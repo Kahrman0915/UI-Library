@@ -1,6 +1,6 @@
 # @ui/lib
 
-A React component library built with **vanilla SCSS + design tokens** and **zero UI dependencies** (no Tailwind, no Radix, no CSS-in-JS). 17 components, 8 semantic color families, 2 built-in themes (light + dark), and 8 product brand scopes.
+A React component library built with **vanilla SCSS + design tokens** and **zero UI dependencies** (no Tailwind, no Radix, no CSS-in-JS). 42 components, light + dark modes, and 8 swappable brand themes — everything driven by CSS variables, so a component's look changes without touching its code.
 
 ## Install
 
@@ -23,7 +23,7 @@ Import the stylesheet once at your app root, then use components anywhere:
 import '@ui/lib/styles.css';
 
 // anywhere
-import { Button, Input, Label, Checkbox, Card, CardHeader, CardBody } from '@ui/lib';
+import { Button, Input, Checkbox, Card, CardHeader, CardBody } from '@ui/lib';
 
 export default function SignIn() {
   return (
@@ -42,87 +42,92 @@ export default function SignIn() {
 
 ## Theming
 
-Set `data-theme="light"` or `data-theme="dark"` on `<html>` (or any parent). Every component picks up the theme via CSS variables — no context provider needed.
+There are two independent axes, both set as attributes and both inherited via CSS variables — **no context provider needed**.
+
+**Mode — light / dark.** Set `data-mode="light"` or `data-mode="dark"` on `<html>`:
 
 ```html
-<html data-theme="dark">
-  ...
-</html>
+<html data-mode="dark"> … </html>
 ```
 
-To create a **branded** subtree, wrap in a product brand scope:
+The `<ModeToggler>` component flips this attribute for you (with a View-Transitions circular reveal).
+
+**Theme — a sub-brand's color.** Set `data-theme="{code}"` on `<html>` or *any* subtree. A theme remaps `--primary` to that brand's color; everything that reads `--primary` (solid buttons, checked checkboxes, radio dots, switch tracks, active chips, default badges, progress, toast actions…) picks it up automatically. The absence of `data-theme` is the neutral-slate **main brand**.
 
 ```tsx
-<div className="brand-db">
-  <Button variant="brand" label="Sign in with DB" />
-</div>
+// Everything reading --primary inside this section turns indigo:
+<section data-theme="db">
+  <Button id="cta" label="Continue" />                 {/* solid indigo */}
+  <Checkbox id="agree" label="I agree" defaultChecked /> {/* indigo check */}
+</section>
 ```
 
-Available product scopes: `.brand-db`, `.brand-dc`, `.brand-dr`, `.brand-ec`, `.brand-ir`, `.brand-nb`, `.brand-ph`, `.brand-rm`.
+Available theme codes: `db`, `dc`, `dr`, `ec`, `ir`, `nb`, `ph`, `rm`. Neutral chrome (secondary/ghost buttons, borders, body text) and `Tooltip` deliberately stay neutral in every theme.
 
 ## Components
 
-| | | |
-|---|---|---|
-| `Avatar` + `AvatarGroup` | `Badge` | `Button` |
-| `ButtonGroup` + `Separator` + `Text` | `Card` + `Header/Body/Footer` | `Checkbox` |
-| `Chip` | `CloseButton` | `Dialog` + `Header/Body/Footer` |
-| `DropdownMenu` + 10 subcomponents | `Input` | `Label` |
-| `ScrollArea` | `Spinner` | `Textarea` |
-| `Tooltip` + `Trigger` + `Content` | | |
+| Category | Components |
+|---|---|
+| **Actions** | `Button`, `ButtonGroup`, `CloseButton` |
+| **Forms** | `Input`, `Textarea`, `Select`, `NativeSelect`, `Combobox`, `Checkbox`, `RadioGroup`, `Switch`, `Field`, `InputGroup`, `Label` |
+| **Feedback** | `Alert`, `Badge`, `Progress`, `Spinner`, `Skeleton`, `Toast` |
+| **Overlays** | `Dialog`, `Drawer`, `Popover`, `Tooltip`, `HoverCard`, `DropdownMenu`, `ContextMenu`, `Command` |
+| **Navigation** | `Tabs`, `Breadcrumb`, `Item` |
+| **Layout** | `Card`, `Accordion`, `Collapsible`, `ScrollArea`, `Attachment`, `Separator`, `Sidebar`, `Empty` |
+| **Identity** | `Avatar` + `AvatarGroup`, `Chip` |
+| **Utility** | `ModeToggler` (light/dark toggle) |
+
+Compound components (`Card`, `Dialog`, `Drawer`, `DropdownMenu`, `Command`, `Sidebar`, `Item`, `Field`, `Tabs`, `Breadcrumb`, `Empty`, …) export their subcomponents from the same entry point.
 
 Every component:
-- Uses `React.forwardRef` — attach a ref
-- Accepts `className` for style overrides
-- Extends the underlying HTML element's attributes — `id`, `data-*`, `aria-*`, event handlers all flow through
 
-Interactive components additionally require an `id` prop (used to seed nested aria relationships).
+- Uses `React.forwardRef` — attach a ref to the underlying element.
+- Accepts `className` for style overrides (merged, never clobbered).
+- Extends the underlying HTML element's attributes — `id`, `data-*`, `aria-*`, and event handlers all flow through via `...rest`.
+
+Non-trivial components take a required `id` prop, used to seed nested aria relationships (`${id}-title`, `${id}-error`, …).
 
 ## Design tokens
 
-Design values live in [`src/styles/tokens.scss`](src/styles/tokens.scss). Categories:
+Every visual value comes from a token in [`src/styles/tokens.scss`](src/styles/tokens.scss). Categories:
 
-- **Spacing / sizing:** `--p-0` through `--p-96`; matching `--w-*` and `--h-*` scales
-- **Typography:** `--text-*`, `--leading-*`, `--tracking-*`, `--font-*` (weight + family)
-- **Radii:** `--rounded-sm` (2px) through `--rounded-3xl` (24px), plus `--rounded-full`
-- **Shadows:** `--shadow-2xs` through `--shadow-2xl` (theme-aware; color pre-baked into each token)
-- **Semantic colors:** `--primary`, `--secondary`, `--muted`, `--accent`, `--card`, `--popover`, `--foreground`, `--background`, `--border`, `--input`, `--ring`, `--focus`
-- **Status colors:** `--error`, `--success`, `--warning`, `--info` — each with `-foreground`, `-light`, `-border`, `-hover`, `-ring`, `-focus`
-- **Brand:** `--brand` + same shape; overridden per-scope via `.brand-*` classes
-- **Category colors:** `--category-red`, `--category-blue`, etc. — chart / tag colors
-- **Motion:** `--duration-fast/normal/slow`, `--ease-*`
-- **Effects:** `--focus-ring-width`, `--overlay-blur`, `--tooltip-slide`
+- **Spacing / sizing:** `--p-0` → `--p-96` (plus half-steps), mirrored `--w-*` / `--h-*`, and `--max-w-*`
+- **Typography:** `--text-*`, `--leading-*`, `--tracking-*`, `--font-*` (weight), `--font-family` / `--font-family-mono`
+- **Radii:** `--rounded-sm` (2px) → `--rounded-3xl` (24px), plus `--rounded-full`
+- **Borders:** `--border-w-50` (0.5px) → `--border-w-400` (4px)
+- **Shadows:** `--shadow-2xs` → `--shadow-2xl` (mode-aware; color pre-baked into each token)
+- **Core colors:** `--primary`, `--secondary`, `--muted`, `--accent`, `--card`, `--popover`, `--foreground`, `--background`, `--border`, `--input`, `--ring`, `--focus` — `--primary` carries a derived family (`-hover`/`-light`/`-soft`/`-border`/`-ring`/`-focus`) that theme scopes remap
+- **Status colors:** `--error`, `--success`, `--warning`, `--info` — each with `-foreground`, `-light`, `-soft`, `-border`, `-hover`, `-ring`, `-focus`
+- **Aiden (AI gradient variant):** `--aiden-primary`, `--aiden-secondary`, `--aiden-outline-*`, …
+- **Sidebar surface:** `--sidebar`, `--sidebar-foreground`, `--sidebar-accent`, `--sidebar-border`, `--sidebar-width`, …
+- **Category colors:** `--category-red`, `--category-blue`, … — chart / tag colors, each with `-bg` and `-hover`
+- **Motion:** `--duration-fast/normal/slow`, `--ease-*` (incl. `--ease-spring` / `--ease-spring-strong`), `--motion-slide-sm/md/lg`
+- **Effects:** `--focus-ring-width`, `--overlay-blur`
 
-Consumers can override tokens by defining them at any scope — e.g. `<div style={{ '--primary': '#ff0066' }}>...` — and every descendant component follows.
+Consumers can override any token at any scope — e.g. `<div style={{ '--primary': '#ff0066' }}>…</div>` — and every descendant component follows.
 
 ## Development
 
 ```bash
-# Install
 npm install
 
-# Storybook (component playground)
-npm run storybook       # http://localhost:6006
-
-# Typecheck
-npm run typecheck
-
-# Build (library bundle)
-npm run build
+npm run storybook   # component playground → http://localhost:6006
+npm run typecheck   # tsc --noEmit
+npm run build       # typecheck + build the library bundle into dist/
 ```
 
-Storybook is the primary way to preview components in isolation. Every component has stories under `src/components/{Name}/{Name}.stories.tsx`.
+Storybook is the primary way to preview components in isolation and the main regression check. Every component has stories at `src/components/{Name}/{Name}.stories.tsx`.
 
 ## Dependencies
 
-**Runtime:** `lucide-react` (icons only)
-**Peer:** `react`, `react-dom`
+- **Runtime:** `lucide-react` (icons only)
+- **Peer:** `react`, `react-dom`
 
-That's it. No Tailwind, no Radix, no cva, no styled-components, no motion library.
+That's it. No Tailwind, no Radix, no cva, no styled-components, no motion library, no floating-ui.
 
 ## Contributing / adding a component
 
-See [`CLAUDE.md`](CLAUDE.md) — it's the source of truth for conventions (file structure, API patterns, token vocabulary, verification workflow). All PRs need to follow the rules there.
+See [`CLAUDE.md`](CLAUDE.md) — the source of truth for conventions (file structure, API patterns, token vocabulary, theming model, verification workflow). Every change should follow the rules there.
 
 ## License
 
