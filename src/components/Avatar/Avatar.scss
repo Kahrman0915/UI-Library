@@ -1,0 +1,139 @@
+.ui-avatar {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  font-family: var(--font-family);
+  font-weight: var(--font-semibold);
+  user-select: none;
+
+  // ---- Sizes ----
+
+  &--sz-sm {
+    width: var(--w-8);
+    height: var(--h-8);
+    font-size: var(--text-xs);
+  }
+
+  &--sz-default {
+    width: var(--w-10);
+    height: var(--h-10);
+    font-size: var(--text-sm);
+  }
+
+  &--sz-lg {
+    width: var(--w-14);
+    height: var(--h-14);
+    font-size: var(--text-base);
+  }
+
+  // ---- Inner clip layer — holds fallback + image so badge can escape ----
+
+  &__inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  // ---- Shape (border radius on both outer and inner so the clip matches) ----
+
+  &--circle,
+  &--circle &__inner {
+    border-radius: var(--rounded-full);
+  }
+
+  &--square,
+  &--square &__inner {
+    border-radius: var(--rounded-md);
+  }
+
+  // ---- Fallback (always in the layer stack under the image) ----
+
+  &__fallback {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--muted);
+    color: var(--muted-foreground);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-wide);
+    z-index: var(--z-0);
+  }
+
+  // ---- Image (covers fallback when loaded) ----
+
+  &__image {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: var(--z-10);
+  }
+
+  // ---- Badge (bottom-right overlay) ----
+
+  &__badge {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-20);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    border: var(--border-w-300) solid var(--background);
+    background: var(--muted);
+    color: var(--foreground);
+    border-radius: var(--rounded-full);
+    box-sizing: content-box;
+  }
+
+  &--sz-sm &__badge {
+    min-width: var(--w-1-5);
+    min-height: var(--h-1-5);
+    padding: 0;
+  }
+
+  &--sz-default &__badge {
+    min-width: var(--w-2);
+    min-height: var(--h-2);
+    padding: 0;
+  }
+
+  &--sz-lg &__badge {
+    min-width: var(--w-2-5);
+    min-height: var(--h-2-5);
+    padding: 0;
+  }
+}
+
+// =============================================================================
+// AvatarGroup — overlapping row of avatars
+// =============================================================================
+
+.ui-avatar-group {
+  display: inline-flex;
+  align-items: center;
+  flex-direction: row;
+
+  > .ui-avatar {
+    border: var(--border-w-300) solid var(--background);
+    box-sizing: content-box;
+  }
+
+  &--sp-sm > .ui-avatar + .ui-avatar {
+    margin-left: calc(-1 * var(--p-2));
+  }
+
+  &--sp-default > .ui-avatar + .ui-avatar {
+    margin-left: calc(-1 * var(--p-3));
+  }
+
+  &--sp-lg > .ui-avatar + .ui-avatar {
+    margin-left: calc(-1 * var(--p-1));
+  }
+}

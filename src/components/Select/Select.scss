@@ -1,0 +1,164 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Trigger — sits inside the reused .ui-input-wrap.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-select__trigger-wrap {
+  cursor: pointer;
+  padding-right: var(--p-2); // room for chevron
+
+  &--open {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    border-color: var(--ring);
+  }
+}
+
+.ui-select__trigger {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--font-normal);
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.ui-select__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--placeholder {
+    color: var(--muted-foreground);
+  }
+}
+
+.ui-select__chevron {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  pointer-events: none;
+  transition: transform var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    display: block;
+  }
+}
+
+.ui-select__trigger-wrap--open .ui-select__chevron {
+  transform: rotate(180deg);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content (listbox)
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-select__content {
+  position: fixed;
+  z-index: var(--z-50);
+  min-width: var(--w-32);
+  max-height: var(--h-64);
+  overflow-y: auto;
+  padding: var(--p-1);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  outline: none;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Item
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-select__item {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  padding: var(--p-1-5) var(--p-2);
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  color: var(--popover-foreground);
+  transition: background var(--duration-fast) var(--ease-out);
+
+  &:hover:not([data-disabled]),
+  &:focus-visible:not([data-disabled]) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &[data-disabled] {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+}
+
+.ui-select__item-indicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--foreground);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+    display: block;
+  }
+}
+
+.ui-select__item-content {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Label / Group / Separator
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-select__group + .ui-select__group {
+  margin-top: var(--p-1);
+}
+
+.ui-select__label {
+  padding: var(--p-1-5) var(--p-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  user-select: none;
+}
+
+.ui-select__separator {
+  height: var(--border-w-100);
+  margin: var(--p-1) 0;
+  background: var(--border);
+}

@@ -1,0 +1,96 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>RadioGroup</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>RadioGroup</h1>
+        <p>
+          Native <code>&lt;input type="radio"&gt;</code>s wired together as a group. Compose
+          <code>RadioGroup</code> with <code>RadioGroupItem</code> children.
+          <code>value</code> / <code>defaultValue</code> select the current item;
+          <code>onValueChange(next)</code> reports changes. Group-level <code>label</code>,
+          <code>description</code>, <code>required</code>, and <code>orientation</code>
+          (<code>vertical</code> / <code>horizontal</code>) apply to all items.
+        </p>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <p>Default orientation. Group label lives in a header above the items.</p>
+        <div role="radiogroup" aria-labelledby="rg-1-label" class="ui-radio-group ui-radio-group--vertical" style="max-width: 380px;">
+          <div class="ui-radio-group__header">
+            <span id="rg-1-label" class="ui-label__text">Plan</span>
+            <span class="ui-label__description">Choose a plan for this workspace.</span>
+          </div>
+          <div class="ui-radio-group__items">
+            <label class="ui-radio-wrap">
+              <input type="radio" class="ui-radio__input" name="plan" value="starter" />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label">
+                <span class="ui-label__text">Starter</span>
+                <span class="ui-label__description">Free forever · 1 seat</span>
+              </span>
+            </label>
+            <label class="ui-radio-wrap">
+              <input type="radio" class="ui-radio__input" name="plan" value="team" checked />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label">
+                <span class="ui-label__text">Team</span>
+                <span class="ui-label__description">$12 / seat / month · unlimited seats</span>
+              </span>
+            </label>
+            <label class="ui-radio-wrap ui-radio-wrap--disabled">
+              <input type="radio" class="ui-radio__input" name="plan" value="enterprise" disabled />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label ui-label--disabled">
+                <span class="ui-label__text">Enterprise</span>
+                <span class="ui-label__description">Contact sales</span>
+              </span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Horizontal</h2>
+        <p>Set <code>orientation="horizontal"</code> for compact chip-like layouts.</p>
+        <div role="radiogroup" aria-labelledby="rg-2-label" class="ui-radio-group ui-radio-group--horizontal">
+          <div class="ui-radio-group__header">
+            <span id="rg-2-label" class="ui-label__text">Density</span>
+          </div>
+          <div class="ui-radio-group__items">
+            <label class="ui-radio-wrap">
+              <input type="radio" class="ui-radio__input" name="density" value="compact" />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label"><span class="ui-label__text">Compact</span></span>
+            </label>
+            <label class="ui-radio-wrap">
+              <input type="radio" class="ui-radio__input" name="density" value="default" checked />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label"><span class="ui-label__text">Default</span></span>
+            </label>
+            <label class="ui-radio-wrap">
+              <input type="radio" class="ui-radio__input" name="density" value="comfortable" />
+              <span class="ui-radio" aria-hidden="true"><span class="ui-radio__dot"></span></span>
+              <span class="ui-label"><span class="ui-label__text">Comfortable</span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

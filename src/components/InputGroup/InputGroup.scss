@@ -1,0 +1,252 @@
+// InputGroup rides on top of the reused `.ui-input-wrap` from Input.scss and
+// overrides its layout to a flex-wrap row that supports block addons.
+
+.ui-input-group__wrap {
+  // Reset the fixed padding — each cell inside owns its own padding.
+  padding: 0;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 0;
+
+  // Focus-within highlight moves onto the wrap regardless of which child is
+  // focused (input, button in an addon, textarea). Inherited from
+  // `.ui-input-wrap:focus-within` — nothing to add here.
+}
+
+// The raw input / textarea inherits typography + placeholder from `.ui-input`
+// and fills whatever cell it lands in.
+.ui-input-group__input,
+.ui-input-group__textarea {
+  order: 2;
+  flex: 1;
+  min-width: 0;
+  padding: 0 var(--p-3);
+  height: 100%;
+  align-self: stretch;
+
+  // Kill the browser's autofill yellow (matches Input.scss).
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground);
+    -webkit-box-shadow: 0 0 0 1000px var(--bg-input-30) inset;
+  }
+}
+
+.ui-input-group__textarea {
+  padding: var(--p-2-5) var(--p-3);
+  resize: vertical;
+  min-height: var(--h-24);
+  font-family: inherit;
+}
+
+// Size the middle row height on inputs. Textareas grow with content.
+.ui-input-field--sz-sm .ui-input-group__input {
+  min-height: var(--h-8);
+}
+.ui-input-field--sz-default .ui-input-group__input {
+  min-height: var(--h-10);
+}
+.ui-input-field--sz-lg .ui-input-group__input {
+  min-height: var(--h-12);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Addons — CSS `order` puts them where the `align` says, regardless of DOM
+// position. flex-basis: 100% forces block addons onto their own row.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-input-group__addon {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  color: var(--muted-foreground);
+  align-self: stretch;
+  padding: 0 var(--p-3);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    display: block;
+    flex-shrink: 0;
+  }
+
+  &--inline-start {
+    order: 1;
+    padding-right: 0;
+  }
+
+  &--inline-end {
+    order: 3;
+    padding-left: 0;
+  }
+
+  &--block-start {
+    order: 0;
+    flex-basis: 100%;
+    padding: var(--p-2) var(--p-3);
+    border-bottom: var(--border-w-100) solid var(--border);
+  }
+
+  &--block-end {
+    order: 4;
+    flex-basis: 100%;
+    padding: var(--p-2) var(--p-3);
+    border-top: var(--border-w-100) solid var(--border);
+  }
+}
+
+// If the size wrap has a fixed height, block-start/block-end can push things
+// beyond that height. Drop the fixed height when block addons are present so
+// the wrap grows to fit them.
+.ui-input-group:has(.ui-input-group__addon--block-start) .ui-input-group__wrap,
+.ui-input-group:has(.ui-input-group__addon--block-end) .ui-input-group__wrap {
+  height: auto;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Text — muted inline text (e.g. "$", ".com", currency codes).
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-input-group__text {
+  color: var(--muted-foreground);
+  font-size: inherit;
+  line-height: inherit;
+  white-space: nowrap;
+  user-select: none;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Button — small, flat, fits inside the wrap. Not a full Button — deliberately
+// lightweight so the wrap's focus-within ring still shows when it's focused.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Matches the Button component's visual language (border-radius, font,
+// shadow, hover treatments) but sized to fit inside the input wrap.
+.ui-input-group__button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p-1);
+  padding: 0 var(--p-2-5);
+  font-family: var(--font-family);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-4);
+  border-radius: var(--rounded-md);
+  border: none;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+    display: block;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  // Sizes — heights match Button's small footprint scaled for input context.
+  &--sz-xs {
+    height: var(--h-6);
+    font-size: var(--text-xs);
+  }
+  &--sz-sm {
+    height: var(--h-7);
+    font-size: var(--text-xs);
+  }
+  &--sz-icon-xs {
+    width: var(--w-6);
+    height: var(--h-6);
+    padding: 0;
+  }
+  &--sz-icon-sm {
+    width: var(--w-7);
+    height: var(--h-7);
+    padding: 0;
+  }
+
+  // Variants — mirror Button's default/outline/ghost/error styles.
+
+  // Ghost: transparent, tinted accent on hover — matches Button ghost.
+  &--ghost {
+    background: transparent;
+    color: var(--foreground);
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  // Outline: hairline border + subtle shadow — matches Button outline.
+  &--outline {
+    background: var(--bg-input-30);
+    color: var(--muted-foreground);
+    border: var(--border-w-100) solid var(--border);
+    box-shadow: var(--shadow-xs);
+
+    &:hover:not(:disabled) {
+      background: var(--opacity-50);
+      color: var(--foreground);
+    }
+
+    &:focus-visible {
+      border-color: var(--ring);
+    }
+  }
+
+  // Default: primary background, subtle shadow — matches Button default.
+  &--default {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    box-shadow: var(--shadow-xs);
+
+    &:hover:not(:disabled) {
+      background:
+        linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
+        var(--primary);
+    }
+  }
+
+  // Destructive: error color with soft red hover.
+  &--destructive {
+    background: transparent;
+    color: var(--error);
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      background: var(--error-light);
+      color: var(--error);
+    }
+  }
+}
+
+// Room around the button/addon in the inline slots so text buttons don't hug
+// the edge.
+.ui-input-group__addon--inline-start .ui-input-group__button,
+.ui-input-group__addon--inline-end .ui-input-group__button {
+  margin: var(--p-1) 0 var(--p-1) 0;
+}
+
+.ui-input-group__addon--inline-end .ui-input-group__button {
+  margin-right: var(--p-1);
+}
+
+.ui-input-group__addon--inline-start .ui-input-group__button {
+  margin-left: var(--p-1);
+}

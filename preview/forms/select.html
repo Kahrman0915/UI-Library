@@ -1,0 +1,128 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Select</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .stack { display: grid; gap: var(--p-6); max-width: 380px; }
+      .stage { position: relative; }
+      .icon { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .popped { position: absolute; top: calc(100% + 4px); left: 0; right: 0; visibility: visible; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Select</h1>
+        <p>
+          Dropdown for choosing one value from a static list. Uses the same
+          <code>.ui-input-wrap</code> border and focus ring as Input for visual consistency.
+          Trigger displays the current value (or a placeholder in <code>--muted-foreground</code>);
+          content is portalled and positioned. Options support optional groups and separators.
+        </p>
+      </div>
+
+      <div>
+        <h2>Closed states</h2>
+        <p>Default, with a chosen value, and error.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Team</span></label>
+            <div class="ui-input-wrap">
+              <button type="button" aria-haspopup="listbox" aria-expanded="false" class="ui-select__trigger-wrap">
+                <span class="ui-select__value ui-select__value--placeholder">Choose a team</span>
+                <span class="ui-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Team</span></label>
+            <div class="ui-input-wrap">
+              <button type="button" aria-haspopup="listbox" aria-expanded="false" class="ui-select__trigger-wrap">
+                <span class="ui-select__value">Design engineering</span>
+                <span class="ui-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Team<span class="ui-label__required" aria-hidden="true">*</span></span></label>
+            <div class="ui-input-wrap ui-input-wrap--error">
+              <button type="button" aria-haspopup="listbox" aria-expanded="false" aria-invalid="true" class="ui-select__trigger-wrap">
+                <span class="ui-select__value ui-select__value--placeholder">Please pick a team</span>
+                <span class="ui-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </button>
+            </div>
+            <p class="ui-input__error">A team is required to continue.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Open, with groups</h2>
+        <p>Static mock of the open state — one item is selected (checkmark). Groups are separated by <code>Separator</code>.</p>
+        <div class="stack">
+          <div class="stage">
+            <div class="ui-input-field ui-input-field--sz-default">
+              <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Team</span></label>
+              <div class="ui-input-wrap">
+                <button type="button" aria-haspopup="listbox" aria-expanded="true" class="ui-select__trigger-wrap ui-select__trigger-wrap--open">
+                  <span class="ui-select__value">Design engineering</span>
+                  <span class="ui-select__chevron" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div role="listbox" tabindex="-1" data-side="bottom" class="ui-select__content popped">
+              <div class="ui-select__group">
+                <div class="ui-select__label">Product</div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-select__item">
+                  <span class="ui-select__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-select__item-content">Design</span>
+                </div>
+                <div role="option" aria-selected="true" tabindex="-1" class="ui-select__item">
+                  <span class="ui-select__item-indicator" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  <span class="ui-select__item-content">Design engineering</span>
+                </div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-select__item">
+                  <span class="ui-select__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-select__item-content">Engineering</span>
+                </div>
+              </div>
+              <div role="separator" class="ui-select__separator"></div>
+              <div class="ui-select__group">
+                <div class="ui-select__label">Support</div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-select__item">
+                  <span class="ui-select__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-select__item-content">Customer success</span>
+                </div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-select__item">
+                  <span class="ui-select__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-select__item-content">Sales</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

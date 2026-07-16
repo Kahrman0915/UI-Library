@@ -1,0 +1,98 @@
+.ui-tabs {
+  display: flex;
+  font-family: var(--font-family);
+  color: var(--foreground);
+
+  &--horizontal {
+    flex-direction: column;
+    gap: var(--p-3);
+  }
+
+  &--vertical {
+    flex-direction: row;
+    gap: var(--p-4);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// List — pill-shaped background with the active trigger looking "lifted".
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-tabs__list {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  padding: var(--p-1);
+  background: var(--muted);
+  border-radius: var(--rounded-md);
+
+  &[data-orientation='vertical'] {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Trigger
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-tabs__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p-1-5);
+  padding: var(--p-1-5) var(--p-3);
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-5);
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  &:hover:not(:disabled):not([data-state='active']) {
+    color: var(--foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  &[data-state='active'] {
+    background: var(--background);
+    color: var(--foreground);
+    box-shadow: var(--shadow-sm);
+  }
+}
+
+.ui-tabs__list[data-orientation='vertical'] .ui-tabs__trigger {
+  justify-content: flex-start;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-tabs__content {
+  flex: 1;
+  min-width: 0;
+  outline: none;
+
+  &:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    border-radius: var(--rounded-sm);
+  }
+}

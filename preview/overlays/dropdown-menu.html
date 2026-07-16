@@ -1,0 +1,166 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>DropdownMenu</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stage {
+        position: relative;
+        min-height: 380px;
+        padding: var(--p-6);
+        border-radius: var(--rounded-md);
+        border: var(--border-w-100) solid var(--border);
+      }
+      .popped {
+        position: absolute;
+        visibility: visible;
+        width: 220px;
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>DropdownMenu</h1>
+        <p>
+          Command-style menu triggered by a button. 11 exports — <code>DropdownMenu</code>,
+          <code>Trigger</code>, <code>Content</code>, <code>Item</code>, <code>Label</code>,
+          <code>Separator</code>, <code>Group</code>, <code>CheckboxItem</code>,
+          <code>RadioGroup</code>, <code>RadioItem</code>, <code>Shortcut</code>. Keyboard
+          navigation wraps at ends. Portals to <code>document.body</code>. Positioning is
+          computed via <code>computePosition</code> — no positioning-library dependency.
+        </p>
+      </div>
+
+      <div>
+        <h2>Command menu</h2>
+        <p>Standard menu with labels, items, shortcuts, and a separator between groups.</p>
+        <div class="stage">
+          <button id="dd-1-trigger" type="button" aria-expanded="true" aria-haspopup="menu" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">
+            File
+            <svg class="icon" viewBox="0 0 24 24" style="width: 12px; height: 12px;"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="dd-1-content" role="menu" data-side="bottom" class="ui-dropdown-menu__content popped" style="top: 72px; left: 24px;">
+            <div class="ui-dropdown-menu__label">Actions</div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item">
+              New file
+              <span class="ui-dropdown-menu__shortcut">⌘N</span>
+            </div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item">
+              Open…
+              <span class="ui-dropdown-menu__shortcut">⌘O</span>
+            </div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item">
+              Save
+              <span class="ui-dropdown-menu__shortcut">⌘S</span>
+            </div>
+            <div role="separator" class="ui-dropdown-menu__separator"></div>
+            <div class="ui-dropdown-menu__label">Export</div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item">Export as PDF</div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item">Export as PNG</div>
+            <div role="separator" class="ui-dropdown-menu__separator"></div>
+            <div role="menuitem" tabindex="-1" class="ui-dropdown-menu__item" style="color: var(--error);">
+              Delete
+              <span class="ui-dropdown-menu__shortcut">⌫</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With CheckboxItem + RadioGroup</h2>
+        <p>Same menu structure supports multi-select checkboxes and single-select radio groups. Indicators sit in a fixed leading gutter.</p>
+        <div class="stage">
+          <button id="dd-2-trigger" type="button" aria-expanded="true" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">
+            View
+            <svg class="icon" viewBox="0 0 24 24" style="width: 12px; height: 12px;"><path d="m6 9 6 6 6-6"/></svg>
+          </button>
+          <div id="dd-2-content" role="menu" data-side="bottom" class="ui-dropdown-menu__content popped" style="top: 72px; left: 24px; width: 240px;">
+            <div class="ui-dropdown-menu__label">Show</div>
+            <div role="menuitemcheckbox" aria-checked="true" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+              <span class="ui-dropdown-menu__item-indicator" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              Show line numbers
+            </div>
+            <div role="menuitemcheckbox" aria-checked="true" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+              <span class="ui-dropdown-menu__item-indicator" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              Show minimap
+            </div>
+            <div role="menuitemcheckbox" aria-checked="false" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+              <span class="ui-dropdown-menu__item-indicator" aria-hidden="true"></span>
+              Show whitespace
+            </div>
+            <div role="separator" class="ui-dropdown-menu__separator"></div>
+            <div class="ui-dropdown-menu__label">Theme</div>
+            <div role="group">
+              <div role="menuitemradio" aria-checked="false" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+                <span class="ui-dropdown-menu__item-indicator" aria-hidden="true"></span>
+                Light
+              </div>
+              <div role="menuitemradio" aria-checked="true" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+                <span class="ui-dropdown-menu__item-indicator" aria-hidden="true">
+                  <span class="ui-dropdown-menu__radio-dot"></span>
+                </span>
+                Dark
+              </div>
+              <div role="menuitemradio" aria-checked="false" tabindex="-1" class="ui-dropdown-menu__item ui-dropdown-menu__item--indicator">
+                <span class="ui-dropdown-menu__item-indicator" aria-hidden="true"></span>
+                System
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

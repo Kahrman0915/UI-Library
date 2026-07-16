@@ -1,0 +1,137 @@
+<!-- @dsCard group="Identity" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Label</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-4);
+      }
+      .example {
+        display: grid;
+        gap: var(--p-2);
+        max-width: 380px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Label</h1>
+        <p>
+          The primitive that every form control's built-in label composes. Renders a native
+          <code>&lt;label&gt;</code> with <code>htmlFor</code> association, plus an optional
+          <code>description</code> below and a <code>required</code> flag that adds a
+          <code>*</code> in <code>--error</code>. Three sizes match Input / Textarea /
+          Field sizing (<code>sm</code>, <code>default</code>, <code>lg</code>). Also honors
+          <code>disabled</code> so the label greys out with its target control.
+        </p>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>Three sizes; use the one that matches the paired control.</p>
+        <div class="stack">
+          <label class="ui-label ui-label--sz-sm">
+            <span class="ui-label__text">Small label</span>
+          </label>
+          <label class="ui-label ui-label--sz-default">
+            <span class="ui-label__text">Default label</span>
+          </label>
+          <label class="ui-label ui-label--sz-lg">
+            <span class="ui-label__text">Large label</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h2>Required + description</h2>
+        <p>
+          <code>required</code> renders a <code>*</code> in the error color as a compact indicator.
+          <code>description</code> stacks a smaller, muted helper line under the label.
+        </p>
+        <div class="example">
+          <label for="lb-req" class="ui-label ui-label--sz-default">
+            <span class="ui-label__text">
+              Team name<span class="ui-label__required" aria-hidden="true">*</span>
+            </span>
+            <span class="ui-label__description">Public name shown on invoices and shared documents.</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h2>Disabled</h2>
+        <p>Greyed to <code>--muted-foreground</code> when the paired control is disabled. Cursor becomes <code>not-allowed</code>.</p>
+        <div class="example">
+          <label for="lb-dis" class="ui-label ui-label--sz-default ui-label--disabled">
+            <span class="ui-label__text">
+              Legacy setting<span class="ui-label__required" aria-hidden="true">*</span>
+            </span>
+            <span class="ui-label__description">Read-only on plans below Team.</span>
+          </label>
+        </div>
+      </div>
+
+      <div>
+        <h2>Composition with a control</h2>
+        <p>
+          Every form-control component in the library (Input, Textarea, Field, Checkbox, etc.)
+          composes <code>Label</code> internally. Pass its props directly on the control (see the
+          Input card) rather than mounting <code>Label</code> separately unless you need a custom
+          layout.
+        </p>
+        <div class="example">
+          <label for="lb-comp" class="ui-label ui-label--sz-default">
+            <span class="ui-label__text">
+              Workspace slug<span class="ui-label__required" aria-hidden="true">*</span>
+            </span>
+            <span class="ui-label__description">Lowercase, letters and hyphens only.</span>
+          </label>
+          <div class="ui-input-wrap">
+            <input id="lb-comp" type="text" class="ui-input" placeholder="my-team" />
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

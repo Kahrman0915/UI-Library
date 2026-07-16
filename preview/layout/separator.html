@@ -1,0 +1,81 @@
+<!-- @dsCard group="Layout" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Separator</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .example { max-width: 420px; }
+      .row { display: flex; align-items: center; gap: var(--p-4); height: 32px; font-size: var(--text-sm); }
+      .btn {
+        padding: var(--p-2) var(--p-3);
+        border-radius: var(--rounded-md);
+        border: var(--border-w-100) solid var(--border);
+        background: var(--background);
+        color: var(--foreground);
+        font-family: var(--font-family);
+        font-size: var(--text-sm);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Separator</h1>
+        <p>
+          A semantic <code>&lt;div role="separator"&gt;</code> for visually and structurally
+          dividing content. Horizontal or vertical <code>orientation</code>, optional inline
+          <code>label</code> for "or"-branches. Set <code>decorative</code> to drop the
+          <code>role="separator"</code> when the divider is purely visual (recommended when
+          adjacent content already conveys the boundary structurally).
+        </p>
+      </div>
+
+      <div class="example">
+        <h2>Horizontal</h2>
+        <p>Default orientation. Full-width 1px hairline using <code>--border</code>.</p>
+        <div>
+          <div style="font-weight: var(--font-semibold); font-size: var(--text-sm);">Design engineering</div>
+          <div style="font-size: var(--text-sm); color: var(--muted-foreground);">Design + engineering shared team.</div>
+        </div>
+        <div role="separator" aria-orientation="horizontal" data-orientation="horizontal" class="ui-separator ui-separator--horizontal" style="margin: var(--p-3) 0;"></div>
+        <div class="row" style="height: auto;">
+          <a href="#" style="color: var(--muted-foreground); text-decoration: none;">Blog</a>
+          <a href="#" style="color: var(--muted-foreground); text-decoration: none;">Docs</a>
+          <a href="#" style="color: var(--muted-foreground); text-decoration: none;">Changelog</a>
+        </div>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <p>Set <code>orientation="vertical"</code>. Renders a 1px-wide full-height rule.</p>
+        <div class="row">
+          <span>Docs</span>
+          <div role="separator" aria-orientation="vertical" data-orientation="vertical" class="ui-separator ui-separator--vertical"></div>
+          <span>Guides</span>
+          <div role="separator" aria-orientation="vertical" data-orientation="vertical" class="ui-separator ui-separator--vertical"></div>
+          <span>Changelog</span>
+        </div>
+      </div>
+
+      <div class="example">
+        <h2>With inline label</h2>
+        <p>Pass <code>label</code> to render an uppercase muted text between two lines — the classic "or" pattern in sign-in forms.</p>
+        <div style="display: grid; gap: var(--p-3);">
+          <button type="button" class="btn">Continue with SSO</button>
+          <div role="separator" aria-orientation="horizontal" data-orientation="horizontal" class="ui-separator ui-separator--horizontal ui-separator--labeled">
+            <span class="ui-separator__label">or</span>
+          </div>
+          <button type="button" class="btn">Continue with email</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

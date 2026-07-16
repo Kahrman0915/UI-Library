@@ -1,0 +1,136 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>HoverCard</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stage {
+        position: relative;
+        min-height: 260px;
+        padding: var(--p-6);
+        border-radius: var(--rounded-md);
+        border: var(--border-w-100) solid var(--border);
+      }
+      .prose {
+        max-width: 460px;
+        font-size: var(--text-sm);
+        line-height: var(--leading-6);
+        color: var(--muted-foreground);
+      }
+      .prose a {
+        color: var(--foreground);
+        font-weight: var(--font-medium);
+        text-decoration: underline;
+        text-underline-offset: 2px;
+        text-decoration-color: var(--border);
+      }
+      .popped {
+        position: absolute;
+        visibility: visible;
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>HoverCard</h1>
+        <p>
+          Rich preview panel that appears on hover — for user profiles, link previews,
+          keyboard-shortcut lists, and other short-form context. Similar API to Popover but
+          triggered by pointer hover with configurable open/close delays. Not appropriate for
+          essential information (touch and keyboard users can't hover) — use Popover if the
+          content is required.
+        </p>
+      </div>
+
+      <div>
+        <h2>Profile preview</h2>
+        <p>Common pattern — hovering a mention or avatar reveals a mini profile card.</p>
+        <div class="stage">
+          <p class="prose">
+            Merged pull request from <a href="#" id="hc-1-trigger" aria-expanded="true">@ren-guo</a> that
+            introduces the eight product brand scopes. Great cleanup — every hard-coded palette
+            reference is now token-driven.
+          </p>
+          <div id="hc-1-content" role="dialog" tabindex="-1" data-side="bottom" class="ui-hover-card__content popped" style="top: 76px; left: 220px;">
+            <div style="padding: var(--p-3); display: grid; gap: var(--p-3);">
+              <div style="display: flex; gap: var(--p-3); align-items: center;">
+                <div class="ui-avatar ui-avatar--sz-lg ui-avatar--circle">
+                  <div class="ui-avatar__inner"><span class="ui-avatar__fallback">RG</span></div>
+                </div>
+                <div>
+                  <div style="font-size: var(--text-sm); font-weight: var(--font-semibold);">Ren Guo</div>
+                  <div style="font-size: var(--text-xs); color: var(--muted-foreground);">Design engineer · Palo Alto</div>
+                </div>
+              </div>
+              <p style="margin: 0; font-size: var(--text-xs); color: var(--muted-foreground); line-height: var(--leading-4);">
+                Builds tools that make design systems less painful. Currently deep in <code>@ui/lib</code>.
+              </p>
+              <div style="display: flex; gap: var(--p-4); font-size: var(--text-xs);">
+                <div><strong style="color: var(--foreground);">128</strong> <span style="color: var(--muted-foreground);">followers</span></div>
+                <div><strong style="color: var(--foreground);">42</strong> <span style="color: var(--muted-foreground);">following</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Link preview</h2>
+        <p>Hovering a link reveals its title, description, and thumbnail — useful for docs, wikis, and knowledge bases.</p>
+        <div class="stage">
+          <p class="prose">
+            Full technical details in the <a href="#" id="hc-2-trigger" aria-expanded="true">brand scopes RFC</a>.
+            Includes the rationale behind opt-in scoping and the fallback matrix.
+          </p>
+          <div id="hc-2-content" role="dialog" tabindex="-1" data-side="bottom" class="ui-hover-card__content popped" style="top: 76px; left: 244px;">
+            <div style="padding: var(--p-3);">
+              <div style="height: 96px; border-radius: var(--rounded-sm); background: linear-gradient(135deg, var(--primary), var(--category-violet)); margin-bottom: var(--p-3);"></div>
+              <div style="font-size: var(--text-sm); font-weight: var(--font-medium); margin-bottom: var(--p-1);">Brand scopes — Design System RFC</div>
+              <p style="margin: 0; font-size: var(--text-xs); color: var(--muted-foreground);">docs.example.com · updated 2 days ago</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

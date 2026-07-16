@@ -1,0 +1,48 @@
+{
+  "$schema": "https://claude.ai/schema/plugin-manifest-v1.json",
+  "name": "ui-lib-design-system",
+  "displayName": "@ui/lib design system",
+  "version": "0.0.1",
+  "description": "A React + SCSS component library with 17 components, semantic tokens, light/dark themes, and 8 product brand scopes. When installed, Claude Code sessions in any repo can import from @ui/lib and use these components/tokens when generating UIs.",
+  "author": {
+    "name": "Kahrman McKenzie",
+    "email": "kahrman.mckenzie@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": [
+    "design-system",
+    "react",
+    "scss",
+    "component-library",
+    "tokens",
+    "ui"
+  ],
+  "skills": [
+    {
+      "name": "ui-lib-usage",
+      "path": "./SKILL.md",
+      "description": "Load this when the user wants to build UI in a project that has @ui/lib installed. Sets Claude up to import from @ui/lib and follow its conventions (BEM classes, tokens, forwardRef, no third-party UI libs)."
+    }
+  ],
+  "resources": [
+    {
+      "name": "component-reference",
+      "path": "./resources/components.md",
+      "description": "Full component API reference — every export, props, and usage examples."
+    },
+    {
+      "name": "token-reference",
+      "path": "./resources/tokens.md",
+      "description": "Complete token vocabulary — spacing, typography, colors, shadows, motion."
+    },
+    {
+      "name": "conventions",
+      "path": "./resources/conventions.md",
+      "description": "Non-negotiable rules for extending or modifying the library."
+    }
+  ],
+  "compatibility": {
+    "claudeCode": ">=1.0.0",
+    "claudeAi": true
+  }
+}

@@ -1,0 +1,242 @@
+<!-- @dsCard group="Buttons" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Button</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-5xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .variant-row {
+        display: grid;
+        gap: var(--p-2);
+        margin-bottom: var(--p-5);
+      }
+      .variant-row__label {
+        font-size: var(--text-sm);
+        font-weight: var(--font-medium);
+        color: var(--muted-foreground);
+        text-transform: capitalize;
+      }
+      .btn-row {
+        display: flex;
+        gap: var(--p-2);
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .brand-strip {
+        display: grid;
+        gap: var(--p-3);
+        padding: var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+      }
+      .brand-strip__label {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-xs);
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Button</h1>
+        <p>
+          The primary interactive element. Composed of a <strong>variant</strong> (color intent —
+          default, brand, error, info, success, warning, aiden) and a <strong>style</strong>
+          (visual weight — default, secondary, outline, ghost, link). Add <code>size</code>
+          (small / default / large), <code>isLoading</code> for a spinner state, <code>disabled</code>
+          for the inactive state, and <code>IconLeft</code> / <code>IconRight</code> / <code>IconCenter</code>
+          (with <code>iconOnly</code>) for icons.
+        </p>
+      </div>
+
+      <div>
+        <h2>Variants × styles</h2>
+        <p>
+          Every variant × style combination. <code>aiden</code> is intentionally restricted to
+          <code>default</code> and <code>outline</code> styles.
+        </p>
+
+        <div class="variant-row">
+          <div class="variant-row__label">default</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">brand</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">error</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--error ui-button--error-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--error ui-button--error-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--error ui-button--error-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--error ui-button--error-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--error ui-button--error-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">info</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--info ui-button--info-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--info ui-button--info-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--info ui-button--info-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--info ui-button--info-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--info ui-button--info-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">success</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--success ui-button--success-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--success ui-button--success-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--success ui-button--success-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--success ui-button--success-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--success ui-button--success-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">warning</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--warning ui-button--warning-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--warning ui-button--warning-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--warning ui-button--warning-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--warning ui-button--warning-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--warning ui-button--warning-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+
+        <div class="variant-row">
+          <div class="variant-row__label">aiden</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--aiden ui-button--aiden-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--aiden ui-button--aiden-outline ui-button--sz-default">outline</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>Three sizes: <code>small</code>, <code>default</code>, <code>large</code>. Applies to every variant × style.</p>
+        <div class="btn-row">
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-small">Small</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Default</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-large">Large</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>States</h2>
+        <p>Loading (spinner replaces content), disabled, with icons, and icon-only.</p>
+        <div class="btn-row">
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default ui-button--loading" disabled>
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" opacity="0.25"></circle>
+              <path d="M12 2a10 10 0 0 1 10 10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path>
+            </svg>
+            Saving
+          </button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default" disabled>Disabled</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/></svg>
+            Back
+          </button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">
+            Next
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+          </button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default ui-button--icon-only" aria-label="Add item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+          <button type="button" class="ui-button ui-button--aiden ui-button--aiden-default ui-button--sz-default ui-button--icon-only ui-button--aiden-icon-only" aria-label="Add with Aiden">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Theme scope</h2>
+        <p>
+          Wrap a subtree in <code>data-theme="{code}"</code> and the default (primary)
+          button takes that theme's color automatically. Secondary / outline / ghost / link
+          stay neutral slate.
+        </p>
+        <div data-theme="db" class="brand-strip">
+          <div class="brand-strip__label">data-theme="db" — DB, Indigo</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+        <div style="height: var(--p-3);"></div>
+        <div data-theme="nb" class="brand-strip">
+          <div class="brand-strip__label">data-theme="nb" — NB, Emerald</div>
+          <div class="btn-row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">default</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">secondary</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">outline</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">ghost</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-link ui-button--sz-default">link</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

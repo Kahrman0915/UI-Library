@@ -1,0 +1,75 @@
+.ui-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: var(--p-1);
+  padding: var(--p-12) var(--p-6);
+  font-family: var(--font-family);
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--p-2);
+    max-width: var(--max-w-sm);
+  }
+
+  &__media {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: var(--p-2);
+    color: var(--muted-foreground);
+
+    svg {
+      width: var(--w-6);
+      height: var(--h-6);
+    }
+
+    // Boxed muted tile for a single lucide icon.
+    &--icon {
+      width: var(--w-12);
+      height: var(--h-12);
+      border-radius: var(--rounded-xl);
+      background: var(--muted);
+      border: var(--border-w-100) solid var(--border);
+
+      svg {
+        width: var(--w-6);
+        height: var(--h-6);
+      }
+    }
+
+    // Unboxed — for larger imagery, avatars, or a big glyph.
+    &--default svg {
+      width: var(--w-10);
+      height: var(--h-10);
+    }
+  }
+
+  &__title {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+  }
+
+  &__description {
+    margin: 0;
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: var(--p-2);
+    margin-top: var(--p-4);
+  }
+}

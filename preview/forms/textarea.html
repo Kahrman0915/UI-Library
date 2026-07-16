@@ -1,0 +1,66 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Textarea</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .stack { display: grid; gap: var(--p-4); max-width: 460px; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Textarea</h1>
+        <p>
+          Multi-line text input. Reuses <code>Input</code>'s <code>.ui-input-wrap</code> via a
+          <code>--multi</code> modifier so borders, focus rings, and error states match.
+          Same size / error / disabled / label composition as Input.
+        </p>
+      </div>
+
+      <div>
+        <h2>States</h2>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Notes</span><span class="ui-label__description">Plain text, no formatting.</span></label>
+            <div class="ui-input-wrap ui-input-wrap--multi">
+              <textarea class="ui-textarea" rows="4" placeholder="Add any relevant context…"></textarea>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Release notes<span class="ui-label__required" aria-hidden="true">*</span></span></label>
+            <div class="ui-input-wrap ui-input-wrap--multi">
+              <textarea class="ui-textarea" rows="4">— Improved keyboard navigation across menus
+— Fixed focus-ring contrast in dark mode
+— Added loading states to form controls</textarea>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Feedback</span></label>
+            <div class="ui-input-wrap ui-input-wrap--multi ui-input-wrap--error">
+              <textarea class="ui-textarea" rows="3" aria-invalid="true">a</textarea>
+            </div>
+            <p class="ui-input__error">Please write at least 10 characters.</p>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default ui-label--disabled"><span class="ui-label__text">Legacy notes</span></label>
+            <div class="ui-input-wrap ui-input-wrap--multi ui-input-wrap--disabled">
+              <textarea class="ui-textarea" rows="3" disabled>Read-only field.</textarea>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

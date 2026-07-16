@@ -1,0 +1,118 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Spinner</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .row { display: flex; gap: var(--p-6); align-items: center; flex-wrap: wrap; }
+      .swatch { display: grid; gap: var(--p-1); align-items: center; justify-items: center; }
+      .swatch__label {
+        font-size: var(--text-xs);
+        font-family: var(--font-family-mono);
+        color: var(--muted-foreground);
+      }
+      .status {
+        display: inline-flex;
+        gap: var(--p-2);
+        align-items: center;
+        padding: var(--p-2) var(--p-3);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        font-size: var(--text-sm);
+        color: var(--muted-foreground);
+      }
+      .brand-primary { color: var(--primary); }
+      .success { color: var(--success); }
+      .error { color: var(--error); }
+      /* Lucide icons default to a stroke-width; the Spinner is just an SVG so
+         we inherit the same base styling. */
+      .ui-spinner {
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Spinner</h1>
+        <p>
+          Loading indicator. A thin wrapper around lucide's <code>LoaderCircle</code> icon
+          with our <code>ui-spinner-rotate</code> keyframe (900ms linear infinite). Colored
+          via <code>currentColor</code> — the surrounding text color drives the arc, which
+          lets one component blend into any context (button label, alert icon, brand-scoped
+          section). Renders with <code>role="status"</code> and
+          <code>aria-label="Loading"</code> for screen readers.
+        </p>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>The <code>size</code> prop is a pixel value, not a token key — pass any integer.</p>
+        <div class="row">
+          <div class="swatch">
+            <svg class="ui-spinner" width="12" height="12" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div class="swatch__label">size={"{"}12{"}"}</div>
+          </div>
+          <div class="swatch">
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div class="swatch__label">size={"{"}16{"}"} (default)</div>
+          </div>
+          <div class="swatch">
+            <svg class="ui-spinner" width="24" height="24" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div class="swatch__label">size={"{"}24{"}"}</div>
+          </div>
+          <div class="swatch">
+            <svg class="ui-spinner" width="40" height="40" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            <div class="swatch__label">size={"{"}40{"}"}</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Color inheritance</h2>
+        <p>The arc uses <code>stroke="currentColor"</code>. Set <code>color</code> on the parent to change it.</p>
+        <div class="row">
+          <span class="status">
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Loading
+          </span>
+          <span data-theme="db" class="status brand-primary">
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Publishing to DB
+          </span>
+          <span class="status success">
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Verifying
+          </span>
+          <span class="status error">
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Retrying
+          </span>
+        </div>
+      </div>
+
+      <div>
+        <h2>Inside a Button</h2>
+        <p>The Button component automatically renders a Spinner when <code>isLoading</code> is true — see the Button card's States row.</p>
+        <div class="row">
+          <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default ui-button--loading" data-theme="db" disabled>
+            <svg class="ui-spinner" width="16" height="16" viewBox="0 0 24 24" aria-label="Loading" role="status"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+            Saving
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,115 @@
+.ui-switch-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--p-2);
+  cursor: pointer;
+  font-family: var(--font-family);
+
+  &--disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Visually hidden native input — stays in the a11y + form tree.
+.ui-switch__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+// Track.
+.ui-switch {
+  flex-shrink: 0;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--rounded-full);
+  background: var(--muted);
+  border: var(--border-w-100) solid transparent;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+// Thumb.
+.ui-switch__thumb {
+  position: absolute;
+  left: var(--p-0-5);
+  border-radius: var(--rounded-full);
+  background: var(--background);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+// Checked — filled track, thumb slides right.
+.ui-switch__input:checked ~ .ui-switch {
+  background: var(--primary);
+}
+
+// Focus ring.
+.ui-switch__input:focus-visible ~ .ui-switch {
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+}
+
+// Disabled.
+.ui-switch__input:disabled ~ .ui-switch {
+  opacity: var(--o-50);
+  cursor: not-allowed;
+}
+
+// Hover — subtle track darken when off.
+.ui-switch-wrap:not(.ui-switch-wrap--disabled):hover
+  .ui-switch__input:not(:checked)
+  ~ .ui-switch {
+  background: var(--accent);
+}
+
+// ---- Sizes: default (h20 w36 thumb16), sm (h16 w28 thumb12), lg (h24 w44 thumb20) ----
+
+.ui-switch-wrap--sz-default {
+  .ui-switch {
+    width: var(--w-9);   // 36px
+    height: var(--h-5);  // 20px
+    margin-top: var(--p-0-5);
+  }
+  .ui-switch__thumb {
+    width: var(--w-4);   // 16px
+    height: var(--h-4);  // 16px
+  }
+  .ui-switch__input:checked ~ .ui-switch .ui-switch__thumb {
+    transform: translateX(16px);
+  }
+}
+
+.ui-switch-wrap--sz-sm {
+  .ui-switch {
+    width: var(--w-7);   // 28px
+    height: var(--h-4);  // 16px
+  }
+  .ui-switch__thumb {
+    width: var(--w-3);   // 12px
+    height: var(--h-3);  // 12px
+  }
+  .ui-switch__input:checked ~ .ui-switch .ui-switch__thumb {
+    transform: translateX(12px);
+  }
+}
+
+.ui-switch-wrap--sz-lg {
+  .ui-switch {
+    width: var(--w-11);  // 44px
+    height: var(--h-6);  // 24px
+  }
+  .ui-switch__thumb {
+    width: var(--w-5);   // 20px
+    height: var(--h-5);  // 20px
+  }
+  .ui-switch__input:checked ~ .ui-switch .ui-switch__thumb {
+    transform: translateX(20px);
+  }
+}

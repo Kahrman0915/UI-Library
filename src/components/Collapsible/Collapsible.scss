@@ -1,0 +1,30 @@
+// Root
+.ui-collapsible {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  font-family: var(--font-family);
+  color: var(--foreground);
+}
+
+// Content — uses the grid-template-rows: 0fr → 1fr trick so height animates
+// without any JavaScript measurement. Requires a single child wrapper with
+// overflow: hidden to clip content while the row transitions.
+.ui-collapsible__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows var(--duration-normal) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+  opacity: 0;
+
+  &[data-state='open'] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+.ui-collapsible__content-inner {
+  overflow: hidden;
+  min-height: 0;
+}

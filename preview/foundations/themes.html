@@ -1,0 +1,124 @@
+<!-- @dsCard group="Foundations" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Foundations — Themes</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-3) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: var(--p-3);
+      }
+      .swatch { display: grid; gap: var(--p-1); }
+      .swatch__color { height: 56px; border-radius: var(--rounded-md); background: var(--primary); }
+      .swatch__name { font-size: var(--text-xs); font-family: var(--font-family-mono); font-weight: var(--font-medium); color: var(--foreground); }
+      .swatch__hue { font-size: var(--text-xs); color: var(--muted-foreground); }
+      .row { display: flex; gap: var(--p-2); align-items: center; flex-wrap: wrap; }
+      .theme-row { display: grid; gap: var(--p-2); margin-bottom: var(--p-4); }
+      .theme-row__label {
+        font-size: var(--text-xs); font-weight: var(--font-semibold);
+        color: var(--muted-foreground); text-transform: uppercase; letter-spacing: var(--tracking-wide);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Themes</h1>
+        <p>
+          Two independent axes. <strong>Mode</strong> is light / dark — set
+          <code>data-mode="light"</code> or <code>data-mode="dark"</code> on
+          <code>&lt;html&gt;</code> (the <code>ModeToggler</code> does this).
+          <strong>Theme</strong> is a sub-brand's color — set
+          <code>data-theme="db"</code> on <code>&lt;html&gt;</code> or any subtree.
+        </p>
+        <p>
+          A theme remaps a single token, <code>--primary</code>, to that brand's
+          color. Every component that reads <code>--primary</code> — the primary
+          button, checked checkbox, switch track, radio dot, active chip, progress —
+          takes the color automatically. The <strong>main brand</strong> is the
+          absence of <code>data-theme</code>: <code>--primary</code> stays neutral
+          slate. Secondary / ghost / outline buttons, chrome, and tooltips stay
+          neutral in every theme.
+        </p>
+      </div>
+
+      <div>
+        <h2>The 8 theme primaries</h2>
+        <p>Each theme assigns one color to <code>--primary</code>. Shown in light mode.</p>
+        <div class="swatch-grid">
+          <div data-theme="db" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="db"</div><div class="swatch__hue">DB — Indigo</div></div>
+          <div data-theme="dc" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="dc"</div><div class="swatch__hue">DC — Teal</div></div>
+          <div data-theme="dr" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="dr"</div><div class="swatch__hue">DR — Rose</div></div>
+          <div data-theme="ec" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="ec"</div><div class="swatch__hue">EC — Cyan</div></div>
+          <div data-theme="ir" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="ir"</div><div class="swatch__hue">IR — Blue</div></div>
+          <div data-theme="nb" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="nb"</div><div class="swatch__hue">NB — Emerald</div></div>
+          <div data-theme="ph" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="ph"</div><div class="swatch__hue">PH — Orange</div></div>
+          <div data-theme="rm" class="swatch"><div class="swatch__color"></div><div class="swatch__name">data-theme="rm"</div><div class="swatch__hue">RM — Violet</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Same components, every theme</h2>
+        <p>
+          Identical markup. Only the primary button takes the theme color — the
+          secondary and ghost buttons stay neutral slate throughout.
+        </p>
+
+        <div class="theme-row">
+          <div class="theme-row__label">Main brand — no data-theme</div>
+          <div class="row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Save</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Draft</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+            <div class="ui-badge ui-badge--default">Live</div>
+          </div>
+        </div>
+
+        <div data-theme="db" class="theme-row">
+          <div class="theme-row__label">data-theme="db" — Indigo</div>
+          <div class="row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Save</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Draft</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+            <div class="ui-badge ui-badge--default">Live</div>
+          </div>
+        </div>
+
+        <div data-theme="nb" class="theme-row">
+          <div class="theme-row__label">data-theme="nb" — Emerald</div>
+          <div class="row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Save</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Draft</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+            <div class="ui-badge ui-badge--default">Live</div>
+          </div>
+        </div>
+
+        <div data-theme="ph" class="theme-row">
+          <div class="theme-row__label">data-theme="ph" — Orange</div>
+          <div class="row">
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Save</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Draft</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+            <div class="ui-badge ui-badge--default">Live</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

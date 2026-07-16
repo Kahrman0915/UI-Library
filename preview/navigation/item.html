@@ -1,0 +1,183 @@
+<!-- @dsCard group="Navigation" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Item</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-4);
+      }
+      .icon {
+        width: 18px;
+        height: 18px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Item</h1>
+        <p>
+          Universal list-row primitive. Renders as <code>&lt;a&gt;</code> if given <code>href</code>,
+          <code>&lt;button&gt;</code> if given <code>onClick</code>, <code>&lt;div&gt;</code>
+          otherwise. Three variants (<code>default</code>, <code>outline</code>, <code>muted</code>)
+          × three sizes (<code>xs</code>, <code>sm</code>, <code>default</code>). Composed of
+          slots: <code>ItemMedia</code> (leading icon/image), <code>ItemContent</code>
+          (title+description), <code>ItemActions</code> (trailing buttons), plus optional
+          <code>ItemHeader</code> / <code>ItemFooter</code>. Group with <code>ItemGroup</code>
+          and separate with <code>ItemSeparator</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Basic anatomy</h2>
+        <p>Media + Content + Actions. This one is interactive (<code>href</code>) so hover/focus styles apply.</p>
+        <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
+          <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+            <svg class="icon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M9 3v18"/></svg>
+          </div>
+          <div class="ui-item__content">
+            <div class="ui-item__title">Design tokens</div>
+            <div class="ui-item__description">Spacing, colors, radii, shadows — the atomic style values.</div>
+          </div>
+          <div class="ui-item__actions">
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-small">Open</button>
+          </div>
+        </a>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <p><code>default</code> is chromeless. <code>outline</code> adds a border. <code>muted</code> adds a soft <code>--muted</code> background — useful in busy lists.</p>
+        <div class="stack">
+          <div data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Default</div>
+              <div class="ui-item__description">No border, no background.</div>
+            </div>
+          </div>
+          <div data-variant="outline" data-size="default" class="ui-item ui-item--outline ui-item--sz-default">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Outline</div>
+              <div class="ui-item__description">Bordered — reads as a card row.</div>
+            </div>
+          </div>
+          <div data-variant="muted" data-size="default" class="ui-item ui-item--muted ui-item--sz-default">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Muted</div>
+              <div class="ui-item__description">Soft background — quieter emphasis.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>Compact <code>xs</code> and <code>sm</code> variants for dense lists (settings, palette items, autocomplete rows).</p>
+        <div class="stack">
+          <div data-variant="outline" data-size="xs" class="ui-item ui-item--outline ui-item--sz-xs">
+            <div class="ui-item__content"><div class="ui-item__title">Extra-small row</div></div>
+          </div>
+          <div data-variant="outline" data-size="sm" class="ui-item ui-item--outline ui-item--sz-sm">
+            <div class="ui-item__content"><div class="ui-item__title">Small row</div></div>
+          </div>
+          <div data-variant="outline" data-size="default" class="ui-item ui-item--outline ui-item--sz-default">
+            <div class="ui-item__content"><div class="ui-item__title">Default row</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Grouped list</h2>
+        <p><code>ItemGroup</code> wraps siblings; <code>ItemSeparator</code> lays a hairline between them. Common shape for settings sections and notification lists.</p>
+        <div role="list" class="ui-item-group">
+          <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20 7L9 18l-5-5"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Deployment succeeded</div>
+              <div class="ui-item__description">2 minutes ago · web-app · main</div>
+            </div>
+          </a>
+          <div role="separator" aria-orientation="horizontal" class="ui-item-separator"></div>
+          <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24" style="color: var(--warning)"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Storage nearing limit</div>
+              <div class="ui-item__description">92% of 500 GB used · workspace shared</div>
+            </div>
+            <div class="ui-item__actions">
+              <button type="button" class="ui-button ui-button--warning ui-button--warning-secondary ui-button--sz-small">Upgrade</button>
+            </div>
+          </a>
+          <div role="separator" aria-orientation="horizontal" class="ui-item-separator"></div>
+          <div data-variant="default" data-size="default" data-disabled="" class="ui-item ui-item--default ui-item--sz-default ui-item--disabled" aria-disabled="true">
+            <div data-variant="icon" class="ui-item__media ui-item__media--icon">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+            </div>
+            <div class="ui-item__content">
+              <div class="ui-item__title">Legacy setting</div>
+              <div class="ui-item__description">Available on Team plans only.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

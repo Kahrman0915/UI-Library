@@ -1,0 +1,158 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldSet — reset native fieldset styling, add spacing.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field-set {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  padding: 0;
+  margin: 0;
+  border: none;
+  min-width: 0;
+  font-family: var(--font-family);
+  color: var(--foreground);
+
+  &[data-disabled] {
+    opacity: var(--o-50);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldLegend — heading-style vs label-style variants.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field-legend {
+  padding: 0;
+  color: var(--foreground);
+  font-family: var(--font-family);
+
+  &--legend {
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-6);
+  }
+
+  &--label {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-5);
+  }
+}
+
+// A description directly under a legend gets tighter spacing.
+.ui-field-legend + .ui-field-description {
+  margin-top: calc(var(--p-1) * -1);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldGroup — column of Fields with consistent gap.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  min-width: 0;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Field — single-field wrapper. Orientation controls stacking.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field {
+  display: flex;
+  font-family: var(--font-family);
+  color: var(--foreground);
+  min-width: 0;
+
+  &--vertical {
+    flex-direction: column;
+    gap: var(--p-1-5);
+  }
+
+  &--horizontal {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--p-3);
+
+    .ui-field-label {
+      padding-top: var(--p-0-5);
+      flex-shrink: 0;
+      min-width: var(--w-32);
+    }
+
+    .ui-field__content {
+      flex: 1;
+      min-width: 0;
+    }
+  }
+
+  &--disabled {
+    opacity: var(--o-50);
+    pointer-events: none;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldContent — inner column for descriptions/errors under a control.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field__content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  min-width: 0;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldLabel / FieldTitle — typography comes from the shared Label primitive
+// (`.ui-label` / `.ui-label__text` / `.ui-label__required`, see Label.scss).
+// Only Field-specific layout overrides live here.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Invalid Field tints its label subtly toward error.
+.ui-field--invalid .ui-field-label .ui-label__text,
+.ui-field--invalid .ui-field-title .ui-label__text {
+  color: var(--error);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldDescription — muted helper text.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field-description {
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  margin: 0;
+  text-wrap: balance;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldError — same size as description, red.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-field-error {
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--error);
+  margin: 0;
+}
+
+.ui-field-error__list {
+  margin: 0;
+  padding-left: var(--p-4);
+  list-style: disc;
+
+  li + li {
+    margin-top: var(--p-0-5);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// FieldSeparator — rendered by the shared Separator component (Separator.scss).
+// `.ui-field-separator` remains as a styling hook only.
+// ─────────────────────────────────────────────────────────────────────────────

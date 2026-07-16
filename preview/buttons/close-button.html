@@ -1,0 +1,153 @@
+<!-- @dsCard group="Buttons" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>CloseButton</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .row {
+        display: flex;
+        gap: var(--p-4);
+        align-items: center;
+      }
+      .in-context {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: var(--p-4);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        background: var(--card);
+        max-width: 420px;
+      }
+      .in-context__title {
+        font-size: var(--text-base);
+        font-weight: var(--font-semibold);
+        color: var(--foreground);
+      }
+      .in-context--dark {
+        background: var(--foreground);
+        color: var(--background);
+      }
+      .in-context--dark .in-context__title {
+        color: var(--background);
+      }
+      .close-svg {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>CloseButton</h1>
+        <p>
+          A compact <code>X</code> icon button for dismissing dialogs, closing panels, or removing
+          items from a list. Two variants: <code>default</code> (transparent, follows text color)
+          and <code>background</code> (translucent chip that reads against imagery or colored
+          headers).
+        </p>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <p>
+          <code>default</code> is the everyday variant. <code>background</code> adds a subtle
+          translucent chip so the button stays legible on top of a colored background.
+        </p>
+        <div class="row">
+          <button type="button" id="cb-default" class="ui-close-button ui-close-button--default" aria-label="Close">
+            <span data-testid="close-icon">
+              <svg class="close-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </span>
+          </button>
+          <button type="button" id="cb-background" class="ui-close-button ui-close-button--background" aria-label="Close">
+            <span data-testid="close-icon">
+              <svg class="close-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Disabled</h2>
+        <p>Applies the standard disabled state — 50% opacity, no pointer.</p>
+        <div class="row">
+          <button type="button" id="cb-disabled" class="ui-close-button ui-close-button--default" aria-label="Close" disabled>
+            <span data-testid="close-icon">
+              <svg class="close-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h2>In context</h2>
+        <p>
+          Common placement — top-right of a dismissible panel or dialog. The <code>background</code>
+          variant is useful over dark or colored headers.
+        </p>
+        <div class="in-context">
+          <div class="in-context__title">Notification card</div>
+          <button type="button" id="cb-ctx1" class="ui-close-button ui-close-button--default" aria-label="Dismiss">
+            <span data-testid="close-icon">
+              <svg class="close-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </span>
+          </button>
+        </div>
+        <div style="height: var(--p-3);"></div>
+        <div class="in-context in-context--dark">
+          <div class="in-context__title">Dark header</div>
+          <button type="button" id="cb-ctx2" class="ui-close-button ui-close-button--background" aria-label="Dismiss">
+            <span data-testid="close-icon">
+              <svg class="close-svg" viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

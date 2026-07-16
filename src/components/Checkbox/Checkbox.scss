@@ -1,0 +1,118 @@
+.ui-checkbox-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--p-2);
+  cursor: pointer;
+  font-family: var(--font-family);
+
+  &--disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Visually hidden native input — stays in the a11y + form tree.
+.ui-checkbox__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+// The visual box the user sees.
+.ui-checkbox {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--w-4);
+  height: var(--h-4);
+  margin-top: var(--p-0-5);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-sm);
+  background: var(--bg-input-30);
+  color: var(--primary-foreground);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--duration-normal) var(--ease-spring),
+    border-color var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  // Both icons always mount so they can animate. Position absolute so they
+  // overlay each other cleanly when the state cross-fades (e.g. checked →
+  // indeterminate).
+  svg {
+    position: absolute;
+    width: var(--w-3);
+    height: var(--h-3);
+    opacity: 0;
+    transform: scale(0.5);
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      transform var(--duration-normal) var(--ease-spring-strong);
+  }
+
+  // The check-mark and indeterminate line draw in via a stroke-dashoffset
+  // trick — path length is ~23 for the check polyline and 14 for the line,
+  // so 24 covers both with a small safety margin.
+  polyline,
+  line {
+    stroke-dasharray: 24;
+    stroke-dashoffset: 24; // fully un-drawn
+    transition: stroke-dashoffset var(--duration-normal) var(--ease-spring);
+  }
+}
+
+// Checked state — filled box, check-mark scales + draws in.
+.ui-checkbox__input:checked ~ .ui-checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+
+  .ui-checkbox__check {
+    opacity: 1;
+    transform: scale(1);
+
+    polyline {
+      stroke-dashoffset: 0; // fully drawn
+    }
+  }
+}
+
+// Indeterminate — filled box, line scales + draws in.
+.ui-checkbox__input:indeterminate ~ .ui-checkbox {
+  background: var(--primary);
+  border-color: var(--primary);
+
+  .ui-checkbox__indeterminate-icon {
+    opacity: 1;
+    transform: scale(1);
+
+    line {
+      stroke-dashoffset: 0;
+    }
+  }
+}
+
+// Focus ring.
+.ui-checkbox__input:focus-visible ~ .ui-checkbox {
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  border-color: var(--ring);
+}
+
+// Disabled.
+.ui-checkbox__input:disabled ~ .ui-checkbox {
+  opacity: var(--o-50);
+  cursor: not-allowed;
+}
+
+// Hover — subtle border darken when not disabled or checked.
+.ui-checkbox-wrap:not(.ui-checkbox-wrap--disabled):hover
+  .ui-checkbox__input:not(:checked):not(:indeterminate)
+  ~ .ui-checkbox {
+  border-color: var(--muted-foreground);
+}
+
+// Text column typography and disabled state are inherited from Label.scss
+// (via the shared `.ui-label` classes on the internal span).

@@ -1,0 +1,57 @@
+// Label — shared label / helper text primitive.
+//
+// This file is also referenced by Checkbox (its inner text column uses the
+// same class names on a <span>). Any styling drift here propagates to every
+// form control that reuses these classes.
+
+.ui-label {
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  font-family: var(--font-family);
+  min-width: 0;
+  user-select: none;
+
+  &--disabled {
+    cursor: not-allowed;
+    opacity: var(--o-50);
+  }
+
+  &__text {
+    display: inline-flex;
+    align-items: baseline;
+    gap: var(--p-1);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+  }
+
+  &__required {
+    color: var(--error);
+    font-weight: var(--font-normal);
+  }
+
+  &__description {
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+
+  // ---- Sizes (drive the primary label text only) ----
+
+  &--sz-sm &__text {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+
+  &--sz-default &__text {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  &--sz-lg &__text {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}

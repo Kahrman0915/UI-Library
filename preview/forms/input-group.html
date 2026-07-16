@@ -1,0 +1,126 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>InputGroup</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .stack { display: grid; gap: var(--p-4); max-width: 460px; }
+      .icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>InputGroup</h1>
+        <p>
+          Composes an input with leading or trailing addons — icons, currency prefixes,
+          embedded buttons, unit suffixes. Reuses <code>Input</code>'s
+          <code>.ui-input-wrap</code> so the border, focus-within ring, and error state match
+          exactly. Addons use CSS <code>order</code> to sit on either side while the input
+          stays first in DOM order for tab flow.
+        </p>
+      </div>
+
+      <div>
+        <h2>Leading + trailing text addons</h2>
+        <p>Common pattern — currency prefix and unit suffix around a numeric input.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group" data-size="default">
+            <div class="ui-input-wrap ui-input-group__wrap">
+              <input type="number" data-slot="input-group-control" class="ui-input ui-input-group__input" value="1200" />
+              <div data-align="inline-start" class="ui-input-group__addon ui-input-group__addon--inline-start">
+                <span class="ui-input-group__text">$</span>
+              </div>
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <span class="ui-input-group__text">USD</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group" data-size="default">
+            <div class="ui-input-wrap ui-input-group__wrap">
+              <input type="text" data-slot="input-group-control" class="ui-input ui-input-group__input" value="your-app" />
+              <div data-align="inline-start" class="ui-input-group__addon ui-input-group__addon--inline-start">
+                <span class="ui-input-group__text">https://</span>
+              </div>
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <span class="ui-input-group__text">.com</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With icons</h2>
+        <p>Icons sit inside <code>InputGroupAddon</code> the same way — they inherit <code>currentColor</code> and sit in <code>--muted-foreground</code> by default.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group" data-size="default">
+            <div class="ui-input-wrap ui-input-group__wrap">
+              <input type="search" data-slot="input-group-control" class="ui-input ui-input-group__input" placeholder="Search components…" />
+              <div data-align="inline-start" class="ui-input-group__addon ui-input-group__addon--inline-start">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </div>
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <span class="ui-input-group__text" style="font-family: var(--font-family-mono);">⌘K</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Trailing button</h2>
+        <p><code>InputGroupButton</code> is a small flat button sized to fit inside the wrap — good for copy-to-clipboard, apply, and reveal-password buttons.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group" data-size="default">
+            <div class="ui-input-wrap ui-input-group__wrap">
+              <input type="text" data-slot="input-group-control" class="ui-input ui-input-group__input" value="app.example.com/views/q4" readonly style="font-family: var(--font-family-mono); font-size: var(--text-xs);" />
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <button type="button" data-size="xs" data-variant="ghost" class="ui-input-group__button ui-input-group__button--sz-xs ui-input-group__button--ghost">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group" data-size="default">
+            <div class="ui-input-wrap ui-input-group__wrap">
+              <input type="password" data-slot="input-group-control" class="ui-input ui-input-group__input" value="hunter2secret" />
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <button type="button" data-size="xs" data-variant="ghost" class="ui-input-group__button ui-input-group__button--sz-xs ui-input-group__button--ghost" aria-label="Show password">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Error state</h2>
+        <p>Error propagates to the wrap the same way as Input — the ring turns error-red, and consumer error text is handled outside the group.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default ui-input-group ui-input-group--error" data-size="default" data-invalid="">
+            <div class="ui-input-wrap ui-input-group__wrap ui-input-wrap--error">
+              <input type="text" data-slot="input-group-control" class="ui-input ui-input-group__input" value="1200000000" aria-invalid="true" />
+              <div data-align="inline-start" class="ui-input-group__addon ui-input-group__addon--inline-start">
+                <span class="ui-input-group__text">$</span>
+              </div>
+              <div data-align="inline-end" class="ui-input-group__addon ui-input-group__addon--inline-end">
+                <span class="ui-input-group__text">USD</span>
+              </div>
+            </div>
+          </div>
+          <p style="margin: 0; font-size: var(--text-xs); color: var(--error);">Amount exceeds the account transfer limit.</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,121 @@
+<!-- @dsCard group="Buttons" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>ButtonGroup</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .examples {
+        display: grid;
+        gap: var(--p-5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>ButtonGroup</h1>
+        <p>
+          Wraps a set of related buttons so their touching corners flatten and their borders
+          collapse into a single visual unit. Two orientations: <code>horizontal</code> (default)
+          and <code>vertical</code>. Compose with <code>ButtonGroupSeparator</code> for visual
+          dividers, and <code>ButtonGroupText</code> for non-button labels inline with the group.
+        </p>
+      </div>
+
+      <div>
+        <h2>Horizontal</h2>
+        <p>Default orientation. Corners of interior buttons flatten automatically.</p>
+        <div class="examples">
+          <div id="bg-h1" role="group" class="ui-button-group ui-button-group--horizontal">
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Copy</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Cut</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Paste</button>
+          </div>
+
+          <div id="bg-h2" role="group" class="ui-button-group ui-button-group--horizontal">
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Left</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Center</button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-secondary ui-button--sz-default">Right</button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <p>Stacks buttons top-to-bottom. Same corner-flatten behavior on the vertical axis.</p>
+        <div id="bg-v1" role="group" class="ui-button-group ui-button-group--vertical" style="width: 200px;">
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Item 1</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Item 2</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Item 3</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>With separator</h2>
+        <p>
+          <code>ButtonGroupSeparator</code> is a thin divider. Use to group logically-distinct
+          buttons within a single group (e.g. undo/redo separated from cut/copy/paste).
+        </p>
+        <div id="bg-sep" role="group" class="ui-button-group ui-button-group--horizontal">
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Undo</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Redo</button>
+          <div role="separator" aria-orientation="vertical" class="ui-button-group__separator ui-button-group__separator--vertical"></div>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Cut</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Copy</button>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Paste</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>With inline text</h2>
+        <p>
+          <code>ButtonGroupText</code> lets you embed a label or count in the group. Useful for
+          quantity spinners and pagination.
+        </p>
+        <div id="bg-txt" role="group" class="ui-button-group ui-button-group--horizontal">
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default" aria-label="Decrease">−</button>
+          <div class="ui-button-group__text">42</div>
+          <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default" aria-label="Increase">+</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

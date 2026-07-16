@@ -1,0 +1,164 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Dialog</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      /* Mockup: place the overlay in-flow instead of via portal */
+      .stage {
+        position: relative;
+        min-height: 320px;
+        border-radius: var(--rounded-md);
+        overflow: hidden;
+        border: var(--border-w-100) solid var(--border);
+      }
+      .stage__page {
+        position: absolute;
+        inset: 0;
+        padding: var(--p-6);
+        background: var(--card);
+        color: var(--muted-foreground);
+        font-size: var(--text-xs);
+      }
+      .stage__overlay {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: var(--p-6);
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Dialog</h1>
+        <p>
+          Modal dialog with focus trap, scroll lock, backdrop-blur overlay, and Escape-to-close.
+          Composed of <code>Dialog</code> root + optional <code>DialogHeader</code> (prop-driven
+          <code>title</code>, <code>description</code>, and a built-in <code>CloseButton</code>),
+          <code>DialogBody</code>, and <code>DialogFooter</code>. Renders through a React portal
+          appended to <code>document.body</code>. Set <code>inline</code> to skip the portal for
+          embedded / storybook demos.
+        </p>
+      </div>
+
+      <div>
+        <h2>Confirmation</h2>
+        <p>The canonical pattern — dialog with a title, description, and two footer actions. Escape closes; the overlay backdrop is blurred with <code>--overlay-blur</code>.</p>
+        <div class="stage">
+          <div class="stage__page">Page content behind the modal, dimmed by the backdrop.</div>
+          <div class="ui-dialog-overlay" role="presentation" style="position: absolute; inset: 0;">
+            <div class="stage__overlay">
+              <div id="dg-1" class="ui-dialog" role="dialog" aria-modal="true" aria-labelledby="dg-1-title">
+                <div class="ui-dialog__header">
+                  <div class="ui-dialog__header-content ui-dialog__header-content--left">
+                    <h2 id="dg-1-title" class="ui-dialog__title">Publish to production</h2>
+                    <p class="ui-dialog__description">This will push the current draft to all subscribed audiences. You can't undo this action.</p>
+                  </div>
+                  <button type="button" class="ui-close-button ui-close-button--background" aria-label="Close dialog">
+                    <span><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+                  </button>
+                </div>
+                <div class="ui-dialog__body ui-dialog__body--left">
+                  <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground); line-height: var(--leading-5);">
+                    Publishing sends the latest version to <strong style="color: var(--foreground);">2,481 subscribers</strong>. Delivery typically completes within 5 minutes.
+                  </p>
+                </div>
+                <div class="ui-dialog__footer">
+                  <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+                  <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Publish</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Destructive</h2>
+        <p>Danger action — the primary button uses <code>variant="error"</code>. Use <code>role="alertdialog"</code> semantics for the highest-severity confirmations.</p>
+        <div class="stage">
+          <div class="stage__page">Deletion in progress…</div>
+          <div class="ui-dialog-overlay" role="presentation" style="position: absolute; inset: 0;">
+            <div class="stage__overlay">
+              <div id="dg-2" class="ui-dialog" role="dialog" aria-modal="true" aria-labelledby="dg-2-title">
+                <div class="ui-dialog__header">
+                  <div class="ui-dialog__header-content ui-dialog__header-content--left">
+                    <h2 id="dg-2-title" class="ui-dialog__title">Delete workspace</h2>
+                    <p class="ui-dialog__description">This deletes all projects, files, and members. This action can't be undone.</p>
+                  </div>
+                  <button type="button" class="ui-close-button ui-close-button--background" aria-label="Close dialog">
+                    <span><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+                  </button>
+                </div>
+                <div class="ui-dialog__body ui-dialog__body--left">
+                  <div class="ui-alert ui-alert--error ui-alert--default" role="alert">
+                    <span class="ui-alert__icon" aria-hidden="true">
+                      <svg class="icon" viewBox="0 0 24 24" style="width: 20px; height: 20px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+                    </span>
+                    <div class="ui-alert__body">
+                      <div class="ui-alert__description">Type <strong>DELETE</strong> to confirm.</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="ui-dialog__footer">
+                  <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+                  <button type="button" class="ui-button ui-button--error ui-button--error-default ui-button--sz-default">Delete workspace</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

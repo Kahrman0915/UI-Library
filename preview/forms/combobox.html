@@ -1,0 +1,148 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Combobox</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .stack { display: grid; gap: var(--p-6); max-width: 380px; }
+      .stage { position: relative; }
+      .icon { width: 14px; height: 14px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .popped { position: absolute; top: calc(100% + 4px); left: 0; right: 0; visibility: visible; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Combobox</h1>
+        <p>
+          Searchable dropdown — like Select, but the content includes an inline search input
+          that filters the item list as you type. Same <code>.ui-input-wrap</code> border on
+          the trigger, its own listbox with search + empty state. Supports optional
+          <code>clear</code> action next to the chevron when a value is set.
+        </p>
+      </div>
+
+      <div>
+        <h2>Closed states</h2>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Assignee</span></label>
+            <div class="ui-input-wrap">
+              <button type="button" aria-haspopup="listbox" aria-expanded="false" class="ui-combobox__trigger-wrap">
+                <span class="ui-combobox__value ui-combobox__value--placeholder">Search for someone…</span>
+                <span class="ui-combobox__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Assignee</span></label>
+            <div class="ui-input-wrap">
+              <button type="button" aria-haspopup="listbox" aria-expanded="false" class="ui-combobox__trigger-wrap">
+                <span class="ui-combobox__value">Ren Guo</span>
+                <button type="button" class="ui-combobox__clear" aria-label="Clear">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                </button>
+                <span class="ui-combobox__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Open with search</h2>
+        <p>Mock of the open state — a search input at the top filters the item list live. Selected item is checkmarked.</p>
+        <div class="stack">
+          <div class="stage">
+            <div class="ui-input-field ui-input-field--sz-default">
+              <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Assignee</span></label>
+              <div class="ui-input-wrap">
+                <button type="button" aria-haspopup="listbox" aria-expanded="true" class="ui-combobox__trigger-wrap ui-combobox__trigger-wrap--open">
+                  <span class="ui-combobox__value">Ren Guo</span>
+                  <span class="ui-combobox__chevron" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div role="dialog" data-side="bottom" class="ui-combobox__content popped">
+              <div class="ui-combobox__search-wrap">
+                <span class="ui-combobox__search-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" class="ui-combobox__search-input" placeholder="Search people…" value="ren" />
+              </div>
+              <div role="listbox" class="ui-combobox__listbox">
+                <div role="option" aria-selected="true" tabindex="-1" class="ui-combobox__item">
+                  <span class="ui-combobox__item-indicator" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+                  </span>
+                  <span class="ui-combobox__item-content">
+                    <span class="ui-combobox__item-label">Ren Guo</span>
+                    <span class="ui-combobox__item-description">ren@example.com</span>
+                  </span>
+                </div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-combobox__item">
+                  <span class="ui-combobox__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-combobox__item-content">
+                    <span class="ui-combobox__item-label">Renata Silva</span>
+                    <span class="ui-combobox__item-description">rsilva@example.com</span>
+                  </span>
+                </div>
+                <div role="option" aria-selected="false" tabindex="-1" class="ui-combobox__item">
+                  <span class="ui-combobox__item-indicator" aria-hidden="true"></span>
+                  <span class="ui-combobox__item-content">
+                    <span class="ui-combobox__item-label">Warren Cho</span>
+                    <span class="ui-combobox__item-description">wcho@example.com</span>
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Empty state</h2>
+        <p>When the query returns no matches, an empty-state slot is shown.</p>
+        <div class="stack">
+          <div class="stage">
+            <div class="ui-input-field ui-input-field--sz-default">
+              <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Assignee</span></label>
+              <div class="ui-input-wrap">
+                <button type="button" aria-haspopup="listbox" aria-expanded="true" class="ui-combobox__trigger-wrap ui-combobox__trigger-wrap--open">
+                  <span class="ui-combobox__value ui-combobox__value--placeholder">Search for someone…</span>
+                  <span class="ui-combobox__chevron" aria-hidden="true">
+                    <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                  </span>
+                </button>
+              </div>
+            </div>
+            <div role="dialog" data-side="bottom" class="ui-combobox__content popped">
+              <div class="ui-combobox__search-wrap">
+                <span class="ui-combobox__search-icon" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                </span>
+                <input type="text" class="ui-combobox__search-input" value="xyzzy" />
+              </div>
+              <div class="ui-combobox__empty">No matches for "xyzzy".</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,214 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Toast</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-3);
+        max-width: 380px;
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .close-svg {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+        stroke-width: 1.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Toast</h1>
+        <p>
+          Global notification system. <code>Toaster</code> mounts once at your app root and
+          subscribes to a global event bus; anywhere else in the tree the imperative
+          <code>toast()</code> API fires notifications. Five semantic <code>variant</code>s
+          (<code>default</code>, <code>info</code>, <code>success</code>, <code>warning</code>,
+          <code>error</code>), six <code>position</code>s, optional <code>action</code>/
+          <code>cancel</code> buttons, <code>toast.promise()</code> for async flows.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <p>Mount the <code>Toaster</code> once, typically in your app root or a layout that persists across routes.</p>
+        <pre>import { Toaster, toast } from '@ui/lib';
+
+export function App() {
+  return (
+    &lt;&gt;
+      &lt;Toaster position="bottom-right" /&gt;
+      &lt;button onClick={() =&gt; toast.success('Saved.')}&gt;Save&lt;/button&gt;
+    &lt;/&gt;
+  );
+}</pre>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <p>Same shape, semantic color per variant. Warnings and errors use <code>role="alert"</code>; the rest use <code>role="status"</code>.</p>
+        <div class="stack">
+          <div role="status" aria-live="polite" data-variant="default" class="ui-toast ui-toast--default">
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Event saved.</div>
+              <div class="ui-toast__description">Kickoff synced to your calendar.</div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div role="status" aria-live="polite" data-variant="success" class="ui-toast ui-toast--success">
+            <span class="ui-toast__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Draft published.</div>
+              <div class="ui-toast__description">2 minutes ago · main</div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div role="status" aria-live="polite" data-variant="info" class="ui-toast ui-toast--info">
+            <span class="ui-toast__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </span>
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">New version 4.1 is available.</div>
+              <div class="ui-toast__description">Reload to pick up the update.</div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div role="alert" aria-live="assertive" data-variant="warning" class="ui-toast ui-toast--warning">
+            <span class="ui-toast__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </span>
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Usage at 92%.</div>
+              <div class="ui-toast__description">You are approaching the monthly quota.</div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+
+          <div role="alert" aria-live="assertive" data-variant="error" class="ui-toast ui-toast--error">
+            <span class="ui-toast__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </span>
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Failed to publish.</div>
+              <div class="ui-toast__description">Check the console for details.</div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With action + cancel</h2>
+        <p>Confirm-style toast — a sticky toast with <code>duration: Infinity</code> plus <code>action</code> and <code>cancel</code> buttons. Actions wrap to a new row and right-align.</p>
+        <div class="stack">
+          <div role="alert" aria-live="assertive" data-variant="warning" class="ui-toast ui-toast--warning">
+            <span class="ui-toast__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </span>
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Delete this project?</div>
+            </div>
+            <div class="ui-toast__actions">
+              <button type="button" class="ui-toast__cancel">Cancel</button>
+              <button type="button" class="ui-toast__action">Delete</button>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With progress</h2>
+        <p>Pass <code>progress</code> (0–100) and the toast renders a slim Progress bar. Update it by re-calling <code>toast()</code> with the same <code>id</code>.</p>
+        <div class="stack">
+          <div role="status" aria-live="polite" data-variant="default" class="ui-toast ui-toast--default">
+            <div class="ui-toast__body">
+              <div class="ui-toast__title">Uploading assets…</div>
+              <div class="ui-toast__description">60% of 24 MB</div>
+              <div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="60" data-state="determinate" data-variant="default" data-size="sm" class="ui-progress ui-progress--sz-sm ui-progress--default ui-toast__progress">
+                <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+              </div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-toast__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Imperative API</h2>
+        <pre>toast('Event saved.')
+
+toast.success('Draft published.', {
+  description: '2 minutes ago · main'
+})
+
+toast.error('Failed to publish.', {
+  duration: 6000
+})
+
+// Sticky toast — no auto-dismiss.
+const id = toast.loading('Rendering report…')
+toast.dismiss(id) // dismiss one; toast.dismiss() dismisses all.
+
+// Wire a toast to a promise.
+toast.promise(fetch('/report'), {
+  loading: 'Rendering report…',
+  success: (r) =&gt; `Rendered in ${r.time}ms`,
+  error:   'Failed to render.',
+})</pre>
+      </div>
+    </div>
+  </body>
+</html>

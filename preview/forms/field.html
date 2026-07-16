@@ -1,0 +1,133 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Field</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .container { max-width: 480px; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Field</h1>
+        <p>
+          Form-composition primitive. Ten exports orchestrate labels, descriptions, errors,
+          and grouping. Use <code>FieldSet</code> + <code>FieldLegend</code> as the semantic
+          root, <code>FieldGroup</code> to stack rows, and <code>Field</code> to wrap each
+          control with its label + description + error slot. <code>orientation</code>
+          switches between vertical (label above) and horizontal (label beside).
+        </p>
+      </div>
+
+      <div>
+        <h2>Vertical field</h2>
+        <p>Default orientation — label, control, description stack top-down. <code>FieldError</code> appears when <code>invalid</code>.</p>
+        <div class="container">
+          <div role="group" data-orientation="vertical" class="ui-field ui-field--vertical">
+            <label for="fd-1" class="ui-field-label ui-label ui-label--sz-default">
+              <span class="ui-label__text">Workspace name<span class="ui-label__required" aria-hidden="true">*</span></span>
+            </label>
+            <div class="ui-input-wrap"><input id="fd-1" type="text" class="ui-input" value="Design engineering" /></div>
+            <p class="ui-field-description">Shown on invoices and shared documents.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Horizontal (label + control side by side)</h2>
+        <p>Compact layout for settings pages — the label sits on the left with the control on the right.</p>
+        <div class="container">
+          <div role="group" data-orientation="horizontal" class="ui-field ui-field--horizontal">
+            <div class="ui-field__content">
+              <div class="ui-field-title ui-label ui-label--sz-default"><span class="ui-label__text">Two-factor authentication</span></div>
+              <p class="ui-field-description">Require a code from your authenticator app on every sign-in.</p>
+            </div>
+            <label class="ui-switch-wrap ui-switch-wrap--sz-default">
+              <input type="checkbox" role="switch" class="ui-switch__input" checked />
+              <span class="ui-switch" aria-hidden="true"><span class="ui-switch__thumb"></span></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Invalid + FieldError</h2>
+        <p>Setting <code>invalid</code> tints the label and border. <code>FieldError</code> pipes messages via <code>role="alert"</code> for screen readers.</p>
+        <div class="container">
+          <div role="group" data-orientation="vertical" data-invalid="" class="ui-field ui-field--vertical ui-field--invalid">
+            <label for="fd-2" class="ui-field-label ui-label ui-label--sz-default"><span class="ui-label__text">Company slug<span class="ui-label__required" aria-hidden="true">*</span></span></label>
+            <div class="ui-input-wrap ui-input-wrap--error"><input id="fd-2" type="text" class="ui-input" value="Not A Slug!" aria-invalid="true" /></div>
+            <div role="alert" aria-live="polite" class="ui-field-error">
+              <ul class="ui-field-error__list">
+                <li>Must be lowercase.</li>
+                <li>Only letters, numbers, and hyphens allowed.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>FieldSet + FieldLegend</h2>
+        <p>Group semantically-related controls under a legend. Two visual variants for the legend.</p>
+        <div class="container">
+          <fieldset class="ui-field-set">
+            <legend data-variant="legend" class="ui-field-legend ui-field-legend--legend">Contact preferences</legend>
+            <div role="group" class="ui-field-group">
+              <label class="ui-checkbox-wrap">
+                <input type="checkbox" class="ui-checkbox__input" checked />
+                <span class="ui-checkbox" aria-hidden="true">
+                  <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <span class="ui-label"><span class="ui-label__text">Weekly digest</span></span>
+              </label>
+              <label class="ui-checkbox-wrap">
+                <input type="checkbox" class="ui-checkbox__input" />
+                <span class="ui-checkbox" aria-hidden="true">
+                  <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <span class="ui-label"><span class="ui-label__text">Product announcements</span></span>
+              </label>
+              <label class="ui-checkbox-wrap">
+                <input type="checkbox" class="ui-checkbox__input" />
+                <span class="ui-checkbox" aria-hidden="true">
+                  <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                  <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                </span>
+                <span class="ui-label"><span class="ui-label__text">Occasional research invitations</span></span>
+              </label>
+            </div>
+          </fieldset>
+        </div>
+      </div>
+
+      <div>
+        <h2>FieldSeparator with label</h2>
+        <p>Hairline divider with an inline label — useful for "or" branches in a form flow.</p>
+        <div class="container">
+          <div role="group" class="ui-field-group">
+            <div role="group" class="ui-field ui-field--vertical">
+              <label for="fd-3" class="ui-field-label ui-label ui-label--sz-default"><span class="ui-label__text">Email</span></label>
+              <div class="ui-input-wrap"><input id="fd-3" type="email" class="ui-input" placeholder="you@company.com" /></div>
+            </div>
+            <div role="separator" aria-orientation="horizontal" data-orientation="horizontal" class="ui-separator ui-separator--horizontal ui-separator--labeled ui-field-separator">
+              <span class="ui-separator__label">or</span>
+            </div>
+            <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Continue with SSO</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

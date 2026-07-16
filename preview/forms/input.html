@@ -1,0 +1,148 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Input</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-4);
+        max-width: 380px;
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Input</h1>
+        <p>
+          Single-line text input. Composes <code>Label</code> internally when <code>label</code>
+          is set. Three sizes (<code>sm</code>, <code>default</code>, <code>lg</code>), optional
+          <code>IconLeft</code> / <code>IconRight</code> slots, and an <code>error</code> boolean
+          that colors the ring and shows <code>errorMessage</code> below.
+          <code>.ui-input-wrap</code> owns the border and focus-within ring — Textarea, Select,
+          and Combobox all reuse this same wrap.
+        </p>
+      </div>
+
+      <div>
+        <h2>States</h2>
+        <p>Default, filled, error, disabled — all with a matching label above.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Email</span></label>
+            <div class="ui-input-wrap"><input type="email" class="ui-input" placeholder="you@company.com" /></div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Full name<span class="ui-label__required" aria-hidden="true">*</span></span></label>
+            <div class="ui-input-wrap"><input type="text" class="ui-input" value="Kahrman McKenzie" /></div>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Company slug<span class="ui-label__required" aria-hidden="true">*</span></span><span class="ui-label__description">Lowercase, letters and hyphens only.</span></label>
+            <div class="ui-input-wrap ui-input-wrap--error"><input type="text" class="ui-input" value="Not A Slug!" aria-invalid="true" /></div>
+            <p class="ui-input__error">Must be lowercase with only letters, numbers, and hyphens.</p>
+          </div>
+
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default ui-label--disabled"><span class="ui-label__text">Legacy field</span></label>
+            <div class="ui-input-wrap ui-input-wrap--disabled"><input type="text" class="ui-input" value="Read-only" disabled /></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>The size prop applies to both the label and the input.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-sm">
+            <label class="ui-label ui-label--sz-sm"><span class="ui-label__text">Small</span></label>
+            <div class="ui-input-wrap"><input type="text" class="ui-input" placeholder="sm" /></div>
+          </div>
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Default</span></label>
+            <div class="ui-input-wrap"><input type="text" class="ui-input" placeholder="default" /></div>
+          </div>
+          <div class="ui-input-field ui-input-field--sz-lg">
+            <label class="ui-label ui-label--sz-lg"><span class="ui-label__text">Large</span></label>
+            <div class="ui-input-wrap"><input type="text" class="ui-input" placeholder="lg" /></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With icons</h2>
+        <p><code>IconLeft</code> and <code>IconRight</code> render inside the wrap. Icons inherit <code>currentColor</code>.</p>
+        <div class="stack">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Search</span></label>
+            <div class="ui-input-wrap ui-input-wrap--has-left">
+              <span class="ui-input__icon ui-input__icon--left" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </span>
+              <input type="search" class="ui-input" placeholder="Search components…" />
+            </div>
+          </div>
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label class="ui-label ui-label--sz-default"><span class="ui-label__text">Amount</span></label>
+            <div class="ui-input-wrap ui-input-wrap--has-left ui-input-wrap--has-right">
+              <span class="ui-input__icon ui-input__icon--left" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+              </span>
+              <input type="number" class="ui-input" value="1200" />
+              <span class="ui-input__icon ui-input__icon--right" aria-hidden="true" style="font-family: var(--font-family-mono); font-size: var(--text-xs); color: var(--muted-foreground);">USD</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

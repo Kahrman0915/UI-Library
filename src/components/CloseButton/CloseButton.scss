@@ -1,0 +1,46 @@
+.ui-close-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--p-0-5);
+  background: transparent;
+  border: none;
+  border-radius: var(--rounded-full);
+  cursor: pointer;
+  color: var(--muted-foreground);
+  line-height: 0;
+  transition: color var(--duration-instant) var(--ease-default);
+
+  > span {
+    display: inline-flex;
+  }
+
+  svg {
+    display: block;
+    width: var(--w-3);
+    height: var(--h-3);
+    stroke-width: var(--icon-border-width);
+  }
+
+  &:hover {
+    color: var(--foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    color: var(--muted-foreground);
+  }
+
+  &--background {
+    &:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--foreground);
+    }
+  }
+}

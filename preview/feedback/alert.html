@@ -1,0 +1,183 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Alert</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-3);
+      }
+      .icon {
+        width: 20px;
+        height: 20px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Alert</h1>
+        <p>
+          Inline, non-modal messaging. Five semantic <code>variant</code>s
+          (<code>default</code>, <code>info</code>, <code>success</code>,
+          <code>warning</code>, <code>error</code>) each with two <code>style</code>s
+          (<code>default</code> — soft-tinted background, <code>outline</code> — bordered only).
+          Slots for <code>Icon</code>, <code>title</code>, <code>description</code>,
+          <code>action</code>, and an optional close button via <code>onClose</code>. Uses
+          <code>role="alert"</code> for warning/error, <code>role="status"</code> otherwise.
+        </p>
+      </div>
+
+      <div>
+        <h2>Variants — default style</h2>
+        <p>Soft-tinted background using each variant's <code>-light</code> and <code>-border</code> tokens.</p>
+        <div class="stack">
+          <div id="al-default" role="status" class="ui-alert ui-alert--default ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Heads up</div>
+              <div class="ui-alert__description">This is a neutral inline notification with no semantic tone.</div>
+            </div>
+          </div>
+
+          <div id="al-info" role="status" class="ui-alert ui-alert--info ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Scheduled maintenance</div>
+              <div class="ui-alert__description">The API will be briefly unavailable on Sunday at 2 AM UTC.</div>
+            </div>
+          </div>
+
+          <div id="al-success" role="status" class="ui-alert ui-alert--success ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Changes saved</div>
+              <div class="ui-alert__description">Your team settings were updated.</div>
+            </div>
+          </div>
+
+          <div id="al-warning" role="alert" class="ui-alert ui-alert--warning ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Usage nearing limit</div>
+              <div class="ui-alert__description">You've used 92% of your monthly quota.</div>
+            </div>
+          </div>
+
+          <div id="al-error" role="alert" class="ui-alert ui-alert--error ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Failed to publish</div>
+              <div class="ui-alert__description">Something went wrong. Check the console for details.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Outline style</h2>
+        <p>Bordered version — the tinted background is dropped, leaving just the border in the variant color.</p>
+        <div class="stack">
+          <div id="al-info-o" role="status" class="ui-alert ui-alert--info ui-alert--outline">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Info — outline</div>
+              <div class="ui-alert__description">Same information, more restrained treatment.</div>
+            </div>
+          </div>
+
+          <div id="al-warn-o" role="alert" class="ui-alert ui-alert--warning ui-alert--outline">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">Warning — outline</div>
+              <div class="ui-alert__description">Use where the alert should feel subordinate to nearby content.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With action + close</h2>
+        <p>
+          Common pattern — one persistent action (button) + dismissable close. The action slot accepts
+          any ReactNode; use a Button component in real code.
+        </p>
+        <div class="stack">
+          <div id="al-action" role="status" class="ui-alert ui-alert--info ui-alert--default">
+            <span class="ui-alert__icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            </span>
+            <div class="ui-alert__body">
+              <div class="ui-alert__title">New team member invited</div>
+              <div class="ui-alert__description">Ren Guo hasn't accepted their invite yet.</div>
+            </div>
+            <div class="ui-alert__action">
+              <button type="button" class="ui-button ui-button--info ui-button--info-secondary ui-button--sz-small">Resend invite</button>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-alert__close" aria-label="Close">
+              <svg class="icon" viewBox="0 0 24 24" style="width: 16px; height: 16px;"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

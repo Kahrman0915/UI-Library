@@ -1,0 +1,188 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Command</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 1.33px;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .search-icon svg {
+        stroke: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Command</h1>
+        <p>
+          A searchable command palette — the cmd-K pattern. Compound API with 9 exports:
+          <code>Command</code>, <code>CommandDialog</code>, <code>CommandInput</code>,
+          <code>CommandList</code>, <code>CommandEmpty</code>, <code>CommandGroup</code>,
+          <code>CommandItem</code>, <code>CommandSeparator</code>, <code>CommandShortcut</code>.
+          Filtering is case-insensitive substring by default (override via
+          <code>filter</code>). Items derive their search value from their text content;
+          pass <code>keywords</code> or an explicit <code>value</code> for reliable matching
+          when children include icons. Keyboard navigation:
+          ↑ / ↓ / <code>Home</code> / <code>End</code> to move, <code>Enter</code> to fire.
+        </p>
+      </div>
+
+      <div>
+        <h2>Inline</h2>
+        <p>Static preview of an inline <code>Command</code>. Calendar is the active item; arrow keys walk the visible list.</p>
+        <div id="cmd-1" role="dialog" aria-label="Command menu" class="ui-command" style="width: 480px;">
+          <div class="ui-command__input-wrap">
+            <span class="ui-command__input-icon search-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input type="text" role="combobox" aria-expanded="true" class="ui-command__input" placeholder="Type a command or search…" value="" />
+          </div>
+          <div role="listbox" class="ui-command__list">
+            <div role="group" class="ui-command__group">
+              <div class="ui-command__group-heading">Suggestions</div>
+              <div role="option" aria-selected="true" data-ui-command-item="" data-visible="true" data-active="" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                Calendar
+              </div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12 17.5c2.33 0 4.5-1.5 5-3.5H7c.5 2 2.67 3.5 5 3.5Z"/><circle cx="12" cy="12" r="10"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8.5 15h7"/></svg>
+                Search emoji
+              </div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>
+                Calculator
+              </div>
+            </div>
+            <div role="separator" aria-orientation="horizontal" class="ui-command__separator"></div>
+            <div role="group" class="ui-command__group">
+              <div class="ui-command__group-heading">Settings</div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                Profile
+                <span class="ui-command__shortcut">⌘P</span>
+              </div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/></svg>
+                Billing
+                <span class="ui-command__shortcut">⌘B</span>
+              </div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+                Settings
+                <span class="ui-command__shortcut">⌘S</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Empty state</h2>
+        <p>When the query filters out every item, <code>CommandEmpty</code> takes over the list body.</p>
+        <div id="cmd-2" role="dialog" aria-label="Command menu" class="ui-command" style="width: 480px;">
+          <div class="ui-command__input-wrap">
+            <span class="ui-command__input-icon search-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input type="text" role="combobox" aria-expanded="true" class="ui-command__input" value="zzzz" readonly />
+          </div>
+          <div role="listbox" class="ui-command__list">
+            <div role="presentation" class="ui-command__empty">No results found.</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With destructive action</h2>
+        <p>Items accept <code>variant="error"</code> to draw danger actions (delete, remove) in the error color.</p>
+        <div id="cmd-3" role="dialog" aria-label="Command menu" class="ui-command" style="width: 480px;">
+          <div class="ui-command__input-wrap">
+            <span class="ui-command__input-icon search-icon" aria-hidden="true">
+              <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+            </span>
+            <input type="text" role="combobox" aria-expanded="true" class="ui-command__input" placeholder="Type a command or search…" />
+          </div>
+          <div role="listbox" class="ui-command__list">
+            <div role="group" class="ui-command__group">
+              <div class="ui-command__group-heading">Actions</div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">Rename…</div>
+              <div role="option" data-ui-command-item="" data-visible="true" class="ui-command__item ui-command__item--default">Duplicate</div>
+              <div role="option" data-ui-command-item="" data-visible="true" data-variant="error" class="ui-command__item ui-command__item--error">
+                <svg class="icon" viewBox="0 0 24 24"><path d="M3 6h18"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
+                Delete
+                <span class="ui-command__shortcut">⌘⌫</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Imperative API</h2>
+        <pre>import {
+  Command, CommandDialog, CommandInput, CommandList,
+  CommandEmpty, CommandGroup, CommandItem, CommandSeparator,
+  CommandShortcut,
+} from '@ui/lib';
+
+function AppShell() {
+  const [open, setOpen] = useState(false);
+
+  useEffect(() =&gt; {
+    const onKey = (e) =&gt; {
+      if (e.key === 'k' &amp;&amp; (e.metaKey || e.ctrlKey)) {
+        e.preventDefault();
+        setOpen((o) =&gt; !o);
+      }
+    };
+    document.addEventListener('keydown', onKey);
+    return () =&gt; document.removeEventListener('keydown', onKey);
+  }, []);
+
+  return (
+    &lt;CommandDialog id="cmd-k" open={open} onClose={() =&gt; setOpen(false)}&gt;
+      &lt;Command id="cmd"&gt;
+        &lt;CommandInput /&gt;
+        &lt;CommandList&gt;
+          &lt;CommandEmpty&gt;No results.&lt;/CommandEmpty&gt;
+          &lt;CommandGroup heading="Suggestions"&gt;
+            &lt;CommandItem onSelect={() =&gt; navigate('/calendar')}&gt;
+              &lt;Calendar /&gt;
+              Calendar
+            &lt;/CommandItem&gt;
+          &lt;/CommandGroup&gt;
+        &lt;/CommandList&gt;
+      &lt;/Command&gt;
+    &lt;/CommandDialog&gt;
+  );
+}</pre>
+      </div>
+    </div>
+  </body>
+</html>

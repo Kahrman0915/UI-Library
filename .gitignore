@@ -1,0 +1,11 @@
+node_modules
+dist
+storybook-static
+.DS_Store
+*.log
+.env
+.env.local
+*.tsbuildinfo
+
+# Personal Claude Code settings (keep launch.json shared, ignore local overrides)
+.claude/settings.local.json

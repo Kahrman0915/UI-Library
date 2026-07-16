@@ -1,0 +1,161 @@
+import { forwardRef } from 'react';
+import type {
+  InputGroupAddonProps,
+  InputGroupButtonProps,
+  InputGroupInputProps,
+  InputGroupProps,
+  InputGroupTextProps,
+  InputGroupTextareaProps,
+} from './InputGroup.types';
+import '../Input/Input.scss';
+import './InputGroup.scss';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// InputGroup — reuses `.ui-input-wrap` for border/focus-within/hover, layers
+// on flex ordering so addons can sit on either side or stack above/below.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
+  (
+    {
+      size = 'default',
+      disabled = false,
+      error = false,
+      className,
+      children,
+      ...rest
+    },
+    ref,
+  ) => (
+    <div
+      {...rest}
+      ref={ref}
+      data-size={size}
+      data-disabled={disabled ? '' : undefined}
+      data-invalid={error ? '' : undefined}
+      className={`ui-input-field ui-input-field--sz-${size} ui-input-group${disabled ? ' ui-input-group--disabled' : ''}${error ? ' ui-input-group--error' : ''}${className ? ' ' + className : ''}`}
+    >
+      <div
+        className={`ui-input-wrap ui-input-group__wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}`}
+      >
+        {children}
+      </div>
+    </div>
+  ),
+);
+
+InputGroup.displayName = 'InputGroup';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Input — raw <input>, no border. Sits at CSS order 2 (middle).
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
+  ({ className, ...rest }, ref) => (
+    <input
+      {...rest}
+      ref={ref}
+      data-slot="input-group-control"
+      className={`ui-input ui-input-group__input${className ? ' ' + className : ''}`}
+    />
+  ),
+);
+
+InputGroupInput.displayName = 'InputGroupInput';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Textarea — raw <textarea>, no border. Wraps drop the fixed height so the
+// textarea can size itself; padding lives on the field.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupTextarea = forwardRef<
+  HTMLTextAreaElement,
+  InputGroupTextareaProps
+>(({ className, ...rest }, ref) => (
+  <textarea
+    {...rest}
+    ref={ref}
+    data-slot="input-group-control"
+    className={`ui-input ui-input-group__textarea${className ? ' ' + className : ''}`}
+  />
+));
+
+InputGroupTextarea.displayName = 'InputGroupTextarea';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Addon — icon/text/button container. CSS `order` puts it in the right slot
+// while the DOM order stays semantic (input first for tab flow).
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupAddon = forwardRef<HTMLDivElement, InputGroupAddonProps>(
+  ({ align = 'inline-start', className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      data-align={align}
+      className={`ui-input-group__addon ui-input-group__addon--${align}${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+InputGroupAddon.displayName = 'InputGroupAddon';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Text — muted inline text (currency, unit, kbd hint).
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupText = forwardRef<HTMLSpanElement, InputGroupTextProps>(
+  ({ className, children, ...rest }, ref) => (
+    <span
+      {...rest}
+      ref={ref}
+      className={`ui-input-group__text${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </span>
+  ),
+);
+
+InputGroupText.displayName = 'InputGroupText';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Button — small, flat button that fits inside the input wrap.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupButton = forwardRef<HTMLButtonElement, InputGroupButtonProps>(
+  (
+    {
+      size = 'xs',
+      variant = 'ghost',
+      className,
+      children,
+      type,
+      ...rest
+    },
+    ref,
+  ) => (
+    <button
+      {...rest}
+      ref={ref}
+      type={type ?? 'button'}
+      data-size={size}
+      data-variant={variant}
+      className={`ui-input-group__button ui-input-group__button--sz-${size} ui-input-group__button--${variant}${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </button>
+  ),
+);
+
+InputGroupButton.displayName = 'InputGroupButton';
+
+export default InputGroup;
+export {
+  InputGroupInput,
+  InputGroupTextarea,
+  InputGroupAddon,
+  InputGroupText,
+  InputGroupButton,
+};

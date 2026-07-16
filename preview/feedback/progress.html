@@ -1,0 +1,141 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Progress</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-4);
+        max-width: 520px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Progress</h1>
+        <p>
+          Linear progress bar. Root accepts <code>value</code> + <code>max</code> and auto-renders
+          the header (via <code>label</code> and <code>showValue</code>) and the track+indicator.
+          Or pass a compound children tree (<code>ProgressLabel</code>, <code>ProgressValue</code>,
+          <code>ProgressTrack</code>, <code>ProgressIndicator</code>) for custom layouts. Set
+          <code>indeterminate</code> to animate an unknown-duration state.
+        </p>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>Three heights — <code>sm</code>, <code>default</code>, <code>lg</code>.</p>
+        <div class="stack">
+          <div id="pg-sm" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="35" data-state="determinate" data-variant="default" data-size="sm" class="ui-progress ui-progress--sz-sm ui-progress--default">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 35%"></div></div>
+          </div>
+          <div id="pg-md" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="55" data-state="determinate" data-variant="default" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--default">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 55%"></div></div>
+          </div>
+          <div id="pg-lg" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="80" data-state="determinate" data-variant="default" data-size="lg" class="ui-progress ui-progress--sz-lg ui-progress--default">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 80%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <p>Six semantic tones — <code>default</code>, <code>brand</code>, <code>info</code>, <code>success</code>, <code>warning</code>, <code>error</code>.</p>
+        <div class="stack">
+          <div id="pv-d" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="default" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--default">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+          <div id="pv-b" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="default" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--default" data-theme="db">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+          <div id="pv-i" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="info" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--info">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+          <div id="pv-s" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="success" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--success">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+          <div id="pv-w" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="warning" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--warning">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+          <div id="pv-e" role="progressbar" aria-valuenow="60" data-state="determinate" data-variant="error" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--error">
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 60%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With header</h2>
+        <p>Set <code>label</code> for a leading text and <code>showValue</code> to render the auto-formatted percentage on the right.</p>
+        <div class="stack">
+          <div id="ph-1" role="progressbar" aria-valuenow="42" data-state="determinate" data-variant="default" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--default">
+            <div class="ui-progress__header">
+              <span class="ui-progress__label">Uploading assets</span>
+              <span class="ui-progress__value">42%</span>
+            </div>
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 42%"></div></div>
+          </div>
+          <div id="ph-2" role="progressbar" aria-valuenow="7" aria-valuemax="12" data-state="determinate" data-variant="success" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--success">
+            <div class="ui-progress__header">
+              <span class="ui-progress__label">Onboarding checklist</span>
+              <span class="ui-progress__value">7 of 12</span>
+            </div>
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 58.33%"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Indeterminate</h2>
+        <p>When you don't know how long something will take. The indicator sweeps back and forth continuously.</p>
+        <div class="stack">
+          <div id="pi-1" role="progressbar" aria-valuemin="0" aria-valuemax="100" data-state="indeterminate" data-variant="default" data-size="default" class="ui-progress ui-progress--sz-default ui-progress--default ui-progress--indeterminate" data-theme="db">
+            <div class="ui-progress__header">
+              <span class="ui-progress__label">Reconnecting…</span>
+            </div>
+            <div class="ui-progress__track"><div class="ui-progress__indicator" style="width: 100%"></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,95 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Checkbox</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .stack { display: grid; gap: var(--p-3); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Checkbox</h1>
+        <p>
+          Native <code>&lt;input type="checkbox"&gt;</code> with a custom visual and animate-ui-flavored
+          transitions. Supports <code>checked</code> / <code>defaultChecked</code>,
+          <code>indeterminate</code>, and an <code>onCheckedChange(next)</code> callback.
+          Composes the shared <code>.ui-label</code> primitive for label + description.
+          Check-mark and indeterminate SVGs are both mounted and cross-fade via
+          <code>--ease-spring-strong</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>States</h2>
+        <div class="stack">
+          <label class="ui-checkbox-wrap">
+            <input type="checkbox" class="ui-checkbox__input" />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label"><span class="ui-label__text">Unchecked</span></span>
+          </label>
+
+          <label class="ui-checkbox-wrap">
+            <input type="checkbox" class="ui-checkbox__input" checked />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label"><span class="ui-label__text">Checked</span></span>
+          </label>
+
+          <label class="ui-checkbox-wrap">
+            <input type="checkbox" class="ui-checkbox__input" checked />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label">
+              <span class="ui-label__text">Send me the weekly digest</span>
+              <span class="ui-label__description">A short summary of team activity — every Monday.</span>
+            </span>
+          </label>
+
+          <label class="ui-checkbox-wrap">
+            <input type="checkbox" class="ui-checkbox__input" indeterminate />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label"><span class="ui-label__text">Indeterminate (some children checked)</span></span>
+          </label>
+
+          <label class="ui-checkbox-wrap ui-checkbox-wrap--disabled">
+            <input type="checkbox" class="ui-checkbox__input" disabled />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label ui-label--disabled"><span class="ui-label__text">Disabled</span></span>
+          </label>
+
+          <label class="ui-checkbox-wrap ui-checkbox-wrap--disabled">
+            <input type="checkbox" class="ui-checkbox__input" checked disabled />
+            <span class="ui-checkbox" aria-hidden="true">
+              <svg class="ui-checkbox__check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <svg class="ui-checkbox__indeterminate-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </span>
+            <span class="ui-label ui-label--disabled"><span class="ui-label__text">Disabled + checked</span></span>
+          </label>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

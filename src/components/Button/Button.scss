@@ -1,0 +1,569 @@
+.ui-button {
+  border: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  font-family: var(--font-family);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-5);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shadow-xs);
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+  }
+
+  // ============================================================
+  // Variant: default
+  // ============================================================
+
+  &--default-default {
+    background: var(--primary);
+    color: var(--primary-foreground);
+  }
+
+  &--default-secondary {
+    background: var(--primary-soft);
+    color: var(--primary);
+    outline: var(--border-w-100) solid var(--primary-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--default-outline {
+    background: var(--bg-input-30);
+    color: var(--primary);
+    outline: var(--border-w-100) solid var(--primary-border);
+    outline-offset: -1px;
+  }
+
+  // Ghost is the deliberate neutral in the default family: the quiet
+  // companion action (e.g. a Dialog "Cancel") stays slate in every theme,
+  // so it never competes with the themed primary CTA. Secondary / outline /
+  // link keep the theme's --primary.
+  &--default-ghost {
+    background: transparent;
+    color: var(--secondary-foreground);
+    box-shadow: none;
+  }
+
+  &--default-link {
+    background: transparent;
+    color: var(--primary);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Default variant focus states ----
+
+  &--default:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--primary-focus);
+  }
+
+  &--default-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--primary-ring);
+    outline-offset: -1px;
+    color: var(--primary-hover);
+  }
+
+  // ---- Default variant hover states ----
+
+  &--default-default:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
+      var(--primary);
+  }
+
+  &--default-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--primary-soft);
+  }
+
+  &--default-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--primary-hover);
+  }
+
+  &--default-ghost:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &--default-ghost:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &--default-link:hover:not(:disabled) {
+    color: var(--primary-hover);
+  }
+
+  // The `default` variant IS the theme's primary — it mirrors the semantic
+  // variants' structure (solid / soft-secondary / outline / ghost / link) using
+  // the --primary-* family, which a data-theme scope remaps to the sub-brand.
+
+  // ============================================================
+  // Variant: error
+  // ============================================================
+
+  &--error-default {
+    background: var(--error);
+    color: var(--error-foreground);
+  }
+
+  &--error-secondary {
+    background: var(--error-soft);
+    color: var(--error);
+    outline: var(--border-w-100) solid var(--error-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--error-outline {
+    background: var(--bg-input-30);
+    color: var(--error);
+    outline: var(--border-w-100) solid var(--error-border);
+    outline-offset: -1px;
+  }
+
+  &--error-ghost {
+    background: transparent;
+    color: var(--error);
+    box-shadow: none;
+  }
+
+  &--error-link {
+    background: transparent;
+    color: var(--error);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Error variant focus states ----
+
+  &--error:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--error-focus);
+  }
+
+  &--error-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--error-ring);
+    outline-offset: -1px;
+    color: var(--error-hover);
+  }
+
+  // ---- Error variant hover states ----
+
+  &--error-default:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)), var(--error);
+  }
+
+  &--error-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--error-soft);
+  }
+
+  &--error-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--error-hover);
+  }
+
+  &--error-ghost:hover:not(:disabled) {
+    background: var(--error-light);
+    color: var(--error-hover);
+  }
+
+  &--error-link:hover:not(:disabled) {
+    color: var(--error-hover);
+  }
+
+  // ============================================================
+  // Variant: info
+  // ============================================================
+
+  &--info-default {
+    background: var(--info);
+    color: var(--info-foreground);
+  }
+
+  &--info-secondary {
+    background: var(--info-soft);
+    color: var(--info);
+    outline: var(--border-w-100) solid var(--info-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--info-outline {
+    background: var(--bg-input-30);
+    color: var(--info);
+    outline: var(--border-w-100) solid var(--info-border);
+    outline-offset: -1px;
+  }
+
+  &--info-ghost {
+    background: transparent;
+    color: var(--info);
+    box-shadow: none;
+  }
+
+  &--info-link {
+    background: transparent;
+    color: var(--info);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Info variant focus states ----
+
+  &--info:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--info-focus);
+  }
+
+  &--info-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--info-ring);
+    outline-offset: -1px;
+    color: var(--info-hover);
+  }
+
+  // ---- Info variant hover states ----
+
+  &--info-default:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)), var(--info);
+  }
+
+  &--info-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--info-soft);
+  }
+
+  &--info-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--info-hover);
+  }
+
+  &--info-ghost:hover:not(:disabled) {
+    background: var(--info-light);
+    color: var(--info-hover);
+  }
+
+  &--info-link:hover:not(:disabled) {
+    color: var(--info-hover);
+  }
+
+  // ============================================================
+  // Variant: success
+  // ============================================================
+
+  &--success-default {
+    background: var(--success);
+    color: var(--success-foreground);
+  }
+
+  &--success-secondary {
+    background: var(--success-soft);
+    color: var(--success);
+    outline: var(--border-w-100) solid var(--success-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--success-outline {
+    background: var(--bg-input-30);
+    color: var(--success);
+    outline: var(--border-w-100) solid var(--success-border);
+    outline-offset: -1px;
+  }
+
+  &--success-ghost {
+    background: transparent;
+    color: var(--success);
+    box-shadow: none;
+  }
+
+  &--success-link {
+    background: transparent;
+    color: var(--success);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Success variant focus states ----
+
+  &--success:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--success-focus);
+  }
+
+  &--success-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--success-ring);
+    outline-offset: -1px;
+    color: var(--success-hover);
+  }
+
+  // ---- Success variant hover states ----
+
+  &--success-default:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
+      var(--success);
+  }
+
+  &--success-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--success-soft);
+  }
+
+  &--success-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--success-hover);
+  }
+
+  &--success-ghost:hover:not(:disabled) {
+    background: var(--success-light);
+    color: var(--success-hover);
+  }
+
+  &--success-link:hover:not(:disabled) {
+    color: var(--success-hover);
+  }
+
+  // ============================================================
+  // Variant: warning
+  // ============================================================
+
+  &--warning-default {
+    background: var(--warning);
+    color: var(--warning-foreground);
+  }
+
+  &--warning-secondary {
+    background: var(--warning-soft);
+    color: var(--warning);
+    outline: var(--border-w-100) solid var(--warning-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--warning-outline {
+    background: var(--bg-input-30);
+    color: var(--warning);
+    outline: var(--border-w-100) solid var(--warning-border);
+    outline-offset: -1px;
+  }
+
+  &--warning-ghost {
+    background: transparent;
+    color: var(--warning);
+    box-shadow: none;
+  }
+
+  &--warning-link {
+    background: transparent;
+    color: var(--warning);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Warning variant focus states ----
+
+  &--warning:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--warning-focus);
+  }
+
+  &--warning-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--warning-ring);
+    outline-offset: -1px;
+    color: var(--warning-hover);
+  }
+
+  // ---- Warning variant hover states ----
+
+  &--warning-default:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
+      var(--warning);
+  }
+
+  &--warning-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--warning-soft);
+  }
+
+  &--warning-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--warning-hover);
+  }
+
+  &--warning-ghost:hover:not(:disabled) {
+    background: var(--warning-light);
+    color: var(--warning-hover);
+  }
+
+  &--warning-link:hover:not(:disabled) {
+    color: var(--warning-hover);
+  }
+
+  // ============================================================
+  // Variant: aiden
+  // ============================================================
+
+  &--aiden-default {
+    background: var(--aiden-primary);
+    color: var(--aiden-primary-foreground);
+  }
+
+  &--aiden-secondary {
+    background: var(--aiden-secondary);
+    color: var(--aiden-outline-border);
+    outline: var(--border-w-100) solid var(--aiden-outline-border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--aiden-outline {
+    background: var(--bg-input-30);
+    color: var(--aiden-outline-border);
+    outline: var(--border-w-100) solid var(--aiden-outline-border);
+    outline-offset: -1px;
+  }
+
+  &--aiden-ghost {
+    background: transparent;
+    color: var(--aiden-outline-border);
+    box-shadow: none;
+  }
+
+  &--aiden-link {
+    background: transparent;
+    color: var(--aiden-outline-border);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Aiden variant focus states ----
+
+  &--aiden:focus-visible {
+    box-shadow: var(--aiden-focus);
+  }
+
+  &--aiden-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--aiden-outline-border);
+    outline-offset: -1px;
+  }
+
+  // ---- Aiden variant hover states ----
+
+  &--aiden-default:hover:not(:disabled) {
+    background: var(--aiden-hover);
+  }
+
+  &--aiden-secondary:hover:not(:disabled) {
+    background: var(--aiden-outline-hover);
+    color: var(--aiden-outline-border);
+  }
+
+  &--aiden-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+  }
+
+  &--aiden-ghost:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--aiden-outline-border) 10%, transparent);
+  }
+
+  &--aiden-link:hover:not(:disabled) {
+    color: color-mix(in srgb, var(--aiden-outline-border) 85%, var(--foreground));
+  }
+
+  // ---- Aiden icon-only special border-radius ----
+
+  &--aiden-icon-only {
+    border-radius: var(--rounded-full);
+  }
+
+  // ---- Sizes ----
+
+  &--sz-small {
+    padding: var(--p-2) var(--p-3);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    gap: var(--p-2);
+
+    svg {
+      width: var(--w-3-5);
+      height: var(--h-3-5);
+    }
+  }
+
+  &--sz-default {
+    padding: var(--p-2) var(--p-4);
+    font-size: var(--text-sm);
+    gap: var(--p-2);
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  &--sz-large {
+    padding: var(--p-2) var(--p-6);
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+    gap: var(--p-2);
+
+    svg {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  // ---- Icon Only ----
+
+  &--icon-only {
+    justify-content: center;
+
+    &.ui-button--sz-small {
+      padding: var(--p-2);
+    }
+
+    &.ui-button--sz-default {
+      padding: var(--p-2);
+
+      svg {
+        width: var(--w-5);
+        height: var(--h-5);
+      }
+    }
+
+    &.ui-button--sz-large {
+      padding: var(--p-2);
+
+      svg {
+        width: var(--w-6);
+        height: var(--h-6);
+      }
+    }
+  }
+
+  // ---- Shared States ----
+
+  &--loading {
+    opacity: var(--o-50);
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: var(--o-50);
+  }
+
+  &:active:not(:disabled) {
+    opacity: var(--o-60);
+  }
+}

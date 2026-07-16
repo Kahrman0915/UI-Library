@@ -1,0 +1,107 @@
+<!-- @dsCard group="Navigation" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tabs</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .panel {
+        padding: var(--p-4);
+        background: var(--card);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        color: var(--foreground);
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Tabs</h1>
+        <p>
+          Compound component for switching between related panels. Root controls the active
+          <code>value</code> (controlled or uncontrolled via <code>defaultValue</code>).
+          <code>TabsList</code> is the tab strip; <code>TabsTrigger</code> is each tab;
+          <code>TabsContent</code> the corresponding panel. Handles arrow-key navigation,
+          <code>Home</code> / <code>End</code>, and <code>automatic</code> vs
+          <code>manual</code> activation. Two orientations.
+        </p>
+      </div>
+
+      <div>
+        <h2>Horizontal</h2>
+        <p>Default orientation. Left/right arrows move focus between triggers; the underline slides to the active tab.</p>
+        <div id="tab-h" data-orientation="horizontal" class="ui-tabs ui-tabs--horizontal">
+          <div role="tablist" aria-orientation="horizontal" data-orientation="horizontal" class="ui-tabs__list">
+            <button id="tab-h-trigger-overview" type="button" role="tab" data-value="overview" data-state="active" aria-selected="true" aria-controls="tab-h-content-overview" tabindex="0" class="ui-tabs__trigger">Overview</button>
+            <button id="tab-h-trigger-activity" type="button" role="tab" data-value="activity" data-state="inactive" aria-selected="false" aria-controls="tab-h-content-activity" tabindex="-1" class="ui-tabs__trigger">Activity</button>
+            <button id="tab-h-trigger-settings" type="button" role="tab" data-value="settings" data-state="inactive" aria-selected="false" aria-controls="tab-h-content-settings" tabindex="-1" class="ui-tabs__trigger">Settings</button>
+            <button id="tab-h-trigger-billing" type="button" role="tab" data-value="billing" data-state="inactive" aria-selected="false" aria-controls="tab-h-content-billing" tabindex="-1" class="ui-tabs__trigger" disabled>Billing</button>
+          </div>
+          <div id="tab-h-content-overview" role="tabpanel" data-state="active" aria-labelledby="tab-h-trigger-overview" tabindex="0" class="ui-tabs__content">
+            <div class="panel">
+              The overview panel is active. Panels are unmounted when inactive unless <code>forceMount</code> is set.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <p>Set <code>orientation="vertical"</code> for a sidebar-style tab list. Arrow-up/down navigate; the active indicator moves to the right edge of the list.</p>
+        <div id="tab-v" data-orientation="vertical" class="ui-tabs ui-tabs--vertical">
+          <div role="tablist" aria-orientation="vertical" data-orientation="vertical" class="ui-tabs__list">
+            <button id="tab-v-trigger-profile" type="button" role="tab" data-value="profile" data-state="inactive" aria-selected="false" aria-controls="tab-v-content-profile" tabindex="-1" class="ui-tabs__trigger">Profile</button>
+            <button id="tab-v-trigger-notif" type="button" role="tab" data-value="notif" data-state="active" aria-selected="true" aria-controls="tab-v-content-notif" tabindex="0" class="ui-tabs__trigger">Notifications</button>
+            <button id="tab-v-trigger-security" type="button" role="tab" data-value="security" data-state="inactive" aria-selected="false" aria-controls="tab-v-content-security" tabindex="-1" class="ui-tabs__trigger">Security</button>
+            <button id="tab-v-trigger-team" type="button" role="tab" data-value="team" data-state="inactive" aria-selected="false" aria-controls="tab-v-content-team" tabindex="-1" class="ui-tabs__trigger">Team</button>
+          </div>
+          <div id="tab-v-content-notif" role="tabpanel" data-state="active" aria-labelledby="tab-v-trigger-notif" tabindex="0" class="ui-tabs__content">
+            <div class="panel">
+              Notifications panel. In vertical orientation the panel sits to the right of the list.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,332 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Root
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment {
+  position: relative;
+  display: flex;
+  gap: var(--p-3);
+  padding: var(--p-3);
+  background: var(--card);
+  color: var(--card-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  font-family: var(--font-family);
+  isolation: isolate;
+  overflow: hidden;
+  min-width: 0;
+
+  &--horizontal {
+    flex-direction: row;
+    align-items: center;
+  }
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: left;
+  }
+
+  // Sizes: adjust padding, gap, and font.
+  &--sz-xs {
+    gap: var(--p-2);
+    padding: var(--p-1-5) var(--p-2);
+    border-radius: var(--rounded-sm);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+
+  &--sz-sm {
+    gap: var(--p-2);
+    padding: var(--p-2) var(--p-2-5);
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  &--sz-default {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  // Error state — destructive border + subtle red background.
+  &--state-error {
+    background: var(--error-light);
+    border-color: var(--error-border);
+    color: var(--error);
+
+    .ui-attachment__description {
+      color: var(--error);
+      opacity: var(--o-80);
+    }
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Media
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment__media {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  overflow: hidden;
+
+  &--icon {
+    width: var(--w-10);
+    height: var(--h-10);
+    background: var(--accent);
+    border-radius: var(--rounded-sm);
+
+    svg {
+      width: var(--w-5);
+      height: var(--h-5);
+      display: block;
+    }
+  }
+
+  &--image {
+    width: var(--w-10);
+    height: var(--h-10);
+    border-radius: var(--rounded-sm);
+    background: var(--muted);
+
+    img,
+    picture,
+    video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+  }
+}
+
+// Media scales down for smaller sizes.
+.ui-attachment--sz-sm .ui-attachment__media {
+  &--icon,
+  &--image {
+    width: var(--w-8);
+    height: var(--h-8);
+  }
+  &--icon svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+.ui-attachment--sz-xs .ui-attachment__media {
+  &--icon,
+  &--image {
+    width: var(--w-5);
+    height: var(--h-5);
+    border-radius: var(--rounded-sm);
+  }
+  &--icon svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+}
+
+// Vertical orientation: media enlarges + centers.
+.ui-attachment--vertical .ui-attachment__media {
+  align-self: center;
+
+  &--icon,
+  &--image {
+    width: var(--w-16);
+    height: var(--h-16);
+  }
+  &--icon svg {
+    width: var(--w-7);
+    height: var(--h-7);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content — title + description column
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment__content {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  justify-content: center;
+}
+
+.ui-attachment__title {
+  font-weight: var(--font-medium);
+  color: inherit;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-attachment__description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Shimmer — animates a gradient across the title text during uploading /
+// processing states. Applied via `-webkit-background-clip: text`.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment__title--shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--muted-foreground) 0%,
+    var(--foreground) 50%,
+    var(--muted-foreground) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: ui-attachment-shimmer var(--duration-shimmer) var(--ease-in-out) infinite;
+}
+
+@keyframes ui-attachment-shimmer {
+  0% {
+    background-position: 100% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Actions — trailing button row (above Trigger via z-index).
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment__actions {
+  position: relative;
+  z-index: 2;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+.ui-attachment--vertical .ui-attachment__actions {
+  align-self: flex-end;
+}
+
+.ui-attachment__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-7);
+  height: var(--h-7);
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+  line-height: 0;
+  transition:
+    color var(--duration-fast) var(--ease-out),
+    background var(--duration-fast) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    color: var(--foreground);
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    display: block;
+  }
+}
+
+.ui-attachment--sz-xs .ui-attachment__action {
+  width: var(--w-5);
+  height: var(--h-5);
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+}
+
+// Error state actions inherit the error color hue.
+.ui-attachment--state-error .ui-attachment__action {
+  color: var(--error);
+
+  &:hover:not(:disabled) {
+    color: var(--error);
+    background: var(--error-light);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Trigger — invisible overlay covering the whole card (below Actions).
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment__trigger {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: transparent;
+  border: none;
+  color: inherit;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  text-decoration: none;
+  border-radius: inherit;
+  transition: background var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-attachment__trigger-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Group — horizontally scrollable row.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-attachment-group {
+  display: flex;
+  gap: var(--p-2);
+  overflow-x: auto;
+  padding-bottom: var(--p-1);
+
+  > * {
+    flex-shrink: 0;
+  }
+}

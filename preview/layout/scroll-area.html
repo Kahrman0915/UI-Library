@@ -1,0 +1,147 @@
+<!-- @dsCard group="Layout" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>ScrollArea</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .demo-item {
+        padding: var(--p-3);
+        border-bottom: var(--border-w-100) solid var(--border);
+        font-size: var(--text-sm);
+      }
+      .demo-item:last-child { border-bottom: none; }
+      .horizontal-strip {
+        display: flex;
+        gap: var(--p-3);
+        padding: var(--p-2);
+        width: max-content;
+      }
+      .horizontal-strip__tile {
+        flex: 0 0 auto;
+        width: 160px;
+        height: 100px;
+        border-radius: var(--rounded-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--font-family-mono);
+        font-size: var(--text-xs);
+        font-weight: var(--font-medium);
+      }
+      /* Static thumb previews — the real component measures at runtime;
+         we render static thumbs here so the card visualizes the shape. */
+      .ui-scroll-area__thumb--demo-y {
+        transform: translateY(24px);
+        height: 60px;
+      }
+      .ui-scroll-area__thumb--demo-x {
+        transform: translateX(40px);
+        width: 80px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>ScrollArea</h1>
+        <p>
+          A scrollable container with an unobtrusive, tokenized thumb. Custom-drawn (not
+          browser-native) so it looks consistent across macOS / Windows / Linux and stays
+          out of the way. Three <code>orientation</code>s (<code>vertical</code>,
+          <code>horizontal</code>, <code>both</code>) and two <code>type</code>s
+          (<code>auto</code> — thumb visible only when overflow;
+          <code>always</code> — thumb always visible). Zero JS deps — the component
+          measures its own viewport and positions the thumb on <code>scroll</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <p>Fixed-height container with a long content list. The thumb sits inside the viewport, tokenized to <code>--muted-foreground</code> at low opacity.</p>
+        <div class="ui-scroll-area ui-scroll-area--vertical ui-scroll-area--type-auto" style="height: 240px; width: 380px; border: var(--border-w-100) solid var(--border); border-radius: var(--rounded-md);">
+          <div class="ui-scroll-area__inner">
+            <div class="ui-scroll-area__viewport">
+              <div class="demo-item">1 — Design tokens</div>
+              <div class="demo-item">2 — Themes</div>
+              <div class="demo-item">3 — Buttons</div>
+              <div class="demo-item">4 — Cards</div>
+              <div class="demo-item">5 — Alerts</div>
+              <div class="demo-item">6 — Dialogs</div>
+              <div class="demo-item">7 — Menus</div>
+              <div class="demo-item">8 — Tabs</div>
+              <div class="demo-item">9 — Toasts</div>
+              <div class="demo-item">10 — Combobox</div>
+              <div class="demo-item">11 — Select</div>
+              <div class="demo-item">12 — Slider</div>
+            </div>
+            <div class="ui-scroll-area__scrollbar ui-scroll-area__scrollbar--vertical" aria-hidden="true">
+              <div class="ui-scroll-area__thumb ui-scroll-area__thumb--demo-y"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Horizontal</h2>
+        <p>Scrolls left/right — good for chip strips, tag rows, and small carousels. Thumb sits along the bottom.</p>
+        <div class="ui-scroll-area ui-scroll-area--horizontal ui-scroll-area--type-auto" style="width: 380px; border: var(--border-w-100) solid var(--border); border-radius: var(--rounded-md);">
+          <div class="ui-scroll-area__inner">
+            <div class="ui-scroll-area__viewport">
+              <div class="horizontal-strip">
+                <div class="horizontal-strip__tile" style="background: var(--category-red-bg); color: var(--category-red)">Red</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-orange-bg); color: var(--category-orange)">Orange</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-amber-bg); color: var(--category-amber)">Amber</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-green-bg); color: var(--category-green)">Green</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-teal-bg); color: var(--category-teal)">Teal</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-blue-bg); color: var(--category-blue)">Blue</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-indigo-bg); color: var(--category-indigo)">Indigo</div>
+                <div class="horizontal-strip__tile" style="background: var(--category-pink-bg); color: var(--category-pink)">Pink</div>
+              </div>
+            </div>
+            <div class="ui-scroll-area__scrollbar ui-scroll-area__scrollbar--horizontal" aria-hidden="true">
+              <div class="ui-scroll-area__thumb ui-scroll-area__thumb--demo-x"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

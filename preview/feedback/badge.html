@@ -1,0 +1,201 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Badge</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .variant-block {
+        display: grid;
+        gap: var(--p-2);
+        margin-bottom: var(--p-4);
+      }
+      .variant-block__label {
+        font-size: var(--text-sm);
+        font-weight: var(--font-medium);
+        color: var(--muted-foreground);
+      }
+      .row {
+        display: flex;
+        gap: var(--p-2);
+        flex-wrap: wrap;
+        align-items: center;
+      }
+      .icon {
+        width: 12px;
+        height: 12px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+      .brand-strip {
+        display: grid;
+        gap: var(--p-2);
+        padding: var(--p-3);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+      }
+      .brand-strip__label {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-xs);
+        color: var(--muted-foreground);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Badge</h1>
+        <p>
+          A small pill for statuses, counts, and labels. Unlike Button which composes
+          <code>variant × style</code>, Badge flattens both dimensions into a single
+          <code>variant</code> prop with 12 values: 2 theme-aware treatments
+          (<code>default</code> filled, <code>outline</code>) that read <code>--primary</code>,
+          plus <code>error</code> / <code>success</code> / <code>warning</code> /
+          <code>info</code> / <code>aiden</code> each with a base and
+          <code>-outline</code> variant.
+        </p>
+      </div>
+
+      <div>
+        <h2>Theme-aware</h2>
+        <p><code>default</code> (filled) and <code>outline</code> — both read <code>--primary</code> (neutral slate here, brand-colored inside a <code>data-theme</code>).</p>
+        <div class="row">
+          <div class="ui-badge ui-badge--default">Default</div>
+          <div class="ui-badge ui-badge--outline">Outline</div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Semantic — base + outline</h2>
+        <p>Each semantic family has a filled base and a bordered outline variant.</p>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Brand</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--default">Default</div>
+            <div class="ui-badge ui-badge--outline">Outline</div>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Error</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--error">Error</div>
+            <div class="ui-badge ui-badge--error-outline">Error-outline</div>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Success</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--success">Success</div>
+            <div class="ui-badge ui-badge--success-outline">Success-outline</div>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Warning</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--warning">Warning</div>
+            <div class="ui-badge ui-badge--warning-outline">Warning-outline</div>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Info</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--info">Info</div>
+            <div class="ui-badge ui-badge--info-outline">Info-outline</div>
+          </div>
+        </div>
+
+        <div class="variant-block">
+          <div class="variant-block__label">Aiden</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--aiden">Aiden</div>
+            <div class="ui-badge ui-badge--aiden-outline">Aiden-outline</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With icons</h2>
+        <p><code>IconLeft</code> / <code>IconRight</code> for status dots or trailing carets; <code>IconCenter</code> + no label for icon-only.</p>
+        <div class="row">
+          <div class="ui-badge ui-badge--success">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>
+            Verified
+          </div>
+          <div class="ui-badge ui-badge--warning">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M12 8v4"/><path d="M12 16h.01"/></svg>
+            Draft
+          </div>
+          <div class="ui-badge ui-badge--info-outline">
+            v4.0
+            <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Theme scope</h2>
+        <p>The default and outline badges pick up the theme's color inside <code>data-theme="{code}"</code>; semantic badges keep their own color.</p>
+        <div data-theme="db" class="brand-strip">
+          <div class="brand-strip__label">data-theme="db" — DB, Indigo</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--default">Default</div>
+            <div class="ui-badge ui-badge--outline">Outline</div>
+          </div>
+        </div>
+        <div style="height: var(--p-3);"></div>
+        <div data-theme="ph" class="brand-strip">
+          <div class="brand-strip__label">data-theme="ph" — PH, Orange</div>
+          <div class="row">
+            <div class="ui-badge ui-badge--default">Default</div>
+            <div class="ui-badge ui-badge--outline">Outline</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,103 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Skeleton</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      .row { display: flex; gap: var(--p-4); align-items: center; }
+      .card {
+        display: grid;
+        gap: var(--p-3);
+        width: 300px;
+        padding: var(--p-4);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        background: var(--card);
+      }
+      .table {
+        display: grid;
+        gap: var(--p-2);
+        max-width: 640px;
+        padding: var(--p-4);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+      }
+      .row-cells {
+        display: grid;
+        grid-template-columns: 32px 1fr 100px 80px;
+        gap: var(--p-3);
+        align-items: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Skeleton</h1>
+        <p>
+          Animated placeholder for content that hasn't loaded yet. Three <code>shape</code>s
+          (<code>default</code>, <code>circle</code>, <code>text</code>) plus explicit
+          <code>width</code> / <code>height</code>. The shimmer sweep is CSS-only —
+          <code>background-position</code> animation from off-screen right to off-screen left
+          with an <code>--ease-in-out</code> curve.
+        </p>
+      </div>
+
+      <div>
+        <h2>Shapes</h2>
+        <p>Rectangular by default (blocks, buttons). Circle for avatars/dots. Text-shape for typography with an aggressive border-radius.</p>
+        <div class="row">
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--default" style="width: 200px; height: 20px;"></div>
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 40px;"></div>
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 160px;"></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Text block</h2>
+        <p>Stack a few of the <code>text</code>-shape variants with varying widths to imitate a paragraph placeholder.</p>
+        <div style="display: grid; gap: var(--p-2); max-width: 480px;">
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 100%;"></div>
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 95%;"></div>
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 90%;"></div>
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Card placeholder</h2>
+        <p>Common pattern — hero image + avatar + title/subtitle.</p>
+        <div class="card">
+          <div aria-hidden="true" class="ui-skeleton ui-skeleton--default" style="width: 100%; height: 140px;"></div>
+          <div class="row">
+            <div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 36px;"></div>
+            <div style="display: grid; gap: var(--p-1-5); flex: 1;">
+              <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div>
+              <div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 45%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Table rows</h2>
+        <p>Data-table shell with 5 rows of shimmering cells while the API request is in flight.</p>
+        <div class="table">
+          <div class="row-cells"><div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 32px;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 80%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div></div>
+          <div class="row-cells"><div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 32px;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 65%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div></div>
+          <div class="row-cells"><div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 32px;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 75%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div></div>
+          <div class="row-cells"><div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 32px;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 55%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div></div>
+          <div class="row-cells"><div aria-hidden="true" class="ui-skeleton ui-skeleton--circle" style="width: 32px;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 82%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 60%;"></div><div aria-hidden="true" class="ui-skeleton ui-skeleton--text" style="width: 70%;"></div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,161 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Trigger — invisible wrapper, doesn't restrict child layout.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-context-menu__trigger {
+  display: contents;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Content
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-context-menu__content {
+  position: fixed;
+  z-index: var(--z-50);
+  min-width: var(--w-48);
+  max-height: var(--h-96);
+  overflow-y: auto;
+  padding: var(--p-1);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  outline: none;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Item
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-context-menu__item {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  padding: var(--p-1-5) var(--p-2);
+  border-radius: var(--rounded-sm);
+  cursor: pointer;
+  outline: none;
+  user-select: none;
+  color: var(--popover-foreground);
+  transition: background var(--duration-fast) var(--ease-out);
+
+  &:hover:not([data-disabled]),
+  &:focus-visible:not([data-disabled]) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &[data-disabled] {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  // Destructive variant — red foreground with red-tinted hover.
+  &--destructive {
+    color: var(--error);
+
+    &:hover:not([data-disabled]),
+    &:focus-visible:not([data-disabled]) {
+      background: var(--error-light);
+      color: var(--error);
+    }
+  }
+
+  &--indicator {
+    padding-left: var(--p-1);
+  }
+}
+
+.ui-context-menu__item-indicator {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-4);
+  height: var(--h-4);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+    display: block;
+  }
+}
+
+.ui-context-menu__radio-dot {
+  width: var(--w-1-5);
+  height: var(--h-1-5);
+  border-radius: var(--rounded-full);
+  background: currentColor;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// SubTrigger + SubContent
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-context-menu__sub-trigger {
+  &[data-state='open'] {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+}
+
+.ui-context-menu__sub-trigger-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-context-menu__sub-trigger-chevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+    display: block;
+  }
+}
+
+.ui-context-menu__sub-content {
+  // Same base styling as the root content — no override needed beyond this.
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Label, Separator, Group, Shortcut
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-context-menu__group + .ui-context-menu__group {
+  margin-top: var(--p-1);
+}
+
+.ui-context-menu__label {
+  padding: var(--p-1-5) var(--p-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  user-select: none;
+}
+
+.ui-context-menu__separator {
+  height: var(--border-w-100);
+  margin: var(--p-1) 0;
+  background: var(--border);
+}
+
+.ui-context-menu__shortcut {
+  margin-left: auto;
+  padding-left: var(--p-4);
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  font-variant-numeric: tabular-nums;
+}

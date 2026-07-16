@@ -1,0 +1,33 @@
+// NativeSelect reuses Input's .ui-input-field / .ui-input-wrap / .ui-input /
+// .ui-input__icon / .ui-input__error classes (imported from Input.scss). These
+// are the select-only bits: strip the native chrome and overlay our chevron.
+.ui-native-select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  height: 100%;
+
+  // Extend the hit area under the chevron + gap so the whole trailing edge
+  // opens the menu; the matching padding keeps the selected value off it. Both
+  // use the chevron width (--w-4) + the wrap's gap (--p-2), which are constant
+  // across sizes, so no per-size rules are needed.
+  margin-right: calc(-1 * (var(--w-4) + var(--p-2)));
+  padding-right: calc(var(--w-4) + var(--p-2));
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+
+  // Style the browser-rendered option list where the platform allows it
+  // (macOS ignores this and paints its own menu — harmless there).
+  option {
+    color: var(--foreground);
+    background: var(--popover);
+  }
+}
+
+// Chevron overlaps the select's extended hit area; non-interactive so a click
+// on it falls through to the <select> and opens the menu.
+.ui-native-select__chevron {
+  pointer-events: none;
+}

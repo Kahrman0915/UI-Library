@@ -1,0 +1,106 @@
+.ui-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+  font-family: var(--font-family);
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-0-5);
+  }
+
+  &__items {
+    display: flex;
+    gap: var(--p-3);
+  }
+
+  &--vertical &__items {
+    flex-direction: column;
+  }
+
+  &--horizontal &__items {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
+
+.ui-radio-wrap {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: var(--p-2);
+  cursor: pointer;
+  font-family: var(--font-family);
+
+  &--disabled {
+    cursor: not-allowed;
+  }
+}
+
+// Visually hidden native input — stays in the a11y + form tree.
+.ui-radio__input {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+// Visual outer circle.
+.ui-radio {
+  flex-shrink: 0;
+  width: var(--w-4);
+  height: var(--h-4);
+  margin-top: var(--p-0-5);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-full);
+  background: var(--bg-input-30);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+}
+
+// Inner dot (hidden until checked).
+.ui-radio__dot {
+  width: var(--w-2);
+  height: var(--h-2);
+  border-radius: var(--rounded-full);
+  background: var(--primary-foreground);
+  transform: scale(0);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+// Checked — filled outer + visible inner dot.
+.ui-radio__input:checked ~ .ui-radio {
+  background: var(--primary);
+  border-color: var(--primary);
+
+  .ui-radio__dot {
+    transform: scale(1);
+  }
+}
+
+// Focus ring.
+.ui-radio__input:focus-visible ~ .ui-radio {
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  border-color: var(--ring);
+}
+
+// Disabled.
+.ui-radio__input:disabled ~ .ui-radio {
+  opacity: var(--o-50);
+  cursor: not-allowed;
+}
+
+// Hover — subtle border darken when not disabled or checked.
+.ui-radio-wrap:not(.ui-radio-wrap--disabled):hover
+  .ui-radio__input:not(:checked)
+  ~ .ui-radio {
+  border-color: var(--muted-foreground);
+}

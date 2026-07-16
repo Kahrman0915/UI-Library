@@ -1,0 +1,209 @@
+<!-- @dsCard group="Foundations" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Foundations — Palettes</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-5xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .swatch-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: var(--p-3);
+      }
+      .swatch {
+        display: grid;
+        gap: var(--p-1);
+      }
+      .swatch__color {
+        height: 64px;
+        border-radius: var(--rounded-md);
+        border: var(--border-w-100) solid var(--border);
+      }
+      .swatch__name {
+        font-size: var(--text-xs);
+        font-family: var(--font-family-mono);
+        color: var(--foreground);
+        font-weight: var(--font-medium);
+      }
+      .swatch__hex {
+        font-size: var(--text-xs);
+        font-family: var(--font-family-mono);
+        color: var(--muted-foreground);
+      }
+      .semantic-row {
+        display: grid;
+        grid-template-columns: 120px repeat(4, 1fr);
+        gap: var(--p-3);
+        align-items: center;
+        margin-bottom: var(--p-3);
+      }
+      .semantic-row__label {
+        font-size: var(--text-sm);
+        font-weight: var(--font-semibold);
+        color: var(--foreground);
+        font-family: var(--font-family-mono);
+      }
+      .semantic-row .swatch__color {
+        height: 48px;
+      }
+      .category-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+        gap: var(--p-3);
+      }
+      .category-swatch {
+        display: grid;
+        gap: var(--p-1);
+      }
+      .category-swatch__color {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 56px;
+        border-radius: var(--rounded-md);
+        font-size: var(--text-xs);
+        font-family: var(--font-family-mono);
+        font-weight: var(--font-medium);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Palettes</h1>
+        <p>
+          Every color the library uses. Split into <strong>neutrals</strong> (chrome, text, borders),
+          <strong>semantics</strong> (error, success, warning, info — each with a 4-token family),
+          and <strong>categories</strong> (17-color chart palette with matching <code>-bg</code>
+          tinted backgrounds).
+        </p>
+      </div>
+
+      <div>
+        <h2>Neutral core</h2>
+        <p>
+          The base look. Every component that isn't a semantic variant lives on this ramp.
+          Theme-swappable via <code>[data-mode="light"]</code> / <code>[data-mode="dark"]</code>
+          on the <code>&lt;html&gt;</code> element.
+        </p>
+        <div class="swatch-grid">
+          <div class="swatch"><div class="swatch__color" style="background: var(--background)"></div><div class="swatch__name">--background</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--foreground)"></div><div class="swatch__name">--foreground</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--muted)"></div><div class="swatch__name">--muted</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--muted-foreground)"></div><div class="swatch__name">--muted-foreground</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--border)"></div><div class="swatch__name">--border</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--input)"></div><div class="swatch__name">--input</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--ring)"></div><div class="swatch__name">--ring</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--focus)"></div><div class="swatch__name">--focus</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--primary)"></div><div class="swatch__name">--primary</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--secondary)"></div><div class="swatch__name">--secondary</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--accent)"></div><div class="swatch__name">--accent</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--card)"></div><div class="swatch__name">--card</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--popover)"></div><div class="swatch__name">--popover</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Semantic families</h2>
+        <p>
+          Each family has the same 4-swatch shape: <code>--{name}</code> (base),
+          <code>--{name}-light</code> (soft background), <code>--{name}-border</code>,
+          <code>--{name}-hover</code>. Use for alerts, error states, status pills, form errors.
+        </p>
+        <div class="semantic-row">
+          <div class="semantic-row__label">--error</div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--error)"></div><div class="swatch__name">base</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--error-light)"></div><div class="swatch__name">light</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--error-border)"></div><div class="swatch__name">border</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--error-hover)"></div><div class="swatch__name">hover</div></div>
+        </div>
+        <div class="semantic-row">
+          <div class="semantic-row__label">--success</div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--success)"></div><div class="swatch__name">base</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--success-light)"></div><div class="swatch__name">light</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--success-border)"></div><div class="swatch__name">border</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--success-hover)"></div><div class="swatch__name">hover</div></div>
+        </div>
+        <div class="semantic-row">
+          <div class="semantic-row__label">--warning</div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--warning)"></div><div class="swatch__name">base</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--warning-light)"></div><div class="swatch__name">light</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--warning-border)"></div><div class="swatch__name">border</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--warning-hover)"></div><div class="swatch__name">hover</div></div>
+        </div>
+        <div class="semantic-row">
+          <div class="semantic-row__label">--info</div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--info)"></div><div class="swatch__name">base</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--info-light)"></div><div class="swatch__name">light</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--info-border)"></div><div class="swatch__name">border</div></div>
+          <div class="swatch"><div class="swatch__color" style="background: var(--info-hover)"></div><div class="swatch__name">hover</div></div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Category colors</h2>
+        <p>
+          17-color palette for charts, tags, and multi-category displays. Each has a
+          <code>--category-{name}</code> base, a <code>-bg</code> tinted-background variant
+          (light-mode 0.10, dark-mode 0.15 opacity), and a <code>-hover</code> darker shade.
+        </p>
+        <div class="category-grid">
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-red-bg); color: var(--category-red)">red</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-orange-bg); color: var(--category-orange)">orange</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-amber-bg); color: var(--category-amber)">amber</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-yellow-bg); color: var(--category-yellow)">yellow</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-lime-bg); color: var(--category-lime)">lime</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-green-bg); color: var(--category-green)">green</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-emerald-bg); color: var(--category-emerald)">emerald</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-teal-bg); color: var(--category-teal)">teal</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-cyan-bg); color: var(--category-cyan)">cyan</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-sky-bg); color: var(--category-sky)">sky</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-blue-bg); color: var(--category-blue)">blue</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-indigo-bg); color: var(--category-indigo)">indigo</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-violet-bg); color: var(--category-violet)">violet</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-purple-bg); color: var(--category-purple)">purple</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-fuchsia-bg); color: var(--category-fuchsia)">fuchsia</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-pink-bg); color: var(--category-pink)">pink</div></div>
+          <div class="category-swatch"><div class="category-swatch__color" style="background: var(--category-rose-bg); color: var(--category-rose)">rose</div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,129 @@
+<!-- @dsCard group="Navigation" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Breadcrumb</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .stack {
+        display: grid;
+        gap: var(--p-4);
+      }
+      .icon {
+        width: 14px;
+        height: 14px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Breadcrumb</h1>
+        <p>
+          Semantic navigation trail. Renders as <code>&lt;nav aria-label="breadcrumb"&gt;</code>
+          wrapping an ordered list. Compound: <code>Breadcrumb</code> ›
+          <code>BreadcrumbList</code> › <code>BreadcrumbItem</code> containing either a
+          <code>BreadcrumbLink</code> (interactive ancestor) or a <code>BreadcrumbPage</code>
+          (current, non-clickable, <code>aria-current="page"</code>).
+          <code>BreadcrumbSeparator</code> and <code>BreadcrumbEllipsis</code> sit between
+          items as <code>role="presentation"</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Simple trail</h2>
+        <p>The current page is a <code>BreadcrumbPage</code>; everything ancestral is a link. Default separator is a chevron.</p>
+        <nav aria-label="breadcrumb" class="ui-breadcrumb">
+          <ol class="ui-breadcrumb__list">
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">Home</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">Projects</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="ui-breadcrumb__item"><span role="link" aria-disabled="true" aria-current="page" class="ui-breadcrumb__page">Q4 report</span></li>
+          </ol>
+        </nav>
+      </div>
+
+      <div>
+        <h2>Collapsed with ellipsis</h2>
+        <p>
+          For long trails, hide middle ancestors behind an <code>Ellipsis</code> — a
+          <code>MoreHorizontal</code> icon by default. Use in tandem with a DropdownMenu
+          for revealing the hidden crumbs.
+        </p>
+        <nav aria-label="breadcrumb" class="ui-breadcrumb">
+          <ol class="ui-breadcrumb__list">
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">Home</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="ui-breadcrumb__item">
+              <span role="presentation" aria-hidden="true" class="ui-breadcrumb__ellipsis">
+                <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                <span class="ui-breadcrumb__sr-only">More</span>
+              </span>
+            </li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">Team</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator"><svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></li>
+            <li class="ui-breadcrumb__item"><span role="link" aria-disabled="true" aria-current="page" class="ui-breadcrumb__page">Invite settings</span></li>
+          </ol>
+        </nav>
+      </div>
+
+      <div>
+        <h2>Custom separator</h2>
+        <p>Pass any content to <code>BreadcrumbSeparator</code> to override the default chevron — a slash, a bullet, a token icon, whatever fits the density.</p>
+        <nav aria-label="breadcrumb" class="ui-breadcrumb">
+          <ol class="ui-breadcrumb__list">
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">docs</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator">/</li>
+            <li class="ui-breadcrumb__item"><a href="#" class="ui-breadcrumb__link">components</a></li>
+            <li role="presentation" aria-hidden="true" class="ui-breadcrumb__separator">/</li>
+            <li class="ui-breadcrumb__item"><span role="link" aria-disabled="true" aria-current="page" class="ui-breadcrumb__page">breadcrumb.md</span></li>
+          </ol>
+        </nav>
+      </div>
+    </div>
+  </body>
+</html>

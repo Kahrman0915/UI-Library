@@ -1,0 +1,189 @@
+.ui-tooltip {
+  position: fixed;
+  z-index: var(--z-70);
+  padding: var(--p-1-5) var(--p-3);
+  // Carved out of theming: always the neutral slate inverse, never the
+  // sub-brand's --primary, so tooltips read consistently across themes.
+  background: var(--tooltip-background);
+  color: var(--tooltip-foreground);
+  font-family: var(--font-family);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shadow-md);
+  pointer-events: none;
+  max-width: var(--max-w-xs);
+
+  // Animate-UI-inspired spring feel — a touch of overshoot on the settle.
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-spring-strong);
+  animation-fill-mode: both;
+
+  // Scale grows FROM the side facing the trigger, so the tooltip appears to
+  // "pop out" of the trigger, plus a small directional slide.
+  &--top {
+    transform-origin: bottom center;
+    animation-name: ui-tooltip-in-top;
+  }
+
+  &--bottom {
+    transform-origin: top center;
+    animation-name: ui-tooltip-in-bottom;
+  }
+
+  &--left {
+    transform-origin: center right;
+    animation-name: ui-tooltip-in-left;
+  }
+
+  &--right {
+    transform-origin: center left;
+    animation-name: ui-tooltip-in-right;
+  }
+
+  // ---- Exit: swap to the matching -out- keyframe when closing.
+  //      Scale collapses back toward the trigger, opacity fades.
+  &--closing {
+    &.ui-tooltip--top {
+      animation-name: ui-tooltip-out-top;
+    }
+    &.ui-tooltip--bottom {
+      animation-name: ui-tooltip-out-bottom;
+    }
+    &.ui-tooltip--left {
+      animation-name: ui-tooltip-out-left;
+    }
+    &.ui-tooltip--right {
+      animation-name: ui-tooltip-out-right;
+    }
+  }
+
+  // Arrow / pointer
+  &::after {
+    content: '';
+    position: absolute;
+    width: var(--w-2);
+    height: var(--h-2);
+    background: var(--tooltip-background);
+    transform: rotate(45deg);
+  }
+
+  &--top::after {
+    bottom: -3px;
+    left: 50%;
+    margin-left: calc(-1 * var(--p-1));
+    border-radius: 0 0 var(--rounded-sm) 0;
+  }
+
+  &--bottom::after {
+    top: -3px;
+    left: 50%;
+    margin-left: calc(-1 * var(--p-1));
+    border-radius: var(--rounded-sm) 0 0 0;
+  }
+
+  &--left::after {
+    right: -3px;
+    top: 50%;
+    margin-top: calc(-1 * var(--p-1));
+    border-radius: 0 var(--rounded-sm) 0 0;
+  }
+
+  &--right::after {
+    left: -3px;
+    top: 50%;
+    margin-top: calc(-1 * var(--p-1));
+    border-radius: 0 0 0 var(--rounded-sm);
+  }
+}
+
+@keyframes ui-tooltip-in-top {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ui-tooltip-in-bottom {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(calc(-1 * var(--motion-slide-sm)));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes ui-tooltip-in-left {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateX(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+@keyframes ui-tooltip-in-right {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateX(calc(-1 * var(--motion-slide-sm)));
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+}
+
+// ---- Exit keyframes: mirror the entrances (slide BACK toward the trigger).
+
+@keyframes ui-tooltip-out-top {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(var(--motion-slide-sm));
+  }
+}
+
+@keyframes ui-tooltip-out-bottom {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateY(calc(-1 * var(--motion-slide-sm)));
+  }
+}
+
+@keyframes ui-tooltip-out-left {
+  from {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateX(var(--motion-slide-sm));
+  }
+}
+
+@keyframes ui-tooltip-out-right {
+  from {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95) translateX(calc(-1 * var(--motion-slide-sm)));
+  }
+}

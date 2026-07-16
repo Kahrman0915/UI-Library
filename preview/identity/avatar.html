@@ -1,0 +1,174 @@
+<!-- @dsCard group="Identity" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Avatar</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      .row {
+        display: flex;
+        gap: var(--p-4);
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .status-dot {
+        display: block;
+        width: 10px;
+        height: 10px;
+        border-radius: var(--rounded-full);
+        border: 2px solid var(--background);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Avatar</h1>
+        <p>
+          A person or resource identity marker. Renders <code>src</code> as an image, falls back
+          to initials from <code>fallback</code> when the image is missing or fails to load.
+          Two <code>shape</code>s (<code>circle</code>, <code>square</code>), three
+          <code>size</code>s (<code>sm</code>, <code>default</code>, <code>lg</code>), and a
+          <code>badge</code> slot for status dots or counts. <code>AvatarGroup</code> stacks
+          multiple avatars with configurable overlap and a <code>+N</code> overflow.
+        </p>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p>Three sizes. Applies to both shapes; fallback typography scales.</p>
+        <div class="row">
+          <div id="av-sm" class="ui-avatar ui-avatar--sz-sm ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">KM</span></div>
+          </div>
+          <div id="av-md" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">KM</span></div>
+          </div>
+          <div id="av-lg" class="ui-avatar ui-avatar--sz-lg ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">KM</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Shapes</h2>
+        <p>Circle for people, square for resources / files / bots.</p>
+        <div class="row">
+          <div id="av-c" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">MP</span></div>
+          </div>
+          <div id="av-s" class="ui-avatar ui-avatar--sz-default ui-avatar--square">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">MP</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With image</h2>
+        <p>Pass a <code>src</code>. If the image fails to load, the component transparently swaps back to the initials fallback.</p>
+        <div class="row">
+          <div id="av-img1" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner">
+              <span class="ui-avatar__fallback" aria-hidden="true">RG</span>
+              <img class="ui-avatar__image" alt="" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Cdefs%3E%3ClinearGradient%20id%3D%22g%22%20x1%3D%220%22%20y1%3D%220%22%20x2%3D%221%22%20y2%3D%221%22%3E%3Cstop%20offset%3D%220%22%20stop-color%3D%22%236366f1%22%2F%3E%3Cstop%20offset%3D%221%22%20stop-color%3D%22%23ec4899%22%2F%3E%3C%2FlinearGradient%3E%3C%2Fdefs%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22url(%23g)%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2263%22%20text-anchor%3D%22middle%22%20font-family%3D%22Inter%22%20font-size%3D%2244%22%20fill%3D%22%23fff%22%20font-weight%3D%22600%22%3ERG%3C%2Ftext%3E%3C%2Fsvg%3E" />
+            </div>
+          </div>
+          <div id="av-img2" class="ui-avatar ui-avatar--sz-default ui-avatar--square">
+            <div class="ui-avatar__inner">
+              <span class="ui-avatar__fallback" aria-hidden="true">TS</span>
+              <img class="ui-avatar__image" alt="" src="data:image/svg+xml;utf8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20100%20100%22%3E%3Crect%20width%3D%22100%22%20height%3D%22100%22%20fill%3D%22%2310b981%22%2F%3E%3Ctext%20x%3D%2250%22%20y%3D%2263%22%20text-anchor%3D%22middle%22%20font-family%3D%22Inter%22%20font-size%3D%2244%22%20fill%3D%22%23fff%22%20font-weight%3D%22600%22%3ETS%3C%2Ftext%3E%3C%2Fsvg%3E" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With badge</h2>
+        <p>
+          The <code>badge</code> prop accepts any ReactNode; commonly a status dot or a small count.
+          It's absolutely positioned at the bottom-right of the avatar with a ring in the page
+          background so it reads against the avatar shape.
+        </p>
+        <div class="row">
+          <div id="av-bdot1" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">AL</span></div>
+            <span class="ui-avatar__badge"><span class="status-dot" style="background: var(--success)"></span></span>
+          </div>
+          <div id="av-bdot2" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">AL</span></div>
+            <span class="ui-avatar__badge"><span class="status-dot" style="background: var(--muted-foreground)"></span></span>
+          </div>
+          <div id="av-bdot3" class="ui-avatar ui-avatar--sz-default ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">AL</span></div>
+            <span class="ui-avatar__badge"><span class="status-dot" style="background: var(--warning)"></span></span>
+          </div>
+          <div id="av-bcount" class="ui-avatar ui-avatar--sz-lg ui-avatar--circle">
+            <div class="ui-avatar__inner"><span class="ui-avatar__fallback">JW</span></div>
+            <span class="ui-avatar__badge">3</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Group</h2>
+        <p>
+          <code>AvatarGroup</code> stacks children with negative margin so they overlap.
+          <code>spacing</code> tunes the overlap (<code>sm</code> / <code>default</code> /
+          <code>lg</code>). <code>max</code> collapses everything past N into a <code>+N</code>
+          overflow bubble.
+        </p>
+        <div class="row">
+          <div id="ag-1" class="ui-avatar-group ui-avatar-group--sp-default">
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">A</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">B</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">C</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">D</span></div></div>
+          </div>
+          <div id="ag-2" class="ui-avatar-group ui-avatar-group--sp-sm">
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">A</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">B</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">C</span></div></div>
+            <div class="ui-avatar ui-avatar--sz-default ui-avatar--circle"><div class="ui-avatar__inner"><span class="ui-avatar__fallback">+4</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

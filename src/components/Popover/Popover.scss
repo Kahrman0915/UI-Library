@@ -1,0 +1,22 @@
+.ui-popover__content {
+  position: fixed;
+  z-index: var(--z-50);
+  min-width: var(--w-64); // 256px
+  max-width: var(--max-w-sm);
+  padding: var(--p-4);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  outline: none;
+
+  &:focus-visible {
+    box-shadow:
+      var(--shadow-md),
+      0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}

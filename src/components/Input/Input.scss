@@ -1,0 +1,141 @@
+// Field wrapper: Label (top) + input box (middle) + error (bottom).
+.ui-input-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  font-family: var(--font-family);
+  min-width: 0;
+}
+
+// The visual "input box" — receives border, background, focus ring.
+// The <input> inside is stripped of its own visual so this wrapper owns it.
+.ui-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  background: var(--bg-input-30);
+  color: var(--foreground);
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+  box-sizing: border-box;
+
+  &:hover:not(.ui-input-wrap--disabled):not(:focus-within) {
+    border-color: var(--muted-foreground);
+  }
+
+  &:focus-within {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    border-color: var(--ring);
+  }
+
+  &--disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+
+    .ui-input {
+      cursor: not-allowed;
+    }
+  }
+
+  &--error {
+    border-color: var(--error-border);
+
+    &:focus-within {
+      box-shadow: 0 0 0 var(--focus-ring-width) var(--error-focus);
+      border-color: var(--error);
+    }
+  }
+}
+
+// The raw <input> — inherits size / font from the wrapper.
+.ui-input {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--font-normal);
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  // Kill the ugly WebKit autofill yellow.
+  &:-webkit-autofill,
+  &:-webkit-autofill:hover,
+  &:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--foreground);
+    -webkit-box-shadow: 0 0 0 1000px var(--bg-input-30) inset;
+  }
+}
+
+// ---- Sizes: control wrap height + horizontal padding + input font-size.
+
+.ui-input-field--sz-sm .ui-input-wrap {
+  height: var(--h-8);
+  padding: 0 var(--p-2-5);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ui-input-field--sz-default .ui-input-wrap {
+  height: var(--h-10);
+  padding: 0 var(--p-3);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.ui-input-field--sz-lg .ui-input-wrap {
+  height: var(--h-12);
+  padding: 0 var(--p-4);
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+}
+
+// --multi drops the fixed height so a multi-line child (Textarea's
+// <textarea>) can size itself. Also drops the wrap's own padding — the
+// textarea fills the wrap edge-to-edge so the browser-native resize handle
+// sits in the true bottom-right corner. Textarea applies its own padding
+// (see Textarea.scss).
+// Selector is doubled to beat the specificity of the size rules above.
+.ui-input-field .ui-input-wrap--multi {
+  height: auto;
+  padding: 0;
+  align-items: stretch;
+}
+
+// ---- Icon slots (either side). Non-interactive by default; consumer can
+//      pass a component that itself handles clicks (e.g. a clear button).
+
+.ui-input__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+// ---- Error text.
+
+.ui-input__error {
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-5);
+  color: var(--error);
+  margin: 0;
+}

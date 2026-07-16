@@ -1,0 +1,948 @@
+@import './fonts';
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*:before,
+*:after {
+  box-sizing: inherit;
+}
+
+:root {
+  font-family: 'Inter', sans-serif;
+
+  /* -----------------------------------------------------------------------
+     Font Family
+     ----------------------------------------------------------------------- */
+  --font-family: 'Inter', sans-serif;
+  --font-family-mono: 'JetBrains Mono', monospace;
+  --font-family-display: 'Inter', sans-serif;
+
+  /* -----------------------------------------------------------------------
+     Spacing / Padding
+     ----------------------------------------------------------------------- */
+  --p-0: 0px;
+  --p-0-5: 2px;
+  --p-1: 4px;
+  --p-1-5: 6px;
+  --p-2: 8px;
+  --p-2-5: 10px;
+  --p-3: 12px;
+  --p-3-5: 14px;
+  --p-4: 16px;
+  --p-5: 20px;
+  --p-6: 24px;
+  --p-7: 28px;
+  --p-8: 32px;
+  --p-9: 36px;
+  --p-10: 40px;
+  --p-11: 44px;
+  --p-12: 48px;
+  --p-14: 56px;
+  --p-16: 64px;
+  --p-20: 80px;
+  --p-24: 96px;
+  --p-28: 112px;
+  --p-32: 128px;
+  --p-36: 144px;
+  --p-40: 160px;
+  --p-44: 176px;
+  --p-48: 192px;
+  --p-52: 208px;
+  --p-56: 224px;
+  --p-60: 240px;
+  --p-64: 256px;
+  --p-72: 288px;
+  --p-80: 320px;
+  --p-96: 348px;
+
+  /* -----------------------------------------------------------------------
+     Width / Height
+     ----------------------------------------------------------------------- */
+  --w-0: 0px;
+  --w-0-5: 2px;
+  --w-1: 4px;
+  --w-1-5: 6px;
+  --w-2: 8px;
+  --w-2-5: 10px;
+  --w-3: 12px;
+  --w-3-5: 14px;
+  --w-4: 16px;
+  --w-5: 20px;
+  --w-6: 24px;
+  --w-7: 28px;
+  --w-8: 32px;
+  --w-9: 36px;
+  --w-10: 40px;
+  --w-11: 44px;
+  --w-12: 48px;
+  --w-14: 56px;
+  --w-16: 64px;
+  --w-20: 80px;
+  --w-24: 96px;
+  --w-28: 112px;
+  --w-32: 128px;
+  --w-36: 144px;
+  --w-40: 160px;
+  --w-44: 176px;
+  --w-48: 192px;
+  --w-52: 208px;
+  --w-56: 224px;
+  --w-60: 240px;
+  --w-64: 256px;
+  --w-72: 288px;
+  --w-80: 320px;
+  --w-96: 348px;
+
+  /* -----------------------------------------------------------------------
+     Height Scale
+     ----------------------------------------------------------------------- */
+  --h-0: 0px;
+  --h-0-5: 2px;
+  --h-1: 4px;
+  --h-1-5: 6px;
+  --h-2: 8px;
+  --h-2-5: 10px;
+  --h-3: 12px;
+  --h-3-5: 14px;
+  --h-4: 16px;
+  --h-5: 20px;
+  --h-6: 24px;
+  --h-7: 28px;
+  --h-8: 32px;
+  --h-9: 36px;
+  --h-10: 40px;
+  --h-11: 44px;
+  --h-12: 48px;
+  --h-14: 56px;
+  --h-16: 64px;
+  --h-20: 80px;
+  --h-24: 96px;
+  --h-28: 112px;
+  --h-32: 128px;
+  --h-36: 144px;
+  --h-40: 160px;
+  --h-44: 176px;
+  --h-48: 192px;
+  --h-52: 208px;
+  --h-56: 224px;
+  --h-60: 240px;
+  --h-64: 256px;
+  --h-72: 288px;
+  --h-80: 320px;
+  --h-96: 348px;
+
+  /* -----------------------------------------------------------------------
+     Max Width Scale
+     ----------------------------------------------------------------------- */
+  --max-w-xs: 320px;
+  --max-w-sm: 384px;
+  --max-w-md: 448px;
+  --max-w-lg: 512px;
+  --max-w-xl: 576px;
+  --max-w-2xl: 672px;
+  --max-w-3xl: 768px;
+  --max-w-4xl: 896px;
+  --max-w-5xl: 1024px;
+  --max-w-6xl: 1152px;
+  --max-w-7xl: 1280px;
+  --max-w-screen-sm: 640px;
+  --max-w-screen-md: 768px;
+  --max-w-screen-lg: 1024px;
+  --max-w-screen-xl: 1280px;
+  --max-w-screen-2xl: 1536px;
+
+  /* -----------------------------------------------------------------------
+     Font Size
+     ----------------------------------------------------------------------- */
+  --text-xs: 12px;
+  --text-code: 13px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 18px;
+  --text-xl: 20px;
+  --text-2xl: 24px;
+  --text-3xl: 30px;
+  --text-4xl: 36px;
+  --text-5xl: 48px;
+  --text-6xl: 60px;
+  --text-7xl: 72px;
+  --text-8xl: 96px;
+  --text-9xl: 128px;
+
+  /* -----------------------------------------------------------------------
+     Font Weight
+     ----------------------------------------------------------------------- */
+  --font-thin: 100;
+  --font-extralight: 200;
+  --font-light: 300;
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  --font-black: 900;
+
+  /* -----------------------------------------------------------------------
+     Line Height
+     ----------------------------------------------------------------------- */
+  --leading-3: 12px;
+  --leading-3-5: 14px;
+  --leading-4: 16px;
+  --leading-5: 20px;
+  --leading-6: 24px;
+  --leading-7: 28px;
+  --leading-8: 32px;
+  --leading-9: 36px;
+  --leading-10: 40px;
+  --leading-11: 44px;
+
+  /* -----------------------------------------------------------------------
+     Letter Spacing (Tracking)
+     ----------------------------------------------------------------------- */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* -----------------------------------------------------------------------
+     Border Width
+     ----------------------------------------------------------------------- */
+  --border-w-50: 0.5px;
+  --border-w-100: 1px;
+  --border-w-200: 1.33px;
+  --border-w-300: 2px;
+  --border-w-400: 4px;
+
+  /* -----------------------------------------------------------------------
+     Border Radius
+     ----------------------------------------------------------------------- */
+  --rounded-none: 0px;
+  --rounded-sm: 2px;
+  --rounded: 4px;
+  --rounded-md: 6px;
+  --rounded-lg: 8px;
+  --rounded-xl: 12px;
+  --rounded-2xl: 16px;
+  --rounded-3xl: 24px;
+  --rounded-full: 9999px;
+
+  /* -----------------------------------------------------------------------
+     Custom — Icon
+     ----------------------------------------------------------------------- */
+  --icon-border-width-sm: 1px;
+  --icon-border-width: 1.33px;
+  --icon-border-width-lg: 2px;
+
+  /* -----------------------------------------------------------------------
+     Opacity Scale (for CSS opacity property)
+     ----------------------------------------------------------------------- */
+  --o-0: 0;
+  --o-5: 0.05;
+  --o-10: 0.1;
+  --o-20: 0.2;
+  --o-25: 0.25;
+  --o-30: 0.3;
+  --o-40: 0.4;
+  --o-50: 0.5;
+  --o-60: 0.6;
+  --o-70: 0.7;
+  --o-80: 0.8;
+  --o-90: 0.9;
+  --o-95: 0.95;
+  --o-100: 1;
+
+  /* -----------------------------------------------------------------------
+     Shadows (x y blur spread)
+     ----------------------------------------------------------------------- */
+  --shadow-2xs: 0px 1px 2px 0px var(--shadow-color-2xs);
+  --shadow-xs: 0px 1px 3px 0px var(--shadow-color-xs);
+  --shadow-sm: 0px 1px 3px 0px var(--shadow-color-sm),
+    0px 1px 2px -1px var(--shadow-color-sm);
+  --shadow-default: 0px 1px 3px 0px var(--shadow-color),
+    0px 1px 3px -1px var(--shadow-color);
+  --shadow-md: 0px 1px 3px 0px var(--shadow-color-md),
+    0px 2px 4px -1px var(--shadow-color-md);
+  --shadow-lg: 0px 1px 3px 0px var(--shadow-color-lg),
+    0px 4px 6px -1px var(--shadow-color-lg);
+  --shadow-xl: 0px 1px 3px 0px var(--shadow-color-xl),
+    0px 8px 10px -1px var(--shadow-color-xl);
+  --shadow-2xl: 0px 1px 3px 0px var(--shadow-color-2xl),
+    0px 12px 16px -2px var(--shadow-color-2xl);
+
+  /* -----------------------------------------------------------------------
+     Z-Index Scale
+     ----------------------------------------------------------------------- */
+  --z-0: 0;
+  --z-10: 10;
+  --z-20: 20;
+  --z-30: 30;
+  --z-40: 40;
+  --z-50: 50;
+  --z-60: 60;
+  --z-70: 70;
+  --z-80: 80;
+  --z-90: 90;
+  --z-100: 100;
+
+  /* -----------------------------------------------------------------------
+     Motion / Transitions
+     ----------------------------------------------------------------------- */
+  --duration-instant: 150ms; /* micro-transitions (hover color shifts) */
+  --duration-fast: 100ms;
+  --duration-normal: 200ms;
+  --duration-slow: 300ms;
+  /* Loop durations — continuous animations, not enter/exit transitions */
+  --duration-spin: 900ms;     /* spinner rotation */
+  --duration-shimmer: 1400ms; /* skeleton / progress / attachment shimmer */
+  --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
+  --ease-default: ease;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-linear: linear;
+  /* Spring feels (approximate framer-motion `type: spring` visually) */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);          /* smooth, no overshoot */
+  --ease-spring-strong: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot / pop */
+
+  /* Motion slide distances — how far an element travels during enter/exit */
+  --motion-slide-sm: 4px;
+  --motion-slide-md: 8px;
+  --motion-slide-lg: 12px;
+  /* Enter scale for pop-in surfaces (menus) */
+  --motion-scale-in: 0.97;
+
+  /* -----------------------------------------------------------------------
+     Effects (focus ring width, overlay blur, motion offsets)
+     ----------------------------------------------------------------------- */
+  --focus-ring-width: 3px;
+  --overlay-blur: 4px;
+  /* Back-compat alias — prefer --motion-slide-sm in new code. */
+  --tooltip-slide: var(--motion-slide-sm);
+
+  /* -----------------------------------------------------------------------
+     Top Global Navigation (always dark, theme-independent)
+     ----------------------------------------------------------------------- */
+  --navigation-background: linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%);
+}
+
+/* =========================================================================
+   Light Theme
+   ========================================================================= */
+:root,
+[data-mode='light'] {
+  /* Core */
+  --background: #ffffff;
+  --foreground: #0f172a;
+  --primary: #334155;
+  --primary-foreground: #f8fafc;
+  /* Derived primary family — soft/border/ring/hover for the default variant's
+     secondary/outline/ghost/link styles. color-mix keeps them in lockstep with
+     --primary, so a theme scope (which remaps --primary) gets themed soft
+     buttons automatically. Mirrors the --error/--info/--warning shape. */
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
+  --tooltip-background: #334155;
+  --tooltip-foreground: #f8fafc;
+  --secondary: #e2e8f0;
+  --secondary-foreground: #1e293b;
+  --muted: #cbd5e1;
+  --muted-foreground: #475569;
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --border: #cbd5e1;
+  --input: #e2e8f0;
+  --ring: #94a3b8;
+
+  /* Sidebar — distinct chrome surface. Widths live here (mode-independent). */
+  --sidebar-width: 16rem;
+  --sidebar-width-icon: 3rem;
+  --sidebar-width-mobile: 18rem;
+  --sidebar: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #334155;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0f172a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #94a3b8;
+
+  /* Code Block */
+  --code-block: #f1f5f9;
+  --code-keyword: #8b5cf6;
+  --code-string: #10b981;
+  --code-comment: #94a3b8;
+  --code-function: #3b82f6;
+  --code-number: #f97316;
+  --code-variable: #475569;
+  --code-type: #06b6d4;
+  --code-built-in: #d946ef;
+  --code-attr: #ea580c;
+  --code-selector: #10b981;
+  --code-tag: #e11d48;
+
+  /* Error — darkened 2026-07 for WCAG AA (≥4.5:1 on white AND on --error-light) */
+  --error: #d32424;
+  --error-foreground: #ffffff;
+  --error-light: rgba(211, 36, 36, 0.06);
+  --error-soft: rgba(211, 36, 36, 0.08);
+  --error-border: rgba(211, 36, 36, 0.3);
+  --error-hover: #b91c1c;
+  --error-ring: rgba(211, 36, 36, 0.5);
+
+  /* Success — darkened 2026-07 for WCAG AA */
+  --success: #047857;
+  --success-foreground: #ffffff;
+  --success-light: rgba(4, 120, 87, 0.06);
+  --success-soft: rgba(4, 120, 87, 0.08);
+  --success-border: rgba(4, 120, 87, 0.3);
+  --success-hover: #065f46;
+  --success-ring: rgba(4, 120, 87, 0.5);
+
+  /* Warning — darkened 2026-07 for WCAG AA */
+  --warning: #c2410c;
+  --warning-foreground: #ffffff;
+  --warning-light: rgba(194, 65, 12, 0.06);
+  --warning-soft: rgba(194, 65, 12, 0.08);
+  --warning-border: rgba(194, 65, 12, 0.3);
+  --warning-hover: #9a3412;
+  --warning-ring: rgba(194, 65, 12, 0.5);
+
+  /* Info */
+  --info: #026aa2;
+  --info-foreground: #f0f9ff;
+  --info-light: rgba(2, 106, 162, 0.06);
+  --info-soft: rgba(2, 106, 162, 0.08);
+  --info-border: rgba(2, 106, 162, 0.3);
+  --info-hover: #025582;
+  --info-ring: rgba(2, 106, 162, 0.5);
+
+  /* Chart */
+  --chart-1: #cbd5e1;
+  --chart-2: #94a3b8;
+  --chart-3: #64748b;
+  --chart-4: #475569;
+  --chart-5: #334155;
+  --chart-6: #0f172a;
+
+  /* Opacity */
+  --opacity-100: rgba(255, 255, 255, 0);
+  --opacity-90: rgba(255, 255, 255, 0.1);
+  --opacity-80: rgba(255, 255, 255, 0.2);
+  --opacity-50: rgba(255, 255, 255, 0.5);
+  --opacity-30: rgba(255, 255, 255, 0.7);
+  --opacity-10: rgba(255, 255, 255, 0.9);
+
+  /* Sidebar */
+  --sidebar-background: #f8fafc;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #334155;
+  --sidebar-primary-foreground: #f8fafc;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #1e293b;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #94a3b8;
+
+  /* Chat */
+  --chat-bubble-user: #f1f5f9;
+  --chat-bubble-ai: #ffffff;
+  --chat-input-background: #ffffff;
+  --chat-input-border: #e2e8f0;
+  --quick-action-active-bg: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
+
+  /* Category Colors */
+  --category-red: #ef4444;
+  --category-red-bg: rgba(239, 68, 68, 0.1);
+  --category-red-hover: #dc2626;
+  --category-orange: #f97316;
+  --category-orange-bg: rgba(249, 115, 22, 0.1);
+  --category-orange-hover: #ea580c;
+  --category-amber: #f59e0b;
+  --category-amber-bg: rgba(245, 158, 11, 0.1);
+  --category-amber-hover: #d97706;
+  --category-yellow: #eab308;
+  --category-yellow-bg: rgba(234, 179, 8, 0.1);
+  --category-yellow-hover: #ca8a04;
+  --category-lime: #84cc16;
+  --category-lime-bg: rgba(132, 204, 22, 0.1);
+  --category-lime-hover: #65a30d;
+  --category-green: #22c55e;
+  --category-green-bg: rgba(34, 197, 94, 0.1);
+  --category-green-hover: #16a34a;
+  --category-emerald: #10b981;
+  --category-emerald-bg: rgba(16, 185, 129, 0.1);
+  --category-emerald-hover: #059669;
+  --category-teal: #14b8a6;
+  --category-teal-bg: rgba(20, 184, 166, 0.1);
+  --category-teal-hover: #0d9488;
+  --category-cyan: #06b6d4;
+  --category-cyan-bg: rgba(6, 182, 212, 0.1);
+  --category-cyan-hover: #0891b2;
+  --category-sky: #0ea5e9;
+  --category-sky-bg: rgba(14, 165, 233, 0.1);
+  --category-sky-hover: #0284c7;
+  --category-blue: #3b82f6;
+  --category-blue-bg: rgba(59, 130, 246, 0.1);
+  --category-blue-hover: #2563eb;
+  --category-indigo: #6366f1;
+  --category-indigo-bg: rgba(99, 102, 241, 0.1);
+  --category-indigo-hover: #4f46e5;
+  --category-violet: #8b5cf6;
+  --category-violet-bg: rgba(139, 92, 246, 0.1);
+  --category-violet-hover: #7c3aed;
+  --category-purple: #a855f7;
+  --category-purple-bg: rgba(168, 85, 247, 0.1);
+  --category-purple-hover: #9333ea;
+  --category-fuchsia: #d946ef;
+  --category-fuchsia-bg: rgba(217, 70, 239, 0.1);
+  --category-fuchsia-hover: #c026d3;
+  --category-pink: #ec4899;
+  --category-pink-bg: rgba(236, 72, 153, 0.1);
+  --category-pink-hover: #db2777;
+  --category-rose: #f43f5e;
+  --category-rose-bg: rgba(244, 63, 94, 0.1);
+  --category-rose-hover: #e11d48;
+
+  /* Custom */
+  --focus: rgba(148, 163, 184, 0.5);
+  --error-focus: rgba(211, 36, 36, 0.4);
+  --warning-focus: rgba(194, 65, 12, 0.4);
+  --info-focus: rgba(2, 106, 162, 0.4);
+  --success-focus: rgba(4, 120, 87, 0.4);
+  --bg-input-30: #ffffff;
+  --bg-input-50: #f8fafc;
+  --bg-input-80: #f1f5f9;
+  --bg-primary-10: rgba(15, 23, 42, 0.12);
+  --bg-primary-30: rgba(15, 23, 42, 0.3);
+  --bg-primary-50: rgba(15, 23, 42, 0.5);
+  --bg-primary-80: rgba(15, 23, 42, 0.8);
+  --bg-overlay: var(--bg-primary-50);
+  --input-darker: rgba(255, 255, 255, 0);
+  --border-subtle: rgba(15, 23, 42, 0.06);
+
+  /* Shadow Colors */
+  --shadow-color-2xs: rgba(15, 23, 42, 0.1);
+  --shadow-color-xs: rgba(15, 23, 42, 0.1);
+  --shadow-color-sm: rgba(15, 23, 42, 0.1);
+  --shadow-color: rgba(15, 23, 42, 0.1);
+  --shadow-color-md: rgba(15, 23, 42, 0.1);
+  --shadow-color-lg: rgba(15, 23, 42, 0.1);
+  --shadow-color-xl: rgba(15, 23, 42, 0.1);
+  --shadow-color-2xl: rgba(15, 23, 42, 0.1);
+
+  /* Theme Palettes — each sub-brand's assigned primary color (its "theme").
+     Consumed only by the [data-theme='{code}'] scopes at the bottom of this
+     file, which remap --primary / --primary-foreground onto these. The main
+     brand is the absence of a theme (--primary stays neutral slate above). */
+  /* Light-mode primaries darkened 2026-07 for WCAG AA (white label ≥4.5:1);
+     DR/IR/RM already passed and are unchanged. */
+  --db-primary: #6063f1;
+  --db-primary-foreground: #ffffff;
+  --dc-primary: #0c8479;
+  --dc-primary-foreground: #ffffff;
+  --dr-primary: #e11d48;
+  --dr-primary-foreground: #ffffff;
+  --ec-primary: #07809d;
+  --ec-primary-foreground: #ffffff;
+  --ir-primary: #2563eb;
+  --ir-primary-foreground: #ffffff;
+  --nb-primary: #04865e;
+  --nb-primary-foreground: #ffffff;
+  --ph-primary: #ca4c0a;
+  --ph-primary-foreground: #ffffff;
+  --rm-primary: #7c3aed;
+  --rm-primary-foreground: #ffffff;
+
+  --aiden-primary: linear-gradient(135deg, #8b5cf6 0%, #7761f3 50%, #60a5fa 100%);
+  --aiden-primary-foreground: #ffffff;
+  --aiden-secondary: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(96, 165, 250, 0.08) 100%);
+  --aiden-secondary-foreground: #0f172a;
+  --aiden-border: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(96, 165, 250, 0.8) 100%);
+  --aiden-hover: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+  --aiden-ring: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(96, 165, 250, 0.5) 100%);
+  --aiden-focus: 0 0 0 3px rgba(139, 92, 246, 0.5);
+  --aiden-gradient-start: #8b5cf6;
+  --aiden-gradient-mid: #7761f3;
+  --aiden-gradient-end: #60a5fa;
+  --aiden-outline-hover: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
+  --aiden-outline-border: #8b5cf6;
+  --aiden-outline-hover-foreground: #0f172a;
+
+  /* Gradient Ramps */
+  --gradient-violet-cyan-emerald: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
+  --gradient-purple-rose-amber: linear-gradient(90deg, #8b5cf6 13%, #d946ef 31%, #f43f5e 53%, #f97316 74%, #f59e0b 90%);
+  --gradient-full-ramp: linear-gradient(90deg, #3b82f6 0%, #6366f1 8%, #8b5cf6 15%, #a855f7 23%, #d946ef 33%, #f43f5e 44%, #f97316 55%, #f59e0b 64%, #84cc16 73%, #22c55e 78%, #10b981 85%, #14b8a6 88%, #06b6d4 93%, #0ea5e9 100%);
+  --text-gradient: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
+  --landing-gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+}
+
+/* =========================================================================
+   Dark Theme
+   ========================================================================= */
+[data-mode='dark'] {
+  /* Core */
+  --background: #0f172a;
+  --foreground: #f8fafc;
+  --primary: #cbd5e1;
+  --primary-foreground: #0f172a;
+  /* Derived primary family (dark). Same color-mix derivation; --foreground is
+     light here, so --primary-hover lightens instead of darkens — auto-adapts. */
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
+  --tooltip-background: #cbd5e1;
+  --tooltip-foreground: #0f172a;
+  --secondary: #1e293b;
+  --secondary-foreground: #f8fafc;
+  --muted: #334155;
+  --muted-foreground: #e2e8f0;
+  --accent: #334155;
+  --accent-foreground: #f8fafc;
+  --card: #1e293b;
+  --card-foreground: #f8fafc;
+  --popover: #475569;
+  --popover-foreground: #f8fafc;
+  --border: #64748b;
+  --input: #475569;
+  --ring: #94a3b8;
+
+  /* Sidebar (dark) — slate-800 surface, distinct from the slate-900 page. */
+  --sidebar: #1e293b;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #cbd5e1;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #334155;
+  --sidebar-ring: #94a3b8;
+
+  /* Code Block */
+  --code-block: #1e293b;
+  --code-keyword: #c4b5fd;
+  --code-string: #6ee7b7;
+  --code-comment: #94a3b8;
+  --code-function: #38bdf8;
+  --code-number: #fb923c;
+  --code-variable: #e2e8f0;
+  --code-type: #22d3ee;
+  --code-built-in: #e879f9;
+  --code-attr: #fb923c;
+  --code-selector: #6ee7b7;
+  --code-tag: #fb7185;
+
+  /* Error */
+  --error: #f87171;
+  --error-foreground: #0f172a;
+  --error-light: rgba(248, 113, 113, 0.06);
+  --error-soft: rgba(248, 113, 113, 0.1);
+  --error-border: rgba(248, 113, 113, 0.4);
+  --error-hover: #fca5a5;
+  --error-ring: rgba(248, 113, 113, 0.5);
+
+  /* Success */
+  --success: #34d399;
+  --success-foreground: #0f172a;
+  --success-light: rgba(52, 211, 153, 0.06);
+  --success-soft: rgba(52, 211, 153, 0.1);
+  --success-border: rgba(52, 211, 153, 0.4);
+  --success-hover: #6ee7b7;
+  --success-ring: rgba(52, 211, 153, 0.5);
+
+  /* Warning */
+  --warning: #fbbf24;
+  --warning-foreground: #0f172a;
+  --warning-light: rgba(251, 191, 36, 0.06);
+  --warning-soft: rgba(251, 191, 36, 0.1);
+  --warning-border: rgba(251, 191, 36, 0.4);
+  --warning-hover: #fcd34d;
+  --warning-ring: rgba(251, 191, 36, 0.5);
+
+  /* Info */
+  --info: #7cd4fd;
+  --info-foreground: #0f172a;
+  --info-light: rgba(124, 212, 253, 0.06);
+  --info-soft: rgba(124, 212, 253, 0.1);
+  --info-border: rgba(124, 212, 253, 0.4);
+  --info-hover: #a5e3fe;
+  --info-ring: rgba(124, 212, 253, 0.5);
+
+  /* Chart — inverted slate ramp so series stay visible on the dark background */
+  --chart-1: #f8fafc;
+  --chart-2: #e2e8f0;
+  --chart-3: #cbd5e1;
+  --chart-4: #94a3b8;
+  --chart-5: #64748b;
+  --chart-6: #475569;
+
+  /* Opacity */
+  --opacity-100: rgba(15, 23, 42, 0);
+  --opacity-90: rgba(15, 23, 42, 0.1);
+  --opacity-80: rgba(15, 23, 42, 0.2);
+  --opacity-50: rgba(15, 23, 42, 0.5);
+  --opacity-30: rgba(15, 23, 42, 0.7);
+  --opacity-10: rgba(15, 23, 42, 0.9);
+
+  /* Sidebar */
+  --sidebar-background: #1e293b;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #e2e8f0;
+  --sidebar-primary-foreground: #0f172a;
+  --sidebar-accent: #334155;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #334155;
+  --sidebar-ring: #64748b;
+
+  /* Chat */
+  --chat-bubble-user: #1e293b;
+  --chat-bubble-ai: #334155;
+  --chat-input-background: #1e293b;
+  --chat-input-border: #475569;
+  --quick-action-active-bg: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(147, 197, 253, 0.3) 100%);
+
+  /* Category Colors */
+  --category-red: #f87171;
+  --category-red-bg: rgba(248, 113, 113, 0.15);
+  --category-red-hover: #fca5a5;
+  --category-orange: #fb923c;
+  --category-orange-bg: rgba(251, 146, 60, 0.15);
+  --category-orange-hover: #fdba74;
+  --category-amber: #fbbf24;
+  --category-amber-bg: rgba(251, 191, 36, 0.15);
+  --category-amber-hover: #fcd34d;
+  --category-yellow: #facc15;
+  --category-yellow-bg: rgba(250, 204, 21, 0.15);
+  --category-yellow-hover: #fde047;
+  --category-lime: #a3e635;
+  --category-lime-bg: rgba(163, 230, 53, 0.15);
+  --category-lime-hover: #bef264;
+  --category-green: #4ade80;
+  --category-green-bg: rgba(74, 222, 128, 0.15);
+  --category-green-hover: #86efac;
+  --category-emerald: #34d399;
+  --category-emerald-bg: rgba(52, 211, 153, 0.15);
+  --category-emerald-hover: #6ee7b7;
+  --category-teal: #2dd4bf;
+  --category-teal-bg: rgba(45, 212, 191, 0.15);
+  --category-teal-hover: #5eead4;
+  --category-cyan: #22d3ee;
+  --category-cyan-bg: rgba(34, 211, 238, 0.15);
+  --category-cyan-hover: #67e8f9;
+  --category-sky: #38bdf8;
+  --category-sky-bg: rgba(56, 189, 248, 0.15);
+  --category-sky-hover: #7dd3fc;
+  --category-blue: #60a5fa;
+  --category-blue-bg: rgba(96, 165, 250, 0.15);
+  --category-blue-hover: #93c5fd;
+  --category-indigo: #818cf8;
+  --category-indigo-bg: rgba(129, 140, 248, 0.15);
+  --category-indigo-hover: #a5b4fc;
+  --category-violet: #a78bfa;
+  --category-violet-bg: rgba(167, 139, 250, 0.15);
+  --category-violet-hover: #c4b5fd;
+  --category-purple: #c084fc;
+  --category-purple-bg: rgba(192, 132, 252, 0.15);
+  --category-purple-hover: #d8b4fe;
+  --category-fuchsia: #e879f9;
+  --category-fuchsia-bg: rgba(232, 121, 249, 0.15);
+  --category-fuchsia-hover: #f0abfc;
+  --category-pink: #f472b6;
+  --category-pink-bg: rgba(244, 114, 182, 0.15);
+  --category-pink-hover: #f9a8d4;
+  --category-rose: #fb7185;
+  --category-rose-bg: rgba(251, 113, 133, 0.15);
+  --category-rose-hover: #fda4af;
+
+  /* Custom */
+  --focus: rgba(147, 197, 253, 0.45);
+  --error-focus: rgba(248, 113, 113, 0.4);
+  --warning-focus: rgba(251, 191, 36, 0.4);
+  --info-focus: rgba(124, 212, 253, 0.4);
+  --success-focus: rgba(52, 211, 153, 0.4);
+  --bg-input-30: rgba(255, 255, 255, 0.04);
+  --bg-input-50: rgba(255, 255, 255, 0.08);
+  --bg-input-80: rgba(255, 255, 255, 0.14);
+  --bg-primary-10: rgba(255, 255, 255, 0.14);
+  --bg-primary-30: rgba(15, 23, 42, 0.3);
+  --bg-primary-50: rgba(15, 23, 42, 0.5);
+  --bg-primary-80: rgba(15, 23, 42, 0.8);
+  --bg-overlay: var(--bg-primary-30);
+  --input-darker: rgba(255, 255, 255, 0.15);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+
+  /* Shadow Colors */
+  --shadow-color-2xs: rgba(255, 255, 255, 0.1);
+  --shadow-color-xs: rgba(255, 255, 255, 0.1);
+  --shadow-color-sm: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(255, 255, 255, 0.1);
+  --shadow-color-md: rgba(255, 255, 255, 0.1);
+  --shadow-color-lg: rgba(255, 255, 255, 0.1);
+  --shadow-color-xl: rgba(255, 255, 255, 0.1);
+  --shadow-color-2xl: rgba(255, 255, 255, 0.1);
+
+  /* Theme Palettes (dark) — each sub-brand's assigned primary color. */
+  --db-primary: #818cf8;
+  --db-primary-foreground: #0f172a;
+  --dc-primary: #2dd4bf;
+  --dc-primary-foreground: #0f172a;
+  --dr-primary: #fb7185;
+  --dr-primary-foreground: #0f172a;
+  --ec-primary: #22d3ee;
+  --ec-primary-foreground: #0f172a;
+  --ir-primary: #60a5fa;
+  --ir-primary-foreground: #0f172a;
+  --nb-primary: #34d399;
+  --nb-primary-foreground: #0f172a;
+  --ph-primary: #fb923c;
+  --ph-primary-foreground: #0f172a;
+  --rm-primary: #a78bfa;
+  --rm-primary-foreground: #0f172a;
+
+  --aiden-primary: linear-gradient(135deg, #a78bfa 0%, #93c5fd 100%);
+  --aiden-primary-foreground: #0f172a;
+  --aiden-secondary: linear-gradient(135deg, rgba(167, 139, 250, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
+  --aiden-secondary-foreground: #ffffff;
+  --aiden-border: linear-gradient(135deg, rgba(167, 139, 250, 0.8) 0%, rgba(147, 197, 253, 0.8) 100%);
+  --aiden-hover: linear-gradient(135deg, #c4b5fd 0%, #bae6fd 100%);
+  --aiden-ring: linear-gradient(135deg, rgba(167, 139, 250, 0.5) 0%, rgba(147, 197, 253, 0.5) 100%);
+  --aiden-focus: 0 0 0 3px rgba(167, 139, 250, 0.5);
+  --aiden-gradient-start: #a78bfa;
+  --aiden-gradient-mid: #a78bfa;
+  --aiden-gradient-end: #93c5fd;
+  --aiden-outline-hover: linear-gradient(135deg, #c4b5fd 0%, #bae6fd 100%);
+  --aiden-outline-border: #a78bfa;
+  --aiden-outline-hover-foreground: #0f172a;
+
+  /* Gradient Ramps */
+  --gradient-violet-cyan-emerald: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
+  --gradient-purple-rose-amber: linear-gradient(90deg, #a78bfa 13%, #e879f9 31%, #fb7185 53%, #fb923c 74%, #fbbf24 90%);
+  --gradient-full-ramp: linear-gradient(90deg, #60a5fa 0%, #818cf8 8%, #a78bfa 15%, #c084fc 23%, #e879f9 33%, #fb7185 44%, #fb923c 55%, #fbbf24 64%, #a3e635 73%, #4ade80 78%, #34d399 85%, #2dd4bf 88%, #22d3ee 93%, #38bdf8 100%);
+  --text-gradient: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
+  --landing-gradient: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+}
+
+/* =========================================================================
+   Theme Scopes
+   -------------------------------------------------------------------------
+   Put `data-theme="{code}"` on <html> (whole app is one sub-brand) or on any
+   subtree (a section is a sub-brand) to remap --primary onto that brand's
+   assigned color. Every component that reads --primary — primary buttons,
+   checked checkboxes, radio dots, switch tracks, active chips, progress,
+   toast action — picks it up automatically. Tooltip is deliberately excluded
+   (it uses --tooltip-*). The MAIN BRAND is the absence of data-theme (--primary
+   stays neutral slate). Theme-independent: the referenced --{code}-primary
+   tokens are defined for both modes, so scopes work in light and dark.
+   ========================================================================= */
+
+/* Each scope remaps --primary + its derived family. The derived members
+   re-run color-mix against the scope's own --primary, so soft/outline/ghost
+   secondary buttons pick up the theme's color. Identical block per theme
+   except the first two lines. */
+[data-theme='db'] {
+  --primary: var(--db-primary);
+  --primary-foreground: var(--db-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='dc'] {
+  --primary: var(--dc-primary);
+  --primary-foreground: var(--dc-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='dr'] {
+  --primary: var(--dr-primary);
+  --primary-foreground: var(--dr-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='ec'] {
+  --primary: var(--ec-primary);
+  --primary-foreground: var(--ec-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='ir'] {
+  --primary: var(--ir-primary);
+  --primary-foreground: var(--ir-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='nb'] {
+  --primary: var(--nb-primary);
+  --primary-foreground: var(--nb-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='ph'] {
+  --primary: var(--ph-primary);
+  --primary-foreground: var(--ph-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+[data-theme='rm'] {
+  --primary: var(--rm-primary);
+  --primary-foreground: var(--rm-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+}
+
+/* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode
+   (keeps the colored label more legible on the fill) but stay at the scope's 10%
+   in dark, which reads well there. One rule covers every theme via var(--primary);
+   its 2-attribute specificity beats the single [data-theme='{code}'] scope above.
+   Matches both same-element (<html data-mode data-theme>) and subtree
+   (<section data-theme>) forms. Semantic + main-brand soft tints are mode-split in
+   the base blocks instead (they aren't themed). */
+[data-mode='light'] [data-theme],
+[data-mode='light'][data-theme] {
+  --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
+}

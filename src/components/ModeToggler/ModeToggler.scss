@@ -1,0 +1,142 @@
+// ─── View Transitions global reset ──────────────────────────────────────────
+// The `::view-transition-*` pseudo-elements live only at the document root, so
+// this rule is necessarily global (not BEM-scoped). It disables the default
+// cross-fade so the JS-driven circular clip-path reveal is the only animation,
+// and stacks the incoming theme above the outgoing one.
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+::view-transition-old(root) {
+  z-index: 0;
+}
+::view-transition-new(root) {
+  z-index: 1;
+}
+
+// ─── Button ─────────────────────────────────────────────────────────────────
+.ui-mode-toggler {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: var(--border-w-100) solid transparent;
+  border-radius: var(--rounded-md);
+  cursor: pointer;
+  color: var(--foreground);
+  background: transparent;
+  transition:
+    background var(--duration-instant) var(--ease-default),
+    color var(--duration-instant) var(--ease-default),
+    border-color var(--duration-instant) var(--ease-default);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  // ---- Variants ----
+  &--default {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    border-color: var(--secondary);
+
+    &:hover:not(:disabled) {
+      background: var(--muted);
+      border-color: var(--muted);
+    }
+  }
+
+  &--outline {
+    border-color: var(--border);
+
+    &:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  &--ghost {
+    &:hover:not(:disabled) {
+      background: var(--accent);
+      color: var(--accent-foreground);
+    }
+  }
+
+  // ---- Sizes ----
+  &--sz-sm {
+    padding: var(--p-1-5);
+    .ui-mode-toggler__icons {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  &--sz-default {
+    padding: var(--p-2);
+    .ui-mode-toggler__icons {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  &--sz-lg {
+    padding: var(--p-2-5);
+    .ui-mode-toggler__icons {
+      width: var(--w-6);
+      height: var(--h-6);
+    }
+  }
+
+  // ---- Icon stack: both icons occupy one grid cell and cross-fade ----
+  &__icons {
+    position: relative;
+    display: inline-grid;
+    place-items: center;
+    line-height: 0;
+  }
+
+  &__icon {
+    grid-area: 1 / 1;
+    width: 100%;
+    height: 100%;
+    stroke-width: var(--icon-border-width);
+    transition:
+      opacity var(--duration-normal) var(--ease-spring),
+      transform var(--duration-normal) var(--ease-spring);
+  }
+
+  // Default (light / pre-mount): sun visible, moon tucked away.
+  &__icon--sun {
+    opacity: 1;
+    transform: rotate(0) scale(1);
+  }
+  &__icon--moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.5);
+  }
+
+  // Dark: swap — sun rotates out, moon rotates in.
+  &[data-mode='dark'] {
+    .ui-mode-toggler__icon--sun {
+      opacity: 0;
+      transform: rotate(90deg) scale(0.5);
+    }
+    .ui-mode-toggler__icon--moon {
+      opacity: 1;
+      transform: rotate(0) scale(1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui-mode-toggler__icon {
+    transition: none;
+  }
+}

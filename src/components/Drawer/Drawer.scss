@@ -1,0 +1,234 @@
+.ui-drawer-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(var(--overlay-blur));
+  z-index: var(--z-50);
+  animation: ui-drawer-overlay-in var(--duration-slow) var(--ease-out);
+
+  &--closing {
+    animation: ui-drawer-overlay-out var(--duration-slow) var(--ease-in)
+      forwards;
+  }
+}
+
+.ui-drawer {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  box-shadow: var(--shadow-lg);
+  z-index: var(--z-50);
+  overflow: hidden;
+
+  // Each side gets its own in/out keyframes with literal transforms — a `var()`
+  // inside @keyframes parks the end value but never fires `animationend`, which
+  // the exit relies on to unmount. `forwards` on exit holds the panel off-screen
+  // until React unmounts it (no flash back to rest).
+  &--right {
+    inset: 0 0 0 auto;
+    width: 100%;
+    max-width: var(--max-w-sm);
+    border-left: var(--border-w-100) solid var(--border);
+    animation: ui-drawer-in-right var(--duration-slow) var(--ease-out);
+  }
+
+  &--left {
+    inset: 0 auto 0 0;
+    width: 100%;
+    max-width: var(--max-w-sm);
+    border-right: var(--border-w-100) solid var(--border);
+    animation: ui-drawer-in-left var(--duration-slow) var(--ease-out);
+  }
+
+  &--top {
+    inset: 0 0 auto 0;
+    max-height: 85vh;
+    border-bottom: var(--border-w-100) solid var(--border);
+    animation: ui-drawer-in-top var(--duration-slow) var(--ease-out);
+  }
+
+  &--bottom {
+    inset: auto 0 0 0;
+    max-height: 85vh;
+    border-top: var(--border-w-100) solid var(--border);
+    animation: ui-drawer-in-bottom var(--duration-slow) var(--ease-out);
+  }
+
+  // Exit animations — two classes, so they outrank the single-class enter rule
+  // once --closing is applied.
+  &--closing {
+    &.ui-drawer--right {
+      animation: ui-drawer-out-right var(--duration-slow) var(--ease-in)
+        forwards;
+    }
+    &.ui-drawer--left {
+      animation: ui-drawer-out-left var(--duration-slow) var(--ease-in) forwards;
+    }
+    &.ui-drawer--top {
+      animation: ui-drawer-out-top var(--duration-slow) var(--ease-in) forwards;
+    }
+    &.ui-drawer--bottom {
+      animation: ui-drawer-out-bottom var(--duration-slow) var(--ease-in)
+        forwards;
+    }
+  }
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--p-6);
+    padding: var(--p-4);
+    flex-shrink: 0;
+    border-bottom: var(--border-w-100) solid var(--border);
+  }
+
+  &__header-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1-5);
+  }
+
+  &__title {
+    font-family: var(--font-family);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-4);
+    color: var(--foreground);
+    margin: 0;
+  }
+
+  &__description {
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-3);
+    padding: var(--p-5) var(--p-4);
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+
+    .ui-input {
+      width: 100%;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--p-2);
+    padding: var(--p-4);
+    background: var(--bg-input-50);
+    border-top: var(--border-w-100) solid var(--border);
+    flex-shrink: 0;
+  }
+}
+
+@keyframes ui-drawer-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ui-drawer-out-right {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes ui-drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ui-drawer-out-left {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes ui-drawer-in-top {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-drawer-out-top {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-100%);
+  }
+}
+
+@keyframes ui-drawer-in-bottom {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes ui-drawer-out-bottom {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes ui-drawer-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes ui-drawer-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

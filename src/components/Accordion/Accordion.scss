@@ -1,0 +1,107 @@
+// Root
+.ui-accordion {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+  color: var(--foreground);
+  width: 100%;
+}
+
+// Item — hairline divider between rows.
+.ui-accordion__item {
+  border-bottom: var(--border-w-100) solid var(--border);
+
+  &:last-of-type {
+    border-bottom: none;
+  }
+}
+
+// Trigger — full-width button, chevron right-aligned.
+// Alignment + gap + rounded corners tuned for a compact disclosure list.
+.ui-accordion__trigger {
+  all: unset;
+  box-sizing: border-box;
+  width: 100%;
+  display: flex;
+  align-items: flex-start; // chevron aligns with top of text when label wraps
+  justify-content: space-between;
+  gap: var(--p-4);          // 16px
+  padding: var(--p-4) 0;
+  border-radius: var(--rounded-md);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+  cursor: pointer;
+  text-align: left;
+  transition: color var(--duration-fast) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+}
+
+.ui-accordion__trigger-label {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-accordion__trigger-chevron {
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  transition: transform var(--duration-normal) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    display: block;
+  }
+}
+
+.ui-accordion__trigger[data-state='open'] .ui-accordion__trigger-chevron {
+  transform: rotate(180deg);
+}
+
+// Content — grid-template-rows: 0fr → 1fr animation, matches Collapsible.
+.ui-accordion__content {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition:
+    grid-template-rows var(--duration-normal) var(--ease-out),
+    opacity var(--duration-fast) var(--ease-out);
+  opacity: 0;
+
+  &[data-state='open'] {
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+}
+
+// Outer clip — only overflow + min-height live here so the row can collapse.
+.ui-accordion__content-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+// Padding + typography live on an inner-inner so they don't contribute to
+// the grid row's minimum content size when closed.
+.ui-accordion__content-body {
+  padding-bottom: var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}

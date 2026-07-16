@@ -1,0 +1,206 @@
+.ui-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-3);
+  padding: var(--p-3) var(--p-4);
+  border-radius: var(--rounded-lg);
+  border: var(--border-w-100) solid transparent;
+  font-family: var(--font-family);
+
+  &__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+      display: block;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1);
+    min-width: 0;
+  }
+
+  &__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    line-height: var(--leading-5);
+  }
+
+  &__description {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+
+  &__content {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  &__action {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  // Composes CloseButton — only variant-color inheritance, geometry, and
+  // opacity-based hover live here; the button reset/focus ring come from
+  // CloseButton.scss.
+  &__close.ui-close-button {
+    flex-shrink: 0;
+    padding: var(--p-1);
+    margin: calc(var(--p-1) * -1);
+    color: inherit;
+    opacity: var(--o-70);
+    transition:
+      opacity var(--duration-fast) var(--ease-out),
+      background var(--duration-fast) var(--ease-out);
+
+    &:hover {
+      color: inherit;
+      opacity: var(--o-100);
+    }
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  // ---- Variants: default treatment (soft filled background) ----
+
+  &--default.ui-alert--default {
+    background: var(--muted);
+    color: var(--foreground);
+    border-color: var(--border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--foreground);
+    }
+  }
+
+  &--info.ui-alert--default {
+    background: var(--info-light);
+    color: var(--info);
+    border-color: var(--info-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--info);
+    }
+
+    .ui-alert__description {
+      color: var(--info);
+      opacity: var(--o-80);
+    }
+  }
+
+  &--success.ui-alert--default {
+    background: var(--success-light);
+    color: var(--success);
+    border-color: var(--success-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--success);
+    }
+
+    .ui-alert__description {
+      color: var(--success);
+      opacity: var(--o-80);
+    }
+  }
+
+  &--warning.ui-alert--default {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-color: var(--warning-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--warning);
+    }
+
+    .ui-alert__description {
+      color: var(--warning);
+      opacity: var(--o-80);
+    }
+  }
+
+  &--error.ui-alert--default {
+    background: var(--error-light);
+    color: var(--error);
+    border-color: var(--error-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--error);
+    }
+
+    .ui-alert__description {
+      color: var(--error);
+      opacity: var(--o-80);
+    }
+  }
+
+  // ---- Outline treatment (transparent background, colored border + icon/title) ----
+
+  &--default.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--border);
+  }
+
+  &--info.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--info-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--info);
+    }
+  }
+
+  &--success.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--success-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--success);
+    }
+  }
+
+  &--warning.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--warning-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--warning);
+    }
+  }
+
+  &--error.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--error-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--error);
+    }
+  }
+}

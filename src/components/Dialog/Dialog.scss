@@ -1,0 +1,125 @@
+.ui-dialog-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--bg-overlay);
+  backdrop-filter: blur(var(--overlay-blur));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-50);
+}
+
+.ui-dialog {
+  display: inline-flex;
+  flex-direction: column;
+  background: var(--card);
+  border-radius: var(--rounded-lg);
+  border: var(--border-w-100) solid var(--border);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+  max-height: 85vh;
+  width: 100%;
+  max-width: var(--max-w-md);
+
+  &__header {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--p-6);
+    padding: var(--p-4);
+    flex-shrink: 0;
+    border-bottom: var(--border-w-100) solid var(--border);
+
+    &--sticky {
+      position: sticky;
+      top: 0;
+      background: var(--card);
+      z-index: var(--z-10);
+    }
+  }
+
+  &__header-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1-5);
+
+    &--center {
+      align-items: center;
+      text-align: center;
+    }
+
+    &--left {
+      align-items: flex-start;
+      text-align: left;
+    }
+  }
+
+  &__title {
+    font-family: var(--font-family);
+    font-size: var(--text-base);
+    font-weight: var(--font-semibold);
+    line-height: var(--leading-4);
+    color: var(--foreground);
+    margin: 0;
+  }
+
+  &__description {
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+    margin: 0;
+  }
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-3);
+    padding: var(--p-5) var(--p-4);
+    overflow-y: auto;
+    flex: 1;
+    min-height: 0;
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+
+    &--center {
+      align-items: center;
+      text-align: center;
+    }
+
+    &--left {
+      align-items: flex-start;
+      text-align: left;
+    }
+
+    // Full-width inputs inside body
+    .ui-input {
+      width: 100%;
+    }
+
+    p {
+      margin: 0;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--p-2);
+    padding: var(--p-4);
+    background: var(--bg-input-50);
+    border-top: var(--border-w-100) solid var(--border);
+    flex-shrink: 0;
+
+    &--sticky {
+      position: sticky;
+      bottom: 0;
+      z-index: var(--z-10);
+    }
+  }
+}

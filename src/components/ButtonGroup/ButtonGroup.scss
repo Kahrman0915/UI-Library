@@ -1,0 +1,69 @@
+.ui-button-group {
+  display: inline-flex;
+  align-items: stretch;
+
+  &--horizontal {
+    flex-direction: row;
+
+    // Flatten the touching corners of every child except the outer ones.
+    > *:not(:first-child) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    > *:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  &--vertical {
+    flex-direction: column;
+
+    > *:not(:first-child) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    > *:not(:last-child) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  // ---- Separator ----
+
+  &__separator {
+    flex-shrink: 0;
+    background: var(--border);
+  }
+
+  &__separator--vertical {
+    width: var(--border-w-100);
+    align-self: stretch;
+  }
+
+  &__separator--horizontal {
+    height: var(--border-w-100);
+    align-self: stretch;
+  }
+
+  // ---- Text cell (passive label inside the group) ----
+
+  &__text {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--p-2) var(--p-3);
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    font-family: var(--font-family);
+    font-size: var(--text-sm);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-5);
+    border-radius: var(--rounded-md);
+    outline: var(--border-w-100) solid var(--border);
+    outline-offset: calc(-1 * var(--border-w-100));
+    box-sizing: border-box;
+    white-space: nowrap;
+  }
+}

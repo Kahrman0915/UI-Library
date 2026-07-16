@@ -1,0 +1,163 @@
+// ─── Toaster stack container ────────────────────────────────────────────────
+.ui-toaster {
+  position: fixed;
+  z-index: var(--z-80);
+  display: flex;
+  flex-direction: column;
+  pointer-events: none;
+  padding: var(--p-4);
+  width: min(calc(100% - var(--p-8)), 380px);
+
+  // Positioning per corner / edge
+  &--top-left     { top: 0; left: 0; align-items: flex-start; }
+  &--top-center   { top: 0; left: 50%; transform: translateX(-50%); align-items: center; }
+  &--top-right    { top: 0; right: 0; align-items: flex-end; }
+  &--bottom-left  { bottom: 0; left: 0; align-items: flex-start; flex-direction: column-reverse; }
+  &--bottom-center{ bottom: 0; left: 50%; transform: translateX(-50%); align-items: center; flex-direction: column-reverse; }
+  &--bottom-right { bottom: 0; right: 0; align-items: flex-end; flex-direction: column-reverse; }
+}
+
+// ─── Individual toast card ─────────────────────────────────────────────────
+.ui-toast {
+  position: relative;
+  pointer-events: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--p-3);
+  padding: var(--p-3);
+  // Reserve room on the right for the absolutely-positioned close button
+  // so content can never sit under it.
+  padding-right: calc(var(--p-3) + var(--w-3) + var(--p-2));
+  min-width: 300px;
+  max-width: 100%;
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  box-shadow: var(--shadow-lg);
+  animation: ui-toast-enter var(--duration-normal) var(--ease-spring) both;
+
+  &__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted-foreground);
+    line-height: 0;
+
+    svg {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  &__body {
+    display: grid;
+    gap: var(--p-1);
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__title {
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+    line-height: var(--leading-5);
+  }
+
+  &__description {
+    font-size: var(--text-xs);
+    color: var(--muted-foreground);
+    line-height: var(--leading-4);
+  }
+
+  &__progress {
+    margin-top: var(--p-1);
+  }
+
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--p-2);
+    // Force a new row inside the wrapping flex container and align to the right.
+    flex-basis: 100%;
+    justify-content: flex-end;
+    margin-top: var(--p-1);
+  }
+
+  &__action,
+  &__cancel {
+    padding: var(--p-1) var(--p-2-5);
+    border-radius: var(--rounded-sm);
+    font-family: var(--font-family);
+    font-size: var(--text-xs);
+    font-weight: var(--font-medium);
+    cursor: pointer;
+    transition:
+      background var(--duration-fast) var(--ease-default),
+      color var(--duration-fast) var(--ease-default);
+  }
+
+  &__action {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    border: none;
+
+    &:hover {
+      background: var(--foreground);
+    }
+  }
+
+  &__cancel {
+    background: transparent;
+    color: var(--muted-foreground);
+    border: var(--border-w-100) solid var(--border);
+
+    &:hover {
+      background: var(--muted);
+      color: var(--foreground);
+    }
+  }
+
+  // Composes CloseButton — only stack positioning lives here; colors, hover,
+  // focus ring, and svg sizing come from CloseButton.scss.
+  &__close.ui-close-button {
+    position: absolute;
+    top: var(--p-2);
+    right: var(--p-2);
+    padding: var(--p-1);
+  }
+
+  // ─── Semantic variants ──────────────────────────────────────────────────
+  &--info {
+    border-color: var(--info-border);
+    .ui-toast__icon { color: var(--info); }
+    .ui-toast__title { color: var(--info); }
+  }
+  &--success {
+    border-color: var(--success-border);
+    .ui-toast__icon { color: var(--success); }
+    .ui-toast__title { color: var(--success); }
+  }
+  &--warning {
+    border-color: var(--warning-border);
+    .ui-toast__icon { color: var(--warning); }
+    .ui-toast__title { color: var(--warning); }
+  }
+  &--error {
+    border-color: var(--error-border);
+    .ui-toast__icon { color: var(--error); }
+    .ui-toast__title { color: var(--error); }
+  }
+}
+
+@keyframes ui-toast-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-slide-md));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

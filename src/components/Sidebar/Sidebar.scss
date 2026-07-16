@@ -1,0 +1,534 @@
+// ── Provider: full-height flex row holding the sidebar + inset content ──────
+.ui-sidebar-provider {
+  display: flex;
+  min-height: 100svh;
+  width: 100%;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+// ── Collapse mechanism ──────────────────────────────────────────────────────
+// The wrap holds an in-flow "gap" (reserves width so inset content shifts) and
+// a viewport-fixed "container" (the visible panel). data-collapsible is only
+// set while collapsed, so the collapse rules never apply when expanded.
+.ui-sidebar-wrap {
+  position: relative;
+}
+
+.ui-sidebar__gap {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  transition: width var(--duration-normal) var(--ease-linear);
+}
+
+.ui-sidebar__container {
+  position: fixed;
+  inset-block: 0;
+  width: var(--sidebar-width);
+  z-index: var(--z-30);
+  display: flex;
+  transition:
+    left var(--duration-normal) var(--ease-linear),
+    right var(--duration-normal) var(--ease-linear),
+    width var(--duration-normal) var(--ease-linear);
+}
+
+.ui-sidebar-wrap[data-side='left'] .ui-sidebar__container {
+  left: 0;
+}
+.ui-sidebar-wrap[data-side='right'] .ui-sidebar__container {
+  right: 0;
+}
+
+// offcanvas: gap collapses to 0, panel slides fully off-screen
+.ui-sidebar-wrap[data-collapsible='offcanvas'] .ui-sidebar__gap {
+  width: 0;
+}
+.ui-sidebar-wrap[data-side='left'][data-collapsible='offcanvas'] .ui-sidebar__container {
+  left: calc(-1 * var(--sidebar-width));
+}
+.ui-sidebar-wrap[data-side='right'][data-collapsible='offcanvas'] .ui-sidebar__container {
+  right: calc(-1 * var(--sidebar-width));
+}
+
+// icon: shrink to the icon rail width
+.ui-sidebar-wrap[data-collapsible='icon'] .ui-sidebar__gap {
+  width: var(--sidebar-width-icon);
+}
+.ui-sidebar-wrap[data-collapsible='icon'] .ui-sidebar__container {
+  width: var(--sidebar-width-icon);
+}
+
+// ── The visible panel ───────────────────────────────────────────────────────
+.ui-sidebar__inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+}
+
+.ui-sidebar-wrap[data-side='left'] .ui-sidebar__inner {
+  border-right: var(--border-w-100) solid var(--sidebar-border);
+}
+.ui-sidebar-wrap[data-side='right'] .ui-sidebar__inner {
+  border-left: var(--border-w-100) solid var(--sidebar-border);
+}
+
+// collapsible="none": a plain in-flow panel that stretches the provider height
+.ui-sidebar__inner--static {
+  width: var(--sidebar-width);
+  flex-shrink: 0;
+  border-right: var(--border-w-100) solid var(--sidebar-border);
+}
+
+// mobile: fills the Drawer panel
+.ui-sidebar__inner--mobile {
+  border: none;
+}
+
+// ── variant: floating ───────────────────────────────────────────────────────
+.ui-sidebar-wrap[data-variant='floating'] .ui-sidebar__container {
+  padding: var(--p-2);
+}
+.ui-sidebar-wrap[data-variant='floating'] .ui-sidebar__inner {
+  border: var(--border-w-100) solid var(--sidebar-border);
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-sm);
+}
+.ui-sidebar-wrap[data-variant='floating'][data-collapsible='icon'] .ui-sidebar__gap {
+  width: calc(var(--sidebar-width-icon) + var(--p-4));
+}
+.ui-sidebar-wrap[data-variant='floating'][data-collapsible='icon'] .ui-sidebar__container {
+  width: calc(var(--sidebar-width-icon) + var(--p-4));
+}
+
+// ── Icon-mode content behavior ──────────────────────────────────────────────
+// No overflow:hidden on the panel here — labels are display:none below (nothing
+// overflows), and hiding it would clip the rail that straddles the edge.
+.ui-sidebar-wrap[data-collapsible='icon'] {
+  .ui-sidebar__group-label,
+  .ui-sidebar__group-action,
+  .ui-sidebar__menu-action,
+  .ui-sidebar__menu-badge,
+  .ui-sidebar__menu-sub,
+  .ui-sidebar__input {
+    display: none;
+  }
+  // Drop the groups' horizontal padding so the icon button centers in the
+  // 3rem rail instead of being pushed right by the accumulated indent.
+  .ui-sidebar__group {
+    padding-left: 0;
+    padding-right: 0;
+  }
+  // Keep only the leading icon; hide the label span AND any trailing
+  // chevron/affordance so multi-icon rows (e.g. Projects ›) don't overflow.
+  .ui-sidebar__menu-button > *:not(:first-child),
+  .ui-sidebar__menu-sub-button > *:not(:first-child) {
+    display: none;
+  }
+  .ui-sidebar__menu-button {
+    justify-content: center;
+    gap: 0;
+    padding: var(--p-2);
+  }
+}
+
+// ── Inset (main content region) ─────────────────────────────────────────────
+.ui-sidebar__inset {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  background: var(--background);
+}
+.ui-sidebar-wrap[data-variant='inset'] ~ .ui-sidebar__inset {
+  margin: var(--p-2);
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-sm);
+  background: var(--card);
+}
+
+// ── Trigger + Rail ──────────────────────────────────────────────────────────
+.ui-sidebar__trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-7);
+  height: var(--h-7);
+  flex-shrink: 0;
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background var(--duration-instant) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+
+  &:hover {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-sidebar__rail {
+  position: absolute;
+  inset-block: 0;
+  z-index: var(--z-30);
+  width: var(--w-4);
+  border: none;
+  background: transparent;
+  cursor: ew-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    left: 50%; // grab line centered in the hit strip so clicking it always lands
+    width: var(--border-w-100);
+    background: transparent;
+    transition: background var(--duration-instant) var(--ease-out);
+  }
+  &:hover::after {
+    background: var(--sidebar-border);
+  }
+}
+// The hit strip lives entirely in the content gutter, just past the panel edge,
+// so it never overlaps the scroll area's scrollbar (which would otherwise
+// swallow the click and grow the OS scrollbar).
+.ui-sidebar-wrap[data-side='left'] .ui-sidebar__rail {
+  right: calc(-1 * var(--w-4));
+}
+.ui-sidebar-wrap[data-side='right'] .ui-sidebar__rail {
+  left: calc(-1 * var(--w-4));
+}
+
+// ── Input ───────────────────────────────────────────────────────────────────
+.ui-sidebar__input {
+  width: 100%;
+  height: var(--h-8);
+  padding: 0 var(--p-2-5);
+  border: var(--border-w-100) solid var(--sidebar-border);
+  border-radius: var(--rounded-md);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  outline: none;
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+  &:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
+    border-color: var(--sidebar-ring);
+  }
+}
+
+// ── Structural sections ─────────────────────────────────────────────────────
+.ui-sidebar__header,
+.ui-sidebar__footer {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  padding: var(--p-2);
+  flex-shrink: 0; // frozen: header/footer stay put while __content scrolls
+}
+
+// Full-width dividers marking the frozen (non-scrolling) header + footer.
+.ui-sidebar__header {
+  border-bottom: var(--border-w-100) solid var(--sidebar-border);
+}
+.ui-sidebar__footer {
+  border-top: var(--border-w-100) solid var(--sidebar-border);
+}
+
+.ui-sidebar__content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: var(--p-2);
+  min-height: 0;
+  padding: var(--p-2);
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  // Consistent thin scrollbar (no OS overlay that grows on hover).
+  scrollbar-width: thin;
+  scrollbar-color: var(--sidebar-border) transparent;
+
+  &::-webkit-scrollbar {
+    width: var(--w-1-5);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--sidebar-border);
+    border-radius: var(--rounded-full);
+  }
+}
+
+.ui-sidebar__group {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: 100%;
+  min-width: 0;
+  padding: var(--p-2);
+}
+
+.ui-sidebar__group-label {
+  display: flex;
+  align-items: center;
+  height: var(--h-8);
+  padding: 0 var(--p-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  user-select: none;
+}
+
+.ui-sidebar__group-action {
+  position: absolute;
+  top: var(--p-3-5);
+  right: var(--p-3-5);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-5);
+  height: var(--h-5);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--sidebar-foreground);
+  cursor: pointer;
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+  &:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
+}
+
+.ui-sidebar__group-content {
+  width: 100%;
+}
+
+.ui-sidebar__separator {
+  height: var(--border-w-100);
+  margin: var(--p-2);
+  background: var(--sidebar-border);
+  flex-shrink: 0; // otherwise the 1px hairline gets flex-shrunk to 0
+}
+
+// ── Menu ────────────────────────────────────────────────────────────────────
+.ui-sidebar__menu,
+.ui-sidebar__menu-sub {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  // No width:100% — a flex/block <ul> already fills its parent, and combining
+  // it with the sub's margin-left would overflow the row by the margin amount.
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ui-sidebar__menu-sub {
+  margin-left: var(--p-3-5);
+  padding-left: var(--p-2-5);
+  border-left: var(--border-w-100) solid var(--sidebar-border);
+}
+
+.ui-sidebar__menu-item,
+.ui-sidebar__menu-sub-item {
+  position: relative;
+}
+
+.ui-sidebar__menu-button {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  width: 100%;
+  padding: var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--sidebar-foreground);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-normal);
+  line-height: var(--leading-4);
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: background var(--duration-instant) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    flex-shrink: 0;
+  }
+  > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
+  }
+  &--active {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+    font-weight: var(--font-medium);
+  }
+  &--outline {
+    background: var(--background);
+    box-shadow: 0 0 0 var(--border-w-100) var(--sidebar-border);
+  }
+}
+
+.ui-sidebar__menu-button--sz-sm {
+  padding: var(--p-1) var(--p-2);
+  font-size: var(--text-xs);
+}
+.ui-sidebar__menu-button--sz-lg {
+  height: var(--h-12);
+}
+
+.ui-sidebar__menu-action {
+  position: absolute;
+  top: var(--p-1-5);
+  right: var(--p-1);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-5);
+  height: var(--h-5);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--sidebar-foreground);
+  cursor: pointer;
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+  &:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
+  &--hover {
+    opacity: 0;
+    transition: opacity var(--duration-instant) var(--ease-out);
+  }
+}
+.ui-sidebar__menu-item:hover .ui-sidebar__menu-action--hover,
+.ui-sidebar__menu-action--hover:focus-visible {
+  opacity: 1;
+}
+
+.ui-sidebar__menu-badge {
+  position: absolute;
+  top: 50%;
+  right: var(--p-1);
+  transform: translateY(-50%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: var(--w-5);
+  height: var(--h-5);
+  padding: 0 var(--p-1);
+  border-radius: var(--rounded-md);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--sidebar-foreground);
+  pointer-events: none;
+  user-select: none;
+}
+
+.ui-sidebar__menu-skeleton {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  height: var(--h-8);
+  padding: 0 var(--p-2);
+}
+.ui-sidebar__menu-skeleton-icon {
+  width: var(--w-4);
+  height: var(--h-4);
+  border-radius: var(--rounded-sm);
+  flex-shrink: 0;
+}
+.ui-sidebar__menu-skeleton-text {
+  height: var(--h-4);
+  flex: 1;
+}
+
+.ui-sidebar__menu-sub-button {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  width: 100%;
+  height: var(--h-7);
+  padding: 0 var(--p-2);
+  border-radius: var(--rounded-md);
+  color: var(--sidebar-foreground);
+  font-size: var(--text-sm);
+  text-decoration: none;
+  overflow: hidden;
+  cursor: pointer;
+  transition: background var(--duration-instant) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    flex-shrink: 0;
+  }
+  > span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  &:hover {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
+  }
+  &--active {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
+  &--sz-sm {
+    font-size: var(--text-xs);
+  }
+}
