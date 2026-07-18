@@ -13,6 +13,7 @@
       "require": "./dist/index.cjs"
     },
     "./styles.css": "./dist/styles.css",
+    "./fonts.css": "./dist/fonts.css",
     "./styles/tokens.scss": "./src/styles/tokens.scss"
   },
   "files": [
@@ -25,7 +26,8 @@
   ],
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "build": "tsc --noEmit && vite build",
+    "build": "tsc --noEmit && vite build && npm run build:fonts",
+    "build:fonts": "sass --no-source-map --style=compressed src/styles/fonts.scss dist/fonts.css && rm -rf dist/fonts && cp -R src/styles/fonts dist/fonts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
     "typecheck": "tsc --noEmit"
