@@ -15,9 +15,13 @@ const Toaster = ({
   position = 'bottom-right',
   visibleToasts = 3,
   gap = 8,
+  duration = 4000,
   className,
 }: ToasterProps) => {
   const [toasts, setToasts] = useState<ToastRecord[]>([]);
+  // Mirror of `toasts`, written synchronously alongside every state update so
+  // the emitter handlers never have to read state from inside an updater.
+  const toastsRef = useRef<ToastRecord[]>([]);
   const timersRef = useRef<Map<string, number>>(new Map());
   const mounted = useMounted();
 
@@ -32,52 +36,63 @@ const Toaster = ({
 
     const scheduleDismiss = (record: ToastRecord) => {
       clearTimer(record.id);
-      if (!Number.isFinite(record.duration)) return;
+      // A record with no duration of its own defers to this Toaster's prop.
+      const ms = record.duration ?? duration;
+      if (!Number.isFinite(ms)) return;
       const timer = window.setTimeout(() => {
         emit({ type: 'DISMISS', id: record.id });
-      }, record.duration);
+      }, ms);
       timersRef.current.set(record.id, timer);
     };
 
+    // Single funnel for state writes. `toastsRef` is kept in lockstep so the
+    // handlers below can read the current stack *outside* a state updater —
+    // React treats updaters as pure and may run them more than once (StrictMode
+    // does in dev), which double-fired consumer `onDismiss` callbacks and
+    // double-scheduled timers. Assigning the ref synchronously here also keeps
+    // same-tick bursts correct, which is what the old `prev` argument bought us.
+    const commit = (next: ToastRecord[]) => {
+      toastsRef.current = next;
+      setToasts(next);
+    };
+
     const unsubscribe = subscribe((action) => {
+      const prev = toastsRef.current;
+
       if (action.type === 'ADD') {
-        setToasts((prev) => {
-          const existingIndex = prev.findIndex((t) => t.id === action.toast.id);
-          if (existingIndex >= 0) {
-            // Reuse of an id — replace in place.
-            const next = [...prev];
-            next[existingIndex] = action.toast;
-            return next;
-          }
+        const existingIndex = prev.findIndex((t) => t.id === action.toast.id);
+        if (existingIndex >= 0) {
+          // Reuse of an id — replace in place.
+          const next = [...prev];
+          next[existingIndex] = action.toast;
+          commit(next);
+        } else {
           // Newer toasts render at the top of the stack; overflow drops off the tail.
-          return [action.toast, ...prev].slice(0, visibleToasts);
-        });
+          commit([action.toast, ...prev].slice(0, visibleToasts));
+        }
         scheduleDismiss(action.toast);
       } else if (action.type === 'DISMISS') {
-        setToasts((prev) => {
-          if (action.id === undefined) {
-            prev.forEach((t) => {
-              clearTimer(t.id);
-              t.onDismiss?.();
-            });
-            return [];
-          }
-          const target = prev.find((t) => t.id === action.id);
-          if (!target) return prev;
-          clearTimer(target.id);
-          target.onDismiss?.();
-          return prev.filter((t) => t.id !== action.id);
-        });
+        if (action.id === undefined) {
+          commit([]);
+          prev.forEach((t) => {
+            clearTimer(t.id);
+            t.onDismiss?.();
+          });
+          return;
+        }
+        const target = prev.find((t) => t.id === action.id);
+        if (!target) return;
+        commit(prev.filter((t) => t.id !== action.id));
+        clearTimer(target.id);
+        target.onDismiss?.();
       } else if (action.type === 'UPDATE') {
-        setToasts((prev) => {
-          const next = prev.map((t) =>
-            t.id === action.id ? { ...t, ...action.patch } : t,
-          );
-          // If the update changed duration, reschedule.
-          const updated = next.find((t) => t.id === action.id);
-          if (updated) scheduleDismiss(updated);
-          return next;
-        });
+        const next = prev.map((t) =>
+          t.id === action.id ? { ...t, ...action.patch } : t,
+        );
+        commit(next);
+        // If the update changed duration, reschedule.
+        const updated = next.find((t) => t.id === action.id);
+        if (updated) scheduleDismiss(updated);
       }
     });
 
@@ -86,7 +101,7 @@ const Toaster = ({
       timersRef.current.forEach((timer) => window.clearTimeout(timer));
       timersRef.current.clear();
     };
-  }, [visibleToasts]);
+  }, [visibleToasts, duration]);
 
   if (!mounted) return null;
   if (toasts.length === 0) return null;
