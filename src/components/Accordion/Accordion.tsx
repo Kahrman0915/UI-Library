@@ -15,6 +15,7 @@ import type {
   AccordionContentProps,
   AccordionItemProps,
   AccordionProps,
+  AccordionRootValueProps,
   AccordionTriggerProps,
 } from './Accordion.types';
 import './Accordion.scss';
@@ -48,8 +49,21 @@ const Accordion = forwardRef<HTMLDivElement, AccordionProps>((props, ref) => {
     className,
     children,
     type,
-    ...rest
+    ...restProps
   } = props;
+
+  // `value` / `defaultValue` / `onValueChange` / `collapsible` are read off
+  // `props` below rather than destructured above, because `type` has to stay an
+  // aliased discriminant of `props` for the narrowing to work. Strip them here
+  // so they don't ride `...rest` onto the DOM — React warns on `collapsible`,
+  // and `value`/`defaultValue` would land as real attributes.
+  const {
+    value: _value,
+    defaultValue: _defaultValue,
+    onValueChange: _onValueChange,
+    collapsible: _collapsible,
+    ...rest
+  } = restProps as typeof restProps & AccordionRootValueProps;
 
   const rootRef = useRef<HTMLDivElement | null>(null);
 

@@ -30,6 +30,22 @@ export type AccordionProps = (
     'defaultValue' | 'onChange' | 'children' | 'className' | 'id'
   >;
 
+/**
+ * The four mode-specific root props, flattened into a non-union shape.
+ *
+ * **Internal only** — the public API is the discriminated `AccordionProps` union
+ * above. The root can't destructure these directly off `props`: `type` has to
+ * stay an aliased discriminant of `props` for `type === 'single'` to narrow
+ * `props.value` / `props.defaultValue`. So the root strips them from the DOM
+ * spread in a second pass, using this type.
+ */
+export type AccordionRootValueProps = {
+  value?: string | string[];
+  defaultValue?: string | string[];
+  onValueChange?: ((value: string) => void) | ((value: string[]) => void);
+  collapsible?: boolean;
+};
+
 export type AccordionItemProps = React.HTMLAttributes<HTMLDivElement> & {
   value: string;
   disabled?: boolean;
