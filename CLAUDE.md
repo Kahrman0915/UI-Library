@@ -6,7 +6,7 @@ This file is auto-loaded into every Claude Code session opened inside this repo.
 
 ## What this repo is
 
-A React + SCSS component library. 42 shipped components, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
+A React + SCSS component library. 43 shipped components, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
 
 ## Hard rules (never break without asking)
 
@@ -265,6 +265,7 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Separator` | no | `orientation` prop; the canonical hairline-with-label primitive (`FieldSeparator` wraps it) |
 | `Sidebar` (+ `SidebarProvider`, `useSidebar`, ~21 parts) | yes | Full app-sidebar subsystem. `collapsible` = offcanvas/icon/none, `variant` = sidebar/floating/inset, `side` = left/right. ⌘B shortcut, localStorage persistence, mobile (<768px) renders as a `Drawer`, icon-mode `tooltip` via `Tooltip`, `SidebarMenuSkeleton` via `Skeleton`. Own `--sidebar-*` token surface. Collapse = in-flow gap spacer + viewport-fixed panel driven by `data-state`/`data-collapsible` |
 | `Skeleton` | no | `shape` = default/circle/text; shimmer via `--duration-shimmer` |
+| `Slider` | no | Single value, or `range` for two thumbs (`[lower, upper]`). `min`/`max`/`step`, `showValue`, `formatValue`, `size` = sm/default/lg. Each thumb is a `role="slider"` span whose `aria-valuemin`/`max` stop at its neighbour. Composes `<Label>`; strips its own union props from `...rest` like Accordion |
 | `Spinner` | no | lucide `LoaderCircle` + `--duration-spin` rotation; `role="status"` |
 | `Switch` | no | `size` prop; checked track uses `--primary`. Thumb travel distances (12/16/20px) are intentional component-internal literals |
 | `Tabs` + `TabsList` + `TabsTrigger` + `TabsContent` | yes | `orientation` prop |
@@ -380,14 +381,14 @@ Steps, for reference / re-running:
 3. Suggested groupings for the `group=` attribute:
    - **Foundations** — Themes, palettes, motion tokens preview, ModeToggler
    - **Buttons** — Button, ButtonGroup, CloseButton
-   - **Forms** — Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Field, InputGroup
+   - **Forms** — Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Slider, Field, InputGroup
    - **Feedback** — Alert, Badge, Progress, Spinner, Skeleton, Toast, Empty
    - **Overlays** — Dialog, Drawer, Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Command
    - **Navigation** — Tabs, Breadcrumb, Sidebar, Item (list rows)
    - **Layout** — Card, Accordion, Collapsible, ScrollArea, Attachment, Separator
    - **Identity** — Avatar, Chip, Label
 
-   (Verified 2026-07-18: these groupings cover all 42 components with no omissions.)
+   (Verified 2026-07-19: these groupings cover all 43 components with no omissions.)
 4. Call `DesignSync` in sequence: `list_projects` → `finalize_plan` → `write_files` → verify
 
 ### After the push
@@ -397,7 +398,7 @@ Steps, for reference / re-running:
 
 ### Non-blocking follow-ups
 
-- **Round out the roster:** **Slider is the only component still missing.** (Roster table above refreshed 2026-07-18 — all 42 components are now listed and every one is exported from `src/index.ts`, verified programmatically. Drawer fills the "sheet"/edge-panel role. Every component now has a Claude Design preview as of 2026-07-19.)
+- ~~**Round out the roster**~~ **Done 2026-07-19 — Slider shipped, the roster is complete at 43.** Every component is exported from `src/index.ts` and has a Claude Design preview, both verified programmatically. Drawer fills the "sheet"/edge-panel role.
 - **Finish the Figma push** (paused mid-Badge — 9/17 variants done, Card unstarted)
 - **npm publish workflow** so any repo can `npm install @ui/lib`
 - **Accessibility audit** — keyboard nav, focus rings, aria-live regions across all 42 components

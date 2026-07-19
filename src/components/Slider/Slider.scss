@@ -1,0 +1,137 @@
+.ui-slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  font-family: var(--font-family);
+  color: var(--foreground);
+  width: 100%;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: var(--p-2);
+  }
+
+  &__value {
+    font-size: var(--text-xs);
+    font-weight: var(--font-normal);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  // ---- Track ----
+  &__track {
+    position: relative;
+    width: 100%;
+    background: var(--muted);
+    border-radius: var(--rounded-full);
+    cursor: pointer;
+    // Let the thumb's focus ring escape the track box.
+    overflow: visible;
+    // Vertical breathing room so the thumb has somewhere to sit and the whole
+    // strip stays an easy pointer target.
+    margin: var(--p-2) 0;
+    touch-action: none;
+  }
+
+  &__range {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    background: var(--primary);
+    border-radius: var(--rounded-full);
+  }
+
+  // ---- Thumb ----
+  &__thumb {
+    position: absolute;
+    top: 50%;
+    // `left` is set inline as a percentage; the translate re-centres the thumb
+    // on that point. Neither `left` nor the range's `width` is transitioned —
+    // dragging must track the pointer exactly, with no easing lag.
+    transform: translate(-50%, -50%);
+    display: block;
+    background: var(--background);
+    border: var(--border-w-300) solid var(--primary);
+    border-radius: var(--rounded-full);
+    box-shadow: var(--shadow-sm);
+    cursor: grab;
+    transition:
+      box-shadow var(--duration-instant) var(--ease-default),
+      border-color var(--duration-instant) var(--ease-default);
+
+    &:hover {
+      border-color: var(--primary-hover);
+    }
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    // Matches Checkbox / Switch / Chip — the system ring, not the browser's.
+    &:focus-visible {
+      outline: none;
+      box-shadow:
+        var(--shadow-sm),
+        0 0 0 var(--focus-ring-width) var(--focus);
+    }
+  }
+
+  // ---- Sizes ----
+  &--sz-sm {
+    .ui-slider__track {
+      height: var(--h-1);
+    }
+
+    .ui-slider__thumb {
+      width: var(--w-3);
+      height: var(--h-3);
+    }
+  }
+
+  &--sz-default {
+    .ui-slider__track {
+      height: var(--h-2);
+    }
+
+    .ui-slider__thumb {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  &--sz-lg {
+    .ui-slider__track {
+      height: var(--h-3);
+    }
+
+    .ui-slider__thumb {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  // ---- Disabled ----
+  &--disabled {
+    .ui-slider__track {
+      cursor: not-allowed;
+    }
+
+    .ui-slider__range {
+      background: var(--muted-foreground);
+    }
+
+    .ui-slider__thumb {
+      cursor: not-allowed;
+      border-color: var(--muted-foreground);
+      box-shadow: none;
+    }
+
+    .ui-slider__value {
+      opacity: var(--o-50);
+    }
+  }
+}

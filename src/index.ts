@@ -542,6 +542,9 @@ export type {
 export { default as Skeleton } from './components/Skeleton';
 export type { SkeletonProps, SkeletonShape } from './components/Skeleton';
 
+export { default as Slider } from './components/Slider';
+export type { SliderProps, SliderSize } from './components/Slider';
+
 export { default as Spinner } from './components/Spinner';
 export type { SpinnerProps } from './components/Spinner';
 
