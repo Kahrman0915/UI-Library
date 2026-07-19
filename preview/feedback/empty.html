@@ -1,0 +1,146 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Empty</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      /* Empty is a centred block — give it a bordered frame so the card reads as a region */
+      .frame {
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        background: var(--card);
+        padding: var(--p-6);
+      }
+      .icon {
+        width: 24px;
+        height: 24px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Empty</h1>
+        <p>
+          Centred empty-state block for a list, table, or panel with nothing to show. Static and
+          composable: <code>Empty</code> root wraps an <code>EmptyHeader</code> (holding
+          <code>EmptyMedia</code>, <code>EmptyTitle</code>, <code>EmptyDescription</code>) plus an
+          optional <code>EmptyContent</code> for actions. <code>EmptyMedia</code> takes
+          <code>variant="icon"</code> for a boxed muted tile, or <code>variant="default"</code>
+          unboxed for a large glyph, image, or avatar.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Empty, EmptyHeader, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent, Button } from '@ui/lib';
+
+&lt;Empty&gt;
+  &lt;EmptyHeader&gt;
+    &lt;EmptyMedia variant="icon"&gt;&lt;Inbox /&gt;&lt;/EmptyMedia&gt;
+    &lt;EmptyTitle&gt;No messages yet&lt;/EmptyTitle&gt;
+    &lt;EmptyDescription&gt;When someone sends you a message it'll show up here.&lt;/EmptyDescription&gt;
+  &lt;/EmptyHeader&gt;
+  &lt;EmptyContent&gt;
+    &lt;Button id="compose" label="Compose" /&gt;
+  &lt;/EmptyContent&gt;
+&lt;/Empty&gt;</pre>
+      </div>
+
+      <div>
+        <h2>With an action</h2>
+        <p>The canonical shape — boxed icon media, title, description, and a single primary action in <code>EmptyContent</code>.</p>
+        <div class="frame">
+          <div class="ui-empty">
+            <div class="ui-empty__header">
+              <div data-variant="icon" class="ui-empty__media ui-empty__media--icon">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+              </div>
+              <div class="ui-empty__title">No messages yet</div>
+              <p class="ui-empty__description">When someone sends you a message it'll show up here. Start a conversation to get going.</p>
+            </div>
+            <div class="ui-empty__content">
+              <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Compose</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Two actions</h2>
+        <p>A primary plus a secondary escape hatch. Anything inside <code>EmptyContent</code> is laid out in a row.</p>
+        <div class="frame">
+          <div class="ui-empty">
+            <div class="ui-empty__header">
+              <div data-variant="icon" class="ui-empty__media ui-empty__media--icon">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+              </div>
+              <div class="ui-empty__title">No documents</div>
+              <p class="ui-empty__description">Create your first document, or import an existing folder from your computer.</p>
+            </div>
+            <div class="ui-empty__content">
+              <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">New document</button>
+              <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-default">Import</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Without an action</h2>
+        <p>Omit <code>EmptyContent</code> entirely when the state is purely informational and there's nothing useful to do.</p>
+        <div class="frame">
+          <div class="ui-empty">
+            <div class="ui-empty__header">
+              <div data-variant="icon" class="ui-empty__media ui-empty__media--icon">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+              </div>
+              <div class="ui-empty__title">No results for "quarterly"</div>
+              <p class="ui-empty__description">Try a different search term or clear your filters.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Unboxed media</h2>
+        <p>The <code>default</code> media variant drops the muted tile — use it for a large glyph, an illustration, or an avatar.</p>
+        <div class="frame">
+          <div class="ui-empty">
+            <div class="ui-empty__header">
+              <div data-variant="default" class="ui-empty__media ui-empty__media--default">
+                <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" style="width: 40px; height: 40px; stroke-width: 1.5;"><path d="M20 6 9 17l-5-5"/></svg>
+              </div>
+              <div class="ui-empty__title">Inbox zero</div>
+              <p class="ui-empty__description">You're all caught up. Nothing needs your attention right now.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

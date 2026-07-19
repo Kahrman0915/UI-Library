@@ -1,0 +1,232 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Drawer</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      h3 { margin: 0 0 var(--p-2) 0; font-size: var(--text-sm); font-weight: var(--font-medium); color: var(--muted-foreground); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      /*
+        Mockup: Drawer normally portals to document.body and pins itself to the
+        viewport edge. Re-anchor the overlay and panel to the stage so each
+        example stays inside its own frame.
+      */
+      .stage {
+        position: relative;
+        min-height: 360px;
+        border-radius: var(--rounded-md);
+        overflow: hidden;
+        border: var(--border-w-100) solid var(--border);
+      }
+      .stage__page {
+        position: absolute;
+        inset: 0;
+        padding: var(--p-6);
+        background: var(--card);
+        color: var(--muted-foreground);
+        font-size: var(--text-xs);
+      }
+      /*
+        Hold the panel in its open resting position. The component animates in
+        with `animation-fill-mode: none`, so a static page can't rely on the
+        keyframes' end state — neutralise the animation and pin the transform
+        so every card renders identically, with no slide-in on load.
+      */
+      .stage .ui-drawer-overlay { position: absolute; inset: 0; animation: none; }
+      .stage .ui-drawer { position: absolute; animation: none; transform: none; }
+      .sides { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--p-4); }
+      .sides .stage { min-height: 200px; }
+      /*
+        Mockup only: at full width the 384px panel fills these small stages and
+        the edge it's anchored to stops reading. Narrow it so the dimmed page
+        stays visible alongside.
+      */
+      .sides .ui-drawer--left,
+      .sides .ui-drawer--right { width: 62%; }
+      .sides .ui-drawer--top,
+      .sides .ui-drawer--bottom { height: 58%; }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Drawer</h1>
+        <p>
+          Edge-anchored panel that slides in from any side. Composed of <code>Drawer</code> root
+          plus <code>DrawerHeader</code> (prop-driven <code>title</code> /
+          <code>description</code> and a built-in <code>CloseButton</code>),
+          <code>DrawerBody</code>, and <code>DrawerFooter</code>. It reuses Dialog's portal, focus
+          trap, scroll lock and Escape-to-close, and adds Tooltip's
+          <code>closed → open → closing</code> state machine so the panel can animate
+          <em>out</em> before it unmounts. Controlled via <code>open</code> /
+          <code>onClose</code>; there's no drag-to-dismiss.
+        </p>
+        <p>
+          Reach for a Drawer over a Dialog when the content is a side task — filters, a detail
+          pane, a form — that benefits from height and shouldn't feel like a hard interruption.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Drawer, DrawerHeader, DrawerBody, DrawerFooter, Button } from '@ui/lib';
+
+&lt;Drawer
+  id="edit"
+  open={open}
+  onClose={() =&gt; setOpen(false)}
+  side="right"
+&gt;
+  &lt;DrawerHeader title="Edit profile" description="Update your details." /&gt;
+  &lt;DrawerBody&gt;…&lt;/DrawerBody&gt;
+  &lt;DrawerFooter&gt;
+    &lt;Button id="cancel" style="ghost" label="Cancel" /&gt;
+    &lt;Button id="save" label="Save changes" /&gt;
+  &lt;/DrawerFooter&gt;
+&lt;/Drawer&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Right side (default)</h2>
+        <p>Header, scrollable body, and a footer action row. The overlay dims the page behind and closes the drawer on click.</p>
+        <div class="stage">
+          <div class="stage__page">Page content behind the drawer, dimmed by the overlay.</div>
+          <div class="ui-drawer-overlay"></div>
+          <div id="dw-1" role="dialog" aria-modal="true" aria-labelledby="dw-1-title" data-side="right" data-state="open" class="ui-drawer ui-drawer--right">
+            <div class="ui-drawer__header">
+              <div class="ui-drawer__header-content">
+                <h2 id="dw-1-title" class="ui-drawer__title">Edit profile</h2>
+                <p class="ui-drawer__description">Update your details and save when you're done.</p>
+              </div>
+              <button type="button" class="ui-close-button ui-close-button--background" aria-label="Close drawer">
+                <span><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+              </button>
+            </div>
+            <div class="ui-drawer__body">
+              <div class="ui-input-field ui-input-field--sz-default">
+                <label for="dw-name" class="ui-label ui-label--sz-default"><span class="ui-label__text">Name</span></label>
+                <div class="ui-input-wrap"><input placeholder="Ada Lovelace" id="dw-name" class="ui-input" /></div>
+              </div>
+              <div class="ui-input-field ui-input-field--sz-default">
+                <label for="dw-email" class="ui-label ui-label--sz-default"><span class="ui-label__text">Email</span></label>
+                <div class="ui-input-wrap"><input placeholder="ada@example.com" id="dw-email" class="ui-input" /></div>
+              </div>
+              <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground); line-height: var(--leading-5);">Changes are saved to your account immediately.</p>
+            </div>
+            <div class="ui-drawer__footer">
+              <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+              <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Save changes</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sides</h2>
+        <p>
+          <code>side</code> takes <code>top</code>, <code>right</code> (default),
+          <code>bottom</code>, or <code>left</code>. Each side has its own enter/exit keyframes —
+          the animated property can't come from a <code>var()</code>, or the browser never fires
+          <code>animationend</code> and the exit hangs.
+        </p>
+        <div class="sides">
+          <div>
+            <h3>side="left"</h3>
+            <div class="stage">
+              <div class="stage__page">Page content</div>
+              <div class="ui-drawer-overlay"></div>
+              <div id="dw-l" role="dialog" aria-modal="true" aria-labelledby="dw-l-title" data-side="left" data-state="open" class="ui-drawer ui-drawer--left">
+                <div class="ui-drawer__header">
+                  <div class="ui-drawer__header-content">
+                    <h2 id="dw-l-title" class="ui-drawer__title">Navigation</h2>
+                  </div>
+                </div>
+                <div class="ui-drawer__body">
+                  <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground);">Left is the natural home for navigation.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3>side="right"</h3>
+            <div class="stage">
+              <div class="stage__page">Page content</div>
+              <div class="ui-drawer-overlay"></div>
+              <div id="dw-r" role="dialog" aria-modal="true" aria-labelledby="dw-r-title" data-side="right" data-state="open" class="ui-drawer ui-drawer--right">
+                <div class="ui-drawer__header">
+                  <div class="ui-drawer__header-content">
+                    <h2 id="dw-r-title" class="ui-drawer__title">Details</h2>
+                  </div>
+                </div>
+                <div class="ui-drawer__body">
+                  <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground);">Right suits detail panes and forms.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3>side="top"</h3>
+            <div class="stage">
+              <div class="stage__page">Page content</div>
+              <div class="ui-drawer-overlay"></div>
+              <div id="dw-t" role="dialog" aria-modal="true" aria-labelledby="dw-t-title" data-side="top" data-state="open" class="ui-drawer ui-drawer--top">
+                <div class="ui-drawer__header">
+                  <div class="ui-drawer__header-content">
+                    <h2 id="dw-t-title" class="ui-drawer__title">Command bar</h2>
+                  </div>
+                </div>
+                <div class="ui-drawer__body">
+                  <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground);">Top works for search and command surfaces.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3>side="bottom"</h3>
+            <div class="stage">
+              <div class="stage__page">Page content</div>
+              <div class="ui-drawer-overlay"></div>
+              <div id="dw-b" role="dialog" aria-modal="true" aria-labelledby="dw-b-title" data-side="bottom" data-state="open" class="ui-drawer ui-drawer--bottom">
+                <div class="ui-drawer__header">
+                  <div class="ui-drawer__header-content">
+                    <h2 id="dw-b-title" class="ui-drawer__title">Filters</h2>
+                  </div>
+                </div>
+                <div class="ui-drawer__body">
+                  <p style="margin: 0; font-size: var(--text-sm); color: var(--muted-foreground);">Bottom reads as a mobile sheet.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

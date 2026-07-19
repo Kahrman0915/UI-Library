@@ -1,0 +1,189 @@
+<!-- @dsCard group="Foundations" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>ModeToggler</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      .row { display: flex; gap: var(--p-4); align-items: center; flex-wrap: wrap; }
+      .labelled { display: grid; gap: var(--p-2); justify-items: center; }
+      .labelled span { font-size: var(--text-xs); color: var(--muted-foreground); }
+      /* Panels that opt a subtree into a mode so both states can be shown side by side */
+      .surface {
+        padding: var(--p-6);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        background: var(--background);
+        color: var(--foreground);
+        display: grid;
+        gap: var(--p-3);
+        justify-items: start;
+      }
+      .surface small { font-size: var(--text-xs); color: var(--muted-foreground); }
+      .bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--p-4);
+        padding: var(--p-3) var(--p-4);
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        background: var(--card);
+      }
+      .bar__brand { font-size: var(--text-sm); font-weight: var(--font-semibold); }
+      .bar__actions { display: flex; align-items: center; gap: var(--p-2); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>ModeToggler</h1>
+        <p>
+          The light/dark switch. It owns the <code>data-mode</code> attribute on
+          <code>&lt;html&gt;</code> — every token in <code>tokens.scss</code> swaps on
+          <code>[data-mode='light']</code> / <code>[data-mode='dark']</code>, so flipping this one
+          attribute re-themes the whole page. Renders as a <code>role="switch"</code> button with
+          <code>aria-checked</code>, and cross-fades a sun and moon icon rather than swapping them.
+        </p>
+        <p>
+          Mode is independent of <strong>theme</strong>: <code>data-mode</code> controls light vs
+          dark, while <code>data-theme='{code}'</code> remaps <code>--primary</code> to a
+          sub-brand. The two never clobber each other.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { ModeToggler } from '@ui/lib';
+
+// Drop it anywhere — usually a top bar. It writes data-mode
+// onto &lt;html&gt; and persists the choice.
+&lt;ModeToggler id="mode" /&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <p><code>default</code> is a filled control, <code>outline</code> adds a border on a transparent field, and <code>ghost</code> is chrome-free for dense toolbars.</p>
+        <div class="row">
+          <div class="labelled">
+            <button id="mt-1" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--default ui-mode-toggler--sz-default" data-mode="light">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <span>default</span>
+          </div>
+          <div class="labelled">
+            <button id="mt-2" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-default" data-mode="light">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <span>outline</span>
+          </div>
+          <div class="labelled">
+            <button id="mt-3" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--ghost ui-mode-toggler--sz-default" data-mode="light">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <span>ghost</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p><code>sm</code>, <code>default</code>, and <code>lg</code>.</p>
+        <div class="row">
+          <button id="mt-sm" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-sm" data-mode="light">
+            <span class="ui-mode-toggler__icons" aria-hidden="true">
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+            </span>
+          </button>
+          <button id="mt-df" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-default" data-mode="light">
+            <span class="ui-mode-toggler__icons" aria-hidden="true">
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+            </span>
+          </button>
+          <button id="mt-lg" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-lg" data-mode="light">
+            <span class="ui-mode-toggler__icons" aria-hidden="true">
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+              <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Both modes</h2>
+        <p>
+          The same control in each state. The panel on the right carries
+          <code>data-mode="dark"</code>, which re-points every token inside it — the toggler's
+          icon cross-fades to the moon and the surface flips with it.
+        </p>
+        <div class="row" style="align-items: stretch;">
+          <div class="surface" data-mode="light" style="flex: 1; min-width: 240px;">
+            <button id="mt-light" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-default" data-mode="light">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <small>data-mode="light" · aria-checked="false"</small>
+          </div>
+          <div class="surface" data-mode="dark" style="flex: 1; min-width: 240px;">
+            <button id="mt-dark" type="button" role="switch" aria-checked="true" aria-label="Switch to light mode" class="ui-mode-toggler ui-mode-toggler--outline ui-mode-toggler--sz-default" data-mode="dark">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <small>data-mode="dark" · aria-checked="true"</small>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>In a toolbar</h2>
+        <p>Its most common home — <code>ghost</code> next to other quiet actions so it doesn't compete with the page's primary CTA.</p>
+        <div class="bar">
+          <span class="bar__brand">Workspace</span>
+          <div class="bar__actions">
+            <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-small">Docs</button>
+            <button id="mt-bar" type="button" role="switch" aria-checked="false" aria-label="Switch to dark mode" class="ui-mode-toggler ui-mode-toggler--ghost ui-mode-toggler--sz-sm" data-mode="light">
+              <span class="ui-mode-toggler__icons" aria-hidden="true">
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                <svg class="ui-mode-toggler__icon ui-mode-toggler__icon--moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"/></svg>
+              </span>
+            </button>
+            <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-small">Share</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

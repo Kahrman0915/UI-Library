@@ -1,0 +1,205 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>NativeSelect</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      .field { width: 260px; }
+      .row { display: flex; gap: var(--p-4); flex-wrap: wrap; align-items: flex-start; }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>NativeSelect</h1>
+        <p>
+          A styled native <code>&lt;select&gt;</code> — distinct from the floating
+          <code>Select</code>. Use this when you want the platform's own dropdown: it's the right
+          call on mobile, inside dense forms, and anywhere the OS picker beats a custom listbox.
+          It composes <code>&lt;Label&gt;</code> and reuses Input's
+          <code>.ui-input-wrap</code> / <code>.ui-input-field</code>, so borders, focus ring,
+          hover, error and disabled states all match the rest of the form controls. Native chrome
+          is stripped and a custom chevron overlaid. Takes <code>size</code>,
+          <code>error</code> and <code>required</code> just like Input.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { NativeSelect, NativeSelectOption, NativeSelectOptGroup } from '@ui/lib';
+
+&lt;NativeSelect id="status" label="Status"&gt;
+  &lt;NativeSelectOption value=""&gt;Select a status…&lt;/NativeSelectOption&gt;
+  &lt;NativeSelectOption value="todo"&gt;Todo&lt;/NativeSelectOption&gt;
+  &lt;NativeSelectOption value="done"&gt;Done&lt;/NativeSelectOption&gt;
+&lt;/NativeSelect&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Default</h2>
+        <p>Label, placeholder option, and a disabled option. The chevron is decorative — the native picker still opens on click.</p>
+        <div class="field">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label for="ns-1" class="ui-label ui-label--sz-default"><span class="ui-label__text">Status</span></label>
+            <div class="ui-input-wrap">
+              <select id="ns-1" class="ui-input ui-native-select">
+                <option value="">Select a status…</option>
+                <option value="todo">Todo</option>
+                <option value="in-progress">In progress</option>
+                <option value="done">Done</option>
+                <option value="archived" disabled>Archived</option>
+              </select>
+              <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <p><code>sm</code>, <code>default</code>, and <code>lg</code> — the size flows to both the label and the field, matching Input.</p>
+        <div class="row">
+          <div class="field" style="width: 200px;">
+            <div class="ui-input-field ui-input-field--sz-sm">
+              <label for="ns-sm" class="ui-label ui-label--sz-sm"><span class="ui-label__text">Small</span></label>
+              <div class="ui-input-wrap">
+                <select id="ns-sm" class="ui-input ui-native-select">
+                  <option>Todo</option><option>Done</option>
+                </select>
+                <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="width: 200px;">
+            <div class="ui-input-field ui-input-field--sz-default">
+              <label for="ns-md" class="ui-label ui-label--sz-default"><span class="ui-label__text">Default</span></label>
+              <div class="ui-input-wrap">
+                <select id="ns-md" class="ui-input ui-native-select">
+                  <option>Todo</option><option>Done</option>
+                </select>
+                <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+          <div class="field" style="width: 200px;">
+            <div class="ui-input-field ui-input-field--sz-lg">
+              <label for="ns-lg" class="ui-label ui-label--sz-lg"><span class="ui-label__text">Large</span></label>
+              <div class="ui-input-wrap">
+                <select id="ns-lg" class="ui-input ui-native-select">
+                  <option>Todo</option><option>Done</option>
+                </select>
+                <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                  <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Grouped options</h2>
+        <p><code>NativeSelectOptGroup</code> renders a native <code>&lt;optgroup&gt;</code> — the platform draws the group headings.</p>
+        <div class="field">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label for="ns-group" class="ui-label ui-label--sz-default"><span class="ui-label__text">Assignee</span></label>
+            <div class="ui-input-wrap">
+              <select id="ns-group" class="ui-input ui-native-select">
+                <option value="">Unassigned</option>
+                <optgroup label="Design">
+                  <option value="ada">Ada Lovelace</option>
+                  <option value="grace">Grace Hopper</option>
+                </optgroup>
+                <optgroup label="Engineering">
+                  <option value="alan">Alan Turing</option>
+                  <option value="katherine">Katherine Johnson</option>
+                </optgroup>
+              </select>
+              <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Required + error</h2>
+        <p>
+          <code>required</code> adds the <code>*</code> via the shared Label, and <code>error</code>
+          swaps the wrap to its error border and wires <code>aria-invalid</code> plus
+          <code>aria-describedby</code> to the message.
+        </p>
+        <div class="field">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label for="ns-err" class="ui-label ui-label--sz-default"><span class="ui-label__text">Country<span class="ui-label__required" aria-hidden="true">*</span></span></label>
+            <div class="ui-input-wrap ui-input-wrap--error">
+              <select id="ns-err" class="ui-input ui-native-select" required aria-invalid="true" aria-describedby="ns-err-error">
+                <option value="" selected>Select a country…</option>
+                <option value="us">United States</option>
+                <option value="ca">Canada</option>
+                <option value="mx">Mexico</option>
+              </select>
+              <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+            <p id="ns-err-error" class="ui-input__error">Please choose a country.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Disabled</h2>
+        <p>Disabled inherits Input's disabled treatment — muted text and a non-interactive field.</p>
+        <div class="field">
+          <div class="ui-input-field ui-input-field--sz-default">
+            <label for="ns-dis" class="ui-label ui-label--sz-default"><span class="ui-label__text">Plan</span></label>
+            <div class="ui-input-wrap">
+              <select id="ns-dis" class="ui-input ui-native-select" disabled>
+                <option>Enterprise (managed by your admin)</option>
+              </select>
+              <span class="ui-input__icon ui-input__icon--right ui-native-select__chevron" aria-hidden="true">
+                <svg class="icon" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

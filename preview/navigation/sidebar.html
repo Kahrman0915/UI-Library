@@ -1,0 +1,325 @@
+<!-- @dsCard group="Navigation" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Sidebar</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre {
+        margin: 0;
+        padding: var(--p-3) var(--p-4);
+        background: var(--muted);
+        border-radius: var(--rounded-md);
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        color: var(--foreground);
+        overflow-x: auto;
+        max-width: 640px;
+      }
+      /*
+        Mockup: .ui-sidebar__container is viewport-fixed in a real app. Re-anchor
+        it to the stage so the panel sits inside its own frame here.
+      */
+      .stage {
+        position: relative;
+        /* Tall enough that the full menu — including the nested sub-menu — fits
+           without the sidebar's own overflow scrolling it out of the card. */
+        height: 600px;
+        border: var(--border-w-100) solid var(--border);
+        border-radius: var(--rounded-md);
+        overflow: hidden;
+        background: var(--background);
+      }
+      .stage .ui-sidebar-wrap { position: absolute; inset: 0; display: flex; }
+      .stage .ui-sidebar__container { position: absolute; top: 0; bottom: 0; height: 100%; }
+      .stage--short { height: 320px; }
+      .main {
+        flex: 1;
+        min-width: 0;
+        padding: var(--p-6);
+        display: grid;
+        gap: var(--p-3);
+        align-content: start;
+      }
+      .main__title { font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      .main__body { font-size: var(--text-sm); color: var(--muted-foreground); line-height: var(--leading-5); }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Sidebar</h1>
+        <p>
+          The full app-navigation subsystem — around 21 parts plus a
+          <code>SidebarProvider</code> and a <code>useSidebar</code> hook. It ships its own
+          <code>--sidebar-*</code> token surface (neutral chrome, deliberately not remapped by
+          <code>data-theme</code>), persists its open/closed state to localStorage, and binds
+          <kbd>⌘B</kbd> to toggle.
+        </p>
+        <p>
+          Collapse works as an in-flow gap spacer plus a viewport-fixed panel, both driven by
+          <code>data-state</code> and <code>data-collapsible</code> on the wrapper — no JS
+          measurement. Below 768px it swaps itself out for a <code>Drawer</code>; in icon mode
+          each row grows a <code>Tooltip</code>, and <code>SidebarMenuSkeleton</code> covers the
+          loading pass.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import {
+  SidebarProvider, Sidebar, SidebarHeader, SidebarContent, SidebarFooter,
+  SidebarGroup, SidebarGroupLabel, SidebarGroupContent,
+  SidebarMenu, SidebarMenuItem, SidebarMenuButton, SidebarInset, SidebarTrigger,
+} from '@ui/lib';
+
+&lt;SidebarProvider&gt;
+  &lt;Sidebar collapsible="icon"&gt;
+    &lt;SidebarHeader&gt;…&lt;/SidebarHeader&gt;
+    &lt;SidebarContent&gt;
+      &lt;SidebarGroup&gt;
+        &lt;SidebarGroupLabel&gt;Platform&lt;/SidebarGroupLabel&gt;
+        &lt;SidebarGroupContent&gt;
+          &lt;SidebarMenu&gt;
+            &lt;SidebarMenuItem&gt;
+              &lt;SidebarMenuButton isActive&gt;Home&lt;/SidebarMenuButton&gt;
+            &lt;/SidebarMenuItem&gt;
+          &lt;/SidebarMenu&gt;
+        &lt;/SidebarGroupContent&gt;
+      &lt;/SidebarGroup&gt;
+    &lt;/SidebarContent&gt;
+  &lt;/Sidebar&gt;
+  &lt;SidebarInset&gt;&lt;SidebarTrigger /&gt;…&lt;/SidebarInset&gt;
+&lt;/SidebarProvider&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Expanded</h2>
+        <p>
+          The full anatomy: a header with a large branded row and a search input, grouped menus
+          with badges, row actions and a nested sub-menu, then a footer for account links. The
+          active row uses <code>--sidebar-accent</code>.
+        </p>
+        <div class="stage">
+          <div class="ui-sidebar-wrap" data-state="expanded" data-collapsible="" data-variant="sidebar" data-side="left">
+            <div class="ui-sidebar__gap" aria-hidden="true"></div>
+            <div class="ui-sidebar__container">
+              <div data-sidebar="sidebar" class="ui-sidebar__inner">
+                <div data-sidebar="header" class="ui-sidebar__header">
+                  <ul data-sidebar="menu" class="ui-sidebar__menu">
+                    <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                      <button data-sidebar="menu-button" data-size="lg" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-lg ui-sidebar__menu-button--default">
+                        <svg class="icon" viewBox="0 0 24 24"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>
+                        <span>Workspace</span>
+                      </button>
+                    </li>
+                  </ul>
+                  <input placeholder="Search…" aria-label="Search" data-sidebar="input" class="ui-sidebar__input" />
+                </div>
+                <div data-sidebar="content" class="ui-sidebar__content">
+                  <div data-sidebar="group" class="ui-sidebar__group">
+                    <div data-sidebar="group-label" class="ui-sidebar__group-label">Platform</div>
+                    <button aria-label="Add" type="button" data-sidebar="group-action" class="ui-sidebar__group-action">
+                      <svg class="icon" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    </button>
+                    <div data-sidebar="group-content" class="ui-sidebar__group-content">
+                      <ul data-sidebar="menu" class="ui-sidebar__menu">
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" data-active="true" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default ui-sidebar__menu-button--active">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            <span>Home</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                            <span>Inbox</span>
+                          </button>
+                          <div data-sidebar="menu-badge" class="ui-sidebar__menu-badge">12</div>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                            <span>Calendar</span>
+                          </button>
+                          <button aria-label="More" type="button" data-sidebar="menu-action" class="ui-sidebar__menu-action ui-sidebar__menu-action--hover">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <span>Search</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                  <div role="separator" aria-orientation="horizontal" data-sidebar="separator" class="ui-sidebar__separator"></div>
+                  <div data-sidebar="group" class="ui-sidebar__group">
+                    <div data-sidebar="group-label" class="ui-sidebar__group-label">Documents</div>
+                    <div data-sidebar="group-content" class="ui-sidebar__group-content">
+                      <ul data-sidebar="menu" class="ui-sidebar__menu">
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>
+                            <span>Projects</span>
+                            <svg class="icon" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg>
+                          </button>
+                          <ul data-sidebar="menu-sub" class="ui-sidebar__menu-sub">
+                            <li data-sidebar="menu-sub-item" class="ui-sidebar__menu-sub-item">
+                              <a href="#" data-sidebar="menu-sub-button" data-size="default" data-active="true" class="ui-sidebar__menu-sub-button ui-sidebar__menu-sub-button--sz-default ui-sidebar__menu-sub-button--active"><span>Q4 roadmap</span></a>
+                            </li>
+                            <li data-sidebar="menu-sub-item" class="ui-sidebar__menu-sub-item">
+                              <a href="#" data-sidebar="menu-sub-button" data-size="default" class="ui-sidebar__menu-sub-button ui-sidebar__menu-sub-button--sz-default"><span>Design specs</span></a>
+                            </li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <div data-sidebar="footer" class="ui-sidebar__footer">
+                  <ul data-sidebar="menu" class="ui-sidebar__menu">
+                    <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                      <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                        <svg class="icon" viewBox="0 0 24 24"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        <span>Account</span>
+                      </button>
+                    </li>
+                    <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                      <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                        <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+                        <span>Settings</span>
+                      </button>
+                    </li>
+                  </ul>
+                </div>
+                <button type="button" aria-label="Toggle sidebar" tabindex="-1" title="Toggle sidebar" class="ui-sidebar__rail"></button>
+              </div>
+            </div>
+            <div class="main">
+              <div class="main__title">Home</div>
+              <div class="main__body">Page content sits in <code>SidebarInset</code>. The sidebar reserves its width through an in-flow gap spacer, so the layout never jumps when it collapses.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Collapsed to icons</h2>
+        <p>
+          With <code>collapsible="icon"</code> the panel narrows to
+          <code>--sidebar-width-icon</code> (3rem) and the labels drop away, leaving the glyphs.
+          Each row gets a <code>Tooltip</code> in this state so the destination is still readable.
+          Use <code>collapsible="offcanvas"</code> to slide it fully out instead.
+        </p>
+        <div class="stage stage--short">
+          <div class="ui-sidebar-wrap" data-state="collapsed" data-collapsible="icon" data-variant="sidebar" data-side="left">
+            <div class="ui-sidebar__gap" aria-hidden="true"></div>
+            <div class="ui-sidebar__container">
+              <div data-sidebar="sidebar" class="ui-sidebar__inner">
+                <div data-sidebar="content" class="ui-sidebar__content">
+                  <div data-sidebar="group" class="ui-sidebar__group">
+                    <div data-sidebar="group-content" class="ui-sidebar__group-content">
+                      <ul data-sidebar="menu" class="ui-sidebar__menu">
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" data-active="true" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default ui-sidebar__menu-button--active">
+                            <svg class="icon" viewBox="0 0 24 24"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+                            <span>Home</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+                            <span>Inbox</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M16 2v4"/><path d="M8 2v4"/><path d="M3 10h18"/></svg>
+                            <span>Calendar</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <svg class="icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                            <span>Search</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+                <button type="button" aria-label="Toggle sidebar" tabindex="-1" title="Toggle sidebar" class="ui-sidebar__rail"></button>
+              </div>
+            </div>
+            <div class="main">
+              <div class="main__title">Collapsed</div>
+              <div class="main__body">Only the glyphs remain. <kbd>⌘B</kbd> toggles between the two states, and the choice is remembered across reloads.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Right side</h2>
+        <p><code>side="right"</code> mirrors the whole subsystem — useful for an inspector or properties panel opposite the main navigation.</p>
+        <div class="stage stage--short">
+          <div class="ui-sidebar-wrap" data-state="expanded" data-collapsible="" data-variant="sidebar" data-side="right">
+            <div class="main">
+              <div class="main__title">Canvas</div>
+              <div class="main__body">Content keeps the left edge; the panel is anchored right.</div>
+            </div>
+            <div class="ui-sidebar__gap" aria-hidden="true"></div>
+            <div class="ui-sidebar__container" style="right: 0;">
+              <div data-sidebar="sidebar" class="ui-sidebar__inner">
+                <div data-sidebar="content" class="ui-sidebar__content">
+                  <div data-sidebar="group" class="ui-sidebar__group">
+                    <div data-sidebar="group-label" class="ui-sidebar__group-label">Inspector</div>
+                    <div data-sidebar="group-content" class="ui-sidebar__group-content">
+                      <ul data-sidebar="menu" class="ui-sidebar__menu">
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" data-active="true" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default ui-sidebar__menu-button--active">
+                            <span>Layout</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <span>Typography</span>
+                          </button>
+                        </li>
+                        <li data-sidebar="menu-item" class="ui-sidebar__menu-item">
+                          <button data-sidebar="menu-button" data-size="default" type="button" class="ui-sidebar__menu-button ui-sidebar__menu-button--sz-default ui-sidebar__menu-button--default">
+                            <span>Effects</span>
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
