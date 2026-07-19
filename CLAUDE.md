@@ -348,7 +348,7 @@ Small clarifying questions cost less than reworking a component after the fact.
 
 ## Roadmap — where we're headed next
 
-**Immediate next up: push to Claude Design via `/design-sync`.** This is the biggest leverage move — it's what unlocks the whole library for AI-assisted UI generation.
+**The Claude Design push is done (2026-07-19).** All 42 components have preview cards. **Immediate next up: generate a UI via Claude Design that actually uses these components, and iterate wherever the AI picks the wrong one** — that's the real test of whether the preview cards communicate what each component is for.
 
 ### Prep
 
@@ -363,9 +363,19 @@ Fonts now build via a separate `npm run build:fonts` (plain `sass` CLI, outside 
 - Storybook loads `src/styles/fonts.scss` explicitly in `.storybook/preview.tsx`.
 - If you ever re-add `@import './fonts'` to `tokens.scss`, the 685 kB regression comes straight back.
 
-### The push (via the `DesignSync` tool + `/design-sync` skill)
+### The push (via the `DesignSync` tool + `/design-sync` skill) — **COMPLETE as of 2026-07-19**
 
-1. Create a Claude Design project (must be `type: PROJECT_TYPE_DESIGN_SYSTEM` — that's set at creation time and immutable)
+Project **`@ui/lib`** (`49609428-9a74-47c7-a777-b9f56bd43b81`), `type: PROJECT_TYPE_DESIGN_SYSTEM`, holds **45 preview files — all 42 components plus 3 Foundations pages** (motion, palettes, themes). Verified programmatically: every directory under `src/components/` has a matching preview.
+
+The previews are **tracked in this repo** under `preview/{group}/{kebab-name}.html` and uploaded from there — local is the source of truth, the project is a published copy. They can drift (they did: `dist/styles.css` sat at the pre-fix 685 kB build for two days, and the Toast preview kept hand-rolled action buttons after Toast moved to composing `Button`). **When you change a component's rendered markup or class names, update its preview in the same commit.**
+
+Two conventions worth knowing before you write another one:
+- **Static pages can't rely on entrance animations.** Drawer animates in with `animation-fill-mode: none`, so after the keyframes finish the panel reverts to its off-screen resting transform. `drawer.html` pins `animation: none; transform: none;` inside its `.stage` so every card renders identically.
+- **Viewport-anchored components need re-anchoring.** `Drawer` is `position: fixed` and `.ui-sidebar__container` likewise; both previews scope a `.stage { position: relative }` and override the child to `absolute` so the component sits inside its own frame instead of the page viewport. `dialog.html` established this pattern.
+
+Steps, for reference / re-running:
+
+1. ~~Create a Claude Design project~~ **Done** — must be `type: PROJECT_TYPE_DESIGN_SYSTEM` (set at creation, immutable)
 2. Build HTML preview files, one per component (or per family), each with a `<!-- @dsCard group="…" -->` marker at the top so it appears as a card in Claude Design's Design System pane
 3. Suggested groupings for the `group=` attribute:
    - **Foundations** — Themes, palettes, motion tokens preview, ModeToggler
@@ -387,7 +397,7 @@ Fonts now build via a separate `npm run build:fonts` (plain `sass` CLI, outside 
 
 ### Non-blocking follow-ups
 
-- **Round out the roster:** **Slider is the only component still missing.** (Roster table above refreshed 2026-07-18 — all 42 components are now listed and every one is exported from `src/index.ts`, verified programmatically. Drawer fills the "sheet"/edge-panel role and still has no Claude Design preview HTML.)
+- **Round out the roster:** **Slider is the only component still missing.** (Roster table above refreshed 2026-07-18 — all 42 components are now listed and every one is exported from `src/index.ts`, verified programmatically. Drawer fills the "sheet"/edge-panel role. Every component now has a Claude Design preview as of 2026-07-19.)
 - **Finish the Figma push** (paused mid-Badge — 9/17 variants done, Card unstarted)
 - **npm publish workflow** so any repo can `npm install @ui/lib`
 - **Accessibility audit** — keyboard nav, focus rings, aria-live regions across all 42 components
