@@ -47,6 +47,14 @@
     }
   }
 
+  // --- Focus ---
+  // Chip had no focus rule at all, so it fell back to the browser's default
+  // outline instead of the system ring. Matches Checkbox / Switch.
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
   // --- Disabled ---
   &:disabled {
     opacity: 0.5;

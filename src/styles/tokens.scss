@@ -944,3 +944,35 @@ html {
 [data-mode='light'][data-theme] {
   --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
 }
+
+/* ── Reduced motion ─────────────────────────────────────────────────────────
+   Honours the OS-level "reduce motion" preference across the whole library.
+   Before this, 27 of 42 components animated and only ModeToggler checked the
+   preference.
+
+   Durations collapse to 0.01ms rather than `animation: none` deliberately.
+   Drawer and Tooltip unmount off `animationend`; `none` means that event never
+   fires and the panel stays mounted forever — the exact stuck-open trap the
+   Drawer notes in CLAUDE.md warn about. A near-zero duration still fires the
+   event on the next frame, so those state machines complete normally and the
+   motion simply isn't perceptible.
+
+   Spinner is the deliberate exception. It's a functional status indicator, and
+   freezing it leaves a static glyph that reads as "nothing is happening". Its
+   rotation is small and localised — the kind of motion this preference targets
+   least. Everything else (slides, height transitions, shimmer, fades) stops. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .ui-spinner {
+    animation-duration: var(--duration-spin) !important;
+    animation-iteration-count: infinite !important;
+  }
+}
