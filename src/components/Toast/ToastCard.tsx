@@ -1,4 +1,5 @@
 import { forwardRef } from 'react';
+import Button from '#components/Button/Button';
 import CloseButton from '#components/CloseButton/CloseButton';
 import Progress from '#components/Progress/Progress';
 import type { ToastRecord } from './Toast.types';
@@ -43,28 +44,29 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
         {(action || cancel) && (
           <div className="ui-toast__actions">
             {cancel && (
-              <button
-                type="button"
+              <Button
+                id={`${toast.id}-cancel`}
                 className="ui-toast__cancel"
+                size="xsmall"
+                style="outline"
+                label={cancel.label}
                 onClick={() => {
                   cancel.onClick?.();
                   onDismiss();
                 }}
-              >
-                {cancel.label}
-              </button>
+              />
             )}
             {action && (
-              <button
-                type="button"
+              <Button
+                id={`${toast.id}-action`}
                 className="ui-toast__action"
+                size="xsmall"
+                label={action.label}
                 onClick={() => {
                   action.onClick();
                   onDismiss();
                 }}
-              >
-                {action.label}
-              </button>
+              />
             )}
           </div>
         )}

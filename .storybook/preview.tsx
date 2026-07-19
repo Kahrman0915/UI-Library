@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import type { Preview, Decorator } from '@storybook/react';
+import '../src/styles/fonts.scss';
 import '../src/styles/tokens.scss';
 import './preview.scss';
 

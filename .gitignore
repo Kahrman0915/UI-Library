@@ -6,6 +6,7 @@ storybook-static
 .env
 .env.local
 *.tsbuildinfo
+vite.config.ts.timestamp-*.mjs
 
 # Personal Claude Code settings (keep launch.json shared, ignore local overrides)
 .claude/settings.local.json

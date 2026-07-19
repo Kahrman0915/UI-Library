@@ -6,7 +6,9 @@ import type {
   ToastVariant,
 } from './Toast.types';
 
-const DEFAULT_DURATION = 4000;
+// Error toasts dwell longer than everything else. Non-error toasts deliberately
+// leave `duration` undefined so the Toaster's own `duration` prop can apply —
+// baking a default in here is what made `<Toaster duration>` a no-op.
 const ERROR_DURATION = 6000;
 
 const create = (
@@ -22,7 +24,7 @@ const create = (
     description: opts.description,
     duration:
       opts.duration ??
-      (defaultVariant === 'error' ? ERROR_DURATION : DEFAULT_DURATION),
+      (defaultVariant === 'error' ? ERROR_DURATION : undefined),
     Icon: opts.Icon,
     action: opts.action,
     cancel: opts.cancel,
@@ -80,7 +82,9 @@ fn.promise = (promise, msgs, opts) => {
       emit({
         type: 'UPDATE',
         id,
-        patch: { title, variant: 'success', duration: DEFAULT_DURATION },
+        // Explicit `undefined` clears the sticky `Infinity` set while pending and
+        // hands the choice back to the Toaster's `duration` prop.
+        patch: { title, variant: 'success', duration: undefined },
       });
     },
     (err) => {

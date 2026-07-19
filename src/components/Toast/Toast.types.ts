@@ -50,7 +50,13 @@ export type ToastRecord = {
   title: React.ReactNode;
   variant: ToastVariant;
   description?: React.ReactNode;
-  duration: number;
+  /**
+   * Resolved auto-dismiss in ms. `undefined` means "no per-toast or per-variant
+   * opinion" — the Toaster substitutes its own `duration` prop. `Infinity` =
+   * sticky. Precedence: per-toast `opts.duration` → variant default (error only)
+   * → `<Toaster duration>` → 4000.
+   */
+  duration?: number;
   Icon?: LucideIcon;
   action?: ToastAction;
   cancel?: ToastCancel;

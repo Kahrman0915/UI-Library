@@ -27,7 +27,10 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: { control: 'select', options: variants },
     style: { control: 'select', options: styles },
-    size: { control: 'select', options: ['small', 'default', 'large'] },
+    size: {
+      control: 'select',
+      options: ['xsmall', 'small', 'default', 'large'],
+    },
     disabled: { control: 'boolean' },
     isLoading: { control: 'boolean' },
     iconOnly: { control: 'boolean' },
@@ -92,6 +95,7 @@ export const AllVariants: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      <Button {...args} id="btn-xs" size="xsmall" label="XSmall" />
       <Button {...args} id="btn-sm" size="small" label="Small" />
       <Button {...args} id="btn-md" size="default" label="Default" />
       <Button {...args} id="btn-lg" size="large" label="Large" />
