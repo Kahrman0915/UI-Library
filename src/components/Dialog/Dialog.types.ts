@@ -1,11 +1,18 @@
 export type DialogContentAlignment = 'left' | 'center';
 
+export type DialogRole = 'dialog' | 'alertdialog';
+
 export type DialogProps = {
   id: string;
   open: boolean;
   onClose: () => void;
   children: React.ReactNode;
   closeOnOutsideClick?: boolean;
+  /**
+   * ARIA role for the panel. Default `dialog`. `alertdialog` marks an
+   * interruptive confirmation that requires a response — used by AlertDialog.
+   */
+  role?: DialogRole;
   inline?: boolean;
   className?: string;
 };

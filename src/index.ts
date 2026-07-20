@@ -76,6 +76,19 @@ export type { SwitchProps, SwitchSize } from './components/Switch';
 export { default as Banner } from './components/Banner';
 export type { BannerProps, BannerVariant } from './components/Banner';
 
+export {
+  default as AlertDialog,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+} from './components/AlertDialog';
+export type {
+  AlertDialogProps,
+  AlertDialogHeaderProps,
+  AlertDialogBodyProps,
+  AlertDialogFooterProps,
+} from './components/AlertDialog';
+
 export { default as Alert } from './components/Alert';
 export type {
   AlertProps,
