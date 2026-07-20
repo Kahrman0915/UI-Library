@@ -636,3 +636,6 @@ export type {
 } from './components/Tooltip';
 
 export type { Size, ChildrenAsPropsType } from './types/GlobalTypes';
+
+export { useRipple } from './hooks/useRipple';
+export type { UseRippleResult } from './hooks/useRipple';

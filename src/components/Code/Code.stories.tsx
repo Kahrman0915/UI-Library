@@ -56,8 +56,8 @@ export const LongLine: Story = {
     <div style={{ maxWidth: 480 }}>
       <CodeBlock
         id="cb-long"
-        filename="tokens.scss"
-        code={`--aiden-primary: linear-gradient(135deg, #8b5cf6 0%, #7761f3 50%, #60a5fa 100%);`}
+        filename="app.tsx"
+        code={`const themes = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;`}
       />
     </div>
   ),
