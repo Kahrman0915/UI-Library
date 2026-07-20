@@ -1,0 +1,59 @@
+<!-- @dsCard group="Identity" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Kbd</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .row { display: flex; gap: var(--p-3); align-items: center; flex-wrap: wrap; }
+      .lines { display: grid; gap: var(--p-3); font-size: var(--text-sm); color: var(--muted-foreground); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Kbd</h1>
+        <p>
+          A keycap for keyboard shortcuts — a styled <code>&lt;kbd&gt;</code> with a monospace
+          face and a raised bottom border. Sizes <code>sm</code> / <code>default</code> /
+          <code>lg</code>. Compose several inline to spell a chord.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Kbd } from '@ui/lib';
+
+Press &lt;Kbd&gt;⌘&lt;/Kbd&gt; &lt;Kbd&gt;K&lt;/Kbd&gt; to search.</pre>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <div class="row">
+          <kbd class="ui-kbd ui-kbd--sz-sm">S</kbd>
+          <kbd class="ui-kbd ui-kbd--sz-default">D</kbd>
+          <kbd class="ui-kbd ui-kbd--sz-lg">L</kbd>
+        </div>
+      </div>
+
+      <div>
+        <h2>Chords</h2>
+        <div class="lines">
+          <div><kbd class="ui-kbd ui-kbd--sz-default">⌘</kbd> <kbd class="ui-kbd ui-kbd--sz-default">K</kbd> — open command palette</div>
+          <div><kbd class="ui-kbd ui-kbd--sz-default">⌘</kbd> <kbd class="ui-kbd ui-kbd--sz-default">⇧</kbd> <kbd class="ui-kbd ui-kbd--sz-default">P</kbd> — quick actions</div>
+          <div><kbd class="ui-kbd ui-kbd--sz-default">Ctrl</kbd> <kbd class="ui-kbd ui-kbd--sz-default">C</kbd> — copy</div>
+          <div>Press <kbd class="ui-kbd ui-kbd--sz-default">Esc</kbd> to close.</div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

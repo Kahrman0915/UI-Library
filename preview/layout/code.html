@@ -1,0 +1,91 @@
+<!-- @dsCard group="Layout" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Code</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      .prose { font-size: var(--text-sm); line-height: 1.7; max-width: 560px; color: var(--foreground); }
+      .frame { max-width: 560px; }
+      .copy-svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Code</h1>
+        <p>
+          Two ways to show source. <code class="ui-code">Code</code> is an inline
+          <code>&lt;code&gt;</code> snippet for running text; <code class="ui-code">CodeBlock</code>
+          is a fenced sample with an optional filename header and a copy button (composes
+          <code>Button</code>, writes to <code>navigator.clipboard</code>). No syntax highlighting
+          — that would need a dependency.
+        </p>
+      </div>
+
+      <div>
+        <h2>Inline</h2>
+        <p class="prose">
+          Install with <code class="ui-code">npm install @ui/lib</code>, then import the styles
+          once: <code class="ui-code">import '@ui/lib/styles.css'</code>. Every component is a named
+          export from <code class="ui-code">@ui/lib</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Block with filename</h2>
+        <div class="frame">
+          <div id="cb-file" data-language="tsx" class="ui-code-block">
+            <div class="ui-code-block__header">
+              <span class="ui-code-block__filename">App.tsx</span>
+              <button id="cb-file-copy" type="button" aria-label="Copy code" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only ui-code-block__copy">
+                <svg class="copy-svg" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              </button>
+            </div>
+            <pre class="ui-code-block__pre"><code class="ui-code-block__code">import { Button } from '@ui/lib';
+
+export function App() {
+  return &lt;Button id="save" label="Save" /&gt;;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Without a filename</h2>
+        <p>The copy button stays flush right on its own.</p>
+        <div class="frame">
+          <div id="cb-bare" class="ui-code-block">
+            <div class="ui-code-block__header">
+              <button id="cb-bare-copy" type="button" aria-label="Copy code" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only ui-code-block__copy">
+                <svg class="copy-svg" viewBox="0 0 24 24"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+              </button>
+            </div>
+            <pre class="ui-code-block__pre"><code class="ui-code-block__code">npx @ui/lib init</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>No copy button</h2>
+        <div class="frame">
+          <div id="cb-nocopy" class="ui-code-block">
+            <div class="ui-code-block__header">
+              <span class="ui-code-block__filename">README.md</span>
+            </div>
+            <pre class="ui-code-block__pre"><code class="ui-code-block__code"># @ui/lib
+
+A React + SCSS component library.</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

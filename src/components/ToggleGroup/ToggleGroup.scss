@@ -1,0 +1,50 @@
+.ui-toggle-group {
+  display: inline-flex;
+
+  &--horizontal {
+    flex-direction: row;
+  }
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  // Segmented look: items sit flush and share edges. The middle radii flatten
+  // and touching borders collapse onto one another (same idea as ButtonGroup).
+  &--horizontal > .ui-toggle {
+    &:not(:first-child) {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      margin-left: calc(-1 * var(--border-w-100));
+    }
+    &:not(:last-child) {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  &--vertical > .ui-toggle {
+    &:not(:first-child) {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      margin-top: calc(-1 * var(--border-w-100));
+    }
+    &:not(:last-child) {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+
+  // The focused / pressed item lifts above its neighbours so its ring and
+  // fill aren't clipped by the overlapping borders.
+  > .ui-toggle {
+    position: relative;
+
+    &:hover:not(:disabled),
+    &.ui-toggle--pressed,
+    &:focus-visible {
+      z-index: 1;
+    }
+  }
+}

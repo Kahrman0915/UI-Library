@@ -1,0 +1,35 @@
+.ui-blockquote {
+  margin: 0;
+  padding-left: var(--p-4);
+  border-left: var(--border-w-400) solid var(--border);
+  color: var(--foreground);
+  font-family: var(--font-family);
+
+  &__content {
+    font-size: var(--text-base);
+    line-height: var(--leading-7);
+    font-style: italic;
+
+    // Collapse the margins of a single wrapped paragraph so the quote sits
+    // flush against its border.
+    > p {
+      margin: 0;
+    }
+
+    > p + p {
+      margin-top: var(--p-3);
+    }
+  }
+
+  &__cite {
+    margin-top: var(--p-2);
+    font-size: var(--text-sm);
+    font-style: normal;
+    color: var(--muted-foreground);
+
+    // Conventional em-dash lead-in for attributions.
+    &::before {
+      content: '— ';
+    }
+  }
+}

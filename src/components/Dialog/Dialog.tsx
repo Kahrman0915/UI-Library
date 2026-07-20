@@ -30,6 +30,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       onClose,
       children,
       closeOnOutsideClick = false,
+      role = 'dialog',
       inline = false,
       className,
     },
@@ -124,7 +125,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
             ).current = node;
         }}
         className={`ui-dialog${className ? ' ' + className : ''}`}
-        role="dialog"
+        role={role}
         aria-modal={!inline}
         aria-labelledby={`${id}-title`}
       >

@@ -1,0 +1,57 @@
+<!-- @dsCard group="Layout" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>AspectRatio</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--p-4); max-width: 720px; }
+      .fill { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--muted); color: var(--muted-foreground); font-size: var(--text-sm); border-radius: var(--rounded-md); }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>AspectRatio</h1>
+        <p>
+          Locks a box to a width-to-height ratio so media never causes layout shift while it
+          loads. A pure-CSS layout primitive — one <code>&lt;div&gt;</code> using the native
+          <code>aspect-ratio</code> property, no JS. Pass the <code>ratio</code> as a division
+          expression (<code>16 / 9</code>, <code>4 / 3</code>, <code>1</code>). Direct
+          <code>img</code> / <code>video</code> / <code>iframe</code> children fill and cover the box.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { AspectRatio } from '@ui/lib';
+
+&lt;AspectRatio ratio={16 / 9}&gt;
+  &lt;img src="/cover.jpg" alt="Cover" /&gt;
+&lt;/AspectRatio&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Ratios</h2>
+        <p>The box sizes its own height from the width it's given.</p>
+        <div class="grid">
+          <div class="ui-aspect-ratio" style="aspect-ratio: 1.77778 / 1;"><div class="fill">16 / 9</div></div>
+          <div class="ui-aspect-ratio" style="aspect-ratio: 1.33333 / 1;"><div class="fill">4 / 3</div></div>
+          <div class="ui-aspect-ratio" style="aspect-ratio: 1 / 1;"><div class="fill">1 / 1</div></div>
+          <div class="ui-aspect-ratio" style="aspect-ratio: 0.75 / 1;"><div class="fill">3 / 4</div></div>
+          <div class="ui-aspect-ratio" style="aspect-ratio: 2.33333 / 1;"><div class="fill">21 / 9</div></div>
+          <div class="ui-aspect-ratio" style="aspect-ratio: 0.66667 / 1;"><div class="fill">2 / 3</div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -21,6 +21,35 @@ export type {
 export { default as Badge } from './components/Badge';
 export type { BadgeProps, BadgeVariant } from './components/Badge';
 
+export { default as AspectRatio } from './components/AspectRatio';
+export type { AspectRatioProps } from './components/AspectRatio';
+
+export { default as Kbd } from './components/Kbd';
+export type { KbdProps, KbdSize } from './components/Kbd';
+
+export { default as Blockquote } from './components/Blockquote';
+export type { BlockquoteProps } from './components/Blockquote';
+
+export { default as Code, CodeBlock } from './components/Code';
+export type { CodeProps, CodeBlockProps } from './components/Code';
+
+export { default as StatusDot } from './components/StatusDot';
+export type {
+  StatusDotProps,
+  StatusDotStatus,
+  StatusDotSize,
+} from './components/StatusDot';
+
+export { default as Toggle } from './components/Toggle';
+export type { ToggleProps, ToggleVariant, ToggleSize } from './components/Toggle';
+
+export { default as ToggleGroup, ToggleGroupItem } from './components/ToggleGroup';
+export type {
+  ToggleGroupProps,
+  ToggleGroupItemProps,
+  ToggleGroupOrientation,
+} from './components/ToggleGroup';
+
 export {
   default as Card,
   CardHeader,
@@ -46,6 +75,22 @@ export type {
 
 export { default as Switch } from './components/Switch';
 export type { SwitchProps, SwitchSize } from './components/Switch';
+
+export { default as Banner } from './components/Banner';
+export type { BannerProps, BannerVariant } from './components/Banner';
+
+export {
+  default as AlertDialog,
+  AlertDialogHeader,
+  AlertDialogBody,
+  AlertDialogFooter,
+} from './components/AlertDialog';
+export type {
+  AlertDialogProps,
+  AlertDialogHeaderProps,
+  AlertDialogBodyProps,
+  AlertDialogFooterProps,
+} from './components/AlertDialog';
 
 export { default as Alert } from './components/Alert';
 export type {
@@ -483,6 +528,24 @@ export type {
   Mode,
 } from './components/ModeToggler';
 
+export {
+  default as Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from './components/Pagination';
+export type {
+  PaginationProps,
+  PaginationContentProps,
+  PaginationItemProps,
+  PaginationLinkProps,
+  PaginationPrevNextProps,
+  PaginationEllipsisProps,
+} from './components/Pagination';
+
 export { default as Separator } from './components/Separator';
 export type {
   SeparatorProps,
@@ -573,3 +636,6 @@ export type {
 } from './components/Tooltip';
 
 export type { Size, ChildrenAsPropsType } from './types/GlobalTypes';
+
+export { useRipple } from './hooks/useRipple';
+export type { UseRippleResult } from './hooks/useRipple';

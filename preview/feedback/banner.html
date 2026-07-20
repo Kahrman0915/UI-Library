@@ -1,0 +1,124 @@
+<!-- @dsCard group="Feedback" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Banner</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      /* Banner is full-bleed; frame each demo so its edges read inside the card. */
+      .frame { border: var(--border-w-100) solid var(--border); border-radius: var(--rounded-md); overflow: hidden; }
+      .icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+      .close-svg { width: 12px; height: 12px; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Banner</h1>
+        <p>
+          A page-level announcement bar — full-bleed, edge-to-edge, with a coloured bottom
+          hairline. Use it for site-wide notices (maintenance, new versions, promotions) that sit
+          above the layout, as opposed to the inline <code>Alert</code> card. Five semantic
+          <code>variant</code>s reuse Alert's tint tokens; warnings and errors take
+          <code>role="alert"</code>, the rest <code>role="status"</code>. Optional leading
+          <code>Icon</code>, trailing <code>action</code> (composes <code>Button</code>), and a
+          dismiss <code>CloseButton</code> via <code>onClose</code>. <code>centered</code> caps and
+          centres the content for marketing bars.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Banner, Button } from '@ui/lib';
+
+&lt;Banner
+  id="update"
+  variant="info"
+  Icon={Info}
+  title="A new version is available."
+  action={&lt;Button id="reload" size="xsmall" style="outline" label="Reload" /&gt;}
+  onClose={() =&gt; setShown(false)}
+/&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <div class="frame">
+          <div id="bv-default" role="status" class="ui-banner ui-banner--default">
+            <div class="ui-banner__inner">
+              <span class="ui-banner__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="m3 11 18-5v12L3 14v-3z"/><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"/></svg></span>
+              <div class="ui-banner__body"><span class="ui-banner__title">Scheduled maintenance this Sunday at 02:00 UTC.</span></div>
+            </div>
+          </div>
+          <div id="bv-info" role="status" class="ui-banner ui-banner--info">
+            <div class="ui-banner__inner">
+              <span class="ui-banner__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+              <div class="ui-banner__body"><span class="ui-banner__title">A new version (4.1) is available.</span></div>
+            </div>
+          </div>
+          <div id="bv-success" role="status" class="ui-banner ui-banner--success">
+            <div class="ui-banner__inner"><div class="ui-banner__body"><span class="ui-banner__title">Your changes have been published.</span></div></div>
+          </div>
+          <div id="bv-warning" role="alert" class="ui-banner ui-banner--warning">
+            <div class="ui-banner__inner"><div class="ui-banner__body"><span class="ui-banner__title">Your trial ends in 3 days.</span></div></div>
+          </div>
+          <div id="bv-error" role="alert" class="ui-banner ui-banner--error">
+            <div class="ui-banner__inner"><div class="ui-banner__body"><span class="ui-banner__title">We couldn't reach the server. Retrying…</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With action</h2>
+        <div class="frame">
+          <div id="ba" role="status" class="ui-banner ui-banner--info">
+            <div class="ui-banner__inner">
+              <span class="ui-banner__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/></svg></span>
+              <div class="ui-banner__body"><span class="ui-banner__title">Aiden can now summarize long threads for you.</span></div>
+              <div class="ui-banner__action">
+                <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall">Not now</button>
+                <button type="button" class="ui-button ui-button--default ui-button--default-outline ui-button--sz-xsmall">Try it</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Dismissible</h2>
+        <div class="frame">
+          <div id="bd" role="alert" class="ui-banner ui-banner--warning">
+            <div class="ui-banner__inner">
+              <div class="ui-banner__body"><span class="ui-banner__title">You have unsaved changes.</span></div>
+            </div>
+            <button type="button" class="ui-close-button ui-close-button--default ui-banner__close" aria-label="Dismiss">
+              <svg class="close-svg" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Centered</h2>
+        <p>For full-bleed marketing bars — content caps and centres.</p>
+        <div class="frame">
+          <div id="bc" role="status" class="ui-banner ui-banner--default ui-banner--centered">
+            <div class="ui-banner__inner">
+              <span class="ui-banner__icon" aria-hidden="true"><svg class="icon" viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/></svg></span>
+              <div class="ui-banner__body"><span class="ui-banner__title">Free shipping on orders over $50 — this week only.</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
