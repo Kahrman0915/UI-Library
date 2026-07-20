@@ -73,6 +73,9 @@ export type {
 export { default as Switch } from './components/Switch';
 export type { SwitchProps, SwitchSize } from './components/Switch';
 
+export { default as Banner } from './components/Banner';
+export type { BannerProps, BannerVariant } from './components/Banner';
+
 export { default as Alert } from './components/Alert';
 export type {
   AlertProps,

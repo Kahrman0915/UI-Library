@@ -1,0 +1,120 @@
+.ui-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--p-3);
+  width: 100%;
+  padding: var(--p-2-5) var(--p-4);
+  font-family: var(--font-family);
+  // Full-bleed bar: a bottom hairline rather than an all-round border.
+  border-bottom: var(--border-w-100) solid transparent;
+
+  &__inner {
+    display: flex;
+    align-items: center;
+    gap: var(--p-3);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 0;
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+      display: block;
+    }
+  }
+
+  &__body {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  &__title {
+    font-weight: var(--font-medium);
+  }
+
+  &__action {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--p-2);
+  }
+
+  // Composes CloseButton — inherits the banner's colour; reset + focus ring
+  // come from CloseButton.scss.
+  &__close.ui-close-button {
+    flex-shrink: 0;
+    padding: var(--p-1);
+    color: inherit;
+    opacity: var(--o-70);
+    transition: opacity var(--duration-fast) var(--ease-out);
+
+    &:hover {
+      color: inherit;
+      opacity: var(--o-100);
+    }
+  }
+
+  // Centered / capped content for full-bleed marketing bars.
+  &--centered .ui-banner__inner {
+    max-width: var(--max-w-5xl);
+    margin: 0 auto;
+    justify-content: center;
+  }
+
+  // ---- Variants (soft tint + bottom hairline, matching Alert's default treatment) ----
+  &--default {
+    background: var(--muted);
+    color: var(--foreground);
+    border-bottom-color: var(--border);
+  }
+
+  &--info {
+    background: var(--info-light);
+    color: var(--info);
+    border-bottom-color: var(--info-border);
+    .ui-banner__icon,
+    .ui-banner__title {
+      color: var(--info);
+    }
+  }
+
+  &--success {
+    background: var(--success-light);
+    color: var(--success);
+    border-bottom-color: var(--success-border);
+    .ui-banner__icon,
+    .ui-banner__title {
+      color: var(--success);
+    }
+  }
+
+  &--warning {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-bottom-color: var(--warning-border);
+    .ui-banner__icon,
+    .ui-banner__title {
+      color: var(--warning);
+    }
+  }
+
+  &--error {
+    background: var(--error-light);
+    color: var(--error);
+    border-bottom-color: var(--error-border);
+    .ui-banner__icon,
+    .ui-banner__title {
+      color: var(--error);
+    }
+  }
+}
