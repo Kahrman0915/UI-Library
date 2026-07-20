@@ -1,0 +1,100 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>ToggleGroup</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .row { display: flex; gap: var(--p-6); align-items: flex-start; flex-wrap: wrap; }
+      .icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>ToggleGroup</h1>
+        <p>
+          A set of connected toggles that share selection — a segmented control.
+          <code>type="single"</code> keeps one item active (and re-clicking clears it);
+          <code>type="multiple"</code> lets any number be on at once. Items reuse the
+          <code>.ui-toggle</code> visual, sit flush with shared borders, and take the group's
+          <code>variant</code> / <code>size</code> / <code>disabled</code>. Controlled via
+          <code>value</code> or uncontrolled via <code>defaultValue</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { ToggleGroup, ToggleGroupItem } from '@ui/lib';
+
+&lt;ToggleGroup id="align" type="single" defaultValue="left" variant="outline"&gt;
+  &lt;ToggleGroupItem value="left" IconCenter={AlignLeft} aria-label="Align left" /&gt;
+  &lt;ToggleGroupItem value="center" IconCenter={AlignCenter} aria-label="Align center" /&gt;
+  &lt;ToggleGroupItem value="right" IconCenter={AlignRight} aria-label="Align right" /&gt;
+&lt;/ToggleGroup&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Single &amp; multiple</h2>
+        <div class="row">
+          <div id="align" role="group" data-orientation="horizontal" class="ui-toggle-group ui-toggle-group--horizontal">
+            <button type="button" aria-pressed="true" aria-label="Align left" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only ui-toggle--pressed">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/></svg>
+            </button>
+            <button type="button" aria-pressed="false" aria-label="Align center" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="17" x2="7" y1="12" y2="12"/><line x1="19" x2="5" y1="18" y2="18"/></svg>
+            </button>
+            <button type="button" aria-pressed="false" aria-label="Align right" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="21" x2="9" y1="12" y2="12"/><line x1="21" x2="7" y1="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <div id="format" role="group" data-orientation="horizontal" class="ui-toggle-group ui-toggle-group--horizontal">
+            <button type="button" aria-pressed="true" aria-label="Bold" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only ui-toggle--pressed">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/></svg>
+            </button>
+            <button type="button" aria-pressed="true" aria-label="Italic" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only ui-toggle--pressed">
+              <svg class="icon" viewBox="0 0 24 24"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>
+            </button>
+            <button type="button" aria-pressed="false" aria-label="Underline" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+              <svg class="icon" viewBox="0 0 24 24"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>With labels</h2>
+        <div id="view" role="group" data-orientation="horizontal" class="ui-toggle-group ui-toggle-group--horizontal">
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-default">List</button>
+          <button type="button" aria-pressed="true" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--pressed">Board</button>
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-default">Calendar</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Vertical</h2>
+        <div id="v-align" role="group" data-orientation="vertical" class="ui-toggle-group ui-toggle-group--vertical">
+          <button type="button" aria-pressed="false" aria-label="Align left" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="15" x2="3" y1="12" y2="12"/><line x1="17" x2="3" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" aria-pressed="true" aria-label="Align center" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only ui-toggle--pressed">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="17" x2="7" y1="12" y2="12"/><line x1="19" x2="5" y1="18" y2="18"/></svg>
+          </button>
+          <button type="button" aria-pressed="false" aria-label="Align right" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="21" x2="3" y1="6" y2="6"/><line x1="21" x2="9" y1="12" y2="12"/><line x1="21" x2="7" y1="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,86 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Toggle</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .row { display: flex; gap: var(--p-3); align-items: center; flex-wrap: wrap; }
+      .icon { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Toggle</h1>
+        <p>
+          A two-state button — pressed or not — exposing <code>aria-pressed</code>. Use it for
+          formatting controls (bold, italic) or any on/off action that lives inline. Distinct from
+          <code>Chip</code> (a rounded filter pill): Toggle is a squared control whose pressed
+          state uses the neutral <code>--accent</code> fill, so it never competes with the themed
+          primary CTA. <code>variant</code> = default / outline, <code>size</code> = sm / default / lg.
+          Controlled via <code>pressed</code> or uncontrolled via <code>defaultPressed</code>.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Toggle } from '@ui/lib';
+import { Bold } from 'lucide-react';
+
+&lt;Toggle id="bold" IconCenter={Bold} aria-label="Bold" defaultPressed /&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Variants</h2>
+        <div class="row">
+          <button type="button" aria-pressed="true" class="ui-toggle ui-toggle--default ui-toggle--sz-default ui-toggle--pressed">Default</button>
+          <button type="button" aria-pressed="true" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--pressed">Outline</button>
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-default">Off</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <div class="row">
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-sm">Small</button>
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-default">Default</button>
+          <button type="button" aria-pressed="false" class="ui-toggle ui-toggle--outline ui-toggle--sz-lg">Large</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Icon-only</h2>
+        <p>Provide an <code>aria-label</code> — the pressed one is filled.</p>
+        <div class="row">
+          <button type="button" aria-pressed="true" aria-label="Bold" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only ui-toggle--pressed">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 12h9a4 4 0 0 1 0 8H7a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h7a4 4 0 0 1 0 8"/></svg>
+          </button>
+          <button type="button" aria-pressed="false" aria-label="Italic" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+            <svg class="icon" viewBox="0 0 24 24"><line x1="19" x2="10" y1="4" y2="4"/><line x1="14" x2="5" y1="20" y2="20"/><line x1="15" x2="9" y1="4" y2="20"/></svg>
+          </button>
+          <button type="button" aria-pressed="false" aria-label="Underline" class="ui-toggle ui-toggle--outline ui-toggle--sz-default ui-toggle--icon-only">
+            <svg class="icon" viewBox="0 0 24 24"><path d="M6 4v6a6 6 0 0 0 12 0V4"/><line x1="4" x2="20" y1="20" y2="20"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <h2>Disabled</h2>
+        <div class="row">
+          <button type="button" aria-pressed="false" disabled class="ui-toggle ui-toggle--default ui-toggle--sz-default">Off</button>
+          <button type="button" aria-pressed="true" disabled class="ui-toggle ui-toggle--default ui-toggle--sz-default ui-toggle--pressed">On</button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

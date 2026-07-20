@@ -37,6 +37,16 @@ export type {
   StatusDotSize,
 } from './components/StatusDot';
 
+export { default as Toggle } from './components/Toggle';
+export type { ToggleProps, ToggleVariant, ToggleSize } from './components/Toggle';
+
+export { default as ToggleGroup, ToggleGroupItem } from './components/ToggleGroup';
+export type {
+  ToggleGroupProps,
+  ToggleGroupItemProps,
+  ToggleGroupOrientation,
+} from './components/ToggleGroup';
+
 export {
   default as Card,
   CardHeader,
