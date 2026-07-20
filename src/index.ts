@@ -30,6 +30,9 @@ export type { KbdProps, KbdSize } from './components/Kbd';
 export { default as Blockquote } from './components/Blockquote';
 export type { BlockquoteProps } from './components/Blockquote';
 
+export { default as Code, CodeBlock } from './components/Code';
+export type { CodeProps, CodeBlockProps } from './components/Code';
+
 export { default as StatusDot } from './components/StatusDot';
 export type {
   StatusDotProps,
