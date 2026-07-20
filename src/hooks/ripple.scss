@@ -16,7 +16,7 @@
   // there's no flash back to the start frame. The global reduced-motion block in
   // tokens.scss collapses this to ~0.01ms — the wave is imperceptible but still
   // fires `animationend`, so the hook's cleanup runs and no nodes leak.
-  animation: ui-ripple-expand var(--duration-slow) var(--ease-out) forwards;
+  animation: ui-ripple-expand var(--duration-ripple) var(--ease-out) forwards;
 }
 
 @keyframes ui-ripple-expand {

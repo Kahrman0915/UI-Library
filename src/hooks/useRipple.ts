@@ -49,8 +49,10 @@ export const useRipple = (disabled = false): UseRippleResult => {
         wave.remove();
       };
       wave.addEventListener('animationend', cleanup, { once: true });
-      // Fallback ≥ the animation's own duration (--duration-slow ≈ 300ms).
-      window.setTimeout(cleanup, 600);
+      // Fallback comfortably past the animation's own duration (--duration-ripple
+      // = 600ms) so `animationend` normally wins; this only fires when that event
+      // doesn't (reduced motion / backgrounded tab / interrupted).
+      window.setTimeout(cleanup, 900);
 
       host.appendChild(wave);
     },
