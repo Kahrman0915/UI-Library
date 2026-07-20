@@ -9,9 +9,38 @@ export type UseRippleResult = {
 /**
  * Opt-in Material-style ripple for any interactive element.
  *
+ * This is a deliberately un-defaulted primitive — no component turns it on for
+ * you (Button intentionally does NOT ship a `ripple` prop). Reach for it only
+ * where the ripple is actually seen and actually helps.
+ *
+ * **When to use it**
+ * - Touch-first surfaces. On a touchscreen there's no cursor or hover state, so
+ *   the ripple is the tap's acknowledgement. This is its real job.
+ * - Actions that stay on the same screen: a toggle, add-to-cart, like/bookmark,
+ *   a quantity stepper, expand/collapse — the button remains mounted long enough
+ *   to see the ~600ms wave.
+ * - A button that kicks off a brief async op and stays put; the ripple fills the
+ *   moment before the response.
+ *
+ * **When NOT to use it**
+ * - Navigation that unmounts the screen — the user never sees the wave (or sees
+ *   a half-played one as the view tears down).
+ * - Desktop/mouse-only UIs — hover and `:active` already give feedback, so the
+ *   ripple is mostly decorative there.
+ * - Dialog confirm/cancel and anything that closes on click.
+ * - When you want the UI to feel instant; the ripple subtly implies "working".
+ *
+ * The effect is a Material/Android signature; much of modern web and iOS design
+ * omits it. Treat it as an occasional accent, not a house style.
+ *
+ * **How to use it** — spread `onPointerDown` on a `.ui-ripple` element (the class
+ * provides `position: relative; overflow: hidden` to clip the wave):
+ *
  * ```tsx
  * const { onPointerDown } = useRipple();
- * <button className="ui-ripple" onPointerDown={onPointerDown}>Tap</button>
+ * <button className="ui-button ui-ripple" onPointerDown={onPointerDown}>
+ *   Add to cart
+ * </button>
  * ```
  *
  * On pointer-down it appends a `.ui-ripple__wave` span at the press point and

@@ -92,20 +92,6 @@ export const AllVariants: Story = {
   ),
 };
 
-export const Ripple: Story = {
-  parameters: { layout: 'padded' },
-  render: () => (
-    <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'center' }}>
-      <Button id="rip-default" ripple label="Click me" />
-      <Button id="rip-outline" ripple style="outline" label="Outline" />
-      <Button id="rip-aiden" ripple variant="aiden" label="Aiden" />
-      <span style={{ fontFamily: 'var(--font-family)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
-        Opt-in via <code>ripple</code>. Off by default.
-      </span>
-    </div>
-  ),
-};
-
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>

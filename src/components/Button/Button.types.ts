@@ -13,8 +13,6 @@ export type ButtonProps = Omit<
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   isLoading?: boolean;
-  /** Opt-in Material-style ripple on press. Default `false`. */
-  ripple?: boolean;
   IconLeft?: React.FC;
   IconRight?: React.FC;
   iconOnly?: boolean;
