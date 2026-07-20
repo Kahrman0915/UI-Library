@@ -1,0 +1,15 @@
+.ui-aspect-ratio {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+
+  // Media and absolutely-positioned children fill the ratio box.
+  > img,
+  > video,
+  > iframe {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}

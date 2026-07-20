@@ -1,0 +1,73 @@
+<!-- @dsCard group="Layout" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Blockquote</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .frame { max-width: 560px; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Blockquote</h1>
+        <p>
+          A quoted passage — a semantic <code>&lt;blockquote&gt;</code> with a left accent border
+          and italic body. Pass <code>cite</code> for an attribution, rendered as a
+          <code>&lt;footer&gt;</code> with an em-dash lead-in.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Blockquote } from '@ui/lib';
+
+&lt;Blockquote cite="Antoine de Saint-Exupéry"&gt;
+  Perfection is achieved … when there is nothing left to take away.
+&lt;/Blockquote&gt;</pre>
+      </div>
+
+      <div>
+        <h2>With attribution</h2>
+        <div class="frame">
+          <blockquote class="ui-blockquote">
+            <div class="ui-blockquote__content">Perfection is achieved, not when there is nothing more to add, but when there is nothing left to take away.</div>
+            <footer class="ui-blockquote__cite">Antoine de Saint-Exupéry</footer>
+          </blockquote>
+        </div>
+      </div>
+
+      <div>
+        <h2>Without attribution</h2>
+        <div class="frame">
+          <blockquote class="ui-blockquote">
+            <div class="ui-blockquote__content">The best way to predict the future is to invent it.</div>
+          </blockquote>
+        </div>
+      </div>
+
+      <div>
+        <h2>Multiple paragraphs</h2>
+        <div class="frame">
+          <blockquote class="ui-blockquote">
+            <div class="ui-blockquote__content">
+              <p>Ship the smallest thing that could possibly be useful.</p>
+              <p>Then listen to what breaks, and fix that next.</p>
+            </div>
+            <footer class="ui-blockquote__cite">A thoughtful engineer</footer>
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

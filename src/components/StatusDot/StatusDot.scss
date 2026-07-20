@@ -1,0 +1,62 @@
+.ui-status-dot {
+  position: relative;
+  display: inline-block;
+  flex-shrink: 0;
+  border-radius: var(--rounded-full);
+  // Named via --ui-status-color so the pulse ring can reuse the same colour.
+  background: var(--ui-status-color);
+
+  // ---- Status colours ----
+  &--online {
+    --ui-status-color: var(--success);
+  }
+  &--offline {
+    --ui-status-color: var(--muted-foreground);
+  }
+  &--busy {
+    --ui-status-color: var(--error);
+  }
+  &--away {
+    --ui-status-color: var(--warning);
+  }
+  &--neutral {
+    --ui-status-color: var(--muted-foreground);
+  }
+
+  // ---- Sizes ----
+  &--sz-sm {
+    width: var(--w-2);
+    height: var(--h-2);
+  }
+  &--sz-default {
+    width: var(--w-2-5);
+    height: var(--h-2-5);
+  }
+  &--sz-lg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+
+  // ---- Pulse ----
+  // A ring that scales out and fades. The global prefers-reduced-motion block
+  // in tokens.scss collapses this to a near-zero duration automatically.
+  &--pulse::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--rounded-full);
+    background: var(--ui-status-color);
+    animation: ui-status-dot-pulse var(--duration-shimmer) var(--ease-out) infinite;
+  }
+}
+
+@keyframes ui-status-dot-pulse {
+  0% {
+    transform: scale(1);
+    opacity: var(--o-70);
+  }
+  100% {
+    transform: scale(2.4);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,73 @@
+<!-- @dsCard group="Identity" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>StatusDot</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .list { display: grid; gap: var(--p-3); }
+      .row { display: inline-flex; align-items: center; gap: var(--p-2); font-size: var(--text-sm); }
+      .sizes { display: flex; gap: var(--p-4); align-items: center; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>StatusDot</h1>
+        <p>
+          A small presence indicator — online, away, busy, offline, or neutral — mapped to the
+          semantic colour tokens. Optional <code>pulse</code> emits a soft expanding ring for
+          live states (suppressed under <code>prefers-reduced-motion</code>). Give it a
+          <code>label</code> and it exposes <code>role="status"</code>; without one it's
+          <code>aria-hidden</code> decoration beside a visible label.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { StatusDot } from '@ui/lib';
+
+&lt;StatusDot status="online" label="Online" /&gt;
+&lt;StatusDot status="busy" pulse label="Recording" /&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Statuses</h2>
+        <div class="list">
+          <span class="row"><span role="status" aria-label="Online" data-status="online" class="ui-status-dot ui-status-dot--online ui-status-dot--sz-default"></span> Online</span>
+          <span class="row"><span role="status" aria-label="Away" data-status="away" class="ui-status-dot ui-status-dot--away ui-status-dot--sz-default"></span> Away</span>
+          <span class="row"><span role="status" aria-label="Busy" data-status="busy" class="ui-status-dot ui-status-dot--busy ui-status-dot--sz-default"></span> Busy</span>
+          <span class="row"><span role="status" aria-label="Offline" data-status="offline" class="ui-status-dot ui-status-dot--offline ui-status-dot--sz-default"></span> Offline</span>
+          <span class="row"><span role="status" aria-label="Unknown" data-status="neutral" class="ui-status-dot ui-status-dot--neutral ui-status-dot--sz-default"></span> Neutral</span>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <div class="sizes">
+          <span aria-hidden="true" data-status="online" class="ui-status-dot ui-status-dot--online ui-status-dot--sz-sm"></span>
+          <span aria-hidden="true" data-status="online" class="ui-status-dot ui-status-dot--online ui-status-dot--sz-default"></span>
+          <span aria-hidden="true" data-status="online" class="ui-status-dot ui-status-dot--online ui-status-dot--sz-lg"></span>
+        </div>
+      </div>
+
+      <div>
+        <h2>Pulse</h2>
+        <p>For live / recording states.</p>
+        <div class="sizes">
+          <span class="row"><span role="status" aria-label="Live" data-status="online" class="ui-status-dot ui-status-dot--online ui-status-dot--sz-default ui-status-dot--pulse"></span> Live</span>
+          <span class="row"><span role="status" aria-label="Recording" data-status="busy" class="ui-status-dot ui-status-dot--busy ui-status-dot--sz-default ui-status-dot--pulse"></span> Recording</span>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

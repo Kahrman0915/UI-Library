@@ -21,6 +21,22 @@ export type {
 export { default as Badge } from './components/Badge';
 export type { BadgeProps, BadgeVariant } from './components/Badge';
 
+export { default as AspectRatio } from './components/AspectRatio';
+export type { AspectRatioProps } from './components/AspectRatio';
+
+export { default as Kbd } from './components/Kbd';
+export type { KbdProps, KbdSize } from './components/Kbd';
+
+export { default as Blockquote } from './components/Blockquote';
+export type { BlockquoteProps } from './components/Blockquote';
+
+export { default as StatusDot } from './components/StatusDot';
+export type {
+  StatusDotProps,
+  StatusDotStatus,
+  StatusDotSize,
+} from './components/StatusDot';
+
 export {
   default as Card,
   CardHeader,
