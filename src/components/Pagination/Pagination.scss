@@ -1,0 +1,63 @@
+// Pagination cells reuse the Button visual (.ui-button classes) for fill, hover,
+// focus ring and theming. Only layout and a few square-cell tweaks live here.
+.ui-pagination {
+  display: flex;
+
+  &__list {
+    display: flex;
+    align-items: center;
+    gap: var(--p-1);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: flex;
+  }
+
+  // Numeric cells are square; prev/next keep their padding for the label.
+  // These are <a> elements wearing .ui-button classes, so kill the UA underline
+  // (Button was only ever used on <button> before, which has none).
+  &__link {
+    min-width: var(--w-9);
+    text-decoration: none;
+
+    &.ui-pagination__prev,
+    &.ui-pagination__next {
+      min-width: auto;
+    }
+  }
+
+  // The active page reads as current — the outline Button style already gives it
+  // a border; nudge the weight so it stands out among the ghost siblings.
+  &__link--active {
+    font-weight: var(--font-semibold);
+  }
+
+  &__ellipsis {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: var(--w-9);
+    height: var(--h-9);
+    color: var(--muted-foreground);
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  &__sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+}

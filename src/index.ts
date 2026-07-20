@@ -525,6 +525,24 @@ export type {
   Mode,
 } from './components/ModeToggler';
 
+export {
+  default as Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from './components/Pagination';
+export type {
+  PaginationProps,
+  PaginationContentProps,
+  PaginationItemProps,
+  PaginationLinkProps,
+  PaginationPrevNextProps,
+  PaginationEllipsisProps,
+} from './components/Pagination';
+
 export { default as Separator } from './components/Separator';
 export type {
   SeparatorProps,
