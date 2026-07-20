@@ -6,7 +6,7 @@ This file is auto-loaded into every Claude Code session opened inside this repo.
 
 ## What this repo is
 
-A React + SCSS component library. 43 shipped components, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
+A React + SCSS component library. 53 shipped components, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
 
 ## Hard rules (never break without asking)
 
@@ -109,6 +109,7 @@ Reuse these — don't reinvent.
 
 - **`src/hooks/useMounted.ts`** — returns `true` after client-side mount. Use in every portal-rendering component (Dialog, Tooltip, DropdownMenu already do). Prevents SSR mismatches.
 - **`src/hooks/useIsMobile.ts`** — SSR-safe `matchMedia` breakpoint hook (default 768px). Used by Sidebar to swap to a Drawer on small viewports; reuse for any responsive branch.
+- **`src/hooks/useRipple.ts`** — opt-in Material ripple. Returns `{ onPointerDown }` to spread on any `.ui-ripple` element; imports `ripple.scss` as a side effect. Removes the wave on `animationend` **plus a 600ms `setTimeout` fallback** (animationend doesn't fire under reduced motion / on a backgrounded tab — verified the fallback catches it). Wired into `Button` behind `ripple` (default off).
 - **`src/utils/computePosition.ts`** — positions a floating element relative to a trigger. `Side`/`Align`/`Position` types exported. Used by Tooltip + DropdownMenu today; use in Popover, Select, Combobox, Sheet next.
 - **`src/components/Label/`** — the shared label + description + required-indicator primitive. Any form control (Input, Textarea, Checkbox, future Radio/Switch) should either render a `<Label>` internally or reuse its `.ui-label` classes. Import `../Label/Label.scss` in the component that reuses the classes.
 - **`src/components/Input/Input.scss`** — owns `.ui-input-wrap` (border, focus-within ring, hover, error, disabled states). Textarea reuses it via a `--multi` modifier and NativeSelect reuses it as-is (native `<select>` inside the wrap). Future form-field-shaped components (Select trigger, Combobox trigger) should reuse it too rather than redefining borders.
@@ -231,9 +232,13 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 |---|---|---|
 | `Accordion` + `AccordionItem` + `AccordionTrigger` + `AccordionContent` | yes | `type` = `single` (+ `collapsible`) or `multiple`. Height animation via the 3-div `grid-template-rows: 0fr→1fr` clip (see Notable techniques) |
 | `Alert` | no | `variant`-driven semantic banner; dismissal X composes `CloseButton` |
+| `AlertDialog` + `AlertDialogHeader` + `AlertDialogBody` + `AlertDialogFooter` | yes | Confirmation dialog. A thin **preset of `Dialog`** (role=`alertdialog`, no overlay-click-close, no header X) — reuses Dialog's portal/focus-trap/escape/restore + Dialog.scss; only new Dialog surface is an optional `role` prop |
+| `AspectRatio` | no | CSS `aspect-ratio` wrapper; `ratio` passed as a division expression (`16 / 9`). Media children fill+cover. Layout primitive, no `id` |
 | `Attachment` (+ `Media` `Content` `Title` `Description` `Actions` `Action` `Trigger` `Group`) | yes | 9 exports. File-attachment row/tile; `size` = xs/sm/default, `orientation` = horizontal/vertical, `AttachmentMedia variant` = icon/image. Shimmer via `--duration-shimmer`. Parallel family to `Item` |
 | `Avatar` + `AvatarGroup` | yes | Fallback initials + optional image + status-dot badge |
 | `Badge` | no | 12 variants — every color is `{solid base, transparent outline}`; no brand — default/outline theme via `--primary`. Extends `HTMLAttributes<HTMLDivElement>` (full `...rest`) |
+| `Banner` | no | Page-level full-bleed announcement bar (distinct from inline `Alert`); reuses Alert's semantic tint tokens + bottom hairline; composes `CloseButton` (dismiss) + `Button` (action); `role` alert/status by severity; `centered` |
+| `Blockquote` | no | Semantic `<blockquote>` + accent border + italic body; optional `cite` renders a `<footer>` with em-dash. Native `cite` URL attr Omit-ed and redefined as content |
 | `Button` | no | 6 variants × 5 styles × **4 sizes** (`xsmall`/`small`/`default`/`large`) + `isLoading` (no brand — `default` IS the theme's primary) |
 | `Breadcrumb` (+ `List` `Item` `Link` `Page` `Separator` `Ellipsis`) | yes | 7 exports. Links use `text-underline-offset: 3px`; `Ellipsis` carries an sr-only label |
 | `ButtonGroup` + `ButtonGroupSeparator` + `ButtonGroupText` | yes | Corner-flatten via CSS `:not(:first/last-child)` |
@@ -241,6 +246,7 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Checkbox` | no | Native input + custom visual + `indeterminate` prop |
 | `Chip` | no | Toggle-style; `active` state uses `--primary` |
 | `CloseButton` | no | Uses `X` from `lucide-react` |
+| `Code` + `CodeBlock` | no | Inline `Code` (`<code>`) + fenced `CodeBlock` (`<pre>` + optional filename header + copy `Button` via `navigator.clipboard`, icon/label swap to check/"Copied"). No syntax highlighting (needs a dep). One folder, two exports |
 | `Collapsible` + `CollapsibleTrigger` + `CollapsibleContent` | yes | Same `0fr→1fr` grid height animation as Accordion; single disclosure |
 | `Combobox` | no | Single export (not compound). Filterable listbox on `computePosition`; `size`/`side`/`align` |
 | `Command` (+ `Dialog` `Input` `List` `Empty` `Group` `Item` `Separator` `Shortcut`) | yes | 9 exports. Command palette; `CommandItem variant` = default/error. Max-height 480px / dialog 560px (panel geometry). One of the 4 menu-item styling copies |
@@ -256,8 +262,10 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Item` (+ `Group` `Separator` `Media` `Content` `Title` `Description` `Actions` `Header` `Footer`) | yes | 10 exports. Generic list row; `variant` = default/outline/muted, `size` = xs/sm/default, `ItemMedia variant` = default/icon/image. Parallel family to `Attachment` |
 | `ModeToggler` | no | Owns the `data-mode` light/dark attribute on `<html>`; `variant` = default/outline/ghost, `size` = sm/default/lg |
 | `NativeSelect` + `NativeSelectOption` + `NativeSelectOptGroup` | yes | Styled native `<select>` (distinct from the floating `Select`); composes `<Label>` + reuses Input's `.ui-input-field`/`.ui-input-wrap`; native chrome stripped, custom chevron overlaid; `size`/`error`/`required` like Input |
+| `Kbd` | no | Styled `<kbd>` keycap, mono + raised bottom border; `size` = sm/default/lg |
 | `Label` | no | Shared with Checkbox internal label + Input/Textarea's built-in label; `required` renders `*` in `--error` |
 | `Popover` + `PopoverTrigger` + `PopoverContent` + `PopoverClose` | yes | `computePosition` floating surface (`--popover`); `side`/`align`, no collision detection |
+| `Pagination` (+ `Content` `Item` `Link` `Previous` `Next` `Ellipsis`) | yes | Page-nav compound; cells reuse `.ui-button` (ghost, outline+`aria-current` when active); imports Button.scss so cells style in isolation; mirrors Breadcrumb ellipsis |
 | `Progress` (+ `Label` `Value` `Track` `Indicator`) | yes | 5 exports. `size` = sm/default/lg, `variant`, `indeterminate` (shimmer via `--duration-shimmer`); default indicator reads `--primary` |
 | `RadioGroup` + `RadioGroupItem` | yes | `orientation` prop; checked dot uses `--primary` |
 | `ScrollArea` | no | Custom JS thumb, grid layout, no floating-ui dep |
@@ -267,11 +275,14 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Skeleton` | no | `shape` = default/circle/text; shimmer via `--duration-shimmer` |
 | `Slider` | no | Single value, or `range` for two thumbs (`[lower, upper]`). `min`/`max`/`step`, `showValue`, `formatValue`, `size` = sm/default/lg. Each thumb is a `role="slider"` span whose `aria-valuemin`/`max` stop at its neighbour. Composes `<Label>`; strips its own union props from `...rest` like Accordion |
 | `Spinner` | no | lucide `LoaderCircle` + `--duration-spin` rotation; `role="status"` |
+| `StatusDot` | no | Presence dot (online/offline/busy/away/neutral) → semantic tokens via `--ui-status-color`; optional `pulse` ring (reduced-motion aware); `role="status"`+label when named. Mirrors Avatar badge |
 | `Switch` | no | `size` prop; checked track uses `--primary`. Thumb travel distances (12/16/20px) are intentional component-internal literals |
 | `Tabs` + `TabsList` + `TabsTrigger` + `TabsContent` | yes | `orientation` prop |
 | `Textarea` | no | Reuses Input's `.ui-input-wrap` via `--multi` modifier |
 | `Toast` — `Toaster` + `toast()` | yes | **Imperative API, not a compound tree**: render `<Toaster>` once, call `toast()` anywhere. `variant`, `duration`, `position`. 380px stack / 300px card min-width (panel geometry); action reads `--primary`; dismissal X composes `CloseButton` |
 | `Tooltip` + `TooltipTrigger` + `TooltipContent` | yes | State machine (`closed`/`open`/`closing`), direction-aware animations, portal |
+| `Toggle` | no | `aria-pressed` squared two-state button; controlled (`pressed`) or uncontrolled (`defaultPressed`); pressed = neutral `--accent` fill. Distinct from `Chip` (rounded filter pill); reuses its interaction shape |
+| `ToggleGroup` + `ToggleGroupItem` | yes | Segmented control; `type` single (re-click clears) / multiple; items reuse `.ui-toggle` + collapse shared borders (ButtonGroup-style). Strips union props from `...rest` like Accordion |
 
 ---
 
@@ -381,14 +392,14 @@ Steps, for reference / re-running:
 3. Suggested groupings for the `group=` attribute:
    - **Foundations** — Themes, palettes, motion tokens preview, ModeToggler
    - **Buttons** — Button, ButtonGroup, CloseButton
-   - **Forms** — Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Slider, Field, InputGroup
-   - **Feedback** — Alert, Badge, Progress, Spinner, Skeleton, Toast, Empty
-   - **Overlays** — Dialog, Drawer, Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Command
-   - **Navigation** — Tabs, Breadcrumb, Sidebar, Item (list rows)
-   - **Layout** — Card, Accordion, Collapsible, ScrollArea, Attachment, Separator
-   - **Identity** — Avatar, Chip, Label
+   - **Forms** — Input, Textarea, Select, NativeSelect, Combobox, Checkbox, RadioGroup, Switch, Slider, Toggle, ToggleGroup, Field, InputGroup
+   - **Feedback** — Alert, Banner, Badge, Progress, Spinner, Skeleton, Toast, Empty
+   - **Overlays** — Dialog, AlertDialog, Drawer, Popover, Tooltip, HoverCard, DropdownMenu, ContextMenu, Command
+   - **Navigation** — Tabs, Breadcrumb, Pagination, Sidebar, Item (list rows)
+   - **Layout** — Card, Accordion, Collapsible, ScrollArea, Attachment, Separator, AspectRatio, Blockquote, Code
+   - **Identity** — Avatar, Chip, Label, Kbd, StatusDot
 
-   (Verified 2026-07-19: these groupings cover all 43 components with no omissions.)
+   (Verified 2026-07-20: these groupings cover all 53 components with no omissions.)
 4. Call `DesignSync` in sequence: `list_projects` → `finalize_plan` → `write_files` → verify
 
 ### After the push
@@ -406,6 +417,11 @@ Steps, for reference / re-running:
 
 ### Recent decisions worth remembering
 
+- **Component batch — 10 new components + ripple (2026-07-20):** shipped in 7 committed groups off the "finish the roster" push. AspectRatio, Kbd, Blockquote, StatusDot (trivial primitives); Toggle + ToggleGroup (segmented); Banner (page-level bar); AlertDialog; Pagination; Code + CodeBlock; plus the `useRipple` hook. Deferred as their own efforts (too large for one session under the no-dep rule): Calendar, Date Picker, Carousel, Resizable, Menubar, Navigation Menu, Input OTP, Direction, App Shell, and the **chat family** (bubble / message / message-scroller / **marker** — "marker" is the inline status/system-note/labeled-separator chat part, per the owner). Overlaps left as reuse, not rebuilt: **Sheet → Drawer**, **Power Search → Command**, Attachment already shipped. Key sub-decisions:
+  - **AlertDialog is a preset of Dialog, not a reimplementation.** The only Dialog change is a new optional `role?: 'dialog' | 'alertdialog'` (default `dialog`, backward-compatible). AlertDialog passes `role="alertdialog"`, `closeOnOutsideClick={false}`, and header `showCloseButton={false}` — the two carve-outs vs a plain dialog. It has **no `.scss` of its own** (reuses Dialog.scss).
+  - **Toggle is distinct from Chip** (owner's call): Chip = rounded filter pill, Toggle = squared `aria-pressed` control with a neutral `--accent` pressed fill. Toggle reuses Chip's interaction shape; ToggleGroupItem reuses `.ui-toggle`.
+  - **Pagination cells are `<a class="ui-button">`** — so Pagination.tsx must `import '../Button/Button.scss'` (cells render with no `<Button>` nearby, so its CSS wouldn't otherwise load in isolation), and `.ui-pagination__link` sets `text-decoration: none` (Button was only ever used on `<button>`, which has no underline). Same class-reuse pattern as NativeSelect→Input, ToggleGroup→Toggle.
+  - **Ripple's `setTimeout` fallback is load-bearing** — under reduced motion the wave's `animationend` doesn't fire (0.01ms duration), so the 600ms timeout is what removes the node. Observed the leak-without-fallback case directly and confirmed the fallback catches it.
 - **Theming re-architecture (2026-07):** `--primary` = "the current theme's color." Mode (light/dark) = `data-mode`; theme (sub-brand) = `data-theme='{code}'` which remaps `--primary`. Main brand = no `data-theme`. The old `--brand` family and `variant="brand"` were **removed** — don't reintroduce them. Full immersion except Tooltip (uses `--tooltip-*`). See `Foundations/Themes`.
 - **Button emphasis ladder (2026-07):** every variant (default + error/info/success/warning + aiden) has five visibly distinct rungs — `default` (solid fill) → `secondary` (filled `-soft` tint + border + colored text) → `outline` (transparent + border + colored text) → `ghost` → `link`. `secondary` must use `-soft` (not `-light`) or it collapses into `outline`. `default`'s `ghost` is the neutral-slate carve-out; aiden keeps its gradient on `default`/`secondary` fills but uses solid violet (`--aiden-outline-border`) for text + outline/ghost/link.
 - **Secondary-button AA status (2026-07, `-soft` at 8%/10%):** measured (contrast script over composited fill) — **dark mode: all secondaries pass AA.** Light mode: main-brand slate, all four semantics (error 4.56 / warning 4.62 / info / success), and the `rm` theme pass; **still under 4.5:1 in light are the themed `default`-secondary for db/dc/dr/ec/ir/nb/ph (3.84–4.34) and aiden (3.84)** — mid/high-luminance colored *text* on a tint of itself can't reach AA no matter how pale the fill. **Owner chose to leave these as-is** (2026-07). The fix if ever wanted: deeper "on-fill" text on the secondary (Material tonal pattern) or neutral-slate text on those two — not a lighter tint.
