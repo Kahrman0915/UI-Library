@@ -86,12 +86,12 @@
 
     &.ui-item--interactive:hover {
       background: var(--accent);
-      border-color: var(--border);
+      border-color: var(--border-hover);
     }
   }
 
   &--muted {
-    background: var(--muted);
+    background: var(--secondary);
     border-color: transparent;
 
     &.ui-item--interactive:hover {
@@ -244,7 +244,7 @@
 
 .ui-item__title {
   font-weight: var(--font-medium);
-  color: inherit;
+  color: var(--foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

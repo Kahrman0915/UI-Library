@@ -78,13 +78,30 @@
   // ---- Variants: default treatment (soft filled background) ----
 
   &--default.ui-alert--default {
-    background: var(--muted);
+    background: var(--secondary);
     color: var(--foreground);
     border-color: var(--border);
 
     .ui-alert__icon,
     .ui-alert__title {
       color: var(--foreground);
+    }
+  }
+
+  // Brand — themed accent (reads --primary, follows data-theme).
+  &--brand.ui-alert--default {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-color: var(--primary-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--primary);
+    }
+
+    .ui-alert__description {
+      color: var(--primary);
+      opacity: var(--o-80);
     }
   }
 
@@ -158,6 +175,17 @@
     background: transparent;
     color: var(--foreground);
     border-color: var(--border);
+  }
+
+  &--brand.ui-alert--outline {
+    background: transparent;
+    color: var(--foreground);
+    border-color: var(--primary-border);
+
+    .ui-alert__icon,
+    .ui-alert__title {
+      color: var(--primary);
+    }
   }
 
   &--info.ui-alert--outline {

@@ -73,9 +73,20 @@
 
   // ---- Variants (soft tint + bottom hairline, matching Alert's default treatment) ----
   &--default {
-    background: var(--muted);
+    background: var(--secondary);
     color: var(--foreground);
     border-bottom-color: var(--border);
+  }
+
+  // Brand — the themed accent (reads --primary, so it follows data-theme).
+  &--brand {
+    background: var(--primary-light);
+    color: var(--primary);
+    border-bottom-color: var(--primary-border);
+    .ui-banner__icon,
+    .ui-banner__title {
+      color: var(--primary);
+    }
   }
 
   &--info {

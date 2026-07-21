@@ -8,13 +8,13 @@ import type {
 import './Card.scss';
 
 const Card = forwardRef<HTMLDivElement, CardProps>(
-  ({ id, children, className, ...rest }, ref) => {
+  ({ id, children, interactive = false, className, ...rest }, ref) => {
     return (
       <div
         {...rest}
         ref={ref}
         id={id}
-        className={`ui-card${className ? ' ' + className : ''}`}
+        className={`ui-card${interactive ? ' ui-card--interactive' : ''}${className ? ' ' + className : ''}`}
       >
         {children}
       </div>

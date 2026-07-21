@@ -16,7 +16,7 @@ const meta: Meta<typeof Alert> = {
   argTypes: {
     variant: {
       control: 'inline-radio',
-      options: ['default', 'info', 'success', 'warning', 'error'],
+      options: ['default', 'brand', 'info', 'success', 'warning', 'error'],
     },
     style: {
       control: 'inline-radio',
@@ -203,6 +203,36 @@ export const WithoutIcon: Story = {
         variant="success"
         title="Success!"
         description="Your changes have been saved."
+      />
+    </div>
+  ),
+};
+
+export const Brand: Story = {
+  render: () => (
+    <div style={{ maxWidth: 'var(--max-w-lg)' }}>
+      <Alert
+        id="brand"
+        variant="brand"
+        Icon={Info}
+        title="Brand Alert"
+        description="Uses the active theme's --primary, so it follows data-theme."
+      />
+    </div>
+  ),
+};
+
+// "Edit Mode" from the Figma design = an info alert used as a persistent
+// instructional banner: no close button, so it can't be dismissed.
+export const EditMode: Story = {
+  render: () => (
+    <div style={{ maxWidth: 'var(--max-w-2xl)' }}>
+      <Alert
+        id="edit-mode"
+        variant="info"
+        Icon={Info}
+        title="Edit Mode Active"
+        description="Drag cards to reorder your board. Use the menu on each card to change types or configure filters. Click “Done Editing” when finished."
       />
     </div>
   ),

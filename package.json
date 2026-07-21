@@ -30,7 +30,8 @@
     "build:fonts": "sass --no-source-map --style=compressed src/styles/fonts.scss dist/fonts.css && rm -rf dist/fonts && cp -R src/styles/fonts dist/fonts",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:contrast": "node scripts/contrast-check.mjs"
   },
   "peerDependencies": {
     "react": ">=18",

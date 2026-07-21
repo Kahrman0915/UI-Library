@@ -4,6 +4,8 @@ export type CardProps = Omit<
 > & {
   id: string;
   children: React.ReactNode;
+  /** Opt-in hover affordance: strengthens the border on hover (var(--border-hover)) + cursor. For clickable cards. */
+  interactive?: boolean;
   className?: string;
 };
 
