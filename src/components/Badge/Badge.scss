@@ -11,7 +11,7 @@
   font-weight: var(--font-medium);
   font-size: var(--text-xs);
   line-height: var(--leading-4);
-  color: var(--primary);
+  color: var(--primary-text);
   gap: var(--p-1);
   border-radius: var(--rounded-md);
 
@@ -27,7 +27,7 @@
 
   &--outline {
     background: transparent;
-    color: var(--primary);
+    color: var(--primary-text);
     border: var(--border-w-100) solid var(--primary-border);
   }
 

@@ -52,9 +52,13 @@
   border-radius: var(--rounded-sm);
   cursor: pointer;
   white-space: nowrap;
+  // NOTE: `color` is deliberately NOT transitioned. It reads var(--muted-foreground),
+  // and Chromium freezes a var()-driven transitioned property when the variable
+  // changes (e.g. a live light/dark switch) — leaving the label at the old mode's
+  // colour (1.36:1 in dark) until the next recalc. Transitioning only background +
+  // box-shadow keeps the active-pill animation without the freeze.
   transition:
     background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out),
     box-shadow var(--duration-fast) var(--ease-out);
 
   &:hover:not(:disabled):not([data-state='active']) {

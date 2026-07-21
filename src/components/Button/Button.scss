@@ -26,7 +26,7 @@
 
   &--default-secondary {
     background: var(--primary-soft);
-    color: var(--primary);
+    color: var(--primary-text);
     outline: var(--border-w-100) solid var(--primary-border);
     outline-offset: -1px;
     box-shadow: none;
@@ -34,7 +34,7 @@
 
   &--default-outline {
     background: var(--bg-input-30);
-    color: var(--primary);
+    color: var(--primary-text);
     outline: var(--border-w-100) solid var(--primary-border);
     outline-offset: -1px;
   }
@@ -51,7 +51,7 @@
 
   &--default-link {
     background: transparent;
-    color: var(--primary);
+    color: var(--primary-text);
     border: none;
     box-shadow: none;
   }

@@ -1,4 +1,4 @@
-import { forwardRef, useContext, useMemo } from 'react';
+import { forwardRef, useContext, useId, useMemo } from 'react';
 import { ProgressContext } from './Progress.context';
 import type {
   ProgressIndicatorProps,
@@ -57,10 +57,21 @@ const Progress = forwardRef<HTMLDivElement, ProgressProps>(
     const hasChildren = children !== undefined && children !== null;
     const hasHeader = !!label || !!showValue;
 
+    // Name the progressbar via its rendered label (simple, non-children path).
+    // Consumers using the children API, or with no label, can pass their own
+    // aria-label / aria-labelledby through ...rest.
+    const uid = useId();
+    const labelId = `${uid}-label`;
+    const nameProps =
+      !hasChildren && label && !rest['aria-label'] && !rest['aria-labelledby']
+        ? { 'aria-labelledby': labelId }
+        : undefined;
+
     return (
       <ProgressContext.Provider value={ctxValue}>
         <div
           {...rest}
+          {...nameProps}
           ref={ref}
           role="progressbar"
           aria-valuemin={0}
@@ -77,7 +88,7 @@ const Progress = forwardRef<HTMLDivElement, ProgressProps>(
             <>
               {hasHeader && (
                 <div className="ui-progress__header">
-                  {label && <ProgressLabel>{label}</ProgressLabel>}
+                  {label && <ProgressLabel id={labelId}>{label}</ProgressLabel>}
                   {showValue && <ProgressValue />}
                 </div>
               )}
