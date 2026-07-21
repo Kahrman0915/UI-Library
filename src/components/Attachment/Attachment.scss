@@ -159,7 +159,7 @@
 
 .ui-attachment__title {
   font-weight: var(--font-medium);
-  color: inherit;
+  color: var(--foreground);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;

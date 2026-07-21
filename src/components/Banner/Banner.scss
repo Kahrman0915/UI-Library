@@ -73,7 +73,7 @@
 
   // ---- Variants (soft tint + bottom hairline, matching Alert's default treatment) ----
   &--default {
-    background: var(--muted);
+    background: var(--secondary);
     color: var(--foreground);
     border-bottom-color: var(--border);
   }
