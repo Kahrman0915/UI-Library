@@ -38,6 +38,23 @@ export const Playground: Story = {
   ),
 };
 
+// Opt-in `interactive` prop — border strengthens to --border-hover on hover.
+// For clickable cards; static cards leave it off.
+export const Interactive: Story = {
+  render: () => (
+    <Card id="int" interactive style={{ width: 400 }}>
+      <CardHeader
+        id="int"
+        title="Enterprise plan"
+        description="Hover the card — the border strengthens to signal it's clickable."
+      />
+      <CardBody>
+        <p>Unlimited seats, SSO, and priority support.</p>
+      </CardBody>
+    </Card>
+  ),
+};
+
 export const HeaderOnly: Story = {
   render: () => (
     <Card id="ho" style={{ width: 360 }}>

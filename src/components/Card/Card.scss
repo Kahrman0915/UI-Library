@@ -9,6 +9,31 @@
   font-family: var(--font-family);
   overflow: hidden;
 
+  // Opt-in hover affordance for clickable cards — strengthens the border
+  // and lifts the card slightly on a stronger shadow.
+  &--interactive {
+    cursor: pointer;
+    transition:
+      border-color var(--duration-normal) var(--ease-out),
+      box-shadow var(--duration-normal) var(--ease-out),
+      transform var(--duration-normal) var(--ease-out);
+
+    &:hover {
+      border-color: var(--border-hover);
+      box-shadow: var(--shadow-md);
+      transform: translateY(calc(-1 * var(--motion-slide-sm)));
+    }
+  }
+
+  // Suppress the positional lift for reduced-motion users (the global rule only
+  // zeroes durations — the translate itself would still jump). Border + shadow
+  // aren't motion, so they stay.
+  @media (prefers-reduced-motion: reduce) {
+    &--interactive:hover {
+      transform: none;
+    }
+  }
+
   &__header {
     display: flex;
     align-items: flex-start;

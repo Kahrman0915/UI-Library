@@ -23,7 +23,7 @@
   box-sizing: border-box;
 
   &:hover:not(.ui-input-wrap--disabled):not(:focus-within) {
-    border-color: var(--muted-foreground);
+    border-color: var(--border-hover);
   }
 
   &:focus-within {

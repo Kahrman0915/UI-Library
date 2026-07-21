@@ -118,6 +118,29 @@
       </div>
 
       <div>
+        <h2>Interactive</h2>
+        <p>Opt-in <code>interactive</code> prop for clickable cards — on hover the border strengthens to <code>--border-hover</code> and the card lifts slightly on a stronger shadow (<code>--shadow-md</code>), with a pointer cursor. The lift is suppressed under <code>prefers-reduced-motion</code>. Off by default, so static cards are unaffected. Hover the card below.</p>
+        <div class="grid">
+          <div class="ui-card ui-card--interactive">
+            <div class="ui-card__header">
+              <div class="ui-card__header-content">
+                <h3 class="ui-card__title">Enterprise plan</h3>
+                <p class="ui-card__description">Unlimited seats, SSO, and priority support.</p>
+              </div>
+              <div class="ui-card__header-action">
+                <div class="ui-badge ui-badge--outline">Popular</div>
+              </div>
+            </div>
+            <div class="ui-card__body">
+              <p style="margin: 0; font-size: var(--text-sm); color: var(--foreground); line-height: var(--leading-5);">
+                $99 / seat / month, billed annually.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
         <h2>Header only</h2>
         <p>Header without body/footer — useful for standalone stat tiles.</p>
         <div class="grid">
