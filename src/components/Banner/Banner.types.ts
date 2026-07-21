@@ -2,6 +2,7 @@ import type { LucideIcon } from 'lucide-react';
 
 export type BannerVariant =
   | 'default'
+  | 'brand'
   | 'info'
   | 'success'
   | 'warning'

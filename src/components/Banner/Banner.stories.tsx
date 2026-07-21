@@ -11,7 +11,7 @@ const meta: Meta<typeof Banner> = {
   argTypes: {
     variant: {
       control: 'select',
-      options: ['default', 'info', 'success', 'warning', 'error'],
+      options: ['default', 'brand', 'info', 'success', 'warning', 'error'],
     },
     centered: { control: 'boolean' },
   },
@@ -37,6 +37,7 @@ export const Variants: Story = {
   render: () => (
     <div style={{ display: 'grid' }}>
       <Banner id="b-default" Icon={Megaphone} title="Scheduled maintenance this Sunday at 02:00 UTC." />
+      <Banner id="b-brand" variant="brand" Icon={Sparkles} title="Brand banner — follows the active theme's --primary." />
       <Banner id="b-info" variant="info" Icon={Info} title="A new version (4.1) is available." />
       <Banner id="b-success" variant="success" title="Your changes have been published." />
       <Banner id="b-warning" variant="warning" title="Your trial ends in 3 days." />
