@@ -349,6 +349,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #334155;
   --tooltip-foreground: #f8fafc;
@@ -606,6 +607,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
@@ -864,6 +866,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='dc'] {
   --primary: var(--dc-primary);
@@ -874,6 +877,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='dr'] {
   --primary: var(--dr-primary);
@@ -884,6 +888,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='ec'] {
   --primary: var(--ec-primary);
@@ -894,6 +899,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='ir'] {
   --primary: var(--ir-primary);
@@ -904,6 +910,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='nb'] {
   --primary: var(--nb-primary);
@@ -914,6 +921,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='ph'] {
   --primary: var(--ph-primary);
@@ -924,6 +932,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 [data-theme='rm'] {
   --primary: var(--rm-primary);
@@ -934,6 +943,7 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 
 /* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode

@@ -81,11 +81,11 @@
   // Brand — the themed accent (reads --primary, so it follows data-theme).
   &--brand {
     background: var(--primary-light);
-    color: var(--primary);
+    color: var(--primary-text);
     border-bottom-color: var(--primary-border);
     .ui-banner__icon,
     .ui-banner__title {
-      color: var(--primary);
+      color: var(--primary-text);
     }
   }
 

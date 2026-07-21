@@ -91,17 +91,16 @@
   // Brand — themed accent (reads --primary, follows data-theme).
   &--brand.ui-alert--default {
     background: var(--primary-light);
-    color: var(--primary);
+    color: var(--primary-text);
     border-color: var(--primary-border);
 
     .ui-alert__icon,
     .ui-alert__title {
-      color: var(--primary);
+      color: var(--primary-text);
     }
 
     .ui-alert__description {
-      color: var(--primary);
-      opacity: var(--o-80);
+      color: var(--primary-text);
     }
   }
 
@@ -116,9 +115,7 @@
     }
 
     .ui-alert__description {
-      color: var(--info);
-      opacity: var(--o-80);
-    }
+      color: var(--info);    }
   }
 
   &--success.ui-alert--default {
@@ -132,9 +129,7 @@
     }
 
     .ui-alert__description {
-      color: var(--success);
-      opacity: var(--o-80);
-    }
+      color: var(--success);    }
   }
 
   &--warning.ui-alert--default {
@@ -148,9 +143,7 @@
     }
 
     .ui-alert__description {
-      color: var(--warning);
-      opacity: var(--o-80);
-    }
+      color: var(--warning);    }
   }
 
   &--error.ui-alert--default {
@@ -164,9 +157,7 @@
     }
 
     .ui-alert__description {
-      color: var(--error);
-      opacity: var(--o-80);
-    }
+      color: var(--error);    }
   }
 
   // ---- Outline treatment (transparent background, colored border + icon/title) ----
@@ -184,7 +175,7 @@
 
     .ui-alert__icon,
     .ui-alert__title {
-      color: var(--primary);
+      color: var(--primary-text);
     }
   }
 
