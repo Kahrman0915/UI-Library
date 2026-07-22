@@ -37,6 +37,17 @@ const preview: Preview = {
       },
     },
     backgrounds: { disable: true },
+    options: {
+      storySort: {
+        order: [
+          'Foundations',
+          ['Overview', 'Typography', 'Spacing & Sizing', 'Motion', 'Tokens', 'Themes'],
+          'Components',
+          'Hooks',
+          'Prototypes',
+        ],
+      },
+    },
   },
   globalTypes: {
     mode: {
