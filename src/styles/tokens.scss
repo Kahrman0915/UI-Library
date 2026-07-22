@@ -54,10 +54,10 @@ html {
   --p-64: 256px;
   --p-72: 288px;
   --p-80: 320px;
-  --p-96: 348px;
+  --p-96: 384px;
 
   /* -----------------------------------------------------------------------
-     Width / Height
+     Width Scale
      ----------------------------------------------------------------------- */
   --w-0: 0px;
   --w-0-5: 2px;
@@ -92,7 +92,7 @@ html {
   --w-64: 256px;
   --w-72: 288px;
   --w-80: 320px;
-  --w-96: 348px;
+  --w-96: 384px;
 
   /* -----------------------------------------------------------------------
      Height Scale
@@ -130,7 +130,7 @@ html {
   --h-64: 256px;
   --h-72: 288px;
   --h-80: 320px;
-  --h-96: 348px;
+  --h-96: 384px;
 
   /* -----------------------------------------------------------------------
      Max Width Scale
@@ -299,6 +299,7 @@ html {
   --duration-shimmer: 1400ms; /* skeleton / progress / attachment shimmer */
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
+  /* Easing curves */
   --ease-default: ease;
   --ease-in: ease-in;
   --ease-out: ease-out;
@@ -368,16 +369,18 @@ html {
   --input: #e2e8f0;
   --ring: #94a3b8;
 
-  /* Sidebar — distinct chrome surface. Widths live here (mode-independent). */
+  /* Sidebar — distinct chrome surface (not remapped by a theme). Widths are
+     mode-independent. */
   --sidebar-width: 16rem;
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
   --sidebar: #f8fafc;
+  --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #334155;
   --sidebar-primary-foreground: #f8fafc;
   --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #0f172a;
+  --sidebar-accent-foreground: #1e293b;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #94a3b8;
 
@@ -439,7 +442,7 @@ html {
   --chart-5: #334155;
   --chart-6: #0f172a;
 
-  /* Opacity */
+  /* Overlay alpha ramp — white scrim at increasing opacity (legacy) */
   --opacity-100: rgba(255, 255, 255, 0);
   --opacity-90: rgba(255, 255, 255, 0.1);
   --opacity-80: rgba(255, 255, 255, 0.2);
@@ -447,22 +450,11 @@ html {
   --opacity-30: rgba(255, 255, 255, 0.7);
   --opacity-10: rgba(255, 255, 255, 0.9);
 
-  /* Sidebar */
-  --sidebar-background: #f8fafc;
-  --sidebar-foreground: #0f172a;
-  --sidebar-primary: #334155;
-  --sidebar-primary-foreground: #f8fafc;
-  --sidebar-accent: #f1f5f9;
-  --sidebar-accent-foreground: #1e293b;
-  --sidebar-border: #e2e8f0;
-  --sidebar-ring: #94a3b8;
-
   /* Chat */
   --chat-bubble-user: #f1f5f9;
   --chat-bubble-ai: #ffffff;
   --chat-input-background: #ffffff;
   --chat-input-border: #e2e8f0;
-  --gradient-lavender-sky: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
 
   /* Category Colors
      `-text` = darkened on-tint text (AA on the `-bg` tint over --background);
@@ -541,12 +533,14 @@ html {
      best-effort; the soft `-text` tags are the strictly-AA-safe path. */
   --category-foreground: #0f172a;
 
-  /* Custom */
+  /* Focus ring colours (semantic + neutral) */
   --focus: rgba(148, 163, 184, 0.5);
   --error-focus: rgba(211, 36, 36, 0.4);
   --warning-focus: rgba(194, 65, 12, 0.4);
   --info-focus: rgba(2, 106, 162, 0.4);
   --success-focus: rgba(4, 120, 87, 0.4);
+
+  /* Background & overlay helpers (input fills, scrims, subtle border) */
   --bg-input-30: #ffffff;
   --bg-input-50: #f8fafc;
   --bg-input-80: #f1f5f9;
@@ -591,6 +585,7 @@ html {
   --rm-primary: #7c3aed;
   --rm-primary-foreground: #ffffff;
 
+  /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback */
   --aiden-primary: linear-gradient(135deg, #8455f0 0%, #5f61ef 50%, #2c6dea 100%);
   --aiden-primary-foreground: #ffffff;
   --aiden-secondary: linear-gradient(135deg, rgba(132, 85, 240, 0.08) 0%, rgba(44, 109, 234, 0.08) 100%);
@@ -611,6 +606,7 @@ html {
   --gradient-purple-rose-amber: linear-gradient(90deg, #8b5cf6 13%, #d946ef 31%, #f43f5e 53%, #f97316 74%, #f59e0b 90%);
   --gradient-full-ramp: linear-gradient(90deg, #3b82f6 0%, #6366f1 8%, #8b5cf6 15%, #a855f7 23%, #d946ef 33%, #f43f5e 44%, #f97316 55%, #f59e0b 64%, #84cc16 73%, #22c55e 78%, #10b981 85%, #14b8a6 88%, #06b6d4 93%, #0ea5e9 100%);
   --gradient-violet-cyan-emerald-diagonal: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+  --gradient-lavender-sky: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
 }
 
 /* =========================================================================
@@ -651,13 +647,14 @@ html {
 
   /* Sidebar (dark) — slate-800 surface, distinct from the slate-900 page. */
   --sidebar: #1e293b;
+  --sidebar-background: #1e293b;
   --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #cbd5e1;
+  --sidebar-primary: #e2e8f0;
   --sidebar-primary-foreground: #0f172a;
   --sidebar-accent: #334155;
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: #334155;
-  --sidebar-ring: #94a3b8;
+  --sidebar-ring: #64748b;
 
   /* Code Block */
   --code-block: #1e293b;
@@ -717,7 +714,7 @@ html {
   --chart-5: #64748b;
   --chart-6: #475569;
 
-  /* Opacity */
+  /* Overlay alpha ramp — dark scrim at increasing opacity (legacy) */
   --opacity-100: rgba(15, 23, 42, 0);
   --opacity-90: rgba(15, 23, 42, 0.1);
   --opacity-80: rgba(15, 23, 42, 0.2);
@@ -725,22 +722,11 @@ html {
   --opacity-30: rgba(15, 23, 42, 0.7);
   --opacity-10: rgba(15, 23, 42, 0.9);
 
-  /* Sidebar */
-  --sidebar-background: #1e293b;
-  --sidebar-foreground: #f8fafc;
-  --sidebar-primary: #e2e8f0;
-  --sidebar-primary-foreground: #0f172a;
-  --sidebar-accent: #334155;
-  --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #334155;
-  --sidebar-ring: #64748b;
-
   /* Chat */
   --chat-bubble-user: #1e293b;
   --chat-bubble-ai: #334155;
   --chat-input-background: #1e293b;
   --chat-input-border: #475569;
-  --gradient-lavender-sky: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(147, 197, 253, 0.3) 100%);
 
   /* Category Colors — dark base already clears AA on its tint, so `-text` = base. */
   --category-red: #f87171;
@@ -814,12 +800,14 @@ html {
   /* Solid-badge text — dark ink on the vivid 400-level fill (clears AA in dark). */
   --category-foreground: #0f172a;
 
-  /* Custom */
+  /* Focus ring colours (semantic + neutral) */
   --focus: rgba(147, 197, 253, 0.45);
   --error-focus: rgba(248, 113, 113, 0.4);
   --warning-focus: rgba(251, 191, 36, 0.4);
   --info-focus: rgba(124, 212, 253, 0.4);
   --success-focus: rgba(52, 211, 153, 0.4);
+
+  /* Background & overlay helpers (input fills, scrims, subtle border) */
   --bg-input-30: rgba(255, 255, 255, 0.04);
   --bg-input-50: rgba(255, 255, 255, 0.08);
   --bg-input-80: rgba(255, 255, 255, 0.14);
@@ -859,6 +847,7 @@ html {
   --rm-primary: #a78bfa;
   --rm-primary-foreground: #0f172a;
 
+  /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback */
   --aiden-primary: linear-gradient(135deg, #a78bfa 0%, #93c5fd 100%);
   --aiden-primary-foreground: #0f172a;
   --aiden-secondary: linear-gradient(135deg, rgba(167, 139, 250, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
@@ -879,6 +868,7 @@ html {
   --gradient-purple-rose-amber: linear-gradient(90deg, #a78bfa 13%, #e879f9 31%, #fb7185 53%, #fb923c 74%, #fbbf24 90%);
   --gradient-full-ramp: linear-gradient(90deg, #60a5fa 0%, #818cf8 8%, #a78bfa 15%, #c084fc 23%, #e879f9 33%, #fb7185 44%, #fb923c 55%, #fbbf24 64%, #a3e635 73%, #4ade80 78%, #34d399 85%, #2dd4bf 88%, #22d3ee 93%, #38bdf8 100%);
   --gradient-violet-cyan-emerald-diagonal: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+  --gradient-lavender-sky: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(147, 197, 253, 0.3) 100%);
 }
 
 /* =========================================================================
@@ -987,13 +977,6 @@ html {
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 
-/* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode
-   (keeps the colored label more legible on the fill) but stay at the scope's 10%
-   in dark, which reads well there. One rule covers every theme via var(--primary);
-   its 2-attribute specificity beats the single [data-theme='{code}'] scope above.
-   Matches both same-element (<html data-mode data-theme>) and subtree
-   (<section data-theme>) forms. Semantic + main-brand soft tints are mode-split in
-   the base blocks instead (they aren't themed). */
 /* Aiden AI surface — a scoped overlay, NOT a brand theme. Kept off the data-theme
    axis so it never enters the brand picker and can nest INSIDE any brand (an Aiden
    chat panel inside db keeps its violet identity). Remaps --primary to Aiden's solid
@@ -1014,6 +997,13 @@ html {
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 
+/* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode
+   (keeps the colored label more legible on the fill) but stay at the scope's 10%
+   in dark, which reads well there. One rule covers every theme via var(--primary);
+   its 2-attribute specificity beats the single [data-theme='{code}'] scope above.
+   Matches both same-element (<html data-mode data-theme>) and subtree
+   (<section data-theme>) forms. Semantic + main-brand soft tints are mode-split in
+   the base blocks instead (they aren't themed). */
 [data-mode='light'] [data-theme],
 [data-mode='light'][data-theme],
 [data-mode='light'] [data-surface='aiden'],
