@@ -1,12 +1,7 @@
 import { forwardRef } from 'react';
 import { LoaderCircle } from 'lucide-react';
+import type { SpinnerProps } from './Spinner.types';
 import './Spinner.scss';
-
-export type SpinnerProps = {
-  id: string;
-  size?: number;
-  className?: string;
-};
 
 const Spinner = forwardRef<SVGSVGElement, SpinnerProps>(
   ({ id, size = 16, className }, ref) => (

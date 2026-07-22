@@ -89,3 +89,10 @@
     border: var(--border-w-100) solid var(--aiden-outline-border);
   }
 }
+
+// Aiden AI surface: the default badge takes the gradient fill (outline stays the
+// solid violet --primary-border/-text driven by the surface scope).
+[data-surface='aiden'] .ui-badge--default {
+  background: var(--aiden-primary);
+  color: var(--aiden-primary-foreground);
+}

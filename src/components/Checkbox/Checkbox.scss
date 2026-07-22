@@ -116,3 +116,10 @@
 
 // Text column typography and disabled state are inherited from Label.scss
 // (via the shared `.ui-label` classes on the internal span).
+
+// Aiden AI surface — exploratory: checked box takes the gradient.
+[data-surface='aiden'] .ui-checkbox__input:checked ~ .ui-checkbox,
+[data-surface='aiden'] .ui-checkbox__input:indeterminate ~ .ui-checkbox {
+  background: var(--aiden-primary);
+  border-color: transparent;
+}

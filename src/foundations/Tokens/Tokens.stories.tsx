@@ -162,12 +162,15 @@ export const Tokens: Story = {
     >
       <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Design tokens</h1>
       <p style={{ maxWidth: 720, lineHeight: 1.6, color: 'var(--muted-foreground)', fontSize: 14 }}>
-        Three layers: <strong>Primitives</strong> (raw scales — spacing, radii, type),{' '}
-        <strong>Mode</strong> (semantic colours that flip on <code>data-mode</code> light/dark),
-        and <strong>Theme</strong> (only <code>--primary</code> and its family, remapped by{' '}
-        <code>data-theme</code>). Toggle the <em>Mode</em> and <em>Theme</em> toolbar controls to
-        see everything below re-resolve. Colours use shadcn's <code>surface / surface-foreground</code>{' '}
-        naming — a base token sets the surface, the <code>-foreground</code> token sets text/icons on it.
+        Layers: <strong>Primitives</strong> (raw scales — spacing, radii, type) and{' '}
+        <strong>Semantic</strong> colours. Semantic colours move on three independent runtime axes:{' '}
+        <strong>Mode</strong> (<code>data-mode</code> light/dark, flips every colour),{' '}
+        <strong>Theme</strong> (<code>data-theme="{'{code}'}"</code>, remaps only <code>--primary</code> and
+        its family), and <strong>Surface</strong> (<code>data-surface="aiden"</code>, the AI surface — see
+        Foundations → Themes → <em>Aiden Surface</em>). Toggle the <em>Mode</em> and <em>Theme</em> toolbar
+        controls to see everything below re-resolve. Colours use shadcn's{' '}
+        <code>surface / surface-foreground</code> naming — a base token sets the surface, the{' '}
+        <code>-foreground</code> token sets text/icons on it.
       </p>
 
       <Group
@@ -176,8 +179,8 @@ export const Tokens: Story = {
           ['background', 'The page base. Everything sits on this.'],
           ['card', 'Raised in-flow surfaces: Card, Dialog panel.'],
           ['popover', 'Floating overlays: Popover, Dropdown, Select, Combobox, Toast.'],
-          ['muted', 'Quiet resting surfaces: Skeleton, Switch track, Kbd, inline Code, Alert/Banner default.'],
-          ['secondary', 'The filled secondary Button surface.'],
+          ['muted', 'Quiet fills that carry NO small muted text: Skeleton, Switch/Slider/Progress track, inline Code, image/icon tiles.'],
+          ['secondary', 'Filled secondary Button — AND the light panel that carries --muted-foreground text: Alert/Banner default, Item muted, Avatar fallback, Kbd. (Moved here from --muted for contrast.)'],
           ['sidebar', 'Sidebar chrome. Neutral — never remapped by a theme.'],
         ]}
       />
@@ -202,6 +205,7 @@ export const Tokens: Story = {
         title="Borders & focus"
         tokens={[
           ['border', 'Default hairline borders and dividers.'],
+          ['border-hover', 'Strengthened border on hover: Card interactive, form-field hover, Item outline hover. Symmetric — gains contrast in both modes.'],
           ['input', 'Form-control borders (Input, Select, Textarea).'],
           ['ring', 'Resting ring on some controls.'],
           ['focus', 'The 3px focus-visible ring (--focus-ring-width).'],
@@ -213,6 +217,7 @@ export const Tokens: Story = {
         tokens={[
           ['primary', 'The theme colour: solid CTA fill, checked controls, active states. Slate on the main brand; a sub-brand hue under data-theme.'],
           ['primary-foreground', 'Text/icons on the solid --primary fill.'],
+          ['primary-text', 'The "on-surface" primary — use when --primary is TEXT on a light surface (outline/link/secondary button text, Badge outline, brand Alert/Banner titles). color-mix nudged toward --foreground so mid-luminance themes clear AA as text. Solid FILLS keep raw --primary.'],
           ['primary-light', '6% tint — subtle themed surfaces.'],
           ['primary-soft', '8% (light) / 10% (dark) tint — the filled secondary button.'],
           ['primary-border', '40% — themed borders.'],
@@ -235,7 +240,9 @@ export const Tokens: Story = {
         <p style={{ maxWidth: 720, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
           <strong>Category</strong> (17 hues × base/-bg/-hover) for tags & charts · <strong>Chart</strong>{' '}
           (1–5, a neutral ramp) · <strong>Code-block</strong> syntax colours · <strong>Tooltip</strong>{' '}
-          (inverse slate, never themed) · <strong>Aiden</strong> (the AI gradient).
+          (inverse slate, never themed) · <strong>Aiden</strong> (the AI <em>surface</em>,{' '}
+          <code>data-surface="aiden"</code> — a violet gradient identity that layers inside any brand;
+          see Foundations → Themes → <em>Aiden Surface</em>).
         </p>
       </section>
 
@@ -257,6 +264,7 @@ export const Tokens: Story = {
           <li><strong><code>--muted-foreground</code> is for text on <code>--background</code> / <code>--card</code></strong> (AAA there). On <code>--muted</code> it's only ~5:1 — fine for AA, but prefer <code>--foreground</code> for anything that must be effortless to read.</li>
           <li><strong>Never use <code>--accent</code> as a resting surface.</strong> It means "hovered." Use <code>--muted</code> / <code>--secondary</code> / <code>--card</code> for resting content.</li>
           <li><strong>Semantic <code>-foreground</code> on the solid base is tuned to AA (~5:1), not AAA</strong> — deliberate, so the hues stay vivid. Use the <code>-light</code> tint + coloured text for higher-contrast informational surfaces (Alerts do this).</li>
+          <li><strong>When <code>--primary</code> is <em>text</em> on a light surface, use <code>--primary-text</code>, not <code>--primary</code>.</strong> Raw <code>--primary</code> is tuned as a fill (with <code>--primary-foreground</code> on top); mid-luminance themes fall just under AA as text on a pale tint. <code>--primary-text</code> fixes that. Outline/link/secondary button text, Badge outline, and brand Alert/Banner titles already use it.</li>
         </ul>
       </section>
     </div>

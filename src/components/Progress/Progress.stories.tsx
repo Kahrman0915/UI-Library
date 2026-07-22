@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import Button from '../Button';
 import Progress, {
   ProgressLabel,
   ProgressValue,
@@ -181,4 +182,35 @@ export const CompoundComposition: Story = {
       </Progress>
     </div>
   ),
+};
+
+// Inside `data-surface="aiden"` the determinate default bar takes Aiden's
+// flowing gradient — and pops a one-shot particle burst when it hits 100%.
+// See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => {
+    const [value, setValue] = useState(0);
+    const [run, setRun] = useState(0);
+    useEffect(() => {
+      let v = 0;
+      setValue(0);
+      const id = setInterval(() => {
+        v = Math.min(100, v + 7);
+        setValue(v);
+        if (v >= 100) clearInterval(id);
+      }, 110);
+      return () => clearInterval(id);
+    }, [run]);
+    return (
+      <div
+        data-surface="aiden"
+        style={{ maxWidth: 'var(--max-w-sm)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'start' }}
+      >
+        <div style={{ width: '100%' }}>
+          <Progress value={value} label={value >= 100 ? 'Complete' : 'Generating…'} showValue />
+        </div>
+        <Button id="aiden-progress-run" label="Run again" style="outline" size="small" onClick={() => setRun((r) => r + 1)} />
+      </div>
+    );
+  },
 };

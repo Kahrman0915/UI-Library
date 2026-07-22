@@ -585,3 +585,13 @@
     opacity: var(--o-60);
   }
 }
+
+// Aiden AI surface: the primary CTA takes the actual gradient fill. The solid
+// violet --primary (set on [data-surface='aiden']) still drives every other
+// treatment — secondary/outline/link text, borders, focus rings — for free.
+[data-surface='aiden'] .ui-button--default-default {
+  background: var(--aiden-primary);
+}
+[data-surface='aiden'] .ui-button--default-default:hover:not(:disabled) {
+  background: var(--aiden-hover);
+}

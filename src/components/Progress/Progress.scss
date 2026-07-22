@@ -94,3 +94,96 @@
     transform: translateX(250%);
   }
 }
+
+// Aiden AI surface: the determinate default bar takes the gradient AND flows —
+// a palindrome (start→mid→end→mid→start) at 2× width, animated so the colours
+// travel rightward (with the bar's growth) for a seamless "processing" shimmer.
+// (Position runs 200%→0 because an oversized background shifts left as the % rises,
+// so the reverse direction reads as rightward flow.) Semantic variants keep their
+// colour; the indeterminate shimmer keeps its own animation. Under
+// prefers-reduced-motion the global rule collapses the duration, and the
+// palindrome's end frame == start, so it settles to a clean static gradient.
+[data-surface='aiden'] .ui-progress--default:not(.ui-progress--indeterminate) .ui-progress__indicator {
+  background: linear-gradient(
+    90deg,
+    var(--aiden-gradient-start),
+    var(--aiden-gradient-mid),
+    var(--aiden-gradient-end),
+    var(--aiden-gradient-mid),
+    var(--aiden-gradient-start)
+  );
+  background-size: 200% 100%;
+  animation: ui-aiden-progress-flow calc(var(--duration-shimmer) * 2) var(--ease-linear) infinite;
+}
+
+@keyframes ui-aiden-progress-flow {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: 0 0;
+  }
+}
+
+.ui-progress__track-wrap {
+  position: relative;
+}
+
+// Completion celebration — a one-shot particle burst from the finished (right)
+// end of the bar. Rendered only when complete; shown only inside the Aiden
+// surface (gated below). Reduced motion collapses the duration, so it never
+// distracts.
+.ui-progress__particles {
+  display: none;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+[data-surface='aiden'] .ui-progress__particles {
+  display: block;
+}
+
+.ui-progress__particle {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: var(--particle-size);
+  height: var(--particle-size);
+  margin: calc(var(--particle-size) / -2);
+  border-radius: var(--rounded-full);
+  animation: ui-progress-particle var(--duration-ripple) var(--ease-out)
+    var(--particle-delay) both;
+
+  &:nth-child(3n + 1) {
+    background: var(--aiden-gradient-start);
+  }
+  &:nth-child(3n + 2) {
+    background: var(--aiden-gradient-mid);
+  }
+  &:nth-child(3n) {
+    background: var(--aiden-gradient-end);
+  }
+}
+
+@keyframes ui-progress-particle {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0);
+  }
+  25% {
+    opacity: 1;
+    transform: translate(
+        calc(var(--particle-dx) * 0.55),
+        calc(var(--particle-dy) * 0.55)
+      )
+      scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--particle-dx), var(--particle-dy)) scale(0.4);
+  }
+}

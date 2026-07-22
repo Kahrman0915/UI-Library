@@ -196,3 +196,17 @@ export const InForm: Story = {
     </form>
   ),
 };
+
+// Inside `data-surface="aiden"` the checked radio's filled circle takes Aiden's
+// gradient. See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => (
+    <div data-surface="aiden">
+      <RadioGroup id="aiden-radio" label="Model" defaultValue="opus">
+        <RadioGroupItem id="aiden-r1" value="opus" label="Opus" />
+        <RadioGroupItem id="aiden-r2" value="sonnet" label="Sonnet" />
+        <RadioGroupItem id="aiden-r3" value="haiku" label="Haiku" />
+      </RadioGroup>
+    </div>
+  ),
+};

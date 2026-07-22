@@ -79,3 +79,15 @@
     }
   }
 }
+
+// Aiden AI surface — exploratory: active chip fill takes the gradient. The hover
+// override must be as specific as the base active-hover rule, or it reverts to the
+// flat --primary (which also fails white-text contrast).
+[data-surface='aiden'] .ui-chip--active {
+  background: var(--aiden-primary);
+  border-color: transparent;
+}
+[data-surface='aiden'] .ui-chip--active:hover:not(:disabled) {
+  background: var(--aiden-hover);
+  border-color: transparent;
+}
