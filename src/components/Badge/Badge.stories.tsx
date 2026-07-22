@@ -5,7 +5,7 @@ import type { BadgeVariant } from './Badge.types';
 import type { CategoryColor } from '../../types/GlobalTypes';
 
 const categories: CategoryColor[] = [
-  'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal',
+  'red', 'orange', 'amber', 'green', 'emerald', 'teal',
   'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose',
 ];
 
