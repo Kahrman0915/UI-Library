@@ -2,6 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Check, Dot, X } from 'lucide-react';
 import Badge from './Badge';
 import type { BadgeVariant } from './Badge.types';
+import type { CategoryColor } from '../../types/GlobalTypes';
+
+const categories: CategoryColor[] = [
+  'red', 'orange', 'amber', 'yellow', 'lime', 'green', 'emerald', 'teal',
+  'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose',
+];
 
 const variants: BadgeVariant[] = [
   'default',
@@ -24,6 +30,8 @@ const meta: Meta<typeof Badge> = {
   parameters: { layout: 'centered' },
   argTypes: {
     variant: { control: 'select', options: variants },
+    category: { control: 'select', options: [undefined, ...categories] },
+    categoryStyle: { control: 'inline-radio', options: ['soft', 'solid'] },
     IconLeft: { control: false, table: { disable: true } },
     IconRight: { control: false, table: { disable: true } },
     IconCenter: { control: false, table: { disable: true } },
@@ -68,6 +76,41 @@ export const AllVariants: Story = {
             {variant}
           </span>
           <Badge id={`badge-${variant}`} variant={variant} label={variant} />
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+// The 17-hue category palette via the `category` prop (overrides `variant`).
+// `categoryStyle="soft"` = tint + AA `-text`; `"solid"` = vivid fill + AA
+// `-foreground`. Both cleared WCAG AA in both modes. For tags, labels, cells.
+export const Categories: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'grid', gap: 20, maxWidth: 540 }}>
+      {(['soft', 'solid'] as const).map((cs) => (
+        <div key={cs} style={{ display: 'grid', gap: 8 }}>
+          <span
+            style={{
+              fontSize: 'var(--text-xs)',
+              color: 'var(--muted-foreground)',
+              fontFamily: 'var(--font-family)',
+            }}
+          >
+            categoryStyle=&quot;{cs}&quot;
+          </span>
+          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {categories.map((c) => (
+              <Badge
+                key={c}
+                id={`cat-${cs}-${c}`}
+                category={c}
+                categoryStyle={cs}
+                label={c}
+              />
+            ))}
+          </div>
         </div>
       ))}
     </div>

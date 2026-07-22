@@ -96,3 +96,25 @@
   background: var(--aiden-primary);
   color: var(--aiden-primary-foreground);
 }
+
+// Category tags — one soft-tint style per palette hue: the `-bg` tint surface
+// with its AA-safe `-text` colour (see --category-*-text). Generated from the
+// shared palette so adding a hue is a one-line change.
+// Quote the names — bare `red`/`cyan`/etc. are Sass colour VALUES (cyan even
+// serialises to `aqua`), which would emit wrong class names in interpolation.
+$ui-badge-categories: 'red', 'orange', 'amber', 'yellow', 'lime', 'green',
+  'emerald', 'teal', 'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple',
+  'fuchsia', 'pink', 'rose';
+
+@each $c in $ui-badge-categories {
+  // Soft: tint surface + AA-safe on-tint text.
+  .ui-badge--cat-#{$c} {
+    background: var(--category-#{$c}-bg);
+    color: var(--category-#{$c}-text);
+  }
+  // Solid: the fully vivid fill + dark ink (the readable option on a bright palette).
+  .ui-badge--cat-#{$c}-solid {
+    background: var(--category-#{$c});
+    color: var(--category-foreground);
+  }
+}
