@@ -471,14 +471,6 @@ html {
   --category-amber-bg: rgba(245, 158, 11, 0.1);
   --category-amber-hover: #d97706;
   --category-amber-text: #996206;
-  --category-yellow: #eab308;
-  --category-yellow-bg: rgba(234, 179, 8, 0.1);
-  --category-yellow-hover: #ca8a04;
-  --category-yellow-text: #8c6b05;
-  --category-lime: #84cc16;
-  --category-lime-bg: rgba(132, 204, 22, 0.1);
-  --category-lime-hover: #65a30d;
-  --category-lime-text: #4e790d;
   --category-green: #22c55e;
   --category-green-bg: rgba(34, 197, 94, 0.1);
   --category-green-hover: #16a34a;
@@ -527,11 +519,11 @@ html {
   --category-rose-bg: rgba(244, 63, 94, 0.1);
   --category-rose-hover: #e11d48;
   --category-rose-text: #d50c2f;
-  /* Solid-badge text — dark ink on the FULLY vivid fill. Dark text is the only
-     readable option on a bright palette (white would force it pale/muddy); this
-     is the standard for colour tags (GitHub / Linear / Notion). Solid is
-     best-effort; the soft `-text` tags are the strictly-AA-safe path. */
-  --category-foreground: #0f172a;
+  /* Solid-badge text — white on the vivid fill, mirroring the semantic badges'
+     inverted `-foreground` (white in light, dark in dark below). Owner accepts
+     that white dips under AA on the lighter hues (amber/green); the soft
+     `-text` tags remain the strictly-AA-safe path. */
+  --category-foreground: #ffffff;
 
   /* Focus ring colours (semantic + neutral) */
   --focus: rgba(148, 163, 184, 0.5);
@@ -741,14 +733,6 @@ html {
   --category-amber-bg: rgba(251, 191, 36, 0.15);
   --category-amber-hover: #fcd34d;
   --category-amber-text: #fbbf24;
-  --category-yellow: #facc15;
-  --category-yellow-bg: rgba(250, 204, 21, 0.15);
-  --category-yellow-hover: #fde047;
-  --category-yellow-text: #facc15;
-  --category-lime: #a3e635;
-  --category-lime-bg: rgba(163, 230, 53, 0.15);
-  --category-lime-hover: #bef264;
-  --category-lime-text: #a3e635;
   --category-green: #4ade80;
   --category-green-bg: rgba(74, 222, 128, 0.15);
   --category-green-hover: #86efac;
@@ -797,7 +781,8 @@ html {
   --category-rose-bg: rgba(251, 113, 133, 0.15);
   --category-rose-hover: #fda4af;
   --category-rose-text: #fb7185;
-  /* Solid-badge text — dark ink on the vivid 400-level fill (clears AA in dark). */
+  /* Solid-badge text — dark ink here (dark-mode fills are the light 400-level);
+     the inverted counterpart of the light white value. */
   --category-foreground: #0f172a;
 
   /* Focus ring colours (semantic + neutral) */

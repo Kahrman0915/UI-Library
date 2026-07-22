@@ -129,13 +129,13 @@ const PAIRINGS = [
   ['warning', 'warning-light', 'background'],
   ['info', 'info-light', 'background'],
   // Category `-text` on its own `-bg` tint (tags / labels / table cells), tint over --background
-  ...['amber','blue','cyan','emerald','fuchsia','green','indigo','lime','orange','pink','purple','red','rose','sky','teal','violet','yellow'].map(
+  ...['amber','blue','cyan','emerald','fuchsia','green','indigo','orange','pink','purple','red','rose','sky','teal','violet'].map(
     (c) => [`category-${c}-text`, `category-${c}-bg`, 'background'],
   ),
-  // NOTE: solid category badges (vivid --category-{c} fill + dark --category-foreground)
-  // are intentionally NOT gated here — dark text on the vivid palette mostly clears AA
-  // (~4.0–9.3) but a couple mid-tones (indigo/violet) dip just under 4.5; accepted as
-  // best-effort. The soft `-text`-on-`-bg` tags above ARE the strictly-AA-safe path.
+  // NOTE: solid category badges (vivid --category-{c} fill + inverted --category-foreground,
+  // white in light / dark in dark) are intentionally NOT gated here — white on the lighter
+  // hues dips under AA in light mode, an owner-accepted tradeoff. The soft `-text`-on-`-bg`
+  // tags above ARE the strictly-AA-safe path.
 ];
 
 // ── Run ───────────────────────────────────────────────────────────────────────
