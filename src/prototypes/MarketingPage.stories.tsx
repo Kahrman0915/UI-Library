@@ -381,7 +381,7 @@ function MarketingPage() {
 
       {/* Final CTA */}
       <section style={{ ...section, padding: '0 var(--p-6) var(--p-16)' }}>
-        <div style={{ borderRadius: 'var(--rounded-2xl)', padding: 'var(--p-12)', textAlign: 'center', backgroundImage: 'var(--landing-gradient)', color: '#ffffff' }}>
+        <div style={{ borderRadius: 'var(--rounded-2xl)', padding: 'var(--p-12)', textAlign: 'center', backgroundImage: 'var(--gradient-violet-cyan-emerald-diagonal)', color: '#ffffff' }}>
           <Rocket width={32} height={32} style={{ margin: '0 auto var(--p-3)' }} />
           <h2 style={{ margin: 0, fontSize: 'var(--text-4xl)', fontWeight: 'var(--font-bold)' }}>Start shipping today</h2>
           <p style={{ margin: 'var(--p-3) auto var(--p-6)', maxWidth: 460, opacity: 0.9 }}>Deploy your first project in under two minutes. No credit card required.</p>

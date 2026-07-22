@@ -324,9 +324,9 @@ html {
   --tooltip-slide: var(--motion-slide-sm);
 
   /* -----------------------------------------------------------------------
-     Top Global Navigation (always dark, theme-independent)
+     Slate gradient — dark, theme-independent chrome (e.g. top global nav)
      ----------------------------------------------------------------------- */
-  --navigation-background: linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%);
+  --gradient-slate: linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%);
 }
 
 /* =========================================================================
@@ -462,60 +462,84 @@ html {
   --chat-bubble-ai: #ffffff;
   --chat-input-background: #ffffff;
   --chat-input-border: #e2e8f0;
-  --quick-action-active-bg: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
+  --gradient-lavender-sky: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
 
-  /* Category Colors */
+  /* Category Colors
+     `-text` = darkened on-tint text (AA on the `-bg` tint over --background);
+     base stays vivid for fills/dots/charts. Mirrors the --primary-text pattern. */
   --category-red: #ef4444;
   --category-red-bg: rgba(239, 68, 68, 0.1);
   --category-red-hover: #dc2626;
+  --category-red-text: #d41212;
   --category-orange: #f97316;
   --category-orange-bg: rgba(249, 115, 22, 0.1);
   --category-orange-hover: #ea580c;
+  --category-orange-text: #b94e05;
   --category-amber: #f59e0b;
   --category-amber-bg: rgba(245, 158, 11, 0.1);
   --category-amber-hover: #d97706;
+  --category-amber-text: #996206;
   --category-yellow: #eab308;
   --category-yellow-bg: rgba(234, 179, 8, 0.1);
   --category-yellow-hover: #ca8a04;
+  --category-yellow-text: #8c6b05;
   --category-lime: #84cc16;
   --category-lime-bg: rgba(132, 204, 22, 0.1);
   --category-lime-hover: #65a30d;
+  --category-lime-text: #4e790d;
   --category-green: #22c55e;
   --category-green-bg: rgba(34, 197, 94, 0.1);
   --category-green-hover: #16a34a;
+  --category-green-text: #167f3d;
   --category-emerald: #10b981;
   --category-emerald-bg: rgba(16, 185, 129, 0.1);
   --category-emerald-hover: #059669;
+  --category-emerald-text: #0b7c56;
   --category-teal: #14b8a6;
   --category-teal-bg: rgba(20, 184, 166, 0.1);
   --category-teal-hover: #0d9488;
+  --category-teal-text: #0e7c70;
   --category-cyan: #06b6d4;
   --category-cyan-bg: rgba(6, 182, 212, 0.1);
   --category-cyan-hover: #0891b2;
+  --category-cyan-text: #047a8f;
   --category-sky: #0ea5e9;
   --category-sky-bg: rgba(14, 165, 233, 0.1);
   --category-sky-hover: #0284c7;
+  --category-sky-text: #0a75a6;
   --category-blue: #3b82f6;
   --category-blue-bg: rgba(59, 130, 246, 0.1);
   --category-blue-hover: #2563eb;
+  --category-blue-text: #0b63f3;
   --category-indigo: #6366f1;
   --category-indigo-bg: rgba(99, 102, 241, 0.1);
   --category-indigo-hover: #4f46e5;
+  --category-indigo-text: #5558f0;
   --category-violet: #8b5cf6;
   --category-violet-bg: rgba(139, 92, 246, 0.1);
   --category-violet-hover: #7c3aed;
+  --category-violet-text: #7a44f5;
   --category-purple: #a855f7;
   --category-purple-bg: rgba(168, 85, 247, 0.1);
   --category-purple-hover: #9333ea;
+  --category-purple-text: #942ef5;
   --category-fuchsia: #d946ef;
   --category-fuchsia-bg: rgba(217, 70, 239, 0.1);
   --category-fuchsia-hover: #c026d3;
+  --category-fuchsia-text: #b812d1;
   --category-pink: #ec4899;
   --category-pink-bg: rgba(236, 72, 153, 0.1);
   --category-pink-hover: #db2777;
+  --category-pink-text: #cd1570;
   --category-rose: #f43f5e;
   --category-rose-bg: rgba(244, 63, 94, 0.1);
   --category-rose-hover: #e11d48;
+  --category-rose-text: #d50c2f;
+  /* Solid-badge text — dark ink on the FULLY vivid fill. Dark text is the only
+     readable option on a bright palette (white would force it pale/muddy); this
+     is the standard for colour tags (GitHub / Linear / Notion). Solid is
+     best-effort; the soft `-text` tags are the strictly-AA-safe path. */
+  --category-foreground: #0f172a;
 
   /* Custom */
   --focus: rgba(148, 163, 184, 0.5);
@@ -586,8 +610,7 @@ html {
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
   --gradient-purple-rose-amber: linear-gradient(90deg, #8b5cf6 13%, #d946ef 31%, #f43f5e 53%, #f97316 74%, #f59e0b 90%);
   --gradient-full-ramp: linear-gradient(90deg, #3b82f6 0%, #6366f1 8%, #8b5cf6 15%, #a855f7 23%, #d946ef 33%, #f43f5e 44%, #f97316 55%, #f59e0b 64%, #84cc16 73%, #22c55e 78%, #10b981 85%, #14b8a6 88%, #06b6d4 93%, #0ea5e9 100%);
-  --text-gradient: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
-  --landing-gradient: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
+  --gradient-violet-cyan-emerald-diagonal: linear-gradient(135deg, #8b5cf6 0%, #06b6d4 50%, #10b981 100%);
 }
 
 /* =========================================================================
@@ -717,60 +740,79 @@ html {
   --chat-bubble-ai: #334155;
   --chat-input-background: #1e293b;
   --chat-input-border: #475569;
-  --quick-action-active-bg: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(147, 197, 253, 0.3) 100%);
+  --gradient-lavender-sky: linear-gradient(135deg, rgba(167, 139, 250, 0.3) 0%, rgba(147, 197, 253, 0.3) 100%);
 
-  /* Category Colors */
+  /* Category Colors — dark base already clears AA on its tint, so `-text` = base. */
   --category-red: #f87171;
   --category-red-bg: rgba(248, 113, 113, 0.15);
   --category-red-hover: #fca5a5;
+  --category-red-text: #f87171;
   --category-orange: #fb923c;
   --category-orange-bg: rgba(251, 146, 60, 0.15);
   --category-orange-hover: #fdba74;
+  --category-orange-text: #fb923c;
   --category-amber: #fbbf24;
   --category-amber-bg: rgba(251, 191, 36, 0.15);
   --category-amber-hover: #fcd34d;
+  --category-amber-text: #fbbf24;
   --category-yellow: #facc15;
   --category-yellow-bg: rgba(250, 204, 21, 0.15);
   --category-yellow-hover: #fde047;
+  --category-yellow-text: #facc15;
   --category-lime: #a3e635;
   --category-lime-bg: rgba(163, 230, 53, 0.15);
   --category-lime-hover: #bef264;
+  --category-lime-text: #a3e635;
   --category-green: #4ade80;
   --category-green-bg: rgba(74, 222, 128, 0.15);
   --category-green-hover: #86efac;
+  --category-green-text: #4ade80;
   --category-emerald: #34d399;
   --category-emerald-bg: rgba(52, 211, 153, 0.15);
   --category-emerald-hover: #6ee7b7;
+  --category-emerald-text: #34d399;
   --category-teal: #2dd4bf;
   --category-teal-bg: rgba(45, 212, 191, 0.15);
   --category-teal-hover: #5eead4;
+  --category-teal-text: #2dd4bf;
   --category-cyan: #22d3ee;
   --category-cyan-bg: rgba(34, 211, 238, 0.15);
   --category-cyan-hover: #67e8f9;
+  --category-cyan-text: #22d3ee;
   --category-sky: #38bdf8;
   --category-sky-bg: rgba(56, 189, 248, 0.15);
   --category-sky-hover: #7dd3fc;
+  --category-sky-text: #38bdf8;
   --category-blue: #60a5fa;
   --category-blue-bg: rgba(96, 165, 250, 0.15);
   --category-blue-hover: #93c5fd;
+  --category-blue-text: #60a5fa;
   --category-indigo: #818cf8;
   --category-indigo-bg: rgba(129, 140, 248, 0.15);
   --category-indigo-hover: #a5b4fc;
+  --category-indigo-text: #818cf8;
   --category-violet: #a78bfa;
   --category-violet-bg: rgba(167, 139, 250, 0.15);
   --category-violet-hover: #c4b5fd;
+  --category-violet-text: #a78bfa;
   --category-purple: #c084fc;
   --category-purple-bg: rgba(192, 132, 252, 0.15);
   --category-purple-hover: #d8b4fe;
+  --category-purple-text: #c084fc;
   --category-fuchsia: #e879f9;
   --category-fuchsia-bg: rgba(232, 121, 249, 0.15);
   --category-fuchsia-hover: #f0abfc;
+  --category-fuchsia-text: #e879f9;
   --category-pink: #f472b6;
   --category-pink-bg: rgba(244, 114, 182, 0.15);
   --category-pink-hover: #f9a8d4;
+  --category-pink-text: #f472b6;
   --category-rose: #fb7185;
   --category-rose-bg: rgba(251, 113, 133, 0.15);
   --category-rose-hover: #fda4af;
+  --category-rose-text: #fb7185;
+  /* Solid-badge text — dark ink on the vivid 400-level fill (clears AA in dark). */
+  --category-foreground: #0f172a;
 
   /* Custom */
   --focus: rgba(147, 197, 253, 0.45);
@@ -836,8 +878,7 @@ html {
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
   --gradient-purple-rose-amber: linear-gradient(90deg, #a78bfa 13%, #e879f9 31%, #fb7185 53%, #fb923c 74%, #fbbf24 90%);
   --gradient-full-ramp: linear-gradient(90deg, #60a5fa 0%, #818cf8 8%, #a78bfa 15%, #c084fc 23%, #e879f9 33%, #fb7185 44%, #fb923c 55%, #fbbf24 64%, #a3e635 73%, #4ade80 78%, #34d399 85%, #2dd4bf 88%, #22d3ee 93%, #38bdf8 100%);
-  --text-gradient: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
-  --landing-gradient: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
+  --gradient-violet-cyan-emerald-diagonal: linear-gradient(135deg, #a78bfa 0%, #22d3ee 50%, #34d399 100%);
 }
 
 /* =========================================================================
