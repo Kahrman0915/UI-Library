@@ -113,3 +113,8 @@
     transform: translateX(20px);
   }
 }
+
+// Aiden AI surface — exploratory: checked track takes the gradient.
+[data-surface='aiden'] .ui-switch__input:checked ~ .ui-switch {
+  background: var(--aiden-primary);
+}

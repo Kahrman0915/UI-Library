@@ -175,3 +175,15 @@ export const InForm: Story = {
     </form>
   ),
 };
+
+// Inside `data-surface="aiden"` the checked/indeterminate box takes Aiden's
+// gradient fill. See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => (
+    <div data-surface="aiden" style={{ display: 'grid', gap: 'var(--p-2-5)' }}>
+      <Checkbox id="aiden-checked" label="Checked" defaultChecked />
+      <Checkbox id="aiden-indeterminate" label="Indeterminate" indeterminate />
+      <Checkbox id="aiden-unchecked" label="Unchecked" />
+    </div>
+  ),
+};

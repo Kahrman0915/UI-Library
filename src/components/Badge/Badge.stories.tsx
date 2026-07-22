@@ -177,3 +177,15 @@ export const ThemesShowcase: Story = {
     </div>
   ),
 };
+
+// Inside `data-surface="aiden"` the default badge takes Aiden's violet→blue
+// gradient and the outline badge its solid violet — the AI-surface identity,
+// which holds even inside a brand theme. See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => (
+    <div data-surface="aiden" style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+      <Badge id="aiden-default" variant="default" label="Default" />
+      <Badge id="aiden-outline" variant="outline" label="Outline" />
+    </div>
+  ),
+};

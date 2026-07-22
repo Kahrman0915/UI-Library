@@ -6,6 +6,7 @@ import Card, { CardHeader, CardBody, CardFooter } from '../../components/Card';
 import Checkbox from '../../components/Checkbox';
 import Switch from '../../components/Switch';
 import Input from '../../components/Input';
+import Chip from '../../components/Chip';
 
 // ─── Theme catalogue ────────────────────────────────────────────────────────
 const themes = [
@@ -26,7 +27,7 @@ const meta: Meta = {
     docs: {
       description: {
         component:
-          "Mode vs. theme. **Mode** = light/dark, set with `data-mode` on `<html>`. **Theme** = a sub-brand's color, set with `data-theme=\"{code}\"` on `<html>` or any subtree. A theme just remaps `--primary` — so the primary button/CTA and every `--primary`-driven control (checkbox, switch, radio, active chip, progress) takes the theme color automatically. The MAIN brand is the absence of `data-theme`: `--primary` stays neutral slate. Secondary/ghost/outline and Tooltip stay neutral in every theme.",
+          "Three independent axes. **Mode** (`data-mode` = light/dark) ⊥ **Theme** (`data-theme=\"{code}\"` = a sub-brand's accent, remaps `--primary`) ⊥ **Surface** (`data-surface=\"aiden\"` = the AI surface, a gradient identity that layers *inside* any brand). A theme remaps `--primary` so every `--primary`-driven control (primary button, checkbox, switch, radio, active chip, progress) takes the accent automatically. The MAIN brand is the absence of `data-theme`: `--primary` stays neutral slate. Secondary/ghost/outline and Tooltip stay neutral in every theme. See the **Aiden Surface** story for the third axis.",
       },
     },
   },
@@ -84,7 +85,12 @@ export const MentalModel: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-3xl)' }}>
       <div>
-        <H>Mode vs. theme</H>
+        <H>Three axes: mode, theme, surface</H>
+        <P>
+          The system has three <em>independent</em> attribute-driven axes. They
+          compose: you can be in dark mode, inside the <Code>db</Code> brand, on an
+          Aiden surface, all at once.
+        </P>
         <P>
           <strong>Mode</strong> is light / dark — set <Code>data-mode="light"</Code>{' '}
           or <Code>data-mode="dark"</Code> on <Code>&lt;html&gt;</Code> (the{' '}
@@ -105,6 +111,15 @@ export const MentalModel: Story = {
           tooltips stay neutral in every theme — so sub-brands feel like one
           synced family with a single accent swapped in.
         </P>
+        <P>
+          <strong>Surface</strong> is a cross-cutting product identity — today just{' '}
+          <strong>Aiden</strong>, the AI assistant. Set{' '}
+          <Code>data-surface="aiden"</Code> on a panel and it adopts Aiden's violet
+          gradient identity, <em>even inside another brand</em> (an Aiden chat inside{' '}
+          <Code>db</Code> stays Aiden, not indigo). It's <em>not</em> a theme code —
+          it never enters the brand picker, and it layers on top of whatever brand
+          it's in. See the <strong>Aiden Surface</strong> story for how it works.
+        </P>
       </div>
 
       <div>
@@ -120,13 +135,18 @@ export const MentalModel: Story = {
             overflow: 'auto',
           }}
         >
-{`<html data-mode="dark">                 {/* light / dark */}
+{`<html data-mode="dark">                 {/* AXIS 1 — light / dark */}
   <App />                                {/* main brand — slate primary */}
 
-  <section data-theme="db">              {/* db sub-brand */}
+  <section data-theme="db">              {/* AXIS 2 — db sub-brand */}
     <Button variant="default">Save</Button>   {/* → indigo, automatically */}
     <Button style="secondary">Cancel</Button> {/* → stays neutral slate */}
     <Checkbox checked />                       {/* → indigo */}
+
+    <aside data-surface="aiden">         {/* AXIS 3 — Aiden AI panel */}
+      <Button variant="default">Ask Aiden</Button> {/* → violet gradient */}
+      <Checkbox checked />                          {/* → violet, not indigo */}
+    </aside>                             {/* keeps Aiden identity inside db */}
   </section>
 </html>`}
         </pre>
@@ -316,6 +336,140 @@ export const Palettes: Story = {
             </span>
           </div>
         ))}
+      </div>
+    </div>
+  ),
+};
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Story 5 — Aiden surface (the third axis)
+// ═══════════════════════════════════════════════════════════════════════════
+
+const Eyebrow = ({ children }: { children: React.ReactNode }) => (
+  <div
+    style={{
+      marginBottom: 'var(--p-2)',
+      fontSize: 'var(--text-xs)',
+      fontWeight: 'var(--font-semibold)',
+      color: 'var(--muted-foreground)',
+      textTransform: 'uppercase',
+      letterSpacing: 'var(--tracking-wide)',
+    }}
+  >
+    {children}
+  </div>
+);
+
+const AidenSampler = () => (
+  <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
+    <Button id={`a-${Math.random()}`} variant="default" label="Ask Aiden" />
+    <Button id={`as-${Math.random()}`} variant="default" style="secondary" label="Secondary" />
+    <Button id={`ao-${Math.random()}`} variant="default" style="outline" label="Outline" />
+    <Button id={`ag-${Math.random()}`} style="ghost" label="Ghost" />
+    <Badge id={`ab-${Math.random()}`} variant="default" label="Badge" />
+    <Chip id={`ac-${Math.random()}`} label="Active" active />
+    <Checkbox id={`acb-${Math.random()}`} defaultChecked label="Checked" />
+    <Switch id={`asw-${Math.random()}`} defaultChecked label="On" />
+  </div>
+);
+
+export const AidenSurface: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-3xl)' }}>
+      <div>
+        <H>Aiden — the surface axis</H>
+        <P>
+          <strong>Aiden</strong> is the AI assistant. It has its own UI and also
+          appears embedded inside every product brand. Its identity is a{' '}
+          <strong>violet→blue gradient</strong>, so it is <em>not</em> a brand theme:
+          a gradient can't be the single scalar <Code>--primary</Code>, and Aiden must{' '}
+          <em>keep</em> its look inside another brand rather than be swapped by it.
+          It's the third axis — a <strong>surface</strong>, set with{' '}
+          <Code>data-surface="aiden"</Code>, that layers on top of any brand.
+        </P>
+      </div>
+
+      <div>
+        <Eyebrow>Neutral — no surface (reference)</Eyebrow>
+        <AidenSampler />
+      </div>
+
+      <div data-surface="aiden">
+        <Eyebrow>data-surface=&quot;aiden&quot;</Eyebrow>
+        <AidenSampler />
+      </div>
+
+      <div data-theme="db">
+        <Eyebrow>Aiden panel nested inside data-theme=&quot;db&quot;</Eyebrow>
+        <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center', marginBottom: 'var(--p-3)' }}>
+          <Button id={`dbref-${Math.random()}`} variant="default" label="db button (indigo)" />
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+            ← the brand · the panel below keeps Aiden violet →
+          </span>
+        </div>
+        <div data-surface="aiden">
+          <AidenSampler />
+        </div>
+      </div>
+
+      <div>
+        <H>How it works</H>
+        <P>
+          The surface reuses the entire theming machinery. It remaps{' '}
+          <Code>--primary</Code> to Aiden's <strong>solid violet</strong> (the
+          gradient's fallback colour), so every <em>scalar</em> <Code>--primary</Code>{' '}
+          consumer — outline / link / secondary text, borders, focus rings, and the
+          checked checkbox / switch / radio / active chip — turns violet{' '}
+          <em>for free</em>. Then the handful of <strong>hero fills</strong> that want
+          the actual gradient (primary Button, default Badge, active Chip, checked
+          Checkbox, Switch track) override their background to{' '}
+          <Code>var(--aiden-primary)</Code> in their own component SCSS. The{' '}
+          <strong>ghost</strong> button stays neutral slate — the same carve-out as in
+          the brand themes.
+        </P>
+        <pre
+          style={{
+            margin: 0,
+            padding: 'var(--p-4)',
+            background: 'var(--muted)',
+            borderRadius: 'var(--rounded-md)',
+            fontSize: 'var(--text-code)',
+            fontFamily: 'var(--font-family-mono)',
+            overflow: 'auto',
+          }}
+        >
+{`/* tokens.scss — one remap, mirrors a theme scope */
+[data-surface='aiden'] {
+  --primary: var(--aiden-outline-border);   /* solid violet */
+  --primary-foreground: var(--aiden-primary-foreground);
+  /* --primary-text / -light / -border / -ring / -focus all derive */
+}
+
+/* component SCSS — hero fills take the gradient */
+[data-surface='aiden'] .ui-button--default-default { background: var(--aiden-primary); }
+[data-surface='aiden'] .ui-badge--default          { background: var(--aiden-primary); }
+[data-surface='aiden'] .ui-chip--active            { background: var(--aiden-primary); }`}
+        </pre>
+      </div>
+
+      <div>
+        <H>The Aiden token family</H>
+        <P>
+          <Code>--aiden-primary</Code> (the gradient fill) ·{' '}
+          <Code>--aiden-hover</Code> (deeper gradient, hover) ·{' '}
+          <Code>--aiden-outline-border</Code> (the solid violet = the surface's{' '}
+          <Code>--primary</Code>) · <Code>--aiden-secondary</Code> /{' '}
+          <Code>--aiden-border</Code> / <Code>--aiden-ring</Code> /{' '}
+          <Code>--aiden-focus</Code> (tints for the standalone{' '}
+          <Code>variant="aiden"</Code>). All are mode-aware.
+        </P>
+        <P>
+          <strong>Accessibility:</strong> in light mode the gradient is tuned so{' '}
+          <em>white</em> text clears AA (~4.6:1) across every stop; in dark mode it's
+          a pastel gradient carrying <em>dark</em> text. The scalar violet clears AA
+          as text via the derived <Code>--primary-text</Code>. So the whole surface —
+          in both modes — passes WCAG AA.
+        </P>
       </div>
     </div>
   ),

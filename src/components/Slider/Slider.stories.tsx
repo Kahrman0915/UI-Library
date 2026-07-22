@@ -169,3 +169,13 @@ export const AllStates: Story = {
     </Frame>
   ),
 };
+
+// Inside `data-surface="aiden"` the filled range takes Aiden's gradient.
+// See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => (
+    <div data-surface="aiden" style={{ maxWidth: 'var(--max-w-sm)' }}>
+      <Slider id="aiden-slider" label="Temperature" defaultValue={65} showValue />
+    </div>
+  ),
+};

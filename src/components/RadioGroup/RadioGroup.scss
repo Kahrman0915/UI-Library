@@ -104,3 +104,10 @@
   ~ .ui-radio {
   border-color: var(--muted-foreground);
 }
+
+// Aiden AI surface: the checked radio's filled outer circle takes the gradient
+// (the inner dot stays --primary-foreground).
+[data-surface='aiden'] .ui-radio__input:checked ~ .ui-radio {
+  background: var(--aiden-primary);
+  border-color: transparent;
+}

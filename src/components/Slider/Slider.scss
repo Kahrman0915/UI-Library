@@ -135,3 +135,8 @@
     }
   }
 }
+
+// Aiden AI surface: the filled range takes the gradient.
+[data-surface='aiden'] .ui-slider__range {
+  background: var(--aiden-primary);
+}

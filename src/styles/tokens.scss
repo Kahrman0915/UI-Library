@@ -567,19 +567,19 @@ html {
   --rm-primary: #7c3aed;
   --rm-primary-foreground: #ffffff;
 
-  --aiden-primary: linear-gradient(135deg, #8b5cf6 0%, #7761f3 50%, #60a5fa 100%);
+  --aiden-primary: linear-gradient(135deg, #8455f0 0%, #5f61ef 50%, #2c6dea 100%);
   --aiden-primary-foreground: #ffffff;
-  --aiden-secondary: linear-gradient(135deg, rgba(139, 92, 246, 0.08) 0%, rgba(96, 165, 250, 0.08) 100%);
+  --aiden-secondary: linear-gradient(135deg, rgba(132, 85, 240, 0.08) 0%, rgba(44, 109, 234, 0.08) 100%);
   --aiden-secondary-foreground: #0f172a;
-  --aiden-border: linear-gradient(135deg, rgba(139, 92, 246, 0.8) 0%, rgba(96, 165, 250, 0.8) 100%);
-  --aiden-hover: linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
-  --aiden-ring: linear-gradient(135deg, rgba(139, 92, 246, 0.5) 0%, rgba(96, 165, 250, 0.5) 100%);
-  --aiden-focus: 0 0 0 3px rgba(139, 92, 246, 0.5);
-  --aiden-gradient-start: #8b5cf6;
-  --aiden-gradient-mid: #7761f3;
-  --aiden-gradient-end: #60a5fa;
-  --aiden-outline-hover: linear-gradient(135deg, #ede9fe 29%, #e0f2fe 100%);
-  --aiden-outline-border: #8b5cf6;
+  --aiden-border: linear-gradient(135deg, rgba(132, 85, 240, 0.8) 0%, rgba(44, 109, 234, 0.8) 100%);
+  --aiden-hover: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%);
+  --aiden-ring: linear-gradient(135deg, rgba(132, 85, 240, 0.5) 0%, rgba(44, 109, 234, 0.5) 100%);
+  --aiden-focus: 0 0 0 3px rgba(132, 85, 240, 0.5);
+  --aiden-gradient-start: #8455f0;
+  --aiden-gradient-mid: #5f61ef;
+  --aiden-gradient-end: #2c6dea;
+  --aiden-outline-hover: linear-gradient(135deg, #ede9fe 29%, #dbeafe 100%);
+  --aiden-outline-border: #8455f0;
   --aiden-outline-hover-foreground: #0f172a;
 
   /* Gradient Ramps */
@@ -953,8 +953,30 @@ html {
    Matches both same-element (<html data-mode data-theme>) and subtree
    (<section data-theme>) forms. Semantic + main-brand soft tints are mode-split in
    the base blocks instead (they aren't themed). */
+/* Aiden AI surface — a scoped overlay, NOT a brand theme. Kept off the data-theme
+   axis so it never enters the brand picker and can nest INSIDE any brand (an Aiden
+   chat panel inside db keeps its violet identity). Remaps --primary to Aiden's solid
+   violet (the intended fallback for its gradient), so every scalar --primary consumer
+   inside the surface — outline/link text, borders, focus rings, checked controls —
+   goes violet for free via the existing plumbing. The few fills that want the actual
+   gradient override it in their own component SCSS (Button primary CTA, Badge default)
+   reading var(--aiden-primary). */
+[data-surface='aiden'] {
+  --primary: var(--aiden-outline-border);
+  --primary-foreground: var(--aiden-primary-foreground);
+  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
+  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+}
+
 [data-mode='light'] [data-theme],
-[data-mode='light'][data-theme] {
+[data-mode='light'][data-theme],
+[data-mode='light'] [data-surface='aiden'],
+[data-mode='light'][data-surface='aiden'] {
   --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
 }
 

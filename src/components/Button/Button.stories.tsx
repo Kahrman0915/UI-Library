@@ -215,3 +215,22 @@ export const ThemesShowcase: Story = {
     </div>
   ),
 };
+
+// Inside `data-surface="aiden"` the primary CTA takes Aiden's violet→blue
+// gradient (hover deepens it); secondary/outline/link go solid violet; ghost
+// stays neutral slate — the same carve-out as the brand themes.
+// See Foundations/Themes → Aiden Surface.
+export const AidenSurface: Story = {
+  render: () => (
+    <div
+      data-surface="aiden"
+      style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}
+    >
+      <Button id="aiden-primary" variant="default" label="Ask Aiden" />
+      <Button id="aiden-secondary" variant="default" style="secondary" label="Secondary" />
+      <Button id="aiden-outline" variant="default" style="outline" label="Outline" />
+      <Button id="aiden-ghost" style="ghost" label="Ghost" />
+      <Button id="aiden-link" variant="default" style="link" label="Link" />
+    </div>
+  ),
+};

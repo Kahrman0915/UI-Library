@@ -250,3 +250,11 @@
 .ui-input-group__addon--inline-start .ui-input-group__button {
   margin-left: var(--p-1);
 }
+
+// Aiden AI surface: the default (primary) button addon takes the gradient.
+[data-surface='aiden'] .ui-input-group__button--default {
+  background: var(--aiden-primary);
+}
+[data-surface='aiden'] .ui-input-group__button--default:hover:not(:disabled) {
+  background: var(--aiden-hover);
+}
