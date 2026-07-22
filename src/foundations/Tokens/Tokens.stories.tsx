@@ -236,13 +236,40 @@ export const Tokens: Story = {
       />
 
       <section style={{ marginBottom: 28 }}>
+        <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600 }}>Category colours — 15 hues for tags, charts &amp; data-viz</h3>
+        <p style={{ maxWidth: 720, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, marginBottom: 10 }}>
+          A vivid 15-hue palette, separate from the semantic system. Each hue has four members plus one
+          global text token. The rule: <strong><code>--category-{'{c}'}</code> is a fill</strong> (charts, dots,
+          the solid badge); <strong>never use it as small text</strong> — use a <code>-text</code> or{' '}
+          <code>-foreground</code> token, which are AA-tuned (the base fails AA as text on its own tint in
+          light mode). The soft <code>-text</code>-on-<code>-bg</code> pairings are gated by{' '}
+          <code>test:contrast</code>.
+        </p>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(300px, 1fr))', gap: '2px 24px', fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, maxWidth: 720 }}>
+          <div><code>--category-{'{c}'}</code> — vivid fill (charts, dots, <em>solid</em> badge)</div>
+          <div><code>--category-{'{c}'}-bg</code> — 10%/15% tint (the <em>soft</em> tag surface)</div>
+          <div><code>--category-{'{c}'}-text</code> — AA text on that tint (soft tag)</div>
+          <div><code>--category-{'{c}'}-hover</code> — darker step (interactive state)</div>
+          <div><code>--category-foreground</code> — text on the solid fill (white light / dark in dark, like the semantic badges)</div>
+        </div>
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 12 }}>
+          {['red', 'amber', 'emerald', 'teal', 'blue', 'violet', 'pink'].map((c) => (
+            <span key={c} style={{ fontFamily: font, fontSize: 12, fontWeight: 500, padding: '4px 10px', borderRadius: 'var(--rounded-md)', background: `var(--category-${c}-bg)`, color: `var(--category-${c}-text)` }}>{c} soft</span>
+          ))}
+          {['red', 'amber', 'emerald', 'teal', 'blue', 'violet', 'pink'].map((c) => (
+            <span key={c} style={{ fontFamily: font, fontSize: 12, fontWeight: 500, padding: '4px 10px', borderRadius: 'var(--rounded-md)', background: `var(--category-${c})`, color: 'var(--category-foreground)' }}>{c} solid</span>
+          ))}
+        </div>
+      </section>
+
+      <section style={{ marginBottom: 28 }}>
         <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600 }}>Also in the system</h3>
         <p style={{ maxWidth: 720, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
-          <strong>Category</strong> (17 hues × base/-bg/-hover) for tags & charts · <strong>Chart</strong>{' '}
-          (1–5, a neutral ramp) · <strong>Code-block</strong> syntax colours · <strong>Tooltip</strong>{' '}
-          (inverse slate, never themed) · <strong>Aiden</strong> (the AI <em>surface</em>,{' '}
-          <code>data-surface="aiden"</code> — a violet gradient identity that layers inside any brand;
-          see Foundations → Themes → <em>Aiden Surface</em>).
+          <strong>Chart</strong> (1–6, a neutral ramp) · <strong>Code-block</strong> syntax colours ·{' '}
+          <strong>Tooltip</strong> (inverse slate, never themed) · <strong>Sidebar</strong> (its own chrome
+          surface) · <strong>Aiden</strong> (the AI <em>surface</em>, <code>data-surface="aiden"</code> — a
+          violet gradient identity that layers inside any brand; see Foundations → Themes →{' '}
+          <em>Aiden Surface</em>).
         </p>
       </section>
 
