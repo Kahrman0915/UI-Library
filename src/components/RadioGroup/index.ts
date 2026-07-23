@@ -3,4 +3,5 @@ export type {
   RadioGroupProps,
   RadioGroupItemProps,
   RadioGroupOrientation,
+  RadioGroupSize,
 } from './RadioGroup.types';

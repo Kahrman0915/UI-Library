@@ -15,6 +15,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
       description,
       disabled = false,
       required,
+      size = 'default',
       name,
       value,
       className,
@@ -42,7 +43,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
 
     return (
       <label
-        className={`ui-checkbox-wrap${disabled ? ' ui-checkbox-wrap--disabled' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-checkbox-wrap ui-checkbox-wrap--sz-${size}${disabled ? ' ui-checkbox-wrap--disabled' : ''}${className ? ' ' + className : ''}`}
         htmlFor={id}
       >
         <input

@@ -18,6 +18,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
       disabled = false,
       required = false,
       orientation = 'vertical',
+      size = 'default',
       label,
       description,
       className,
@@ -47,7 +48,7 @@ const RadioGroup = forwardRef<HTMLDivElement, RadioGroupProps>(
         aria-describedby={description ? `${id}-description` : undefined}
         aria-required={required || undefined}
         aria-disabled={disabled || undefined}
-        className={`ui-radio-group ui-radio-group--${orientation}${className ? ' ' + className : ''}`}
+        className={`ui-radio-group ui-radio-group--${orientation} ui-radio-group--sz-${size}${className ? ' ' + className : ''}`}
       >
         {(label || description) && (
           <div className="ui-radio-group__header">
