@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import {
   Copy,
   FileText,
@@ -277,4 +277,103 @@ export const ComposerWithAttachment: StoryObj = {
 
 export const ComposerStreaming: StoryObj = {
   render: () => <ComposerDemo streaming />,
+};
+
+// ── Assembled: a working chat (list + composer wired together) ────────────────
+
+type Msg = {
+  id: string;
+  from: 'user' | 'assistant';
+  content?: string;
+  pending?: boolean;
+};
+
+const AssembledDemo = () => {
+  const [messages, setMessages] = useState<Msg[]>([
+    { id: 'm0', from: 'assistant', content: "Hi — I'm Aiden. Ask me anything." },
+  ]);
+  const [value, setValue] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const idRef = useRef(1);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const send = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const pendingId = `m${idRef.current++}-a`;
+    setMessages((m) => [
+      ...m,
+      { id: `m${idRef.current++}-u`, from: 'user', content: trimmed },
+      { id: pendingId, from: 'assistant', pending: true },
+    ]);
+    setValue('');
+    setStreaming(true);
+    timerRef.current = setTimeout(() => {
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === pendingId
+            ? { ...msg, pending: false, content: `You said: "${trimmed}"` }
+            : msg,
+        ),
+      );
+      setStreaming(false);
+    }, 1600);
+  };
+
+  const stop = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setStreaming(false);
+    setMessages((m) =>
+      m.map((msg) =>
+        msg.pending
+          ? { ...msg, pending: false, content: '(stopped)' }
+          : msg,
+      ),
+    );
+  };
+
+  return frame(
+    <Chat density="balanced" style={{ flex: 1 }}>
+      <ChatMessageList>
+        {messages.map((msg) =>
+          msg.from === 'user' ? (
+            <ChatMessage key={msg.id} from="user">
+              <ChatBubble>{msg.content}</ChatBubble>
+            </ChatMessage>
+          ) : (
+            <ChatMessage key={msg.id} from="assistant" avatar={aiden}>
+              <ChatBubble pending={msg.pending}>{msg.content}</ChatBubble>
+            </ChatMessage>
+          ),
+        )}
+      </ChatMessageList>
+      <div
+        style={{
+          padding: 'var(--p-3)',
+          borderTop: '1px solid var(--border)',
+        }}
+      >
+        <ChatComposer
+          value={value}
+          onValueChange={setValue}
+          onSubmit={send}
+          isStreaming={streaming}
+          onStop={stop}
+        >
+          <ChatComposerInput
+            placeholder="Message Aiden…"
+            aria-label="Message Aiden"
+          />
+          <ChatComposerActions>
+            <AttachButton />
+            <ChatComposerSend />
+          </ChatComposerActions>
+        </ChatComposer>
+      </div>
+    </Chat>,
+  );
+};
+
+export const Assembled: StoryObj = {
+  render: () => <AssembledDemo />,
 };
