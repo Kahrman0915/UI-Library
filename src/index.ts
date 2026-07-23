@@ -576,6 +576,37 @@ export type {
   DropdownMenuAlign,
 } from './components/DropdownMenu';
 
+export {
+  default as Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarLabel,
+  MenubarSeparator,
+  MenubarGroup,
+  MenubarCheckboxItem,
+  MenubarRadioGroup,
+  MenubarRadioItem,
+  MenubarShortcut,
+} from './components/Menubar';
+export type {
+  MenubarProps,
+  MenubarMenuProps,
+  MenubarTriggerProps,
+  MenubarContentProps,
+  MenubarItemProps,
+  MenubarLabelProps,
+  MenubarSeparatorProps,
+  MenubarGroupProps,
+  MenubarCheckboxItemProps,
+  MenubarRadioGroupProps,
+  MenubarRadioItemProps,
+  MenubarShortcutProps,
+  MenubarSide,
+  MenubarAlign,
+} from './components/Menubar';
+
 export { default as ScrollArea } from './components/ScrollArea';
 export type {
   ScrollAreaProps,
