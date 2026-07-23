@@ -1,0 +1,284 @@
+// ═════════════════════════════════════════════════════════════════════════════
+// Chat — root column container. Give it a bounded height so the list scrolls.
+// ═════════════════════════════════════════════════════════════════════════════
+
+.ui-chat {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  font-family: var(--font-family);
+  color: var(--foreground);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MessageList — scroll region + floating jump-to-latest button.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat__list-wrap {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+}
+
+.ui-chat__list {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.ui-chat__list-content {
+  display: flex;
+  flex-direction: column;
+  padding: var(--p-4);
+
+  &--density-compact {
+    gap: var(--p-2);
+  }
+  &--density-balanced {
+    gap: var(--p-4);
+  }
+  &--density-spacious {
+    gap: var(--p-6);
+  }
+}
+
+.ui-chat__jump {
+  position: absolute;
+  bottom: var(--p-3);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-8);
+  height: var(--h-8);
+  padding: 0;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-full);
+  background: var(--popover);
+  color: var(--foreground);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--accent);
+    border-color: var(--border-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow:
+      var(--shadow-md),
+      0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-chat__jump-icon {
+  width: var(--w-4);
+  height: var(--h-4);
+  display: block;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Message — one row. User right, assistant left, system centered.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-message {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--p-2);
+  width: 100%;
+  min-width: 0;
+
+  &--assistant {
+    justify-content: flex-start;
+  }
+
+  &--user {
+    justify-content: flex-end;
+
+    // Avatar (if any) sits on the trailing edge for the user's own messages.
+    .ui-chat-message__avatar {
+      order: 2;
+    }
+  }
+
+  &--system {
+    justify-content: center;
+  }
+}
+
+.ui-chat-message__avatar {
+  flex-shrink: 0;
+}
+
+.ui-chat-message__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  min-width: 0;
+  max-width: min(75%, var(--max-w-lg));
+}
+
+.ui-chat-message--user .ui-chat-message__body {
+  align-items: flex-end;
+}
+
+.ui-chat-message--system .ui-chat-message__body {
+  max-width: min(90%, var(--max-w-md));
+  align-items: center;
+  text-align: center;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Bubble — the message surface, with a subtle tail toward the sender.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-bubble {
+  display: inline-block;
+  max-width: 100%;
+  padding: var(--p-2-5) var(--p-3-5);
+  border-radius: var(--rounded-2xl);
+  border: var(--border-w-100) solid transparent;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+  overflow-wrap: break-word;
+
+  p {
+    margin: 0;
+  }
+  p + p {
+    margin-top: var(--p-2);
+  }
+
+  &--user {
+    background: var(--chat-bubble-user);
+    border-bottom-right-radius: var(--rounded-sm);
+  }
+
+  &--assistant {
+    background: var(--chat-bubble-ai);
+    border-color: var(--border);
+    border-bottom-left-radius: var(--rounded-sm);
+  }
+
+  // System messages are bubble-less centered notes; if a bubble is used anyway,
+  // keep it quiet.
+  &--system {
+    background: var(--secondary);
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+  }
+}
+
+// ---- Typing indicator (pending) ----
+
+.ui-chat-bubble__typing {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  padding: var(--p-0-5) 0;
+}
+
+.ui-chat-bubble__dot {
+  width: var(--w-1-5);
+  height: var(--h-1-5);
+  border-radius: var(--rounded-full);
+  background: var(--muted-foreground);
+  animation: ui-chat-typing var(--duration-shimmer) var(--ease-in-out) infinite;
+
+  &:nth-child(2) {
+    animation-delay: var(--duration-instant);
+  }
+  &:nth-child(3) {
+    animation-delay: var(--duration-slow);
+  }
+}
+
+@keyframes ui-chat-typing {
+  0%,
+  60%,
+  100% {
+    opacity: var(--o-30);
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(calc(var(--motion-slide-sm) / -2));
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// MessageActions — trailing action row, revealed on hover / focus.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-message__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-1);
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-out);
+
+  &--user {
+    justify-content: flex-end;
+  }
+  &--assistant {
+    justify-content: flex-start;
+  }
+}
+
+.ui-chat-message:hover .ui-chat-message__actions,
+.ui-chat-message:focus-within .ui-chat-message__actions {
+  opacity: 1;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Marker — labeled divider / centered system note / status line.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-marker {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--p-2);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+
+  &--divider {
+    gap: var(--p-3);
+
+    &::before,
+    &::after {
+      content: '';
+      flex: 1 1 auto;
+      height: var(--border-w-100);
+      background: var(--border);
+    }
+  }
+
+  // Centered pill for system notes.
+  &--system .ui-chat-marker__label {
+    padding: var(--p-1) var(--p-3);
+    border-radius: var(--rounded-full);
+    background: var(--secondary);
+  }
+}
+
+.ui-chat-marker__label {
+  font-weight: var(--font-medium);
+}
+
+.ui-chat-marker__dot {
+  flex-shrink: 0;
+}

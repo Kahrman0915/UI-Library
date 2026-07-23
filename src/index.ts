@@ -66,6 +66,26 @@ export type {
 export { default as Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
 
+export {
+  default as Chat,
+  ChatMessageList,
+  ChatMessage,
+  ChatBubble,
+  ChatMessageActions,
+  ChatMarker,
+} from './components/Chat';
+export type {
+  ChatProps,
+  ChatMessageListProps,
+  ChatMessageProps,
+  ChatBubbleProps,
+  ChatMessageActionsProps,
+  ChatMarkerProps,
+  ChatDensity,
+  ChatSender,
+  ChatMarkerVariant,
+} from './components/Chat';
+
 export { default as RadioGroup, RadioGroupItem } from './components/RadioGroup';
 export type {
   RadioGroupProps,
