@@ -474,6 +474,9 @@ export type {
 export { default as Input } from './components/Input';
 export type { InputProps, InputSize } from './components/Input';
 
+export { default as InputOTP } from './components/InputOTP';
+export type { InputOTPProps, InputOTPSize } from './components/InputOTP';
+
 export { default as Label } from './components/Label';
 export type { LabelProps, LabelSize } from './components/Label';
 
