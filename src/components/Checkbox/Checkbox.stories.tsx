@@ -11,6 +11,7 @@ const meta: Meta<typeof Checkbox> = {
     checked: { control: 'boolean' },
     indeterminate: { control: 'boolean' },
     disabled: { control: 'boolean' },
+    size: { control: 'inline-radio', options: ['sm', 'default', 'lg'] },
     onCheckedChange: { action: 'checked-change' },
   },
   args: {
@@ -184,6 +185,23 @@ export const AidenSurface: Story = {
       <Checkbox id="aiden-checked" label="Checked" defaultChecked />
       <Checkbox id="aiden-indeterminate" label="Indeterminate" indeterminate />
       <Checkbox id="aiden-unchecked" label="Unchecked" />
+    </div>
+  ),
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-4)', alignItems: 'start' }}>
+      <Checkbox id="cb-sm" size="sm" label="Small" defaultChecked />
+      <Checkbox id="cb-default" size="default" label="Default" defaultChecked />
+      <Checkbox id="cb-lg" size="lg" label="Large" defaultChecked />
+      <Checkbox
+        id="cb-lg-desc"
+        size="lg"
+        label="Large with description"
+        description="Everything scales together."
+        indeterminate
+      />
     </div>
   ),
 };

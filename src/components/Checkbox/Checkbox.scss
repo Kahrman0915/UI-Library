@@ -114,6 +114,46 @@
   border-color: var(--muted-foreground);
 }
 
+// ---- Sizes: default (box 16 / check 12), sm (14 / 10), lg (20 / 16). The box
+//      + icon scale here; the label text scales via the `.ui-label__text` rules.
+//      Base `.ui-checkbox` already supplies the default box; only sm/lg override.
+
+.ui-checkbox-wrap--sz-sm {
+  .ui-checkbox {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+  }
+  .ui-checkbox svg {
+    width: var(--w-2-5);
+    height: var(--h-2-5);
+  }
+  .ui-label__text {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+.ui-checkbox-wrap--sz-default .ui-label__text {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.ui-checkbox-wrap--sz-lg {
+  .ui-checkbox {
+    width: var(--w-5);
+    height: var(--h-5);
+    border-radius: var(--rounded-md);
+  }
+  .ui-checkbox svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+  .ui-label__text {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
 // Text column typography and disabled state are inherited from Label.scss
 // (via the shared `.ui-label` classes on the internal span).
 

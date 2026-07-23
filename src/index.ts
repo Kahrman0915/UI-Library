@@ -64,7 +64,7 @@ export type {
 } from './components/Card';
 
 export { default as Checkbox } from './components/Checkbox';
-export type { CheckboxProps } from './components/Checkbox';
+export type { CheckboxProps, CheckboxSize } from './components/Checkbox';
 
 export {
   default as Chat,
@@ -134,6 +134,7 @@ export type {
   RadioGroupProps,
   RadioGroupItemProps,
   RadioGroupOrientation,
+  RadioGroupSize,
 } from './components/RadioGroup';
 
 export { default as Switch } from './components/Switch';
