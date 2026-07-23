@@ -7,7 +7,15 @@ import {
   useRef,
   useState,
 } from 'react';
-import { ArrowDown, ArrowUp, Square } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  Check,
+  ChevronRight,
+  CircleAlert,
+  Square,
+  Wrench,
+} from 'lucide-react';
 import {
   ChatComposerContext,
   ChatContext,
@@ -20,6 +28,11 @@ import { useStickToBottom } from '../../hooks/useStickToBottom';
 import { useAutosizeTextarea } from '../../hooks/useAutosizeTextarea';
 import StatusDot from '../StatusDot/StatusDot';
 import Button from '../Button/Button';
+import Spinner from '../Spinner/Spinner';
+import Collapsible, {
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '../Collapsible/Collapsible';
 // The composer reuses `.ui-input-wrap` / `.ui-input` for its border, focus ring
 // and native-control reset — those classes live in Input.scss.
 import '../Input/Input.scss';
@@ -34,6 +47,10 @@ import type {
   ChatMessageListProps,
   ChatMessageProps,
   ChatProps,
+  ChatSuggestionProps,
+  ChatSuggestionsProps,
+  ChatToolCallProps,
+  ChatToolCallsProps,
 } from './Chat.types';
 import './Chat.scss';
 
@@ -163,7 +180,17 @@ ChatMessage.displayName = 'ChatMessage';
 // ═════════════════════════════════════════════════════════════════════════════
 
 const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
-  ({ from: fromProp, pending = false, className, children, ...rest }, ref) => {
+  (
+    {
+      from: fromProp,
+      pending = false,
+      streaming = false,
+      className,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
     const msgCtx = useChatMessageContext();
     const from = fromProp ?? msgCtx?.from ?? 'assistant';
     return (
@@ -171,7 +198,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
         {...rest}
         ref={ref}
         data-from={from}
-        aria-busy={pending || undefined}
+        aria-busy={pending || streaming || undefined}
         className={`ui-chat-bubble ui-chat-bubble--${from}${pending ? ' ui-chat-bubble--pending' : ''}${className ? ' ' + className : ''}`}
       >
         {pending ? (
@@ -181,7 +208,12 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
             <span className="ui-chat-bubble__dot" />
           </span>
         ) : (
-          children
+          <>
+            {children}
+            {streaming && (
+              <span className="ui-chat-bubble__caret" aria-hidden />
+            )}
+          </>
         )}
       </div>
     );
@@ -412,6 +444,125 @@ const ChatComposerSend = forwardRef<HTMLButtonElement, ChatComposerSendProps>(
 
 ChatComposerSend.displayName = 'ChatComposerSend';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// ToolCalls — the agent's tool invocations. `ChatToolCalls` stacks them;
+// `ChatToolCall` is a collapsible card (reuses Collapsible) whose body holds the
+// args / result (consumer-provided, typically Code / CodeBlock).
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatToolCalls = forwardRef<HTMLDivElement, ChatToolCallsProps>(
+  ({ className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-tools${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+ChatToolCalls.displayName = 'ChatToolCalls';
+
+const ChatToolCall = forwardRef<HTMLDivElement, ChatToolCallProps>(
+  (
+    {
+      id: idProp,
+      name,
+      status = 'success',
+      icon,
+      statusLabel,
+      defaultOpen = false,
+      className,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    const autoId = useId();
+    const id = idProp ?? autoId;
+
+    const statusNode =
+      status === 'running' ? (
+        <>
+          <Spinner id={`${id}-status`} size={14} />
+          <span>{statusLabel ?? 'Running'}</span>
+        </>
+      ) : status === 'error' ? (
+        <>
+          <CircleAlert aria-hidden />
+          <span>{statusLabel ?? 'Error'}</span>
+        </>
+      ) : (
+        <>
+          <Check aria-hidden />
+          <span>{statusLabel ?? 'Done'}</span>
+        </>
+      );
+
+    return (
+      <Collapsible
+        {...rest}
+        ref={ref}
+        id={id}
+        defaultOpen={defaultOpen}
+        data-status={status}
+        className={`ui-chat-tool ui-chat-tool--${status}${className ? ' ' + className : ''}`}
+      >
+        <CollapsibleTrigger>
+          <button type="button" className="ui-chat-tool__trigger">
+            <ChevronRight className="ui-chat-tool__chevron" aria-hidden />
+            <span className="ui-chat-tool__icon">
+              {icon ?? <Wrench aria-hidden />}
+            </span>
+            <span className="ui-chat-tool__name">{name}</span>
+            <span className="ui-chat-tool__status">{statusNode}</span>
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="ui-chat-tool__body">{children}</div>
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  },
+);
+
+ChatToolCall.displayName = 'ChatToolCall';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Suggestions — a wrapping row of one-shot prompt buttons (starters / follow-ups).
+// Momentary buttons, not toggles (so not Chip); consumers wire onClick to send.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatSuggestions = forwardRef<HTMLDivElement, ChatSuggestionsProps>(
+  ({ className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-suggestions${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+ChatSuggestions.displayName = 'ChatSuggestions';
+
+const ChatSuggestion = forwardRef<HTMLButtonElement, ChatSuggestionProps>(
+  ({ className, type, children, ...rest }, ref) => (
+    <button
+      {...rest}
+      ref={ref}
+      type={type ?? 'button'}
+      className={`ui-chat-suggestion${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </button>
+  ),
+);
+
+ChatSuggestion.displayName = 'ChatSuggestion';
+
 export default Chat;
 export {
   ChatMessageList,
@@ -423,4 +574,8 @@ export {
   ChatComposerInput,
   ChatComposerActions,
   ChatComposerSend,
+  ChatToolCalls,
+  ChatToolCall,
+  ChatSuggestions,
+  ChatSuggestion,
 };

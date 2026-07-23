@@ -9,6 +9,10 @@ export {
   ChatComposerInput,
   ChatComposerActions,
   ChatComposerSend,
+  ChatToolCalls,
+  ChatToolCall,
+  ChatSuggestions,
+  ChatSuggestion,
 } from './Chat';
 export type {
   ChatProps,
@@ -21,6 +25,11 @@ export type {
   ChatComposerInputProps,
   ChatComposerActionsProps,
   ChatComposerSendProps,
+  ChatToolCallsProps,
+  ChatToolCallProps,
+  ChatToolStatus,
+  ChatSuggestionsProps,
+  ChatSuggestionProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

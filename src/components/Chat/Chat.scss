@@ -337,3 +337,185 @@
 .ui-chat-composer__send {
   margin-inline-start: auto;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Streaming caret — a blinking cursor appended while tokens arrive.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-bubble__caret {
+  display: inline-block;
+  width: var(--w-0-5);
+  height: 1em;
+  margin-inline-start: var(--p-0-5);
+  vertical-align: text-bottom;
+  background: currentColor;
+  border-radius: var(--rounded-sm);
+  animation: ui-chat-caret var(--duration-shimmer) steps(1) infinite;
+}
+
+@keyframes ui-chat-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ToolCalls — collapsible agent action cards.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-tools {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  font-family: var(--font-family);
+}
+
+.ui-chat-tool {
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--card);
+  overflow: hidden;
+}
+
+.ui-chat-tool__trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  width: 100%;
+  padding: var(--p-2) var(--p-3);
+  border: none;
+  background: transparent;
+  color: var(--foreground);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    background: var(--accent);
+  }
+  &:focus-visible {
+    outline: none;
+    // inset so the card's overflow:hidden doesn't clip the ring
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-chat-tool__chevron {
+  width: var(--w-4);
+  height: var(--h-4);
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+  transition: transform var(--duration-fast) var(--ease-out);
+}
+
+.ui-chat-tool__trigger[data-state='open'] .ui-chat-tool__chevron {
+  transform: rotate(90deg);
+}
+
+.ui-chat-tool__icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+.ui-chat-tool__name {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  font-weight: var(--font-medium);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-chat-tool__status {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  font-size: var(--text-xs);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+  }
+}
+
+.ui-chat-tool--running .ui-chat-tool__status {
+  color: var(--muted-foreground);
+}
+.ui-chat-tool--success .ui-chat-tool__status {
+  color: var(--success);
+}
+.ui-chat-tool--error .ui-chat-tool__status {
+  color: var(--error);
+}
+
+.ui-chat-tool__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  padding: 0 var(--p-3) var(--p-3);
+  font-size: var(--text-sm);
+  color: var(--foreground);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Suggestions — a wrapping row of one-shot prompt pills.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-2);
+  font-family: var(--font-family);
+}
+
+.ui-chat-suggestion {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  padding: var(--p-1-5) var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-full);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  cursor: pointer;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  &:hover:not(:disabled) {
+    background: var(--accent);
+    border-color: var(--border-hover);
+  }
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    flex-shrink: 0;
+  }
+}

@@ -4,6 +4,7 @@ import {
   FileText,
   Paperclip,
   RefreshCw,
+  Sparkles,
   ThumbsUp,
   X,
 } from 'lucide-react';
@@ -18,6 +19,10 @@ import Chat, {
   ChatMessage,
   ChatMessageActions,
   ChatMessageList,
+  ChatSuggestion,
+  ChatSuggestions,
+  ChatToolCall,
+  ChatToolCalls,
 } from './Chat';
 import { CodeBlock } from '../Code/Code';
 import Attachment, {
@@ -371,4 +376,82 @@ const AssembledDemo = () => {
 
 export const Assembled: StoryObj = {
   render: () => <AssembledDemo />,
+};
+
+// ── AI parts: tool calls, suggestions, streaming ─────────────────────────────
+
+export const ToolCalls: StoryObj = {
+  render: () => (
+    <div style={{ width: 480 }}>
+      <ChatMessage from="assistant">
+        <ChatBubble>
+          <p>Looking into that now.</p>
+          <ChatToolCalls style={{ marginTop: 'var(--p-3)' }}>
+            <ChatToolCall name="web_search" status="success" defaultOpen>
+              <CodeBlock
+                id="tc-args"
+                language="json"
+                code={`{ "query": "how to center a div" }`}
+              />
+              <CodeBlock
+                id="tc-result"
+                language="json"
+                code={`{ "results": 8, "top": "flexbox" }`}
+              />
+            </ChatToolCall>
+            <ChatToolCall name="read_file" status="running" />
+            <ChatToolCall name="write_file" status="error" statusLabel="Failed">
+              <span style={{ color: 'var(--muted-foreground)' }}>
+                Permission denied: /etc/hosts
+              </span>
+            </ChatToolCall>
+          </ChatToolCalls>
+        </ChatBubble>
+      </ChatMessage>
+    </div>
+  ),
+};
+
+export const Suggestions: StoryObj = {
+  render: () => {
+    const [picked, setPicked] = useState<string | null>(null);
+    return (
+      <div style={{ width: 520 }}>
+        <ChatSuggestions>
+          {['Summarize this page', 'Draft a reply', 'Explain the diff'].map(
+            (s) => (
+              <ChatSuggestion key={s} onClick={() => setPicked(s)}>
+                {s}
+              </ChatSuggestion>
+            ),
+          )}
+          <ChatSuggestion onClick={() => setPicked('Brainstorm ideas')}>
+            <Sparkles /> Brainstorm ideas
+          </ChatSuggestion>
+        </ChatSuggestions>
+        <p
+          style={{
+            marginTop: 'var(--p-4)',
+            fontFamily: 'var(--font-family)',
+            fontSize: 'var(--text-sm)',
+            color: 'var(--muted-foreground)',
+          }}
+        >
+          {picked ? `Picked: ${picked}` : 'Pick a suggestion…'}
+        </p>
+      </div>
+    );
+  },
+};
+
+export const Streaming: StoryObj = {
+  render: () => (
+    <div style={{ width: 520 }}>
+      <ChatMessage from="assistant">
+        <ChatBubble streaming>
+          The capital of France is Paris. It sits on the Seine and is known for
+        </ChatBubble>
+      </ChatMessage>
+    </div>
+  ),
 };

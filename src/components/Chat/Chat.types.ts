@@ -28,8 +28,10 @@ export type ChatMessageProps = React.HTMLAttributes<HTMLDivElement> & {
 export type ChatBubbleProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Overrides the sender inherited from the enclosing `ChatMessage`. */
   from?: ChatSender;
-  /** Render an animated typing indicator instead of children. */
+  /** Render an animated typing indicator instead of children (nothing yet). */
   pending?: boolean;
+  /** Append a blinking caret after the content (tokens are still arriving). */
+  streaming?: boolean;
   className?: string;
 };
 
@@ -84,5 +86,39 @@ export type ChatComposerSendProps = {
   /** Accessible label while streaming. Default "Stop generating". */
   stopLabel?: string;
   size?: Size;
+  className?: string;
+};
+
+// ── Tool calls ───────────────────────────────────────────────────────────────
+
+export type ChatToolStatus = 'running' | 'success' | 'error';
+
+export type ChatToolCallsProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
+
+export type ChatToolCallProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  id?: string;
+  /** The tool name (rendered in mono). */
+  name: React.ReactNode;
+  status?: ChatToolStatus;
+  /** Leading tool icon; defaults to a wrench. */
+  icon?: React.ReactNode;
+  /** Overrides the status label text (default Running/Done/Error). */
+  statusLabel?: React.ReactNode;
+  defaultOpen?: boolean;
+  className?: string;
+};
+
+// ── Suggestions ──────────────────────────────────────────────────────────────
+
+export type ChatSuggestionsProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
+
+export type ChatSuggestionProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   className?: string;
 };
