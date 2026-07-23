@@ -66,6 +66,69 @@ export type {
 export { default as Checkbox } from './components/Checkbox';
 export type { CheckboxProps } from './components/Checkbox';
 
+export {
+  default as Chat,
+  ChatMessageList,
+  ChatMessage,
+  ChatBubble,
+  ChatMessageActions,
+  ChatMarker,
+  ChatComposer,
+  ChatComposerInput,
+  ChatComposerActions,
+  ChatComposerSend,
+  ChatComposerDictation,
+  ChatComposerDrawer,
+  ChatToolCalls,
+  ChatToolCall,
+  ChatSuggestions,
+  ChatSuggestion,
+  ChatLayout,
+  ChatLayoutHeader,
+  ChatLayoutBody,
+  ChatLayoutFooter,
+  ChatMessageEdit,
+  ChatMessageVersions,
+  ChatReasoning,
+  ChatCitation,
+  ChatSources,
+  ChatSource,
+  ChatGreeting,
+} from './components/Chat';
+export type {
+  ChatProps,
+  ChatMessageListProps,
+  ChatMessageProps,
+  ChatBubbleProps,
+  ChatMessageActionsProps,
+  ChatMarkerProps,
+  ChatComposerProps,
+  ChatComposerInputProps,
+  ChatComposerActionsProps,
+  ChatComposerSendProps,
+  ChatComposerDictationProps,
+  ChatComposerDrawerProps,
+  ChatToolCallsProps,
+  ChatToolCallProps,
+  ChatToolStatus,
+  ChatSuggestionsProps,
+  ChatSuggestionProps,
+  ChatLayoutProps,
+  ChatLayoutHeaderProps,
+  ChatLayoutBodyProps,
+  ChatLayoutFooterProps,
+  ChatMessageEditProps,
+  ChatMessageVersionsProps,
+  ChatReasoningProps,
+  ChatCitationProps,
+  ChatSourcesProps,
+  ChatSourceProps,
+  ChatGreetingProps,
+  ChatDensity,
+  ChatSender,
+  ChatMarkerVariant,
+} from './components/Chat';
+
 export { default as RadioGroup, RadioGroupItem } from './components/RadioGroup';
 export type {
   RadioGroupProps,
@@ -639,3 +702,10 @@ export type { Size, CategoryColor, ChildrenAsPropsType } from './types/GlobalTyp
 
 export { useRipple } from './hooks/useRipple';
 export type { UseRippleResult } from './hooks/useRipple';
+
+export { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
+export type { UseAutosizeTextareaOptions } from './hooks/useAutosizeTextarea';
+export { useStickToBottom } from './hooks/useStickToBottom';
+export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
+export { useStreamingText } from './hooks/useStreamingText';
+export type { UseStreamingTextOptions } from './hooks/useStreamingText';
