@@ -1,7 +1,13 @@
 // InputGroup rides on top of the reused `.ui-input-wrap` from Input.scss and
 // overrides its layout to a flex-wrap row that supports block addons.
 
-.ui-input-group__wrap {
+// The `.ui-input-field` prefix matches the specificity of Input's
+// `.ui-input-field--sz-* .ui-input-wrap` size rules (which set `padding: 0 …`);
+// being later in the cascade it wins, so the fixed horizontal padding is
+// actually reset to 0. Without it the wrap keeps its size padding *on top of*
+// each cell's own padding, double-padding the leading edge (same trick as
+// Input's `.ui-input-field .ui-input-wrap--multi`).
+.ui-input-field .ui-input-group__wrap {
   // Reset the fixed padding — each cell inside owns its own padding.
   padding: 0;
   align-items: stretch;
