@@ -173,3 +173,91 @@ export type ChatLayoutBodyProps = React.HTMLAttributes<HTMLDivElement> & {
 export type ChatLayoutFooterProps = React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
 };
+
+// ── Editing + response versions ──────────────────────────────────────────────
+
+export type ChatMessageEditProps = {
+  /** Uncontrolled initial value. */
+  defaultValue?: string;
+  /** Controlled value (pair with onValueChange). */
+  value?: string;
+  onValueChange?: (value: string) => void;
+  onSave: (value: string) => void;
+  onCancel: () => void;
+  saveLabel?: string;
+  cancelLabel?: string;
+  placeholder?: string;
+  maxRows?: number;
+  className?: string;
+};
+
+export type ChatMessageVersionsProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** 1-based index of the shown version. */
+  index: number;
+  count: number;
+  onPrevious?: () => void;
+  onNext?: () => void;
+  previousLabel?: string;
+  nextLabel?: string;
+  className?: string;
+};
+
+// ── Reasoning ("thinking") ───────────────────────────────────────────────────
+
+export type ChatReasoningProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  id?: string;
+  /** Header label. Defaults to "Thinking…" while active, else "Reasoning". */
+  label?: React.ReactNode;
+  /** Active state — the label shimmers. */
+  thinking?: boolean;
+  defaultOpen?: boolean;
+  className?: string;
+};
+
+// ── Citations + sources ──────────────────────────────────────────────────────
+
+export type ChatCitationProps = Omit<
+  React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  'children'
+> & {
+  /** The marker content (e.g. a number). Alternatively pass children. */
+  index?: React.ReactNode;
+  href?: string;
+  children?: React.ReactNode;
+  className?: string;
+};
+
+export type ChatSourcesProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Optional heading above the cards (e.g. "Sources"). */
+  label?: React.ReactNode;
+  className?: string;
+};
+
+export type ChatSourceProps = Omit<
+  React.AnchorHTMLAttributes<HTMLAnchorElement>,
+  'title'
+> & {
+  href?: string;
+  index?: React.ReactNode;
+  title: React.ReactNode;
+  domain?: React.ReactNode;
+  /** Leading favicon / thumbnail slot. */
+  icon?: React.ReactNode;
+  className?: string;
+};
+
+// ── Greeting / empty state ───────────────────────────────────────────────────
+
+export type ChatGreetingProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  title: React.ReactNode;
+  description?: React.ReactNode;
+  /** Logo / brand-mark slot above the title. */
+  icon?: React.ReactNode;
+  className?: string;
+};

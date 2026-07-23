@@ -3,6 +3,7 @@ import {
   Copy,
   FileText,
   Paperclip,
+  Pencil,
   RefreshCw,
   Sparkles,
   ThumbsUp,
@@ -11,12 +12,14 @@ import {
 import type { Meta, StoryObj } from '@storybook/react';
 import Chat, {
   ChatBubble,
+  ChatCitation,
   ChatComposer,
   ChatComposerActions,
   ChatComposerDictation,
   ChatComposerDrawer,
   ChatComposerInput,
   ChatComposerSend,
+  ChatGreeting,
   ChatLayout,
   ChatLayoutBody,
   ChatLayoutFooter,
@@ -24,7 +27,12 @@ import Chat, {
   ChatMarker,
   ChatMessage,
   ChatMessageActions,
+  ChatMessageEdit,
   ChatMessageList,
+  ChatMessageVersions,
+  ChatReasoning,
+  ChatSource,
+  ChatSources,
   ChatSuggestion,
   ChatSuggestions,
   ChatToolCall,
@@ -566,4 +574,146 @@ const LayoutDemo = () => {
 
 export const FullLayout: StoryObj = {
   render: () => <LayoutDemo />,
+};
+
+// ── Batch 4: editing, versions, reasoning, citations, greeting ───────────────
+
+export const Editing: StoryObj = {
+  render: () => {
+    const [content, setContent] = useState('How do I center a div in CSS?');
+    const [editing, setEditing] = useState(false);
+    return (
+      <div style={{ width: 520 }}>
+        <ChatMessage from="user">
+          {editing ? (
+            <ChatMessageEdit
+              defaultValue={content}
+              onSave={(v) => {
+                setContent(v);
+                setEditing(false);
+              }}
+              onCancel={() => setEditing(false)}
+            />
+          ) : (
+            <>
+              <ChatBubble>{content}</ChatBubble>
+              <ChatMessageActions>
+                <button
+                  type="button"
+                  aria-label="Edit"
+                  onClick={() => setEditing(true)}
+                  className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+                >
+                  <Pencil />
+                </button>
+              </ChatMessageActions>
+            </>
+          )}
+        </ChatMessage>
+      </div>
+    );
+  },
+};
+
+export const Versions: StoryObj = {
+  render: () => {
+    const answers = [
+      'Use flexbox: display: flex; justify-content: center; align-items: center.',
+      'Or grid: display: grid; place-items: center — both axes at once.',
+      'For a single line, text-align: center works too.',
+    ];
+    const [i, setI] = useState(0);
+    return (
+      <div style={{ width: 520 }}>
+        <ChatMessage from="assistant">
+          <ChatBubble>{answers[i]}</ChatBubble>
+          <ChatMessageActions>
+            <ChatMessageVersions
+              index={i + 1}
+              count={answers.length}
+              onPrevious={() => setI((n) => Math.max(0, n - 1))}
+              onNext={() => setI((n) => Math.min(answers.length - 1, n + 1))}
+            />
+            <button
+              type="button"
+              aria-label="Regenerate"
+              className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+            >
+              <RefreshCw />
+            </button>
+          </ChatMessageActions>
+        </ChatMessage>
+      </div>
+    );
+  },
+};
+
+export const Reasoning: StoryObj = {
+  render: () => (
+    <div style={{ width: 520, display: 'flex', flexDirection: 'column', gap: 'var(--p-4)' }}>
+      <ChatMessage from="assistant">
+        <ChatReasoning thinking />
+      </ChatMessage>
+      <ChatMessage from="assistant">
+        <ChatReasoning label="Thought for 3s" defaultOpen>
+          The question is about centering. There are two robust approaches —
+          flexbox and grid. Grid’s place-items is the most concise, so I’ll lead
+          with that and mention flexbox as the alternative.
+        </ChatReasoning>
+        <ChatBubble>Use <code>display: grid; place-items: center;</code>.</ChatBubble>
+      </ChatMessage>
+    </div>
+  ),
+};
+
+export const Citations: StoryObj = {
+  render: () => (
+    <div style={{ width: 520 }}>
+      <ChatMessage from="assistant">
+        <ChatBubble>
+          <p>
+            The Seine runs through Paris
+            <ChatCitation href="#" index={1} />, and the city has been France’s
+            capital since 508 AD
+            <ChatCitation href="#" index={2} />.
+          </p>
+          <ChatSources label="Sources">
+            <ChatSource
+              href="#"
+              index={1}
+              title="Seine — Wikipedia"
+              domain="en.wikipedia.org"
+            />
+            <ChatSource
+              href="#"
+              index={2}
+              title="History of Paris"
+              domain="paris.fr"
+            />
+          </ChatSources>
+        </ChatBubble>
+      </ChatMessage>
+    </div>
+  ),
+};
+
+export const Greeting: StoryObj = {
+  render: () =>
+    frame(
+      <Chat style={{ flex: 1 }}>
+        <ChatMessageList>
+          <ChatGreeting
+            icon={<Sparkles />}
+            title="How can I help today?"
+            description="Ask a question, or start from one of these."
+          >
+            <ChatSuggestions>
+              <ChatSuggestion>Summarize a document</ChatSuggestion>
+              <ChatSuggestion>Write some code</ChatSuggestion>
+              <ChatSuggestion>Plan my week</ChatSuggestion>
+            </ChatSuggestions>
+          </ChatGreeting>
+        </ChatMessageList>
+      </Chat>,
+    ),
 };

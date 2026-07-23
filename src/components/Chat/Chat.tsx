@@ -10,7 +10,9 @@ import {
 import {
   ArrowDown,
   ArrowUp,
+  Brain,
   Check,
+  ChevronLeft,
   ChevronRight,
   CircleAlert,
   Maximize2,
@@ -64,6 +66,13 @@ import type {
   ChatLayoutHeaderProps,
   ChatLayoutBodyProps,
   ChatLayoutFooterProps,
+  ChatMessageEditProps,
+  ChatMessageVersionsProps,
+  ChatReasoningProps,
+  ChatCitationProps,
+  ChatSourcesProps,
+  ChatSourceProps,
+  ChatGreetingProps,
 } from './Chat.types';
 import './Chat.scss';
 
@@ -761,6 +770,329 @@ const ChatLayoutFooter = forwardRef<HTMLDivElement, ChatLayoutFooterProps>(
 
 ChatLayoutFooter.displayName = 'ChatLayoutFooter';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// MessageEdit — inline editor for a message (typically a user turn). Enter saves,
+// Shift+Enter is a newline, Escape cancels. Reuses .ui-input-wrap + autosize.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
+  (
+    {
+      defaultValue = '',
+      value: valueProp,
+      onValueChange,
+      onSave,
+      onCancel,
+      saveLabel = 'Save',
+      cancelLabel = 'Cancel',
+      placeholder,
+      maxRows = 10,
+      className,
+    },
+    ref,
+  ) => {
+    const controlled = valueProp !== undefined;
+    const [internal, setInternal] = useState(defaultValue);
+    const value = controlled ? valueProp : internal;
+    const autoRef = useAutosizeTextarea(value, { maxRows });
+    const genId = useId();
+
+    const setValue = (v: string) => {
+      if (!controlled) setInternal(v);
+      onValueChange?.(v);
+    };
+
+    const setNode = useCallback(
+      (node: HTMLTextAreaElement | null) => {
+        autoRef.current = node;
+        if (typeof ref === 'function') ref(node);
+        else if (ref) ref.current = node;
+      },
+      [autoRef, ref],
+    );
+
+    const save = () => {
+      if (value.trim()) onSave(value);
+    };
+
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        onCancel();
+      } else if (
+        e.key === 'Enter' &&
+        !e.shiftKey &&
+        !e.nativeEvent.isComposing
+      ) {
+        e.preventDefault();
+        save();
+      }
+    };
+
+    return (
+      <div className={`ui-chat-edit${className ? ' ' + className : ''}`}>
+        <div className="ui-input-wrap ui-chat-edit__wrap">
+          <textarea
+            ref={setNode}
+            rows={1}
+            value={value}
+            placeholder={placeholder}
+            onChange={(e) => setValue(e.target.value)}
+            onKeyDown={handleKeyDown}
+            className="ui-input ui-chat-edit__input"
+            aria-label="Edit message"
+          />
+        </div>
+        <div className="ui-chat-edit__actions">
+          <Button
+            id={`${genId}-cancel`}
+            style="ghost"
+            size="small"
+            label={cancelLabel}
+            onClick={onCancel}
+          />
+          <Button
+            id={`${genId}-save`}
+            variant="aiden"
+            size="small"
+            label={saveLabel}
+            disabled={!value.trim()}
+            onClick={save}
+          />
+        </div>
+      </div>
+    );
+  },
+);
+
+ChatMessageEdit.displayName = 'ChatMessageEdit';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// MessageVersions — a ‹ 2 / 3 › pager for stepping through regenerated
+// responses. Presentational: the consumer owns the versions array.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatMessageVersions = forwardRef<
+  HTMLDivElement,
+  ChatMessageVersionsProps
+>(
+  (
+    {
+      index,
+      count,
+      onPrevious,
+      onNext,
+      previousLabel = 'Previous version',
+      nextLabel = 'Next version',
+      className,
+      ...rest
+    },
+    ref,
+  ) => (
+    <div
+      {...rest}
+      ref={ref}
+      role="group"
+      aria-label="Response versions"
+      className={`ui-chat-versions${className ? ' ' + className : ''}`}
+    >
+      <button
+        type="button"
+        className="ui-chat-versions__nav"
+        aria-label={previousLabel}
+        disabled={index <= 1}
+        onClick={onPrevious}
+      >
+        <ChevronLeft aria-hidden />
+      </button>
+      <span className="ui-chat-versions__count">
+        {index} / {count}
+      </span>
+      <button
+        type="button"
+        className="ui-chat-versions__nav"
+        aria-label={nextLabel}
+        disabled={index >= count}
+        onClick={onNext}
+      >
+        <ChevronRight aria-hidden />
+      </button>
+    </div>
+  ),
+);
+
+ChatMessageVersions.displayName = 'ChatMessageVersions';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Reasoning — a collapsible "thinking" block (composes Collapsible). `thinking`
+// shimmers the label while the model is still reasoning.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatReasoning = forwardRef<HTMLDivElement, ChatReasoningProps>(
+  (
+    {
+      id: idProp,
+      label,
+      thinking = false,
+      defaultOpen = false,
+      className,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    const autoId = useId();
+    const id = idProp ?? autoId;
+    const text = label ?? (thinking ? 'Thinking…' : 'Reasoning');
+
+    return (
+      <Collapsible
+        {...rest}
+        ref={ref}
+        id={id}
+        defaultOpen={defaultOpen}
+        data-thinking={thinking ? '' : undefined}
+        className={`ui-chat-reasoning${className ? ' ' + className : ''}`}
+      >
+        <CollapsibleTrigger>
+          <button type="button" className="ui-chat-reasoning__trigger">
+            <Brain className="ui-chat-reasoning__icon" aria-hidden />
+            <span
+              className={`ui-chat-reasoning__label${thinking ? ' ui-chat-reasoning__label--thinking' : ''}`}
+            >
+              {text}
+            </span>
+            <ChevronRight className="ui-chat-reasoning__chevron" aria-hidden />
+          </button>
+        </CollapsibleTrigger>
+        <CollapsibleContent>
+          <div className="ui-chat-reasoning__body">{children}</div>
+        </CollapsibleContent>
+      </Collapsible>
+    );
+  },
+);
+
+ChatReasoning.displayName = 'ChatReasoning';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Citation — an inline source marker. Renders an <a> when href is given.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatCitation = forwardRef<
+  HTMLAnchorElement | HTMLSpanElement,
+  ChatCitationProps
+>(({ index, href, className, children, ...rest }, ref) => {
+  const content = children ?? index;
+  const cls = `ui-chat-citation${className ? ' ' + className : ''}`;
+  if (href) {
+    return (
+      <a
+        {...rest}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
+        className={cls}
+      >
+        {content}
+      </a>
+    );
+  }
+  return (
+    <span
+      {...(rest as React.HTMLAttributes<HTMLSpanElement>)}
+      ref={ref as React.Ref<HTMLSpanElement>}
+      className={cls}
+    >
+      {content}
+    </span>
+  );
+});
+
+ChatCitation.displayName = 'ChatCitation';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Sources — a labeled group of source cards.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatSources = forwardRef<HTMLDivElement, ChatSourcesProps>(
+  ({ label, className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-sources${className ? ' ' + className : ''}`}
+    >
+      {label && <div className="ui-chat-sources__label">{label}</div>}
+      <div className="ui-chat-sources__list">{children}</div>
+    </div>
+  ),
+);
+
+ChatSources.displayName = 'ChatSources';
+
+const ChatSource = forwardRef<
+  HTMLAnchorElement | HTMLDivElement,
+  ChatSourceProps
+>(({ href, index, title, domain, icon, className, ...rest }, ref) => {
+  const cls = `ui-chat-source${className ? ' ' + className : ''}`;
+  const body = (
+    <>
+      {index != null && <span className="ui-chat-source__index">{index}</span>}
+      {icon && <span className="ui-chat-source__icon">{icon}</span>}
+      <span className="ui-chat-source__body">
+        <span className="ui-chat-source__title">{title}</span>
+        {domain && <span className="ui-chat-source__domain">{domain}</span>}
+      </span>
+    </>
+  );
+  if (href) {
+    return (
+      <a
+        {...rest}
+        ref={ref as React.Ref<HTMLAnchorElement>}
+        href={href}
+        className={cls}
+      >
+        {body}
+      </a>
+    );
+  }
+  return (
+    <div
+      {...(rest as React.HTMLAttributes<HTMLDivElement>)}
+      ref={ref as React.Ref<HTMLDivElement>}
+      className={cls}
+    >
+      {body}
+    </div>
+  );
+});
+
+ChatSource.displayName = 'ChatSource';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Greeting — a centered conversation-start screen (title + subtitle + slot for
+// a suggestions grid). Drop it in the message list when there are no messages.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatGreeting = forwardRef<HTMLDivElement, ChatGreetingProps>(
+  ({ title, description, icon, className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-greeting${className ? ' ' + className : ''}`}
+    >
+      {icon && <div className="ui-chat-greeting__icon">{icon}</div>}
+      <h2 className="ui-chat-greeting__title">{title}</h2>
+      {description && (
+        <p className="ui-chat-greeting__description">{description}</p>
+      )}
+      {children && <div className="ui-chat-greeting__content">{children}</div>}
+    </div>
+  ),
+);
+
+ChatGreeting.displayName = 'ChatGreeting';
+
 export default Chat;
 export {
   ChatMessageList,
@@ -782,4 +1114,11 @@ export {
   ChatLayoutHeader,
   ChatLayoutBody,
   ChatLayoutFooter,
+  ChatMessageEdit,
+  ChatMessageVersions,
+  ChatReasoning,
+  ChatCitation,
+  ChatSources,
+  ChatSource,
+  ChatGreeting,
 };
