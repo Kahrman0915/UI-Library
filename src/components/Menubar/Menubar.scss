@@ -1,0 +1,41 @@
+// The bar. The menu surfaces reuse `.ui-dropdown-menu__*` (DropdownMenu.scss),
+// so only the bar + its triggers need styling here.
+.ui-menubar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-0-5);
+  padding: var(--p-1);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  background: var(--background);
+  font-family: var(--font-family);
+}
+
+.ui-menubar__trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  padding: var(--p-1) var(--p-2-5);
+  border: none;
+  border-radius: var(--rounded-sm);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-5);
+  cursor: default;
+  user-select: none;
+  transition: background var(--duration-fast) var(--ease-out);
+
+  &:hover,
+  &--open {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
