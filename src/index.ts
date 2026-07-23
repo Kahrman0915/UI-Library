@@ -639,3 +639,8 @@ export type { Size, CategoryColor, ChildrenAsPropsType } from './types/GlobalTyp
 
 export { useRipple } from './hooks/useRipple';
 export type { UseRippleResult } from './hooks/useRipple';
+
+export { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
+export type { UseAutosizeTextareaOptions } from './hooks/useAutosizeTextarea';
+export { useStickToBottom } from './hooks/useStickToBottom';
+export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
