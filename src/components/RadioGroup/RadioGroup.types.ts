@@ -1,4 +1,5 @@
 export type RadioGroupOrientation = 'vertical' | 'horizontal';
+export type RadioGroupSize = 'sm' | 'default' | 'lg';
 
 export type RadioGroupProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
@@ -12,6 +13,8 @@ export type RadioGroupProps = Omit<
   disabled?: boolean;
   required?: boolean;
   orientation?: RadioGroupOrientation;
+  /** Scales the radios + label text for every item in the group. */
+  size?: RadioGroupSize;
   label?: React.ReactNode;
   description?: React.ReactNode;
   className?: string;

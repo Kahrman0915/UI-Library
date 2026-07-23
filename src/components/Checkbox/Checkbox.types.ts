@@ -1,3 +1,5 @@
+export type CheckboxSize = 'sm' | 'default' | 'lg';
+
 export type CheckboxProps = Omit<
   React.InputHTMLAttributes<HTMLInputElement>,
   'type' | 'onChange' | 'checked' | 'defaultChecked' | 'size'
@@ -11,6 +13,7 @@ export type CheckboxProps = Omit<
   description?: React.ReactNode;
   disabled?: boolean;
   required?: boolean;
+  size?: CheckboxSize;
   name?: string;
   value?: string;
   className?: string;
