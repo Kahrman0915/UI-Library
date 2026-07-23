@@ -105,6 +105,45 @@
   border-color: var(--muted-foreground);
 }
 
+// ---- Sizes: default (circle 16 / dot 8), sm (14 / 6), lg (20 / 10). Scales the
+//      radios + all label text (group header + item labels) from the group root.
+//      Base `.ui-radio` / `.ui-radio__dot` supply the default size.
+
+.ui-radio-group--sz-sm {
+  .ui-radio {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+  }
+  .ui-radio__dot {
+    width: var(--w-1-5);
+    height: var(--h-1-5);
+  }
+  .ui-label__text {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+.ui-radio-group--sz-default .ui-label__text {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.ui-radio-group--sz-lg {
+  .ui-radio {
+    width: var(--w-5);
+    height: var(--h-5);
+  }
+  .ui-radio__dot {
+    width: var(--w-2-5);
+    height: var(--h-2-5);
+  }
+  .ui-label__text {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
 // Aiden AI surface: the checked radio's filled outer circle takes the gradient
 // (the inner dot stays --primary-foreground).
 [data-surface='aiden'] .ui-radio__input:checked ~ .ui-radio {

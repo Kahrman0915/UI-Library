@@ -14,6 +14,7 @@ const meta: Meta<typeof RadioGroup> = {
     },
     disabled: { control: 'boolean' },
     required: { control: 'boolean' },
+    size: { control: 'inline-radio', options: ['sm', 'default', 'lg'] },
     onValueChange: { action: 'value-change' },
   },
   args: {
@@ -206,6 +207,25 @@ export const AidenSurface: Story = {
         <RadioGroupItem id="aiden-r1" value="opus" label="Opus" />
         <RadioGroupItem id="aiden-r2" value="sonnet" label="Sonnet" />
         <RadioGroupItem id="aiden-r3" value="haiku" label="Haiku" />
+      </RadioGroup>
+    </div>
+  ),
+};
+
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-6)' }}>
+      <RadioGroup id="rg-sm" size="sm" label="Small" defaultValue="a">
+        <RadioGroupItem id="rg-sm-a" value="a" label="Option A" />
+        <RadioGroupItem id="rg-sm-b" value="b" label="Option B" />
+      </RadioGroup>
+      <RadioGroup id="rg-default" size="default" label="Default" defaultValue="a">
+        <RadioGroupItem id="rg-md-a" value="a" label="Option A" />
+        <RadioGroupItem id="rg-md-b" value="b" label="Option B" />
+      </RadioGroup>
+      <RadioGroup id="rg-lg" size="lg" label="Large" defaultValue="a">
+        <RadioGroupItem id="rg-lg-a" value="a" label="Option A" />
+        <RadioGroupItem id="rg-lg-b" value="b" label="Option B" />
       </RadioGroup>
     </div>
   ),
