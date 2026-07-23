@@ -27,3 +27,27 @@ export const ChatMessageContext =
 
 export const useChatMessageContext = (): ChatMessageContextValue | null =>
   useContext(ChatMessageContext);
+
+// Composer context: the input state, shared to ChatComposerInput / …Send so
+// they stay a single controlled source. Sub-parts require the provider.
+export type ChatComposerContextValue = {
+  value: string;
+  onValueChange?: (value: string) => void;
+  submit: () => void;
+  disabled: boolean;
+  isStreaming: boolean;
+  onStop?: () => void;
+};
+
+export const ChatComposerContext =
+  createContext<ChatComposerContextValue | null>(null);
+
+export const useChatComposerContext = (): ChatComposerContextValue => {
+  const ctx = useContext(ChatComposerContext);
+  if (!ctx) {
+    throw new Error(
+      'ChatComposer subcomponents must be used inside <ChatComposer>.',
+    );
+  }
+  return ctx;
+};

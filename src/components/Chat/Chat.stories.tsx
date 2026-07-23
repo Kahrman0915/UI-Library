@@ -1,8 +1,19 @@
-import { useMemo } from 'react';
-import { Copy, RefreshCw, ThumbsUp } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import {
+  Copy,
+  FileText,
+  Paperclip,
+  RefreshCw,
+  ThumbsUp,
+  X,
+} from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Chat, {
   ChatBubble,
+  ChatComposer,
+  ChatComposerActions,
+  ChatComposerInput,
+  ChatComposerSend,
   ChatMarker,
   ChatMessage,
   ChatMessageActions,
@@ -10,6 +21,14 @@ import Chat, {
 } from './Chat';
 import Avatar from '../Avatar/Avatar';
 import { CodeBlock } from '../Code/Code';
+import Attachment, {
+  AttachmentAction,
+  AttachmentActions,
+  AttachmentContent,
+  AttachmentGroup,
+  AttachmentMedia,
+  AttachmentTitle,
+} from '../Attachment/Attachment';
 
 const meta: Meta<typeof Chat> = {
   title: 'Components/Chat',
@@ -182,4 +201,80 @@ export const LongScroll: Story = {
       </Chat>,
     );
   },
+};
+
+// ── Composer ─────────────────────────────────────────────────────────────────
+
+const AttachButton = () => (
+  <button
+    type="button"
+    aria-label="Attach file"
+    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-button--icon-only"
+  >
+    <Paperclip />
+  </button>
+);
+
+const ComposerDemo = ({
+  streaming = false,
+  withAttachment = false,
+}: {
+  streaming?: boolean;
+  withAttachment?: boolean;
+}) => {
+  const [value, setValue] = useState('');
+  const [isStreaming, setIsStreaming] = useState(streaming);
+
+  return (
+    <div style={{ width: 520 }}>
+      <ChatComposer
+        value={value}
+        onValueChange={setValue}
+        onSubmit={() => {
+          setValue('');
+          setIsStreaming(true);
+        }}
+        isStreaming={isStreaming}
+        onStop={() => setIsStreaming(false)}
+      >
+        {withAttachment && (
+          <AttachmentGroup>
+            <Attachment size="xs">
+              <AttachmentMedia variant="icon">
+                <FileText />
+              </AttachmentMedia>
+              <AttachmentContent>
+                <AttachmentTitle>q3-report.pdf</AttachmentTitle>
+              </AttachmentContent>
+              <AttachmentActions>
+                <AttachmentAction aria-label="Remove attachment">
+                  <X />
+                </AttachmentAction>
+              </AttachmentActions>
+            </Attachment>
+          </AttachmentGroup>
+        )}
+        <ChatComposerInput
+          placeholder="Message Aiden…"
+          aria-label="Message Aiden"
+        />
+        <ChatComposerActions>
+          <AttachButton />
+          <ChatComposerSend />
+        </ChatComposerActions>
+      </ChatComposer>
+    </div>
+  );
+};
+
+export const Composer: StoryObj = {
+  render: () => <ComposerDemo />,
+};
+
+export const ComposerWithAttachment: StoryObj = {
+  render: () => <ComposerDemo withAttachment />,
+};
+
+export const ComposerStreaming: StoryObj = {
+  render: () => <ComposerDemo streaming />,
 };

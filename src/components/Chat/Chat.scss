@@ -282,3 +282,45 @@
 .ui-chat-marker__dot {
   flex-shrink: 0;
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Composer — column box reusing .ui-input-wrap chrome.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-composer {
+  font-family: var(--font-family);
+}
+
+// Override .ui-input-wrap's row layout for a stacked composer: attachments on
+// top, textarea in the middle, toolbar at the bottom.
+.ui-chat-composer__box {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--p-2);
+  padding: var(--p-2-5) var(--p-3);
+}
+
+.ui-chat-composer__input {
+  width: 100%;
+  resize: none;
+  overflow-y: hidden; // the autosize hook flips this to auto past maxRows
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+}
+
+.ui-chat-composer__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+// The send button sits at the trailing edge regardless of how many leading
+// tools precede it.
+.ui-chat-composer__send {
+  margin-inline-start: auto;
+}

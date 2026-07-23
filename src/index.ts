@@ -73,6 +73,10 @@ export {
   ChatBubble,
   ChatMessageActions,
   ChatMarker,
+  ChatComposer,
+  ChatComposerInput,
+  ChatComposerActions,
+  ChatComposerSend,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -81,6 +85,10 @@ export type {
   ChatBubbleProps,
   ChatMessageActionsProps,
   ChatMarkerProps,
+  ChatComposerProps,
+  ChatComposerInputProps,
+  ChatComposerActionsProps,
+  ChatComposerSendProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

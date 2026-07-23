@@ -2,21 +2,33 @@ import {
   forwardRef,
   useCallback,
   useEffect,
+  useId,
   useMemo,
   useRef,
   useState,
 } from 'react';
-import { ArrowDown } from 'lucide-react';
+import { ArrowDown, ArrowUp, Square } from 'lucide-react';
 import {
+  ChatComposerContext,
   ChatContext,
   ChatMessageContext,
+  useChatComposerContext,
   useChatContext,
   useChatMessageContext,
 } from './Chat.context';
 import { useStickToBottom } from '../../hooks/useStickToBottom';
+import { useAutosizeTextarea } from '../../hooks/useAutosizeTextarea';
 import StatusDot from '../StatusDot/StatusDot';
+import Button from '../Button/Button';
+// The composer reuses `.ui-input-wrap` / `.ui-input` for its border, focus ring
+// and native-control reset — those classes live in Input.scss.
+import '../Input/Input.scss';
 import type {
   ChatBubbleProps,
+  ChatComposerActionsProps,
+  ChatComposerInputProps,
+  ChatComposerProps,
+  ChatComposerSendProps,
   ChatMarkerProps,
   ChatMessageActionsProps,
   ChatMessageListProps,
@@ -230,6 +242,176 @@ const ChatMarker = forwardRef<HTMLDivElement, ChatMarkerProps>(
 
 ChatMarker.displayName = 'ChatMarker';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// Composer — the input stack. A <form> whose box reuses `.ui-input-wrap` for
+// border / focus-ring / disabled chrome, laid out as a column. Holds the
+// controlled value so the input and send button share one source of truth.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposer = forwardRef<HTMLFormElement, ChatComposerProps>(
+  (
+    {
+      value,
+      onValueChange,
+      onSubmit,
+      disabled = false,
+      isStreaming = false,
+      onStop,
+      className,
+      children,
+      ...rest
+    },
+    ref,
+  ) => {
+    const submit = useCallback(() => {
+      if (disabled || isStreaming) return;
+      if (!value.trim()) return;
+      onSubmit?.(value);
+    }, [disabled, isStreaming, value, onSubmit]);
+
+    const ctx = useMemo(
+      () => ({ value, onValueChange, submit, disabled, isStreaming, onStop }),
+      [value, onValueChange, submit, disabled, isStreaming, onStop],
+    );
+
+    const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      submit();
+    };
+
+    return (
+      <ChatComposerContext.Provider value={ctx}>
+        <form
+          {...rest}
+          ref={ref}
+          onSubmit={handleFormSubmit}
+          className={`ui-chat-composer${className ? ' ' + className : ''}`}
+        >
+          <div
+            className={`ui-input-wrap ui-chat-composer__box${disabled ? ' ui-input-wrap--disabled' : ''}`}
+          >
+            {children}
+          </div>
+        </form>
+      </ChatComposerContext.Provider>
+    );
+  },
+);
+
+ChatComposer.displayName = 'ChatComposer';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ComposerInput — the autosizing textarea. Enter submits, Shift+Enter inserts a
+// newline. Reads/writes the composer's controlled value via context.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposerInput = forwardRef<
+  HTMLTextAreaElement,
+  ChatComposerInputProps
+>(({ maxRows = 8, rows = 1, className, onKeyDown, ...rest }, ref) => {
+  const { value, onValueChange, submit, disabled } = useChatComposerContext();
+  const autoRef = useAutosizeTextarea(value, { maxRows });
+
+  const setNode = useCallback(
+    (node: HTMLTextAreaElement | null) => {
+      autoRef.current = node;
+      if (typeof ref === 'function') ref(node);
+      else if (ref) ref.current = node;
+    },
+    [autoRef, ref],
+  );
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    onKeyDown?.(e);
+    if (e.defaultPrevented) return;
+    // Enter submits; Shift+Enter is a newline. Ignore IME composition.
+    if (e.key === 'Enter' && !e.shiftKey && !e.nativeEvent.isComposing) {
+      e.preventDefault();
+      submit();
+    }
+  };
+
+  return (
+    <textarea
+      {...rest}
+      ref={setNode}
+      rows={rows}
+      value={value}
+      disabled={disabled}
+      onChange={(e) => onValueChange?.(e.target.value)}
+      onKeyDown={handleKeyDown}
+      className={`ui-input ui-chat-composer__input${className ? ' ' + className : ''}`}
+    />
+  );
+});
+
+ChatComposerInput.displayName = 'ChatComposerInput';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ComposerActions — the bottom toolbar row. Left-aligned by default; the send
+// button pushes itself to the trailing edge.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposerActions = forwardRef<
+  HTMLDivElement,
+  ChatComposerActionsProps
+>(({ className, children, ...rest }, ref) => (
+  <div
+    {...rest}
+    ref={ref}
+    className={`ui-chat-composer__actions${className ? ' ' + className : ''}`}
+  >
+    {children}
+  </div>
+));
+
+ChatComposerActions.displayName = 'ChatComposerActions';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ComposerSend — the Aiden-gradient send button. Submits the form when idle;
+// swaps to a Stop button (wired to onStop) while streaming. Auto-aligns right.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposerSend = forwardRef<HTMLButtonElement, ChatComposerSendProps>(
+  (
+    {
+      id: idProp,
+      sendLabel = 'Send message',
+      stopLabel = 'Stop generating',
+      size = 'small',
+      className,
+    },
+    ref,
+  ) => {
+    const { disabled, isStreaming, onStop, value } =
+      useChatComposerContext();
+    const autoId = useId();
+    const id = idProp ?? autoId;
+    const canSend = value.trim().length > 0;
+
+    return (
+      <Button
+        ref={ref}
+        id={id}
+        variant="aiden"
+        size={size}
+        iconOnly
+        IconCenter={isStreaming ? Square : ArrowUp}
+        type={isStreaming ? 'button' : 'submit'}
+        aria-label={isStreaming ? stopLabel : sendLabel}
+        aria-busy={isStreaming || undefined}
+        disabled={disabled || (!isStreaming && !canSend)}
+        // Idle: type=submit lets the form fire submit() (no onClick, else it
+        // double-fires). Streaming: type=button + onStop.
+        onClick={isStreaming ? onStop : undefined}
+        className={`ui-chat-composer__send${className ? ' ' + className : ''}`}
+      />
+    );
+  },
+);
+
+ChatComposerSend.displayName = 'ChatComposerSend';
+
 export default Chat;
 export {
   ChatMessageList,
@@ -237,4 +419,8 @@ export {
   ChatBubble,
   ChatMessageActions,
   ChatMarker,
+  ChatComposer,
+  ChatComposerInput,
+  ChatComposerActions,
+  ChatComposerSend,
 };
