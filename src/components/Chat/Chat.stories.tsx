@@ -13,8 +13,14 @@ import Chat, {
   ChatBubble,
   ChatComposer,
   ChatComposerActions,
+  ChatComposerDictation,
+  ChatComposerDrawer,
   ChatComposerInput,
   ChatComposerSend,
+  ChatLayout,
+  ChatLayoutBody,
+  ChatLayoutFooter,
+  ChatLayoutHeader,
   ChatMarker,
   ChatMessage,
   ChatMessageActions,
@@ -454,4 +460,110 @@ export const Streaming: StoryObj = {
       </ChatMessage>
     </div>
   ),
+};
+
+// ── Full page layout: shell + all composer tools ─────────────────────────────
+
+const LayoutDemo = () => {
+  const [messages, setMessages] = useState<Msg[]>([
+    { id: 'm0', from: 'assistant', content: 'Hi — I’m Aiden. How can I help?' },
+  ]);
+  const [value, setValue] = useState('');
+  const [streaming, setStreaming] = useState(false);
+  const [recording, setRecording] = useState(false);
+  const idRef = useRef(1);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const send = (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const pendingId = `m${idRef.current++}-a`;
+    setMessages((m) => [
+      ...m,
+      { id: `m${idRef.current++}-u`, from: 'user', content: trimmed },
+      { id: pendingId, from: 'assistant', pending: true },
+    ]);
+    setValue('');
+    setStreaming(true);
+    timerRef.current = setTimeout(() => {
+      setMessages((m) =>
+        m.map((msg) =>
+          msg.id === pendingId
+            ? { ...msg, pending: false, content: `You said: “${trimmed}”` }
+            : msg,
+        ),
+      );
+      setStreaming(false);
+    }, 1600);
+  };
+
+  const stop = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    setStreaming(false);
+    setMessages((m) =>
+      m.map((msg) =>
+        msg.pending ? { ...msg, pending: false, content: '(stopped)' } : msg,
+      ),
+    );
+  };
+
+  return (
+    <div
+      style={{
+        width: 560,
+        height: 560,
+        border: '1px solid var(--border)',
+        borderRadius: 'var(--rounded-xl)',
+        overflow: 'hidden',
+      }}
+    >
+      <ChatLayout>
+        <ChatLayoutHeader>
+          <strong style={{ fontSize: 'var(--text-sm)' }}>Aiden</strong>
+        </ChatLayoutHeader>
+        <ChatLayoutBody>
+          <ChatMessageList>
+            {messages.map((msg) =>
+              msg.from === 'user' ? (
+                <ChatMessage key={msg.id} from="user">
+                  <ChatBubble>{msg.content}</ChatBubble>
+                </ChatMessage>
+              ) : (
+                <ChatMessage key={msg.id} from="assistant">
+                  <ChatBubble pending={msg.pending}>{msg.content}</ChatBubble>
+                </ChatMessage>
+              ),
+            )}
+          </ChatMessageList>
+        </ChatLayoutBody>
+        <ChatLayoutFooter>
+          <ChatComposer
+            value={value}
+            onValueChange={setValue}
+            onSubmit={send}
+            isStreaming={streaming}
+            onStop={stop}
+          >
+            <ChatComposerInput
+              placeholder="Message Aiden…"
+              aria-label="Message Aiden"
+            />
+            <ChatComposerActions>
+              <AttachButton />
+              <ChatComposerDictation
+                recording={recording}
+                onClick={() => setRecording((r) => !r)}
+              />
+              <ChatComposerDrawer />
+              <ChatComposerSend />
+            </ChatComposerActions>
+          </ChatComposer>
+        </ChatLayoutFooter>
+      </ChatLayout>
+    </div>
+  );
+};
+
+export const FullLayout: StoryObj = {
+  render: () => <LayoutDemo />,
 };

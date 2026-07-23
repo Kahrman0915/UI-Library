@@ -77,10 +77,16 @@ export {
   ChatComposerInput,
   ChatComposerActions,
   ChatComposerSend,
+  ChatComposerDictation,
+  ChatComposerDrawer,
   ChatToolCalls,
   ChatToolCall,
   ChatSuggestions,
   ChatSuggestion,
+  ChatLayout,
+  ChatLayoutHeader,
+  ChatLayoutBody,
+  ChatLayoutFooter,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -93,11 +99,17 @@ export type {
   ChatComposerInputProps,
   ChatComposerActionsProps,
   ChatComposerSendProps,
+  ChatComposerDictationProps,
+  ChatComposerDrawerProps,
   ChatToolCallsProps,
   ChatToolCallProps,
   ChatToolStatus,
   ChatSuggestionsProps,
   ChatSuggestionProps,
+  ChatLayoutProps,
+  ChatLayoutHeaderProps,
+  ChatLayoutBodyProps,
+  ChatLayoutFooterProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,
@@ -681,3 +693,5 @@ export { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
 export type { UseAutosizeTextareaOptions } from './hooks/useAutosizeTextarea';
 export { useStickToBottom } from './hooks/useStickToBottom';
 export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
+export { useStreamingText } from './hooks/useStreamingText';
+export type { UseStreamingTextOptions } from './hooks/useStreamingText';

@@ -13,6 +13,8 @@ import {
   Check,
   ChevronRight,
   CircleAlert,
+  Maximize2,
+  Mic,
   Square,
   Wrench,
 } from 'lucide-react';
@@ -33,6 +35,11 @@ import Collapsible, {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '../Collapsible/Collapsible';
+import Drawer, {
+  DrawerBody,
+  DrawerFooter,
+  DrawerHeader,
+} from '../Drawer/Drawer';
 // The composer reuses `.ui-input-wrap` / `.ui-input` for its border, focus ring
 // and native-control reset — those classes live in Input.scss.
 import '../Input/Input.scss';
@@ -51,6 +58,12 @@ import type {
   ChatSuggestionsProps,
   ChatToolCallProps,
   ChatToolCallsProps,
+  ChatComposerDictationProps,
+  ChatComposerDrawerProps,
+  ChatLayoutProps,
+  ChatLayoutHeaderProps,
+  ChatLayoutBodyProps,
+  ChatLayoutFooterProps,
 } from './Chat.types';
 import './Chat.scss';
 
@@ -563,6 +576,191 @@ const ChatSuggestion = forwardRef<HTMLButtonElement, ChatSuggestionProps>(
 
 ChatSuggestion.displayName = 'ChatSuggestion';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// ComposerDictation — a mic toggle for the composer toolbar. Presentational:
+// `recording` drives the visual (red + pulse); wire your own speech recognition.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposerDictation = forwardRef<
+  HTMLButtonElement,
+  ChatComposerDictationProps
+>(
+  (
+    {
+      recording = false,
+      label = 'Start dictation',
+      activeLabel = 'Stop dictation',
+      className,
+      type,
+      ...rest
+    },
+    ref,
+  ) => (
+    <button
+      {...rest}
+      ref={ref}
+      type={type ?? 'button'}
+      aria-pressed={recording}
+      aria-label={recording ? activeLabel : label}
+      className={`ui-chat-composer__tool ui-chat-dictation${recording ? ' ui-chat-dictation--recording' : ''}${className ? ' ' + className : ''}`}
+    >
+      <Mic aria-hidden />
+    </button>
+  ),
+);
+
+ChatComposerDictation.displayName = 'ChatComposerDictation';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// ComposerDrawer — a trigger that opens an expanded writing surface (Drawer)
+// bound to the same composer value. Enter is a newline here (roomy editor);
+// send via the drawer footer.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatComposerDrawer = forwardRef<
+  HTMLButtonElement,
+  ChatComposerDrawerProps
+>(
+  (
+    {
+      id: idProp,
+      side = 'bottom',
+      label = 'Expand composer',
+      title = 'Compose',
+      sendLabel = 'Send',
+      className,
+      type,
+      ...rest
+    },
+    ref,
+  ) => {
+    const { value, onValueChange, submit, disabled, isStreaming } =
+      useChatComposerContext();
+    const autoId = useId();
+    const id = idProp ?? autoId;
+    const [open, setOpen] = useState(false);
+    const canSend = value.trim().length > 0;
+
+    return (
+      <>
+        <button
+          {...rest}
+          ref={ref}
+          type={type ?? 'button'}
+          aria-label={label}
+          onClick={() => setOpen(true)}
+          className={`ui-chat-composer__tool ui-chat-composer__expand${className ? ' ' + className : ''}`}
+        >
+          <Maximize2 aria-hidden />
+        </button>
+        <Drawer
+          id={`${id}-drawer`}
+          open={open}
+          onClose={() => setOpen(false)}
+          side={side}
+        >
+          <DrawerHeader
+            id={`${id}-title`}
+            title={title}
+            onClose={() => setOpen(false)}
+          />
+          <DrawerBody>
+            <textarea
+              value={value}
+              disabled={disabled}
+              onChange={(e) => onValueChange?.(e.target.value)}
+              placeholder="Write your message…"
+              aria-label={title}
+              className="ui-chat-composer__drawer-input"
+            />
+          </DrawerBody>
+          <DrawerFooter>
+            <Button
+              id={`${id}-send`}
+              variant="aiden"
+              label={sendLabel}
+              disabled={disabled || isStreaming || !canSend}
+              onClick={() => {
+                submit();
+                setOpen(false);
+              }}
+            />
+          </DrawerFooter>
+        </Drawer>
+      </>
+    );
+  },
+);
+
+ChatComposerDrawer.displayName = 'ChatComposerDrawer';
+
+// ═════════════════════════════════════════════════════════════════════════════
+// Layout — a full-height page shell: fixed header, scrollable body (holds the
+// message list), docked composer footer. Provides `density` like the Chat root.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const ChatLayout = forwardRef<HTMLDivElement, ChatLayoutProps>(
+  ({ density = 'balanced', className, children, ...rest }, ref) => {
+    const ctx = useMemo(() => ({ density }), [density]);
+    return (
+      <ChatContext.Provider value={ctx}>
+        <div
+          {...rest}
+          ref={ref}
+          data-density={density}
+          className={`ui-chat-layout${className ? ' ' + className : ''}`}
+        >
+          {children}
+        </div>
+      </ChatContext.Provider>
+    );
+  },
+);
+
+ChatLayout.displayName = 'ChatLayout';
+
+const ChatLayoutHeader = forwardRef<HTMLDivElement, ChatLayoutHeaderProps>(
+  ({ className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-layout__header${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+ChatLayoutHeader.displayName = 'ChatLayoutHeader';
+
+const ChatLayoutBody = forwardRef<HTMLDivElement, ChatLayoutBodyProps>(
+  ({ className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-layout__body${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+ChatLayoutBody.displayName = 'ChatLayoutBody';
+
+const ChatLayoutFooter = forwardRef<HTMLDivElement, ChatLayoutFooterProps>(
+  ({ className, children, ...rest }, ref) => (
+    <div
+      {...rest}
+      ref={ref}
+      className={`ui-chat-layout__footer${className ? ' ' + className : ''}`}
+    >
+      {children}
+    </div>
+  ),
+);
+
+ChatLayoutFooter.displayName = 'ChatLayoutFooter';
+
 export default Chat;
 export {
   ChatMessageList,
@@ -574,8 +772,14 @@ export {
   ChatComposerInput,
   ChatComposerActions,
   ChatComposerSend,
+  ChatComposerDictation,
+  ChatComposerDrawer,
   ChatToolCalls,
   ChatToolCall,
   ChatSuggestions,
   ChatSuggestion,
+  ChatLayout,
+  ChatLayoutHeader,
+  ChatLayoutBody,
+  ChatLayoutFooter,
 };

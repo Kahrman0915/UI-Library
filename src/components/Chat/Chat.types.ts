@@ -1,5 +1,6 @@
 import type { StatusDotStatus } from '../StatusDot/StatusDot.types';
 import type { Size } from '../../types/GlobalTypes';
+import type { DrawerSide } from '../Drawer/Drawer.types';
 
 // Vertical rhythm between messages, provided by the Chat root via context.
 export type ChatDensity = 'compact' | 'balanced' | 'spacious';
@@ -120,5 +121,55 @@ export type ChatSuggestionsProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export type ChatSuggestionProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  className?: string;
+};
+
+// ── Composer extras: dictation + expand-to-drawer ────────────────────────────
+
+export type ChatComposerDictationProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'aria-label'
+> & {
+  /** Recording state (presentational — wire your own speech recognition). */
+  recording?: boolean;
+  /** Accessible label when idle. */
+  label?: string;
+  /** Accessible label while recording. */
+  activeLabel?: string;
+  className?: string;
+};
+
+export type ChatComposerDrawerProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'aria-label'
+> & {
+  id?: string;
+  /** Which edge the expanded composer slides from. Default 'bottom'. */
+  side?: DrawerSide;
+  /** Trigger button accessible label. */
+  label?: string;
+  /** Drawer header title. */
+  title?: string;
+  /** Send button label inside the drawer. */
+  sendLabel?: string;
+  className?: string;
+};
+
+// ── Page-level layout shell ──────────────────────────────────────────────────
+
+export type ChatLayoutProps = React.HTMLAttributes<HTMLDivElement> & {
+  density?: ChatDensity;
+  className?: string;
+};
+
+export type ChatLayoutHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
+
+export type ChatLayoutBodyProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};
+
+export type ChatLayoutFooterProps = React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
 };
