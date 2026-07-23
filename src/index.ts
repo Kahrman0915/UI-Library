@@ -529,6 +529,9 @@ export type {
   DrawerSide,
 } from './components/Drawer';
 
+export { default as DirectionProvider, useDirection } from './components/Direction';
+export type { Direction, DirectionProviderProps } from './components/Direction';
+
 export {
   default as Empty,
   EmptyHeader,

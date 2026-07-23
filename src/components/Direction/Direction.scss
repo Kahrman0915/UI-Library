@@ -1,0 +1,5 @@
+// Layout-neutral wrapper: the `dir` attribute still cascades to descendants
+// (and drives CSS logical properties) without introducing a layout box.
+.ui-direction {
+  display: contents;
+}
