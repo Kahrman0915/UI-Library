@@ -31,16 +31,19 @@
 .ui-chat__list-content {
   display: flex;
   flex-direction: column;
-  padding: var(--p-4);
+  width: 100%;
+  max-width: var(--max-w-3xl);
+  margin-inline: auto;
+  padding: var(--p-6) var(--p-4);
 
   &--density-compact {
-    gap: var(--p-2);
-  }
-  &--density-balanced {
     gap: var(--p-4);
   }
-  &--density-spacious {
+  &--density-balanced {
     gap: var(--p-6);
+  }
+  &--density-spacious {
+    gap: var(--p-8);
   }
 }
 
@@ -123,10 +126,18 @@
   flex-direction: column;
   gap: var(--p-1);
   min-width: 0;
-  max-width: min(75%, var(--max-w-lg));
+  max-width: 100%;
 }
 
+// Assistant answers read as full-width prose (no bubble) — the Claude style.
+.ui-chat-message--assistant .ui-chat-message__body {
+  flex: 1 1 auto;
+  align-items: flex-start;
+}
+
+// The user's own turns sit in a contained bubble on the trailing edge.
 .ui-chat-message--user .ui-chat-message__body {
+  max-width: min(80%, var(--max-w-lg));
   align-items: flex-end;
 }
 
@@ -144,13 +155,9 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-chat-bubble {
-  display: inline-block;
   max-width: 100%;
-  padding: var(--p-2-5) var(--p-3-5);
-  border-radius: var(--rounded-2xl);
-  border: var(--border-w-100) solid transparent;
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
+  font-size: var(--text-base);
+  line-height: var(--leading-7);
   color: var(--foreground);
   overflow-wrap: break-word;
 
@@ -158,23 +165,29 @@
     margin: 0;
   }
   p + p {
-    margin-top: var(--p-2);
+    margin-top: var(--p-3);
   }
 
+  // User turns: a contained bubble with uniform corners (no tail).
   &--user {
+    display: inline-block;
+    padding: var(--p-2-5) var(--p-4);
+    border-radius: var(--rounded-2xl);
     background: var(--chat-bubble-user);
-    border-bottom-right-radius: var(--rounded-sm);
   }
 
+  // Assistant turns: full-width prose, no bubble — matches the Claude UI.
   &--assistant {
-    background: var(--chat-bubble-ai);
-    border-color: var(--border);
-    border-bottom-left-radius: var(--rounded-sm);
+    display: block;
+    background: transparent;
+    padding: 0;
   }
 
-  // System messages are bubble-less centered notes; if a bubble is used anyway,
-  // keep it quiet.
+  // System notes stay a quiet centered pill.
   &--system {
+    display: inline-block;
+    padding: var(--p-1) var(--p-3);
+    border-radius: var(--rounded-full);
     background: var(--secondary);
     color: var(--muted-foreground);
     font-size: var(--text-xs);

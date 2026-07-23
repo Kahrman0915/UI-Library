@@ -19,7 +19,6 @@ import Chat, {
   ChatMessageActions,
   ChatMessageList,
 } from './Chat';
-import Avatar from '../Avatar/Avatar';
 import { CodeBlock } from '../Code/Code';
 import Attachment, {
   AttachmentAction,
@@ -45,10 +44,6 @@ const meta: Meta<typeof Chat> = {
 export default meta;
 
 type Story = StoryObj<typeof Chat>;
-
-const aiden = (
-  <Avatar id="aiden-av" fallback="AI" size="sm" aria-label="Aiden" />
-);
 
 // A ghost action button for the hover row.
 const ActionButton = ({
@@ -97,7 +92,7 @@ export const Conversation: Story = {
             <ChatBubble>How do I center a div in CSS?</ChatBubble>
           </ChatMessage>
 
-          <ChatMessage from="assistant" avatar={aiden}>
+          <ChatMessage from="assistant">
             <ChatBubble>
               <p>The modern way is a flex or grid parent:</p>
               <CodeBlock
@@ -117,7 +112,7 @@ export const Conversation: Story = {
             <ChatBubble>Perfect — and for a single line of text?</ChatBubble>
           </ChatMessage>
 
-          <ChatMessage from="assistant" avatar={aiden}>
+          <ChatMessage from="assistant">
             <ChatBubble>
               Same idea, or add <code>text-align: center</code> for inline
               content. Grid <code>place-items</code> handles both axes at once.
@@ -142,7 +137,7 @@ export const Pending: Story = {
           <ChatMessage from="user">
             <ChatBubble>Summarise the last quarter for me.</ChatBubble>
           </ChatMessage>
-          <ChatMessage from="assistant" avatar={aiden}>
+          <ChatMessage from="assistant">
             <ChatBubble pending />
           </ChatMessage>
         </ChatMessageList>
@@ -164,7 +159,7 @@ export const Markers: Story = {
           <ChatMarker variant="system">
             Aiden switched to the research model
           </ChatMarker>
-          <ChatMessage from="assistant" avatar={aiden}>
+          <ChatMessage from="assistant">
             <ChatBubble>Here with more depth now.</ChatBubble>
           </ChatMessage>
           <ChatMarker variant="status" status="away">
@@ -192,7 +187,7 @@ export const LongScroll: Story = {
                 <ChatBubble>User message #{n + 1}</ChatBubble>
               </ChatMessage>
             ) : (
-              <ChatMessage key={n} from="assistant" avatar={aiden}>
+              <ChatMessage key={n} from="assistant">
                 <ChatBubble>Assistant reply #{n + 1}</ChatBubble>
               </ChatMessage>
             ),
@@ -341,7 +336,7 @@ const AssembledDemo = () => {
               <ChatBubble>{msg.content}</ChatBubble>
             </ChatMessage>
           ) : (
-            <ChatMessage key={msg.id} from="assistant" avatar={aiden}>
+            <ChatMessage key={msg.id} from="assistant">
               <ChatBubble pending={msg.pending}>{msg.content}</ChatBubble>
             </ChatMessage>
           ),
