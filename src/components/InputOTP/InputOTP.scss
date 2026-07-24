@@ -1,0 +1,147 @@
+// Field wrapper: label (top) + slots + error/description (bottom).
+.ui-otp-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  font-family: var(--font-family);
+  min-width: 0;
+}
+
+// The segmented control. A single transparent <input> overlays the slots and
+// owns the value; the slots are painted underneath.
+.ui-otp {
+  position: relative;
+  display: inline-flex;
+  width: max-content;
+
+  &--disabled {
+    opacity: var(--o-50);
+  }
+}
+
+.ui-otp__input {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: transparent;
+  caret-color: transparent;
+  cursor: text;
+  font: inherit;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.ui-otp__slots {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+.ui-otp__slot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  background: var(--bg-input-30);
+  color: var(--foreground);
+  font-weight: var(--font-medium);
+  font-variant-numeric: tabular-nums;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-fast) var(--ease-out);
+
+  &--active {
+    border-color: var(--ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    z-index: 1;
+  }
+}
+
+// Error state.
+.ui-otp--error .ui-otp__slot {
+  border-color: var(--error-border);
+}
+.ui-otp--error .ui-otp__slot--active {
+  border-color: var(--error);
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--error-focus);
+}
+
+// Separator between groups.
+.ui-otp__separator {
+  width: var(--p-2);
+  height: var(--border-w-200);
+  border-radius: var(--rounded-full);
+  background: var(--muted-foreground);
+}
+
+// Blinking caret in the active empty slot.
+.ui-otp__caret {
+  width: var(--w-0-5);
+  height: 1.1em;
+  border-radius: var(--rounded-sm);
+  background: var(--foreground);
+  animation: ui-otp-caret var(--duration-shimmer) steps(1) infinite;
+}
+
+@keyframes ui-otp-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
+}
+
+// ---- Sizes ----
+
+.ui-otp--sz-sm .ui-otp__slots {
+  gap: var(--p-1-5);
+}
+.ui-otp--sz-sm .ui-otp__slot {
+  width: var(--w-8);
+  height: var(--h-10);
+  font-size: var(--text-base);
+  border-radius: var(--rounded-sm);
+}
+
+.ui-otp--sz-default .ui-otp__slot {
+  width: var(--w-10);
+  height: var(--h-12);
+  font-size: var(--text-lg);
+}
+
+.ui-otp--sz-lg .ui-otp__slots {
+  gap: var(--p-2-5);
+}
+.ui-otp--sz-lg .ui-otp__slot {
+  width: var(--w-12);
+  height: var(--h-14);
+  font-size: var(--text-xl);
+}
+
+// ---- Messages ----
+
+.ui-otp__error {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--error);
+}
+
+.ui-otp__description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
