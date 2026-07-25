@@ -272,14 +272,32 @@
       "props": "VARIANT Size (sm/default/lg) × State (Unchecked/Checked/Indeterminate) × Disabled (False/True) = 18; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
       "version": "1.0 · 2026-07-25",
       "notes": "First Phase 2 page. Hidden-input pattern: the native <input> is opacity-0/0x0 (NOT display:none) so it stays focusable + submittable, and every visual state is a CSS sibling selector. Both SVGs (check + dash) are always mounted and overlaid so checked→indeterminate CROSS-FADES; stroke-dasharray 24 → dashoffset 0 draws the stroke in. Box carries margin-top --p-0-5 to sit against the first text line — in Figma that is a 'box align' wrapper frame since auto-layout has no per-child margin. Aiden is a SURFACE effect here (not a variant like Button), so it is documented in text only. Uses .ui-label__* classes rather than nesting <Label> (a label can't contain a label)."
+    },
+    "RadioGroup": {
+      "status": "done-v4",
+      "pageId": "223:32",
+      "setIds": [
+        "223:129"
+      ],
+      "setNote": "223:129 is RadioGroup/Item — the group root is a layout container + context provider, documented as composition per the compound-family rule.",
+      "frames": {
+        "overview": "224:32",
+        "spec": "224:157",
+        "theming": "225:287",
+        "examplesDocsHistory": "225:694"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — checked circle fills with --primary (Theme collection), dot is --primary-foreground.",
+      "props": "RadioGroup/Item: VARIANT Size (sm/default/lg) × State (Unchecked/Checked) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Same hidden-input pattern as Checkbox. DOCUMENTED DIVERGENCE: in code `size` is set ONCE on the group and cascades to every item via CSS descendant selectors; Figma cannot model a descendant selector reaching into instances, so each item carries its own Size and the Overview says so explicitly under a '⚠ CODE vs FIGMA' section. The group owns three things the items never receive as props: name/value/callbacks via React context, the size cascade via CSS, and role=radiogroup + aria-labelledby via ARIA. RadioGroupItem throws outside a RadioGroup because a nameless radio silently stops excluding its siblings. Label visibility bound to the ui-label CONTAINER (Checkbox lesson)."
     }
   },
   "queue": {
-    "nextUp": "RadioGroup",
+    "nextUp": "Switch",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "RadioGroup",
       "Switch",
       "Slider",
       "Badge",
