@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 5/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0). Phase queue in the ledger.
+- **Status:** 6/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0). Phase queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -24,6 +24,13 @@ the reader.
 **Icons:** build lucide glyphs with `figma.createNodeFromSvg(...)` using the real path
 data, then `rescale(size/24)` so the stroke keeps lucide's 2÷24 ratio. Name the inner
 vector (`loader-arc`) or the lint flags it.
+
+**Don't draw what isn't ours.** Where the browser or OS owns the rendering — a native
+`<select>`'s open list, a date picker's calendar, an autofill dropdown — omit the frame
+and say why in its place. NativeSelect's Spec ends with a "THE OPEN STATE — NOT DRAWN
+HERE" note explaining that Chrome-on-Windows, Safari-on-macOS and the iOS wheel all
+differ, so mocking one would document a lie. A stated boundary is documentation; a
+plausible-looking mock is a bug waiting to be built.
 
 ---
 

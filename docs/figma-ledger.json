@@ -156,11 +156,22 @@
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Placeholder / 'Error message'. No icon slots (a textarea has no room).",
       "version": "1.0 · 2026-07-25",
       "notes": "Reuses Input's wrap via --multi: wrap height auto + padding 0 + align stretch, padding moved onto the .ui-textarea so the native resize grip lands in the true corner. Min-heights 64/96/128 bound to height/16|24|32. The grip is drawn as an absolutely-positioned 2-tick vector named 'resize grip (native)' pinned to MAX/MAX constraints. TextareaSize re-exports InputSize so the two can't drift."
+    },
+    "NativeSelect": {
+      "status": "done-v4",
+      "pageId": "205:32",
+      "setIds": ["205:233"],
+      "frames": { "overview": "206:80", "spec": "206:201", "examplesDocsHistory": "206:1013" },
+      "themed": false,
+      "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
+      "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Value / 'Error message'. No icon booleans — the right slot is permanently the chevron.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Third wrap consumer and the only one that uses .ui-input-wrap completely unmodified. Two things the page exists to teach: (1) the ours/browser boundary — the closed control is ours, the open list is browser/OS-rendered and unstylable (option color/background honoured on Windows+Linux, ignored on macOS), which is precisely why the floating Select exists; (2) the hit-area trick — the <select> gets margin-right -(--w-4 + --p-2) and equal padding-right so it bleeds under the pointer-events:none chevron, making the whole trailing edge open the menu, size-independently. NO open-state frame is drawn, deliberately: mocking one OS's menu would document a lie. NativeSelectOption/OptGroup get no Figma components (no visual form of ours)."
     }
   },
   "queue": {
-    "nextUp": "NativeSelect",
-    "phase1": ["NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "InputGroup",
+    "phase1": ["InputGroup", "InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
