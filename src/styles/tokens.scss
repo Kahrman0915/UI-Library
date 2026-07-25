@@ -384,19 +384,24 @@ html {
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #94a3b8;
 
-  /* Code Block */
+  /* Code Block — syntax palette darkened 2026-07-25 for WCAG AA on --code-block.
+     The originals were Tailwind 500/600 on slate-100 and 10 of 11 sat between
+     2.22 and 4.29; nothing rendered them, so nothing caught it. Now gated by
+     `npm run test:contrast` — don't lighten these back without re-running it. */
   --code-block: #f1f5f9;
-  --code-keyword: #8b5cf6;
-  --code-string: #10b981;
-  --code-comment: #94a3b8;
-  --code-function: #3b82f6;
-  --code-number: #f97316;
-  --code-variable: #475569;
-  --code-type: #06b6d4;
-  --code-built-in: #d946ef;
-  --code-attr: #ea580c;
-  --code-selector: #10b981;
-  --code-tag: #e11d48;
+  --code-keyword: #7c3aed;  /* violet-600  */
+  --code-string: #047857;   /* emerald-700 */
+  --code-comment: #5e6d7d;  /* derived slate — the lightest that still clears AA,
+                               so comments stay recessive against --code-variable */
+  --code-function: #2563eb; /* blue-600    */
+  --code-number: #c2410c;   /* orange-700  */
+  --code-variable: #475569; /* slate-600 — the only one that already passed */
+  --code-type: #0e7490;     /* cyan-700    */
+  --code-built-in: #a21caf; /* fuchsia-700 */
+  --code-attr: #b45309;     /* amber-700 — amber, not orange, so it stays
+                               distinct from --code-number in BOTH modes */
+  --code-selector: #047857; /* emerald-700 — deliberately shares the string hue */
+  --code-tag: #be123c;      /* rose-700    */
 
   /* Error — darkened 2026-07 for WCAG AA (≥4.5:1 on white AND on --error-light) */
   --error: #d32424;
@@ -648,7 +653,9 @@ html {
   --sidebar-border: #334155;
   --sidebar-ring: #64748b;
 
-  /* Code Block */
+  /* Code Block — dark already cleared AA (5.4–9.6); only --code-attr changed,
+     to break a collision: it and --code-number were BOTH orange-400 here, while
+     light kept them distinct. Now amber in both modes. */
   --code-block: #1e293b;
   --code-keyword: #c4b5fd;
   --code-string: #6ee7b7;
@@ -658,8 +665,8 @@ html {
   --code-variable: #e2e8f0;
   --code-type: #22d3ee;
   --code-built-in: #e879f9;
-  --code-attr: #fb923c;
-  --code-selector: #6ee7b7;
+  --code-attr: #fcd34d;     /* amber-300 — was orange-400, same as --code-number */
+  --code-selector: #6ee7b7; /* deliberately shares the string hue */
   --code-tag: #fb7185;
 
   /* Error */

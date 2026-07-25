@@ -10,6 +10,7 @@
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
 - **Status:** 20/57 done. Phase 1 COMPLETE. Phase 2 (12/14): + Code, CloseButton, Avatar. Next up: AspectRatio. Queue in the ledger.
+- **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
 
@@ -206,12 +207,13 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Plugin-API gotchas (each cost real debugging time)
 
-- **The Figma Button set does not model `iconOnly` or an icon slot.** It has
-  Variant × Style × Size + Label + isLoading only. Components that compose an icon-only
-  Button in code (CodeBlock's copy control, ChatComposerSend, Attachment actions) cannot
-  instance it faithfully — draw the control locally, **name the layer for what it is in
-  code** (`ui-code-block__copy  (ui-button · ghost · xsmall · iconOnly)`), and say so on
-  the page rather than letting the drawing imply a bespoke control.
+- **A new set that is a systematic transform of an existing one? CLONE, don't rebuild.**
+  `component.clone()` preserves every binding — variable-bound fills/strokes/radii, effect
+  styles, boolean-bound child visibility, the lot. `Button/Icon-only` is all 120 labelled
+  Button variants cloned with three edits each (drop the label, square the padding, aiden
+  gets `--rounded-full`), so theme bindings and the aiden `flag/is-dark` overlay came across
+  verbatim. Read the per-variant colour binding off the node you are about to delete and
+  re-apply it to whatever replaces it (`label.boundVariables.fills[0].id` → the icon's stroke).
 - **`use_figma` scripts are ATOMIC.** One thrown error rolls back *everything* the script
   did — including finished work on unrelated pages. A typo in a Separator helper wiped a
   completed Kbd page in the same call. **Build one component page per script.** Batch only

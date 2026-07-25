@@ -113,15 +113,16 @@
     "A gradient overlay used to fake an un-bindable effect (Skeleton's shimmer) must be full-bleed with STRETCH constraints. A narrower band leaves its own rect edge visible wherever the parent clips to a radius.",
     "Component-SET wrappers need their padding and corner radius bound too — Figma gives new sets a default radius of 5, which the lint flags. Bind to spacing/* and radius/lg.",
     "_Doc/ChangelogRow's master had unbound 8px top/bottom padding (now bound to spacing/2). When the lint flags a _Doc instance, fix the MASTER — it clears every page at once, past and future.",
-    "The Figma Button set (76:300) models Variant × Style × Size + Label + isLoading, but NOT iconOnly or an icon slot. Components composing an icon-only Button (CodeBlock's copy control, ChatComposerSend, Attachment actions) therefore cannot instance it faithfully — draw the control locally, name the layer for what it is in code, and say so on the page. Worth closing when the Button page is next revised.",
-    "Re-applying a text style RESETS the properties it owns — setTextStyleIdAsync is the fix for an accidental detach, not just the initial assignment."
+    "Re-applying a text style RESETS the properties it owns — setTextStyleIdAsync is the fix for an accidental detach, not just the initial assignment.",
+    "Cloning a variant (component.clone()) preserves EVERY binding — variable-bound fills/strokes/radii, effect styles, and boolean-bound child visibility. Button/Icon-only was built by cloning all 120 labelled variants and editing three things, which is far safer than rebuilding and is the right move whenever a new set is a systematic transform of an existing one. Read the per-variant colour binding off the node you are about to delete (the label) and re-apply it to its replacement."
   ],
   "components": {
     "Button": {
       "status": "done-v4-approved",
       "pageId": "0:1",
       "setIds": [
-        "76:300"
+        "76:300",
+        "260:1600"
       ],
       "frames": {
         "overview": "158:275",
@@ -135,7 +136,11 @@
       "defaultFamilyReboundToTheme": true,
       "aidenDarkOverlays": 8,
       "isLoadingProp": "isLoading#183:0 — BOOLEAN on the set; each of the 120 variants holds a Spinner instance named 'spinner' at child index 0, visible bound to the prop, Size tracking the button size (XSmall=12, Small/Default=16, Large=20) and stroke bound to the same variable as that variant's label.",
-      "version": "1.5 · 2026-07-25"
+      "version": "1.2 · 2026-07-25",
+      "setNote": "TWO sets: 76:300 'Button' (120 = Variant 6 × Style 5 × Size 4, + Label TEXT + isLoading BOOLEAN) and 260:1600 'Button/Icon-only' (the same 120 with the label suppressed). Separate sets, not a 4th axis: in code `iconOnly` makes the label unrenderable ({!iconOnly && label}), so they are mutually exclusive — same reasoning as Badge vs Badge/Category. Icon-only variants were CLONED from their labelled counterparts, so all fills/strokes/focus effects/theme bindings and the aiden flag/is-dark overlay carry over verbatim; only the label removal, squared padding (--p-1 xsmall, --p-2 else; icon 12/14/20/24px) and aiden's --rounded-full differ.",
+      "resolved": [
+        "The Figma Button set modelled no iconOnly / icon slot, so components composing an icon-only Button (CodeBlock copy, ChatComposerSend) had nothing faithful to instance. Closed 2026-07-25 with the Button/Icon-only set. Also bound the Button set wrapper's padding/radius (previously raw 32px / 5px default) and fixed a 17px overflow — the page is now all-zeros on lint."
+      ]
     },
     "Spinner": {
       "status": "done-v4",
@@ -448,13 +453,11 @@
       "themingFrame": "ABSENT — neutral in every brand. Code should not change colour with the sub-brand.",
       "props": "Code: TEXT Label. CodeBlock: VARIANT Header (3) + TEXT Filename + TEXT Code.",
       "version": "1.1 · 2026-07-25",
-      "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers — a palette pre-picked for a highlighter we do not have.",
+      "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers (now at least AA-gated) — a palette pre-picked for a highlighter we do not have.",
       "figmaDivergence": "Inline chip vertical padding is 0.1em in CSS (em-relative, ~1.3px at --text-code); Figma variables cannot express em, so it is bound to spacing/0-5 (2px). Stated on the Avatar Overview note covering both divergences.",
       "resolved": [
-        "The scrollable <pre> had overflow-x: auto with no tabindex, making overflowed code unreachable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). Fixed 2026-07-25: tabIndex={0} plus an inset --focus ring in Code.scss. No ARIA role added, so it stays announced as preformatted text."
-      ],
-      "openQuestions": [
-        "The 11 --code-* syntax tokens are an exact Tailwind mapping (light 500/600, dark 300/400) with ZERO consumers and no contrast coverage. Hand-computed against --code-block, 9 of 11 fall under AA in LIGHT mode (type 2.22 … tag 4.29; only `variable` at 6.84 passes); dark is fine at 5.4-9.6. Also `selector` duplicates `string` in both modes, and `attr` duplicates `number` in DARK only. If a highlighter is ever added, the light palette needs re-deriving and all 11 pairings adding to scripts/contrast-check.mjs. Numbers are hand-calculated, not script output — verify before acting."
+        "The scrollable <pre> had overflow-x: auto with no tabindex, making overflowed code unreachable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). Fixed 2026-07-25: tabIndex={0} plus an inset --focus ring in Code.scss. No ARIA role added, so it stays announced as preformatted text.",
+        "The 11 --code-* syntax tokens were an exact Tailwind 500/600 mapping that had never been contrast-checked; the script confirmed 10 of 11 below AA in light (2.22-4.29). Fixed 2026-07-25: light values darkened to Tailwind 600/700 (comment uses a derived slate #5e6d7d — the lightest that clears AA, so it stays recessive against --code-variable), and dark --code-attr moved orange-400 → amber-300 to break a collision with --code-number that existed in dark only. All 11 now gated in scripts/contrast-check.mjs (49 pairings, 0 below AA). Figma code/* variables synced. STILL A JUDGMENT CALL, deliberately left alone: --code-selector shares --code-string's hue in both modes (consistent, so it reads as intentional), and in dark --code-type (cyan-400) sits close to --code-function (sky-400)."
       ]
     },
     "CloseButton": {
