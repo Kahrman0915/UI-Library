@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 3/57 components done (Button 1.5, Spinner 1.1, Label 1.0). Phase queue in the ledger.
+- **Status:** 4/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0). Phase queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -84,14 +84,17 @@ override). Table anatomy:
   say so in the group label.
 
 ### 3 · Theming  *(only for theme-aware components — see CLAUDE.md's routing table)*
-When a component is neutral chrome and gets **no** Theming frame (Label, Tooltip,
-Sidebar chrome…), say so in one line in the TOKENS section — "all neutral, nothing
-reads `--primary`, a `data-theme` wrapper leaves it unchanged". An unexplained missing
-frame reads as an oversight; a stated one reads as a decision.
 Section + "Try it: select any frame → Appearance panel → set Theme or Mode" caption →
 header row of theme codes → **Light row + Dark row** of cells; each cell is a small
 `color/background` frame with `setExplicitVariableModeForCollection(Theme, mode)`
 (+ Mode=Dark on row 2) containing one instance labeled with the theme code.
+
+**When you omit this frame** because the component is neutral chrome (Label, Input,
+Tooltip, Sidebar chrome…), say so in one line in the TOKENS section — "all neutral,
+nothing reads `--primary`, a `data-theme` wrapper leaves it unchanged". An unexplained
+missing frame reads as an oversight; a stated one reads as a decision. Check first:
+`--ring`, `--focus`, `--border-hover` and `--bg-input-30` are Mode-level neutrals, so a
+component can look interactive and still not theme.
 
 ### 4 · Examples · Docs · History
 Examples section → **light bar + identical dark bar** (full-width, explicit Mode=Dark
@@ -171,6 +174,9 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Plugin-API gotchas (each cost real debugging time)
 
+- **`instance.children` omits hidden children.** A layer hidden by a boolean property
+  disappears from the array, so index access (`inst.children[1]`) silently shifts or
+  returns `undefined`. Always locate by name: `inst.findOne(n => n.name === 'ui-input-wrap')`.
 - **Booleans can only drive `visible`.** A code prop that toggles a *layer* (Label's
   `required` asterisk, its `description` line, Button's `isLoading` spinner) maps to a
   BOOLEAN property. A prop that changes a *style* — opacity, fill, size — cannot, and

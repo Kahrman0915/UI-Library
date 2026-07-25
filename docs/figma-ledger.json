@@ -134,11 +134,22 @@
       "props": "VARIANT Size (sm/default/lg) × VARIANT Disabled (False/True) = 6 variants; BOOLEAN Required + 'Show description'; TEXT Label + Description.",
       "version": "1.0 · 2026-07-25",
       "notes": "Disabled had to be a VARIANT, not a BOOLEAN: Figma booleans can only drive layer visibility, and disabled is opacity 50%. Overview carries an ANATOMY section because six components reuse the .ui-label__* class names rather than nesting <Label> — that split (5 render it / 6 borrow the classes) is the page's most important content."
+    },
+    "Input": {
+      "status": "done-v4",
+      "pageId": "192:32",
+      "setIds": ["192:281"],
+      "frames": { "overview": "195:80", "spec": "195:205", "examplesDocsHistory": "197:486" },
+      "themed": false,
+      "themingFrame": "OMITTED — --ring / --focus / --border-hover / --bg-input-30 are Mode-level neutrals that no data-theme remaps. Stated in the TOKENS section.",
+      "props": "VARIANT Size (sm/default/lg) × Error (False/True) × Disabled (False/True) = 12; BOOLEAN 'Show label' / 'Show error message' / 'Icon left' / 'Icon right'; TEXT Placeholder / 'Error message'.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Nests a live Label instance with isExposedInstance=true, so Label's Required / Show description surface on any Input. Owns .ui-input-wrap — documented in the Overview as a CONTRACT because Textarea, NativeSelect, InputGroup and the Chat composer apply the class to their own markup rather than importing Input. When building those four, reuse this wrap spec verbatim; do not redefine borders."
     }
   },
   "queue": {
-    "nextUp": "Input",
-    "phase1": ["Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "Textarea",
+    "phase1": ["Textarea", "NativeSelect", "InputGroup", "InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
