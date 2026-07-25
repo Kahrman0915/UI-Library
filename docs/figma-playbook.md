@@ -229,6 +229,12 @@ Sweep the new page + set (skip nodes inside instances):
   a blob. **Any icon placed below 24px needs its stroke set to `2 × size ÷ 24`.** Measure
   the real value in the browser (`computedStrokeWidth × renderedSize ÷ viewBoxSize`) rather
   than assuming. CloseButton is the carve-out — its CSS pins 1.33 units, so 0.665px at 12px.
+- **An `INSTANCE_SWAP` property swap DISCARDS nested overrides.** Uniform layer names do
+  *not* save you — that only helps manual `swapComponent` in limited cases. Anything that
+  must survive a swap has to come from a **variable mode set on an ancestor**, because
+  modes cascade and are not overrides. Icon stroke weight works this way (collection
+  `Icon`, modes 24/20/16/14/12). **Always verify on a real placed-and-swapped instance,
+  never on the master** — the master can read perfectly while every real usage is wrong.
 - **Give a swappable family identical inner layer names.** `instance.swapComponent()`
   discards overrides whose layer names don't match the new component, so every icon uses a
   `glyph` group over `path-1`, `path-2`… Per-glyph names silently reset the stroke colour
