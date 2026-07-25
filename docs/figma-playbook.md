@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 6/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0). Phase queue in the ledger.
+- **Status:** 7/57 done. Phase 1: Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0, InputGroup 1.0 — only InputOTP left. Phase queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -33,6 +33,19 @@ differ, so mocking one would document a lie. A stated boundary is documentation;
 plausible-looking mock is a bug waiting to be built.
 
 ---
+
+### Compound families — model only what has visual decisions
+
+A family's export count is not its component count. InputGroup ships six exports but
+gets **one** component set (`InputGroup/Button`, 16 variants) because the other five —
+Addon, Text, Input, Textarea, and the root — are *layout containers*: their look comes
+entirely from the shared wrap plus their own padding, and their content is arbitrary.
+Modelling them as components would produce empty boxes a designer can't use.
+
+Document those as **slots + a composition gallery** instead: a labelled diagram of the
+positions (InputGroup's Spec shows the CSS `order: 0…4` stack with each slot named),
+then assembled real-world arrangements in Examples. Designers copy compositions, not
+empty containers. Apply the same judgement to Chat, Sidebar, Item and Field.
 
 ## File structure (page list)
 

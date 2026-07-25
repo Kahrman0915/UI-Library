@@ -166,12 +166,25 @@
       "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Value / 'Error message'. No icon booleans — the right slot is permanently the chevron.",
       "version": "1.0 · 2026-07-25",
+      "notesInputGroupSibling": "see InputGroup below — fourth and last wrap consumer",
       "notes": "Third wrap consumer and the only one that uses .ui-input-wrap completely unmodified. Two things the page exists to teach: (1) the ours/browser boundary — the closed control is ours, the open list is browser/OS-rendered and unstylable (option color/background honoured on Windows+Linux, ignored on macOS), which is precisely why the floating Select exists; (2) the hit-area trick — the <select> gets margin-right -(--w-4 + --p-2) and equal padding-right so it bleeds under the pointer-events:none chevron, making the whole trailing edge open the menu, size-independently. NO open-state frame is drawn, deliberately: mocking one OS's menu would document a lie. NativeSelectOption/OptGroup get no Figma components (no visual form of ours)."
+    },
+    "InputGroup": {
+      "status": "done-v4",
+      "pageId": "208:32",
+      "setIds": ["208:97"],
+      "setNote": "208:97 is InputGroup/Button — the ONLY sub-part modelled as a component set. 16 variants (4 variants × 4 sizes).",
+      "frames": { "overview": "209:32", "spec": "209:152", "theming": "210:182", "examplesDocsHistory": "210:319" },
+      "themed": true,
+      "themingFrame": "PRESENT — the first field component with one. InputGroupButton variant=default fills with --primary (Theme collection) and takes the Aiden gradient under data-surface. Everything else in the family is neutral.",
+      "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "COMPOUND-FAMILY PATTERN worth copying: of the 6 exports only InputGroupButton has real visual decisions, so only it becomes a component set. Addon / Text / Input / Textarea are layout containers whose look comes from the wrap plus their own padding — documented as SLOTS (a labelled order-0..4 diagram) plus a composition gallery of assembled examples, not modelled as components. Two techniques documented: (1) CSS order decouples visual placement from DOM order so the input always gets Tab first; (2) the doubled selector `.ui-input-field .ui-input-group__wrap` is required to out-specify Input's per-size padding rule — without it the leading edge double-pads (owner hit this bug in code earlier). In Figma the block addons are built as VERTICAL rows rather than emulating flex-wrap + flex-basis:100%; visually identical, far simpler."
     }
   },
   "queue": {
-    "nextUp": "InputGroup",
-    "phase1": ["InputGroup", "InputOTP"],
+    "nextUp": "InputOTP",
+    "phase1": ["InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
