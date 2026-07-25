@@ -223,6 +223,16 @@ Sweep the new page + set (skip nodes inside instances):
   `exportfunctionSidebar` — every trailing space is measured away. Use **non-breaking
   spaces (U+00A0)** for every space inside multi-span text: identical width in a mono
   face, never trimmed.
+- **Icon stroke weight does not scale on resize in Figma — but it does in the browser.**
+  SVG `stroke-width` is in viewBox units, so lucide's `2` renders 1.0px at 12px, 1.33px at
+  16px, 2.0px at 24px. Figma leaves it at a flat 2px, which is why a shrunk icon looks like
+  a blob. **Any icon placed below 24px needs its stroke set to `2 × size ÷ 24`.** Measure
+  the real value in the browser (`computedStrokeWidth × renderedSize ÷ viewBoxSize`) rather
+  than assuming. CloseButton is the carve-out — its CSS pins 1.33 units, so 0.665px at 12px.
+- **Give a swappable family identical inner layer names.** `instance.swapComponent()`
+  discards overrides whose layer names don't match the new component, so every icon uses a
+  `glyph` group over `path-1`, `path-2`… Per-glyph names silently reset the stroke colour
+  and weight on every swap — which is exactly what a host component sets.
 - **Bulk assets go through `upload_assets`, never through the conversation.** The full
   lucide set is ~353 KB of markup; pasting it into `use_figma` scripts would cost six
   figures of tokens. Generate ONE SVG locally with each icon wrapped in
