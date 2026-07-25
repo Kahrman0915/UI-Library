@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 7/57 done. Phase 1: Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0, InputGroup 1.0 — only InputOTP left. Phase queue in the ledger.
+- **Status:** 8/57 done. **Phase 1 is COMPLETE** — Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0, InputGroup 1.0, InputOTP 1.0. Next up: Checkbox (Phase 2 · Atoms). Queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 

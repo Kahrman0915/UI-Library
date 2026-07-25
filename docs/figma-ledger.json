@@ -180,11 +180,23 @@
       "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
       "version": "1.0 · 2026-07-25",
       "notes": "COMPOUND-FAMILY PATTERN worth copying: of the 6 exports only InputGroupButton has real visual decisions, so only it becomes a component set. Addon / Text / Input / Textarea are layout containers whose look comes from the wrap plus their own padding — documented as SLOTS (a labelled order-0..4 diagram) plus a composition gallery of assembled examples, not modelled as components. Two techniques documented: (1) CSS order decouples visual placement from DOM order so the input always gets Tab first; (2) the doubled selector `.ui-input-field .ui-input-group__wrap` is required to out-specify Input's per-size padding rule — without it the leading edge double-pads (owner hit this bug in code earlier). In Figma the block addons are built as VERTICAL rows rather than emulating flex-wrap + flex-basis:100%; visually identical, far simpler."
+    },
+    "InputOTP": {
+      "status": "done-v4",
+      "pageId": "212:32",
+      "setIds": ["212:441"],
+      "frames": { "overview": "213:104", "spec": "213:200", "examplesDocsHistory": "213:766" },
+      "themed": false,
+      "themingFrame": "OMITTED — slot surface is neutral; stated in TOKENS.",
+      "props": "VARIANT Size (sm/default/lg) × State (Empty/Focused/Partial/Complete/Error/Disabled) = 18; BOOLEAN 'Show label' / Separator / 'Show error message'; TEXT Label / 'Error message'.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The ONE form control that does NOT reuse .ui-input-wrap — slots own their border, radius and focus ring, so forcing them through the wrap would mean fighting its padding/height per size. State is a WHOLE-CONTROL axis, not a per-slot one, because a slot is never designed alone; the Spec adds an isolated slot-state strip (default/active/filled/error/error-active) for the atomic view. Built at length 6 with a toggleable groupSize-3 separator. Caret = 2px bar, --w-0-5 wide, steps(1) blink on --duration-shimmer, shown only in the active EMPTY slot."
     }
   },
   "queue": {
-    "nextUp": "InputOTP",
-    "phase1": ["InputOTP"],
+    "nextUp": "Checkbox — start of Phase 2",
+    "phase1": [],
+    "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
