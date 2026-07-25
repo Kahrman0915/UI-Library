@@ -310,14 +310,32 @@
       "version": "1.0 · 2026-07-25",
       "notes": "Third and last of the hidden-input trio. role='switch' on a native type=checkbox — keeps every native behaviour, only changes the announcement to 'switch, on/off'. Thumb travel (12/16/20px) is an intentional hard-coded literal per CLAUDE.md: travel = track − thumb − 2×2px inset. In Figma the thumb is an absolutely-positioned ellipse at x=2 (off) / x=2+travel (on). Overview carries a Switch-vs-Checkbox-vs-Radio decision guide (the distinction is immediacy, not appearance).",
       "openQuestion": "FLAGGED FOR OWNER: only .ui-switch-wrap--sz-default sets margin-top:--p-0-5 on the track. At every size the track height already equals the label line-height (16/16, 20/20, 24/24), so default sits 2px lower than its label while sm and lg sit flush. Checkbox/RadioGroup genuinely need that nudge (16px box vs 20px line); Switch looks like it inherited it. Reproduced faithfully in Figma and noted on the Spec frame. If the owner confirms it's a bug, remove the margin-top from Switch.scss and drop the 'track align' padding from the default variants."
+    },
+    "Slider": {
+      "status": "done-v4",
+      "pageId": "230:32",
+      "setIds": [
+        "230:147"
+      ],
+      "frames": {
+        "overview": "232:32",
+        "spec": "232:156",
+        "theming": "233:503",
+        "examplesDocsHistory": "233:854"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — filled range AND the 3px thumb border read --primary. Unfilled track stays --muted.",
+      "props": "VARIANT Size (sm/default/lg) × Mode (Single/Range) × Disabled = 12; BOOLEAN 'Show label' / 'Show value'; TEXT Label. Value text is intentionally NOT a bound property so Range variants can keep '25 – 75' while Single keeps '60' — text in an instance is directly editable anyway.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The ONE form control with no hidden native input: <input type=range> has a single thumb, so range mode would need a second implementation. Each thumb is its own role='slider' span; ARIA here IS the implementation. Neighbour clamp lives in each thumb's aria-valuemin/max (announced, not just enforced). Position/width are deliberately NEVER transitioned — easing would lag the pointer during a drag; only box-shadow and border-color ease. Track uses overflow:visible so the focus ring escapes a 4px sm track. In Figma the thumb is an absolutely-positioned ellipse; Single sits at 60%, Range at 25%/75%.",
+      "layoutNote": "Spec card is 1440 wide (not the usual 1280): 4 state columns × 290px cells overflowed a 1280 card by 22px. Measure row content against the TABLE's inner padding, not just the card bounds — the card-level lint misses this."
     }
   },
   "queue": {
-    "nextUp": "Slider",
+    "nextUp": "Badge",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Slider",
       "Badge",
       "Kbd",
       "Separator",

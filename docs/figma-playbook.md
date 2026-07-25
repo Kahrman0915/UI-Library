@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 11/57 done. Phase 1 COMPLETE. Phase 2: Checkbox, RadioGroup, Switch. Next up: Slider. Queue in the ledger.
+- **Status:** 12/57 done. Phase 1 COMPLETE. Phase 2: Checkbox, RadioGroup, Switch, Slider. Next up: Badge. Queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -214,6 +214,11 @@ Sweep the new page + set (skip nodes inside instances):
   short captions and grid axes only. For anything paragraph-length, create a plain TEXT
   node with the `xs/leading-normal/Medium` style + `color/muted-foreground` and set
   `layoutSizingHorizontal='FILL'` — that wraps correctly.
+- **Measure overflow against the TABLE's inner padding, not just the card.** The
+  card-level lint only catches content escaping the card bounds, so a spec row can sit
+  22px into a table's right padding and still pass. Slider's four 290px state columns
+  needed the card widened from 1280 → 1440. Check
+  `rowContentMaxX > tableX + tableWidth − tablePaddingRight` before shipping a wide spec.
 - **Rows of many pills overflow the card.** A hugging horizontal auto-layout row will
   run past a fixed-width card rather than wrap. Set `layoutWrap='WRAP'`,
   `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
