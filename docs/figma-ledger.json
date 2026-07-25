@@ -329,14 +329,34 @@
       "version": "1.0 · 2026-07-25",
       "notes": "The ONE form control with no hidden native input: <input type=range> has a single thumb, so range mode would need a second implementation. Each thumb is its own role='slider' span; ARIA here IS the implementation. Neighbour clamp lives in each thumb's aria-valuemin/max (announced, not just enforced). Position/width are deliberately NEVER transitioned — easing would lag the pointer during a drag; only box-shadow and border-color ease. Track uses overflow:visible so the focus ring escapes a 4px sm track. In Figma the thumb is an absolutely-positioned ellipse; Single sits at 60%, Range at 25%/75%.",
       "layoutNote": "Spec card is 1440 wide (not the usual 1280): 4 state columns × 290px cells overflowed a 1280 card by 22px. Measure row content against the TABLE's inner padding, not just the card bounds — the card-level lint misses this."
+    },
+    "Badge": {
+      "status": "done-v4",
+      "pageId": "236:32",
+      "setIds": [
+        "236:70",
+        "236:161"
+      ],
+      "setNote": "TWO sets: 236:70 'Badge' (12 status variants) and 236:161 'Badge/Category' (15 hues × soft|solid = 30). Split because `category` OVERRIDES `variant` in code — they are two modes, not two axes.",
+      "frames": {
+        "overview": "237:32",
+        "spec": "237:158",
+        "theming": "238:187",
+        "examplesDocsHistory": "238:324"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — only default + outline follow the brand (--primary / --primary-text / --primary-border). The semantic four keep their own colour in every theme; the 15 category hues are a fixed palette and never theme.",
+      "props": "Badge: VARIANT Variant (12) + TEXT Label. Badge/Category: VARIANT Hue (15) × Style (soft|solid) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Category variables are NESTED in Figma: category/{hue}/base | /bg | /text (NOT hyphen-suffixed), plus a single category/foreground. The aiden variant is a real gradient variant (unlike Checkbox/Switch where aiden is only a surface effect), so it carries the aidenDarkPattern overlay bound to flag/is-dark — verified flipping. No size prop and no brand variant, both deliberate; stated on the page. Not interactive: a <div> with no role/tabindex, so the Spec has no hover/focus/disabled axis.",
+      "contrastNote": "Soft category style is AA-gated (all 15 -text-on--bg pairings in npm run test:contrast). Solid is deliberately NOT gated — inverted --category-foreground dips under AA on amber/green in light. Owner's accepted call; the page says so plainly rather than hiding it."
     }
   },
   "queue": {
-    "nextUp": "Badge",
+    "nextUp": "Kbd",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Badge",
       "Kbd",
       "Separator",
       "StatusDot",

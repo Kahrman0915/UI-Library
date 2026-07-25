@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 12/57 done. Phase 1 COMPLETE. Phase 2: Checkbox, RadioGroup, Switch, Slider. Next up: Badge. Queue in the ledger.
+- **Status:** 13/57 done. Phase 1 COMPLETE. Phase 2: Checkbox, RadioGroup, Switch, Slider, Badge. Next up: Kbd. Queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -33,6 +33,15 @@ differ, so mocking one would document a lie. A stated boundary is documentation;
 plausible-looking mock is a bug waiting to be built.
 
 ---
+
+### Mutually exclusive props → separate sets, not one long axis
+
+When two props are alternatives rather than dimensions — one overrides the other in
+code — give each its own component set. Badge ships `variant` (12 status options) and
+`category` (15 hues × soft|solid), and passing a category ignores the variant entirely.
+Flattening them into one 42-option dropdown would offer a designer choices that silently
+cancel each other out. Two sets (`Badge`, `Badge/Category`) make the fork explicit: pick
+the set that matches the job, then pick within it. Say which wins in the Overview.
 
 ### Compound families — model only what has visual decisions
 
