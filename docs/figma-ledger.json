@@ -291,14 +291,32 @@
       "props": "RadioGroup/Item: VARIANT Size (sm/default/lg) × State (Unchecked/Checked) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
       "version": "1.0 · 2026-07-25",
       "notes": "Same hidden-input pattern as Checkbox. DOCUMENTED DIVERGENCE: in code `size` is set ONCE on the group and cascades to every item via CSS descendant selectors; Figma cannot model a descendant selector reaching into instances, so each item carries its own Size and the Overview says so explicitly under a '⚠ CODE vs FIGMA' section. The group owns three things the items never receive as props: name/value/callbacks via React context, the size cascade via CSS, and role=radiogroup + aria-labelledby via ARIA. RadioGroupItem throws outside a RadioGroup because a nameless radio silently stops excluding its siblings. Label visibility bound to the ui-label CONTAINER (Checkbox lesson)."
+    },
+    "Switch": {
+      "status": "done-v4",
+      "pageId": "227:32",
+      "setIds": [
+        "227:129"
+      ],
+      "frames": {
+        "overview": "228:32",
+        "spec": "228:140",
+        "theming": "229:263",
+        "examplesDocsHistory": "229:670"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — on-track fills with --primary (Theme collection). Off stays --muted in every theme, deliberately.",
+      "props": "VARIANT Size (sm/default/lg) × State (Off/On) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Third and last of the hidden-input trio. role='switch' on a native type=checkbox — keeps every native behaviour, only changes the announcement to 'switch, on/off'. Thumb travel (12/16/20px) is an intentional hard-coded literal per CLAUDE.md: travel = track − thumb − 2×2px inset. In Figma the thumb is an absolutely-positioned ellipse at x=2 (off) / x=2+travel (on). Overview carries a Switch-vs-Checkbox-vs-Radio decision guide (the distinction is immediacy, not appearance).",
+      "openQuestion": "FLAGGED FOR OWNER: only .ui-switch-wrap--sz-default sets margin-top:--p-0-5 on the track. At every size the track height already equals the label line-height (16/16, 20/20, 24/24), so default sits 2px lower than its label while sm and lg sit flush. Checkbox/RadioGroup genuinely need that nudge (16px box vs 20px line); Switch looks like it inherited it. Reproduced faithfully in Figma and noted on the Spec frame. If the owner confirms it's a bug, remove the margin-top from Switch.scss and drop the 'track align' padding from the default variants."
     }
   },
   "queue": {
-    "nextUp": "Switch",
+    "nextUp": "Slider",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Switch",
       "Slider",
       "Badge",
       "Kbd",
