@@ -123,11 +123,22 @@
       "sizes": [16, 12, 20, 24, 40],
       "version": "1.1 · 2026-07-25",
       "notes": "Non-interactive: no hover/focus/disabled, so the Spec frame is sizes × colour contexts plus a rotation-phase strip (Figma can't animate). Icon built via figma.createNodeFromSvg with lucide's LoaderCircle path, then rescale(size/24) so stroke stays 2÷24 of the box. Colour is set per-instance on the child VECTOR named 'loader-arc'."
+    },
+    "Label": {
+      "status": "done-v4",
+      "pageId": "186:32",
+      "setIds": ["186:69"],
+      "frames": { "overview": "187:32", "spec": "187:155", "examplesDocsHistory": "188:243" },
+      "themed": false,
+      "themingFrame": "OMITTED — Label is neutral chrome (foreground / muted-foreground / error only). The omission is stated in the TOKENS section so it reads as a decision, not a gap.",
+      "props": "VARIANT Size (sm/default/lg) × VARIANT Disabled (False/True) = 6 variants; BOOLEAN Required + 'Show description'; TEXT Label + Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Disabled had to be a VARIANT, not a BOOLEAN: Figma booleans can only drive layer visibility, and disabled is opacity 50%. Overview carries an ANATOMY section because six components reuse the .ui-label__* class names rather than nesting <Label> — that split (5 render it / 6 borrow the classes) is the page's most important content."
     }
   },
   "queue": {
-    "nextUp": "Label",
-    "phase1": ["Label", "Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "Input",
+    "phase1": ["Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
