@@ -9,9 +9,43 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 1/57 components done (Button, changelog 1.4). Phase queue in the ledger.
+- **Status:** 8/57 done. **Phase 1 is COMPLETE** — Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0, InputGroup 1.0, InputOTP 1.0. Next up: Checkbox (Phase 2 · Atoms). Queue in the ledger.
+
+### Adapting the recipe to non-interactive components
+
+The four frames are the shape, not a straitjacket. Spinner set the precedent: it has
+**no hover / focus / disabled** (it isn't focusable), so its Spec frame is
+**sizes × colour contexts** instead of states, plus a **rotation-phase strip** (0/90/
+180/270°) because Figma can't play the animation. Keep the frame *names* and the
+light/dark side-by-side structure; swap the axes for whatever actually varies. Say
+plainly in the Section description why the axes differ — that sentence is what teaches
+the reader.
+
+**Icons:** build lucide glyphs with `figma.createNodeFromSvg(...)` using the real path
+data, then `rescale(size/24)` so the stroke keeps lucide's 2÷24 ratio. Name the inner
+vector (`loader-arc`) or the lint flags it.
+
+**Don't draw what isn't ours.** Where the browser or OS owns the rendering — a native
+`<select>`'s open list, a date picker's calendar, an autofill dropdown — omit the frame
+and say why in its place. NativeSelect's Spec ends with a "THE OPEN STATE — NOT DRAWN
+HERE" note explaining that Chrome-on-Windows, Safari-on-macOS and the iOS wheel all
+differ, so mocking one would document a lie. A stated boundary is documentation; a
+plausible-looking mock is a bug waiting to be built.
 
 ---
+
+### Compound families — model only what has visual decisions
+
+A family's export count is not its component count. InputGroup ships six exports but
+gets **one** component set (`InputGroup/Button`, 16 variants) because the other five —
+Addon, Text, Input, Textarea, and the root — are *layout containers*: their look comes
+entirely from the shared wrap plus their own padding, and their content is arbitrary.
+Modelling them as components would produce empty boxes a designer can't use.
+
+Document those as **slots + a composition gallery** instead: a labelled diagram of the
+positions (InputGroup's Spec shows the CSS `order: 0…4` stack with each slot named),
+then assembled real-world arrangements in Examples. Designers copy compositions, not
+empty containers. Apply the same judgement to Chat, Sidebar, Item and Field.
 
 ## File structure (page list)
 
@@ -74,6 +108,13 @@ Section + "Try it: select any frame → Appearance panel → set Theme or Mode" 
 header row of theme codes → **Light row + Dark row** of cells; each cell is a small
 `color/background` frame with `setExplicitVariableModeForCollection(Theme, mode)`
 (+ Mode=Dark on row 2) containing one instance labeled with the theme code.
+
+**When you omit this frame** because the component is neutral chrome (Label, Input,
+Tooltip, Sidebar chrome…), say so in one line in the TOKENS section — "all neutral,
+nothing reads `--primary`, a `data-theme` wrapper leaves it unchanged". An unexplained
+missing frame reads as an oversight; a stated one reads as a decision. Check first:
+`--ring`, `--focus`, `--border-hover` and `--bg-input-30` are Mode-level neutrals, so a
+component can look interactive and still not theme.
 
 ### 4 · Examples · Docs · History
 Examples section → **light bar + identical dark bar** (full-width, explicit Mode=Dark
@@ -153,6 +194,24 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Plugin-API gotchas (each cost real debugging time)
 
+- **`instance.children` omits hidden children.** A layer hidden by a boolean property
+  disappears from the array, so index access (`inst.children[1]`) silently shifts or
+  returns `undefined`. Always locate by name: `inst.findOne(n => n.name === 'ui-input-wrap')`.
+- **Booleans can only drive `visible`.** A code prop that toggles a *layer* (Label's
+  `required` asterisk, its `description` line, Button's `isLoading` spinner) maps to a
+  BOOLEAN property. A prop that changes a *style* — opacity, fill, size — cannot, and
+  has to become a VARIANT axis instead (Label's `disabled` is opacity 50%, so
+  `Size × Disabled` = 6 variants). Decide this before building the variants.
+- **Don't use `_Doc/Annotation` for prose.** Its inner text hugs, so even with the
+  instance set to `FILL` a long note renders as one overflowing line. Annotations are for
+  short captions and grid axes only. For anything paragraph-length, create a plain TEXT
+  node with the `xs/leading-normal/Medium` style + `color/muted-foreground` and set
+  `layoutSizingHorizontal='FILL'` — that wraps correctly.
+- **Rows of many pills overflow the card.** A hugging horizontal auto-layout row will
+  run past a fixed-width card rather than wrap. Set `layoutWrap='WRAP'`,
+  `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
+  `cardWidth − padding` (a Props row with ~8+ pills always will).
+  Same care for fixed-width table label columns: measure the longest string before sizing.
 - **Instances can't `appendChild`** — masters pre-provision max children; instances
   hide extras (`visible=false`).
 - **`createAutoLayout` defaults `clipsContent=true`** — unclip rows/cells or focus

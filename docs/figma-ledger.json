@@ -111,13 +111,92 @@
       "themed": true,
       "defaultFamilyReboundToTheme": true,
       "aidenDarkOverlays": 8,
-      "version": "1.4 · 2026-07-24",
-      "followUp": "After Spinner ships: add a real isLoading boolean property (instance-swap Spinner) and drop its ⚠ code-only marker."
+      "isLoadingProp": "isLoading#183:0 — BOOLEAN on the set; each of the 120 variants holds a Spinner instance named 'spinner' at child index 0, visible bound to the prop, Size tracking the button size (XSmall=12, Small/Default=16, Large=20) and stroke bound to the same variable as that variant's label.",
+      "version": "1.5 · 2026-07-25"
+    },
+    "Spinner": {
+      "status": "done-v4",
+      "pageId": "178:26",
+      "setIds": ["178:39"],
+      "frames": { "overview": "179:26", "spec": "179:78", "theming": "180:135", "examplesDocsHistory": "180:271" },
+      "themed": "indirectly — no colour prop; renders currentColor, so a themed parent colours it",
+      "sizes": [16, 12, 20, 24, 40],
+      "version": "1.1 · 2026-07-25",
+      "notes": "Non-interactive: no hover/focus/disabled, so the Spec frame is sizes × colour contexts plus a rotation-phase strip (Figma can't animate). Icon built via figma.createNodeFromSvg with lucide's LoaderCircle path, then rescale(size/24) so stroke stays 2÷24 of the box. Colour is set per-instance on the child VECTOR named 'loader-arc'."
+    },
+    "Label": {
+      "status": "done-v4",
+      "pageId": "186:32",
+      "setIds": ["186:69"],
+      "frames": { "overview": "187:32", "spec": "187:155", "examplesDocsHistory": "188:243" },
+      "themed": false,
+      "themingFrame": "OMITTED — Label is neutral chrome (foreground / muted-foreground / error only). The omission is stated in the TOKENS section so it reads as a decision, not a gap.",
+      "props": "VARIANT Size (sm/default/lg) × VARIANT Disabled (False/True) = 6 variants; BOOLEAN Required + 'Show description'; TEXT Label + Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Disabled had to be a VARIANT, not a BOOLEAN: Figma booleans can only drive layer visibility, and disabled is opacity 50%. Overview carries an ANATOMY section because six components reuse the .ui-label__* class names rather than nesting <Label> — that split (5 render it / 6 borrow the classes) is the page's most important content."
+    },
+    "Input": {
+      "status": "done-v4",
+      "pageId": "192:32",
+      "setIds": ["192:281"],
+      "frames": { "overview": "195:80", "spec": "195:205", "examplesDocsHistory": "197:486" },
+      "themed": false,
+      "themingFrame": "OMITTED — --ring / --focus / --border-hover / --bg-input-30 are Mode-level neutrals that no data-theme remaps. Stated in the TOKENS section.",
+      "props": "VARIANT Size (sm/default/lg) × Error (False/True) × Disabled (False/True) = 12; BOOLEAN 'Show label' / 'Show error message' / 'Icon left' / 'Icon right'; TEXT Placeholder / 'Error message'.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Nests a live Label instance with isExposedInstance=true, so Label's Required / Show description surface on any Input. Owns .ui-input-wrap — documented in the Overview as a CONTRACT because Textarea, NativeSelect, InputGroup and the Chat composer apply the class to their own markup rather than importing Input. When building those four, reuse this wrap spec verbatim; do not redefine borders."
+    },
+    "Textarea": {
+      "status": "done-v4",
+      "pageId": "199:32",
+      "setIds": ["199:257"],
+      "frames": { "overview": "201:80", "spec": "201:177", "examplesDocsHistory": "201:1249" },
+      "themed": false,
+      "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
+      "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Placeholder / 'Error message'. No icon slots (a textarea has no room).",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Reuses Input's wrap via --multi: wrap height auto + padding 0 + align stretch, padding moved onto the .ui-textarea so the native resize grip lands in the true corner. Min-heights 64/96/128 bound to height/16|24|32. The grip is drawn as an absolutely-positioned 2-tick vector named 'resize grip (native)' pinned to MAX/MAX constraints. TextareaSize re-exports InputSize so the two can't drift."
+    },
+    "NativeSelect": {
+      "status": "done-v4",
+      "pageId": "205:32",
+      "setIds": ["205:233"],
+      "frames": { "overview": "206:80", "spec": "206:201", "examplesDocsHistory": "206:1013" },
+      "themed": false,
+      "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
+      "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Value / 'Error message'. No icon booleans — the right slot is permanently the chevron.",
+      "version": "1.0 · 2026-07-25",
+      "notesInputGroupSibling": "see InputGroup below — fourth and last wrap consumer",
+      "notes": "Third wrap consumer and the only one that uses .ui-input-wrap completely unmodified. Two things the page exists to teach: (1) the ours/browser boundary — the closed control is ours, the open list is browser/OS-rendered and unstylable (option color/background honoured on Windows+Linux, ignored on macOS), which is precisely why the floating Select exists; (2) the hit-area trick — the <select> gets margin-right -(--w-4 + --p-2) and equal padding-right so it bleeds under the pointer-events:none chevron, making the whole trailing edge open the menu, size-independently. NO open-state frame is drawn, deliberately: mocking one OS's menu would document a lie. NativeSelectOption/OptGroup get no Figma components (no visual form of ours)."
+    },
+    "InputGroup": {
+      "status": "done-v4",
+      "pageId": "208:32",
+      "setIds": ["208:97"],
+      "setNote": "208:97 is InputGroup/Button — the ONLY sub-part modelled as a component set. 16 variants (4 variants × 4 sizes).",
+      "frames": { "overview": "209:32", "spec": "209:152", "theming": "210:182", "examplesDocsHistory": "210:319" },
+      "themed": true,
+      "themingFrame": "PRESENT — the first field component with one. InputGroupButton variant=default fills with --primary (Theme collection) and takes the Aiden gradient under data-surface. Everything else in the family is neutral.",
+      "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "COMPOUND-FAMILY PATTERN worth copying: of the 6 exports only InputGroupButton has real visual decisions, so only it becomes a component set. Addon / Text / Input / Textarea are layout containers whose look comes from the wrap plus their own padding — documented as SLOTS (a labelled order-0..4 diagram) plus a composition gallery of assembled examples, not modelled as components. Two techniques documented: (1) CSS order decouples visual placement from DOM order so the input always gets Tab first; (2) the doubled selector `.ui-input-field .ui-input-group__wrap` is required to out-specify Input's per-size padding rule — without it the leading edge double-pads (owner hit this bug in code earlier). In Figma the block addons are built as VERTICAL rows rather than emulating flex-wrap + flex-basis:100%; visually identical, far simpler."
+    },
+    "InputOTP": {
+      "status": "done-v4",
+      "pageId": "212:32",
+      "setIds": ["212:441"],
+      "frames": { "overview": "213:104", "spec": "213:200", "examplesDocsHistory": "213:766" },
+      "themed": false,
+      "themingFrame": "OMITTED — slot surface is neutral; stated in TOKENS.",
+      "props": "VARIANT Size (sm/default/lg) × State (Empty/Focused/Partial/Complete/Error/Disabled) = 18; BOOLEAN 'Show label' / Separator / 'Show error message'; TEXT Label / 'Error message'.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The ONE form control that does NOT reuse .ui-input-wrap — slots own their border, radius and focus ring, so forcing them through the wrap would mean fighting its padding/height per size. State is a WHOLE-CONTROL axis, not a per-slot one, because a slot is never designed alone; the Spec adds an isolated slot-state strip (default/active/filled/error/error-active) for the atomic view. Built at length 6 with a toggleable groupSize-3 separator. Caret = 2px bar, --w-0-5 wide, steps(1) blink on --duration-shimmer, shown only in the active EMPTY slot."
     }
   },
   "queue": {
-    "nextUp": "Spinner",
-    "phase1": ["Spinner", "Label", "Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "Checkbox — start of Phase 2",
+    "phase1": [],
+    "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
