@@ -33,6 +33,8 @@ HERE" note explaining that Chrome-on-Windows, Safari-on-macOS and the iOS wheel 
 differ, so mocking one would document a lie. A stated boundary is documentation; a
 plausible-looking mock is a bug waiting to be built.
 
+The same rule has a constructive half: when a token family exists but nothing renders it, document it as a **reference**, not as a usage example. The Code page shows its 11 `--code-*` syntax tokens as swatches on the real `code/block` surface with their measured contrast — a designer can see and review the palette, but nobody can mistake it for a highlighter the library ships. A rendered example would have been the lie; a labelled swatch table is the documentation.
+
 ---
 
 ### Mutually exclusive props → separate sets, not one long axis
