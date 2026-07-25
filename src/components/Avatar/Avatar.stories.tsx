@@ -183,3 +183,66 @@ export const GroupSizes: Story = {
     </div>
   ),
 };
+
+/**
+ * `spacing` names the visual gap, so it runs inversely to the overlap: `sm` is the
+ * tightest cluster, `lg` the loosest. Nothing exercised this prop until 2026-07-25,
+ * which is how `sm` and `default` stayed transposed — read top to bottom, the gap
+ * should widen on every row.
+ */
+export const GroupSpacing: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'grid', gap: 20 }}>
+      {(['sm', 'default', 'lg'] as const).map((spacing) => (
+        <div
+          key={spacing}
+          style={{ display: 'flex', alignItems: 'center', gap: 16 }}
+        >
+          <span
+            style={{
+              width: 64,
+              fontSize: 'var(--text-xs)',
+              color: 'var(--muted-foreground)',
+            }}
+          >
+            {spacing}
+          </span>
+          <AvatarGroup id={`g-sp-${spacing}`} spacing={spacing} max={3}>
+            <Avatar id={`gsp-${spacing}-1`} fallback="AB" />
+            <Avatar id={`gsp-${spacing}-2`} fallback="CD" />
+            <Avatar id={`gsp-${spacing}-3`} fallback="EF" />
+            <Avatar id={`gsp-${spacing}-4`} fallback="GH" />
+            <Avatar id={`gsp-${spacing}-5`} fallback="IJ" />
+          </AvatarGroup>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
+/**
+ * The group's `size` reaches direct `Avatar` children that haven't chosen their own,
+ * so the generated `+N` chip can't end up the only large avatar. Neither group below
+ * sets `size` on a child; both should be internally consistent.
+ */
+export const GroupSizeInheritance: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'grid', gap: 20 }}>
+      <AvatarGroup id="g-inh-lg" size="lg" max={3}>
+        <Avatar id="gi-1" fallback="AB" />
+        <Avatar id="gi-2" fallback="CD" />
+        <Avatar id="gi-3" fallback="EF" />
+        <Avatar id="gi-4" fallback="GH" />
+        <Avatar id="gi-5" fallback="IJ" />
+      </AvatarGroup>
+      <AvatarGroup id="g-inh-sm" size="sm" max={3}>
+        <Avatar id="gj-1" fallback="AB" />
+        <Avatar id="gj-2" fallback="CD" />
+        <Avatar id="gj-3" fallback="EF" />
+        <Avatar id="gj-4" fallback="GH" />
+      </AvatarGroup>
+    </div>
+  ),
+};

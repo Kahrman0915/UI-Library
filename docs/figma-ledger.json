@@ -317,9 +317,11 @@
       "themed": true,
       "themingFrame": "PRESENT — on-track fills with --primary (Theme collection). Off stays --muted in every theme, deliberately.",
       "props": "VARIANT Size (sm/default/lg) × State (Off/On) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
-      "version": "1.0 · 2026-07-25",
+      "version": "1.1 · 2026-07-25",
       "notes": "Third and last of the hidden-input trio. role='switch' on a native type=checkbox — keeps every native behaviour, only changes the announcement to 'switch, on/off'. Thumb travel (12/16/20px) is an intentional hard-coded literal per CLAUDE.md: travel = track − thumb − 2×2px inset. In Figma the thumb is an absolutely-positioned ellipse at x=2 (off) / x=2+travel (on). Overview carries a Switch-vs-Checkbox-vs-Radio decision guide (the distinction is immediacy, not appearance).",
-      "openQuestion": "FLAGGED FOR OWNER: only .ui-switch-wrap--sz-default sets margin-top:--p-0-5 on the track. At every size the track height already equals the label line-height (16/16, 20/20, 24/24), so default sits 2px lower than its label while sm and lg sit flush. Checkbox/RadioGroup genuinely need that nudge (16px box vs 20px line); Switch looks like it inherited it. Reproduced faithfully in Figma and noted on the Spec frame. If the owner confirms it's a bug, remove the margin-top from Switch.scss and drop the 'track align' padding from the default variants."
+      "resolved": [
+        "The 'default sits 2px low' alignment inconsistency was a SYMPTOM, not the cause: Switch never passed a size class to its label, so .ui-label__text stayed at --leading-5 (20px) at every size while the track scaled 16/20/24. The margin was patching that mismatch on the one size that least needed it. Fixed 2026-07-25 by adding ui-label--sz-{size} (matching Checkbox and RadioGroup) and deleting the --sz-default margin-top. Track height now equals label line-height at all three sizes (16/16, 20/20, 24/24), so every track is flush with no nudge. The ramps are now coupled — a comment in Switch.scss records that."
+      ]
     },
     "Slider": {
       "status": "done-v4",
@@ -445,9 +447,15 @@
       "themed": false,
       "themingFrame": "ABSENT — neutral in every brand. Code should not change colour with the sub-brand.",
       "props": "Code: TEXT Label. CodeBlock: VARIANT Header (3) + TEXT Filename + TEXT Code.",
-      "version": "1.0 · 2026-07-25",
+      "version": "1.1 · 2026-07-25",
       "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers — a palette pre-picked for a highlighter we do not have.",
-      "figmaDivergence": "Inline chip vertical padding is 0.1em in CSS (em-relative, ~1.3px at --text-code); Figma variables cannot express em, so it is bound to spacing/0-5 (2px). Stated on the Avatar Overview note covering both divergences."
+      "figmaDivergence": "Inline chip vertical padding is 0.1em in CSS (em-relative, ~1.3px at --text-code); Figma variables cannot express em, so it is bound to spacing/0-5 (2px). Stated on the Avatar Overview note covering both divergences.",
+      "resolved": [
+        "The scrollable <pre> had overflow-x: auto with no tabindex, making overflowed code unreachable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). Fixed 2026-07-25: tabIndex={0} plus an inset --focus ring in Code.scss. No ARIA role added, so it stays announced as preformatted text."
+      ],
+      "openQuestions": [
+        "The 11 --code-* syntax tokens are an exact Tailwind mapping (light 500/600, dark 300/400) with ZERO consumers and no contrast coverage. Hand-computed against --code-block, 9 of 11 fall under AA in LIGHT mode (type 2.22 … tag 4.29; only `variable` at 6.84 passes); dark is fine at 5.4-9.6. Also `selector` duplicates `string` in both modes, and `attr` duplicates `number` in DARK only. If a highlighter is ever added, the light palette needs re-deriving and all 11 pairings adding to scripts/contrast-check.mjs. Numbers are hand-calculated, not script output — verify before acting."
+      ]
     },
     "CloseButton": {
       "status": "done-v4",
@@ -482,12 +490,13 @@
       "themed": false,
       "themingFrame": "ABSENT — a person's avatar is not a brand accent.",
       "props": "Avatar: VARIANT Size × Shape + BOOLEAN Image + BOOLEAN Badge + TEXT Fallback. AvatarGroup: VARIANT Spacing (3).",
-      "version": "1.0 · 2026-07-25",
-      "notes": "The fallback is ALWAYS mounted at z-0 under the image rather than swapped in on error, so a slow image shows initials then resolves and a broken one shows initials permanently — no flash of empty space either way. The badge lives OUTSIDE __inner because __inner owns overflow:hidden to clip the image to the shape; a badge inside it would lose the half that overhangs. Modeled the image as a gradient placeholder rect (no asset uploads).",
+      "version": "1.1 · 2026-07-25",
+      "notes": "The fallback is ALWAYS mounted at z-0 under the image rather than swapped in on error, so a slow image shows initials then resolves and a broken one shows initials permanently — no flash of empty space either way. The badge lives OUTSIDE __inner because __inner owns overflow:hidden to clip the image to the shape; a badge inside it would lose the half that overhangs. Modeled the image as a gradient placeholder rect (no asset uploads). Page updated to v1.1 after both defects were fixed in code — the Spec note now documents the resolution, not a reproduction.",
       "figmaDivergence": "Initials carry --tracking-wide (0.025em) in code but plain tracking in Figma — pinning letterSpacing detaches textStyleId and 0.35px on two letters did not justify three new Semibold-Wide styles. Noted on the Overview frame.",
-      "openQuestions": [
-        "AvatarGroup spacing ramp is NON-MONOTONIC: sm = -8px, default = -12px, lg = -4px. So 'default' overlaps MORE than 'sm' — sm and default read swapped (a real ramp would be -12/-8/-4). No story exercises the spacing prop, which is why it was never caught. Reproduced faithfully in Figma and called out on the Spec frame.",
-        "AvatarGroup's `size` prop only reaches the auto-generated +N count chip. Children are consumer-supplied <Avatar> elements with their own size and the group does not clone them, so <AvatarGroup size='lg'> around default-size children makes the overflow chip the only large avatar. Every story sets size on both group and children, hiding it."
+      "resolved": [
+        "AvatarGroup spacing ramp was non-monotonic (sm -8 / default -12 / lg -4). Fixed 2026-07-25 by reassigning the same three values in order: sm -12 / default -8 / lg -4. `spacing` names the visual gap, which runs inversely to the overlap. Groups that never set spacing loosen from -12 to -8, since default was the value out of place.",
+        "AvatarGroup `size` reached only the +N chip. Fixed 2026-07-25: the group now cloneElement's direct Avatar children that have no explicit size. Guarded on `child.type === Avatar` so a wrapping element (Tooltip, link) never receives `size` as an unknown prop; an explicit child size still wins.",
+        "Stories added: GroupSpacing + GroupSizeInheritance — the absence of these is why both survived."
       ]
     }
   },

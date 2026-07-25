@@ -1,4 +1,11 @@
-import { Children, forwardRef, useEffect, useState } from 'react';
+import {
+  Children,
+  cloneElement,
+  forwardRef,
+  isValidElement,
+  useEffect,
+  useState,
+} from 'react';
 import type {
   AvatarGroupProps,
   AvatarProps,
@@ -76,6 +83,18 @@ const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
     const hiddenCount =
       typeof max === 'number' ? Math.max(0, childArray.length - max) : 0;
 
+    // Push the group's size onto direct Avatar children that haven't picked one,
+    // so the generated +N chip can't end up the only large avatar in the row.
+    // Only Avatars are touched — a child wrapping one (a Tooltip, a link) would
+    // receive `size` as an unknown prop — and an explicit child size still wins.
+    const sized = visible.map((child) =>
+      isValidElement<AvatarProps>(child) &&
+      child.type === Avatar &&
+      child.props.size === undefined
+        ? cloneElement(child, { size })
+        : child,
+    );
+
     return (
       <div
         {...rest}
@@ -83,7 +102,7 @@ const AvatarGroup = forwardRef<HTMLDivElement, AvatarGroupProps>(
         id={id}
         className={`ui-avatar-group ui-avatar-group--sp-${spacing}${className ? ' ' + className : ''}`}
       >
-        {visible}
+        {sized}
         {hiddenCount > 0 && (
           <Avatar
             id={`${id}-count`}

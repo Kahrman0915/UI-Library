@@ -47,7 +47,7 @@ const Switch = forwardRef<HTMLInputElement, SwitchProps>(
         </span>
         {(label || description) && (
           <span
-            className={`ui-label${disabled ? ' ui-label--disabled' : ''}`}
+            className={`ui-label ui-label--sz-${size}${disabled ? ' ui-label--disabled' : ''}`}
           >
             {label && <span className="ui-label__text">{label}</span>}
             {description && (

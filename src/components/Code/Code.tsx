@@ -77,7 +77,14 @@ const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(
             )}
           </div>
         )}
-        <pre className="ui-code-block__pre">
+        {/*
+          tabIndex=0 is load-bearing, not decoration: the <pre> is a horizontal
+          scroll container (overflow-x: auto), and a scrollable region has to be
+          focusable or a keyboard-only user can never reach the overflowed code
+          (WCAG 2.1.1 — axe's `scrollable-region-focusable`). It takes no role, so
+          it is announced as ordinary preformatted text rather than a widget.
+        */}
+        <pre className="ui-code-block__pre" tabIndex={0}>
           <code className="ui-code-block__code">{children ?? code}</code>
         </pre>
       </div>
