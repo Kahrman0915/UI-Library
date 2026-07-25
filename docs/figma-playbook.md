@@ -223,6 +223,20 @@ Sweep the new page + set (skip nodes inside instances):
   `exportfunctionSidebar` — every trailing space is measured away. Use **non-breaking
   spaces (U+00A0)** for every space inside multi-span text: identical width in a mono
   face, never trimmed.
+- **Bulk assets go through `upload_assets`, never through the conversation.** The full
+  lucide set is ~353 KB of markup; pasting it into `use_figma` scripts would cost six
+  figures of tokens. Generate ONE SVG locally with each icon wrapped in
+  `<g id="{name}">` — Figma keeps the group id as the layer name, which is the whole
+  name mapping — then call `upload_assets`, `curl -F file=@… ;type=image/svg+xml` the
+  submitUrl, and convert the imported tree in place (~450 per script, ~85 ms each).
+  Imported SVG groups **hug their glyph bounds**, so wrap each in a 24×24 frame and set
+  the group's offset to `(group.xy − cellOrigin.xy)` to restore a uniform box.
+- **Icons come from `node_modules`, not from community files.** `🧩 Icons` (page
+  `275:32`) holds all 1,746 canonical lucide icons generated from
+  `lucide-react@1.24.0` — the same package the components import, so the set cannot
+  drift from what a developer can build. Aliases are excluded. Do **not** paste in another
+  library: anything outside lucide-react is unbuildable under hard rule #1, and MIT /
+  Apache-2.0 / paid sets all carry notices that must stay attached.
 - **Vector geometry cannot be overridden inside an instance.** Figma throws
   `This property cannot be overridden in an instance` on `vectorPaths`. So a component
   with a swappable glyph needs the icon to be an **instance of an icon component plus an
