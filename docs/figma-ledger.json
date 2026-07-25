@@ -18,7 +18,13 @@
     "startHere": "165:506",
     "index": "125:180",
     "indexBoard": "125:183",
-    "dividers": { "phase1": "165:632", "phase2": "165:633", "phase3": "165:634", "phase4": "165:635", "phase5": "165:636" },
+    "dividers": {
+      "phase1": "165:632",
+      "phase2": "165:633",
+      "phase3": "165:634",
+      "phase4": "165:635",
+      "phase5": "165:636"
+    },
     "template": "146:122",
     "parkedSets": "14:60",
     "archive": "144:180",
@@ -50,7 +56,10 @@
       "xs": "S:5c9f4c5cfe5e7661980cf7bf42c6ba0fc52025ca,",
       "xsMed": "S:570279f939b28e3e2f033b3a013b047a31b6e85e,",
       "xsSemi": "S:b0daeaffeedb299741e659e3c2810e1224c6b267,",
-      "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,"
+      "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,",
+      "monoXs_12": "S:0aeef06828ad049df29ab3f435f135a36ef262e7,",
+      "monoSm_14": "S:132f19fd831366b8959678010705e99eb68a0e94,",
+      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,"
     },
     "keyVars": {
       "color/background": "VariableID:2:3",
@@ -98,37 +107,75 @@
     "Component sets must bind brand fills to the THEME collection vars, NOT Mode brand/main/* — otherwise theme modes don't flip them. Ghost text stays color/secondary-foreground (neutral carve-out).",
     "figma.root.name is read-only — file rename must be manual.",
     "Code Connect blocked: needs Dev/Full seat on Org/Enterprise plan.",
-    "Load Inter Regular/Medium/Semi Bold/Bold + JetBrains Mono before any text op."
+    "Load Inter Regular/Medium/Semi Bold/Bold + JetBrains Mono before any text op.",
+    "use_figma scripts are ATOMIC — one thrown error rolls back everything the script did, including work on unrelated pages. Build one component page per script so a typo costs one page, not four.",
+    "Setting any property a text style owns (letterSpacing, fontSize, lineHeight) DETACHES textStyleId and trips the lint. If the design needs a value no style carries, create the style — 'xs/leading-none/Mono' (12), 'sm/leading-none/Mono' (14) and 'xs/leading-normal/Medium Wide' (--tracking-wide) were added this way.",
+    "A gradient overlay used to fake an un-bindable effect (Skeleton's shimmer) must be full-bleed with STRETCH constraints. A narrower band leaves its own rect edge visible wherever the parent clips to a radius.",
+    "Component-SET wrappers need their padding and corner radius bound too — Figma gives new sets a default radius of 5, which the lint flags. Bind to spacing/* and radius/lg.",
+    "_Doc/ChangelogRow's master had unbound 8px top/bottom padding (now bound to spacing/2). When the lint flags a _Doc instance, fix the MASTER — it clears every page at once, past and future.",
+    "Re-applying a text style RESETS the properties it owns — setTextStyleIdAsync is the fix for an accidental detach, not just the initial assignment.",
+    "Cloning a variant (component.clone()) preserves EVERY binding — variable-bound fills/strokes/radii, effect styles, and boolean-bound child visibility. Button/Icon-only was built by cloning all 120 labelled variants and editing three things, which is far safer than rebuilding and is the right move whenever a new set is a systematic transform of an existing one. Read the per-variant colour binding off the node you are about to delete (the label) and re-apply it to its replacement."
   ],
   "components": {
     "Button": {
       "status": "done-v4-approved",
       "pageId": "0:1",
-      "setIds": ["76:300"],
-      "frames": { "overview": "158:275", "spec": "159:21", "theming": "160:353", "examplesDocsHistory": "160:451" },
+      "setIds": [
+        "76:300",
+        "260:1600"
+      ],
+      "frames": {
+        "overview": "158:275",
+        "spec": "159:21",
+        "theming": "160:353",
+        "examplesDocsHistory": "160:451"
+      },
       "specLight": "159:28",
       "specDark": "159:625",
       "themed": true,
       "defaultFamilyReboundToTheme": true,
       "aidenDarkOverlays": 8,
       "isLoadingProp": "isLoading#183:0 — BOOLEAN on the set; each of the 120 variants holds a Spinner instance named 'spinner' at child index 0, visible bound to the prop, Size tracking the button size (XSmall=12, Small/Default=16, Large=20) and stroke bound to the same variable as that variant's label.",
-      "version": "1.5 · 2026-07-25"
+      "version": "1.2 · 2026-07-25",
+      "setNote": "TWO sets: 76:300 'Button' (120 = Variant 6 × Style 5 × Size 4, + Label TEXT + isLoading BOOLEAN) and 260:1600 'Button/Icon-only' (the same 120 with the label suppressed). Separate sets, not a 4th axis: in code `iconOnly` makes the label unrenderable ({!iconOnly && label}), so they are mutually exclusive — same reasoning as Badge vs Badge/Category. Icon-only variants were CLONED from their labelled counterparts, so all fills/strokes/focus effects/theme bindings and the aiden flag/is-dark overlay carry over verbatim; only the label removal, squared padding (--p-1 xsmall, --p-2 else; icon 12/14/20/24px) and aiden's --rounded-full differ.",
+      "resolved": [
+        "The Figma Button set modelled no iconOnly / icon slot, so components composing an icon-only Button (CodeBlock copy, ChatComposerSend) had nothing faithful to instance. Closed 2026-07-25 with the Button/Icon-only set. Also bound the Button set wrapper's padding/radius (previously raw 32px / 5px default) and fixed a 17px overflow — the page is now all-zeros on lint."
+      ]
     },
     "Spinner": {
       "status": "done-v4",
       "pageId": "178:26",
-      "setIds": ["178:39"],
-      "frames": { "overview": "179:26", "spec": "179:78", "theming": "180:135", "examplesDocsHistory": "180:271" },
+      "setIds": [
+        "178:39"
+      ],
+      "frames": {
+        "overview": "179:26",
+        "spec": "179:78",
+        "theming": "180:135",
+        "examplesDocsHistory": "180:271"
+      },
       "themed": "indirectly — no colour prop; renders currentColor, so a themed parent colours it",
-      "sizes": [16, 12, 20, 24, 40],
+      "sizes": [
+        16,
+        12,
+        20,
+        24,
+        40
+      ],
       "version": "1.1 · 2026-07-25",
       "notes": "Non-interactive: no hover/focus/disabled, so the Spec frame is sizes × colour contexts plus a rotation-phase strip (Figma can't animate). Icon built via figma.createNodeFromSvg with lucide's LoaderCircle path, then rescale(size/24) so stroke stays 2÷24 of the box. Colour is set per-instance on the child VECTOR named 'loader-arc'."
     },
     "Label": {
       "status": "done-v4",
       "pageId": "186:32",
-      "setIds": ["186:69"],
-      "frames": { "overview": "187:32", "spec": "187:155", "examplesDocsHistory": "188:243" },
+      "setIds": [
+        "186:69"
+      ],
+      "frames": {
+        "overview": "187:32",
+        "spec": "187:155",
+        "examplesDocsHistory": "188:243"
+      },
       "themed": false,
       "themingFrame": "OMITTED — Label is neutral chrome (foreground / muted-foreground / error only). The omission is stated in the TOKENS section so it reads as a decision, not a gap.",
       "props": "VARIANT Size (sm/default/lg) × VARIANT Disabled (False/True) = 6 variants; BOOLEAN Required + 'Show description'; TEXT Label + Description.",
@@ -138,8 +185,14 @@
     "Input": {
       "status": "done-v4",
       "pageId": "192:32",
-      "setIds": ["192:281"],
-      "frames": { "overview": "195:80", "spec": "195:205", "examplesDocsHistory": "197:486" },
+      "setIds": [
+        "192:281"
+      ],
+      "frames": {
+        "overview": "195:80",
+        "spec": "195:205",
+        "examplesDocsHistory": "197:486"
+      },
       "themed": false,
       "themingFrame": "OMITTED — --ring / --focus / --border-hover / --bg-input-30 are Mode-level neutrals that no data-theme remaps. Stated in the TOKENS section.",
       "props": "VARIANT Size (sm/default/lg) × Error (False/True) × Disabled (False/True) = 12; BOOLEAN 'Show label' / 'Show error message' / 'Icon left' / 'Icon right'; TEXT Placeholder / 'Error message'.",
@@ -149,8 +202,14 @@
     "Textarea": {
       "status": "done-v4",
       "pageId": "199:32",
-      "setIds": ["199:257"],
-      "frames": { "overview": "201:80", "spec": "201:177", "examplesDocsHistory": "201:1249" },
+      "setIds": [
+        "199:257"
+      ],
+      "frames": {
+        "overview": "201:80",
+        "spec": "201:177",
+        "examplesDocsHistory": "201:1249"
+      },
       "themed": false,
       "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Placeholder / 'Error message'. No icon slots (a textarea has no room).",
@@ -160,8 +219,14 @@
     "NativeSelect": {
       "status": "done-v4",
       "pageId": "205:32",
-      "setIds": ["205:233"],
-      "frames": { "overview": "206:80", "spec": "206:201", "examplesDocsHistory": "206:1013" },
+      "setIds": [
+        "205:233"
+      ],
+      "frames": {
+        "overview": "206:80",
+        "spec": "206:201",
+        "examplesDocsHistory": "206:1013"
+      },
       "themed": false,
       "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Value / 'Error message'. No icon booleans — the right slot is permanently the chevron.",
@@ -172,9 +237,16 @@
     "InputGroup": {
       "status": "done-v4",
       "pageId": "208:32",
-      "setIds": ["208:97"],
+      "setIds": [
+        "208:97"
+      ],
       "setNote": "208:97 is InputGroup/Button — the ONLY sub-part modelled as a component set. 16 variants (4 variants × 4 sizes).",
-      "frames": { "overview": "209:32", "spec": "209:152", "theming": "210:182", "examplesDocsHistory": "210:319" },
+      "frames": {
+        "overview": "209:32",
+        "spec": "209:152",
+        "theming": "210:182",
+        "examplesDocsHistory": "210:319"
+      },
       "themed": true,
       "themingFrame": "PRESENT — the first field component with one. InputGroupButton variant=default fills with --primary (Theme collection) and takes the Aiden gradient under data-surface. Everything else in the family is neutral.",
       "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
@@ -184,23 +256,307 @@
     "InputOTP": {
       "status": "done-v4",
       "pageId": "212:32",
-      "setIds": ["212:441"],
-      "frames": { "overview": "213:104", "spec": "213:200", "examplesDocsHistory": "213:766" },
+      "setIds": [
+        "212:441"
+      ],
+      "frames": {
+        "overview": "213:104",
+        "spec": "213:200",
+        "examplesDocsHistory": "213:766"
+      },
       "themed": false,
       "themingFrame": "OMITTED — slot surface is neutral; stated in TOKENS.",
       "props": "VARIANT Size (sm/default/lg) × State (Empty/Focused/Partial/Complete/Error/Disabled) = 18; BOOLEAN 'Show label' / Separator / 'Show error message'; TEXT Label / 'Error message'.",
       "version": "1.0 · 2026-07-25",
       "notes": "The ONE form control that does NOT reuse .ui-input-wrap — slots own their border, radius and focus ring, so forcing them through the wrap would mean fighting its padding/height per size. State is a WHOLE-CONTROL axis, not a per-slot one, because a slot is never designed alone; the Spec adds an isolated slot-state strip (default/active/filled/error/error-active) for the atomic view. Built at length 6 with a toggleable groupSize-3 separator. Caret = 2px bar, --w-0-5 wide, steps(1) blink on --duration-shimmer, shown only in the active EMPTY slot."
+    },
+    "Checkbox": {
+      "status": "done-v4",
+      "pageId": "215:32",
+      "setIds": [
+        "215:183"
+      ],
+      "frames": {
+        "overview": "217:32",
+        "spec": "217:140",
+        "theming": "218:364",
+        "examplesDocsHistory": "218:879"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — checked AND indeterminate fill with --primary (Theme collection); mark is --primary-foreground. Unchecked stays neutral.",
+      "props": "VARIANT Size (sm/default/lg) × State (Unchecked/Checked/Indeterminate) × Disabled (False/True) = 18; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "First Phase 2 page. Hidden-input pattern: the native <input> is opacity-0/0x0 (NOT display:none) so it stays focusable + submittable, and every visual state is a CSS sibling selector. Both SVGs (check + dash) are always mounted and overlaid so checked→indeterminate CROSS-FADES; stroke-dasharray 24 → dashoffset 0 draws the stroke in. Box carries margin-top --p-0-5 to sit against the first text line — in Figma that is a 'box align' wrapper frame since auto-layout has no per-child margin. Aiden is a SURFACE effect here (not a variant like Button), so it is documented in text only. Uses .ui-label__* classes rather than nesting <Label> (a label can't contain a label)."
+    },
+    "RadioGroup": {
+      "status": "done-v4",
+      "pageId": "223:32",
+      "setIds": [
+        "223:129"
+      ],
+      "setNote": "223:129 is RadioGroup/Item — the group root is a layout container + context provider, documented as composition per the compound-family rule.",
+      "frames": {
+        "overview": "224:32",
+        "spec": "224:157",
+        "theming": "225:287",
+        "examplesDocsHistory": "225:694"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — checked circle fills with --primary (Theme collection), dot is --primary-foreground.",
+      "props": "RadioGroup/Item: VARIANT Size (sm/default/lg) × State (Unchecked/Checked) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Same hidden-input pattern as Checkbox. DOCUMENTED DIVERGENCE: in code `size` is set ONCE on the group and cascades to every item via CSS descendant selectors; Figma cannot model a descendant selector reaching into instances, so each item carries its own Size and the Overview says so explicitly under a '⚠ CODE vs FIGMA' section. The group owns three things the items never receive as props: name/value/callbacks via React context, the size cascade via CSS, and role=radiogroup + aria-labelledby via ARIA. RadioGroupItem throws outside a RadioGroup because a nameless radio silently stops excluding its siblings. Label visibility bound to the ui-label CONTAINER (Checkbox lesson)."
+    },
+    "Switch": {
+      "status": "done-v4",
+      "pageId": "227:32",
+      "setIds": [
+        "227:129"
+      ],
+      "frames": {
+        "overview": "228:32",
+        "spec": "228:140",
+        "theming": "229:263",
+        "examplesDocsHistory": "229:670"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — on-track fills with --primary (Theme collection). Off stays --muted in every theme, deliberately.",
+      "props": "VARIANT Size (sm/default/lg) × State (Off/On) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.1 · 2026-07-25",
+      "notes": "Third and last of the hidden-input trio. role='switch' on a native type=checkbox — keeps every native behaviour, only changes the announcement to 'switch, on/off'. Thumb travel (12/16/20px) is an intentional hard-coded literal per CLAUDE.md: travel = track − thumb − 2×2px inset. In Figma the thumb is an absolutely-positioned ellipse at x=2 (off) / x=2+travel (on). Overview carries a Switch-vs-Checkbox-vs-Radio decision guide (the distinction is immediacy, not appearance).",
+      "resolved": [
+        "The 'default sits 2px low' alignment inconsistency was a SYMPTOM, not the cause: Switch never passed a size class to its label, so .ui-label__text stayed at --leading-5 (20px) at every size while the track scaled 16/20/24. The margin was patching that mismatch on the one size that least needed it. Fixed 2026-07-25 by adding ui-label--sz-{size} (matching Checkbox and RadioGroup) and deleting the --sz-default margin-top. Track height now equals label line-height at all three sizes (16/16, 20/20, 24/24), so every track is flush with no nudge. The ramps are now coupled — a comment in Switch.scss records that."
+      ]
+    },
+    "Slider": {
+      "status": "done-v4",
+      "pageId": "230:32",
+      "setIds": [
+        "230:147"
+      ],
+      "frames": {
+        "overview": "232:32",
+        "spec": "232:156",
+        "theming": "233:503",
+        "examplesDocsHistory": "233:854"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — filled range AND the 3px thumb border read --primary. Unfilled track stays --muted.",
+      "props": "VARIANT Size (sm/default/lg) × Mode (Single/Range) × Disabled = 12; BOOLEAN 'Show label' / 'Show value'; TEXT Label. Value text is intentionally NOT a bound property so Range variants can keep '25 – 75' while Single keeps '60' — text in an instance is directly editable anyway.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The ONE form control with no hidden native input: <input type=range> has a single thumb, so range mode would need a second implementation. Each thumb is its own role='slider' span; ARIA here IS the implementation. Neighbour clamp lives in each thumb's aria-valuemin/max (announced, not just enforced). Position/width are deliberately NEVER transitioned — easing would lag the pointer during a drag; only box-shadow and border-color ease. Track uses overflow:visible so the focus ring escapes a 4px sm track. In Figma the thumb is an absolutely-positioned ellipse; Single sits at 60%, Range at 25%/75%.",
+      "layoutNote": "Spec card is 1440 wide (not the usual 1280): 4 state columns × 290px cells overflowed a 1280 card by 22px. Measure row content against the TABLE's inner padding, not just the card bounds — the card-level lint misses this."
+    },
+    "Badge": {
+      "status": "done-v4",
+      "pageId": "236:32",
+      "setIds": [
+        "236:70",
+        "236:161"
+      ],
+      "setNote": "TWO sets: 236:70 'Badge' (12 status variants) and 236:161 'Badge/Category' (15 hues × soft|solid = 30). Split because `category` OVERRIDES `variant` in code — they are two modes, not two axes.",
+      "frames": {
+        "overview": "237:32",
+        "spec": "237:158",
+        "theming": "238:187",
+        "examplesDocsHistory": "238:324"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — only default + outline follow the brand (--primary / --primary-text / --primary-border). The semantic four keep their own colour in every theme; the 15 category hues are a fixed palette and never theme.",
+      "props": "Badge: VARIANT Variant (12) + TEXT Label. Badge/Category: VARIANT Hue (15) × Style (soft|solid) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Category variables are NESTED in Figma: category/{hue}/base | /bg | /text (NOT hyphen-suffixed), plus a single category/foreground. The aiden variant is a real gradient variant (unlike Checkbox/Switch where aiden is only a surface effect), so it carries the aidenDarkPattern overlay bound to flag/is-dark — verified flipping. No size prop and no brand variant, both deliberate; stated on the page. Not interactive: a <div> with no role/tabindex, so the Spec has no hover/focus/disabled axis.",
+      "contrastNote": "Soft category style is AA-gated (all 15 -text-on--bg pairings in npm run test:contrast). Solid is deliberately NOT gated — inverted --category-foreground dips under AA on amber/green in light. Owner's accepted call; the page says so plainly rather than hiding it."
+    },
+    "Kbd": {
+      "status": "done-v4",
+      "pageId": "241:32",
+      "setIds": [
+        "241:42"
+      ],
+      "frames": {
+        "overview": "241:43",
+        "spec": "241:106",
+        "examplesDocsHistory": "241:227"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome (--secondary surface). A keycap that changed colour per brand would read as a button.",
+      "props": "VARIANT Size (sm|default|lg) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The keycap look is an ASYMMETRIC border: strokeTopWeight/Left/Right bound to border-width/100 and strokeBottomWeight to border-width/300 — that thicker bottom edge is the whole illusion. minWidth is bound per size (width/4|5|6) so single characters (K, ⌘, ⇧) stay square while multi-character caps (Esc, Enter) widen past it. Font sizes come straight from the SCSS: sm and default are BOTH --text-xs (12px), only lg steps up to --text-sm (14px) — sm differs from default in box size, not type."
+    },
+    "Separator": {
+      "status": "done-v4",
+      "pageId": "244:32",
+      "setIds": [
+        "244:42"
+      ],
+      "frames": {
+        "overview": "244:43",
+        "spec": "244:119",
+        "examplesDocsHistory": "244:175"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — a rule that changed colour per brand would fight the content it divides.",
+      "props": "VARIANT Variant (horizontal|vertical|labeled) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The labeled variant is a horizontal auto-layout of line/label/line with both lines set layoutSizingHorizontal='FILL' — that mirrors the CSS flex:1 on ::before/::after, so the word stays centred at any width. In code, setting a label forces orientation to horizontal. The vertical variant relies on align-self: stretch, so it needs a parent that gives it height; dropped into a block container it collapses to nothing (noted on the Spec frame). decorative → role='none' is the documented a11y decision."
+    },
+    "StatusDot": {
+      "status": "done-v4",
+      "pageId": "244:271",
+      "setIds": [
+        "244:332"
+      ],
+      "frames": {
+        "overview": "244:333",
+        "spec": "244:401",
+        "examplesDocsHistory": "244:714"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — semantic, not brand. A green 'online' must stay green in every sub-brand.",
+      "props": "VARIANT Status (online|offline|busy|away|neutral) × Size (sm|default|lg) = 15, + BOOLEAN Pulse.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The idea worth copying: each status sets ONE custom property (--ui-status-color) and both the dot and the ::after pulse ring read it back, so the colour is written once rather than twice per status. Modeled in Figma as a hidden 'pulse ring' ellipse at 0.35 opacity whose visibility is bound to a Pulse boolean. offline and neutral both resolve to --muted-foreground and therefore render identically — that is faithful to the code and deliberately called out on the page rather than hidden."
+    },
+    "Skeleton": {
+      "status": "done-v4",
+      "pageId": "244:873",
+      "setIds": [
+        "244:883"
+      ],
+      "frames": {
+        "overview": "244:884",
+        "spec": "244:975",
+        "examplesDocsHistory": "244:1037"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — the --bg-primary-10 shimmer highlight IS technically themed, but a 10%-alpha sweep is imperceptible as a brand demo.",
+      "props": "VARIANT Shape (default|circle|text). Width/height are free-form in code — resize the instance in Figma.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The shimmer is a background-position animation on a 200%-wide gradient, not a moving element — nothing in the layout moves, which is why a page of skeletons stays smooth. Figma variables hold solid colours only, so the sweep is drawn as a white low-alpha GRADIENT_LINEAR overlay rather than bound. Make that overlay FULL-BLEED (same size as the shape, x=0, STRETCH constraints): a narrower band's own rect edge shows through the circle's round clip as a hard vertical line."
+    },
+    "Code": {
+      "status": "done-v4",
+      "pageId": "252:32",
+      "setIds": [
+        "252:35",
+        "252:59"
+      ],
+      "setNote": "TWO components: 252:35 'Code' is a single COMPONENT (inline chip, no variant axis — only a Label text prop); 252:59 'CodeBlock' is a 3-variant SET on a Header axis (filename | copy | none).",
+      "frames": {
+        "overview": "252:60",
+        "spec": "252:172",
+        "examplesDocsHistory": "252:355"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral in every brand. Code should not change colour with the sub-brand.",
+      "props": "Code: TEXT Label. CodeBlock: VARIANT Header (3) + TEXT Filename + TEXT Code.",
+      "version": "1.1 · 2026-07-25",
+      "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers (now at least AA-gated) — a palette pre-picked for a highlighter we do not have.",
+      "figmaDivergence": "Inline chip vertical padding is 0.1em in CSS (em-relative, ~1.3px at --text-code); Figma variables cannot express em, so it is bound to spacing/0-5 (2px). Stated on the Avatar Overview note covering both divergences.",
+      "resolved": [
+        "The scrollable <pre> had overflow-x: auto with no tabindex, making overflowed code unreachable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). Fixed 2026-07-25: tabIndex={0} plus an inset --focus ring in Code.scss. No ARIA role added, so it stays announced as preformatted text.",
+        "The 11 --code-* syntax tokens were an exact Tailwind 500/600 mapping that had never been contrast-checked; the script confirmed 10 of 11 below AA in light (2.22-4.29). Fixed 2026-07-25: light values darkened to Tailwind 600/700 (comment uses a derived slate #5e6d7d — the lightest that clears AA, so it stays recessive against --code-variable), and dark --code-attr moved orange-400 → amber-300 to break a collision with --code-number that existed in dark only. All 11 now gated in scripts/contrast-check.mjs (49 pairings, 0 below AA). Figma code/* variables synced. STILL A JUDGMENT CALL, deliberately left alone: --code-selector shares --code-string's hue in both modes (consistent, so it reads as intentional), and in dark --code-type (cyan-400) sits close to --code-function (sky-400)."
+      ]
+    },
+    "CloseButton": {
+      "status": "done-v4",
+      "pageId": "253:32",
+      "setIds": [
+        "253:43"
+      ],
+      "frames": {
+        "overview": "253:44",
+        "spec": "253:125",
+        "examplesDocsHistory": "253:290"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — a dismissal is never the themed action on a surface.",
+      "props": "VARIANT Variant (default|background). No size axis — there is exactly one size.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The two variants are pixel-identical at rest and differ ONLY on hover (default shifts icon colour; background additionally fills --accent), which is why they are variants rather than separate components — the Spec matrix is built to make that the visible conclusion. Two a11y guarantees are designed in rather than documented around: the native aria-label is Omit-ed and replaced by an ariaLabel prop defaulting to 'Close' (so it can never ship nameless), and type='button' is hard-coded (so it can never submit a form). Focus is a box-shadow, not an outline, because the button is round and transparent."
+    },
+    "Avatar": {
+      "status": "done-v4",
+      "pageId": "254:32",
+      "setIds": [
+        "254:69",
+        "254:184"
+      ],
+      "setNote": "TWO sets: 254:69 'Avatar' (3 sizes × 2 shapes = 6, plus Image + Badge booleans and a Fallback text prop) and 254:184 'AvatarGroup' (3 Spacing variants, each holding 4 nested Avatar instances).",
+      "frames": {
+        "overview": "254:185",
+        "spec": "254:288",
+        "examplesDocsHistory": "254:869"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — a person's avatar is not a brand accent.",
+      "props": "Avatar: VARIANT Size × Shape + BOOLEAN Image + BOOLEAN Badge + TEXT Fallback. AvatarGroup: VARIANT Spacing (3).",
+      "version": "1.1 · 2026-07-25",
+      "notes": "The fallback is ALWAYS mounted at z-0 under the image rather than swapped in on error, so a slow image shows initials then resolves and a broken one shows initials permanently — no flash of empty space either way. The badge lives OUTSIDE __inner because __inner owns overflow:hidden to clip the image to the shape; a badge inside it would lose the half that overhangs. Modeled the image as a gradient placeholder rect (no asset uploads). Page updated to v1.1 after both defects were fixed in code — the Spec note now documents the resolution, not a reproduction.",
+      "figmaDivergence": "Initials carry --tracking-wide (0.025em) in code but plain tracking in Figma — pinning letterSpacing detaches textStyleId and 0.35px on two letters did not justify three new Semibold-Wide styles. Noted on the Overview frame.",
+      "resolved": [
+        "AvatarGroup spacing ramp was non-monotonic (sm -8 / default -12 / lg -4). Fixed 2026-07-25 by reassigning the same three values in order: sm -12 / default -8 / lg -4. `spacing` names the visual gap, which runs inversely to the overlap. Groups that never set spacing loosen from -12 to -8, since default was the value out of place.",
+        "AvatarGroup `size` reached only the +N chip. Fixed 2026-07-25: the group now cloneElement's direct Avatar children that have no explicit size. Guarded on `child.type === Avatar` so a wrapping element (Tooltip, link) never receives `size` as an unknown prop; an explicit child size still wins.",
+        "Stories added: GroupSpacing + GroupSizeInheritance — the absence of these is why both survived."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Checkbox — start of Phase 2",
+    "nextUp": "AspectRatio",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
-    "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
-    "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
-    "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
-    "phase5": ["ModeToggler", "Direction", "Sidebar", "Chat"]
+    "phase2": [
+      "AspectRatio",
+      "Blockquote",
+      "ScrollArea",
+      "Chip",
+      "Toggle",
+      "ToggleGroup",
+      "ButtonGroup"
+    ],
+    "phase3": [
+      "Card",
+      "Item",
+      "Attachment",
+      "Collapsible",
+      "Accordion",
+      "Alert",
+      "Banner",
+      "Empty",
+      "Progress",
+      "Tabs",
+      "Breadcrumb",
+      "Pagination",
+      "Field"
+    ],
+    "phase4": [
+      "Tooltip",
+      "Dialog",
+      "AlertDialog",
+      "Drawer",
+      "Popover",
+      "HoverCard",
+      "DropdownMenu",
+      "ContextMenu",
+      "Menubar",
+      "Select",
+      "Combobox",
+      "Command",
+      "Toast"
+    ],
+    "phase5": [
+      "ModeToggler",
+      "Direction",
+      "Sidebar",
+      "Chat"
+    ],
+    "phase2Status": "IN PROGRESS — 12/14 shipped. Remaining: AspectRatio, Blockquote, ScrollArea, Chip, Toggle, ToggleGroup, ButtonGroup."
   },
-  "migrateExisting": { "Banner": "15:90", "Alert": "16:97", "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding." }
+  "migrateExisting": {
+    "Banner": "15:90",
+    "Alert": "16:97",
+    "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding."
+  }
 }

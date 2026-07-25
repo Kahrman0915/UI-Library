@@ -125,12 +125,16 @@
     box-sizing: content-box;
   }
 
+  // `spacing` names the visual gap, so it runs inversely to the overlap:
+  // small gap = deepest overlap. Keep these monotonic — sm/default were
+  // transposed until 2026-07-25, which made `default` tighter than `sm`.
+
   &--sp-sm > .ui-avatar + .ui-avatar {
-    margin-left: calc(-1 * var(--p-2));
+    margin-left: calc(-1 * var(--p-3));
   }
 
   &--sp-default > .ui-avatar + .ui-avatar {
-    margin-left: calc(-1 * var(--p-3));
+    margin-left: calc(-1 * var(--p-2));
   }
 
   &--sp-lg > .ui-avatar + .ui-avatar {

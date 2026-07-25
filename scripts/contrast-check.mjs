@@ -136,6 +136,12 @@ const PAIRINGS = [
   // white in light / dark in dark) are intentionally NOT gated here — white on the lighter
   // hues dips under AA in light mode, an owner-accepted tradeoff. The soft `-text`-on-`-bg`
   // tags above ARE the strictly-AA-safe path.
+  // Syntax-highlighting palette on the code-block surface. Nothing renders these yet —
+  // the library ships no tokenizer — but they are gated so the palette is usable the day
+  // one is added, rather than discovered to be unreadable at that point.
+  ...['keyword','string','comment','function','number','variable','type','built-in','attr','selector','tag'].map(
+    (t) => [`code-${t}`, 'code-block'],
+  ),
 ];
 
 // ── Run ───────────────────────────────────────────────────────────────────────

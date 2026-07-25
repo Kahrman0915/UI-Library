@@ -50,6 +50,12 @@
     margin: 0;
     padding: var(--p-3) var(--p-4);
     overflow-x: auto;
+
+    // It's a focusable scroll container (see Code.tsx) — so it needs to show focus.
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+    }
   }
 
   &__code {
