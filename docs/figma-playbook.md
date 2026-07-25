@@ -9,7 +9,21 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 1/57 components done (Button, changelog 1.4). Phase queue in the ledger.
+- **Status:** 2/57 components done (Button 1.5, Spinner 1.1). Phase queue in the ledger.
+
+### Adapting the recipe to non-interactive components
+
+The four frames are the shape, not a straitjacket. Spinner set the precedent: it has
+**no hover / focus / disabled** (it isn't focusable), so its Spec frame is
+**sizes × colour contexts** instead of states, plus a **rotation-phase strip** (0/90/
+180/270°) because Figma can't play the animation. Keep the frame *names* and the
+light/dark side-by-side structure; swap the axes for whatever actually varies. Say
+plainly in the Section description why the axes differ — that sentence is what teaches
+the reader.
+
+**Icons:** build lucide glyphs with `figma.createNodeFromSvg(...)` using the real path
+data, then `rescale(size/24)` so the stroke keeps lucide's 2÷24 ratio. Name the inner
+vector (`loader-arc`) or the lint flags it.
 
 ---
 

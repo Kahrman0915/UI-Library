@@ -111,13 +111,23 @@
       "themed": true,
       "defaultFamilyReboundToTheme": true,
       "aidenDarkOverlays": 8,
-      "version": "1.4 · 2026-07-24",
-      "followUp": "After Spinner ships: add a real isLoading boolean property (instance-swap Spinner) and drop its ⚠ code-only marker."
+      "isLoadingProp": "isLoading#183:0 — BOOLEAN on the set; each of the 120 variants holds a Spinner instance named 'spinner' at child index 0, visible bound to the prop, Size tracking the button size (XSmall=12, Small/Default=16, Large=20) and stroke bound to the same variable as that variant's label.",
+      "version": "1.5 · 2026-07-25"
+    },
+    "Spinner": {
+      "status": "done-v4",
+      "pageId": "178:26",
+      "setIds": ["178:39"],
+      "frames": { "overview": "179:26", "spec": "179:78", "theming": "180:135", "examplesDocsHistory": "180:271" },
+      "themed": "indirectly — no colour prop; renders currentColor, so a themed parent colours it",
+      "sizes": [16, 12, 20, 24, 40],
+      "version": "1.1 · 2026-07-25",
+      "notes": "Non-interactive: no hover/focus/disabled, so the Spec frame is sizes × colour contexts plus a rotation-phase strip (Figma can't animate). Icon built via figma.createNodeFromSvg with lucide's LoaderCircle path, then rescale(size/24) so stroke stays 2÷24 of the box. Colour is set per-instance on the child VECTOR named 'loader-arc'."
     }
   },
   "queue": {
-    "nextUp": "Spinner",
-    "phase1": ["Spinner", "Label", "Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "Label",
+    "phase1": ["Label", "Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
