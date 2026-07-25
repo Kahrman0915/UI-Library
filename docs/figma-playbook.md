@@ -33,6 +33,8 @@ HERE" note explaining that Chrome-on-Windows, Safari-on-macOS and the iOS wheel 
 differ, so mocking one would document a lie. A stated boundary is documentation; a
 plausible-looking mock is a bug waiting to be built.
 
+The owner can overrule this, and did once: the Code page carries highlighted CodeBlock mock-ups even though the library has no tokenizer, because the design need was real and the code decision was worth deferring. That is fine **when it is an explicit decision, labelled as such** — the frame has a `REQUIRES A TOKENIZER, NOT BUILT` separator and a note saying what a developer would actually get. What the rule forbids is the *unlabelled* mock that quietly implies a capability.
+
 The same rule has a constructive half: when a token family exists but nothing renders it, document it as a **reference**, not as a usage example. The Code page shows its 11 `--code-*` syntax tokens as swatches on the real `code/block` surface with their measured contrast — a designer can see and review the palette, but nobody can mistake it for a highlighter the library ships. A rendered example would have been the lie; a labelled swatch table is the documentation.
 
 ---
@@ -216,6 +218,11 @@ Sweep the new page + set (skip nodes inside instances):
   gets `--rounded-full`), so theme bindings and the aiden `flag/is-dark` overlay came across
   verbatim. Read the per-variant colour binding off the node you are about to delete and
   re-apply it to whatever replaces it (`label.boundVariables.fills[0].id` → the icon's stroke).
+- **Figma trims whitespace at the edges of a hugging TEXT node.** A line of code split
+  into per-token coloured spans inside a horizontal auto-layout renders as
+  `exportfunctionSidebar` — every trailing space is measured away. Use **non-breaking
+  spaces (U+00A0)** for every space inside multi-span text: identical width in a mono
+  face, never trimmed.
 - **`use_figma` scripts are ATOMIC.** One thrown error rolls back *everything* the script
   did — including finished work on unrelated pages. A typo in a Separator helper wiped a
   completed Kbd page in the same call. **Build one component page per script.** Batch only
