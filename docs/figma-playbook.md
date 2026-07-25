@@ -223,6 +223,17 @@ Sweep the new page + set (skip nodes inside instances):
   `exportfunctionSidebar` — every trailing space is measured away. Use **non-breaking
   spaces (U+00A0)** for every space inside multi-span text: identical width in a mono
   face, never trimmed.
+- **Vector geometry cannot be overridden inside an instance.** Figma throws
+  `This property cannot be overridden in an instance` on `vectorPaths`. So a component
+  with a swappable glyph needs the icon to be an **instance of an icon component plus an
+  `INSTANCE_SWAP` property** — a drawn glyph locks every instance to it, which is what
+  briefly made `Button/Icon-only` useless. Colour and stroke weight *are* overridable;
+  geometry is not. Icon masters live on `_Template` as `_Icon/*` (24×24, stroke-width 2,
+  SCALE constraints).
+- **Set `layoutSizing*` AFTER parenting.** Sizing modes assigned before `appendChild` are
+  reset by the new parent's auto-layout. A card built with `primaryAxisSizingMode='AUTO'`
+  and then appended arrived stuck at its placeholder 10px height, with its children
+  spilling over the siblings below it.
 - **`use_figma` scripts are ATOMIC.** One thrown error rolls back *everything* the script
   did — including finished work on unrelated pages. A typo in a Separator helper wiped a
   completed Kbd page in the same call. **Build one component page per script.** Batch only
