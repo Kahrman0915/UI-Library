@@ -56,7 +56,10 @@
       "xs": "S:5c9f4c5cfe5e7661980cf7bf42c6ba0fc52025ca,",
       "xsMed": "S:570279f939b28e3e2f033b3a013b047a31b6e85e,",
       "xsSemi": "S:b0daeaffeedb299741e659e3c2810e1224c6b267,",
-      "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,"
+      "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,",
+      "monoXs_12": "S:0aeef06828ad049df29ab3f435f135a36ef262e7,",
+      "monoSm_14": "S:132f19fd831366b8959678010705e99eb68a0e94,",
+      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,"
     },
     "keyVars": {
       "color/background": "VariableID:2:3",
@@ -104,7 +107,12 @@
     "Component sets must bind brand fills to the THEME collection vars, NOT Mode brand/main/* — otherwise theme modes don't flip them. Ghost text stays color/secondary-foreground (neutral carve-out).",
     "figma.root.name is read-only — file rename must be manual.",
     "Code Connect blocked: needs Dev/Full seat on Org/Enterprise plan.",
-    "Load Inter Regular/Medium/Semi Bold/Bold + JetBrains Mono before any text op."
+    "Load Inter Regular/Medium/Semi Bold/Bold + JetBrains Mono before any text op.",
+    "use_figma scripts are ATOMIC — one thrown error rolls back everything the script did, including work on unrelated pages. Build one component page per script so a typo costs one page, not four.",
+    "Setting any property a text style owns (letterSpacing, fontSize, lineHeight) DETACHES textStyleId and trips the lint. If the design needs a value no style carries, create the style — 'xs/leading-none/Mono' (12), 'sm/leading-none/Mono' (14) and 'xs/leading-normal/Medium Wide' (--tracking-wide) were added this way.",
+    "A gradient overlay used to fake an un-bindable effect (Skeleton's shimmer) must be full-bleed with STRETCH constraints. A narrower band leaves its own rect edge visible wherever the parent clips to a radius.",
+    "Component-SET wrappers need their padding and corner radius bound too — Figma gives new sets a default radius of 5, which the lint flags. Bind to spacing/* and radius/lg.",
+    "_Doc/ChangelogRow's master had unbound 8px top/bottom padding (now bound to spacing/2). When the lint flags a _Doc instance, fix the MASTER — it clears every page at once, past and future."
   ],
   "components": {
     "Button": {
@@ -350,17 +358,81 @@
       "version": "1.0 · 2026-07-25",
       "notes": "Category variables are NESTED in Figma: category/{hue}/base | /bg | /text (NOT hyphen-suffixed), plus a single category/foreground. The aiden variant is a real gradient variant (unlike Checkbox/Switch where aiden is only a surface effect), so it carries the aidenDarkPattern overlay bound to flag/is-dark — verified flipping. No size prop and no brand variant, both deliberate; stated on the page. Not interactive: a <div> with no role/tabindex, so the Spec has no hover/focus/disabled axis.",
       "contrastNote": "Soft category style is AA-gated (all 15 -text-on--bg pairings in npm run test:contrast). Solid is deliberately NOT gated — inverted --category-foreground dips under AA on amber/green in light. Owner's accepted call; the page says so plainly rather than hiding it."
+    },
+    "Kbd": {
+      "status": "done-v4",
+      "pageId": "241:32",
+      "setIds": [
+        "241:42"
+      ],
+      "frames": {
+        "overview": "241:43",
+        "spec": "241:106",
+        "examplesDocsHistory": "241:227"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome (--secondary surface). A keycap that changed colour per brand would read as a button.",
+      "props": "VARIANT Size (sm|default|lg) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The keycap look is an ASYMMETRIC border: strokeTopWeight/Left/Right bound to border-width/100 and strokeBottomWeight to border-width/300 — that thicker bottom edge is the whole illusion. minWidth is bound per size (width/4|5|6) so single characters (K, ⌘, ⇧) stay square while multi-character caps (Esc, Enter) widen past it. Font sizes come straight from the SCSS: sm and default are BOTH --text-xs (12px), only lg steps up to --text-sm (14px) — sm differs from default in box size, not type."
+    },
+    "Separator": {
+      "status": "done-v4",
+      "pageId": "244:32",
+      "setIds": [
+        "244:42"
+      ],
+      "frames": {
+        "overview": "244:43",
+        "spec": "244:119",
+        "examplesDocsHistory": "244:175"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — a rule that changed colour per brand would fight the content it divides.",
+      "props": "VARIANT Variant (horizontal|vertical|labeled) + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The labeled variant is a horizontal auto-layout of line/label/line with both lines set layoutSizingHorizontal='FILL' — that mirrors the CSS flex:1 on ::before/::after, so the word stays centred at any width. In code, setting a label forces orientation to horizontal. The vertical variant relies on align-self: stretch, so it needs a parent that gives it height; dropped into a block container it collapses to nothing (noted on the Spec frame). decorative → role='none' is the documented a11y decision."
+    },
+    "StatusDot": {
+      "status": "done-v4",
+      "pageId": "244:271",
+      "setIds": [
+        "244:332"
+      ],
+      "frames": {
+        "overview": "244:333",
+        "spec": "244:401",
+        "examplesDocsHistory": "244:714"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — semantic, not brand. A green 'online' must stay green in every sub-brand.",
+      "props": "VARIANT Status (online|offline|busy|away|neutral) × Size (sm|default|lg) = 15, + BOOLEAN Pulse.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The idea worth copying: each status sets ONE custom property (--ui-status-color) and both the dot and the ::after pulse ring read it back, so the colour is written once rather than twice per status. Modeled in Figma as a hidden 'pulse ring' ellipse at 0.35 opacity whose visibility is bound to a Pulse boolean. offline and neutral both resolve to --muted-foreground and therefore render identically — that is faithful to the code and deliberately called out on the page rather than hidden."
+    },
+    "Skeleton": {
+      "status": "done-v4",
+      "pageId": "244:873",
+      "setIds": [
+        "244:883"
+      ],
+      "frames": {
+        "overview": "244:884",
+        "spec": "244:975",
+        "examplesDocsHistory": "244:1037"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — the --bg-primary-10 shimmer highlight IS technically themed, but a 10%-alpha sweep is imperceptible as a brand demo.",
+      "props": "VARIANT Shape (default|circle|text). Width/height are free-form in code — resize the instance in Figma.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The shimmer is a background-position animation on a 200%-wide gradient, not a moving element — nothing in the layout moves, which is why a page of skeletons stays smooth. Figma variables hold solid colours only, so the sweep is drawn as a white low-alpha GRADIENT_LINEAR overlay rather than bound. Make that overlay FULL-BLEED (same size as the shape, x=0, STRETCH constraints): a narrower band's own rect edge shows through the circle's round clip as a hard vertical line."
     }
   },
   "queue": {
-    "nextUp": "Kbd",
+    "nextUp": "Code",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Kbd",
-      "Separator",
-      "StatusDot",
-      "Skeleton",
       "Code",
       "CloseButton",
       "Avatar",
@@ -407,7 +479,8 @@
       "Direction",
       "Sidebar",
       "Chat"
-    ]
+    ],
+    "phase2Status": "IN PROGRESS — 9/14 shipped (Checkbox, RadioGroup, Switch, Slider, Badge, Kbd, Separator, StatusDot, Skeleton). 10 remain."
   },
   "migrateExisting": {
     "Banner": "15:90",

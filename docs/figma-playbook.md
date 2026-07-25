@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 13/57 done. Phase 1 COMPLETE. Phase 2: Checkbox, RadioGroup, Switch, Slider, Badge. Next up: Kbd. Queue in the ledger.
+- **Status:** 17/57 done. Phase 1 COMPLETE. Phase 2 (9/14): Checkbox, RadioGroup, Switch, Slider, Badge, Kbd, Separator, StatusDot, Skeleton. Next up: Code. Queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -176,6 +176,9 @@ description too — it's part of the lint.
   `base/leading-normal/Normal` `S:b07e84…`, sm/sm-Med/sm-Semi `S:6bdb0a…/S:ad4292…/
   S:74e17a…`, xs/xs-Med/xs-Semi `S:5c9f4c…/S:570279…/S:b0daea…`, code
   `code/leading-normal/Mono` `S:e0fb2e…` (full IDs in the ledger).
+  Added 2026-07-25 for Kbd + Separator: `xs/leading-none/Mono` (12) `S:0aeef0…`,
+  `sm/leading-none/Mono` (14) `S:132f19…`, `xs/leading-normal/Medium Wide`
+  (`--tracking-wide`) `S:66438c…`. Add a style rather than overriding one — see gotchas.
 - Common primitives: `spacing/1..16` = `1:5,1:7,1:9,1:11,1:13,1:15…`, `radius/sm|md|lg|
   xl|full` = `1:122,1:124,1:125,1:126,1:129` (full map in the ledger).
 
@@ -203,6 +206,26 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Plugin-API gotchas (each cost real debugging time)
 
+- **`use_figma` scripts are ATOMIC.** One thrown error rolls back *everything* the script
+  did — including finished work on unrelated pages. A typo in a Separator helper wiped a
+  completed Kbd page in the same call. **Build one component page per script.** Batch only
+  the read-only passes (lint, index links, screenshots) once the pages exist.
+- **Setting any property a text style owns DETACHES `textStyleId`** and trips lint rule 2.
+  `letterSpacing`, `fontSize` and `lineHeight` all do it — so "apply the style, then tweak
+  the tracking" silently unstyles the node. If the design needs a value no style carries,
+  **create the style**: `xs/leading-none/Mono` (12), `sm/leading-none/Mono` (14) and
+  `xs/leading-normal/Medium Wide` (`--tracking-wide`) were added for exactly this.
+- **Component-SET wrappers need bindings too.** Figma gives every new set a default corner
+  radius of 5 and whatever raw padding you set, both of which the lint flags. Bind the
+  wrapper's padding to `spacing/*` and its radius to `radius/lg`.
+- **When the lint flags a `_Doc/*` instance, fix the MASTER.** `_Doc/ChangelogRow` carried
+  unbound 8px top/bottom padding; binding it on the master (`146:160` → `spacing/2`)
+  cleared the finding on every page at once, retroactively.
+- **A gradient overlay faking an un-bindable effect must be FULL-BLEED.** Figma variables
+  hold solid colours only, so Skeleton's shimmer is a drawn white low-alpha gradient. Sized
+  narrower than its parent, the overlay's own rect edge shows through wherever the parent
+  clips to a radius — the circle read as two hard-split halves. Match the parent's size,
+  `x=0`, `constraints: STRETCH/STRETCH`.
 - **An auto-layout frame whose children are ALL hidden keeps its last width** — it does
   not collapse to 0, even set to HUG. So binding a boolean to a leaf text node leaves the
   container holding its old width, and the instance stays full-size: Checkbox's label-less
@@ -250,7 +273,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Spinner**).
+1. Read the ledger → next component in the phase queue (next up: **Code**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).
