@@ -1,0 +1,127 @@
+{
+  "runId": "uilib-component-push-2026-07",
+  "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
+  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page.",
+  "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
+  "v4": {
+    "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",
+    "overview": "Composition-forward: PageHeader → sep → COMPOSITION section → 'Uses inside →' pills → 'Used by →' chips → 'Props →' single line (set-modeled props + '⚠ code-only: …') → note → sep → the component set nested in-frame. NO full props table (owner cut it; _Doc/PropRow kept but unused).",
+    "spec": "OWNER'S LAYOUT — keep: sizes strip at top under header, then sep, then 'Light + Dark' horizontal wrapper holding 'Spec table — Light' and 'Spec table — Dark' SIDE BY SIDE. Variant groups delimited by _Doc/SeparatorLabeled (uppercase variant name). Rows=styles, cols=Enabled/Hover/Focus/Disabled. Hover=-hover var paint; Focus=Focus/{Variant} effect style; Disabled=opacity .5. Dark table: explicit Mode=Dark + caption.",
+    "theming": "Themed components only: theme-code header + Light/Dark rows of explicit-Theme-mode cells + 'Try it: Appearance panel' caption.",
+    "examples": "Light bar + identical dark bar (explicit Mode=Dark), clusters inline mirroring Storybook stories.",
+    "a11y": "'A11y contract' section: Keyboard pills row + paragraphs (semantics / focus / loading / disabled / contrast incl. gradient caveat).",
+    "designCheck": "Ship gate, must be ALL ZEROS: unbound solid fills/strokes (outside instances) · text without textStyleId · generic layer names · unbound nonzero padding/radius · missing COMPONENT descriptions.",
+    "labeledSeparator": "_Doc/SeparatorLabeled (175:594) — line/LABEL/line, Label prop; table group headings.",
+    "aidenDarkPattern": "REQUIRED for every aiden gradient fill: 'aiden-dark-gradient' rect at child index 0 (above frame fill, below content; STRETCH; radius bound) with dark gradient #a78bfa→#93c5fd (alpha 1 solid / 0.10 secondary), visibility bound to Mode boolean flag/is-dark (VariableID:175:26, Light=false Dark=true). Aiden TEXT already flips via color/aiden-* Mode vars. NEVER separate aiden-light/dark variants — mode is an axis, not a variant."
+  },
+  "pages": {
+    "startHere": "165:506",
+    "index": "125:180",
+    "indexBoard": "125:183",
+    "dividers": { "phase1": "165:632", "phase2": "165:633", "phase3": "165:634", "phase4": "165:635", "phase5": "165:636" },
+    "template": "146:122",
+    "parkedSets": "14:60",
+    "archive": "144:180",
+    "aidenHandoff": "116:180"
+  },
+  "docMasters": {
+    "pageHeader": "146:134",
+    "section": "146:139",
+    "chip": "146:125",
+    "tokenPill": "146:142",
+    "annotation": "146:163",
+    "separator": "157:278",
+    "separatorLabeled": "175:594",
+    "doDont": "146:154",
+    "changelogRow": "146:160",
+    "propRow": "164:451",
+    "cardStyleRef_doNotInstance": "157:276"
+  },
+  "sharedIds": {
+    "shadowVar": "VariableID:145:122",
+    "isDarkFlag": "VariableID:175:26",
+    "textStyles": {
+      "h1_4xl_bold": "S:938cb5ed86a94c09894ca5a8e89778bb54b504a9,",
+      "h2_2xl_semibold": "S:98e64e92de0c18cb7464120ea51fb422c249e59a,",
+      "body": "S:b07e84b675858e3fa775ebb7c2467f63b34f34c3,",
+      "sm": "S:6bdb0ae075e2016971b5f4cf939d80f54f58f4a5,",
+      "smMed": "S:ad42927ab0f631a69d7236d70aa1a5100a42cd67,",
+      "smSemi": "S:74e17a38a1e34d258e2365caa0690fd0b5fedaa6,",
+      "xs": "S:5c9f4c5cfe5e7661980cf7bf42c6ba0fc52025ca,",
+      "xsMed": "S:570279f939b28e3e2f033b3a013b047a31b6e85e,",
+      "xsSemi": "S:b0daeaffeedb299741e659e3c2810e1224c6b267,",
+      "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,"
+    },
+    "keyVars": {
+      "color/background": "VariableID:2:3",
+      "color/foreground": "VariableID:2:4",
+      "color/secondary": "VariableID:2:5",
+      "color/secondary-foreground": "VariableID:2:6",
+      "color/muted": "VariableID:2:7",
+      "color/muted-foreground": "VariableID:2:8",
+      "color/accent": "VariableID:2:9",
+      "color/card": "VariableID:2:11",
+      "color/border": "VariableID:2:15",
+      "color/error": "VariableID:7:2",
+      "color/success": "VariableID:7:10",
+      "spacing/1": "VariableID:1:5",
+      "spacing/2": "VariableID:1:7",
+      "spacing/3": "VariableID:1:9",
+      "spacing/4": "VariableID:1:11",
+      "spacing/6": "VariableID:1:13",
+      "spacing/8": "VariableID:1:15",
+      "radius/sm": "VariableID:1:122",
+      "radius/md": "VariableID:1:124",
+      "radius/lg": "VariableID:1:125",
+      "radius/xl": "VariableID:1:126",
+      "radius/full": "VariableID:1:129"
+    },
+    "themeVars": {
+      "primary": "VariableID:2:44",
+      "primary-foreground": "VariableID:2:45",
+      "primary-hover": "VariableID:2:46",
+      "primary-light": "VariableID:2:47",
+      "primary-soft": "VariableID:2:48",
+      "primary-border": "VariableID:2:49",
+      "primary-ring": "VariableID:2:50",
+      "primary-focus": "VariableID:2:51",
+      "primary-text": "VariableID:35:65"
+    }
+  },
+  "lessons": [
+    "Instances cannot receive appendChild — masters must pre-provision max children; hide extras per-instance (visible=false).",
+    "createAutoLayout defaults clipsContent=true — unclip rows/cells or focus rings get cut.",
+    "Focus/* drop shadows need showShadowBehindNode=false or they darken translucent fills (matches CSS box-shadow clipping).",
+    "REST get_screenshot serves stale renders for MODIFIED nodes but is fine for freshly created nodes; node.exportAsync is always live but base64 results >20kb get truncated in tool output.",
+    "On horizontal auto-layout, counterAxisSizingMode=FIXED freezes HEIGHT (text clips on wrap) — use primaryAxisSizingMode=FIXED + counterAxisSizingMode=AUTO for fixed-width/hug-height rows.",
+    "A COMPONENT_SET can be appendChild-ed into an auto-layout frame (Overview nests the Button set).",
+    "Component sets must bind brand fills to the THEME collection vars, NOT Mode brand/main/* — otherwise theme modes don't flip them. Ghost text stays color/secondary-foreground (neutral carve-out).",
+    "figma.root.name is read-only — file rename must be manual.",
+    "Code Connect blocked: needs Dev/Full seat on Org/Enterprise plan.",
+    "Load Inter Regular/Medium/Semi Bold/Bold + JetBrains Mono before any text op."
+  ],
+  "components": {
+    "Button": {
+      "status": "done-v4-approved",
+      "pageId": "0:1",
+      "setIds": ["76:300"],
+      "frames": { "overview": "158:275", "spec": "159:21", "theming": "160:353", "examplesDocsHistory": "160:451" },
+      "specLight": "159:28",
+      "specDark": "159:625",
+      "themed": true,
+      "defaultFamilyReboundToTheme": true,
+      "aidenDarkOverlays": 8,
+      "version": "1.4 · 2026-07-24",
+      "followUp": "After Spinner ships: add a real isLoading boolean property (instance-swap Spinner) and drop its ⚠ code-only marker."
+    }
+  },
+  "queue": {
+    "nextUp": "Spinner",
+    "phase1": ["Spinner", "Label", "Input", "Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
+    "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
+    "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
+    "phase5": ["ModeToggler", "Direction", "Sidebar", "Chat"]
+  },
+  "migrateExisting": { "Banner": "15:90", "Alert": "16:97", "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding." }
+}
