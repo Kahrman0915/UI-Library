@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 4/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0). Phase queue in the ledger.
+- **Status:** 5/57 components done (Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0). Phase queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -182,9 +182,16 @@ Sweep the new page + set (skip nodes inside instances):
   BOOLEAN property. A prop that changes a *style* — opacity, fill, size — cannot, and
   has to become a VARIANT axis instead (Label's `disabled` is opacity 50%, so
   `Size × Disabled` = 6 variants). Decide this before building the variants.
-- **Long `_Doc/Annotation` instances need `layoutSizingHorizontal='FILL'`** — the master
-  hugs (correct for grid axes), so a paragraph-length note runs past the card edge.
-  Same for fixed-width table label columns: measure the longest string before sizing.
+- **Don't use `_Doc/Annotation` for prose.** Its inner text hugs, so even with the
+  instance set to `FILL` a long note renders as one overflowing line. Annotations are for
+  short captions and grid axes only. For anything paragraph-length, create a plain TEXT
+  node with the `xs/leading-normal/Medium` style + `color/muted-foreground` and set
+  `layoutSizingHorizontal='FILL'` — that wraps correctly.
+- **Rows of many pills overflow the card.** A hugging horizontal auto-layout row will
+  run past a fixed-width card rather than wrap. Set `layoutWrap='WRAP'`,
+  `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
+  `cardWidth − padding` (a Props row with ~8+ pills always will).
+  Same care for fixed-width table label columns: measure the longest string before sizing.
 - **Instances can't `appendChild`** — masters pre-provision max children; instances
   hide extras (`visible=false`).
 - **`createAutoLayout` defaults `clipsContent=true`** — unclip rows/cells or focus

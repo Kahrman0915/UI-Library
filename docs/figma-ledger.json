@@ -145,11 +145,22 @@
       "props": "VARIANT Size (sm/default/lg) × Error (False/True) × Disabled (False/True) = 12; BOOLEAN 'Show label' / 'Show error message' / 'Icon left' / 'Icon right'; TEXT Placeholder / 'Error message'.",
       "version": "1.0 · 2026-07-25",
       "notes": "Nests a live Label instance with isExposedInstance=true, so Label's Required / Show description surface on any Input. Owns .ui-input-wrap — documented in the Overview as a CONTRACT because Textarea, NativeSelect, InputGroup and the Chat composer apply the class to their own markup rather than importing Input. When building those four, reuse this wrap spec verbatim; do not redefine borders."
+    },
+    "Textarea": {
+      "status": "done-v4",
+      "pageId": "199:32",
+      "setIds": ["199:257"],
+      "frames": { "overview": "201:80", "spec": "201:177", "examplesDocsHistory": "201:1249" },
+      "themed": false,
+      "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
+      "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Placeholder / 'Error message'. No icon slots (a textarea has no room).",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Reuses Input's wrap via --multi: wrap height auto + padding 0 + align stretch, padding moved onto the .ui-textarea so the native resize grip lands in the true corner. Min-heights 64/96/128 bound to height/16|24|32. The grip is drawn as an absolutely-positioned 2-tick vector named 'resize grip (native)' pinned to MAX/MAX constraints. TextareaSize re-exports InputSize so the two can't drift."
     }
   },
   "queue": {
-    "nextUp": "Textarea",
-    "phase1": ["Textarea", "NativeSelect", "InputGroup", "InputOTP"],
+    "nextUp": "NativeSelect",
+    "phase1": ["NativeSelect", "InputGroup", "InputOTP"],
     "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
     "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
     "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
