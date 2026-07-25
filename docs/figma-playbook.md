@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 8/57 done. **Phase 1 is COMPLETE** — Button 1.5, Spinner 1.1, Label 1.0, Input 1.0, Textarea 1.0, NativeSelect 1.0, InputGroup 1.0, InputOTP 1.0. Next up: Checkbox (Phase 2 · Atoms). Queue in the ledger.
+- **Status:** 9/57 done. Phase 1 COMPLETE (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). Phase 2 in progress: Checkbox 1.0. Next up: RadioGroup. Queue in the ledger.
 
 ### Adapting the recipe to non-interactive components
 
@@ -194,6 +194,13 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Plugin-API gotchas (each cost real debugging time)
 
+- **An auto-layout frame whose children are ALL hidden keeps its last width** — it does
+  not collapse to 0, even set to HUG. So binding a boolean to a leaf text node leaves the
+  container holding its old width, and the instance stays full-size: Checkbox's label-less
+  instances were 185px of mostly-empty space, overflowing their 120px grid cells and
+  visually spilling into the neighbouring column. **Bind visibility to the container, not
+  the leaf** (`ui-label` column ← "Show label"; the description text keeps its own
+  boolean inside). Then set label-less instances to `layoutSizingHorizontal='HUG'`.
 - **`instance.children` omits hidden children.** A layer hidden by a boolean property
   disappears from the array, so index access (`inst.children[1]`) silently shifts or
   returns `undefined`. Always locate by name: `inst.findOne(n => n.name === 'ui-input-wrap')`.

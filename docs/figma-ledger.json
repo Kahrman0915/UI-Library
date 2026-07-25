@@ -18,7 +18,13 @@
     "startHere": "165:506",
     "index": "125:180",
     "indexBoard": "125:183",
-    "dividers": { "phase1": "165:632", "phase2": "165:633", "phase3": "165:634", "phase4": "165:635", "phase5": "165:636" },
+    "dividers": {
+      "phase1": "165:632",
+      "phase2": "165:633",
+      "phase3": "165:634",
+      "phase4": "165:635",
+      "phase5": "165:636"
+    },
     "template": "146:122",
     "parkedSets": "14:60",
     "archive": "144:180",
@@ -104,8 +110,15 @@
     "Button": {
       "status": "done-v4-approved",
       "pageId": "0:1",
-      "setIds": ["76:300"],
-      "frames": { "overview": "158:275", "spec": "159:21", "theming": "160:353", "examplesDocsHistory": "160:451" },
+      "setIds": [
+        "76:300"
+      ],
+      "frames": {
+        "overview": "158:275",
+        "spec": "159:21",
+        "theming": "160:353",
+        "examplesDocsHistory": "160:451"
+      },
       "specLight": "159:28",
       "specDark": "159:625",
       "themed": true,
@@ -117,18 +130,37 @@
     "Spinner": {
       "status": "done-v4",
       "pageId": "178:26",
-      "setIds": ["178:39"],
-      "frames": { "overview": "179:26", "spec": "179:78", "theming": "180:135", "examplesDocsHistory": "180:271" },
+      "setIds": [
+        "178:39"
+      ],
+      "frames": {
+        "overview": "179:26",
+        "spec": "179:78",
+        "theming": "180:135",
+        "examplesDocsHistory": "180:271"
+      },
       "themed": "indirectly — no colour prop; renders currentColor, so a themed parent colours it",
-      "sizes": [16, 12, 20, 24, 40],
+      "sizes": [
+        16,
+        12,
+        20,
+        24,
+        40
+      ],
       "version": "1.1 · 2026-07-25",
       "notes": "Non-interactive: no hover/focus/disabled, so the Spec frame is sizes × colour contexts plus a rotation-phase strip (Figma can't animate). Icon built via figma.createNodeFromSvg with lucide's LoaderCircle path, then rescale(size/24) so stroke stays 2÷24 of the box. Colour is set per-instance on the child VECTOR named 'loader-arc'."
     },
     "Label": {
       "status": "done-v4",
       "pageId": "186:32",
-      "setIds": ["186:69"],
-      "frames": { "overview": "187:32", "spec": "187:155", "examplesDocsHistory": "188:243" },
+      "setIds": [
+        "186:69"
+      ],
+      "frames": {
+        "overview": "187:32",
+        "spec": "187:155",
+        "examplesDocsHistory": "188:243"
+      },
       "themed": false,
       "themingFrame": "OMITTED — Label is neutral chrome (foreground / muted-foreground / error only). The omission is stated in the TOKENS section so it reads as a decision, not a gap.",
       "props": "VARIANT Size (sm/default/lg) × VARIANT Disabled (False/True) = 6 variants; BOOLEAN Required + 'Show description'; TEXT Label + Description.",
@@ -138,8 +170,14 @@
     "Input": {
       "status": "done-v4",
       "pageId": "192:32",
-      "setIds": ["192:281"],
-      "frames": { "overview": "195:80", "spec": "195:205", "examplesDocsHistory": "197:486" },
+      "setIds": [
+        "192:281"
+      ],
+      "frames": {
+        "overview": "195:80",
+        "spec": "195:205",
+        "examplesDocsHistory": "197:486"
+      },
       "themed": false,
       "themingFrame": "OMITTED — --ring / --focus / --border-hover / --bg-input-30 are Mode-level neutrals that no data-theme remaps. Stated in the TOKENS section.",
       "props": "VARIANT Size (sm/default/lg) × Error (False/True) × Disabled (False/True) = 12; BOOLEAN 'Show label' / 'Show error message' / 'Icon left' / 'Icon right'; TEXT Placeholder / 'Error message'.",
@@ -149,8 +187,14 @@
     "Textarea": {
       "status": "done-v4",
       "pageId": "199:32",
-      "setIds": ["199:257"],
-      "frames": { "overview": "201:80", "spec": "201:177", "examplesDocsHistory": "201:1249" },
+      "setIds": [
+        "199:257"
+      ],
+      "frames": {
+        "overview": "201:80",
+        "spec": "201:177",
+        "examplesDocsHistory": "201:1249"
+      },
       "themed": false,
       "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Placeholder / 'Error message'. No icon slots (a textarea has no room).",
@@ -160,8 +204,14 @@
     "NativeSelect": {
       "status": "done-v4",
       "pageId": "205:32",
-      "setIds": ["205:233"],
-      "frames": { "overview": "206:80", "spec": "206:201", "examplesDocsHistory": "206:1013" },
+      "setIds": [
+        "205:233"
+      ],
+      "frames": {
+        "overview": "206:80",
+        "spec": "206:201",
+        "examplesDocsHistory": "206:1013"
+      },
       "themed": false,
       "themingFrame": "OMITTED — same neutral surface as Input; stated in TOKENS.",
       "props": "VARIANT Size × Error × Disabled = 12; BOOLEAN 'Show label' / 'Show error message'; TEXT Value / 'Error message'. No icon booleans — the right slot is permanently the chevron.",
@@ -172,9 +222,16 @@
     "InputGroup": {
       "status": "done-v4",
       "pageId": "208:32",
-      "setIds": ["208:97"],
+      "setIds": [
+        "208:97"
+      ],
       "setNote": "208:97 is InputGroup/Button — the ONLY sub-part modelled as a component set. 16 variants (4 variants × 4 sizes).",
-      "frames": { "overview": "209:32", "spec": "209:152", "theming": "210:182", "examplesDocsHistory": "210:319" },
+      "frames": {
+        "overview": "209:32",
+        "spec": "209:152",
+        "theming": "210:182",
+        "examplesDocsHistory": "210:319"
+      },
       "themed": true,
       "themingFrame": "PRESENT — the first field component with one. InputGroupButton variant=default fills with --primary (Theme collection) and takes the Aiden gradient under data-surface. Everything else in the family is neutral.",
       "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
@@ -184,23 +241,103 @@
     "InputOTP": {
       "status": "done-v4",
       "pageId": "212:32",
-      "setIds": ["212:441"],
-      "frames": { "overview": "213:104", "spec": "213:200", "examplesDocsHistory": "213:766" },
+      "setIds": [
+        "212:441"
+      ],
+      "frames": {
+        "overview": "213:104",
+        "spec": "213:200",
+        "examplesDocsHistory": "213:766"
+      },
       "themed": false,
       "themingFrame": "OMITTED — slot surface is neutral; stated in TOKENS.",
       "props": "VARIANT Size (sm/default/lg) × State (Empty/Focused/Partial/Complete/Error/Disabled) = 18; BOOLEAN 'Show label' / Separator / 'Show error message'; TEXT Label / 'Error message'.",
       "version": "1.0 · 2026-07-25",
       "notes": "The ONE form control that does NOT reuse .ui-input-wrap — slots own their border, radius and focus ring, so forcing them through the wrap would mean fighting its padding/height per size. State is a WHOLE-CONTROL axis, not a per-slot one, because a slot is never designed alone; the Spec adds an isolated slot-state strip (default/active/filled/error/error-active) for the atomic view. Built at length 6 with a toggleable groupSize-3 separator. Caret = 2px bar, --w-0-5 wide, steps(1) blink on --duration-shimmer, shown only in the active EMPTY slot."
+    },
+    "Checkbox": {
+      "status": "done-v4",
+      "pageId": "215:32",
+      "setIds": [
+        "215:183"
+      ],
+      "frames": {
+        "overview": "217:32",
+        "spec": "217:140",
+        "theming": "218:364",
+        "examplesDocsHistory": "218:879"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — checked AND indeterminate fill with --primary (Theme collection); mark is --primary-foreground. Unchecked stays neutral.",
+      "props": "VARIANT Size (sm/default/lg) × State (Unchecked/Checked/Indeterminate) × Disabled (False/True) = 18; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "First Phase 2 page. Hidden-input pattern: the native <input> is opacity-0/0x0 (NOT display:none) so it stays focusable + submittable, and every visual state is a CSS sibling selector. Both SVGs (check + dash) are always mounted and overlaid so checked→indeterminate CROSS-FADES; stroke-dasharray 24 → dashoffset 0 draws the stroke in. Box carries margin-top --p-0-5 to sit against the first text line — in Figma that is a 'box align' wrapper frame since auto-layout has no per-child margin. Aiden is a SURFACE effect here (not a variant like Button), so it is documented in text only. Uses .ui-label__* classes rather than nesting <Label> (a label can't contain a label)."
     }
   },
   "queue": {
-    "nextUp": "Checkbox — start of Phase 2",
+    "nextUp": "RadioGroup",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
-    "phase2": ["Checkbox", "RadioGroup", "Switch", "Slider", "Badge", "Kbd", "Separator", "StatusDot", "Skeleton", "Code", "CloseButton", "Avatar", "AspectRatio", "Blockquote", "ScrollArea", "Chip", "Toggle", "ToggleGroup", "ButtonGroup"],
-    "phase3": ["Card", "Item", "Attachment", "Collapsible", "Accordion", "Alert", "Banner", "Empty", "Progress", "Tabs", "Breadcrumb", "Pagination", "Field"],
-    "phase4": ["Tooltip", "Dialog", "AlertDialog", "Drawer", "Popover", "HoverCard", "DropdownMenu", "ContextMenu", "Menubar", "Select", "Combobox", "Command", "Toast"],
-    "phase5": ["ModeToggler", "Direction", "Sidebar", "Chat"]
+    "phase2": [
+      "RadioGroup",
+      "Switch",
+      "Slider",
+      "Badge",
+      "Kbd",
+      "Separator",
+      "StatusDot",
+      "Skeleton",
+      "Code",
+      "CloseButton",
+      "Avatar",
+      "AspectRatio",
+      "Blockquote",
+      "ScrollArea",
+      "Chip",
+      "Toggle",
+      "ToggleGroup",
+      "ButtonGroup"
+    ],
+    "phase3": [
+      "Card",
+      "Item",
+      "Attachment",
+      "Collapsible",
+      "Accordion",
+      "Alert",
+      "Banner",
+      "Empty",
+      "Progress",
+      "Tabs",
+      "Breadcrumb",
+      "Pagination",
+      "Field"
+    ],
+    "phase4": [
+      "Tooltip",
+      "Dialog",
+      "AlertDialog",
+      "Drawer",
+      "Popover",
+      "HoverCard",
+      "DropdownMenu",
+      "ContextMenu",
+      "Menubar",
+      "Select",
+      "Combobox",
+      "Command",
+      "Toast"
+    ],
+    "phase5": [
+      "ModeToggler",
+      "Direction",
+      "Sidebar",
+      "Chat"
+    ]
   },
-  "migrateExisting": { "Banner": "15:90", "Alert": "16:97", "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding." }
+  "migrateExisting": {
+    "Banner": "15:90",
+    "Alert": "16:97",
+    "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding."
+  }
 }
