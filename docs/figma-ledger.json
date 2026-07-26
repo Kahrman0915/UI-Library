@@ -143,7 +143,8 @@
     "Use neutral, invented placeholder copy in design-system demos — not real people's quotations or names. A component library's demo content gets copied into product mockups, and a real attribution reads as endorsement. Blockquote's first draft used a real person's aphorism; replaced with invented copy and a fictional reviewer.",
     "Hiding a native scrollbar transfers all of its accessibility to you. ScrollArea set scrollbar-width:none and drew its own thumb, which meant the missing tabIndex had no fallback at all — and its hover-reveal could never trigger for keyboard users because :focus-within had nothing to match. If a component takes over a native affordance, audit what the browser was doing for free before shipping it.",
     "An audit note is only as good as its list. CLAUDE.md claimed component SCSS was fully tokenized and enumerated what had been checked (durations, easings, border-widths, focus-rings). Opacity was not on that list and five raw literals were sitting in four components with --o-* already defined. Enumerate token CATEGORIES from tokens.scss and grep for a raw literal of each, rather than trusting a prose summary.",
-    "When two components share an interaction shape and differ only in emphasis (Chip vs Toggle: both aria-pressed, one brand one neutral), the doc page's job is the DECISION RULE, not the pixel diff. 'Does the on-state change what data is shown, or how a tool behaves?' is what a designer actually needs; a side-by-side of the two fills is not."
+    "When two components share an interaction shape and differ only in emphasis (Chip vs Toggle: both aria-pressed, one brand one neutral), the doc page's job is the DECISION RULE, not the pixel diff. 'Does the on-state change what data is shown, or how a tool behaves?' is what a designer actually needs; a side-by-side of the two fills is not.",
+    "The repo imports 6 DEPRECATED lucide aliases that the Figma icon set excludes: AlignLeft->text-align-start, AlertCircle->circle-alert, AlertTriangle->triangle-alert, FileVideo->file-play, FileWarning->file-exclamation-point, MoreHorizontal->ellipsis. A designer searching the swap list for 'align-left' will not find it. Excluding aliases was right for the swap list, but it breaks the code<->Figma name mapping wherever the code still uses an old name — the fix is to migrate those imports to canonical names, not to re-add the aliases."
   ],
   "components": {
     "Button": {
@@ -635,14 +636,35 @@
       "version": "1.0 · 2026-07-25",
       "notes": "Chip-vs-Toggle is the decision this page exists to settle: does the on-state change WHAT DATA is shown (Chip, brand fill) or HOW A TOOL BEHAVES (Toggle, neutral fill)? ToggleGroup does not re-implement any of this — its items reuse .ui-toggle and collapse shared borders ButtonGroup-style, so changing Toggle changes the segmented control. Controlled/uncontrolled boundary is `pressed !== undefined`, so pressed={false} is controlled but omitting it is not — a computed prop that flips to undefined silently hands control back.",
       "openQuestion": "⚠ Hover and pressed resolve to the SAME fill (--accent), so an unpressed toggle under the cursor looks identical to a pressed one at rest. In a toolbar this reads fine because the pointer is over only one item and the rest show true state; a LONE borderless toggle is genuinely ambiguous. Documented on the Spec frame with the outline variant recommended as the mitigation. Not changed — distinguishing them would mean a new hover token or a pressed treatment beyond fill, which is a system decision."
+    },
+    "ToggleGroup": {
+      "status": "done-v4",
+      "pageId": "344:44",
+      "setIds": [
+        "344:101"
+      ],
+      "frames": {
+        "overview": "345:68",
+        "spec": "345:188",
+        "examplesDocsHistory": "345:417"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — inherits Toggle's neutral pressed state, deliberately.",
+      "props": "VARIANT Orientation (horizontal|vertical) × Variant (default|outline) = 4.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Items are NOT Toggle instances in code either — ToggleGroupItem is a <button> wearing .ui-toggle, because it reads pressed state from context rather than owning it. ToggleGroup.scss therefore has NO colour/size/state rules; it only arranges. The segmented recipe is three rules: flatten inner radii, collapse borders with margin -1px (--border-w-100), and lift the active item to z-index 1 so its ring/fill is not clipped by an overlapping neighbour. In Figma the items are DRAWN, not Toggle instances, because per-item corner flattening cannot be expressed by an instance whose radius is bound uniformly — stated in the set description.",
+      "openQuestions": [
+        "No arrow-key navigation. The WAI-ARIA toolbar pattern expects a roving tabindex (one tab stop, arrows move within); here every item is its own tab stop. Workable at 3-5 items, which is why the page caps the recommended length. Menubar in this library DOES implement roving tabindex, so the pattern exists if this is worth closing.",
+        "The group has no accessible name. role=\"group\" with no aria-label announces just 'group'. Unlike the item-level name (now type-enforced), nothing requires this. Could default one, or require aria-label on the root.",
+        "type=\"single\" deselect passes an EMPTY STRING, not undefined — onValueChange is typed (value: string) => void and the code sends `next ?? ''`. Consumers must treat '' as 'nothing selected'."
+      ]
     }
   },
   "queue": {
-    "nextUp": "ToggleGroup",
+    "nextUp": "ButtonGroup",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "ToggleGroup",
       "ButtonGroup"
     ],
     "phase3": [
@@ -681,7 +703,7 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — remaining: ToggleGroup, ButtonGroup."
+    "phase2Status": "IN PROGRESS — remaining: ButtonGroup (last of Phase 2)."
   },
   "migrateExisting": {
     "Banner": "15:90",
