@@ -150,7 +150,20 @@ const ScrollArea = forwardRef<HTMLDivElement, ScrollAreaProps>(
         className={`ui-scroll-area ui-scroll-area--${orientation} ui-scroll-area--type-${type}${className ? ' ' + className : ''}`}
       >
         <div className="ui-scroll-area__inner">
-          <div ref={viewportRef} className="ui-scroll-area__viewport">
+          {/*
+            tabIndex=0 is load-bearing. This is the scroll container, and a
+            scrollable region must be focusable or a keyboard-only user cannot
+            reach the overflowed content at all (WCAG 2.1.1). It matters more
+            here than elsewhere because the native scrollbar is hidden, so
+            there is nothing else to grab — and with type="hover" the custom
+            bar only appears on :hover or :focus-within, which could never
+            fire while nothing inside was focusable.
+          */}
+          <div
+            ref={viewportRef}
+            className="ui-scroll-area__viewport"
+            tabIndex={0}
+          >
             {children}
           </div>
           {showVertical && vertical.visible && (

@@ -73,7 +73,7 @@
   }
 
   &:disabled {
-    opacity: 0.5;
+    opacity: var(--o-50);
     cursor: not-allowed;
     color: var(--muted-foreground);
   }

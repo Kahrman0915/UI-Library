@@ -112,7 +112,7 @@
     }
 
     &[data-disabled] {
-      opacity: 0.5;
+      opacity: var(--o-50);
       cursor: not-allowed;
       pointer-events: none;
     }
