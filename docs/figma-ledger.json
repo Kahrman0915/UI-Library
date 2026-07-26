@@ -594,14 +594,35 @@
       "version": "1.0 · 2026-07-25",
       "notes": "The rails are LAID OUT, not overlaid: the inner element is a CSS grid where the viewport takes cell 1/1 and each rail gets its own fixed column/row with a --p-4 gap, so the thumb can never sit on content in any browser. The viewport needs min-width:0 / min-height:0 or the grid item refuses to shrink and the thing silently never scrolls. Thumb length and offset are computed at runtime from scrollTop/scrollHeight with a 20px floor, so the offsets drawn in Figma are ILLUSTRATIVE and the page says so. ResizeObserver watches the viewport and the children present AT MOUNT; a child that grows later is only caught by the layout effect keyed on `children`.",
       "codeFixesLandedSameDay": "WCAG 2.1.1 — the viewport had no tabIndex, so 474px of content in a 206px box was unreachable by keyboard. Worse than the identical CodeBlock bug because the native scrollbar is hidden, leaving no fallback affordance, and because type='hover' keeps the rail at opacity 0 until :hover or :focus-within — which could never fire with nothing focusable inside. The two defects concealed each other; one tabIndex={0} fixed both. Also tokenized 5 raw opacity literals (ScrollArea x2, CloseButton, Chip, Command) and moved the thumb from cursor:pointer to grab/grabbing."
+    },
+    "Chip": {
+      "status": "done-v4",
+      "pageId": "335:44",
+      "setIds": [
+        "335:99"
+      ],
+      "frames": {
+        "overview": "336:44",
+        "spec": "336:128",
+        "theming": "336:637",
+        "examplesDocsHistory": "336:905"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — only the ACTIVE chip themes: it reads --primary for fill and border and --primary-foreground for the label. A resting chip is --bg-input-30 on --border, both neutral, so it is identical in every brand. The selection is the branded moment; the unselected state is chrome.",
+      "props": "VARIANT Size (xsmall|small|default) × Active (false|true) = 6, + BOOLEAN 'Icon left'/'Icon right' with INSTANCE_SWAP glyphs + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Active is a VARIANT axis, not a boolean — it changes fill, border and text colour, and a Figma boolean can only drive visibility. Hover moves only the resting chip (--bg-input-30 → -50); the active rule re-states --primary so a selected filter does not shift under the cursor, and the base hover is scoped :not(.ui-chip--active). Verified the SCSS `:not(&--active)` compiles correctly to `:not(.ui-chip--active)`. Hit targets measured 26 / 34 / 38px tall — all clear the 24px minimum, xsmall being the tightest.",
+      "openQuestions": [
+        "IconCenter is in ChipProps but does nothing distinct: the JSX renders {IconLeft}{IconCenter}{label}{IconRight}, so it occupies the same slot as IconLeft. With a label present the two are identical; without one it produces the same icon-only chip IconLeft would. Chip has no `iconOnly` switch (unlike Button) to suppress the label, and the container is justify-content: flex-start so nothing ever centres. Either wire it to suppress+centre like Button, or remove it — removing is breaking. Documented on the Overview as an alias for now.",
+        "An icon-only Chip has NO accessible name. `aria-label` is an optional prop with no fallback, so <Chip IconLeft={X} /> announces only 'button, not pressed'. CloseButton solves the identical problem by defaulting ariaLabel to 'Close'. Consider the same default, or requiring aria-label when no label is passed (a discriminated union would enforce it)."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Chip",
+    "nextUp": "Toggle",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Chip",
       "Toggle",
       "ToggleGroup",
       "ButtonGroup"
@@ -642,7 +663,7 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — remaining: Chip, Toggle, ToggleGroup, ButtonGroup."
+    "phase2Status": "IN PROGRESS — remaining: Toggle, ToggleGroup, ButtonGroup."
   },
   "migrateExisting": {
     "Banner": "15:90",
