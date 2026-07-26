@@ -61,7 +61,8 @@
       "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,",
       "monoXs_12": "S:0aeef06828ad049df29ab3f435f135a36ef262e7,",
       "monoSm_14": "S:132f19fd831366b8959678010705e99eb68a0e94,",
-      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,"
+      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,",
+      "baseLeading7Italic": "S:03b6f16079d8a19ecd839a4e686bbfb99893e946,"
     },
     "keyVars": {
       "color/background": "VariableID:2:3",
@@ -138,7 +139,8 @@
     "A pinned CSS stroke-width on an SVG icon is in VIEWBOX units, not rendered pixels — pinning '1.33px' on a 12px icon renders 0.665px. If a token's value is meant as a rendered width, it only matches at the size where viewBox and box coincide. Usually the right move is to NOT pin it and let lucide's own 2 units scale.",
     "Check hit targets, not just visuals: measure getBoundingClientRect against WCAG 2.5.8's 24x24. A control can look right and be untappable. Where the drawn box must stay small, expand the target with a transparent ::after rather than resizing.",
     "node.targetAspectRatio is READ-ONLY to plugins — an aspect-ratio constraint can only be set in the Figma UI. When a component's whole point is a constraint the API cannot express, size the frames correctly and flag the manual toggle on the page rather than leaving a silent gap.",
-    "When a prop is CONTINUOUS (a number) rather than a union, a Figma variant axis cannot be faithful. Model representative values and say plainly in the set description that they are a shortcut, not the API — otherwise a designer reads six options as the whole surface."
+    "When a prop is CONTINUOUS (a number) rather than a union, a Figma variant axis cannot be faithful. Model representative values and say plainly in the set description that they are a shortcut, not the API — otherwise a designer reads six options as the whole surface.",
+    "Use neutral, invented placeholder copy in design-system demos — not real people's quotations or names. A component library's demo content gets copied into product mockups, and a real attribution reads as endorsement. Blockquote's first draft used a real person's aphorism; replaced with invented copy and a fictional reviewer."
   ],
   "components": {
     "Button": {
@@ -554,14 +556,31 @@
       "version": "1.0 · 2026-07-25",
       "notes": "`ratio` is a CONTINUOUS number, not a union — any value is valid. Figma variants must be discrete, so the six are REPRESENTATIVE and the set description says so explicitly; this is a case where the Figma model cannot be faithful and the honest move is to label the shortcut. Also one of the few components with NO required `id` (rule 6 exception, like Toaster): no children of its own, no ARIA to wire, no state to announce. Documents the inline-style decision (ratio is per-instance, not a token; consumer `style` is spread after so it wins) and the one a11y trap — overflow: hidden clips the focus ring of any interactive child near the edge.",
       "manualStep": "⚠ Figma's aspect-ratio lock is READ-ONLY to plugins (node.targetAspectRatio cannot be assigned), so the six variants are sized correctly but not constrained — drag-resizing distorts them instead of deriving the height. Someone must select the six variants and enable the aspect-ratio lock (or set W and H to Scale) in the UI. Noted on the Spec frame and in the set description."
+    },
+    "Blockquote": {
+      "status": "done-v4",
+      "pageId": "331:45",
+      "setIds": [
+        "331:57"
+      ],
+      "frames": {
+        "overview": "331:58",
+        "spec": "331:127",
+        "examplesDocsHistory": "331:206"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — all neutral. Noted on the page that the 4px rule is a plausible place a brand accent COULD live (several design systems tint it) but this one keeps it --border, consistent with the rule that chrome stays neutral. Changing that would be a system decision, not a component tweak.",
+      "props": "VARIANT Content (single|multi) + TEXT Quote + TEXT 'Quote 2' + BOOLEAN 'Show attribution' + TEXT Attribution.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The Content axis exists to show the paragraph rule: `> p` has margin zeroed so a single-paragraph quote sits flush against the rule, and `> p + p` adds --p-3 back only between consecutive paragraphs — the default state needs no correction. `cite` is Omit-ed from the native props and REDEFINED as displayed content: HTML's own cite attribute takes a source URL that browsers never render, so the component trades machine-readable provenance for a better call site. No required `id` (leaf, no ARIA to wire). Added one text style, base/leading-7/Italic — the only 16/28 pairing in the system; the CSS is --text-base on --leading-7 and no existing style carried it.",
+      "specDeviation": "⚠ The HTML spec says a quotation's attribution must be placed OUTSIDE the blockquote (the canonical markup is <figure> + <figcaption>). This component renders a <footer> INSIDE, which is what most component libraries do and degrades gracefully, but strictly makes the attribution part of the quoted material. Documented on the a11y section rather than silently modelled as correct; fixing it would be a breaking DOM change."
     }
   },
   "queue": {
-    "nextUp": "Blockquote",
+    "nextUp": "ScrollArea",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Blockquote",
       "ScrollArea",
       "Chip",
       "Toggle",
@@ -604,7 +623,7 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — 13/14 shipped. Remaining: Blockquote, ScrollArea, Chip, Toggle, ToggleGroup, ButtonGroup."
+    "phase2Status": "IN PROGRESS — 14/14 of the original list shipped... remaining: ScrollArea, Chip, Toggle, ToggleGroup, ButtonGroup."
   },
   "migrateExisting": {
     "Banner": "15:90",
