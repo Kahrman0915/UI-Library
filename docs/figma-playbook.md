@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 28/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way. Next up: **Item**. Queue in the ledger.
+- **Status:** 29/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way (Card, Item). Next up: **Attachment**. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -210,6 +210,20 @@ comp.editComponentProperty(slotKey, {
 
 They are suggestions at the top of the picker rather than a whitelist, so listing a handful costs nothing
 and steers the designer toward the components that actually belong there.
+
+### Slot gotchas found the hard way
+
+- **Converting a frame to a slot strips its children's `componentPropertyReferences` and hides them.** Item's
+  header/footer labels lost their `characters` binding and went invisible, leaving two orphan TEXT properties
+  behind. Figma treats slot default content as a placeholder. The lesson is not to work around it — it is
+  that a `ReactNode` region should not have a text property in the first place. `ItemHeader` takes children,
+  so the fix was deleting the text props, not restoring them.
+- **A freshly converted slot holds a stale 100px height and lies about it.** It reports
+  `layoutSizingVertical: 'HUG'` while rendering a 100px empty band. Setting HUG again does nothing; call
+  `resize(w, contentHeight)` first to clear the explicit size, *then* set HUG and it sticks.
+- **Skip hidden children in the overflow check.** A node hidden by a boolean keeps a stale
+  `absoluteBoundingBox`, which produced 18 phantom overflows on Item. Filter `c.visible !== false` alongside
+  the `layoutPositioning === 'ABSOLUTE'` filter.
 
 ### Slot vs TEXT vs INSTANCE_SWAP
 
@@ -461,7 +475,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Item**).
+1. Read the ledger → next component in the phase queue (next up: **Attachment**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).

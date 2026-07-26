@@ -157,7 +157,10 @@
     "Figma SLOTS are reachable from the plugin API even though nothing documents them: addComponentProperty(name,'SLOT','') then node.componentPropertyReferences={slotContentId:key}. The key `slotContentId` is undocumented — the official component-creation reference lists only characters/visible/mainComponent, and every guess (slot, slotContent, content, children) is rejected as an unrecognized key. I only found it by having the owner convert ONE layer in the UI and reading back its componentPropertyReferences. Lesson: when an API looks unavailable, have the user perform the action once in the UI and inspect the result, rather than concluding it cannot be done.",
     "Slot vs TEXT vs INSTANCE_SWAP: a slot is right when the code prop is React.ReactNode AND the content is genuinely open (an avatar, a status dot, an icon button). A short string is still better as a TEXT property — InputGroup/Button keeps Label on its 8 labelled variants and slots only the 8 icon-only ones. Slots and text properties coexist: a slot preserves its default content, so a TEXT-bound node living inside a slot keeps working (Card's Body does exactly this).",
     "preferredValues AND description are both writable on a SLOT property via editComponentProperty(key,{preferredValues,description}) — accepting {type:'COMPONENT_SET'|'COMPONENT', key}. They are suggestions surfaced at the top of the picker, not a whitelist, so listing a handful costs nothing and guides the designer.",
-    "A Figma slot can quietly outrun the code. Exposing a WHOLE region as one free slot lets a designer compose things the component has no prop for — Card's header has no leading position at all, so a featured icon was undrawable in code while being trivial in Figma. Prefer NAMED slots that map 1:1 to real props; if the design need is real, add the prop to the code first and mirror it, which is what CardHeader's `media` was."
+    "A Figma slot can quietly outrun the code. Exposing a WHOLE region as one free slot lets a designer compose things the component has no prop for — Card's header has no leading position at all, so a featured icon was undrawable in code while being trivial in Figma. Prefer NAMED slots that map 1:1 to real props; if the design need is real, add the prop to the code first and mirror it, which is what CardHeader's `media` was.",
+    "Converting a frame to a SLOT STRIPS componentPropertyReferences from its children and hides them. Item's header/footer labels lost their `characters` binding and went invisible, leaving two orphan TEXT properties. Slot default content is treated as placeholder, so do NOT expect a text property to survive inside a newly-converted slot — bind text BEFORE deciding, or (better) accept that a ReactNode region should not have a text prop at all.",
+    "A freshly-converted SLOT holds a stale explicit height (100px) and REPORTS layoutSizingVertical:'HUG' while ignoring it. Setting HUG alone does nothing; call resize(w, contentHeight) first to clear the explicit size, then set HUG and it sticks. Symptom is a 100px empty band where a 16px line should be.",
+    "The overflow check must skip hidden children. A node hidden by a boolean keeps a STALE absoluteBoundingBox, which reported 18 phantom overflows on Item. Filter c.visible !== false alongside the ABSOLUTE-positioning filter."
   ],
   "components": {
     "Button": {
@@ -726,15 +729,40 @@
       ],
       "slots": "FOUR slots: ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All four are React.ReactNode in code. Title/Description/Body stay TEXT props; a slot preserves default content so the text property inside the body slot still works. Every slot carries preferredValues (Avatar/StatusDot/icons for media; Badge/Chip/icon-button for action; Button/ButtonGroup for footer) and a description.",
       "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build."
+    },
+    "Item": {
+      "status": "done-v4",
+      "pageId": "384:44",
+      "setIds": [
+        "384:218",
+        "384:72",
+        "384:73"
+      ],
+      "frames": {
+        "overview": "386:44",
+        "spec": "386:117",
+        "examplesDocsHistory": "387:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — Item is neutral chrome; nothing reads --primary. Stated in TOKENS.",
+      "props": "Item: VARIANT Variant (default|outline|muted) x Size (xs|sm|default) = 9. Item/Media: Variant (default|icon|image) x Size = 9. Item/Separator: 1 component. TEXT Title + Description; BOOLEAN Show description/media/actions/header/footer; SLOT media/actions/header/footer, each with preferredValues + description. href / onClick / disabled are code-only — they change the ELEMENT, not the look.",
+      "version": "1.0 · 2026-07-26",
+      "slots": "FIRST page built slots-first. header and footer are PURE slots with NO text property — ItemHeader/ItemFooter take children: React.ReactNode in code, not a string. Title and description remain TEXT props because they are genuinely strings.",
+      "notes": "The row is a CSS GRID (grid-template-areas: header spans / media-content-actions / footer spans). Figma has no grid, so each variant nests an auto-layout row named 'row — media · content · actions'; identical render, stated on the page. Ships with a code fix — grouped rows now collapse touching borders and the focused row lifts to z-index 1, the third component to need that after ToggleGroup and ButtonGroup.",
+      "openQuestions": [
+        "ItemGroup is role=\"list\" and ItemSeparator role=\"separator\", but the rows are NOT role=\"listitem\" — the list is announced with no matching item count.",
+        "The actions slot sits inside the row, so if the row is a link or button anything interactive in actions is a nested interactive. Nothing prevents it.",
+        "Title is nowrap+ellipsis and description clamps to 2 lines, both with no title attribute — truncated text is unavailable to hover and to assistive tech alike.",
+        "disabled sets pointer-events: none, so a disabled row cannot show a tooltip explaining why."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Item (Phase 3)",
+    "nextUp": "Attachment (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Item",
       "Attachment",
       "Collapsible",
       "Accordion",
@@ -769,7 +797,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card shipped; 12 composites remain."
+    "phase3Status": "IN PROGRESS — Card and Item shipped; 11 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",
