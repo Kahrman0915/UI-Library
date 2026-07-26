@@ -31,7 +31,6 @@
     svg {
       width: var(--w-4);
       height: var(--h-4);
-      stroke-width: var(--icon-border-width);
     }
   }
 
@@ -95,7 +94,6 @@
     > svg {
       width: var(--w-4);
       height: var(--h-4);
-      stroke-width: var(--icon-border-width);
       color: var(--muted-foreground);
       flex-shrink: 0;
     }
