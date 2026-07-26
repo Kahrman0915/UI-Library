@@ -25,13 +25,14 @@ const Card = forwardRef<HTMLDivElement, CardProps>(
 Card.displayName = 'Card';
 
 const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
-  ({ id, title, description, action, className, ...rest }, ref) => {
+  ({ id, title, description, media, action, className, ...rest }, ref) => {
     return (
       <div
         {...rest}
         ref={ref}
         className={`ui-card__header${className ? ' ' + className : ''}`}
       >
+        {media && <div className="ui-card__header-media">{media}</div>}
         <div className="ui-card__header-content">
           <h3 id={`${id}-title`} className="ui-card__title">
             {title}

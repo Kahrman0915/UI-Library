@@ -59,6 +59,29 @@
     border-bottom: var(--border-w-100) solid var(--border);
   }
 
+  // Leading visual, before the title. The header aligns to flex-start, so the
+  // media stays with the first line of the title instead of drifting to the
+  // middle of a two-line block. Mirrors __header-action and ItemMedia.
+  &__header-media {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    // Floor the box at one line of title. Without it a small mark — a 10px
+    // StatusDot — pins to the top of the line box and reads as floating above
+    // the heading. Anything taller than a line, an Avatar say, sets its own
+    // height and is untouched by this.
+    min-height: var(--leading-5);
+
+    // Size a bare icon the way ItemMedia does, so consumers don't each pick
+    // their own. Non-SVG media (Avatar, StatusDot) brings its own dimensions.
+    svg {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
   &__header-content {
     flex: 1;
     display: flex;

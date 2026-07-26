@@ -1,7 +1,10 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import { Rocket } from 'lucide-react';
 import Card, { CardHeader, CardBody, CardFooter } from './Card';
 import Button from '../Button/Button';
 import Badge from '../Badge/Badge';
+import Avatar from '../Avatar/Avatar';
+import StatusDot from '../StatusDot/StatusDot';
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',
@@ -15,6 +18,47 @@ const meta: Meta<typeof Card> = {
 export default meta;
 
 type Story = StoryObj<typeof Card>;
+
+/**
+ * `media` is the leading visual slot — a featured icon, an avatar, a status
+ * dot. It renders before the title and shrinks to its content, so a two-line
+ * description doesn't drag it out of line with the heading.
+ */
+export const WithMedia: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap' }}>
+      <Card id="m-icon" style={{ width: 320 }}>
+        <CardHeader
+          id="m-icon-h"
+          media={<Rocket />}
+          title="Deploy preview"
+          description="Ships to a throwaway URL on every push."
+        />
+        <CardBody>Builds finish in about 40 seconds.</CardBody>
+      </Card>
+      <Card id="m-avatar" style={{ width: 320 }}>
+        <CardHeader
+          id="m-avatar-h"
+          media={<Avatar id="m-avatar-a" fallback="KM" />}
+          title="Kahrman McKenzie"
+          description="Owner"
+          action={<Badge id="m-avatar-b" variant="outline" label="Admin" />}
+        />
+        <CardBody>Full access to every workspace setting.</CardBody>
+      </Card>
+      <Card id="m-status" style={{ width: 320 }}>
+        <CardHeader
+          id="m-status-h"
+          media={<StatusDot status="online" />}
+          title="Production"
+          description="All systems nominal."
+        />
+        <CardBody>Last incident 94 days ago.</CardBody>
+      </Card>
+    </div>
+  ),
+};
 
 export const Playground: Story = {
   render: () => (

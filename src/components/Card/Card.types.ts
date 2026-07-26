@@ -25,6 +25,12 @@ export type CardHeaderProps = Omit<
   id: string;
   title: string;
   description?: string;
+  /**
+   * Leading visual, rendered before the title — a featured icon, an avatar, a
+   * status dot. Same role `ItemMedia` / `EmptyMedia` / `AttachmentMedia` play
+   * in their families; Card was the only one of the four without it.
+   */
+  media?: React.ReactNode;
   action?: React.ReactNode;
   className?: string;
 };
