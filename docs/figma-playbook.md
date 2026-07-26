@@ -229,6 +229,22 @@ Sweep the new page + set (skip nodes inside instances):
   a blob. **Any icon placed below 24px needs its stroke set to `2 × size ÷ 24`.** Measure
   the real value in the browser (`computedStrokeWidth × renderedSize ÷ viewBoxSize`) rather
   than assuming. CloseButton is the carve-out — its CSS pins 1.33 units, so 0.665px at 12px.
+- **Icons do not auto-tint — by decision.** They arrive as `--foreground`; the designer
+  sets the colour after placing. Automatic per-variant tinting was attempted five ways and
+  abandoned (per-layer overrides reach only the default glyph's layers; a colour mode
+  collection needs 13 modes against Figma's cap of 10; stubs don't carry through a swap;
+  hand-merging geometry corrupted the library). Stroke **weight** is variable-driven and
+  does work.
+- **`figma.flatten()` merges vectors correctly; hand-concatenating `vectorPaths` does not.**
+  Path data lives in each node's own coordinate space, so concatenating discards every
+  other node's offset and collapses the glyph. This destroyed all 1,746 icons once.
+- **Verify a bulk geometry operation on ONE duplicate, with a screenshot, before running it
+  across a library.** After the bad merge every property read looked perfect — "1 path,
+  stroke kept, 24×24" — while every glyph was visually ruined. For geometry, pixels are the
+  only verification.
+- **The API can't reach instances nested inside component-set variants.** `findAll()`
+  returns 0 vectors for 238 of 240 slots that render fine on canvas; only the set's default
+  variant is readable. Apply nested styling at instance-creation time, before inserting.
 - **A per-layer override only reaches layers that exist on the DEFAULT swap target.** If a
   swappable family has varying inner layer counts, an override applies *partially* — the
   symptom is an icon rendering half in the host's colour and half in the library default.
