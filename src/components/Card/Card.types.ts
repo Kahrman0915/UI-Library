@@ -4,7 +4,16 @@ export type CardProps = Omit<
 > & {
   id: string;
   children: React.ReactNode;
-  /** Opt-in hover affordance: strengthens the border on hover (var(--border-hover)) + cursor. For clickable cards. */
+  /**
+   * Opt-in hover affordance for a card that leads somewhere: strengthens the
+   * border to `var(--border-hover)`, lifts it, and sets `cursor: pointer`.
+   *
+   * **Visual only — this does not make the card operable.** Card stays a plain
+   * `<div>` with no role and no tab stop, so put the real click target *inside*
+   * it as a link or button. A card that carries its own actions cannot itself
+   * be a button without nesting interactive elements. If you do make the card
+   * focusable yourself, it already carries a matching `:focus-visible` ring.
+   */
   interactive?: boolean;
   className?: string;
 };
