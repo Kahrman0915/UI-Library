@@ -229,6 +229,16 @@ Sweep the new page + set (skip nodes inside instances):
   a blob. **Any icon placed below 24px needs its stroke set to `2 × size ÷ 24`.** Measure
   the real value in the browser (`computedStrokeWidth × renderedSize ÷ viewBoxSize`) rather
   than assuming. CloseButton is the carve-out — its CSS pins 1.33 units, so 0.665px at 12px.
+- **A per-layer override only reaches layers that exist on the DEFAULT swap target.** If a
+  swappable family has varying inner layer counts, an override applies *partially* — the
+  symptom is an icon rendering half in the host's colour and half in the library default.
+  Icons are therefore normalised to **one vector named `path-1`**, so a single override
+  covers the whole glyph. Merge geometry at the **node** level (concatenate `vectorPaths`
+  entries), never by string-joining path `d` data — that breaks any sub-path starting with
+  a relative moveto.
+- **A variable collection is capped at 10 modes.** Anything needing more distinct cascading
+  values can't use modes at all. Check the count first: an icon-colour collection needed 14
+  and was abandoned for the single-path approach above.
 - **An `INSTANCE_SWAP` property swap DISCARDS nested overrides.** Uniform layer names do
   *not* save you — that only helps manual `swapComponent` in limited cases. Anything that
   must survive a swap has to come from a **variable mode set on an ancestor**, because
