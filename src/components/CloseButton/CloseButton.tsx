@@ -8,6 +8,7 @@ const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
     {
       id,
       variant = 'default',
+      size = 'default',
       disabled = false,
       onClick,
       ariaLabel = 'Close',
@@ -22,7 +23,7 @@ const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
         ref={ref}
         id={id}
         type="button"
-        className={`ui-close-button ui-close-button--${variant}${className ? ' ' + className : ''}`}
+        className={`ui-close-button ui-close-button--${variant} ui-close-button--sz-${size}${className ? ' ' + className : ''}`}
         disabled={disabled}
         onClick={onClick}
         aria-label={ariaLabel}

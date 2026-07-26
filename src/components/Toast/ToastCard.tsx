@@ -72,6 +72,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
         )}
         <CloseButton
           id={`${toast.id}-close`}
+          size="sm"
           className="ui-toast__close"
           onClick={onDismiss}
           ariaLabel="Dismiss"
