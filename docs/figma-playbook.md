@@ -180,6 +180,22 @@ What the conversion does and does not preserve:
 
 Slots are invisible to rendering — screenshots before and after are identical — and they do not affect the lint.
 
+### Rollout policy (owner, 2026-07-26)
+
+**Forward-only plus a scoped backfill.** Every new page slots anything that is `React.ReactNode` in code.
+The backfill was limited to the compound families designers actually compose with — Item, Field,
+InputGroup, Attachment — and of those only **InputGroup** had shipped, so that was the whole backfill
+(its icon-only button glyph). Item, Field and Attachment are still queued and get slots natively. The
+simpler shipped atoms keep their baked content **deliberately** — don't sweep them.
+
+### Slot vs TEXT vs INSTANCE_SWAP
+
+Reach for a slot when the code prop is `React.ReactNode` *and* the content is genuinely open — an avatar,
+a status dot, an icon button. A short string is still better as a TEXT property. `InputGroup/Button` shows
+the split: its 8 labelled variants keep `Label` as TEXT, and only the 8 icon-only variants slot their
+`glyph`. The two coexist happily — a slot keeps its default content, so a TEXT-bound node *inside* a slot
+still works, which is how Card keeps an editable `Body` inside `ui-card__body`.
+
 ## `_Doc/*` masters (page `146:122`)
 
 | Master | ID | Notes |
