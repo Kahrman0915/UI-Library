@@ -136,6 +136,30 @@
   border-bottom-right-radius: var(--rounded-md);
 }
 
+// Collapse the touching borders of two items that sit directly against each
+// other, so a seam reads the same weight as the group's outer edge instead of
+// doubling to 2px. The adjacent-sibling selector does the carve-out for free:
+// where an ItemSeparator sits between two items they are not adjacent, the
+// rule never fires, and the hairline keeps its full height.
+.ui-item-group > .ui-item + .ui-item {
+  margin-top: calc(-1 * var(--border-w-100));
+}
+
+// The hovered or focused item lifts above its neighbours. The focus ring is an
+// outward box-shadow and grouped items abut, so without this the sibling that
+// follows paints over it and a middle item is ringed on only three sides. The
+// same lift keeps a hover background from being clipped by the 1px overlap
+// above. Matches ToggleGroup and ButtonGroup.
+.ui-item-group > .ui-item {
+  position: relative;
+}
+
+.ui-item-group > .ui-item--interactive:hover:not(.ui-item--disabled),
+.ui-item-group > .ui-item:focus-visible,
+.ui-item-group > .ui-item:focus-within {
+  z-index: 1;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Header / Footer — full-width rows.
 // ─────────────────────────────────────────────────────────────────────────────
