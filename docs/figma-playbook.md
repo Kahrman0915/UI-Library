@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 22/57 done. Phase 1 COMPLETE. Phase 2: + Code, CloseButton, Avatar, AspectRatio, Blockquote. Next up: ScrollArea. Queue in the ledger.
+- **Status:** 23/57 done. Phase 1 COMPLETE. Phase 2: + Code, CloseButton, Avatar, AspectRatio, Blockquote, ScrollArea. Next up: Chip. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -369,7 +369,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **ScrollArea**).
+1. Read the ledger → next component in the phase queue (next up: **Chip**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).
