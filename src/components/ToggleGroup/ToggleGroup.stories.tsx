@@ -1,7 +1,7 @@
 import {
-  AlignLeft,
-  AlignCenter,
-  AlignRight,
+  TextAlignStart,
+  TextAlignCenter,
+  TextAlignEnd,
   Bold,
   Italic,
   Underline,
@@ -22,9 +22,9 @@ type Story = StoryObj<typeof ToggleGroup>;
 export const Single: Story = {
   render: () => (
     <ToggleGroup id="align" type="single" defaultValue="left" variant="outline">
-      <ToggleGroupItem value="left" IconCenter={AlignLeft} aria-label="Align left" />
-      <ToggleGroupItem value="center" IconCenter={AlignCenter} aria-label="Align center" />
-      <ToggleGroupItem value="right" IconCenter={AlignRight} aria-label="Align right" />
+      <ToggleGroupItem value="left" IconCenter={TextAlignStart} aria-label="Align left" />
+      <ToggleGroupItem value="center" IconCenter={TextAlignCenter} aria-label="Align center" />
+      <ToggleGroupItem value="right" IconCenter={TextAlignEnd} aria-label="Align right" />
     </ToggleGroup>
   ),
 };
@@ -58,9 +58,9 @@ export const Vertical: Story = {
       variant="outline"
       orientation="vertical"
     >
-      <ToggleGroupItem value="left" IconCenter={AlignLeft} aria-label="Align left" />
-      <ToggleGroupItem value="center" IconCenter={AlignCenter} aria-label="Align center" />
-      <ToggleGroupItem value="right" IconCenter={AlignRight} aria-label="Align right" />
+      <ToggleGroupItem value="left" IconCenter={TextAlignStart} aria-label="Align left" />
+      <ToggleGroupItem value="center" IconCenter={TextAlignCenter} aria-label="Align center" />
+      <ToggleGroupItem value="right" IconCenter={TextAlignEnd} aria-label="Align right" />
     </ToggleGroup>
   ),
 };
@@ -68,9 +68,9 @@ export const Vertical: Story = {
 export const Disabled: Story = {
   render: () => (
     <ToggleGroup id="dis" type="single" defaultValue="left" variant="outline" disabled>
-      <ToggleGroupItem value="left" IconCenter={AlignLeft} aria-label="Align left" />
-      <ToggleGroupItem value="center" IconCenter={AlignCenter} aria-label="Align center" />
-      <ToggleGroupItem value="right" IconCenter={AlignRight} aria-label="Align right" />
+      <ToggleGroupItem value="left" IconCenter={TextAlignStart} aria-label="Align left" />
+      <ToggleGroupItem value="center" IconCenter={TextAlignCenter} aria-label="Align center" />
+      <ToggleGroupItem value="right" IconCenter={TextAlignEnd} aria-label="Align right" />
     </ToggleGroup>
   ),
 };

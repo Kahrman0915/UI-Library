@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { CheckCircle2, Info, AlertTriangle, XCircle } from 'lucide-react';
+import { CircleCheck, Info, TriangleAlert, CircleX } from 'lucide-react';
 import Toaster from './Toaster';
 import { toast } from './toast';
 
@@ -83,7 +83,7 @@ export const Variants: Story = {
         <Btn
           onClick={() =>
             toast.success('Draft published.', {
-              Icon: CheckCircle2,
+              Icon: CircleCheck,
               description: '2 minutes ago · main',
             })
           }
@@ -103,7 +103,7 @@ export const Variants: Story = {
         <Btn
           onClick={() =>
             toast.warning('Usage at 92%.', {
-              Icon: AlertTriangle,
+              Icon: TriangleAlert,
               description: 'You are approaching the monthly quota.',
             })
           }
@@ -113,7 +113,7 @@ export const Variants: Story = {
         <Btn
           onClick={() =>
             toast.error('Failed to publish.', {
-              Icon: XCircle,
+              Icon: CircleX,
               description: 'Check the console for details.',
             })
           }
@@ -146,7 +146,7 @@ export const WithAction: Story = {
         <Btn
           onClick={() =>
             toast.warning('Delete this project?', {
-              Icon: AlertTriangle,
+              Icon: TriangleAlert,
               cancel: { label: 'Cancel' },
               action: {
                 label: 'Delete',

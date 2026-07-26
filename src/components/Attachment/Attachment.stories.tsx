@@ -4,9 +4,9 @@ import {
   Download,
   File,
   FileImage,
+  FilePlay,
   FileSpreadsheet,
   FileText,
-  FileVideo,
   X,
 } from 'lucide-react';
 import Attachment, {
@@ -251,7 +251,7 @@ export const Group: Story = {
       </Attachment>
       <Attachment size="sm">
         <AttachmentMedia variant="icon">
-          <FileVideo />
+          <FilePlay />
         </AttachmentMedia>
         <AttachmentContent>
           <AttachmentTitle>Demo.mp4</AttachmentTitle>
@@ -288,7 +288,7 @@ export const UploadingWithProgress: Story = {
       <div style={{ display: 'grid', gap: 'var(--p-4)', maxWidth: 420 }}>
         <Attachment state={state}>
           <AttachmentMedia variant="icon">
-            <FileVideo />
+            <FilePlay />
           </AttachmentMedia>
           <AttachmentContent>
             <AttachmentTitle>keynote-demo.mp4</AttachmentTitle>

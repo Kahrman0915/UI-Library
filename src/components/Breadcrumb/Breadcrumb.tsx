@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronRight, Ellipsis } from 'lucide-react';
 import type {
   BreadcrumbEllipsisProps,
   BreadcrumbItemProps,
@@ -140,7 +140,7 @@ const BreadcrumbEllipsis = forwardRef<HTMLSpanElement, BreadcrumbEllipsisProps>(
       aria-hidden="true"
       className={`ui-breadcrumb__ellipsis${className ? ' ' + className : ''}`}
     >
-      {children ?? <MoreHorizontal />}
+      {children ?? <Ellipsis />}
       <span className="ui-breadcrumb__sr-only">More</span>
     </span>
   ),

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import {
   Download,
-  FileJson,
+  FileBraces,
+  FileExclamationPoint,
   FileSpreadsheet,
   FileText,
-  FileWarning,
   Lock,
   RotateCw,
 } from 'lucide-react';
@@ -81,7 +81,7 @@ const TYPE_ICON: Record<Doc['type'], React.FC> = {
   csv: FileSpreadsheet,
   xlsx: FileSpreadsheet,
   pdf: FileText,
-  json: FileJson,
+  json: FileBraces,
 };
 
 const STATE = { ready: 'done', generating: 'processing', failed: 'error' } as const;
@@ -273,7 +273,7 @@ const AidenDocuments = () => {
                     <Empty>
                       <EmptyHeader>
                         <EmptyMedia variant="icon">
-                          <FileWarning />
+                          <FileExclamationPoint />
                         </EmptyMedia>
                         <EmptyTitle>No documents available</EmptyTitle>
                         <EmptyDescription>
