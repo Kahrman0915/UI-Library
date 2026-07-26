@@ -46,6 +46,30 @@
     }
   }
 
+  // --- Icon-only ---
+  // An IconCenter with no label. The base chip is justify-content: flex-start
+  // and padded for text, so without this the glyph sat off to one side in a
+  // pill-shaped box. Square it up and centre the icon.
+  &--icon-only {
+    justify-content: center;
+    padding: var(--p-1-5);
+
+    &.ui-chip--sz-xsmall {
+      width: var(--w-6);
+      height: var(--h-6);
+    }
+
+    &.ui-chip--sz-small {
+      width: var(--w-8);
+      height: var(--h-8);
+    }
+
+    &.ui-chip--sz-default {
+      width: var(--w-9);
+      height: var(--h-9);
+    }
+  }
+
   // --- Focus ---
   // Chip had no focus rule at all, so it fell back to the browser's default
   // outline instead of the system ring. Matches Checkbox / Switch.

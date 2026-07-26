@@ -20,13 +20,18 @@ const Chip = forwardRef<HTMLButtonElement, ChipProps>(
     },
     ref,
   ) => {
+    // Same rule as Toggle and ToggleGroup: an IconCenter with no label is an
+    // icon-only chip. Without this, IconCenter rendered in the same slot as
+    // IconLeft and was indistinguishable from it.
+    const iconOnly = !!IconCenter && label === undefined;
+
     return (
       <button
         {...rest}
         ref={ref}
         id={id}
         type="button"
-        className={`ui-chip ui-chip--sz-${size}${active ? ' ui-chip--active' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-chip ui-chip--sz-${size}${active ? ' ui-chip--active' : ''}${iconOnly ? ' ui-chip--icon-only' : ''}${className ? ' ' + className : ''}`}
         disabled={disabled}
         onClick={onClick}
         aria-pressed={active}
