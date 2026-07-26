@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 27/57 done. **Phases 1 and 2 COMPLETE.** Next up: **Card** — the first Phase 3 composite. Queue in the ledger.
+- **Status:** 28/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way. Next up: **Item**. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -359,6 +359,14 @@ Sweep the new page + set (skip nodes inside instances):
   as a free-floating pill). Read the real `borderRadius` per child out of the browser and match it literally. Where a run
   genuinely breaks — a full-width separator — nest the collapsed run inside a spacing-0 outer row instead of restarting
   the corner assignment.
+- **A clipping frame hides its own overflow from `absoluteBoundingBox`.** With `clipsContent: true` the reported box is
+  the *clipped* one, so a bounding-box check passes while content is visibly cut off — Card's 150px footer sliced the
+  "Cancel" button in half and the check said clean. Run a **content** check too: sum the children's sizes plus gaps and
+  padding, compare against the frame, and skip `layoutWrap === 'WRAP'` frames.
+- **`SPACE_BETWEEN` makes Figma ignore `itemSpacing`.** CSS applies `justify-content: space-between` *and* `gap`; Figma
+  drops the gap and lets a FILL child absorb it. Card's header handed its title 16px more width than the browser until
+  the align became `MIN` — the FILL child already grows, so `MIN` reproduces the CSS exactly. Any frame with both a FILL
+  child and SPACE_BETWEEN is worth checking against real measurements.
 - **`appendChild()` returns void, not the child.** `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws
   `cannot set property of null`, and since scripts are atomic that rolls back the entire page. Use a small
   `add(parent, node, fill)` helper that appends, optionally sets sizing, and *returns the node*.
@@ -387,7 +395,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Card**, first of Phase 3).
+1. Read the ledger → next component in the phase queue (next up: **Item**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).

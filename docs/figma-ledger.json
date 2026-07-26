@@ -149,7 +149,9 @@
     "layoutWrap='WRAP' can only be set AFTER layoutMode='HORIZONTAL'. Setting it on a frame that is still VERTICAL throws.",
     "The overflow check must be RECURSIVE. Comparing only the top-level frames' direct children passed clean while both example bars sat collapsed at 100px with their contents spilling — the bug was one level deeper. Walk every auto-layout frame against its own children (skipping layoutPositioning==='ABSOLUTE').",
     "Figma paints later siblings on top, exactly like the DOM — so a CSS z-index lift CANNOT be shown by applying a focus effect to a middle child. The neighbour that follows it covers the ring and the canvas silently documents the BUG rather than the fix. Draw the ring as an absolutely-positioned rect appended last instead.",
-    "When a code example puts several parts inside ONE container, model it in Figma as ONE run with corners assigned by GLOBAL position. Composing it from sub-groups restarts the first/last logic and produces rounded corners in the middle of a control: ButtonGroup's toolbar shipped with Copy rounded on its right and Paste rounded on both sides, and the 'Sort by' cell as a free-floating pill, because each sub-group thought it had its own first and last child. The CSS runs :not(:first-child)/:not(:last-child) across ALL the group's children — text cells and separators included. Read the real borderRadius per child out of the browser and match it literally. Where a run must break (a full-width separator), nest the collapsed run inside a spacing-0 outer row rather than restarting the corner logic."
+    "When a code example puts several parts inside ONE container, model it in Figma as ONE run with corners assigned by GLOBAL position. Composing it from sub-groups restarts the first/last logic and produces rounded corners in the middle of a control: ButtonGroup's toolbar shipped with Copy rounded on its right and Paste rounded on both sides, and the 'Sort by' cell as a free-floating pill, because each sub-group thought it had its own first and last child. The CSS runs :not(:first-child)/:not(:last-child) across ALL the group's children — text cells and separators included. Read the real borderRadius per child out of the browser and match it literally. Where a run must break (a full-width separator), nest the collapsed run inside a spacing-0 outer row rather than restarting the corner logic.",
+    "A frame with clipsContent:true HIDES its own overflow from absoluteBoundingBox — the box comes back clipped, so a bounding-box overflow check reports clean while content is visibly cut off (Card's 150px footer clipped its Cancel button). Add a CONTENT check alongside the box check: sum the children's widths/heights plus gaps and padding and compare against the frame, skipping layoutWrap==='WRAP' frames.",
+    "primaryAxisAlignItems='SPACE_BETWEEN' makes Figma IGNORE itemSpacing, so a FILL child absorbs the gap. CSS does not work that way — `justify-content: space-between` and `gap` both apply. Card's header gave its title 16px more width than the browser until the align was changed to MIN (the FILL child already grows, so MIN reproduces the CSS exactly). Whenever a frame has both a FILL child and SPACE_BETWEEN, check the numbers against the browser."
   ],
   "components": {
     "Button": {
@@ -688,15 +690,41 @@
         "On the solid default style the focus ring is --primary-focus — the fill colour at 40% alpha — so where it crosses a neighbouring solid button it is invisible even with the z-index lift. Fixing it means changing Button's focus token globally, not ButtonGroup. Ring reads fully only on transparent-fill styles.",
         "ButtonGroupSeparator exposes role=\"separator\" to AT; aria-hidden may be more honest where it is decorative."
       ]
+    },
+    "Card": {
+      "status": "done-v4",
+      "pageId": "364:45",
+      "setIds": [
+        "364:46",
+        "364:61",
+        "364:69",
+        "364:72"
+      ],
+      "frames": {
+        "overview": "364:78",
+        "spec": "365:83",
+        "examplesDocsHistory": "369:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — Card is neutral chrome; nothing in it reads --primary. Stated in TOKENS.",
+      "props": "NO variant axis. One assembled `Card` COMPONENT with TEXT props (Title, Description, Body) and BOOLEAN props (Show description, Show header action, Show footer), plus Card/Header, Card/Body and Card/Footer as standalone region specimens. `interactive` is modelled as code-only: it has NO resting appearance, only cursor + hover/focus, which are drawn in Spec.",
+      "version": "1.0 · 2026-07-26",
+      "newTextStyle": "base/leading-5/Semibold (16/20) — created for the card title; base/leading-normal is 24 and base/leading-none is 16.",
+      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring.",
+      "openQuestions": [
+        "CardHeader always renders an <h3>; the level is not configurable, so a card can produce a heading order that does not match its document position.",
+        "CardHeader generates `${id}-title` on its heading but nothing in the library references it — it exists for a consumer to point aria-labelledby at.",
+        "CardBody and CardFooter take no `id` prop, unlike Card and CardHeader — inconsistent with hard rule 6, probably deliberate since they are layout-only.",
+        "overflow:hidden clips any menu/popover/tooltip opened inside a card; those need a portal."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Card (Phase 3)",
+    "nextUp": "Item (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Card",
       "Item",
       "Attachment",
       "Collapsible",
@@ -731,7 +759,8 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below."
+    "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
+    "phase3Status": "IN PROGRESS — Card shipped; 12 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",
