@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 20/57 done. Phase 1 COMPLETE. Phase 2 (12/14): + Code, CloseButton, Avatar. Next up: AspectRatio. Queue in the ledger.
+- **Status:** 21/57 done. Phase 1 COMPLETE. Phase 2 (13/14): + Code, CloseButton, Avatar, AspectRatio. Next up: Blockquote. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -47,6 +47,18 @@ code — give each its own component set. Badge ships `variant` (12 status optio
 Flattening them into one 42-option dropdown would offer a designer choices that silently
 cancel each other out. Two sets (`Badge`, `Badge/Category`) make the fork explicit: pick
 the set that matches the job, then pick within it. Say which wins in the Overview.
+
+### Continuous props can't be a variant axis — say so
+
+`AspectRatio`'s `ratio` is a plain number, so every value is legal. Figma variants must be
+discrete, so the set ships six representative shapes and the **description states outright
+that they are a shortcut, not the API**. Without that line a designer reads six options as
+the entire surface. Same applies to any free-form numeric prop (Skeleton's width/height,
+Slider's min/max).
+
+Related: `node.targetAspectRatio` is **read-only to plugins**. Where the component's whole
+point is a constraint the API can't express, size the frames correctly and flag the manual
+UI toggle on the page — a stated manual step beats a silent gap.
 
 ### Compound families — model only what has visual decisions
 
@@ -357,7 +369,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **AspectRatio**).
+1. Read the ledger → next component in the phase queue (next up: **Blockquote**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).
