@@ -153,6 +153,33 @@ checkers get wrong — e.g. axe can't score the aiden gradient) → sep →
 VERSION HISTORY section + `_Doc/ChangelogRow` per edit (**append, never rewrite**;
 seed `1.0 · date · author · Initial doc page`).
 
+## Slots — for anything that is `React.ReactNode` in code
+
+If a layer's code counterpart accepts arbitrary children, model it as a **Figma slot**, not as baked-in
+content. A designer can then drop an Avatar, StatusDot or icon button straight in without detaching the
+whole component. Card's `ui-card__header-action`, `ui-card__body` and `ui-card__footer` are the reference.
+
+```js
+const key = master.addComponentProperty('ui-card__body', 'SLOT', '');
+node.componentPropertyReferences = { ...existingRefs, slotContentId: key };
+```
+
+**`slotContentId` is undocumented.** The official component-creation reference lists only
+`characters` / `visible` / `mainComponent`, and every plausible guess (`slot`, `slotContent`, `content`,
+`children`) is rejected as an unrecognized key. It was found by having the owner convert one layer in the
+Figma UI and reading back its `componentPropertyReferences` — worth remembering as a technique whenever an
+API looks unavailable.
+
+What the conversion does and does not preserve:
+
+- Converts the frame **in place** into a real `SLOT` node — same node id, and `figma.createSlot()` does not exist, so this is the only programmatic path.
+- **Keeps** default content, other property bindings (a `visible` boolean coexists fine), and layout sizing.
+- **Renames** the node to the property name — so name the property with the **BEM class** to keep layer names mapped to CSS.
+- `clone()` preserves slots, so a slotted master can seed variants.
+- Text properties inside a slot's default content keep working, so `Title` / `Body` can stay TEXT props alongside the slot.
+
+Slots are invisible to rendering — screenshots before and after are identical — and they do not affect the lint.
+
 ## `_Doc/*` masters (page `146:122`)
 
 | Master | ID | Notes |
