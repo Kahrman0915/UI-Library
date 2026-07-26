@@ -148,7 +148,8 @@
     "figma appendChild() returns VOID, not the appended child. `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws 'cannot set property of null' and — because scripts are atomic — rolls the whole page back. Use an add(parent,node,fill) helper that appends, optionally sets sizing, and returns the node.",
     "layoutWrap='WRAP' can only be set AFTER layoutMode='HORIZONTAL'. Setting it on a frame that is still VERTICAL throws.",
     "The overflow check must be RECURSIVE. Comparing only the top-level frames' direct children passed clean while both example bars sat collapsed at 100px with their contents spilling — the bug was one level deeper. Walk every auto-layout frame against its own children (skipping layoutPositioning==='ABSOLUTE').",
-    "Figma paints later siblings on top, exactly like the DOM — so a CSS z-index lift CANNOT be shown by applying a focus effect to a middle child. The neighbour that follows it covers the ring and the canvas silently documents the BUG rather than the fix. Draw the ring as an absolutely-positioned rect appended last instead."
+    "Figma paints later siblings on top, exactly like the DOM — so a CSS z-index lift CANNOT be shown by applying a focus effect to a middle child. The neighbour that follows it covers the ring and the canvas silently documents the BUG rather than the fix. Draw the ring as an absolutely-positioned rect appended last instead.",
+    "When a code example puts several parts inside ONE container, model it in Figma as ONE run with corners assigned by GLOBAL position. Composing it from sub-groups restarts the first/last logic and produces rounded corners in the middle of a control: ButtonGroup's toolbar shipped with Copy rounded on its right and Paste rounded on both sides, and the 'Sort by' cell as a free-floating pill, because each sub-group thought it had its own first and last child. The CSS runs :not(:first-child)/:not(:last-child) across ALL the group's children — text cells and separators included. Read the real borderRadius per child out of the browser and match it literally. Where a run must break (a full-width separator), nest the collapsed run inside a spacing-0 outer row rather than restarting the corner logic."
   ],
   "components": {
     "Button": {
@@ -679,7 +680,7 @@
       "themed": false,
       "themingFrame": "ABSENT — every token ButtonGroup itself reads is neutral (--border, --secondary). Stated in TOKENS. The colour in the examples belongs to the child Buttons, which do theme.",
       "props": "VARIANT Orientation (horizontal|vertical) = 2. Deliberately no Style/Size axis — those belong to the child Buttons, not the group.",
-      "version": "1.0 · 2026-07-26",
+      "version": "1.1 · 2026-07-26",
       "notes": "Three components, mirroring the three exports: ButtonGroup (2 variants), ButtonGroup/Separator (Orientation, 2) and ButtonGroup/Text (1). The root models ONLY orientation because that is its only prop — adding a style axis would have repeated Badge's variant/category mistake of offering choices the API does not have. Spec is 'anatomy x orientation' rather than 'matrix x states': the group is a div with role=group and has no states of its own, so the table breaks down seam treatment by position (first/middle/last), orientation, the two drawn parts, and the focus lift. Shipped WITH a code fix — see the ButtonGroup entry in git history.",
       "openQuestions": [
         "role=\"group\" has no accessible name and nothing enforces one; consumers must pass aria-label. Same gap as ToggleGroup.",

@@ -352,6 +352,13 @@ Sweep the new page + set (skip nodes inside instances):
   `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
   `cardWidth − padding` (a Props row with ~8+ pills always will).
   Same care for fixed-width table label columns: measure the longest string before sizing.
+- **Composite examples: one run, corners by GLOBAL position.** When the code puts several parts inside a single
+  container, the CSS runs `:not(:first-child)` / `:not(:last-child)` across *all* of them — text cells and separators
+  included. Building the example from sub-groups in Figma restarts that logic and yields rounded corners in the middle of
+  a control (ButtonGroup shipped with `Copy` rounded on its right, `Paste` rounded on both sides, and the `Sort by` cell
+  as a free-floating pill). Read the real `borderRadius` per child out of the browser and match it literally. Where a run
+  genuinely breaks — a full-width separator — nest the collapsed run inside a spacing-0 outer row instead of restarting
+  the corner assignment.
 - **`appendChild()` returns void, not the child.** `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws
   `cannot set property of null`, and since scripts are atomic that rolls back the entire page. Use a small
   `add(parent, node, fill)` helper that appends, optionally sets sizing, and *returns the node*.
