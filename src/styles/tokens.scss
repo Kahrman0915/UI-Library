@@ -231,10 +231,20 @@ html {
 
   /* -----------------------------------------------------------------------
      Custom — Icon
+     The RENDERED stroke width a lucide icon draws at 12 / 16 / 24px. lucide's
+     own stroke-width is 2 *viewBox units*, so it already scales with the icon
+     and these are the values that fall out: 2 x size / 24.
+
+     ⚠ Do NOT assign these to `stroke-width`. That property is in viewBox
+     units, so `stroke-width: var(--icon-border-width)` on a 16px icon renders
+     0.887px, not 1.33px — and on a 12px icon it rendered a 0.665px hairline.
+     Four components did exactly that until 2026-07-25. Leave stroke-width
+     unset and let lucide scale; these tokens exist to *document* the resulting
+     widths, and the Figma `icon/stroke-weight` modes alias them.
      ----------------------------------------------------------------------- */
-  --icon-border-width-sm: 1px;
-  --icon-border-width: 1.33px;
-  --icon-border-width-lg: 2px;
+  --icon-border-width-sm: 1px; /* at a 12px icon */
+  --icon-border-width: 1.33px; /* at a 16px icon */
+  --icon-border-width-lg: 2px; /* at a 24px icon */
 
   /* -----------------------------------------------------------------------
      Opacity Scale (for CSS opacity property)

@@ -33,6 +33,10 @@ HERE" note explaining that Chrome-on-Windows, Safari-on-macOS and the iOS wheel 
 differ, so mocking one would document a lie. A stated boundary is documentation; a
 plausible-looking mock is a bug waiting to be built.
 
+The owner can overrule this, and did once: the Code page carries highlighted CodeBlock mock-ups even though the library has no tokenizer, because the design need was real and the code decision was worth deferring. That is fine **when it is an explicit decision, labelled as such** — the frame has a `REQUIRES A TOKENIZER, NOT BUILT` separator and a note saying what a developer would actually get. What the rule forbids is the *unlabelled* mock that quietly implies a capability.
+
+The same rule has a constructive half: when a token family exists but nothing renders it, document it as a **reference**, not as a usage example. The Code page shows its 11 `--code-*` syntax tokens as swatches on the real `code/block` surface with their measured contrast — a designer can see and review the palette, but nobody can mistake it for a highlighter the library ships. A rendered example would have been the lie; a labelled swatch table is the documentation.
+
 ---
 
 ### Mutually exclusive props → separate sets, not one long axis
@@ -214,6 +218,78 @@ Sweep the new page + set (skip nodes inside instances):
   gets `--rounded-full`), so theme bindings and the aiden `flag/is-dark` overlay came across
   verbatim. Read the per-variant colour binding off the node you are about to delete and
   re-apply it to whatever replaces it (`label.boundVariables.fills[0].id` → the icon's stroke).
+- **Figma trims whitespace at the edges of a hugging TEXT node.** A line of code split
+  into per-token coloured spans inside a horizontal auto-layout renders as
+  `exportfunctionSidebar` — every trailing space is measured away. Use **non-breaking
+  spaces (U+00A0)** for every space inside multi-span text: identical width in a mono
+  face, never trimmed.
+- **Icon stroke weight does not scale on resize in Figma — but it does in the browser.**
+  SVG `stroke-width` is in viewBox units, so lucide's `2` renders 1.0px at 12px, 1.33px at
+  16px, 2.0px at 24px. Figma leaves it at a flat 2px, which is why a shrunk icon looks like
+  a blob. **Any icon placed below 24px needs its stroke set to `2 × size ÷ 24`.** Measure
+  the real value in the browser (`computedStrokeWidth × renderedSize ÷ viewBoxSize`) rather
+  than assuming. CloseButton is the carve-out — its CSS pins 1.33 units, so 0.665px at 12px.
+- **Icons do not auto-tint — by decision.** They arrive as `--foreground`; the designer
+  sets the colour after placing. Automatic per-variant tinting was attempted five ways and
+  abandoned (per-layer overrides reach only the default glyph's layers; a colour mode
+  collection needs 13 modes against Figma's cap of 10; stubs don't carry through a swap;
+  hand-merging geometry corrupted the library). Stroke **weight** is variable-driven and
+  does work.
+- **`figma.flatten()` merges vectors correctly; hand-concatenating `vectorPaths` does not.**
+  Path data lives in each node's own coordinate space, so concatenating discards every
+  other node's offset and collapses the glyph. This destroyed all 1,746 icons once.
+- **Verify a bulk geometry operation on ONE duplicate, with a screenshot, before running it
+  across a library.** After the bad merge every property read looked perfect — "1 path,
+  stroke kept, 24×24" — while every glyph was visually ruined. For geometry, pixels are the
+  only verification.
+- **The API can't reach instances nested inside component-set variants.** `findAll()`
+  returns 0 vectors for 238 of 240 slots that render fine on canvas; only the set's default
+  variant is readable. Apply nested styling at instance-creation time, before inserting.
+- **A per-layer override only reaches layers that exist on the DEFAULT swap target.** If a
+  swappable family has varying inner layer counts, an override applies *partially* — the
+  symptom is an icon rendering half in the host's colour and half in the library default.
+  Icons are therefore normalised to **one vector named `path-1`**, so a single override
+  covers the whole glyph. Merge geometry at the **node** level (concatenate `vectorPaths`
+  entries), never by string-joining path `d` data — that breaks any sub-path starting with
+  a relative moveto.
+- **A variable collection is capped at 10 modes.** Anything needing more distinct cascading
+  values can't use modes at all. Check the count first: an icon-colour collection needed 14
+  and was abandoned for the single-path approach above.
+- **An `INSTANCE_SWAP` property swap DISCARDS nested overrides.** Uniform layer names do
+  *not* save you — that only helps manual `swapComponent` in limited cases. Anything that
+  must survive a swap has to come from a **variable mode set on an ancestor**, because
+  modes cascade and are not overrides. Icon stroke weight works this way (collection
+  `Icon`, modes 24/20/16/14/12). **Always verify on a real placed-and-swapped instance,
+  never on the master** — the master can read perfectly while every real usage is wrong.
+- **Give a swappable family identical inner layer names.** `instance.swapComponent()`
+  discards overrides whose layer names don't match the new component, so every icon uses a
+  `glyph` group over `path-1`, `path-2`… Per-glyph names silently reset the stroke colour
+  and weight on every swap — which is exactly what a host component sets.
+- **Bulk assets go through `upload_assets`, never through the conversation.** The full
+  lucide set is ~353 KB of markup; pasting it into `use_figma` scripts would cost six
+  figures of tokens. Generate ONE SVG locally with each icon wrapped in
+  `<g id="{name}">` — Figma keeps the group id as the layer name, which is the whole
+  name mapping — then call `upload_assets`, `curl -F file=@… ;type=image/svg+xml` the
+  submitUrl, and convert the imported tree in place (~450 per script, ~85 ms each).
+  Imported SVG groups **hug their glyph bounds**, so wrap each in a 24×24 frame and set
+  the group's offset to `(group.xy − cellOrigin.xy)` to restore a uniform box.
+- **Icons come from `node_modules`, not from community files.** `🧩 Icons` (page
+  `275:32`) holds all 1,746 canonical lucide icons generated from
+  `lucide-react@1.24.0` — the same package the components import, so the set cannot
+  drift from what a developer can build. Aliases are excluded. Do **not** paste in another
+  library: anything outside lucide-react is unbuildable under hard rule #1, and MIT /
+  Apache-2.0 / paid sets all carry notices that must stay attached.
+- **Vector geometry cannot be overridden inside an instance.** Figma throws
+  `This property cannot be overridden in an instance` on `vectorPaths`. So a component
+  with a swappable glyph needs the icon to be an **instance of an icon component plus an
+  `INSTANCE_SWAP` property** — a drawn glyph locks every instance to it, which is what
+  briefly made `Button/Icon-only` useless. Colour and stroke weight *are* overridable;
+  geometry is not. Icon masters live on `_Template` as `_Icon/*` (24×24, stroke-width 2,
+  SCALE constraints).
+- **Set `layoutSizing*` AFTER parenting.** Sizing modes assigned before `appendChild` are
+  reset by the new parent's auto-layout. A card built with `primaryAxisSizingMode='AUTO'`
+  and then appended arrived stuck at its placeholder 10px height, with its children
+  spilling over the siblings below it.
 - **`use_figma` scripts are ATOMIC.** One thrown error rolls back *everything* the script
   did — including finished work on unrelated pages. A typo in a Separator helper wiped a
   completed Kbd page in the same call. **Build one component page per script.** Batch only

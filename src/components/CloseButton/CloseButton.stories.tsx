@@ -56,6 +56,32 @@ export const Variants: Story = {
   ),
 };
 
+/**
+ * `sm` (20px) suits a dense surface like a Toast, `default` (24px) a dialog or
+ * banner header, `lg` (32px) a touch-first layout. Every size keeps a pointer
+ * target of at least 24×24 — `sm`'s is expanded past its drawn box.
+ */
+export const Sizes: Story = {
+  render: (args) => (
+    <div style={{ display: 'flex', gap: 32, alignItems: 'center' }}>
+      {(['sm', 'default', 'lg'] as const).map((size) => (
+        <div key={size} style={{ display: 'grid', gap: 6, justifyItems: 'center' }}>
+          <CloseButton {...args} id={`close-${size}`} size={size} variant="background" />
+          <span
+            style={{
+              fontFamily: 'var(--font-family)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--muted-foreground)',
+            }}
+          >
+            {size}
+          </span>
+        </div>
+      ))}
+    </div>
+  ),
+};
+
 export const Disabled: Story = {
   args: { disabled: true },
 };

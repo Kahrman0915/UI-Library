@@ -28,7 +28,8 @@
     "template": "146:122",
     "parkedSets": "14:60",
     "archive": "144:180",
-    "aidenHandoff": "116:180"
+    "aidenHandoff": "116:180",
+    "icons": "275:32"
   },
   "docMasters": {
     "pageHeader": "146:134",
@@ -41,7 +42,8 @@
     "doDont": "146:154",
     "changelogRow": "146:160",
     "propRow": "164:451",
-    "cardStyleRef_doNotInstance": "157:276"
+    "cardStyleRef_doNotInstance": "157:276",
+    "iconsNote": "_Icon/{Plus,Copy,Check,Pencil,Trash,More,Send,Download} live on _Template — 24x24 lucide glyphs, stroke-width 2, SCALE constraints. Instance-swap targets for Button/Icon-only; stroke colour is overridden per instance to inherit the variant's text colour."
   },
   "sharedIds": {
     "shadowVar": "VariableID:145:122",
@@ -114,7 +116,27 @@
     "Component-SET wrappers need their padding and corner radius bound too — Figma gives new sets a default radius of 5, which the lint flags. Bind to spacing/* and radius/lg.",
     "_Doc/ChangelogRow's master had unbound 8px top/bottom padding (now bound to spacing/2). When the lint flags a _Doc instance, fix the MASTER — it clears every page at once, past and future.",
     "Re-applying a text style RESETS the properties it owns — setTextStyleIdAsync is the fix for an accidental detach, not just the initial assignment.",
-    "Cloning a variant (component.clone()) preserves EVERY binding — variable-bound fills/strokes/radii, effect styles, and boolean-bound child visibility. Button/Icon-only was built by cloning all 120 labelled variants and editing three things, which is far safer than rebuilding and is the right move whenever a new set is a systematic transform of an existing one. Read the per-variant colour binding off the node you are about to delete (the label) and re-apply it to its replacement."
+    "Cloning a variant (component.clone()) preserves EVERY binding — variable-bound fills/strokes/radii, effect styles, and boolean-bound child visibility. Button/Icon-only was built by cloning all 120 labelled variants and editing three things, which is far safer than rebuilding and is the right move whenever a new set is a systematic transform of an existing one. Read the per-variant colour binding off the node you are about to delete (the label) and re-apply it to its replacement.",
+    "Figma TRIMS whitespace at the edge of a TEXT node when it hugs, so a line of code split into per-token spans renders as 'exportfunctionSidebar'. Use non-breaking spaces (U+00A0) for every space inside multi-span text — same width in a mono face, never trimmed. Applies to any run of coloured spans laid out in a horizontal auto-layout.",
+    "Figma will NOT let you override vector geometry inside an instance ('This property cannot be overridden in an instance'). Any component with a swappable glyph therefore needs the icon to be an INSTANCE of an icon component plus an INSTANCE_SWAP property — a drawn glyph locks every instance to it. Colour and stroke weight ARE overridable; geometry is not.",
+    "Set layoutSizing AFTER parenting. Sizing modes assigned before appendChild get reset by the new parent's auto-layout — a card built with primaryAxisSizingMode='AUTO' then appended arrived stuck at its placeholder 10px height and its children spilled over the following siblings.",
+    "NEVER pipe bulk asset data through the conversation. 1,746 lucide icons are ~353 KB of markup; batching it through use_figma scripts would have cost six figures of tokens. Instead: generate ONE SVG locally with each icon wrapped in <g id='{name}'>, call upload_assets for a submitUrl, POST it with curl, then convert the imported tree in-place. Figma keeps the group ids as layer names, which is the whole mapping. Imported SVG groups hug their glyph bounds, so wrap each in a 24x24 frame and offset the group by (groupXY - cellXY) to restore a uniform box.",
+    "Third-party icon sets imported from Figma community files are a trap for THIS project: the library's first hard rule is that lucide-react is the only runtime dependency, so a Hugeicons/Phosphor/Tabler glyph in Figma is unbuildable. It is also a licensing hazard — MIT and Apache-2.0 both require the copyright notice to be retained, and paid tiers (Hugeicons Pro) and template vendors (shadcncraft) carry their own notices. Generate from node_modules instead; provenance and buildability come free.",
+    "Icon stroke weight does NOT scale when you resize an instance in Figma, but it DOES scale in the browser, because SVG stroke-width is in viewBox units. A 24px master at stroke 2 placed at 12px must be set to 1.0 by hand. Measure the real value in the browser (computedStrokeWidth x renderedSize / viewBoxSize) rather than assuming.",
+    "instance.swapComponent() DISCARDS overrides whose layer names don't match the new component. Give every member of a swappable family identical inner layer names, or every swap silently resets colour and stroke.",
+    "An INSTANCE_SWAP property swap DISCARDS nested overrides — uniform layer names do NOT save you (that only helps manual swapComponent in limited cases). Anything that must survive a swap has to come from a VARIABLE MODE set on an ancestor, because modes cascade and are not overrides. Verify on a real placed-and-swapped instance, never on the master: the master can look perfectly correct while every real usage is wrong.",
+    "Typing a raw value over a variable-bound property in the Figma UI silently DETACHES the binding. After any hand-edit to a variable-driven system, re-check bindings before assuming the system still holds — count bound vs unbound, don't eyeball.",
+    "Before inventing a Figma variable, check whether the number already exists as a token. icon/stroke-weight's 24/16/12 modes turned out to equal icon-border-width/lg, /default and /sm exactly, so they alias the Primitives rather than duplicating the values. Aliasing keeps one source of truth; duplicating creates two that drift.",
+    "Two ways to change a nested icon behave differently: the INSTANCE_SWAP property keeps the child's variable bindings, while selecting the nested instance and swapping it directly drops them. Test both paths — designers will use whichever the right-hand panel makes easiest.",
+    "Do not infer a mechanism's behaviour from nodes you have already mutated by another route. I concluded 'INSTANCE_SWAP discards overrides' from instances my own swapComponent() pass had broken, and reported a non-existent limitation. Reproduce on a FRESH instance created from the current master before naming a root cause.",
+    "A per-layer override only reaches layers present on the component's DEFAULT swap target. If a swappable family has varying inner layer counts, anything set as an override will be applied partially — the visible symptom is an icon rendering half in one colour and half in another. Normalise the family to a single, uniformly-named layer instead.",
+    "Merge vector geometry at the NODE level (concatenate vectorPaths entries), never by string-joining path `d` data. String-joining silently breaks any sub-path that begins with a relative moveto — it resolves against the previous path's endpoint instead of the origin. That corrupted 551 of 1,746 icons on an earlier attempt.",
+    "Figma caps a variable collection at 10 modes. Anything needing more distinct cascading values (13 icon colours here) cannot use the mode mechanism at all — check the count before designing around modes.",
+    "figma.flatten() merges vectors correctly (it respects each node's local transform); concatenating vectorPaths by hand does NOT — path data is in each node's own coordinate space, so merging discards every other node's offset and collapses the geometry. That corrupted all 1,746 icons and required a full rebuild from the source SVG. If a bulk geometry operation exists as a Figma built-in, use it.",
+    "Verify a destructive bulk operation on ONE duplicated node and screenshot it BEFORE running it across a library. Counts and property reads looked perfect after the bad merge ('1 path, stroke kept, 24x24') while every glyph was visually destroyed. Numbers are not verification for geometry — pixels are.",
+    "When a component's shape comes from a CHILD layer's radius, a stroke or ring applied to the ROOT will follow the root's (square) geometry instead. Mirror the radius onto every layer the CSS sets it on — Avatar's CSS applies it to both the root and the inner clip layer, and modelling only the inner produced square rings around circular avatars.",
+    "A pinned CSS stroke-width on an SVG icon is in VIEWBOX units, not rendered pixels — pinning '1.33px' on a 12px icon renders 0.665px. If a token's value is meant as a rendered width, it only matches at the size where viewBox and box coincide. Usually the right move is to NOT pin it and let lucide's own 2 units scale.",
+    "Check hit targets, not just visuals: measure getBoundingClientRect against WCAG 2.5.8's 24x24. A control can look right and be untappable. Where the drawn box must stay small, expand the target with a transparent ::after rather than resizing."
   ],
   "components": {
     "Button": {
@@ -136,11 +158,16 @@
       "defaultFamilyReboundToTheme": true,
       "aidenDarkOverlays": 8,
       "isLoadingProp": "isLoading#183:0 — BOOLEAN on the set; each of the 120 variants holds a Spinner instance named 'spinner' at child index 0, visible bound to the prop, Size tracking the button size (XSmall=12, Small/Default=16, Large=20) and stroke bound to the same variable as that variant's label.",
-      "version": "1.2 · 2026-07-25",
-      "setNote": "TWO sets: 76:300 'Button' (120 = Variant 6 × Style 5 × Size 4, + Label TEXT + isLoading BOOLEAN) and 260:1600 'Button/Icon-only' (the same 120 with the label suppressed). Separate sets, not a 4th axis: in code `iconOnly` makes the label unrenderable ({!iconOnly && label}), so they are mutually exclusive — same reasoning as Badge vs Badge/Category. Icon-only variants were CLONED from their labelled counterparts, so all fills/strokes/focus effects/theme bindings and the aiden flag/is-dark overlay carry over verbatim; only the label removal, squared padding (--p-1 xsmall, --p-2 else; icon 12/14/20/24px) and aiden's --rounded-full differ.",
+      "version": "1.7 · 2026-07-25",
+      "setNote": "TWO sets: 76:300 'Button' (120 = Variant 6 × Style 5 × Size 4, + Label TEXT + isLoading BOOLEAN) and 260:1600 'Button/Icon-only' (the same 120 with the label suppressed). Separate sets, not a 4th axis: in code `iconOnly` makes the label unrenderable ({!iconOnly && label}), so they are mutually exclusive — same reasoning as Badge vs Badge/Category. Icon-only variants were CLONED from their labelled counterparts, so all fills/strokes/focus effects/theme bindings and the aiden flag/is-dark overlay carry over verbatim; only the label removal, squared padding (--p-1 xsmall, --p-2 else; icon 12/14/20/24px) and aiden's --rounded-full differ. The icon-only set carries an INSTANCE_SWAP property `Icon` pointing at the _Icon/* components on _Template (Plus, Copy, Check, Pencil, Trash, More, Send, Download). That slot is REQUIRED, not decoration: Figma forbids overriding vector geometry inside an instance, so a drawn glyph would have locked every instance to the placeholder. Examples frame now shows icon-only in three contexts (card header actions, toolbar, aiden send) in light and dark.",
       "resolved": [
-        "The Figma Button set modelled no iconOnly / icon slot, so components composing an icon-only Button (CodeBlock copy, ChatComposerSend) had nothing faithful to instance. Closed 2026-07-25 with the Button/Icon-only set. Also bound the Button set wrapper's padding/radius (previously raw 32px / 5px default) and fixed a 17px overflow — the page is now all-zeros on lint."
-      ]
+        "The Figma Button set modelled no iconOnly / icon slot, so components composing an icon-only Button (CodeBlock copy, ChatComposerSend) had nothing faithful to instance. Closed 2026-07-25 with the Button/Icon-only set. Also bound the Button set wrapper's padding/radius (previously raw 32px / 5px default) and fixed a 17px overflow — the page is now all-zeros on lint.",
+        "Button/Icon-only initially shipped with a drawn placeholder glyph, which made it nearly useless — instances could not change the icon. Reworked 2026-07-25: each variant's icon is now an instance of an _Icon/* component bound to an INSTANCE_SWAP property.",
+        "The 8 hand-drawn _Icon/* placeholders were replaced 2026-07-25 by the real lucide library: all 120 variants' icon instances swapped, the INSTANCE_SWAP default repointed to Icon/plus, 18 example instances remapped to their canonical equivalents (Trash->trash-2, More->ellipsis, Send->arrow-up), and the temporaries deleted.",
+        "Icon-only buttons rendered a flat 2px stroke at every size, which reads as a blob at 12-14px. Fixed 2026-07-25: each variant's icon vectors now carry 2 x size / 24 (XSmall 1.0, Small 1.167, Default 1.667, Large 2.0), matching the browser. Stroke colour bindings were also restored — swapComponent had discarded them.",
+        "Leading and trailing icon slots added 2026-07-25 to all 120 labelled variants — a boolean plus an instance-swap each. A LABELLED button's icon sizes are --w-3/-3-5/-4/-5 (12/14/16/20), which differ from icon-only's 12/14/20/24; each variant sets the matching Icon-collection mode so stroke weight stays right and survives a glyph swap."
+      ],
+      "props": "Button (76:300): VARIANT Variant x Style x Size + TEXT Label + BOOLEAN isLoading + BOOLEAN 'Leading icon' / INSTANCE_SWAP 'Leading glyph' + BOOLEAN 'Trailing icon' / INSTANCE_SWAP 'Trailing glyph' (mirror IconLeft / IconRight in code; both off by default). Button/Icon-only (260:1600): same variants + INSTANCE_SWAP Icon."
     },
     "Spinner": {
       "status": "done-v4",
@@ -452,19 +479,20 @@
       "themed": false,
       "themingFrame": "ABSENT — neutral in every brand. Code should not change colour with the sub-brand.",
       "props": "Code: TEXT Label. CodeBlock: VARIANT Header (3) + TEXT Filename + TEXT Code.",
-      "version": "1.1 · 2026-07-25",
-      "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers (now at least AA-gated) — a palette pre-picked for a highlighter we do not have.",
+      "version": "1.4 · 2026-07-25",
+      "notes": "The Header axis mirrors real CSS behaviour: with no filename the header switches to justify-content: flex-end (hence the 'copy' variant pushes the button right), and with showCopy=false and no filename there is no header element at all. Documents the deliberate no-syntax-highlighting decision AND that 11 --code-* syntax tokens already exist in tokens.scss (mirrored to Figma as code/*) with zero consumers (now at least AA-gated) — a palette pre-picked for a highlighter we do not have. The Overview carries a syntax-palette REFERENCE (node 265:53) — 11 swatches rendered in mono on the real code/block surface, light and dark side by side, each labelled with its measured contrast. Deliberately a swatch table, NOT a highlighted CodeBlock instance: rendering one would document a capability the library does not have (same rule as NativeSelect's undrawn open state). It also makes both remaining judgment calls visible — attr-vs-number now separate in both modes, selector sharing string's hue obviously enough to read as intended. OWNER DECISION 2026-07-25: the Overview also carries two HIGHLIGHTED MOCK-UPS (node 267:57) — a .tsx and a .scss block, light and dark, between them exercising all 11 code/* tokens with every span bound to its variable. These are NOT CodeBlock instances and the component cannot render them; the owner accepted that designers may build with them and chose to defer the code decision (add a tokenizer dependency vs keep flat rendering) until something actually needs it. The labelled separator and the note directly beneath say so explicitly. Layer names mirror the real component so the intent transfers if it is ever built. This is a deliberate, owner-approved exception to the 'don't draw what isn't ours' rule — do not silently delete it, and do not treat it as licence to mock other unbuilt behaviour.",
       "figmaDivergence": "Inline chip vertical padding is 0.1em in CSS (em-relative, ~1.3px at --text-code); Figma variables cannot express em, so it is bound to spacing/0-5 (2px). Stated on the Avatar Overview note covering both divergences.",
       "resolved": [
         "The scrollable <pre> had overflow-x: auto with no tabindex, making overflowed code unreachable by keyboard (WCAG 2.1.1 / axe scrollable-region-focusable). Fixed 2026-07-25: tabIndex={0} plus an inset --focus ring in Code.scss. No ARIA role added, so it stays announced as preformatted text.",
-        "The 11 --code-* syntax tokens were an exact Tailwind 500/600 mapping that had never been contrast-checked; the script confirmed 10 of 11 below AA in light (2.22-4.29). Fixed 2026-07-25: light values darkened to Tailwind 600/700 (comment uses a derived slate #5e6d7d — the lightest that clears AA, so it stays recessive against --code-variable), and dark --code-attr moved orange-400 → amber-300 to break a collision with --code-number that existed in dark only. All 11 now gated in scripts/contrast-check.mjs (49 pairings, 0 below AA). Figma code/* variables synced. STILL A JUDGMENT CALL, deliberately left alone: --code-selector shares --code-string's hue in both modes (consistent, so it reads as intentional), and in dark --code-type (cyan-400) sits close to --code-function (sky-400)."
+        "The 11 --code-* syntax tokens were an exact Tailwind 500/600 mapping that had never been contrast-checked; the script confirmed 10 of 11 below AA in light (2.22-4.29). Fixed 2026-07-25: light values darkened to Tailwind 600/700 (comment uses a derived slate #5e6d7d — the lightest that clears AA, so it stays recessive against --code-variable), and dark --code-attr moved orange-400 → amber-300 to break a collision with --code-number that existed in dark only. All 11 now gated in scripts/contrast-check.mjs (49 pairings, 0 below AA). Figma code/* variables synced. STILL A JUDGMENT CALL, deliberately left alone: --code-selector shares --code-string's hue in both modes (consistent, so it reads as intentional), and in dark --code-type (cyan-400) sits close to --code-function (sky-400).",
+        "The Overview composition note claimed the Figma Button set did not model iconOnly. Stale once Button/Icon-only shipped; corrected 2026-07-25. It now states that the copy control corresponds to Variant=Default/Style=Ghost/Size=XSmall/Icon=Copy and explains why it is still DRAWN rather than instanced inside the CodeBlock variants — the 2-second copied→check glyph swap would otherwise need a CodeBlock variant axis for a transient state no consumer controls."
       ]
     },
     "CloseButton": {
       "status": "done-v4",
       "pageId": "253:32",
       "setIds": [
-        "253:43"
+        "325:259"
       ],
       "frames": {
         "overview": "253:44",
@@ -473,9 +501,12 @@
       },
       "themed": false,
       "themingFrame": "ABSENT — a dismissal is never the themed action on a surface.",
-      "props": "VARIANT Variant (default|background). No size axis — there is exactly one size.",
-      "version": "1.0 · 2026-07-25",
-      "notes": "The two variants are pixel-identical at rest and differ ONLY on hover (default shifts icon colour; background additionally fills --accent), which is why they are variants rather than separate components — the Spec matrix is built to make that the visible conclusion. Two a11y guarantees are designed in rather than documented around: the native aria-label is Omit-ed and replaced by an ariaLabel prop defaulting to 'Close' (so it can never ship nameless), and type='button' is hard-coded (so it can never submit a form). Focus is a box-shadow, not an outline, because the button is round and transparent."
+      "props": "VARIANT Variant (default|background) × Size (sm|default|lg) = 6.",
+      "version": "1.1 · 2026-07-25",
+      "notes": "The two variants are pixel-identical at rest and differ ONLY on hover (default shifts icon colour; background additionally fills --accent), which is why they are variants rather than separate components — the Spec matrix is built to make that the visible conclusion. Two a11y guarantees are designed in rather than documented around: the native aria-label is Omit-ed and replaced by an ariaLabel prop defaulting to 'Close' (so it can never ship nameless), and type='button' is hard-coded (so it can never submit a form). Focus is a box-shadow, not an outline, because the button is round and transparent.",
+      "resolved": [
+        "Three defects fixed in code and mirrored 2026-07-25. (1) The hit target was 16x16, failing WCAG 2.5.8's 24x24 minimum on the library's most-tapped control; a transparent ::after now widens the pointer target without changing what is drawn. (2) stroke-width was pinned to --icon-border-width (1.33 VIEWBOX units), which halved to a 0.665px hairline at a 12px icon — the thinnest stroke in the library; removing the pin lets lucide's own width scale (1.0/1.33/1.67px), and at a 16px icon that lands on exactly 1.33px, so the token's VALUE was right and only the mechanism was wrong. (3) No size prop, leaving it the last interactive holdout of 26 components that have one — same reasoning that added size to Checkbox and RadioGroup in July. Toast keeps its density with size='sm' (that surface is why the small box existed); Dialog, Drawer, Alert and Banner move to default, whose X grows from a 12px icon in a 16px box to 16px in 24px."
+      ]
     },
     "Avatar": {
       "status": "done-v4",
@@ -493,14 +524,16 @@
       "themed": false,
       "themingFrame": "ABSENT — a person's avatar is not a brand accent.",
       "props": "Avatar: VARIANT Size × Shape + BOOLEAN Image + BOOLEAN Badge + TEXT Fallback. AvatarGroup: VARIANT Spacing (3).",
-      "version": "1.1 · 2026-07-25",
+      "version": "1.2 · 2026-07-25",
       "notes": "The fallback is ALWAYS mounted at z-0 under the image rather than swapped in on error, so a slow image shows initials then resolves and a broken one shows initials permanently — no flash of empty space either way. The badge lives OUTSIDE __inner because __inner owns overflow:hidden to clip the image to the shape; a badge inside it would lose the half that overhangs. Modeled the image as a gradient placeholder rect (no asset uploads). Page updated to v1.1 after both defects were fixed in code — the Spec note now documents the resolution, not a reproduction.",
       "figmaDivergence": "Initials carry --tracking-wide (0.025em) in code but plain tracking in Figma — pinning letterSpacing detaches textStyleId and 0.35px on two letters did not justify three new Semibold-Wide styles. Noted on the Overview frame.",
       "resolved": [
         "AvatarGroup spacing ramp was non-monotonic (sm -8 / default -12 / lg -4). Fixed 2026-07-25 by reassigning the same three values in order: sm -12 / default -8 / lg -4. `spacing` names the visual gap, which runs inversely to the overlap. Groups that never set spacing loosen from -12 to -8, since default was the value out of place.",
         "AvatarGroup `size` reached only the +N chip. Fixed 2026-07-25: the group now cloneElement's direct Avatar children that have no explicit size. Guarded on `child.type === Avatar` so a wrapping element (Tooltip, link) never receives `size` as an unknown prop; an explicit child size still wins.",
-        "Stories added: GroupSpacing + GroupSizeInheritance — the absence of these is why both survived."
-      ]
+        "Stories added: GroupSpacing + GroupSizeInheritance — the absence of these is why both survived.",
+        "AvatarGroup rendered flat-sided notches where avatars overlapped. Cause: the group's separating ring was applied to the instance ROOT, which had radius 0 — the circular shape lived only on ui-avatar__inner — so a 3px SQUARE ring was drawn around a circular avatar and its straight edge cut into the neighbour. Fixed 2026-07-25 by binding the root's radius per shape (circle -> radius/full, square -> radius/md), which also closes a fidelity gap: the CSS applies the radius to BOTH .ui-avatar and .ui-avatar__inner, and only the inner had been modelled."
+      ],
+      "note": "At Spacing=sm (-12px on a 40px avatar) the next circle clips part of the previous one's initials. That is faithful to the CSS, not a modelling error — worth knowing when choosing a spacing for two-letter fallbacks."
     }
   },
   "queue": {
@@ -558,5 +591,25 @@
     "Banner": "15:90",
     "Alert": "16:97",
     "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding."
+  },
+  "iconLibrary": {
+    "page": "275:32",
+    "grid": "282:34",
+    "card": "284:32",
+    "count": 1746,
+    "source": "Generated from node_modules/lucide-react@1.24.0 in this repo — the SAME package the components import at runtime, so the Figma set cannot drift from what the code can render. Regenerate after a lucide upgrade; never hand-add icons.",
+    "naming": "Icon/{kebab} exactly as lucide names them (Figma 'circle-alert' = React CircleAlert).",
+    "geometry": "24x24 masters at stroke-width 2 (lucide's native geometry). CRITICAL: lucide's stroke-width is in VIEWBOX units, so in the browser it scales with the icon — 12px renders 1.0px, 14px 1.167px, 16px 1.33px, 20px 1.667px, 24px 2.0px (measured in Storybook, not derived). Figma does NOT scale stroke on resize, so any instance placed below 24px must have its stroke set to 2 x size / 24 or it looks like a blob. Button/Icon-only carries the correct value per size. CloseButton is the carve-out: its CSS pins stroke-width to --icon-border-width (1.33 units) so at 12px it renders 0.665px.",
+    "colour": "Stroke bound to color/foreground; a host component (Button, Alert) overrides it, mirroring `color: inherit` in CSS. 25 icons have FILLED shapes (chart-scatter dots etc.) — those fills are bound too.",
+    "aliases": "249 lucide aliases (alert-circle -> circle-alert, home -> house) deliberately EXCLUDED — duplicate geometry under an old name, and two identical entries in a swap list is worse than one findable one.",
+    "licence": "Lucide is ISC. The notice lives in node_modules/lucide-react/LICENSE; each component description records its lucide name and licence.",
+    "pipeline": "Do NOT paste icon data through the conversation — 353 KB of markup. Generate one SVG with each icon in <g id='{name}'> (the id becomes the Figma layer name), upload via the upload_assets tool + curl, then convert the imported groups to 24x24 components in chunks of ~450 (about 85ms each).",
+    "layerNaming": "Every icon's inner layers are uniform — a 'glyph' group over 'path-1', 'path-2', … — and this is load-bearing, not tidiness. Figma matches instance overrides BY LAYER NAME, so uniform names are what let a swapped icon keep the stroke colour and weight its host component set. Per-glyph names ('plus-1') silently reset both on every swap.",
+    "strokeWeightMechanism": "Collection 'Icon' (VariableCollectionId:291:32), modes 24/20/16/14/12, variable icon/stroke-weight. lucide's stroke-width is in VIEWBOX units, so the rendered value is 2 x size / 24. At 24/16/12 that lands exactly on the existing Primitives tokens, so those three modes ALIAS them: 24 -> icon-border-width/lg (2), 16 -> icon-border-width/default (1.33), 12 -> icon-border-width/sm (1). Modes 20 (1.667) and 14 (1.167) are intermediates of the same ratio with no token of their own — the code expresses this as a ratio, not a set of constants, so inventing tokens for them would be backwards. All ~6,971 icon vectors bind strokeWeight to the variable; each Button/Icon-only variant sets its size mode; the Icons page grid is pinned to mode 16 so the library displays at 1.33, the system's most common icon weight.",
+    "warning": "NEVER type a raw stroke weight on an icon in the Figma UI — it DETACHES the variable binding. That happened on 2026-07-25 (all 6,971 vectors detached to a flat 1.33) and had to be rebound. Change the MODE, not the value.",
+    "swapGuidance": "Change a glyph via the component's Icon / Leading glyph / Trailing glyph PROPERTY, not by selecting the nested icon layer and swapping it in the right panel. Both keep the 24x24 sizing, but a direct layer swap DROPS the strokeWeight variable binding (verified 2026-07-25), so the icon silently stops tracking the size mode.",
+    "colourDurability": "RESOLVED / was a mis-diagnosis. I previously recorded that an INSTANCE_SWAP discards the icon's stroke colour. Re-tested 2026-07-25 on Default/Default/Default, Error/Ghost/Small and Aiden/Default/Default, for both the icon-only set and the labelled Button's leading slot: swapping via the PROPERTY preserves the bound stroke colour AND the bound stroke weight in every case. The broken instances I originally measured had been damaged by my own swapComponent() rewire step, not by the property mechanism — I diagnosed the mechanism from wreckage I had created. The real, still-true caveat is narrower: swapping the nested icon LAYER directly (right panel, with the layer selected) drops the strokeWeight binding. Use the property.",
+    "colourModel": "OWNER DECISION 2026-07-25: icons do NOT auto-tint. They arrive as --foreground and the designer sets the colour after placing. Automatic per-variant tinting was attempted five ways and abandoned: (1) per-layer stroke overrides — only reach layers present on the DEFAULT swap target, so a richer glyph rendered half-tinted; (2) a variable-mode colour collection — Figma caps a collection at 10 modes and 13 icon colours are needed; (3) empty path-2 stubs so an override had somewhere to land — verified not to carry through a swap; (4) manual vectorPaths concatenation to force one path — CORRUPTED all 1,746 icons (see lesson) and forced a full rebuild; (5) figma.flatten + re-sync — geometry survived but the nested instances inside component-set variants became unreadable to the API. Stroke WEIGHT is unaffected and remains variable-driven and correct.",
+    "apiCaveat": "The plugin API cannot reliably read or write the subtree of an instance nested inside a COMPONENT-SET VARIANT — findAll() returns 0 vectors for 238 of 240 slots even though they render correctly on canvas. Only the set's DEFAULT variant is reachable. Page-level instances are fully reachable. Any per-variant nested styling must therefore be applied at instance-creation time, before the instance is inserted into the variant."
   }
 }
