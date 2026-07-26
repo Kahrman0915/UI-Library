@@ -144,7 +144,11 @@
     "Hiding a native scrollbar transfers all of its accessibility to you. ScrollArea set scrollbar-width:none and drew its own thumb, which meant the missing tabIndex had no fallback at all — and its hover-reveal could never trigger for keyboard users because :focus-within had nothing to match. If a component takes over a native affordance, audit what the browser was doing for free before shipping it.",
     "An audit note is only as good as its list. CLAUDE.md claimed component SCSS was fully tokenized and enumerated what had been checked (durations, easings, border-widths, focus-rings). Opacity was not on that list and five raw literals were sitting in four components with --o-* already defined. Enumerate token CATEGORIES from tokens.scss and grep for a raw literal of each, rather than trusting a prose summary.",
     "When two components share an interaction shape and differ only in emphasis (Chip vs Toggle: both aria-pressed, one brand one neutral), the doc page's job is the DECISION RULE, not the pixel diff. 'Does the on-state change what data is shown, or how a tool behaves?' is what a designer actually needs; a side-by-side of the two fills is not.",
-    "RESOLVED 2026-07-26 — the repo was importing 13 DEPRECATED lucide aliases, which the Figma icon set (built from canonical names only) does not contain, so a designer searching the swap list for 'align-left' found nothing. Detection is mechanical, not guesswork: in lucide-react/dist/esm/icons an ALIAS module is a bare `export { default } from './canonical.mjs'` re-export, while a canonical module calls createLucideIcon. Migrated all 13: AlignLeft->TextAlignStart, AlignCenter->TextAlignCenter, AlignRight->TextAlignEnd, AlertCircle->CircleAlert, AlertTriangle->TriangleAlert, XCircle->CircleX, CheckCircle2->CircleCheck, MoreHorizontal->Ellipsis, FileVideo->FilePlay, FileWarning->FileExclamationPoint, FileJson->FileBraces, BarChart3->ChartColumn, Home->House. Two were in SHIPPED source (Breadcrumb.tsx, Pagination.tsx), the rest in stories/prototypes. Re-run the alias check after any lucide upgrade — today's canonical name is tomorrow's alias."
+    "RESOLVED 2026-07-26 — the repo was importing 13 DEPRECATED lucide aliases, which the Figma icon set (built from canonical names only) does not contain, so a designer searching the swap list for 'align-left' found nothing. Detection is mechanical, not guesswork: in lucide-react/dist/esm/icons an ALIAS module is a bare `export { default } from './canonical.mjs'` re-export, while a canonical module calls createLucideIcon. Migrated all 13: AlignLeft->TextAlignStart, AlignCenter->TextAlignCenter, AlignRight->TextAlignEnd, AlertCircle->CircleAlert, AlertTriangle->TriangleAlert, XCircle->CircleX, CheckCircle2->CircleCheck, MoreHorizontal->Ellipsis, FileVideo->FilePlay, FileWarning->FileExclamationPoint, FileJson->FileBraces, BarChart3->ChartColumn, Home->House. Two were in SHIPPED source (Breadcrumb.tsx, Pagination.tsx), the rest in stories/prototypes. Re-run the alias check after any lucide upgrade — today's canonical name is tomorrow's alias.",
+    "figma appendChild() returns VOID, not the appended child. `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws 'cannot set property of null' and — because scripts are atomic — rolls the whole page back. Use an add(parent,node,fill) helper that appends, optionally sets sizing, and returns the node.",
+    "layoutWrap='WRAP' can only be set AFTER layoutMode='HORIZONTAL'. Setting it on a frame that is still VERTICAL throws.",
+    "The overflow check must be RECURSIVE. Comparing only the top-level frames' direct children passed clean while both example bars sat collapsed at 100px with their contents spilling — the bug was one level deeper. Walk every auto-layout frame against its own children (skipping layoutPositioning==='ABSOLUTE').",
+    "Figma paints later siblings on top, exactly like the DOM — so a CSS z-index lift CANNOT be shown by applying a focus effect to a middle child. The neighbour that follows it covers the ring and the canvas silently documents the BUG rather than the fix. Draw the ring as an absolutely-positioned rect appended last instead."
   ],
   "components": {
     "Button": {
@@ -658,15 +662,38 @@
         "The group has no accessible name. role=\"group\" with no aria-label announces just 'group'. Unlike the item-level name (now type-enforced), nothing requires this. Could default one, or require aria-label on the root.",
         "type=\"single\" deselect passes an EMPTY STRING, not undefined — onValueChange is typed (value: string) => void and the code sends `next ?? ''`. Consumers must treat '' as 'nothing selected'."
       ]
+    },
+    "ButtonGroup": {
+      "status": "done-v4",
+      "pageId": "353:44",
+      "setIds": [
+        "353:61",
+        "353:64",
+        "353:65"
+      ],
+      "frames": {
+        "overview": "353:68",
+        "spec": "353:121",
+        "examplesDocsHistory": "355:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — every token ButtonGroup itself reads is neutral (--border, --secondary). Stated in TOKENS. The colour in the examples belongs to the child Buttons, which do theme.",
+      "props": "VARIANT Orientation (horizontal|vertical) = 2. Deliberately no Style/Size axis — those belong to the child Buttons, not the group.",
+      "version": "1.0 · 2026-07-26",
+      "notes": "Three components, mirroring the three exports: ButtonGroup (2 variants), ButtonGroup/Separator (Orientation, 2) and ButtonGroup/Text (1). The root models ONLY orientation because that is its only prop — adding a style axis would have repeated Badge's variant/category mistake of offering choices the API does not have. Spec is 'anatomy x orientation' rather than 'matrix x states': the group is a div with role=group and has no states of its own, so the table breaks down seam treatment by position (first/middle/last), orientation, the two drawn parts, and the focus lift. Shipped WITH a code fix — see the ButtonGroup entry in git history.",
+      "openQuestions": [
+        "role=\"group\" has no accessible name and nothing enforces one; consumers must pass aria-label. Same gap as ToggleGroup.",
+        "ButtonGroupText is a <div>, not a <label>, so a visible 'Sort by' cell is not programmatically tied to the buttons.",
+        "On the solid default style the focus ring is --primary-focus — the fill colour at 40% alpha — so where it crosses a neighbouring solid button it is invisible even with the z-index lift. Fixing it means changing Button's focus token globally, not ButtonGroup. Ring reads fully only on transparent-fill styles.",
+        "ButtonGroupSeparator exposes role=\"separator\" to AT; aria-hidden may be more honest where it is decorative."
+      ]
     }
   },
   "queue": {
-    "nextUp": "ButtonGroup",
+    "nextUp": "Card (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
-    "phase2": [
-      "ButtonGroup"
-    ],
+    "phase2": [],
     "phase3": [
       "Card",
       "Item",
@@ -703,7 +730,7 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — remaining: ButtonGroup (last of Phase 2)."
+    "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below."
   },
   "migrateExisting": {
     "Banner": "15:90",

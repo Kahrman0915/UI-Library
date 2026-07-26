@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 26/57 done. Phase 1 COMPLETE. Phase 2: + Code, CloseButton, Avatar, AspectRatio, Blockquote, ScrollArea, Chip, Toggle, ToggleGroup. Next up: ButtonGroup (last of Phase 2). Queue in the ledger.
+- **Status:** 27/57 done. **Phases 1 and 2 COMPLETE.** Next up: **Card** — the first Phase 3 composite. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -352,6 +352,17 @@ Sweep the new page + set (skip nodes inside instances):
   `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
   `cardWidth − padding` (a Props row with ~8+ pills always will).
   Same care for fixed-width table label columns: measure the longest string before sizing.
+- **`appendChild()` returns void, not the child.** `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws
+  `cannot set property of null`, and since scripts are atomic that rolls back the entire page. Use a small
+  `add(parent, node, fill)` helper that appends, optionally sets sizing, and *returns the node*.
+- **`layoutWrap='WRAP'` must be set AFTER `layoutMode='HORIZONTAL'`** — setting it while the frame is still vertical throws.
+- **Check overflow RECURSIVELY, not just at the top level.** Comparing only each page-frame's direct children reported
+  clean while both example bars sat collapsed at 100px with their contents spilling out — the failure was a level deeper
+  (a horizontal bar left at `counterAxisSizingMode='FIXED'`, which freezes *height*). Walk every auto-layout frame against
+  its own children, skipping `layoutPositioning==='ABSOLUTE'`.
+- **Figma paints later siblings on top, exactly like the DOM — so you cannot demonstrate a CSS `z-index` lift by putting a
+  focus effect on a middle child.** The neighbour that follows it covers the ring, and the canvas ends up documenting the
+  *bug* rather than the fix. Draw the ring as an absolutely-positioned rect appended last. ButtonGroup's Spec does this.
 - **Instances can't `appendChild`** — masters pre-provision max children; instances
   hide extras (`visible=false`).
 - **`createAutoLayout` defaults `clipsContent=true`** — unclip rows/cells or focus
@@ -369,7 +380,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **ButtonGroup**).
+1. Read the ledger → next component in the phase queue (next up: **Card**, first of Phase 3).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).
