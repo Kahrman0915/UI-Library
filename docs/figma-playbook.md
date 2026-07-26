@@ -188,6 +188,29 @@ InputGroup, Attachment — and of those only **InputGroup** had shipped, so that
 (its icon-only button glyph). Item, Field and Attachment are still queued and get slots natively. The
 simpler shipped atoms keep their baked content **deliberately** — don't sweep them.
 
+### Name your slots after real props — don't slot a whole region
+
+A slot can quietly outrun the code. Exposing an entire region as one free slot lets a designer compose
+things the component has no prop for: Card's header has no leading position at all, so a featured icon was
+undrawable in code while being trivial in Figma. That is the "plausible-looking mock is a bug waiting to be
+built" failure in a new costume.
+
+Prefer **named slots that map 1:1 to a real prop** (`ui-card__header-media` ← `media`,
+`ui-card__header-action` ← `action`). If the design need is genuine, **add the prop to the code first and
+mirror it** — that is exactly how `CardHeader`'s `media` came about.
+
+Slots also take `preferredValues` *and* a `description`:
+
+```js
+comp.editComponentProperty(slotKey, {
+  preferredValues: [{type:'COMPONENT_SET', key: badgeKey}, {type:'COMPONENT', key: iconKey}],
+  description: 'Pinned right of the title — a status Badge, a Chip, an icon button.',
+});
+```
+
+They are suggestions at the top of the picker rather than a whitelist, so listing a handful costs nothing
+and steers the designer toward the components that actually belong there.
+
 ### Slot vs TEXT vs INSTANCE_SWAP
 
 Reach for a slot when the code prop is `React.ReactNode` *and* the content is genuinely open — an avatar,
