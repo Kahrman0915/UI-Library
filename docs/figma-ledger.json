@@ -142,7 +142,8 @@
     "When a prop is CONTINUOUS (a number) rather than a union, a Figma variant axis cannot be faithful. Model representative values and say plainly in the set description that they are a shortcut, not the API — otherwise a designer reads six options as the whole surface.",
     "Use neutral, invented placeholder copy in design-system demos — not real people's quotations or names. A component library's demo content gets copied into product mockups, and a real attribution reads as endorsement. Blockquote's first draft used a real person's aphorism; replaced with invented copy and a fictional reviewer.",
     "Hiding a native scrollbar transfers all of its accessibility to you. ScrollArea set scrollbar-width:none and drew its own thumb, which meant the missing tabIndex had no fallback at all — and its hover-reveal could never trigger for keyboard users because :focus-within had nothing to match. If a component takes over a native affordance, audit what the browser was doing for free before shipping it.",
-    "An audit note is only as good as its list. CLAUDE.md claimed component SCSS was fully tokenized and enumerated what had been checked (durations, easings, border-widths, focus-rings). Opacity was not on that list and five raw literals were sitting in four components with --o-* already defined. Enumerate token CATEGORIES from tokens.scss and grep for a raw literal of each, rather than trusting a prose summary."
+    "An audit note is only as good as its list. CLAUDE.md claimed component SCSS was fully tokenized and enumerated what had been checked (durations, easings, border-widths, focus-rings). Opacity was not on that list and five raw literals were sitting in four components with --o-* already defined. Enumerate token CATEGORIES from tokens.scss and grep for a raw literal of each, rather than trusting a prose summary.",
+    "When two components share an interaction shape and differ only in emphasis (Chip vs Toggle: both aria-pressed, one brand one neutral), the doc page's job is the DECISION RULE, not the pixel diff. 'Does the on-state change what data is shown, or how a tool behaves?' is what a designer actually needs; a side-by-side of the two fills is not."
   ],
   "components": {
     "Button": {
@@ -616,14 +617,31 @@
         "IconCenter is in ChipProps but does nothing distinct: the JSX renders {IconLeft}{IconCenter}{label}{IconRight}, so it occupies the same slot as IconLeft. With a label present the two are identical; without one it produces the same icon-only chip IconLeft would. Chip has no `iconOnly` switch (unlike Button) to suppress the label, and the container is justify-content: flex-start so nothing ever centres. Either wire it to suppress+centre like Button, or remove it — removing is breaking. Documented on the Overview as an alias for now.",
         "An icon-only Chip has NO accessible name. `aria-label` is an optional prop with no fallback, so <Chip IconLeft={X} /> announces only 'button, not pressed'. CloseButton solves the identical problem by defaulting ariaLabel to 'Close'. Consider the same default, or requiring aria-label when no label is passed (a discriminated union would enforce it)."
       ]
+    },
+    "Toggle": {
+      "status": "done-v4",
+      "pageId": "338:44",
+      "setIds": [
+        "338:117"
+      ],
+      "frames": {
+        "overview": "339:44",
+        "spec": "339:154",
+        "examplesDocsHistory": "339:655"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT and DELIBERATE — pressed fills neutral --accent, never --primary. A toolbar is a row of toggles and a screen has one primary action; if Bold/Italic/Underline all lit up in the brand colour they would out-shout the CTA beside them. Same reasoning as the ghost-button carve-out. Chip is the component that DOES take the brand when pressed.",
+      "props": "VARIANT Variant (default|outline) × Size (sm|default|lg) × Pressed (false|true) = 12, + BOOLEAN Icon + INSTANCE_SWAP Glyph + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Chip-vs-Toggle is the decision this page exists to settle: does the on-state change WHAT DATA is shown (Chip, brand fill) or HOW A TOOL BEHAVES (Toggle, neutral fill)? ToggleGroup does not re-implement any of this — its items reuse .ui-toggle and collapse shared borders ButtonGroup-style, so changing Toggle changes the segmented control. Controlled/uncontrolled boundary is `pressed !== undefined`, so pressed={false} is controlled but omitting it is not — a computed prop that flips to undefined silently hands control back.",
+      "openQuestion": "⚠ Hover and pressed resolve to the SAME fill (--accent), so an unpressed toggle under the cursor looks identical to a pressed one at rest. In a toolbar this reads fine because the pointer is over only one item and the rest show true state; a LONE borderless toggle is genuinely ambiguous. Documented on the Spec frame with the outline variant recommended as the mitigation. Not changed — distinguishing them would mean a new hover token or a pressed treatment beyond fill, which is a system decision."
     }
   },
   "queue": {
-    "nextUp": "Toggle",
+    "nextUp": "ToggleGroup",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [
-      "Toggle",
       "ToggleGroup",
       "ButtonGroup"
     ],
@@ -663,7 +681,7 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — remaining: Toggle, ToggleGroup, ButtonGroup."
+    "phase2Status": "IN PROGRESS — remaining: ToggleGroup, ButtonGroup."
   },
   "migrateExisting": {
     "Banner": "15:90",
