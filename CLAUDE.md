@@ -348,6 +348,11 @@ If any of the greps produces output that doesn't fit the "allowed" list, you've 
 
 ## Design decisions the user has made — do not relitigate
 
+- **Choosing between `Select` / `NativeSelect` / `Combobox` (they look identical when closed — pick by behavior, not looks).** A static mockup can't tell them apart; the choice is a behavior decision:
+  - **`NativeSelect`** — the default. Reach for it first for short, simple option lists (≤ ~7), especially on mobile. Renders the OS-native `<select>` (native scroll wheel, best a11y, cheapest). No custom item rendering, no search.
+  - **`Select`** — the styled floating listbox. Use it when you need rich items (icons, descriptions, groups, separators) or pixel-consistent styling across platforms. No built-in search.
+  - **`Combobox`** — the only one with a **search field**. Use it when the list is long (timezones, countries, users) or the user should filter by typing.
+  - Rule of thumb: **NativeSelect first → Select for rich items → Combobox for long/searchable lists.** (Surfaced by the Settings handoff test-drive: all three render as an identical bordered field + chevron, so a design can only communicate the pick via the layer name — which is the argument for composing real component instances in designs, not hand-drawn boxes.)
 - **Vanilla CSS + React only.** No Tailwind. No Radix. No cva. No Framer Motion. No floating-ui. No CSS-in-JS. If the user's asked for a feature that would need one of these, offer them the trade-off explicitly (like Tooltip exit-animation interruption) and let them decide — don't silently reach for the dep.
 - **BEM `ui-*` prefix.** Not per-component (`.button-*`), not per-product (`.foo-button`), not CSS Modules. This was renamed once already; don't reintroduce old names.
 - **Product brand codes are 2 letters.** `db`, `dc`, `dr`, `ec`, `ir`, `nb`, `ph`, `rm`. Do not expand these codes to full product names — those were replaced during the codebase rename.
