@@ -1360,23 +1360,47 @@
       "props": "DirectionProvider — dir ('ltr' | 'rtl') on a display:contents wrapper; useDirection() — reads the current Direction from context. No visual props, no variants.",
       "version": "1.0 · 2026-07-27",
       "notes": "CONCEPT PAGE — Direction has NO visual atom (it renders a display:contents <div dir> and shares direction via context), so there is NO component set / no component master on the page. Adapted the 3-frame template: Overview (mechanism + API + an inline LTR/RTL search-field teaser) · Mirroring (the 'Spec' slot — a field / nav-item / toggle mini-UI hand-arranged in both directions to show the rendered DOM, since Figma has NO live RTL auto-layout) · Guidance·Docs·History (a mirrors-vs-doesn't two-column, do/dont, a11y, changelog). The LTR/RTL illustration is built from token-bound primitives (icons + text + frames), NOT instances — acceptable here because there's no atom to instance and Figma can't auto-mirror real component instances anyway; RTL rows reverse child order, right-align text, and swap chevron-right->chevron-left. Lint all-zeros (no COMPONENT to describe), no overflow, index 125:497 linked."
+    },
+    "Sidebar": {
+      "status": "done-v4",
+      "pageId": "627:44",
+      "componentIds": {
+        "panel": "628:62",
+        "menuButton": "627:99",
+        "subButton": "627:104",
+        "groupLabel": "627:105",
+        "separator": "627:107"
+      },
+      "setIds": [
+        "627:99",
+        "627:104"
+      ],
+      "frames": {
+        "overview": "630:114",
+        "spec": "631:237",
+        "examplesDocsHistory": "632:323"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — own --sidebar-* surface (neutral chrome, like Tooltip); NOT remapped by data-theme.",
+      "props": "Instanceable atoms: Sidebar/MenuButton — VARIANT State (default|active|outline) × Size (sm|default|lg) + TEXT Label + TEXT Badge + BOOL Show badge + BOOL Show icon. Sidebar/MenuSubButton — VARIANT State (default|active) + TEXT Label. Sidebar/GroupLabel (TEXT). Sidebar/Separator. Sidebar/Panel — an assembled 256px panel (header brand+search, grouped content menus + sub-menu + badge, footer user row). The subsystem (24 exports: Provider/useSidebar/Trigger/Rail/Inset/Input/Header/Footer/Content/Group/GroupLabel/GroupAction/GroupContent/Menu/MenuItem/MenuButton/MenuAction/MenuBadge/MenuSkeleton/MenuSub/MenuSubItem/MenuSubButton/Separator) with side/variant/collapsible props, the ⌘B toggle, localStorage persistence, the gap+fixed-container collapse, and the <768px Drawer swap are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Largest atom-based page so far. NO code change. Own --sidebar-* palette (7:36-7:43): sidebar 7:36, -foreground 7:37, -primary 7:38, -primary-foreground 7:39, -accent 7:40, -accent-foreground 7:41, -border 7:42, -ring 7:43. Built 4 atom masters + an assembled Sidebar/Panel component (composes the atoms + brand/search/user primitives; nested 'icon' instances swapComponent-ed per row for variety, stroke rebound to --sidebar-foreground/-accent-foreground after swap). Panel initially clipped at fixed height 600 -> switched inner + content to primaryAxisSizingMode AUTO so it hugs (689). Overview: hero panel on a stage + masters nested under SOURCE. Spec: menu states/sizes on --sidebar cards (light + dark via Mode 2:2->2:1) + an icon-rail collapse illustration + collapse/variant pills. Examples: a full app-shell (Panel + inset topbar/stat-cards/content) in light + dark. GOTCHA (again): the app-shell frames froze to 10px tall because resize(880,10) freezes BOTH axes — fixed by re-asserting counterAxisSizingMode='AUTO' AFTER resize (they then hug the 689 panel). Icons: house/inbox/calendar/frame/bot/square-terminal/settings/user/ellipsis/search/panel-left. Lint all-zeros, no overflow, index 125:502 linked."
     }
   },
   "queue": {
-    "nextUp": "Sidebar (Phase 5)",
+    "nextUp": "Chat (Phase 5 — the final component)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [],
     "phase5": [
-      "Sidebar",
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
     "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
-    "phase5Status": "IN PROGRESS — ModeToggler + Direction shipped. Next: Sidebar (large app-sidebar subsystem, ~21 parts), then the Chat family (largest, last)."
+    "phase5Status": "IN PROGRESS — ModeToggler + Direction + Sidebar shipped. Only Chat remains — the largest family (Astryx AI chat, ~40 parts). It is the FINAL component of the whole push."
   },
   "iconLibrary": {
     "page": "275:32",
