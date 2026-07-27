@@ -180,7 +180,8 @@
     "A Figma SLOT whose default content is MULTIPLE loose nodes is unswappable: hiding one default child re-renders the slot and invalidates the OTHER defaults' node refs, so the next .visible read throws 'node not found' — even iterating slot.children with .find throws on the stale node. Two rules: (1) give a swappable slot a SINGLE wrapper frame as its default content, not loose siblings; (2) hide that wrapper BEFORE appending the replacement (a ref grabbed before an append goes stale after it). Dialog/Field slots worked only because each had exactly one default child.",
     "Command page: setProperties on a standalone COMPONENT (not just a set) still needs the FULL property key with the #id suffix (e.g. 'Label#588:24'), not the bare name — the bare name throws 'Could not find a component property'. Variant props use the bare axis name ('State'); TEXT/BOOL props always use name#id.",
     "Toast page: composing real component INSTANCES inside a new atom is the cleanest path for cards that wrap other components (Button/CloseButton/Progress). Instances are skipped by lint. To customize a nested composed component (e.g. a Button's label, or swap an icon), reach into the OUTER instance with findOne by the layer name you set at build time and setProperties/swapComponent on it — the wrapping atom need not re-expose every inner prop. After swapComponent on an icon, re-bind its stroke to the desired color var (the swap discards the binding).",
-    "Atom master components must live NESTED inside a page frame (the convention: an 'Overview > … > parts' frame), NOT as loose top-level canvas components. Building a master with figma.createComponent()/combineAsVariants() places it at the page root; if you then only instance it in the frames, the master itself is left stranded on the canvas (looks like stray orphan components far below). Fix: append the master(s) into a labeled 'parts' frame inside the Overview. Instances elsewhere stay valid — an instance references its master by id regardless of where the master lives. (Hit on Command + Toast; caught by visual review of the page canvas, not by lint.)"
+    "Atom master components must live NESTED inside a page frame (the convention: an 'Overview > … > parts' frame), NOT as loose top-level canvas components. Building a master with figma.createComponent()/combineAsVariants() places it at the page root; if you then only instance it in the frames, the master itself is left stranded on the canvas (looks like stray orphan components far below). Fix: append the master(s) into a labeled 'parts' frame inside the Overview. Instances elsewhere stay valid — an instance references its master by id regardless of where the master lives. (Hit on Command + Toast; caught by visual review of the page canvas, not by lint.)",
+    "Provider/hook components with no visual atom (Direction; later maybe others) get a CONCEPT page, not a component-set page: keep the 3-frame shape but swap the middle 'Spec' for a mechanism/behaviour demo, and DROP the 'component master' section (there's nothing to nest). Figma has NO live RTL auto-layout — to illustrate dir='rtl' you hand-arrange token-bound primitives (reverse child order, text-align right, swap directional icons); caption it as 'the rendered DOM' so it's clearly an illustration, not a live mirror."
   ],
   "components": {
     "Button": {
@@ -1343,24 +1344,39 @@
       "props": "Instanceable. ModeToggler set — VARIANT Variant (default|outline|ghost) × Size (sm|default|lg) × Mode (light|dark) = 18. default = --secondary fill (hover --muted); outline = --border (hover --accent); ghost = transparent (hover --accent). Size scales padding + icon (16/20/24). Mode drives which icon shows (sun light / moon dark). id/variant/size/mode/defaultMode/onModeChange/storageKey/disableAnimation are the code props; the localStorage persistence, MutationObserver sync, and startViewTransition circular reveal are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "FIRST Phase 5 page. NO code change. The one component that owns the html data-mode attribute; an icon-only role=switch. Modeled as a full 3×3×2 variant set (Variant×Size×Mode) — Mode is a variant axis (not a boolean) so the sun/moon icon is baked per variant, not toggled. GOTCHA: the Mode axis value is the STRING 'light'/'dark'; passing the JS boolean from a grid(dark) helper throws 'Unable to find a variant' (convert first). Set reflowed to HORIZONTAL layoutWrap so the 18 variants tile (default combineAsVariants is a 1-col strip). Overview: light/dark demo trios (dark trio via setExplicitVariableModeForCollection Mode 2:2->2:1) + the master nested under a SOURCE section. Spec: a 3-variant×3-size grid in light (sun) and dark (moon) side by side. Examples: an app-header bar (title + ghost toggler) in light and dark showing the icon follow the mode. Icons Sun 312:20798 / Moon 312:19868. Lint all-zeros, no overflow, index 125:492 linked."
+    },
+    "Direction": {
+      "status": "done-v4",
+      "pageId": "622:44",
+      "componentIds": {},
+      "setIds": [],
+      "frames": {
+        "overview": "622:45",
+        "mirroring": "623:76",
+        "guidanceDocsHistory": "624:96"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — structural provider, no color of its own.",
+      "props": "DirectionProvider — dir ('ltr' | 'rtl') on a display:contents wrapper; useDirection() — reads the current Direction from context. No visual props, no variants.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "CONCEPT PAGE — Direction has NO visual atom (it renders a display:contents <div dir> and shares direction via context), so there is NO component set / no component master on the page. Adapted the 3-frame template: Overview (mechanism + API + an inline LTR/RTL search-field teaser) · Mirroring (the 'Spec' slot — a field / nav-item / toggle mini-UI hand-arranged in both directions to show the rendered DOM, since Figma has NO live RTL auto-layout) · Guidance·Docs·History (a mirrors-vs-doesn't two-column, do/dont, a11y, changelog). The LTR/RTL illustration is built from token-bound primitives (icons + text + frames), NOT instances — acceptable here because there's no atom to instance and Figma can't auto-mirror real component instances anyway; RTL rows reverse child order, right-align text, and swap chevron-right->chevron-left. Lint all-zeros (no COMPONENT to describe), no overflow, index 125:497 linked."
     }
   },
   "queue": {
-    "nextUp": "Direction (Phase 5)",
+    "nextUp": "Sidebar (Phase 5)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [],
     "phase5": [
-      "Direction",
       "Sidebar",
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
     "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
-    "phase5Status": "IN PROGRESS — ModeToggler shipped. Next: Direction (RTL/LTR provider — likely a concept/usage page since it renders no visible chrome of its own), then Sidebar, then the Chat family (largest, last)."
+    "phase5Status": "IN PROGRESS — ModeToggler + Direction shipped. Next: Sidebar (large app-sidebar subsystem, ~21 parts), then the Chat family (largest, last)."
   },
   "iconLibrary": {
     "page": "275:32",
