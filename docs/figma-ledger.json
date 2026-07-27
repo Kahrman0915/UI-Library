@@ -178,7 +178,8 @@
     "A rotated node's .x/.y is NOT its visual top-left — Figma's rotation origin shifts it, so positioning a rotated shape (a tooltip/popover arrow) by x/y math lands it wrong (the tooltip top arrow ended ~4px inside the bubble and was invisible). Position it in two passes: set an approximate x/y, read the node's absoluteBoundingBox to get its TRUE rendered center, then add (targetCenter - currentCenter) to x/y. Use a plain square (cornerRadius 0) for the arrow — a same-colour diamond centered on the bubble edge reads as a clean triangle; a rounded corner makes it a pentagon. Applies to every Overlay arrow ahead (Popover / HoverCard / DropdownMenu / Select / Combobox).",
     "resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — this has now bitten on Field, Dialog panels AND the Dialog scrim stage. Standing rule: after ANY resize() on an auto-layout node, re-assert the axis that should hug (primaryAxisSizingMode/counterAxisSizingMode='AUTO'); better, avoid resize entirely — append the frame to its parent, then set layoutSizingHorizontal='FILL' (or a width via the parent) and the hug axis to AUTO. A frozen axis shows as a 10px-tall strip with content spilling.",
     "A Figma SLOT whose default content is MULTIPLE loose nodes is unswappable: hiding one default child re-renders the slot and invalidates the OTHER defaults' node refs, so the next .visible read throws 'node not found' — even iterating slot.children with .find throws on the stale node. Two rules: (1) give a swappable slot a SINGLE wrapper frame as its default content, not loose siblings; (2) hide that wrapper BEFORE appending the replacement (a ref grabbed before an append goes stale after it). Dialog/Field slots worked only because each had exactly one default child.",
-    "Command page: setProperties on a standalone COMPONENT (not just a set) still needs the FULL property key with the #id suffix (e.g. 'Label#588:24'), not the bare name — the bare name throws 'Could not find a component property'. Variant props use the bare axis name ('State'); TEXT/BOOL props always use name#id."
+    "Command page: setProperties on a standalone COMPONENT (not just a set) still needs the FULL property key with the #id suffix (e.g. 'Label#588:24'), not the bare name — the bare name throws 'Could not find a component property'. Variant props use the bare axis name ('State'); TEXT/BOOL props always use name#id.",
+    "Toast page: composing real component INSTANCES inside a new atom is the cleanest path for cards that wrap other components (Button/CloseButton/Progress). Instances are skipped by lint. To customize a nested composed component (e.g. a Button's label, or swap an icon), reach into the OUTER instance with findOne by the layer name you set at build time and setProperties/swapComponent on it — the wrapping atom need not re-expose every inner prop. After swapComponent on an icon, re-bind its stroke to the desired color var (the swap discards the binding)."
   ],
   "components": {
     "Button": {
@@ -1301,17 +1302,35 @@
       "props": "Instanceable. Command/Item — VARIANT State (default|active|disabled|error|error-active) + TEXT Label + TEXT Shortcut (mono) + BOOL Show icon + BOOL Show shortcut. Command/Heading — group label (uppercase, xs medium, muted). Command/Separator — 1px hairline. Command/Empty — no-results text. Command/Palette — a --popover surface: a search Input row (search icon + query) over a scrollable List (compose Heading / Item / Separator / Empty inside). CommandDialog wrapping, filtering, keyboard nav and aria-activedescendant are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "Twelfth Overlays page — the LAST Phase 4 item before Toast. The 4th (final) menu-item styling copy, per the standing policy (DropdownMenu / ContextMenu / Select / Command). NO code change. It is a ⌘K command palette: a search row on top, a grouped/scrollable command list, mono ⌘ shortcuts right-aligned, and an error item variant (--error text / --error-light active). Overview renders the palette on a bg-overlay scrim to show the classic CommandDialog top-anchored ⌘K feel (plain NONE-layout stage, palette placed absolutely + centered). Spec shows all five item states in light + dark side-by-side on a --popover surface (dark card via setExplicitVariableModeForCollection Mode 2:2 -> Dark 2:1). Examples build fresh palettes from the atoms (not palette instances) to show live filtering: query 'cal' -> RESULTS(Calendar active, Calculator); query 'xyzzy' -> Empty. The example search-input text is --foreground when a query is present, --muted-foreground when it is the placeholder. shadow-lg via the 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:474 linked."
+    },
+    "Toast": {
+      "status": "done-v4",
+      "pageId": "601:44",
+      "componentIds": {
+        "card": "601:257"
+      },
+      "setIds": [
+        "601:257"
+      ],
+      "frames": {
+        "overview": "602:111",
+        "spec": "603:190",
+        "examplesDocsHistory": "604:338"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — semantic-variant surface (--popover) recolored by info/success/warning/error tokens; no --primary. The action Button inside DOES theme (it's a real Button instance), but the toast chrome itself is neutral/semantic.",
+      "props": "Instanceable atom is Toast/Card — VARIANT Variant (default|info|success|warning|error) + TEXT Title + TEXT Description + BOOL Show icon / Show description / Show actions / Show progress. Composes real Button (xsmall: outline cancel + solid action), CloseButton (top-right, absolute) and Progress (sm, revealed by Show progress). The imperative API — <Toaster position|visibleToasts|gap|duration> + toast(title,{variant,description,action,cancel,duration,progress,Icon,id,onDismiss}) and toast.success/info/warning/error/loading/promise/dismiss — is code-only (stacking, timers, dedupe-by-id).",
+      "version": "1.0 · 2026-07-27",
+      "notes": "FINAL Phase 4 (Overlays) page — Phase 4 COMPLETE. Toast is imperative (render <Toaster/> once, call toast() anywhere), so the Figma atom is the CARD, not a compound tree. NO code change. Composition-forward: the card set composes real Button/CloseButton/Progress INSTANCES (Button set 76:300, CloseButton 325:259, Progress 435:90) — instances are lint-skipped and give free fidelity/theming. Five semantic variants recolor border + icon + title only; surface stays --popover; error/warning are aria-live=assertive. Overview renders a corner Toaster stack on a dark backdrop (bottom-right feel). Spec = 5 variants light+dark (dark col via setExplicitVariableModeForCollection Mode 2:2->2:1) + anatomy + the 6 positions. Examples: success+Undo, a LOADING toast (nested 'icon' instance swapComponent-ed to Icon/loader-circle 312:19640, stroke rebound to --muted after swap), and a determinate progress toast (Show progress reveals the Progress instance). Custom action labels (Undo/Retry/Dismiss) set by reaching into the card instance's 'actions' frame and setting the nested Button Label#79:0 — the card set does NOT expose action labels as its own props. shadow-lg via 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:479 linked."
     }
   },
   "queue": {
-    "nextUp": "Toast (Phase 4 — Overlays; completes the phase)",
+    "nextUp": "ModeToggler (Phase 5)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
-    "phase4": [
-      "Toast"
-    ],
+    "phase4": [],
     "phase5": [
       "ModeToggler",
       "Direction",
@@ -1320,7 +1339,8 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip through Command shipped (12 overlays). Toast is the FINAL Phase 4 item; after it Phase 4 (Overlays) is COMPLETE and Phase 5 begins (ModeToggler, Direction, Sidebar, Chat)."
+    "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
+    "phase5Status": "NOT STARTED — the final phase. ModeToggler next, then Direction, Sidebar, and the Chat family (largest, last)."
   },
   "iconLibrary": {
     "page": "275:32",
