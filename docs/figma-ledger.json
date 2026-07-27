@@ -1092,16 +1092,35 @@
       "props": "PRESET of Dialog — no new component. Every instance on the page is a Dialog (503:150) instance with Show close=false (the visual signature of an alert dialog). Carve-outs vs Dialog: role='alertdialog', closeOnOutsideClick=false, showCloseButton=false. AlertDialog's own props are just open/onClose/inline; it drops closeOnOutsideClick/role/showCloseButton.",
       "version": "1.0 · 2026-07-27",
       "notes": "Third Overlays page and the FIRST preset page — reuses the Dialog panel master wholesale (like Menubar reused DropdownMenu), matching the code where AlertDialog renders a <Dialog role='alertdialog' closeOnOutsideClick={false}> with showCloseButton={false}. Deliberately did NOT mint a second master. Spec is a Dialog-vs-AlertDialog comparison (X present vs absent, outside-click vs none); Overview + examples are Dialog instances with Show close off + destructive footer overrides (Variant=Error). Anatomy/tokens/sizes are intentionally NOT duplicated — the page points to Dialog for those. Lint all-zeros, no overflow, index 125:429 linked."
+    },
+    "Drawer": {
+      "status": "done-v4",
+      "pageId": "514:44",
+      "componentIds": {
+        "drawer": "514:236"
+      },
+      "setIds": [
+        "514:236"
+      ],
+      "frames": {
+        "overview": "515:90",
+        "spec": "516:147",
+        "examplesDocsHistory": "518:361"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral card chrome, no --primary. Panel --card, scrim --bg-overlay, footer --bg-input-50; all mode-aware, never themed. Footer CTA is a Button, which themes on its own.",
+      "props": "Instanceable edge panel: Drawer — VARIANT Side (right|left|top|bottom) + TEXT Title/Description + BOOL Show description/Show close/Show footer + SLOT Body. Header composes CloseButton (background); footer bakes Reset (outline) + Apply (default) Buttons, overridable. right/left variants are 360x460 (cap --max-w-sm), top/bottom 640x260 (cap 85vh); border on the INNER edge; --shadow-lg. side/open/onClose/closeOnOutsideClick are code-only; the slide-in/out animation isn't drawable.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Fourth Overlays page. NO code change. Nearly Dialog's structure (header/body-slot/footer, same CloseButton + Button, same bg-input-50 footer) but EDGE-pinned: per-side interior border via strokeTop/Bottom/Left/RightWeight, --shadow-lg (vs Dialog --shadow-xs), no radius, and 4 Side variants with two shape archetypes. Reuses Dialog's portal/focus-trap/scroll-lock and Tooltip's closed->open->closing exit machine IN CODE (documented, not drawable). Demos use the edge-anchor stage: a --background frame with faint --secondary page-bars, a --bg-overlay scrim, and the drawer anchored flush to its edge (absolute). Spec/example drawer INSTANCES are resize()'d to fit compact stages (instances resize fine; the body's layoutGrow=1 keeps header/footer pinned). Body SLOT swaps to a real Input for the filters example. Hit the resize()-freezes-both-axes gotcha again on the panel masters (wanted fixed W+H anyway, so fine). Lint all-zeros (after binding the decorative page-bar radii), no overflow, index 125:434 linked."
     }
   },
   "queue": {
-    "nextUp": "Drawer (Phase 4 — Overlays)",
+    "nextUp": "Popover (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Drawer",
       "Popover",
       "HoverCard",
       "DropdownMenu",
@@ -1120,7 +1139,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog shipped. Drawer next (edge panel; reuses Dialog portal + Tooltip exit state machine in code)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer shipped. Popover next (computePosition floating surface; arrow uses the rotated-node two-pass positioning lesson)."
   },
   "iconLibrary": {
     "page": "275:32",
