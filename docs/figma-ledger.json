@@ -830,15 +830,37 @@
         "The trigger is a <button>, not a heading — the component makes no assumption about heading level, so a document that needs an outline must wrap the AccordionTrigger in its own <h3>.",
         "A full-width trigger's 3px focus ring exits the container on both sides; fine standalone, but a consumer who wraps the Accordion in an overflow:hidden card will clip it left and right."
       ]
+    },
+    "Alert": {
+      "status": "done-v4",
+      "pageId": "416:44",
+      "setIds": [
+        "416:141"
+      ],
+      "frames": {
+        "overview": "418:44",
+        "spec": "418:106",
+        "theming": "419:44",
+        "examplesDocsHistory": "419:155"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — the brand variant is the ONLY one that themes. It reads --primary and follows data-theme; the four semantic variants (info/success/warning/error) keep their own colour under every theme. The theme grid shows the brand alert across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|info|success|warning|error) × Style (default filled | outline) = 12. TEXT Title + Description; BOOLEAN Show icon / Show description. Icon (any LucideIcon), action (ReactNode) and onClose are code-only. role is DERIVED not a prop: alert for error/warning, status otherwise.",
+      "version": "1.0 · 2026-07-27",
+      "supersedes": "Parked pre-v4 Alert set 16:97 (6 variants, Type axis only, no style axis) DELETED from page 14:60. The Banner set 15:90 on that page is left until Banner ships.",
+      "notes": "NO code change — verified sound: the July a11y sweep removed the opacity:0.8 that dropped semantic descriptions to 3.68 (now full colour, error 4.72 AA, gated by scripts/contrast-check.mjs). Filled description takes the semantic accent colour; outline description is muted-foreground. The 12-variant set was built HORIZONTAL+WRAP; the brand variant binds to the THEME collection (primary-light 2:47 / primary-border 2:49 / primary-text 35:65), everything else to Mode-level semantic vars.",
+      "openQuestions": [
+        "The dismiss X inherits the variant colour at --o-70; on a filled error the muted X is coloured error too. Legible but worth a glance in a real red alert.",
+        "Icon is a LucideIcon prop with a per-variant default; the Figma set draws the default but does not model icon-swap (no INSTANCE_SWAP) — a designer changing the icon detaches."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Alert (Phase 3)",
+    "nextUp": "Banner (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Alert",
       "Banner",
       "Empty",
       "Progress",
@@ -869,12 +891,11 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion shipped; 8 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert shipped; 7 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",
-    "Alert": "16:97",
-    "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding."
+    "note": "Alert set removed 2026-07-27 (superseded by the 3 · Alert page). Banner set 15:90 remains on page 14:60 until the Banner page is built; fold it in then."
   },
   "iconLibrary": {
     "page": "275:32",
