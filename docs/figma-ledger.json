@@ -1227,16 +1227,40 @@
       "props": "Only TWO new atoms — the rest is reuse (like the code): Menubar (the bar — --background, --border, --rounded-md, a row of triggers File/Edit/View/Help) + Menubar/Trigger (VARIANT State default|open, TEXT Label; hover/open = --accent). Every open menu is a DropdownMenu instance (Content + Items + Checkbox/Radio/Label/Separator reused). side/align/open coordination are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "Ninth Overlays page and the SECOND preset-style page (after AlertDialog): Menubar reuses DropdownMenu WHOLESALE — the Figma page has only the bar + trigger, and every demo menu is a real DropdownMenu Content instance with DropdownMenu Item/Checkbox/Radio/Label swapped into its slot (matching the code, where MenubarContent etc. ARE DropdownMenu's re-exported). Overview + examples position the open menu below the opened trigger by reading the trigger's absoluteBoundingBox BEFORE flipping it to open (the variant-swap-stales-the-ref gotcha). Example View menu reuses DropdownMenu checkbox + radio + label to show toggles. No submenus (v1). Lint all-zeros, no overflow, index 125:459 linked."
+    },
+    "Select": {
+      "status": "done-v4",
+      "pageId": "574:44",
+      "componentIds": {
+        "trigger": "574:55",
+        "content": "575:54",
+        "item": "574:74",
+        "label": "574:75",
+        "separator": "574:77"
+      },
+      "setIds": [
+        "574:55",
+        "574:74"
+      ],
+      "frames": {
+        "overview": "576:67",
+        "spec": "577:131",
+        "examplesDocsHistory": "578:227"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral input-wrap trigger (--background/--input/--ring, neutral --focus ring) + --popover listbox with --accent hover; no --primary.",
+      "props": "Instanceable: Select/Trigger — VARIANT State (default|open) + TEXT Value (open adds --ring border + Focus/Default ring + chevron rotated 180; placeholder = override value fill to --muted-foreground). Select/Content — --popover listbox (min-width 128) with a Body SLOT (default fruit list). Select/Item — VARIANT State (default|hover|disabled) + TEXT Label + BOOL Selected (leading --foreground check, 16px reserved indicator). Select/Label + Separator. value/onValueChange/placeholder/side/align/disabled are code-only. Distinct from NativeSelect (the styled native <select>).",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Tenth Overlays page. NO code change. The FLOATING custom select (vs NativeSelect's real <select>): a bordered input-wrap trigger + a --popover listbox. Reuses the menu-item styling (4th of the 4 copies: DropdownMenu/ContextMenu/Command/Select) with a leading check on the SELECTED option. Trigger chevron rotates 180 on open (icon inst.rotation=180) and gets the Focus/Default ring + --ring border. Content Body slot swaps to grouped lists (Label + Separator). Examples: grouped-open, resting-in-a-field, and a muted placeholder (value fill overridden to --muted-foreground). Docs steer toward NativeSelect when a plain option list suffices. Lint all-zeros, no overflow, index 125:464 linked."
     }
   },
   "queue": {
-    "nextUp": "Select (Phase 4 — Overlays)",
+    "nextUp": "Combobox (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Select",
       "Combobox",
       "Command",
       "Toast"
@@ -1249,7 +1273,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar shipped. Select next (a menu-styled listbox: a trigger showing the value + a --popover list of options with a check on the selected one)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select shipped. Combobox next (a Select with a search input at the top that filters the option list)."
   },
   "iconLibrary": {
     "page": "275:32",
