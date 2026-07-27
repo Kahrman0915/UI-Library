@@ -23,27 +23,19 @@
     margin-bottom: var(--p-2);
     color: var(--muted-foreground);
 
-    svg {
+    // Direct-child only. A composed child that brings its own icon — a
+    // FeaturedIcon, an Avatar — must keep its own glyph size, so these rules
+    // must not reach a nested svg.
+    > svg {
       width: var(--w-6);
       height: var(--h-6);
     }
 
-    // Boxed muted tile for a single lucide icon.
-    &--icon {
-      width: var(--w-12);
-      height: var(--h-12);
-      border-radius: var(--rounded-xl);
-      background: var(--muted);
-      border: var(--border-w-100) solid var(--border);
-
-      svg {
-        width: var(--w-6);
-        height: var(--h-6);
-      }
-    }
+    // `&--icon` is not styled here — it reuses .ui-featured-icon (lg/default/
+    // square), applied in EmptyMedia.tsx, so the boxed tile lives in one place.
 
     // Unboxed — for larger imagery, avatars, or a big glyph.
-    &--default svg {
+    &--default > svg {
       width: var(--w-10);
       height: var(--h-10);
     }

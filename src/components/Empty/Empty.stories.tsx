@@ -8,6 +8,7 @@ import Empty, {
   EmptyContent,
 } from './Empty';
 import Button from '../Button/Button';
+import FeaturedIcon from '../FeaturedIcon/FeaturedIcon';
 
 const meta: Meta<typeof Empty> = {
   title: 'Components/Empty',
@@ -18,6 +19,30 @@ const meta: Meta<typeof Empty> = {
 export default meta;
 
 type Story = StoryObj<typeof Empty>;
+
+/**
+ * The preferred way to get a boxed icon: drop a `<FeaturedIcon>` into the
+ * `default` media slot. It brings sizes, a circle option, and semantic/brand
+ * tones — the shared version of the inline `variant="icon"` tile.
+ */
+export const WithFeaturedIcon: Story = {
+  render: () => (
+    <Empty>
+      <EmptyHeader>
+        <EmptyMedia>
+          <FeaturedIcon Icon={Inbox} size="lg" />
+        </EmptyMedia>
+        <EmptyTitle>No messages yet</EmptyTitle>
+        <EmptyDescription>
+          When someone sends you a message, it will show up here.
+        </EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button id="empty-fi-compose" label="New message" />
+      </EmptyContent>
+    </Empty>
+  ),
+};
 
 export const Default: Story = {
   render: () => (

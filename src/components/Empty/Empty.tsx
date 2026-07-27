@@ -7,6 +7,7 @@ import type {
   EmptyDescriptionProps,
   EmptyContentProps,
 } from './Empty.types';
+import '../FeaturedIcon/FeaturedIcon.scss';
 import './Empty.scss';
 
 // Root — centered empty-state container wrapping EmptyHeader + EmptyContent.
@@ -41,16 +42,27 @@ EmptyHeader.displayName = 'EmptyHeader';
 
 // Media — icon / image / avatar slot. `icon` renders a boxed muted tile.
 const EmptyMedia = forwardRef<HTMLDivElement, EmptyMediaProps>(
-  ({ variant = 'default', children, className, ...rest }, ref) => (
-    <div
-      {...rest}
-      ref={ref}
-      data-variant={variant}
-      className={`ui-empty__media ui-empty__media--${variant}${className ? ' ' + className : ''}`}
-    >
-      {children}
-    </div>
-  ),
+  ({ variant = 'default', children, className, ...rest }, ref) => {
+    // The `icon` variant's tile is FeaturedIcon's lg/default/square, exactly —
+    // 48px, --muted, --rounded-xl, --border, 24px glyph. Reuse those classes
+    // rather than redeclare the tile, so the two never drift. (Prefer a real
+    // <FeaturedIcon> in the `default` slot for new work; this variant stays for
+    // back-compat and takes an icon element as children.)
+    const iconTile =
+      variant === 'icon'
+        ? ' ui-featured-icon ui-featured-icon--sz-lg ui-featured-icon--default ui-featured-icon--shape-square'
+        : '';
+    return (
+      <div
+        {...rest}
+        ref={ref}
+        data-variant={variant}
+        className={`ui-empty__media ui-empty__media--${variant}${iconTile}${className ? ' ' + className : ''}`}
+      >
+        {children}
+      </div>
+    );
+  },
 );
 
 EmptyMedia.displayName = 'EmptyMedia';

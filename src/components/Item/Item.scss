@@ -201,6 +201,12 @@
     }
   }
 
+  // Deliberately NOT FeaturedIcon. This is a compact list-media tile — --accent
+  // (not --muted), --rounded-sm (not the scaling radius), and its size is driven
+  // by the row's own size prop (xs/sm/default → 20/32/40), not FeaturedIcon's.
+  // ItemMedia also holds images and avatars via its other variants, so it can't
+  // reduce to an icon-only component. FeaturedIcon is the larger decorative tile;
+  // this is the denser row version. Keep them separate.
   &--icon {
     width: var(--w-10);
     height: var(--h-10);

@@ -11,6 +11,15 @@ export type EmptyHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export type EmptyMediaProps = React.HTMLAttributes<HTMLDivElement> & {
+  /**
+   * `default` is an unboxed slot for an illustration, avatar or large glyph.
+   * `icon` draws a boxed muted tile around a single icon.
+   *
+   * For the boxed-icon case, prefer composing a `<FeaturedIcon>` inside the
+   * `default` slot — it carries the same tile with sizes, a circle shape and
+   * semantic/brand tones, and is the shared version of this pattern. The `icon`
+   * variant here is the original inline tile, kept for back-compat.
+   */
   variant?: EmptyMediaVariant;
   children: React.ReactNode;
   className?: string;

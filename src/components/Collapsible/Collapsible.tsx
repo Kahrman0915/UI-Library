@@ -129,8 +129,16 @@ const CollapsibleTrigger = ({ children }: CollapsibleTriggerProps) => {
 };
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Content — always mounted. Uses `hidden` + `inert` when closed for a11y,
-// and a grid-template-rows animation so height opens/closes smoothly.
+// Content — always mounted. `inert` when closed so it leaves the a11y tree and
+// the tab order, plus a grid-template-rows animation for the height.
+//
+// THREE layers, and all three are load-bearing (same structure as Accordion):
+//   __content       the grid, 0fr → 1fr
+//   __content-inner the clip context — overflow: hidden + min-height: 0, and
+//                   NOTHING else. Padding here leaks into the grid row's
+//                   min-content size, so a closed panel keeps a phantom gap.
+//   __content-body  where padding and typography go, inside the clip. The
+//                   consumer's className and ...rest land here for that reason.
 // ═════════════════════════════════════════════════════════════════════════════
 
 const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
@@ -147,11 +155,13 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
         inert={ctx.open ? undefined : ''}
         className="ui-collapsible__content"
       >
-        <div
-          {...rest}
-          className={`ui-collapsible__content-inner${className ? ' ' + className : ''}`}
-        >
-          {children}
+        <div className="ui-collapsible__content-inner">
+          <div
+            {...rest}
+            className={`ui-collapsible__content-body${className ? ' ' + className : ''}`}
+          >
+            {children}
+          </div>
         </div>
       </div>
     );

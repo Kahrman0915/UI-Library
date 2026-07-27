@@ -1,7 +1,7 @@
 {
   "runId": "uilib-component-push-2026-07",
   "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
-  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page.",
+  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster now 58 — FeaturedIcon added 2026-07-27.)",
   "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
   "v4": {
     "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",
@@ -167,7 +167,14 @@
     "layoutAlign='MAX' silently does not stick on an auto-layout child (stays INHERIT); the parent's counterAxisAlignItems wins. To reproduce CSS align-self:flex-end, make the child FILL the width and set its own primaryAxisAlignItems='MAX'.",
     "CloseButton hard-codes an <X> — it is a close button, not an icon-button primitive, and its two variants differ only in hover background. Splitting them would yield two close buttons. When a component looks like it should be shared but its icon is fixed, the reusable thing is the SHELL underneath, not the component: `.ui-icon-button` in src/styles/icon-button.scss now carries the box, hover tint, focus ring, disabled state and hit-target expansion for CloseButton, AttachmentAction and the Chat composer tools.",
     "Instance sublayers cannot be removed — figma throws 'Node with id I…;… not found' on remove(). To change what is inside an instance you need a slot, a boolean-bound visibility, or an INSTANCE_SWAP; there is no deleting.",
-    "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring."
+    "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring.",
+    "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it.",
+    "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use.",
+    "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops.",
+    "The 'clear stale slot heights with layoutSizingVertical=HUG' trick is safe ONLY when the slot holds an instance (which carries its own size). When a slot holds DRAWN content with a deliberate aspect (Empty's 48x48 icon tile), HUG collapses one axis to the content and distorts it. Empty's tile rendered 48x32 until the height was re-fixed. Check what a slot contains before hugging it.",
+    "After extracting a shared primitive (FeaturedIcon), sweep for slots it should fill: add it to the preferredValues of any leading-visual slot where it fits (Empty media, Card header-media) and update the 'Uses inside' pills + slot descriptions. NOT every media slot — Item/Attachment media are the compact list-tile pattern and deliberately do NOT suggest FeaturedIcon. Record future homes (Dialog/AlertDialog/ChatGreeting) so the wiring happens when they're built.",
+    "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.).",
+    "A component that WRAPS another control (Field) is modelled with a Figma SLOT for the control (default content = a real control instance), so examples compose real instances. Two gotchas: (1) if the wrapped control has its OWN label (Input's 'Show label' defaults true), turn it off or it doubles the wrapper's label. (2) Filling a slot on an INSTANCE is append-not-replace: slot.appendChild(newControl) leaves the master's default content visible, so hide slot.children[0] first. Also: resize() on an auto-layout frame freezes BOTH axes to FIXED — re-assert the hug axis AFTER any resize()."
   ],
   "components": {
     "Button": {
@@ -787,25 +794,253 @@
         "AttachmentTrigger's accessible name is entirely whatever children the consumer passes into the sr-only span; an empty trigger announces as a blank link the size of the card. Nothing enforces it."
       ],
       "codeChanges": "Three fixes shipped with this page: the error description no longer fades to 3.68:1 (last component applying o-80 to semantic text); AttachmentGroup is a keyboard-reachable scroll region; and the action button's hit target expands to 24x24 at xs. That last one exposed that CloseButton, AttachmentAction and the Chat composer tools had each hand-rolled the same shell, so `.ui-icon-button` was extracted to src/styles/icon-button.scss and all three now sit on it."
+    },
+    "Collapsible": {
+      "status": "done-v4",
+      "pageId": "404:44",
+      "setIds": [
+        "404:77"
+      ],
+      "frames": {
+        "overview": "405:44",
+        "spec": "405:100",
+        "examplesDocsHistory": "406:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — reads no colour beyond --foreground on the root. Stated in TOKENS.",
+      "props": "VARIANT State (closed|open) = 2. EVERY prop is code-only: open/defaultOpen drive the one visual axis, onOpenChange and disabled have no resting appearance — a disabled Collapsible looks exactly like a closed one, because the disabled styling belongs to whatever Button was passed to the trigger.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Spec IS the three-layer clip — that is the whole component. Also documents that CollapsibleTrigger renders no markup at all: it clones its single child and injects id / aria-expanded / aria-controls / data-state / disabled / onClick (the consumer's handler runs first, then the toggle). The header row in every example is labelled 'YOUR markup, not the component' because it genuinely is — Collapsible owns only the flex column and the clip. Ships with a code fix: the third clip layer was missing.",
+      "openQuestions": [
+        "CollapsibleTrigger clones its child with `disabled`. Give it a non-button element and React warns about an unknown DOM attribute; nothing in the types prevents it.",
+        "`disabled` has no root-level styling — a disabled Collapsible is visually identical to a closed one. Consumers who care must style off data-disabled themselves."
+      ]
+    },
+    "Accordion": {
+      "status": "done-v4",
+      "pageId": "410:44",
+      "setIds": [
+        "410:70"
+      ],
+      "frames": {
+        "overview": "410:71",
+        "spec": "410:156",
+        "examplesDocsHistory": "412:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — reads only neutral tokens. Stated in TOKENS.",
+      "props": "The SET is Accordion/Item with VARIANT State (closed|open|disabled) = 3 — that is the one visual axis. type (single|multiple), collapsible, value, defaultValue and disabled are all CODE-ONLY: single vs multiple look identical, the difference is purely whether opening one item closes the others.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — the component was already sound: three-layer clip, inert-when-closed, roving arrow-key focus (Up/Down + Home/End, disabled triggers skipped), single/multiple modes, all verified in the browser. Modelled as Accordion/Item (the repeating unit with the visual decisions) plus assembled 3-item lists drawn from mkItem, since the divider hairline is per-item (removed on the last). Shares Collapsible's grid-rows clip; the page cross-references it rather than re-explaining.",
+      "openQuestions": [
+        "The trigger is a <button>, not a heading — the component makes no assumption about heading level, so a document that needs an outline must wrap the AccordionTrigger in its own <h3>.",
+        "A full-width trigger's 3px focus ring exits the container on both sides; fine standalone, but a consumer who wraps the Accordion in an overflow:hidden card will clip it left and right."
+      ]
+    },
+    "Alert": {
+      "status": "done-v4",
+      "pageId": "416:44",
+      "setIds": [
+        "416:141"
+      ],
+      "frames": {
+        "overview": "418:44",
+        "spec": "418:106",
+        "theming": "419:44",
+        "examplesDocsHistory": "419:155"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — the brand variant is the ONLY one that themes. It reads --primary and follows data-theme; the four semantic variants (info/success/warning/error) keep their own colour under every theme. The theme grid shows the brand alert across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|info|success|warning|error) × Style (default filled | outline) = 12. TEXT Title + Description; BOOLEAN Show icon / Show description. Icon (any LucideIcon), action (ReactNode) and onClose are code-only. role is DERIVED not a prop: alert for error/warning, status otherwise.",
+      "version": "1.0 · 2026-07-27",
+      "supersedes": "Parked pre-v4 Alert set 16:97 (6 variants, Type axis only, no style axis) DELETED from page 14:60. The Banner set 15:90 on that page is left until Banner ships.",
+      "notes": "NO code change — verified sound: the July a11y sweep removed the opacity:0.8 that dropped semantic descriptions to 3.68 (now full colour, error 4.72 AA, gated by scripts/contrast-check.mjs). Filled description takes the semantic accent colour; outline description is muted-foreground. The 12-variant set was built HORIZONTAL+WRAP; the brand variant binds to the THEME collection (primary-light 2:47 / primary-border 2:49 / primary-text 35:65), everything else to Mode-level semantic vars.",
+      "openQuestions": [
+        "The dismiss X inherits the variant colour at --o-70; on a filled error the muted X is coloured error too. Legible but worth a glance in a real red alert.",
+        "Icon is a LucideIcon prop with a per-variant default; the Figma set draws the default but does not model icon-swap (no INSTANCE_SWAP) — a designer changing the icon detaches."
+      ]
+    },
+    "Banner": {
+      "status": "done-v4",
+      "pageId": "423:44",
+      "setIds": [
+        "423:93"
+      ],
+      "frames": {
+        "overview": "424:44",
+        "spec": "424:104",
+        "theming": "426:44",
+        "examplesDocsHistory": "426:155"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — brand variant only, same rule as Alert. The theme grid shows full-bleed brand bars across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|info|success|warning|error) = 6 (NO style axis, unlike Alert). TEXT Title, BOOLEAN Show icon. Icon, action, onClose and `centered` are code-only. `centered` is a LAYOUT mode (caps content at --max-w-5xl + centres), not a boolean-toggleable property, so it is shown in Examples not modelled as an axis. role derived: alert for error/warning, status otherwise.",
+      "version": "1.0 · 2026-07-27",
+      "supersedes": "Parked pre-v4 Banner set 15:90 DELETED from page 14:60. Both parked sets (Alert + Banner) now retired; the migrate page 14:60 is empty.",
+      "notes": "NO code change — the page-level cousin of Alert, verified sound. Full-bleed: a BOTTOM hairline (border-bottom-color) instead of Alert's all-round border, no radius, spans 100% width. Reuses Alert's semantic tint tokens verbatim (do not fork them). No muted description — the whole message takes the accent colour, AA-gated the same way. __close sits OUTSIDE __inner so it stays right-pinned when centred. Same THEME-collection binding for brand as Alert.",
+      "openQuestions": [
+        "A Banner mounted at page load with role=alert (error/warning) announces immediately — intended for an outage bar, but a designer must not set a marketing message to error/warning or it interrupts on load.",
+        "`centered` cannot be a Figma property (it changes layout, not visibility); shown in Examples only, so an instance cannot be toggled to centred — a designer wanting it detaches or rebuilds."
+      ]
+    },
+    "Empty": {
+      "status": "done-v4",
+      "pageId": "430:44",
+      "setIds": [
+        "430:75"
+      ],
+      "frames": {
+        "overview": "431:44",
+        "spec": "431:97",
+        "examplesDocsHistory": "431:263"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome; nothing reads --primary. The example Button themes on its own, the Empty container never does. Stated in TOKENS.",
+      "props": "VARIANT Media (default | icon) = 2 — the one visual axis (EmptyMedia's variant). TEXT Title + Description; BOOLEAN Show description / Show action; SLOT media + content. Everything is children in code — Empty has no props of its own beyond EmptyMedia's variant. Static, no interactivity.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — a clean static compound. Centred column, generous --p-12 vertical padding, header capped at --max-w-sm. icon media = a --w-12 --muted tile at --rounded-xl; default = an unboxed --w-10 glyph. The tile uses --muted (not --secondary) because it is an image surface carrying an icon, the same call Item/Attachment make. Modelled with Media as the variant axis; the icon and the action row are slots.",
+      "openQuestions": [
+        "Empty is a plain <div> with no role — correct for a presentational block, but when it replaces a live region (a search-results list) the announcement must happen on that region, not here. Nothing enforces it.",
+        "The description is capped in Figma at a fixed 250px width; in code it is --max-w-sm (384) and wraps fluidly. The fixed width is a Figma approximation, not the code cap."
+      ],
+      "fixNote": "2026-07-27: the icon media tile rendered 48x32 (a wide blob) not 48x48. Cause: after converting ui-empty__media to a SLOT, a blanket layoutSizingVertical='HUG' pass (meant to clear stale slot heights) collapsed the height to hug the 24px glyph while the width stayed pinned at --w-12. Restored to a fixed 48x48 square, both axes bound. Empty was the ONLY slot affected — Item/Attachment media slots hold square Media INSTANCES, so hugging them stays square; Empty's slot held the tile styling directly."
+    },
+    "Progress": {
+      "status": "done-v4",
+      "pageId": "435:44",
+      "setIds": [
+        "435:90"
+      ],
+      "frames": {
+        "overview": "436:44",
+        "spec": "436:106",
+        "theming": "437:44",
+        "examplesDocsHistory": "437:99"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — the DEFAULT variant themes (indicator reads --primary), recoloured across all 9 codes; semantic variants keep their own hue.",
+      "aiden": "YES — first Phase 3 component with an aiden gradient. The default determinate bar's indicator takes the violet→blue gradient under data-surface=aiden, built with the dark-overlay pattern (aiden-dark-gradient rect, visibility bound to flag/is-dark 175:26). Plus a completion particle burst (aiden-gated, not drawable). Documented in a dedicated AIDEN SURFACE card, since the flow + particles are animated.",
+      "props": "VARIANT Variant (default|success|warning|error|info) × Size (sm|default|lg) = 15, laid out as a 5-row × 3-col grid (manual positioning after combineAsVariants). value/max/indeterminate/valueFormatter are code-only; label + showValue are header shortcuts.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — the July a11y sweep already wired aria-labelledby to the rendered label via useId. Track --muted, indicator --primary (or variant colour), heights --h-1/-2/-3. The set cells are bare track+indicator (header shown once in anatomy) to keep the 15-grid tight. indeterminate is a 40% sliding bar with NO aria-valuenow — shown as its resting 40% frame, not drawable. value text uses tabular-nums.",
+      "openQuestions": [
+        "Naming: `label` auto-wires aria-labelledby, but the compound API or a label-less bar needs a consumer aria-label — an unnamed progressbar announces only 'progress bar, 62%'.",
+        "The set cells omit the header row for grid density; a designer wanting the label+value composes it (shown in anatomy and examples) rather than toggling a property."
+      ]
+    },
+    "FeaturedIcon": {
+      "status": "done-v4",
+      "pageId": "442:44",
+      "setIds": [
+        "442:105"
+      ],
+      "frames": {
+        "overview": "443:44",
+        "spec": "443:102",
+        "theming": "443:288",
+        "examplesDocsHistory": "443:361"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — brand variant only; reads --primary, recoloured across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|success|warning|error|info) × Shape (square|circle) = 12 at default size. Size (sm|default|lg = 32/40/48) shown in Spec, not a variant axis (would be 36). Icon + label code-only.",
+      "version": "1.0 · 2026-07-27",
+      "newComponent": "YES — 58th component, added 2026-07-27. Extracted from the boxed icon-tile pattern hand-rolled in Empty, Item and Attachment media. Owner requested it after spotting the Empty tile. Index board got a new FeaturedIcon row (444:289).",
+      "notes": "Reuses Alert/Badge -light tint tokens, no new tokens. Icon is half the box at every size (16/20/24). Square radius scales md/lg/xl; circle is full. brand binds to Theme collection like Alert/Banner. Follow-up chip spawned to consolidate Item/Attachment/EmptyMedia tiles onto it.",
+      "composedBy": "WHERE FeaturedIcon should appear as a composed element / slot preferred value: Empty (icon media — code composes it; slot pref + uses-inside updated 2026-07-27), Card (ui-card__header-media slot — pref added 2026-07-27). TODO when built: Dialog + AlertDialog (a featured icon atop a confirmation — especially a red error tile for destructive confirms), ChatGreeting (centered featured icon on the start screen). Wire FeaturedIcon into those header/greeting areas + their slot preferredValues when their pages are built."
+    },
+    "Tabs": {
+      "status": "done-v4",
+      "pageId": "451:44",
+      "setIds": [
+        "451:69"
+      ],
+      "frames": {
+        "overview": "452:44",
+        "spec": "452:100",
+        "examplesDocsHistory": "453:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — the active pill is --background, not --primary; all neutral. Stated in TOKENS.",
+      "props": "VARIANT Orientation (horizontal|vertical) = 2. value/defaultValue/onValueChange/activationMode are code-only (selection + automatic-vs-manual activation aren't drawable). TabsContent unmounts unless forceMount.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — full WAI-ARIA tab pattern verified: roving tabindex (active=0, rest=-1), arrow + Home/End, automatic (arrow selects) vs manual (Enter/Space selects), focusable tabpanel. Active trigger is a lifted --background pill with --shadow-sm on a --muted list; inactive --muted-foreground. The trigger COLOUR is deliberately NOT transitioned (only bg+shadow) to dodge the Chromium var()-freeze on a live mode switch — documented on the page."
+    },
+    "Breadcrumb": {
+      "status": "done-v4",
+      "pageId": "458:44",
+      "setIds": [
+        "464:226",
+        "464:235"
+      ],
+      "frames": {
+        "overview": "458:55",
+        "spec": "459:84",
+        "examplesDocsHistory": "461:131"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome, no --primary. Links --muted-foreground, current page --foreground. Same stance as Tooltip / Sidebar; stated in TOKENS.",
+      "props": "Atom components (mirrors the compound code, NOT one fixed trail): Breadcrumb/Crumb — VARIANT Type (link|current) + TEXT Label (link=--muted-foreground <a>, current=--foreground <span aria-current>); Breadcrumb/Separator — VARIANT Glyph (chevron|slash), aria-hidden; Breadcrumb/Ellipsis — single component. Every trail on the page (overview, spec cells, all six example trails) is COMPOSED FROM REAL INSTANCES of these, so they stay in sync with the masters and a designer drags atoms to build any depth.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Verified in-browser the link's `transition: color` does NOT hit the Chromium var()-transition freeze Tabs dodged: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent), so a plain mode flip settles to the correct dark value (8.93:1) — documented on the a11y frame. REBUILT from a fixed hand-drawn trail to instanceable ATOMS after the owner asked why examples weren't the real component: Crumb/Separator/Ellipsis are real components, and overview + spec + examples compose instances (dark frames set Mode=Dark so the instances flip automatically — verified). Separator glyphs are lucide icon instances (chevron 312:18466, slash 312:20530, ellipsis 312:18936) stroke re-weighted (2·rendered/24) and bound to --muted-foreground. Hover cell overrides the link instance text fill to --foreground; focus cell wraps a link instance in a Focus/Default effect frame (2px pad bound to spacing/0-5). Lint all-zeros, no overflow, index row 125:396 linked.",
+      "componentIds": {
+        "crumb": "464:226",
+        "separator": "464:235",
+        "ellipsis": "464:236"
+      }
+    },
+    "Field": {
+      "status": "done-v4",
+      "pageId": "469:44",
+      "componentIds": {
+        "field": "469:91",
+        "legend": "469:49"
+      },
+      "setIds": [
+        "469:91",
+        "469:49"
+      ],
+      "frames": {
+        "overview": "473:60",
+        "spec": "474:119",
+        "examplesDocsHistory": "476:338"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral scaffolding, drives no --primary. The only colour it owns is --error (invalid label + FieldError). Stated in TOKENS.",
+      "props": "Instanceable, composes real controls: Field — VARIANT Orientation (vertical|horizontal) + a Control SLOT (default = an Input instance, preferredValues Input/Checkbox/Switch) + TEXT Label/Description/Error + BOOL Required/Show description/Show error. Field/Legend — VARIANT (legend|label) + TEXT. invalid + disabled are DEMONSTRATED states (override the label fill to --error / set opacity 0.5), not variants. FieldSet/FieldGroup/FieldContent are spacing frames; FieldSeparator reuses the Separator component.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Built instanceable per the Breadcrumb lesson: every field on the page (overview, spec cells, all example forms) is a real Field INSTANCE with a real control in the slot. The Control slot holds an Input instance by default with its built-in label turned OFF via 'Show label#192:0'=false (else Field's label doubles the Input's). The Checkbox example swaps the slot: hide slot.children[0] (the default Input), then slot.appendChild(Checkbox instance) — appending does NOT replace, so the default must be hidden. Dark frames set Mode=Dark and the nested control + text instances flip automatically (verified). GOTCHAS hit: resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — the vertical variant's height froze at 10px until primaryAxisSizingMode was re-set to AUTO after the resize; and a hug-width group must be counterAxisSizingMode=AUTO with children NOT set to FILL, or the wrapped inputs squish. Lint all-zeros, no overflow, index row 125:406 linked."
+    },
+    "Pagination": {
+      "status": "done-v4",
+      "pageId": "483:44",
+      "componentIds": {
+        "cell": "483:49",
+        "prev": "483:50",
+        "next": "483:55",
+        "ellipsis": "483:60"
+      },
+      "setIds": [
+        "483:49"
+      ],
+      "frames": {
+        "overview": "484:50",
+        "spec": "487:100",
+        "theming": "488:182",
+        "examplesDocsHistory": "489:229"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT (488:182) — the active cell borders/text read --primary-border / --primary-text, so it themes; shown under Main/db/dr/ph. Ghost cells + prev/next stay neutral.",
+      "props": "Instanceable atoms, cells reuse the Button visual: Pagination/Cell — VARIANT State (default|active) + TEXT Number (default=ghost --secondary-foreground; active=outline inset --primary-border + --primary-text + semibold, aria-current). Pagination/Prev + /Next — BOOL Show label (chevron + optional text; false = icon-only pager). Pagination/Ellipsis — single component. isActive/disabled/showLabel are the code props; the current page is app state.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Built instanceable per the Breadcrumb lesson — overview, spec cells, theming rows and every example pager are real atom instances; dark frames set Mode=Dark and flip automatically. Cells are DEDICATED atoms styled to match the Button ghost/outline-small look (transparent + --secondary-foreground; active = inset --primary-border stroke strokeAlign=INSIDE + --primary-text + semibold) rather than instancing the Button set, since pagination adds a square 36px cell + semibold-active. Theming frame proves the active cell picks up the theme (setExplicitVariableModeForCollection on the Theme collection: Main 2:2 / DB 2:3 / DR 51:0 / PH 51:4). GOTCHA repeat: resize() froze Prev/Next width to 10px until primaryAxisSizingMode was re-set to AUTO after the resize. Lint all-zeros, no overflow, index 125:401 linked."
     }
   },
   "queue": {
-    "nextUp": "Collapsible (Phase 3)",
+    "nextUp": "Tooltip (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
-    "phase3": [
-      "Collapsible",
-      "Accordion",
-      "Alert",
-      "Banner",
-      "Empty",
-      "Progress",
-      "Tabs",
-      "Breadcrumb",
-      "Pagination",
-      "Field"
-    ],
+    "phase3": [],
     "phase4": [
       "Tooltip",
       "Dialog",
@@ -828,12 +1063,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment shipped; 10 composites remain."
-  },
-  "migrateExisting": {
-    "Banner": "15:90",
-    "Alert": "16:97",
-    "note": "Parked on page 14:60; fold into their Phase-3 pages instead of rebuilding."
+    "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next."
   },
   "iconLibrary": {
     "page": "275:32",
@@ -854,5 +1084,6 @@
     "colourDurability": "RESOLVED / was a mis-diagnosis. I previously recorded that an INSTANCE_SWAP discards the icon's stroke colour. Re-tested 2026-07-25 on Default/Default/Default, Error/Ghost/Small and Aiden/Default/Default, for both the icon-only set and the labelled Button's leading slot: swapping via the PROPERTY preserves the bound stroke colour AND the bound stroke weight in every case. The broken instances I originally measured had been damaged by my own swapComponent() rewire step, not by the property mechanism — I diagnosed the mechanism from wreckage I had created. The real, still-true caveat is narrower: swapping the nested icon LAYER directly (right panel, with the layer selected) drops the strokeWeight binding. Use the property.",
     "colourModel": "OWNER DECISION 2026-07-25: icons do NOT auto-tint. They arrive as --foreground and the designer sets the colour after placing. Automatic per-variant tinting was attempted five ways and abandoned: (1) per-layer stroke overrides — only reach layers present on the DEFAULT swap target, so a richer glyph rendered half-tinted; (2) a variable-mode colour collection — Figma caps a collection at 10 modes and 13 icon colours are needed; (3) empty path-2 stubs so an override had somewhere to land — verified not to carry through a swap; (4) manual vectorPaths concatenation to force one path — CORRUPTED all 1,746 icons (see lesson) and forced a full rebuild; (5) figma.flatten + re-sync — geometry survived but the nested instances inside component-set variants became unreadable to the API. Stroke WEIGHT is unaffected and remains variable-driven and correct.",
     "apiCaveat": "The plugin API cannot reliably read or write the subtree of an instance nested inside a COMPONENT-SET VARIANT — findAll() returns 0 vectors for 238 of 240 slots even though they render correctly on canvas. Only the set's DEFAULT variant is reachable. Page-level instances are fully reachable. Any per-variant nested styling must therefore be applied at instance-creation time, before the instance is inserted into the variant."
-  }
+  },
+  "migrateComplete": "Both parked sets (Alert 16:97, Banner 15:90) retired 2026-07-27 as their v4 pages shipped. Page 14:60 is now empty and can be deleted by the owner."
 }

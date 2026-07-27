@@ -8,8 +8,8 @@
 }
 
 // Content — uses the grid-template-rows: 0fr → 1fr trick so height animates
-// without any JavaScript measurement. Requires a single child wrapper with
-// overflow: hidden to clip content while the row transitions.
+// without any JavaScript measurement. Three layers, all load-bearing; see the
+// comment above CollapsibleContent in the .tsx.
 .ui-collapsible__content {
   display: grid;
   grid-template-rows: 0fr;
@@ -24,7 +24,19 @@
   }
 }
 
+// The clip context, and ONLY that. Anything with height here — padding above
+// all — leaks into the grid row's minimum content size, so a closed panel
+// keeps a phantom gap. Measured before this layer existed: 16px of padding
+// left 32px behind when closed.
 .ui-collapsible__content-inner {
   overflow: hidden;
   min-height: 0;
+}
+
+// Padding and typography belong here, inside the clip, which is why the
+// consumer's className and ...rest land on this layer. Deliberately carries no
+// styling of its own — Collapsible makes no assumption about its content, so
+// adding default padding here would shift every existing usage.
+.ui-collapsible__content-body {
+  min-width: 0;
 }
