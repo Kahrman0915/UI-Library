@@ -224,59 +224,22 @@
   align-self: flex-end;
 }
 
+// Shell from `src/styles/icon-button.scss`; only the shape, box and icon size
+// are Attachment's own.
 .ui-attachment__action {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  --ui-icon-button-radius: var(--rounded-sm);
   width: var(--w-7);
   height: var(--h-7);
-
-  // The drawn box shrinks to 20px at xs, which is under the 24×24 pointer
-  // target minimum (WCAG 2.5.8). Widen the hit area without changing anything
-  // that renders — the same `::after` trick CloseButton uses, since this
-  // button deliberately does not compose it (see the note in Attachment.tsx).
-  &::after {
-    content: '';
-    position: absolute;
-    inset: var(--ui-attachment-hit, 0);
-  }
-  padding: 0;
-  border: none;
-  background: transparent;
-  color: var(--muted-foreground);
-  border-radius: var(--rounded-sm);
-  cursor: pointer;
-  line-height: 0;
-  transition:
-    color var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) var(--ease-out);
-
-  &:hover:not(:disabled) {
-    color: var(--foreground);
-    background: var(--accent);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-
-  &:disabled {
-    opacity: var(--o-50);
-    cursor: not-allowed;
-  }
 
   svg {
     width: var(--w-4);
     height: var(--h-4);
-    display: block;
   }
 }
 
 .ui-attachment--sz-xs .ui-attachment__action {
-  // 20px drawn, expanded to 24 by the ::after above (-2px on each side).
-  --ui-attachment-hit: calc(-1 * var(--p-0-5));
+  // 20px drawn, expanded to a 24px target by the shared ::after (-2px a side).
+  --ui-icon-button-hit: calc(-1 * var(--p-0-5));
   width: var(--w-5);
   height: var(--h-5);
 

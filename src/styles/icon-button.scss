@@ -1,0 +1,72 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Shared shell for every small icon-only button in the library.
+//
+// CloseButton, AttachmentAction and the Chat composer tools had each rebuilt
+// this independently, and they had drifted: only CloseButton carried the
+// WCAG 2.5.8 hit-target expansion, and the transition timings disagreed.
+// Extracted at the third copy, following the same class-level reuse the
+// library already uses for `.ui-input-wrap`, `.ui-toggle` and `.ui-button`.
+//
+// Imported as a side effect by each consuming component, the way
+// `ripple.scss` is — Vite dedupes the module, so it lands in the bundle once.
+//
+// What a consumer still owns:
+//   • the box (width / height / padding) and the icon size
+//   • `--ui-icon-button-radius` — defaults to --rounded-md
+//   • `--ui-icon-button-hit`   — a NEGATIVE inset, required on any box under
+//     24px so the pointer target still clears 24×24 (WCAG 2.5.8)
+//   • `--fill` if the button should tint its background on hover, not just
+//     its glyph
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-icon-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--muted-foreground);
+  border-radius: var(--ui-icon-button-radius, var(--rounded-md));
+  cursor: pointer;
+  line-height: 0;
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+
+  // Widens the pointer target without changing anything that renders.
+  &::after {
+    content: '';
+    position: absolute;
+    inset: var(--ui-icon-button-hit, 0);
+  }
+
+  &:hover:not(:disabled) {
+    color: var(--foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  svg {
+    display: block;
+    // No stroke-width override on purpose. lucide's own width is 2 *viewBox
+    // units*, so it scales with the icon — 1px at 12, 1.33px at 16, 1.67px at
+    // 20. Pinning --icon-border-width (1.33 units) here instead rendered a
+    // 0.665px hairline at 12px, the thinnest stroke in the library.
+  }
+
+  // Opt-in background tint on hover. CloseButton's `default` variant
+  // deliberately tints only the glyph; everything else fills.
+  &--fill:hover:not(:disabled) {
+    background: var(--accent);
+  }
+}

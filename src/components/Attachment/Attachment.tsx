@@ -11,6 +11,7 @@ import type {
   AttachmentTitleProps,
   AttachmentTriggerProps,
 } from './Attachment.types';
+import '../../styles/icon-button.scss';
 import './Attachment.scss';
 
 const useAttachment = () => {
@@ -173,9 +174,10 @@ const AttachmentActions = forwardRef<HTMLDivElement, AttachmentActionsProps>(
 AttachmentActions.displayName = 'AttachmentActions';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Action — a single icon button in the actions row. Consumers can style/wire
-// however they want; this is intentionally a plain <button> so it composes
-// with any icon element inside.
+// Action — a single icon button in the actions row. A plain <button> so it
+// composes with any icon, and deliberately NOT CloseButton, which hard-codes
+// an X and is only ever a dismissal. Both sit on the shared `.ui-icon-button`
+// shell, so they cannot drift apart again.
 // ═════════════════════════════════════════════════════════════════════════════
 
 const AttachmentAction = forwardRef<HTMLButtonElement, AttachmentActionProps>(
@@ -186,7 +188,7 @@ const AttachmentAction = forwardRef<HTMLButtonElement, AttachmentActionProps>(
         {...rest}
         ref={ref}
         type={type ?? 'button'}
-        className={`ui-attachment__action${className ? ' ' + className : ''}`}
+        className={`ui-icon-button ui-icon-button--fill ui-attachment__action${className ? ' ' + className : ''}`}
       >
         {children}
       </button>

@@ -74,6 +74,7 @@ import type {
   ChatSourceProps,
   ChatGreetingProps,
 } from './Chat.types';
+import '../../styles/icon-button.scss';
 import './Chat.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
@@ -611,7 +612,7 @@ const ChatComposerDictation = forwardRef<
       type={type ?? 'button'}
       aria-pressed={recording}
       aria-label={recording ? activeLabel : label}
-      className={`ui-chat-composer__tool ui-chat-dictation${recording ? ' ui-chat-dictation--recording' : ''}${className ? ' ' + className : ''}`}
+      className={`ui-icon-button ui-icon-button--fill ui-chat-composer__tool ui-chat-dictation${recording ? ' ui-chat-dictation--recording' : ''}${className ? ' ' + className : ''}`}
     >
       <Mic aria-hidden />
     </button>
@@ -658,7 +659,7 @@ const ChatComposerDrawer = forwardRef<
           type={type ?? 'button'}
           aria-label={label}
           onClick={() => setOpen(true)}
-          className={`ui-chat-composer__tool ui-chat-composer__expand${className ? ' ' + className : ''}`}
+          className={`ui-icon-button ui-icon-button--fill ui-chat-composer__tool ui-chat-composer__expand${className ? ' ' + className : ''}`}
         >
           <Maximize2 aria-hidden />
         </button>

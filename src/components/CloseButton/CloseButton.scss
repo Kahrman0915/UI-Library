@@ -1,42 +1,23 @@
-.ui-close-button {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: transparent;
-  border: none;
-  border-radius: var(--rounded-full);
-  cursor: pointer;
-  color: var(--muted-foreground);
-  line-height: 0;
-  transition: color var(--duration-instant) var(--ease-default);
+// The shell — box, hover tint, focus ring, disabled, hit-target expansion —
+// lives in `src/styles/icon-button.scss` and is shared with AttachmentAction
+// and the Chat composer tools. What stays here is what is specific to a close
+// button: its circular shape and its three sizes.
+//
+// The `background` variant maps to `.ui-icon-button--fill`, added in the TSX.
 
-  // The drawn box is deliberately small on dense surfaces (a Toast), but a
-  // pointer target must not be. This widens the clickable area to at least
-  // 24×24 — WCAG 2.5.8 — without changing anything that renders. Only `sm`
-  // needs the expansion; `default` and `lg` clear 24 on their own.
-  &::after {
-    content: '';
-    position: absolute;
-    inset: var(--ui-close-hit, 0);
-  }
+.ui-close-button {
+  --ui-icon-button-radius: var(--rounded-full);
 
   > span {
     display: inline-flex;
   }
 
-  svg {
-    display: block;
-    // No stroke-width override on purpose. lucide's own width is 2 *viewBox
-    // units*, so it scales with the icon — 1px at 12, 1.33px at 16, 1.67px at
-    // 20. Pinning --icon-border-width (1.33 units) here instead rendered a
-    // 0.665px hairline at 12px, the thinnest stroke in the library.
-  }
-
   // ---- Sizes: sm (20px box), default (24px), lg (32px) ----
+  // Only `sm` needs the hit-target expansion; default and lg clear 24 on their
+  // own.
 
   &--sz-sm {
-    --ui-close-hit: calc(-1 * var(--p-0-5));
+    --ui-icon-button-hit: calc(-1 * var(--p-0-5));
     padding: var(--p-1);
 
     svg {
@@ -60,28 +41,6 @@
     svg {
       width: var(--w-5);
       height: var(--h-5);
-    }
-  }
-
-  &:hover {
-    color: var(--foreground);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-
-  &:disabled {
-    opacity: var(--o-50);
-    cursor: not-allowed;
-    color: var(--muted-foreground);
-  }
-
-  &--background {
-    &:hover:not(:disabled) {
-      background: var(--accent);
-      color: var(--foreground);
     }
   }
 }
