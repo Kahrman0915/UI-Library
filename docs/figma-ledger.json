@@ -168,7 +168,8 @@
     "CloseButton hard-codes an <X> — it is a close button, not an icon-button primitive, and its two variants differ only in hover background. Splitting them would yield two close buttons. When a component looks like it should be shared but its icon is fixed, the reusable thing is the SHELL underneath, not the component: `.ui-icon-button` in src/styles/icon-button.scss now carries the box, hover tint, focus ring, disabled state and hit-target expansion for CloseButton, AttachmentAction and the Chat composer tools.",
     "Instance sublayers cannot be removed — figma throws 'Node with id I…;… not found' on remove(). To change what is inside an instance you need a slot, a boolean-bound visibility, or an INSTANCE_SWAP; there is no deleting.",
     "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring.",
-    "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it."
+    "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it.",
+    "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use."
   ],
   "components": {
     "Button": {
@@ -876,15 +877,35 @@
         "A Banner mounted at page load with role=alert (error/warning) announces immediately — intended for an outage bar, but a designer must not set a marketing message to error/warning or it interrupts on load.",
         "`centered` cannot be a Figma property (it changes layout, not visibility); shown in Examples only, so an instance cannot be toggled to centred — a designer wanting it detaches or rebuilds."
       ]
+    },
+    "Empty": {
+      "status": "done-v4",
+      "pageId": "430:44",
+      "setIds": [
+        "430:75"
+      ],
+      "frames": {
+        "overview": "431:44",
+        "spec": "431:97",
+        "examplesDocsHistory": "431:263"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome; nothing reads --primary. The example Button themes on its own, the Empty container never does. Stated in TOKENS.",
+      "props": "VARIANT Media (default | icon) = 2 — the one visual axis (EmptyMedia's variant). TEXT Title + Description; BOOLEAN Show description / Show action; SLOT media + content. Everything is children in code — Empty has no props of its own beyond EmptyMedia's variant. Static, no interactivity.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — a clean static compound. Centred column, generous --p-12 vertical padding, header capped at --max-w-sm. icon media = a --w-12 --muted tile at --rounded-xl; default = an unboxed --w-10 glyph. The tile uses --muted (not --secondary) because it is an image surface carrying an icon, the same call Item/Attachment make. Modelled with Media as the variant axis; the icon and the action row are slots.",
+      "openQuestions": [
+        "Empty is a plain <div> with no role — correct for a presentational block, but when it replaces a live region (a search-results list) the announcement must happen on that region, not here. Nothing enforces it.",
+        "The description is capped in Figma at a fixed 250px width; in code it is --max-w-sm (384) and wraps fluidly. The fixed width is a Figma approximation, not the code cap."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Empty (Phase 3)",
+    "nextUp": "Progress (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Empty",
       "Progress",
       "Tabs",
       "Breadcrumb",
@@ -913,7 +934,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner shipped; 6 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty shipped; 5 composites remain."
   },
   "iconLibrary": {
     "page": "275:32",
