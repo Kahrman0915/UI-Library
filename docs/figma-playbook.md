@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 51/58 done (FeaturedIcon added). Phases 1–3 COMPLETE; Phase 4 (Overlays) under way — Tooltip through Combobox shipped (11 overlays). Next up: **Command**. Queue in the ledger.
+- **Status:** 52/58 done (FeaturedIcon added). Phases 1–3 COMPLETE; Phase 4 (Overlays) under way — Tooltip through Command shipped (12 overlays). Next up: **Toast** (the final Phase 4 item). Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -498,7 +498,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Command**).
+1. Read the ledger → next component in the phase queue (next up: **Toast**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).

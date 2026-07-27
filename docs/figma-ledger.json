@@ -177,7 +177,8 @@
     "A component that WRAPS another control (Field) is modelled with a Figma SLOT for the control (default content = a real control instance), so examples compose real instances. Two gotchas: (1) if the wrapped control has its OWN label (Input's 'Show label' defaults true), turn it off or it doubles the wrapper's label. (2) Filling a slot on an INSTANCE is append-not-replace: slot.appendChild(newControl) leaves the master's default content visible, so hide slot.children[0] first. Also: resize() on an auto-layout frame freezes BOTH axes to FIXED — re-assert the hug axis AFTER any resize().",
     "A rotated node's .x/.y is NOT its visual top-left — Figma's rotation origin shifts it, so positioning a rotated shape (a tooltip/popover arrow) by x/y math lands it wrong (the tooltip top arrow ended ~4px inside the bubble and was invisible). Position it in two passes: set an approximate x/y, read the node's absoluteBoundingBox to get its TRUE rendered center, then add (targetCenter - currentCenter) to x/y. Use a plain square (cornerRadius 0) for the arrow — a same-colour diamond centered on the bubble edge reads as a clean triangle; a rounded corner makes it a pentagon. Applies to every Overlay arrow ahead (Popover / HoverCard / DropdownMenu / Select / Combobox).",
     "resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — this has now bitten on Field, Dialog panels AND the Dialog scrim stage. Standing rule: after ANY resize() on an auto-layout node, re-assert the axis that should hug (primaryAxisSizingMode/counterAxisSizingMode='AUTO'); better, avoid resize entirely — append the frame to its parent, then set layoutSizingHorizontal='FILL' (or a width via the parent) and the hug axis to AUTO. A frozen axis shows as a 10px-tall strip with content spilling.",
-    "A Figma SLOT whose default content is MULTIPLE loose nodes is unswappable: hiding one default child re-renders the slot and invalidates the OTHER defaults' node refs, so the next .visible read throws 'node not found' — even iterating slot.children with .find throws on the stale node. Two rules: (1) give a swappable slot a SINGLE wrapper frame as its default content, not loose siblings; (2) hide that wrapper BEFORE appending the replacement (a ref grabbed before an append goes stale after it). Dialog/Field slots worked only because each had exactly one default child."
+    "A Figma SLOT whose default content is MULTIPLE loose nodes is unswappable: hiding one default child re-renders the slot and invalidates the OTHER defaults' node refs, so the next .visible read throws 'node not found' — even iterating slot.children with .find throws on the stale node. Two rules: (1) give a swappable slot a SINGLE wrapper frame as its default content, not loose siblings; (2) hide that wrapper BEFORE appending the replacement (a ref grabbed before an append goes stale after it). Dialog/Field slots worked only because each had exactly one default child.",
+    "Command page: setProperties on a standalone COMPONENT (not just a set) still needs the FULL property key with the #id suffix (e.g. 'Label#588:24'), not the bare name — the bare name throws 'Could not find a component property'. Variant props use the bare axis name ('State'); TEXT/BOOL props always use name#id."
   ],
   "components": {
     "Button": {
@@ -1276,16 +1277,39 @@
       "props": "Instanceable, a searchable Select: Combobox/Trigger — VARIANT State (default|open) + TEXT Value + BOOL Show clear (an X). Combobox/Content — a --popover panel (min-width 256) with a search-input row on top (border-bottom, h-10) + a Body SLOT listbox. Combobox/Item — VARIANT State (default|highlighted|disabled) + TEXT Label + TEXT Description + BOOL Selected (check) + BOOL Show description. Combobox/Empty — the no-results text. value/onValueChange/placeholder/searchPlaceholder/clearable/side/align + the live filtering are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "Eleventh Overlays page. NO code change. Select + search: the trigger is Select's input-wrap field plus an optional clear (X); the Content adds a search row (search icon + input) above the listbox and an Empty state, and items carry an optional description line. Reuses the menu-item styling (a parallel copy, like the others). Examples demonstrate LIVE FILTERING by overriding the Content's search-input text to a query (fill flipped to --foreground) + swapping the Body slot to the matching item(s) (search 'sv' -> Svelte highlighted; 'qwerty' -> Empty). Trigger chevron rotates 180 on open + Focus/Default ring. Lint all-zeros, no overflow, index 125:469 linked."
+    },
+    "Command": {
+      "status": "done-v4",
+      "pageId": "588:44",
+      "componentIds": {
+        "palette": "590:54",
+        "item": "588:75",
+        "heading": "588:76",
+        "separator": "588:78",
+        "empty": "588:79"
+      },
+      "setIds": [
+        "588:75"
+      ],
+      "frames": {
+        "overview": "591:88",
+        "spec": "594:167",
+        "examplesDocsHistory": "595:231"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral menu recipe (--popover surface, --accent highlight, --error for the error variant); no --primary. Same as the other three menu families.",
+      "props": "Instanceable. Command/Item — VARIANT State (default|active|disabled|error|error-active) + TEXT Label + TEXT Shortcut (mono) + BOOL Show icon + BOOL Show shortcut. Command/Heading — group label (uppercase, xs medium, muted). Command/Separator — 1px hairline. Command/Empty — no-results text. Command/Palette — a --popover surface: a search Input row (search icon + query) over a scrollable List (compose Heading / Item / Separator / Empty inside). CommandDialog wrapping, filtering, keyboard nav and aria-activedescendant are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Twelfth Overlays page — the LAST Phase 4 item before Toast. The 4th (final) menu-item styling copy, per the standing policy (DropdownMenu / ContextMenu / Select / Command). NO code change. It is a ⌘K command palette: a search row on top, a grouped/scrollable command list, mono ⌘ shortcuts right-aligned, and an error item variant (--error text / --error-light active). Overview renders the palette on a bg-overlay scrim to show the classic CommandDialog top-anchored ⌘K feel (plain NONE-layout stage, palette placed absolutely + centered). Spec shows all five item states in light + dark side-by-side on a --popover surface (dark card via setExplicitVariableModeForCollection Mode 2:2 -> Dark 2:1). Examples build fresh palettes from the atoms (not palette instances) to show live filtering: query 'cal' -> RESULTS(Calendar active, Calculator); query 'xyzzy' -> Empty. The example search-input text is --foreground when a query is present, --muted-foreground when it is the placeholder. shadow-lg via the 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:474 linked."
     }
   },
   "queue": {
-    "nextUp": "Command (Phase 4 — Overlays)",
+    "nextUp": "Toast (Phase 4 — Overlays; completes the phase)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Command",
       "Toast"
     ],
     "phase5": [
@@ -1296,7 +1320,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip through Combobox shipped (11 overlays). Command next (a command palette: a Dialog holding a Combobox-like search + grouped command list — the LAST Phase 4 item before Toast)."
+    "phase4Status": "IN PROGRESS — Tooltip through Command shipped (12 overlays). Toast is the FINAL Phase 4 item; after it Phase 4 (Overlays) is COMPLETE and Phase 5 begins (ModeToggler, Direction, Sidebar, Chat)."
   },
   "iconLibrary": {
     "page": "275:32",
