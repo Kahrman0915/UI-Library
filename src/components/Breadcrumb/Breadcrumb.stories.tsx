@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { MoreHorizontal, Slash } from 'lucide-react';
+import { Ellipsis, Slash } from 'lucide-react';
 import Breadcrumb, {
   BreadcrumbEllipsis,
   BreadcrumbItem,
@@ -109,7 +109,7 @@ export const WithDropdownCollapse: Story = {
               <Button
                 id="crumb-ellipsis"
                 iconOnly
-                IconCenter={MoreHorizontal}
+                IconCenter={Ellipsis}
                 style="ghost"
                 size="small"
                 aria-label="Show hidden segments"

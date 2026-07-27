@@ -2,11 +2,11 @@ import type { Meta, StoryObj } from '@storybook/react';
 import {
   Calendar,
   ChevronRight,
+  Ellipsis,
   FileText,
-  Home,
+  House,
   Inbox,
   LayoutDashboard,
-  MoreHorizontal,
   Plus,
   Search,
   Settings,
@@ -79,7 +79,7 @@ const DemoSidebar = ({
           <SidebarMenu>
             <SidebarMenuItem>
               <SidebarMenuButton tooltip="Home" isActive>
-                <Home />
+                <House />
                 <span>Home</span>
               </SidebarMenuButton>
             </SidebarMenuItem>
@@ -96,7 +96,7 @@ const DemoSidebar = ({
                 <span>Calendar</span>
               </SidebarMenuButton>
               <SidebarMenuAction showOnHover aria-label="More">
-                <MoreHorizontal />
+                <Ellipsis />
               </SidebarMenuAction>
             </SidebarMenuItem>
             <SidebarMenuItem>

@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   Info,
-  CheckCircle2,
-  AlertTriangle,
-  AlertCircle,
+  CircleCheck,
+  TriangleAlert,
+  CircleAlert,
   Terminal,
 } from 'lucide-react';
 import Alert from './Alert';
@@ -49,11 +49,11 @@ const iconFor = (variant: string) => {
     case 'info':
       return Info;
     case 'success':
-      return CheckCircle2;
+      return CircleCheck;
     case 'warning':
-      return AlertTriangle;
+      return TriangleAlert;
     case 'error':
-      return AlertCircle;
+      return CircleAlert;
     default:
       return Terminal;
   }
@@ -119,11 +119,11 @@ export const TitleOnly: Story = {
         maxWidth: 'var(--max-w-lg)',
       }}
     >
-      <Alert id="t1" variant="success" Icon={CheckCircle2} title="Saved" />
+      <Alert id="t1" variant="success" Icon={CircleCheck} title="Saved" />
       <Alert
         id="t2"
         variant="error"
-        Icon={AlertCircle}
+        Icon={CircleAlert}
         title="Something went wrong"
       />
     </div>
@@ -148,7 +148,7 @@ export const DescriptionOnly: Story = {
       <Alert
         id="d2"
         variant="warning"
-        Icon={AlertTriangle}
+        Icon={TriangleAlert}
         description="This action is irreversible."
       />
     </div>
@@ -161,7 +161,7 @@ export const WithAction: Story = {
       <Alert
         id="a1"
         variant="warning"
-        Icon={AlertTriangle}
+        Icon={TriangleAlert}
         title="Storage almost full"
         description="You've used 92% of your allocated storage."
         action={

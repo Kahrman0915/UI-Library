@@ -11,6 +11,7 @@ import type {
   AttachmentTitleProps,
   AttachmentTriggerProps,
 } from './Attachment.types';
+import '../../styles/icon-button.scss';
 import './Attachment.scss';
 
 const useAttachment = () => {
@@ -173,9 +174,10 @@ const AttachmentActions = forwardRef<HTMLDivElement, AttachmentActionsProps>(
 AttachmentActions.displayName = 'AttachmentActions';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Action — a single icon button in the actions row. Consumers can style/wire
-// however they want; this is intentionally a plain <button> so it composes
-// with any icon element inside.
+// Action — a single icon button in the actions row. A plain <button> so it
+// composes with any icon, and deliberately NOT CloseButton, which hard-codes
+// an X and is only ever a dismissal. Both sit on the shared `.ui-icon-button`
+// shell, so they cannot drift apart again.
 // ═════════════════════════════════════════════════════════════════════════════
 
 const AttachmentAction = forwardRef<HTMLButtonElement, AttachmentActionProps>(
@@ -186,7 +188,7 @@ const AttachmentAction = forwardRef<HTMLButtonElement, AttachmentActionProps>(
         {...rest}
         ref={ref}
         type={type ?? 'button'}
-        className={`ui-attachment__action${className ? ' ' + className : ''}`}
+        className={`ui-icon-button ui-icon-button--fill ui-attachment__action${className ? ' ' + className : ''}`}
       >
         {children}
       </button>
@@ -242,6 +244,12 @@ const AttachmentGroup = forwardRef<HTMLDivElement, AttachmentGroupProps>(
     <div
       {...rest}
       ref={ref}
+      // The group scrolls horizontally (overflow-x: auto), and a row of plain
+      // display attachments contains nothing focusable — so without a tab stop
+      // a keyboard user cannot reach the overflow at all (WCAG 2.1.1). Same
+      // fix ScrollArea and CodeBlock carry. It is unconditional because
+      // whether the children happen to be focusable is a runtime question.
+      tabIndex={0}
       className={`ui-attachment-group${className ? ' ' + className : ''}`}
     >
       {children}

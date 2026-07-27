@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 20/57 done. Phase 1 COMPLETE. Phase 2 (12/14): + Code, CloseButton, Avatar. Next up: AspectRatio. Queue in the ledger.
+- **Status:** 30/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way (Card, Item, Attachment). Next up: **Collapsible**. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -47,6 +47,18 @@ code — give each its own component set. Badge ships `variant` (12 status optio
 Flattening them into one 42-option dropdown would offer a designer choices that silently
 cancel each other out. Two sets (`Badge`, `Badge/Category`) make the fork explicit: pick
 the set that matches the job, then pick within it. Say which wins in the Overview.
+
+### Continuous props can't be a variant axis — say so
+
+`AspectRatio`'s `ratio` is a plain number, so every value is legal. Figma variants must be
+discrete, so the set ships six representative shapes and the **description states outright
+that they are a shortcut, not the API**. Without that line a designer reads six options as
+the entire surface. Same applies to any free-form numeric prop (Skeleton's width/height,
+Slider's min/max).
+
+Related: `node.targetAspectRatio` is **read-only to plugins**. Where the component's whole
+point is a constraint the API can't express, size the frames correctly and flag the manual
+UI toggle on the page — a stated manual step beats a silent gap.
 
 ### Compound families — model only what has visual decisions
 
@@ -140,6 +152,106 @@ semantics / focus / loading / disabled / contrast (call out anything automated
 checkers get wrong — e.g. axe can't score the aiden gradient) → sep →
 VERSION HISTORY section + `_Doc/ChangelogRow` per edit (**append, never rewrite**;
 seed `1.0 · date · author · Initial doc page`).
+
+## Slots — for anything that is `React.ReactNode` in code
+
+If a layer's code counterpart accepts arbitrary children, model it as a **Figma slot**, not as baked-in
+content. A designer can then drop an Avatar, StatusDot or icon button straight in without detaching the
+whole component. Card's `ui-card__header-action`, `ui-card__body` and `ui-card__footer` are the reference.
+
+```js
+const key = master.addComponentProperty('ui-card__body', 'SLOT', '');
+node.componentPropertyReferences = { ...existingRefs, slotContentId: key };
+```
+
+**`slotContentId` is undocumented.** The official component-creation reference lists only
+`characters` / `visible` / `mainComponent`, and every plausible guess (`slot`, `slotContent`, `content`,
+`children`) is rejected as an unrecognized key. It was found by having the owner convert one layer in the
+Figma UI and reading back its `componentPropertyReferences` — worth remembering as a technique whenever an
+API looks unavailable.
+
+What the conversion does and does not preserve:
+
+- Converts the frame **in place** into a real `SLOT` node — same node id, and `figma.createSlot()` does not exist, so this is the only programmatic path.
+- **Keeps** default content, other property bindings (a `visible` boolean coexists fine), and layout sizing.
+- **Renames** the node to the property name — so name the property with the **BEM class** to keep layer names mapped to CSS.
+- `clone()` preserves slots, so a slotted master can seed variants.
+- Text properties inside a slot's default content keep working, so `Title` / `Body` can stay TEXT props alongside the slot.
+
+Slots are invisible to rendering — screenshots before and after are identical — and they do not affect the lint.
+
+### Rollout policy (owner, 2026-07-26)
+
+**Forward-only plus a scoped backfill.** Every new page slots anything that is `React.ReactNode` in code.
+The backfill was limited to the compound families designers actually compose with — Item, Field,
+InputGroup, Attachment — and of those only **InputGroup** had shipped, so that was the whole backfill
+(its icon-only button glyph). Item, Field and Attachment are still queued and get slots natively. The
+simpler shipped atoms keep their baked content **deliberately** — don't sweep them.
+
+### Name your slots after real props — don't slot a whole region
+
+A slot can quietly outrun the code. Exposing an entire region as one free slot lets a designer compose
+things the component has no prop for: Card's header has no leading position at all, so a featured icon was
+undrawable in code while being trivial in Figma. That is the "plausible-looking mock is a bug waiting to be
+built" failure in a new costume.
+
+Prefer **named slots that map 1:1 to a real prop** (`ui-card__header-media` ← `media`,
+`ui-card__header-action` ← `action`). If the design need is genuine, **add the prop to the code first and
+mirror it** — that is exactly how `CardHeader`'s `media` came about.
+
+Slots also take `preferredValues` *and* a `description`:
+
+```js
+comp.editComponentProperty(slotKey, {
+  preferredValues: [{type:'COMPONENT_SET', key: badgeKey}, {type:'COMPONENT', key: iconKey}],
+  description: 'Pinned right of the title — a status Badge, a Chip, an icon button.',
+});
+```
+
+They are suggestions at the top of the picker rather than a whitelist, so listing a handful costs nothing
+and steers the designer toward the components that actually belong there.
+
+### A slot OR text properties — never both
+
+**A slot's sublayers cannot hold `componentPropertyReferences`.** Figma throws *"Cannot set component
+property references on slot sublayer"*. So a region is either a slot or has text properties inside it.
+Attachment's content stayed a plain frame for exactly this reason, keeping Title and Description editable;
+only media and actions became slots.
+
+Confusingly, a binding created *before* conversion can survive — Card's `Body` sits inside a slot and still
+works — while Item's labels were stripped by the same operation. Treat survival as unreliable and re-check
+every conversion rather than assuming either outcome.
+
+### Two more API traps
+
+- **`findAll()` does not traverse into component-set variants; `findAllWithCriteria()` does.** A slot health
+  check written with `findAll` reported "wired 0" for slots that were correctly wired across all six
+  variants. Use `findAllWithCriteria` for anything inside a set.
+- **`layoutAlign = 'MAX'` silently does not stick** on an auto-layout child — it stays `INHERIT` and the
+  parent's `counterAxisAlignItems` wins. To reproduce CSS `align-self: flex-end`, make the child FILL the
+  width and set its own `primaryAxisAlignItems = 'MAX'`.
+
+### Slot gotchas found the hard way
+
+- **Converting a frame to a slot strips its children's `componentPropertyReferences` and hides them.** Item's
+  header/footer labels lost their `characters` binding and went invisible, leaving two orphan TEXT properties
+  behind. Figma treats slot default content as a placeholder. The lesson is not to work around it — it is
+  that a `ReactNode` region should not have a text property in the first place. `ItemHeader` takes children,
+  so the fix was deleting the text props, not restoring them.
+- **A freshly converted slot holds a stale 100px height and lies about it.** It reports
+  `layoutSizingVertical: 'HUG'` while rendering a 100px empty band. Setting HUG again does nothing; call
+  `resize(w, contentHeight)` first to clear the explicit size, *then* set HUG and it sticks.
+- **Skip hidden children in the overflow check.** A node hidden by a boolean keeps a stale
+  `absoluteBoundingBox`, which produced 18 phantom overflows on Item. Filter `c.visible !== false` alongside
+  the `layoutPositioning === 'ABSOLUTE'` filter.
+
+### Slot vs TEXT vs INSTANCE_SWAP
+
+Reach for a slot when the code prop is `React.ReactNode` *and* the content is genuinely open — an avatar,
+a status dot, an icon button. A short string is still better as a TEXT property. `InputGroup/Button` shows
+the split: its 8 labelled variants keep `Label` as TEXT, and only the 8 icon-only variants slot their
+`glyph`. The two coexist happily — a slot keeps its default content, so a TEXT-bound node *inside* a slot
+still works, which is how Card keeps an editable `Body` inside `ui-card__body`.
 
 ## `_Doc/*` masters (page `146:122`)
 
@@ -340,13 +452,42 @@ Sweep the new page + set (skip nodes inside instances):
   `counterAxisSpacing`, and `layoutSizingHorizontal='FILL'` on any row that might exceed
   `cardWidth − padding` (a Props row with ~8+ pills always will).
   Same care for fixed-width table label columns: measure the longest string before sizing.
+- **Composite examples: one run, corners by GLOBAL position.** When the code puts several parts inside a single
+  container, the CSS runs `:not(:first-child)` / `:not(:last-child)` across *all* of them — text cells and separators
+  included. Building the example from sub-groups in Figma restarts that logic and yields rounded corners in the middle of
+  a control (ButtonGroup shipped with `Copy` rounded on its right, `Paste` rounded on both sides, and the `Sort by` cell
+  as a free-floating pill). Read the real `borderRadius` per child out of the browser and match it literally. Where a run
+  genuinely breaks — a full-width separator — nest the collapsed run inside a spacing-0 outer row instead of restarting
+  the corner assignment.
+- **A clipping frame hides its own overflow from `absoluteBoundingBox`.** With `clipsContent: true` the reported box is
+  the *clipped* one, so a bounding-box check passes while content is visibly cut off — Card's 150px footer sliced the
+  "Cancel" button in half and the check said clean. Run a **content** check too: sum the children's sizes plus gaps and
+  padding, compare against the frame, and skip `layoutWrap === 'WRAP'` frames.
+- **`SPACE_BETWEEN` makes Figma ignore `itemSpacing`.** CSS applies `justify-content: space-between` *and* `gap`; Figma
+  drops the gap and lets a FILL child absorb it. Card's header handed its title 16px more width than the browser until
+  the align became `MIN` — the FILL child already grows, so `MIN` reproduces the CSS exactly. Any frame with both a FILL
+  child and SPACE_BETWEEN is worth checking against real measurements.
+- **`appendChild()` returns void, not the child.** `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws
+  `cannot set property of null`, and since scripts are atomic that rolls back the entire page. Use a small
+  `add(parent, node, fill)` helper that appends, optionally sets sizing, and *returns the node*.
+- **`layoutWrap='WRAP'` must be set AFTER `layoutMode='HORIZONTAL'`** — setting it while the frame is still vertical throws.
+- **Check overflow RECURSIVELY, not just at the top level.** Comparing only each page-frame's direct children reported
+  clean while both example bars sat collapsed at 100px with their contents spilling out — the failure was a level deeper
+  (a horizontal bar left at `counterAxisSizingMode='FIXED'`, which freezes *height*). Walk every auto-layout frame against
+  its own children, skipping `layoutPositioning==='ABSOLUTE'`.
+- **Figma paints later siblings on top, exactly like the DOM — so you cannot demonstrate a CSS `z-index` lift by putting a
+  focus effect on a middle child.** The neighbour that follows it covers the ring, and the canvas ends up documenting the
+  *bug* rather than the fix. Draw the ring as an absolutely-positioned rect appended last. ButtonGroup's Spec does this.
 - **Instances can't `appendChild`** — masters pre-provision max children; instances
   hide extras (`visible=false`).
 - **`createAutoLayout` defaults `clipsContent=true`** — unclip rows/cells or focus
   rings get cut.
 - **Horizontal AL: `counterAxisSizingMode='FIXED'` freezes HEIGHT** (wrapped text
   clips). Fixed-width/hug-height = `primaryAxisSizingMode='FIXED'` +
-  `counterAxisSizingMode='AUTO'`.
+  `counterAxisSizingMode='AUTO'`. **The axes FLIP on a VERTICAL frame** — there primary is *height* and
+  counter is *width*, so fixed-width/hug-height becomes `counterAxisSizingMode='FIXED'` +
+  `primaryAxisSizingMode='AUTO'`. Reusing one pair for both orientations gave Attachment's vertical variants
+  a frozen 100px height and a hugging width.
 - **REST `get_screenshot` serves stale renders for freshly *modified* nodes**
   (fresh-created nodes are fine). Fallback: `node.exportAsync` — but base64 >20 kb
   truncates in tool output; export small crops or decode via a saved file.
@@ -357,7 +498,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **AspectRatio**).
+1. Read the ledger → next component in the phase queue (next up: **Collapsible**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).

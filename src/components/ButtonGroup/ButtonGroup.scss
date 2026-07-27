@@ -2,18 +2,43 @@
   display: inline-flex;
   align-items: stretch;
 
+  // The focused or hovered child lifts above its neighbours. Button draws its
+  // focus ring as an *outward* box-shadow, and children abut exactly — so
+  // without this the ring is painted over by whichever sibling follows it in
+  // the DOM, leaving a middle button ringed on only two sides. Same lift
+  // ToggleGroup uses.
+  > * {
+    position: relative;
+  }
+
+  > *:hover:not(:disabled),
+  > *:focus-visible,
+  > *:focus-within {
+    z-index: 1;
+  }
+
   &--horizontal {
     flex-direction: row;
 
-    // Flatten the touching corners of every child except the outer ones.
+    // Flatten the touching corners of every child except the outer ones, and
+    // pull each one back so the two 1px inset outlines at a seam collapse onto
+    // each other. Without the pull a seam reads 2px against a 1px outer edge.
     > *:not(:first-child) {
       border-top-left-radius: 0;
       border-bottom-left-radius: 0;
+      margin-left: calc(-1 * var(--border-w-100));
     }
 
     > *:not(:last-child) {
       border-top-right-radius: 0;
       border-bottom-right-radius: 0;
+    }
+
+    // The separator *is* a 1px rule. Collapsing it would erase it, and pulling
+    // the next child over it would do the same — so neither one moves.
+    > .ui-button-group__separator,
+    > .ui-button-group__separator + * {
+      margin-left: 0;
     }
   }
 
@@ -23,11 +48,17 @@
     > *:not(:first-child) {
       border-top-left-radius: 0;
       border-top-right-radius: 0;
+      margin-top: calc(-1 * var(--border-w-100));
     }
 
     > *:not(:last-child) {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
+    }
+
+    > .ui-button-group__separator,
+    > .ui-button-group__separator + * {
+      margin-top: 0;
     }
   }
 

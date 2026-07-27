@@ -2,9 +2,9 @@ import { Fragment } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
   ChevronRight,
+  Ellipsis,
   FileText,
   Folder,
-  MoreHorizontal,
   Star,
   User,
 } from 'lucide-react';
@@ -287,7 +287,7 @@ export const Disabled: Story = {
           <ItemDescription>Read-only. Restore to interact.</ItemDescription>
         </ItemContent>
         <ItemActions>
-          <MoreHorizontal
+          <Ellipsis
             style={{ color: 'var(--muted-foreground)' }}
             width={16}
             height={16}

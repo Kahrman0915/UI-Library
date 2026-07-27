@@ -524,34 +524,11 @@
 // Composer tools — icon buttons for the toolbar (dictation, expand).
 // ─────────────────────────────────────────────────────────────────────────────
 
+// Shell from `src/styles/icon-button.scss`; only the box and icon size are the
+// composer's own. --rounded-md is the shared default, so no radius override.
 .ui-chat-composer__tool {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   width: var(--w-8);
   height: var(--h-8);
-  padding: 0;
-  border: none;
-  border-radius: var(--rounded-md);
-  background: transparent;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
-
-  &:hover:not(:disabled) {
-    background: var(--accent);
-    color: var(--foreground);
-  }
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-  &:disabled {
-    opacity: var(--o-50);
-    cursor: not-allowed;
-  }
 
   svg {
     width: var(--w-4);

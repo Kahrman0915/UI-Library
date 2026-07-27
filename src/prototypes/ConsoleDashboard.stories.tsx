@@ -4,7 +4,7 @@ import {
   Search,
   Plus,
   ChevronDown,
-  MoreHorizontal,
+  Ellipsis,
   User,
   Settings,
   LogOut,
@@ -266,7 +266,7 @@ function Dashboard() {
 
               <ContextMenu id="ov-ctx">
                 <ContextMenuTrigger>
-                  <Button id="ov-ctx-t" label="Right-click me" style="outline" IconRight={MoreHorizontal} />
+                  <Button id="ov-ctx-t" label="Right-click me" style="outline" IconRight={Ellipsis} />
                 </ContextMenuTrigger>
                 <ContextMenuContent>
                   <ContextMenuItem>Rename</ContextMenuItem>

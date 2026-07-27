@@ -39,6 +39,13 @@
     width: 100%;
     height: 100%;
 
+    // It's a focusable scroll container (see ScrollArea.tsx) — so it has to
+    // show focus. Inset, because an outset ring would sit under the rail.
+    &:focus-visible {
+      outline: none;
+      box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+    }
+
     // Hide native scrollbar — thumb is rendered manually
     scrollbar-width: none;
     -ms-overflow-style: none;
@@ -91,16 +98,22 @@
   &__thumb {
     position: absolute;
     background: var(--muted-foreground);
-    opacity: 0.4;
+    opacity: var(--o-40);
     border-radius: var(--rounded-full);
-    cursor: pointer;
+    // A drag handle, not a target — `pointer` promises a click that does
+    // nothing here. `grab` / `grabbing` names what the thumb actually does.
+    cursor: grab;
     transition:
       opacity var(--duration-fast) var(--ease-out);
     touch-action: none;
 
-    &:hover,
+    &:hover {
+      opacity: var(--o-70);
+    }
+
     &:active {
-      opacity: 0.7;
+      opacity: var(--o-70);
+      cursor: grabbing;
     }
   }
 

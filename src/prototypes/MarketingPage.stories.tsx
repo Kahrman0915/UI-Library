@@ -9,7 +9,7 @@ import {
   Star,
   Zap,
   Shield,
-  BarChart3,
+  ChartColumn,
   Globe,
   Workflow,
   Bell,
@@ -80,7 +80,7 @@ const eyebrow: CSSProperties = {
 const features = [
   { id: 'f-speed', Icon: Zap, title: 'Instant builds', desc: 'Sub-second incremental builds with a globally distributed cache.' },
   { id: 'f-secure', Icon: Shield, title: 'Enterprise security', desc: 'SOC 2 Type II, SSO/SAML, and audit logs on every plan tier.' },
-  { id: 'f-analytics', Icon: BarChart3, title: 'Real-time analytics', desc: 'Track usage, errors, and latency the moment they happen.' },
+  { id: 'f-analytics', Icon: ChartColumn, title: 'Real-time analytics', desc: 'Track usage, errors, and latency the moment they happen.' },
   { id: 'f-global', Icon: Globe, title: 'Edge network', desc: 'Deploy to 40 regions with automatic failover and routing.' },
   { id: 'f-flow', Icon: Workflow, title: 'Automations', desc: 'Wire builds, deploys, and alerts into no-code workflows.' },
   { id: 'f-alerts', Icon: Bell, title: 'Smart alerts', desc: 'Anomaly detection that pages you only when it truly matters.' },

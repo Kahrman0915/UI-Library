@@ -47,15 +47,25 @@ export type ToggleGroupValueProps = {
   onValueChange?: ((value: string) => void) | ((value: string[]) => void);
 };
 
-export type ToggleGroupItemProps = Omit<
+type ToggleGroupItemBase = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,
-  'onClick' | 'type' | 'value'
+  'onClick' | 'type' | 'value' | 'aria-label'
 > & {
   value: string;
-  label?: React.ReactNode;
   IconLeft?: React.FC;
+  /** Icon-only item — renders a single centred glyph. Requires an `aria-label`. */
   IconCenter?: React.FC;
   disabled?: boolean;
-  'aria-label'?: string;
   className?: string;
 };
+
+/**
+ * Same rule as Toggle and Chip: a visible `label` supplies the accessible name,
+ * and without one `aria-label` is required. Icon-only items are the common case
+ * in a segmented control, so this is the shape most likely to need it.
+ */
+export type ToggleGroupItemProps = ToggleGroupItemBase &
+  (
+    | { label: React.ReactNode; 'aria-label'?: string }
+    | { label?: undefined; 'aria-label': string }
+  );

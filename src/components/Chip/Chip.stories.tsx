@@ -44,6 +44,38 @@ export const Sizes: Story = {
   ),
 };
 
+/**
+ * An `IconCenter` with no `label` renders alone in a squared, centred box —
+ * the same rule Toggle and ToggleGroup use. `aria-label` is required by the
+ * type in this shape, because there is no visible text to name the control.
+ */
+export const IconOnly: Story = {
+  render: () => (
+    <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+      {sizes.map((size) => (
+        <div key={size} style={{ display: 'grid', gap: 6, justifyItems: 'center' }}>
+          <Chip
+            id={`icon-only-${size}`}
+            size={size}
+            IconCenter={Plus}
+            aria-label={`Add filter (${size})`}
+          />
+          <span
+            style={{
+              fontFamily: 'var(--font-family)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--muted-foreground)',
+            }}
+          >
+            {size}
+          </span>
+        </div>
+      ))}
+      <Chip id="icon-only-active" IconCenter={Check} active aria-label="Selected" />
+    </div>
+  ),
+};
+
 export const Active: Story = {
   args: { active: true, label: 'Selected' },
 };

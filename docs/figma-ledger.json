@@ -12,7 +12,9 @@
     "a11y": "'A11y contract' section: Keyboard pills row + paragraphs (semantics / focus / loading / disabled / contrast incl. gradient caveat).",
     "designCheck": "Ship gate, must be ALL ZEROS: unbound solid fills/strokes (outside instances) · text without textStyleId · generic layer names · unbound nonzero padding/radius · missing COMPONENT descriptions.",
     "labeledSeparator": "_Doc/SeparatorLabeled (175:594) — line/LABEL/line, Label prop; table group headings.",
-    "aidenDarkPattern": "REQUIRED for every aiden gradient fill: 'aiden-dark-gradient' rect at child index 0 (above frame fill, below content; STRETCH; radius bound) with dark gradient #a78bfa→#93c5fd (alpha 1 solid / 0.10 secondary), visibility bound to Mode boolean flag/is-dark (VariableID:175:26, Light=false Dark=true). Aiden TEXT already flips via color/aiden-* Mode vars. NEVER separate aiden-light/dark variants — mode is an axis, not a variant."
+    "aidenDarkPattern": "REQUIRED for every aiden gradient fill: 'aiden-dark-gradient' rect at child index 0 (above frame fill, below content; STRETCH; radius bound) with dark gradient #a78bfa→#93c5fd (alpha 1 solid / 0.10 secondary), visibility bound to Mode boolean flag/is-dark (VariableID:175:26, Light=false Dark=true). Aiden TEXT already flips via color/aiden-* Mode vars. NEVER separate aiden-light/dark variants — mode is an axis, not a variant.",
+    "slots": "SLOTS (added 2026-07-26, owner request). Any layer whose code counterpart is React.ReactNode should be a slot, so a designer can drop in an Avatar / StatusDot / icon button without detaching. Recipe: key = master.addComponentProperty(\"<bem-name>\", \"SLOT\", \"\") then node.componentPropertyReferences = {...existingRefs, slotContentId: key}. THE REFERENCE KEY IS `slotContentId` — it is in none of the official skill docs, which list only characters/visible/mainComponent. Wiring it CONVERTS the frame into a real SLOT node in place: same node id, default content kept, other bindings (e.g. visible) kept, layout sizing kept — but the node is RENAMED to the property name, so name the property with the BEM class to keep layer names mapped to CSS. There is no figma.createSlot(); wiring the reference is the only programmatic path. clone() preserves slots.",
+    "slotPolicy": "OWNER DECISION 2026-07-26: forward-only plus high-value backfill. Every NEW page slots any layer whose code counterpart is React.ReactNode. Backfill was scoped to the compound families that designers actually compose with — Item, Field, InputGroup, Attachment — of which only InputGroup was already shipped, so the backfill was that one page. Item, Field and Attachment are still in the Phase 3 queue and get slots natively. The simpler shipped atoms keep their baked content deliberately; do NOT sweep them."
   },
   "pages": {
     "startHere": "165:506",
@@ -61,7 +63,8 @@
       "code": "S:e0fb2e6aa1bd0675508ec33895d7660703122bae,",
       "monoXs_12": "S:0aeef06828ad049df29ab3f435f135a36ef262e7,",
       "monoSm_14": "S:132f19fd831366b8959678010705e99eb68a0e94,",
-      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,"
+      "xsMedWide": "S:66438c8b43d03d644e151674a4e5cdefb63c3a7e,",
+      "baseLeading7Italic": "S:03b6f16079d8a19ecd839a4e686bbfb99893e946,"
     },
     "keyVars": {
       "color/background": "VariableID:2:3",
@@ -136,7 +139,35 @@
     "Verify a destructive bulk operation on ONE duplicated node and screenshot it BEFORE running it across a library. Counts and property reads looked perfect after the bad merge ('1 path, stroke kept, 24x24') while every glyph was visually destroyed. Numbers are not verification for geometry — pixels are.",
     "When a component's shape comes from a CHILD layer's radius, a stroke or ring applied to the ROOT will follow the root's (square) geometry instead. Mirror the radius onto every layer the CSS sets it on — Avatar's CSS applies it to both the root and the inner clip layer, and modelling only the inner produced square rings around circular avatars.",
     "A pinned CSS stroke-width on an SVG icon is in VIEWBOX units, not rendered pixels — pinning '1.33px' on a 12px icon renders 0.665px. If a token's value is meant as a rendered width, it only matches at the size where viewBox and box coincide. Usually the right move is to NOT pin it and let lucide's own 2 units scale.",
-    "Check hit targets, not just visuals: measure getBoundingClientRect against WCAG 2.5.8's 24x24. A control can look right and be untappable. Where the drawn box must stay small, expand the target with a transparent ::after rather than resizing."
+    "Check hit targets, not just visuals: measure getBoundingClientRect against WCAG 2.5.8's 24x24. A control can look right and be untappable. Where the drawn box must stay small, expand the target with a transparent ::after rather than resizing.",
+    "node.targetAspectRatio is READ-ONLY to plugins — an aspect-ratio constraint can only be set in the Figma UI. When a component's whole point is a constraint the API cannot express, size the frames correctly and flag the manual toggle on the page rather than leaving a silent gap.",
+    "When a prop is CONTINUOUS (a number) rather than a union, a Figma variant axis cannot be faithful. Model representative values and say plainly in the set description that they are a shortcut, not the API — otherwise a designer reads six options as the whole surface.",
+    "Use neutral, invented placeholder copy in design-system demos — not real people's quotations or names. A component library's demo content gets copied into product mockups, and a real attribution reads as endorsement. Blockquote's first draft used a real person's aphorism; replaced with invented copy and a fictional reviewer.",
+    "Hiding a native scrollbar transfers all of its accessibility to you. ScrollArea set scrollbar-width:none and drew its own thumb, which meant the missing tabIndex had no fallback at all — and its hover-reveal could never trigger for keyboard users because :focus-within had nothing to match. If a component takes over a native affordance, audit what the browser was doing for free before shipping it.",
+    "An audit note is only as good as its list. CLAUDE.md claimed component SCSS was fully tokenized and enumerated what had been checked (durations, easings, border-widths, focus-rings). Opacity was not on that list and five raw literals were sitting in four components with --o-* already defined. Enumerate token CATEGORIES from tokens.scss and grep for a raw literal of each, rather than trusting a prose summary.",
+    "When two components share an interaction shape and differ only in emphasis (Chip vs Toggle: both aria-pressed, one brand one neutral), the doc page's job is the DECISION RULE, not the pixel diff. 'Does the on-state change what data is shown, or how a tool behaves?' is what a designer actually needs; a side-by-side of the two fills is not.",
+    "RESOLVED 2026-07-26 — the repo was importing 13 DEPRECATED lucide aliases, which the Figma icon set (built from canonical names only) does not contain, so a designer searching the swap list for 'align-left' found nothing. Detection is mechanical, not guesswork: in lucide-react/dist/esm/icons an ALIAS module is a bare `export { default } from './canonical.mjs'` re-export, while a canonical module calls createLucideIcon. Migrated all 13: AlignLeft->TextAlignStart, AlignCenter->TextAlignCenter, AlignRight->TextAlignEnd, AlertCircle->CircleAlert, AlertTriangle->TriangleAlert, XCircle->CircleX, CheckCircle2->CircleCheck, MoreHorizontal->Ellipsis, FileVideo->FilePlay, FileWarning->FileExclamationPoint, FileJson->FileBraces, BarChart3->ChartColumn, Home->House. Two were in SHIPPED source (Breadcrumb.tsx, Pagination.tsx), the rest in stories/prototypes. Re-run the alias check after any lucide upgrade — today's canonical name is tomorrow's alias.",
+    "figma appendChild() returns VOID, not the appended child. `parent.appendChild(x).layoutSizingHorizontal='FILL'` throws 'cannot set property of null' and — because scripts are atomic — rolls the whole page back. Use an add(parent,node,fill) helper that appends, optionally sets sizing, and returns the node.",
+    "layoutWrap='WRAP' can only be set AFTER layoutMode='HORIZONTAL'. Setting it on a frame that is still VERTICAL throws.",
+    "The overflow check must be RECURSIVE. Comparing only the top-level frames' direct children passed clean while both example bars sat collapsed at 100px with their contents spilling — the bug was one level deeper. Walk every auto-layout frame against its own children (skipping layoutPositioning==='ABSOLUTE').",
+    "Figma paints later siblings on top, exactly like the DOM — so a CSS z-index lift CANNOT be shown by applying a focus effect to a middle child. The neighbour that follows it covers the ring and the canvas silently documents the BUG rather than the fix. Draw the ring as an absolutely-positioned rect appended last instead.",
+    "When a code example puts several parts inside ONE container, model it in Figma as ONE run with corners assigned by GLOBAL position. Composing it from sub-groups restarts the first/last logic and produces rounded corners in the middle of a control: ButtonGroup's toolbar shipped with Copy rounded on its right and Paste rounded on both sides, and the 'Sort by' cell as a free-floating pill, because each sub-group thought it had its own first and last child. The CSS runs :not(:first-child)/:not(:last-child) across ALL the group's children — text cells and separators included. Read the real borderRadius per child out of the browser and match it literally. Where a run must break (a full-width separator), nest the collapsed run inside a spacing-0 outer row rather than restarting the corner logic.",
+    "A frame with clipsContent:true HIDES its own overflow from absoluteBoundingBox — the box comes back clipped, so a bounding-box overflow check reports clean while content is visibly cut off (Card's 150px footer clipped its Cancel button). Add a CONTENT check alongside the box check: sum the children's widths/heights plus gaps and padding and compare against the frame, skipping layoutWrap==='WRAP' frames.",
+    "primaryAxisAlignItems='SPACE_BETWEEN' makes Figma IGNORE itemSpacing, so a FILL child absorbs the gap. CSS does not work that way — `justify-content: space-between` and `gap` both apply. Card's header gave its title 16px more width than the browser until the align was changed to MIN (the FILL child already grows, so MIN reproduces the CSS exactly). Whenever a frame has both a FILL child and SPACE_BETWEEN, check the numbers against the browser.",
+    "Figma SLOTS are reachable from the plugin API even though nothing documents them: addComponentProperty(name,'SLOT','') then node.componentPropertyReferences={slotContentId:key}. The key `slotContentId` is undocumented — the official component-creation reference lists only characters/visible/mainComponent, and every guess (slot, slotContent, content, children) is rejected as an unrecognized key. I only found it by having the owner convert ONE layer in the UI and reading back its componentPropertyReferences. Lesson: when an API looks unavailable, have the user perform the action once in the UI and inspect the result, rather than concluding it cannot be done.",
+    "Slot vs TEXT vs INSTANCE_SWAP: a slot is right when the code prop is React.ReactNode AND the content is genuinely open (an avatar, a status dot, an icon button). A short string is still better as a TEXT property — InputGroup/Button keeps Label on its 8 labelled variants and slots only the 8 icon-only ones. Slots and text properties coexist: a slot preserves its default content, so a TEXT-bound node living inside a slot keeps working (Card's Body does exactly this).",
+    "preferredValues AND description are both writable on a SLOT property via editComponentProperty(key,{preferredValues,description}) — accepting {type:'COMPONENT_SET'|'COMPONENT', key}. They are suggestions surfaced at the top of the picker, not a whitelist, so listing a handful costs nothing and guides the designer.",
+    "A Figma slot can quietly outrun the code. Exposing a WHOLE region as one free slot lets a designer compose things the component has no prop for — Card's header has no leading position at all, so a featured icon was undrawable in code while being trivial in Figma. Prefer NAMED slots that map 1:1 to real props; if the design need is real, add the prop to the code first and mirror it, which is what CardHeader's `media` was.",
+    "Converting a frame to a SLOT STRIPS componentPropertyReferences from its children and hides them. Item's header/footer labels lost their `characters` binding and went invisible, leaving two orphan TEXT properties. Slot default content is treated as placeholder, so do NOT expect a text property to survive inside a newly-converted slot — bind text BEFORE deciding, or (better) accept that a ReactNode region should not have a text prop at all.",
+    "A freshly-converted SLOT holds a stale explicit height (100px) and REPORTS layoutSizingVertical:'HUG' while ignoring it. Setting HUG alone does nothing; call resize(w, contentHeight) first to clear the explicit size, then set HUG and it sticks. Symptom is a 100px empty band where a 16px line should be.",
+    "The overflow check must skip hidden children. A node hidden by a boolean keeps a STALE absoluteBoundingBox, which reported 18 phantom overflows on Item. Filter c.visible !== false alongside the ABSOLUTE-positioning filter.",
+    "A SLOT's sublayers CANNOT hold componentPropertyReferences — Figma throws 'Cannot set component property references on slot sublayer'. So a region is either a slot OR has text properties inside it, never both. Attachment's content stayed a plain frame for exactly this reason, keeping Title/Description as text props. Oddly, a binding that existed BEFORE conversion can survive (Card's Body does, verified) while Item's labels were stripped — treat survival as unreliable and re-check after every conversion.",
+    "findAll() does NOT traverse into component-set variants, but findAllWithCriteria() DOES. A health check written with findAll reported 'wired 0' for slots that were in fact wired across all 6 variants. Use findAllWithCriteria for anything inside a set.",
+    "The auto-layout sizing axes FLIP with layoutMode, and it bites twice: on HORIZONTAL, primary=width and counter=height; on VERTICAL it is the reverse. Applying the same FIXED/AUTO pair to both orientations gave Attachment's vertical variants a frozen 100px height and a hugging width — the exact inverse of the intent. Set the axes per orientation.",
+    "layoutAlign='MAX' silently does not stick on an auto-layout child (stays INHERIT); the parent's counterAxisAlignItems wins. To reproduce CSS align-self:flex-end, make the child FILL the width and set its own primaryAxisAlignItems='MAX'.",
+    "CloseButton hard-codes an <X> — it is a close button, not an icon-button primitive, and its two variants differ only in hover background. Splitting them would yield two close buttons. When a component looks like it should be shared but its icon is fixed, the reusable thing is the SHELL underneath, not the component: `.ui-icon-button` in src/styles/icon-button.scss now carries the box, hover tint, focus ring, disabled state and hit-target expansion for CloseButton, AttachmentAction and the Chat composer tools.",
+    "Instance sublayers cannot be removed — figma throws 'Node with id I…;… not found' on remove(). To change what is inside an instance you need a slot, a boolean-bound visibility, or an INSTANCE_SWAP; there is no deleting.",
+    "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring."
   ],
   "components": {
     "Button": {
@@ -277,8 +308,9 @@
       "themed": true,
       "themingFrame": "PRESENT — the first field component with one. InputGroupButton variant=default fills with --primary (Theme collection) and takes the Aiden gradient under data-surface. Everything else in the family is neutral.",
       "props": "InputGroup/Button: VARIANT Variant (default/outline/ghost/destructive) × Size (xs/sm/icon-xs/icon-sm) = 16; TEXT Label.",
-      "version": "1.0 · 2026-07-25",
-      "notes": "COMPOUND-FAMILY PATTERN worth copying: of the 6 exports only InputGroupButton has real visual decisions, so only it becomes a component set. Addon / Text / Input / Textarea are layout containers whose look comes from the wrap plus their own padding — documented as SLOTS (a labelled order-0..4 diagram) plus a composition gallery of assembled examples, not modelled as components. Two techniques documented: (1) CSS order decouples visual placement from DOM order so the input always gets Tab first; (2) the doubled selector `.ui-input-field .ui-input-group__wrap` is required to out-specify Input's per-size padding rule — without it the leading edge double-pads (owner hit this bug in code earlier). In Figma the block addons are built as VERTICAL rows rather than emulating flex-wrap + flex-basis:100%; visually identical, far simpler."
+      "version": "1.1 · 2026-07-26",
+      "notes": "COMPOUND-FAMILY PATTERN worth copying: of the 6 exports only InputGroupButton has real visual decisions, so only it becomes a component set. Addon / Text / Input / Textarea are layout containers whose look comes from the wrap plus their own padding — documented as SLOTS (a labelled order-0..4 diagram) plus a composition gallery of assembled examples, not modelled as components. Two techniques documented: (1) CSS order decouples visual placement from DOM order so the input always gets Tab first; (2) the doubled selector `.ui-input-field .ui-input-group__wrap` is required to out-specify Input's per-size padding rule — without it the leading edge double-pads (owner hit this bug in code earlier). In Figma the block addons are built as VERTICAL rows rather than emulating flex-wrap + flex-basis:100%; visually identical, far simpler.",
+      "slots": "InputGroup/Button's `glyph` is a SLOT on the 8 icon-* variants (the icon was fixed geometry, changeable only by detaching). The 8 labelled variants keep the Label TEXT property — a short label is better served by text than by a slot. Matches the code: InputGroupButton takes children: React.ReactNode."
     },
     "InputOTP": {
       "status": "done-v4",
@@ -534,25 +566,235 @@
         "AvatarGroup rendered flat-sided notches where avatars overlapped. Cause: the group's separating ring was applied to the instance ROOT, which had radius 0 — the circular shape lived only on ui-avatar__inner — so a 3px SQUARE ring was drawn around a circular avatar and its straight edge cut into the neighbour. Fixed 2026-07-25 by binding the root's radius per shape (circle -> radius/full, square -> radius/md), which also closes a fidelity gap: the CSS applies the radius to BOTH .ui-avatar and .ui-avatar__inner, and only the inner had been modelled."
       ],
       "note": "At Spacing=sm (-12px on a 40px avatar) the next circle clips part of the previous one's initials. That is faithful to the CSS, not a modelling error — worth knowing when choosing a spacing for two-letter fallbacks."
+    },
+    "AspectRatio": {
+      "status": "done-v4",
+      "pageId": "327:44",
+      "setIds": [
+        "327:63"
+      ],
+      "frames": {
+        "overview": "327:64",
+        "spec": "327:142",
+        "examplesDocsHistory": "327:241"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — and this one is absolute: AspectRatio.scss contains ZERO var(--…) references. It is the only component in the library that consumes no design token at all. Nothing to theme, and it never appears in the contrast script because it renders no text and no surface.",
+      "props": "VARIANT Ratio (16:9 | 4:3 | 1:1 | 3:4 | 21:9 | 2:3).",
+      "version": "1.0 · 2026-07-25",
+      "notes": "`ratio` is a CONTINUOUS number, not a union — any value is valid. Figma variants must be discrete, so the six are REPRESENTATIVE and the set description says so explicitly; this is a case where the Figma model cannot be faithful and the honest move is to label the shortcut. Also one of the few components with NO required `id` (rule 6 exception, like Toaster): no children of its own, no ARIA to wire, no state to announce. Documents the inline-style decision (ratio is per-instance, not a token; consumer `style` is spread after so it wins) and the one a11y trap — overflow: hidden clips the focus ring of any interactive child near the edge.",
+      "manualStep": "⚠ Figma's aspect-ratio lock is READ-ONLY to plugins (node.targetAspectRatio cannot be assigned), so the six variants are sized correctly but not constrained — drag-resizing distorts them instead of deriving the height. Someone must select the six variants and enable the aspect-ratio lock (or set W and H to Scale) in the UI. Noted on the Spec frame and in the set description."
+    },
+    "Blockquote": {
+      "status": "done-v4",
+      "pageId": "331:45",
+      "setIds": [
+        "331:57"
+      ],
+      "frames": {
+        "overview": "331:58",
+        "spec": "331:127",
+        "examplesDocsHistory": "331:206"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — all neutral. Noted on the page that the 4px rule is a plausible place a brand accent COULD live (several design systems tint it) but this one keeps it --border, consistent with the rule that chrome stays neutral. Changing that would be a system decision, not a component tweak.",
+      "props": "VARIANT Content (single|multi) + TEXT Quote + TEXT 'Quote 2' + BOOLEAN 'Show attribution' + TEXT Attribution.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The Content axis exists to show the paragraph rule: `> p` has margin zeroed so a single-paragraph quote sits flush against the rule, and `> p + p` adds --p-3 back only between consecutive paragraphs — the default state needs no correction. `cite` is Omit-ed from the native props and REDEFINED as displayed content: HTML's own cite attribute takes a source URL that browsers never render, so the component trades machine-readable provenance for a better call site. No required `id` (leaf, no ARIA to wire). Added one text style, base/leading-7/Italic — the only 16/28 pairing in the system; the CSS is --text-base on --leading-7 and no existing style carried it.",
+      "specDeviation": "⚠ The HTML spec says a quotation's attribution must be placed OUTSIDE the blockquote (the canonical markup is <figure> + <figcaption>). This component renders a <footer> INSIDE, which is what most component libraries do and degrades gracefully, but strictly makes the attribution part of the quoted material. Documented on the a11y section rather than silently modelled as correct; fixing it would be a breaking DOM change."
+    },
+    "ScrollArea": {
+      "status": "done-v4",
+      "pageId": "333:44",
+      "setIds": [
+        "333:80"
+      ],
+      "frames": {
+        "overview": "333:81",
+        "spec": "333:184",
+        "examplesDocsHistory": "333:363"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — scrollbar chrome stays neutral; nothing reads --primary.",
+      "props": "VARIANT Orientation (vertical|horizontal|both). `type` (auto|hover) is NOT a variant — it changes nothing at rest that Figma can show, so it is a note.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "The rails are LAID OUT, not overlaid: the inner element is a CSS grid where the viewport takes cell 1/1 and each rail gets its own fixed column/row with a --p-4 gap, so the thumb can never sit on content in any browser. The viewport needs min-width:0 / min-height:0 or the grid item refuses to shrink and the thing silently never scrolls. Thumb length and offset are computed at runtime from scrollTop/scrollHeight with a 20px floor, so the offsets drawn in Figma are ILLUSTRATIVE and the page says so. ResizeObserver watches the viewport and the children present AT MOUNT; a child that grows later is only caught by the layout effect keyed on `children`.",
+      "codeFixesLandedSameDay": "WCAG 2.1.1 — the viewport had no tabIndex, so 474px of content in a 206px box was unreachable by keyboard. Worse than the identical CodeBlock bug because the native scrollbar is hidden, leaving no fallback affordance, and because type='hover' keeps the rail at opacity 0 until :hover or :focus-within — which could never fire with nothing focusable inside. The two defects concealed each other; one tabIndex={0} fixed both. Also tokenized 5 raw opacity literals (ScrollArea x2, CloseButton, Chip, Command) and moved the thumb from cursor:pointer to grab/grabbing."
+    },
+    "Chip": {
+      "status": "done-v4",
+      "pageId": "335:44",
+      "setIds": [
+        "335:99"
+      ],
+      "frames": {
+        "overview": "336:44",
+        "spec": "336:128",
+        "theming": "336:637",
+        "examplesDocsHistory": "336:905"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — only the ACTIVE chip themes: it reads --primary for fill and border and --primary-foreground for the label. A resting chip is --bg-input-30 on --border, both neutral, so it is identical in every brand. The selection is the branded moment; the unselected state is chrome.",
+      "props": "VARIANT Size (xsmall|small|default) × Active (false|true) = 6, + BOOLEAN 'Icon left'/'Icon right' with INSTANCE_SWAP glyphs + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Active is a VARIANT axis, not a boolean — it changes fill, border and text colour, and a Figma boolean can only drive visibility. Hover moves only the resting chip (--bg-input-30 → -50); the active rule re-states --primary so a selected filter does not shift under the cursor, and the base hover is scoped :not(.ui-chip--active). Verified the SCSS `:not(&--active)` compiles correctly to `:not(.ui-chip--active)`. Hit targets measured 26 / 34 / 38px tall — all clear the 24px minimum, xsmall being the tightest.",
+      "openQuestions": [
+        "IconCenter is in ChipProps but does nothing distinct: the JSX renders {IconLeft}{IconCenter}{label}{IconRight}, so it occupies the same slot as IconLeft. With a label present the two are identical; without one it produces the same icon-only chip IconLeft would. Chip has no `iconOnly` switch (unlike Button) to suppress the label, and the container is justify-content: flex-start so nothing ever centres. Either wire it to suppress+centre like Button, or remove it — removing is breaking. Documented on the Overview as an alias for now.",
+        "An icon-only Chip has NO accessible name. `aria-label` is an optional prop with no fallback, so <Chip IconLeft={X} /> announces only 'button, not pressed'. CloseButton solves the identical problem by defaulting ariaLabel to 'Close'. Consider the same default, or requiring aria-label when no label is passed (a discriminated union would enforce it)."
+      ]
+    },
+    "Toggle": {
+      "status": "done-v4",
+      "pageId": "338:44",
+      "setIds": [
+        "338:117"
+      ],
+      "frames": {
+        "overview": "339:44",
+        "spec": "339:154",
+        "examplesDocsHistory": "339:655"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT and DELIBERATE — pressed fills neutral --accent, never --primary. A toolbar is a row of toggles and a screen has one primary action; if Bold/Italic/Underline all lit up in the brand colour they would out-shout the CTA beside them. Same reasoning as the ghost-button carve-out. Chip is the component that DOES take the brand when pressed.",
+      "props": "VARIANT Variant (default|outline) × Size (sm|default|lg) × Pressed (false|true) = 12, + BOOLEAN Icon + INSTANCE_SWAP Glyph + TEXT Label.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Chip-vs-Toggle is the decision this page exists to settle: does the on-state change WHAT DATA is shown (Chip, brand fill) or HOW A TOOL BEHAVES (Toggle, neutral fill)? ToggleGroup does not re-implement any of this — its items reuse .ui-toggle and collapse shared borders ButtonGroup-style, so changing Toggle changes the segmented control. Controlled/uncontrolled boundary is `pressed !== undefined`, so pressed={false} is controlled but omitting it is not — a computed prop that flips to undefined silently hands control back.",
+      "openQuestion": "⚠ Hover and pressed resolve to the SAME fill (--accent), so an unpressed toggle under the cursor looks identical to a pressed one at rest. In a toolbar this reads fine because the pointer is over only one item and the rest show true state; a LONE borderless toggle is genuinely ambiguous. Documented on the Spec frame with the outline variant recommended as the mitigation. Not changed — distinguishing them would mean a new hover token or a pressed treatment beyond fill, which is a system decision."
+    },
+    "ToggleGroup": {
+      "status": "done-v4",
+      "pageId": "344:44",
+      "setIds": [
+        "344:101"
+      ],
+      "frames": {
+        "overview": "345:68",
+        "spec": "345:188",
+        "examplesDocsHistory": "345:417"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — inherits Toggle's neutral pressed state, deliberately.",
+      "props": "VARIANT Orientation (horizontal|vertical) × Variant (default|outline) = 4.",
+      "version": "1.0 · 2026-07-25",
+      "notes": "Items are NOT Toggle instances in code either — ToggleGroupItem is a <button> wearing .ui-toggle, because it reads pressed state from context rather than owning it. ToggleGroup.scss therefore has NO colour/size/state rules; it only arranges. The segmented recipe is three rules: flatten inner radii, collapse borders with margin -1px (--border-w-100), and lift the active item to z-index 1 so its ring/fill is not clipped by an overlapping neighbour. In Figma the items are DRAWN, not Toggle instances, because per-item corner flattening cannot be expressed by an instance whose radius is bound uniformly — stated in the set description.",
+      "openQuestions": [
+        "No arrow-key navigation. The WAI-ARIA toolbar pattern expects a roving tabindex (one tab stop, arrows move within); here every item is its own tab stop. Workable at 3-5 items, which is why the page caps the recommended length. Menubar in this library DOES implement roving tabindex, so the pattern exists if this is worth closing.",
+        "The group has no accessible name. role=\"group\" with no aria-label announces just 'group'. Unlike the item-level name (now type-enforced), nothing requires this. Could default one, or require aria-label on the root.",
+        "type=\"single\" deselect passes an EMPTY STRING, not undefined — onValueChange is typed (value: string) => void and the code sends `next ?? ''`. Consumers must treat '' as 'nothing selected'."
+      ]
+    },
+    "ButtonGroup": {
+      "status": "done-v4",
+      "pageId": "353:44",
+      "setIds": [
+        "353:61",
+        "353:64",
+        "353:65"
+      ],
+      "frames": {
+        "overview": "353:68",
+        "spec": "353:121",
+        "examplesDocsHistory": "355:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — every token ButtonGroup itself reads is neutral (--border, --secondary). Stated in TOKENS. The colour in the examples belongs to the child Buttons, which do theme.",
+      "props": "VARIANT Orientation (horizontal|vertical) = 2. Deliberately no Style/Size axis — those belong to the child Buttons, not the group.",
+      "version": "1.1 · 2026-07-26",
+      "notes": "Three components, mirroring the three exports: ButtonGroup (2 variants), ButtonGroup/Separator (Orientation, 2) and ButtonGroup/Text (1). The root models ONLY orientation because that is its only prop — adding a style axis would have repeated Badge's variant/category mistake of offering choices the API does not have. Spec is 'anatomy x orientation' rather than 'matrix x states': the group is a div with role=group and has no states of its own, so the table breaks down seam treatment by position (first/middle/last), orientation, the two drawn parts, and the focus lift. Shipped WITH a code fix — see the ButtonGroup entry in git history.",
+      "openQuestions": [
+        "role=\"group\" has no accessible name and nothing enforces one; consumers must pass aria-label. Same gap as ToggleGroup.",
+        "ButtonGroupText is a <div>, not a <label>, so a visible 'Sort by' cell is not programmatically tied to the buttons.",
+        "On the solid default style the focus ring is --primary-focus — the fill colour at 40% alpha — so where it crosses a neighbouring solid button it is invisible even with the z-index lift. Fixing it means changing Button's focus token globally, not ButtonGroup. Ring reads fully only on transparent-fill styles.",
+        "ButtonGroupSeparator exposes role=\"separator\" to AT; aria-hidden may be more honest where it is decorative."
+      ]
+    },
+    "Card": {
+      "status": "done-v4",
+      "pageId": "364:45",
+      "setIds": [
+        "364:46",
+        "364:61",
+        "364:69",
+        "364:72"
+      ],
+      "frames": {
+        "overview": "364:78",
+        "spec": "365:83",
+        "examplesDocsHistory": "369:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — Card is neutral chrome; nothing in it reads --primary. Stated in TOKENS.",
+      "props": "NO variant axis. One assembled `Card` COMPONENT with TEXT props (Title, Description, Body) and BOOLEAN props (Show description, Show header action, Show footer), plus Card/Header, Card/Body and Card/Footer as standalone region specimens. `interactive` is modelled as code-only: it has NO resting appearance, only cursor + hover/focus, which are drawn in Spec.",
+      "version": "1.2 · 2026-07-26",
+      "newTextStyle": "base/leading-5/Semibold (16/20) — created for the card title; base/leading-normal is 24 and base/leading-none is 16.",
+      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring.",
+      "openQuestions": [
+        "CardHeader generates `${id}-title` on its heading but nothing in the library references it — it exists for a consumer to point aria-labelledby at.",
+        "CardBody and CardFooter take no `id` prop, unlike Card and CardHeader — inconsistent with hard rule 6, probably deliberate since they are layout-only.",
+        "overflow:hidden clips any menu/popover/tooltip opened inside a card; those need a portal.",
+        "CardHeader always renders an <h3>; the level is not configurable, so a card can produce a heading order that does not match its document position. Still open after the media addition."
+      ],
+      "slots": "FOUR slots: ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All four are React.ReactNode in code. Title/Description/Body stay TEXT props; a slot preserves default content so the text property inside the body slot still works. Every slot carries preferredValues (Avatar/StatusDot/icons for media; Badge/Chip/icon-button for action; Button/ButtonGroup for footer) and a description.",
+      "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build."
+    },
+    "Item": {
+      "status": "done-v4",
+      "pageId": "384:44",
+      "setIds": [
+        "384:218",
+        "384:72",
+        "384:73"
+      ],
+      "frames": {
+        "overview": "386:44",
+        "spec": "386:117",
+        "examplesDocsHistory": "387:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — Item is neutral chrome; nothing reads --primary. Stated in TOKENS.",
+      "props": "Item: VARIANT Variant (default|outline|muted) x Size (xs|sm|default) = 9. Item/Media: Variant (default|icon|image) x Size = 9. Item/Separator: 1 component. TEXT Title + Description; BOOLEAN Show description/media/actions/header/footer; SLOT media/actions/header/footer, each with preferredValues + description. href / onClick / disabled are code-only — they change the ELEMENT, not the look.",
+      "version": "1.0 · 2026-07-26",
+      "slots": "FIRST page built slots-first. header and footer are PURE slots with NO text property — ItemHeader/ItemFooter take children: React.ReactNode in code, not a string. Title and description remain TEXT props because they are genuinely strings.",
+      "notes": "The row is a CSS GRID (grid-template-areas: header spans / media-content-actions / footer spans). Figma has no grid, so each variant nests an auto-layout row named 'row — media · content · actions'; identical render, stated on the page. Ships with a code fix — grouped rows now collapse touching borders and the focused row lifts to z-index 1, the third component to need that after ToggleGroup and ButtonGroup.",
+      "openQuestions": [
+        "ItemGroup is role=\"list\" and ItemSeparator role=\"separator\", but the rows are NOT role=\"listitem\" — the list is announced with no matching item count.",
+        "The actions slot sits inside the row, so if the row is a link or button anything interactive in actions is a nested interactive. Nothing prevents it.",
+        "Title is nowrap+ellipsis and description clamps to 2 lines, both with no title attribute — truncated text is unavailable to hover and to assistive tech alike.",
+        "disabled sets pointer-events: none, so a disabled row cannot show a tooltip explaining why."
+      ]
+    },
+    "Attachment": {
+      "status": "done-v4",
+      "pageId": "391:44",
+      "setIds": [
+        "391:150",
+        "391:65"
+      ],
+      "frames": {
+        "overview": "393:44",
+        "spec": "393:106",
+        "examplesDocsHistory": "394:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome plus the error family; nothing reads --primary. Stated in TOKENS.",
+      "props": "Attachment: VARIANT Orientation (horizontal|vertical) x Size (xs|sm|default) = 6. Attachment/Media: Variant (icon|image) x Size (xs|sm|default|vertical) = 8. TEXT Title + Description; BOOLEAN Show description/media/actions; SLOT media + actions with preferredValues and descriptions.",
+      "version": "1.1 · 2026-07-26",
+      "axisDecision": "`state` is deliberately NOT a variant axis, following the Spinner precedent of adapting axes with a stated reason. It has 5 values but only 3 renderings — idle==done, uploading==processing (shimmer only), error is the single real repaint. Five near-identical variants would have been noise; the five are laid out as a row in Spec instead and the reasoning is on the Overview.",
+      "notes": "Parallel family to Item. The interesting technique is the two-layer overlay: __trigger is position:absolute inset:0 at z-index 1 so the whole card is clickable, __actions sit at z-index 2 so buttons are not swallowed, and isolation:isolate on the root keeps both out of the page stacking context. Neither layer is drawable (a transparent overlay renders as nothing) so Spec specifies rather than mocks it. Content is NOT a slot — see lessons.",
+      "openQuestions": [
+        "`state` drives colour and a shimmer only; nothing is announced. A screen reader is told nothing when a file goes uploading -> done. Needs the state in the description text or a consumer-supplied aria-live region.",
+        "A card with a trigger plus three actions is four tab stops.",
+        "AttachmentTrigger's accessible name is entirely whatever children the consumer passes into the sr-only span; an empty trigger announces as a blank link the size of the card. Nothing enforces it."
+      ],
+      "codeChanges": "Three fixes shipped with this page: the error description no longer fades to 3.68:1 (last component applying o-80 to semantic text); AttachmentGroup is a keyboard-reachable scroll region; and the action button's hit target expands to 24x24 at xs. That last one exposed that CloseButton, AttachmentAction and the Chat composer tools had each hand-rolled the same shell, so `.ui-icon-button` was extracted to src/styles/icon-button.scss and all three now sit on it."
     }
   },
   "queue": {
-    "nextUp": "AspectRatio",
+    "nextUp": "Collapsible (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
-    "phase2": [
-      "AspectRatio",
-      "Blockquote",
-      "ScrollArea",
-      "Chip",
-      "Toggle",
-      "ToggleGroup",
-      "ButtonGroup"
-    ],
+    "phase2": [],
     "phase3": [
-      "Card",
-      "Item",
-      "Attachment",
       "Collapsible",
       "Accordion",
       "Alert",
@@ -585,7 +827,8 @@
       "Sidebar",
       "Chat"
     ],
-    "phase2Status": "IN PROGRESS — 12/14 shipped. Remaining: AspectRatio, Blockquote, ScrollArea, Chip, Toggle, ToggleGroup, ButtonGroup."
+    "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment shipped; 10 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",

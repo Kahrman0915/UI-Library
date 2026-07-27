@@ -1,5 +1,5 @@
 import { forwardRef } from 'react';
-import { ChevronLeft, ChevronRight, MoreHorizontal } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Ellipsis } from 'lucide-react';
 import type {
   PaginationProps,
   PaginationContentProps,
@@ -119,7 +119,7 @@ const PaginationEllipsis = forwardRef<HTMLSpanElement, PaginationEllipsisProps>(
       aria-hidden="true"
       className={`ui-pagination__ellipsis${className ? ' ' + className : ''}`}
     >
-      <MoreHorizontal />
+      <Ellipsis />
       <span className="ui-pagination__sr-only">More pages</span>
     </span>
   ),
