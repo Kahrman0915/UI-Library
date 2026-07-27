@@ -962,15 +962,30 @@
       "props": "VARIANT Orientation (horizontal|vertical) = 2. value/defaultValue/onValueChange/activationMode are code-only (selection + automatic-vs-manual activation aren't drawable). TabsContent unmounts unless forceMount.",
       "version": "1.0 · 2026-07-27",
       "notes": "NO code change — full WAI-ARIA tab pattern verified: roving tabindex (active=0, rest=-1), arrow + Home/End, automatic (arrow selects) vs manual (Enter/Space selects), focusable tabpanel. Active trigger is a lifted --background pill with --shadow-sm on a --muted list; inactive --muted-foreground. The trigger COLOUR is deliberately NOT transitioned (only bg+shadow) to dodge the Chromium var()-freeze on a live mode switch — documented on the page."
+    },
+    "Breadcrumb": {
+      "status": "done-v4",
+      "pageId": "458:44",
+      "componentId": "458:45",
+      "setIds": [],
+      "frames": {
+        "overview": "458:55",
+        "spec": "459:84",
+        "examplesDocsHistory": "461:131"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome, no --primary. Links --muted-foreground, current page --foreground. Same stance as Tooltip / Sidebar; stated in TOKENS.",
+      "props": "NO variant props — Breadcrumb is pure composition. Modelled as a single COMPONENT (the assembled trail Home > Components > current), NOT a variant set. 7 parts: Breadcrumb/List/Item/Link/Page/Separator/Ellipsis; every part takes only className + children + native attrs.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Verified in-browser that the link's `transition: color` does NOT hit the Chromium var()-transition freeze that Tabs had to dodge: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent, which recomputes instantly), so a plain mode flip settles to the correct dark value (8.93:1 on dark bg) — documented on the a11y frame so nobody 'fixes' the non-bug. Separators/ellipsis are lucide icon INSTANCES (chevron-right 312:18466, ellipsis 312:18936, slash 312:20530) resized to 14/16px with stroke re-weighted (2 x rendered/24) and stroke bound to --muted-foreground so they flip correctly in the Dark table + Dark examples. Spec = anatomy + Light/Dark tables (LINK states default/hover/focus + OTHER PARTS page/separator/ellipsis). Focus cell uses the Focus/Default effect style; its 2px pad bound to spacing/0-5. Lint all-zeros, no overflow, index row 125:396 linked."
     }
   },
   "queue": {
-    "nextUp": "Breadcrumb (Phase 3)",
+    "nextUp": "Pagination (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Breadcrumb",
       "Pagination",
       "Field"
     ],
@@ -996,7 +1011,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs shipped; 3 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb shipped; 2 composites remain (Pagination, Field)."
   },
   "iconLibrary": {
     "page": "275:32",
