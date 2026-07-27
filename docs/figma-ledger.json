@@ -160,7 +160,11 @@
     "A Figma slot can quietly outrun the code. Exposing a WHOLE region as one free slot lets a designer compose things the component has no prop for — Card's header has no leading position at all, so a featured icon was undrawable in code while being trivial in Figma. Prefer NAMED slots that map 1:1 to real props; if the design need is real, add the prop to the code first and mirror it, which is what CardHeader's `media` was.",
     "Converting a frame to a SLOT STRIPS componentPropertyReferences from its children and hides them. Item's header/footer labels lost their `characters` binding and went invisible, leaving two orphan TEXT properties. Slot default content is treated as placeholder, so do NOT expect a text property to survive inside a newly-converted slot — bind text BEFORE deciding, or (better) accept that a ReactNode region should not have a text prop at all.",
     "A freshly-converted SLOT holds a stale explicit height (100px) and REPORTS layoutSizingVertical:'HUG' while ignoring it. Setting HUG alone does nothing; call resize(w, contentHeight) first to clear the explicit size, then set HUG and it sticks. Symptom is a 100px empty band where a 16px line should be.",
-    "The overflow check must skip hidden children. A node hidden by a boolean keeps a STALE absoluteBoundingBox, which reported 18 phantom overflows on Item. Filter c.visible !== false alongside the ABSOLUTE-positioning filter."
+    "The overflow check must skip hidden children. A node hidden by a boolean keeps a STALE absoluteBoundingBox, which reported 18 phantom overflows on Item. Filter c.visible !== false alongside the ABSOLUTE-positioning filter.",
+    "A SLOT's sublayers CANNOT hold componentPropertyReferences — Figma throws 'Cannot set component property references on slot sublayer'. So a region is either a slot OR has text properties inside it, never both. Attachment's content stayed a plain frame for exactly this reason, keeping Title/Description as text props. Oddly, a binding that existed BEFORE conversion can survive (Card's Body does, verified) while Item's labels were stripped — treat survival as unreliable and re-check after every conversion.",
+    "findAll() does NOT traverse into component-set variants, but findAllWithCriteria() DOES. A health check written with findAll reported 'wired 0' for slots that were in fact wired across all 6 variants. Use findAllWithCriteria for anything inside a set.",
+    "The auto-layout sizing axes FLIP with layoutMode, and it bites twice: on HORIZONTAL, primary=width and counter=height; on VERTICAL it is the reverse. Applying the same FIXED/AUTO pair to both orientations gave Attachment's vertical variants a frozen 100px height and a hugging width — the exact inverse of the intent. Set the axes per orientation.",
+    "layoutAlign='MAX' silently does not stick on an auto-layout child (stays INHERIT); the parent's counterAxisAlignItems wins. To reproduce CSS align-self:flex-end, make the child FILL the width and set its own primaryAxisAlignItems='MAX'."
   ],
   "components": {
     "Button": {
@@ -755,15 +759,38 @@
         "Title is nowrap+ellipsis and description clamps to 2 lines, both with no title attribute — truncated text is unavailable to hover and to assistive tech alike.",
         "disabled sets pointer-events: none, so a disabled row cannot show a tooltip explaining why."
       ]
+    },
+    "Attachment": {
+      "status": "done-v4",
+      "pageId": "391:44",
+      "setIds": [
+        "391:150",
+        "391:65"
+      ],
+      "frames": {
+        "overview": "393:44",
+        "spec": "393:106",
+        "examplesDocsHistory": "394:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome plus the error family; nothing reads --primary. Stated in TOKENS.",
+      "props": "Attachment: VARIANT Orientation (horizontal|vertical) x Size (xs|sm|default) = 6. Attachment/Media: Variant (icon|image) x Size (xs|sm|default|vertical) = 8. TEXT Title + Description; BOOLEAN Show description/media/actions; SLOT media + actions with preferredValues and descriptions.",
+      "version": "1.0 · 2026-07-26",
+      "axisDecision": "`state` is deliberately NOT a variant axis, following the Spinner precedent of adapting axes with a stated reason. It has 5 values but only 3 renderings — idle==done, uploading==processing (shimmer only), error is the single real repaint. Five near-identical variants would have been noise; the five are laid out as a row in Spec instead and the reasoning is on the Overview.",
+      "notes": "Parallel family to Item. The interesting technique is the two-layer overlay: __trigger is position:absolute inset:0 at z-index 1 so the whole card is clickable, __actions sit at z-index 2 so buttons are not swallowed, and isolation:isolate on the root keeps both out of the page stacking context. Neither layer is drawable (a transparent overlay renders as nothing) so Spec specifies rather than mocks it. Content is NOT a slot — see lessons.",
+      "openQuestions": [
+        "`state` drives colour and a shimmer only; nothing is announced. A screen reader is told nothing when a file goes uploading -> done. Needs the state in the description text or a consumer-supplied aria-live region.",
+        "A card with a trigger plus three actions is four tab stops.",
+        "AttachmentTrigger's accessible name is entirely whatever children the consumer passes into the sr-only span; an empty trigger announces as a blank link the size of the card. Nothing enforces it."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Attachment (Phase 3)",
+    "nextUp": "Collapsible (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Attachment",
       "Collapsible",
       "Accordion",
       "Alert",
@@ -797,7 +824,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card and Item shipped; 11 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment shipped; 10 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",

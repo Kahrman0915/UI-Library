@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 29/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way (Card, Item). Next up: **Attachment**. Queue in the ledger.
+- **Status:** 30/57 done. Phases 1 and 2 COMPLETE; Phase 3 under way (Card, Item, Attachment). Next up: **Collapsible**. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -210,6 +210,26 @@ comp.editComponentProperty(slotKey, {
 
 They are suggestions at the top of the picker rather than a whitelist, so listing a handful costs nothing
 and steers the designer toward the components that actually belong there.
+
+### A slot OR text properties — never both
+
+**A slot's sublayers cannot hold `componentPropertyReferences`.** Figma throws *"Cannot set component
+property references on slot sublayer"*. So a region is either a slot or has text properties inside it.
+Attachment's content stayed a plain frame for exactly this reason, keeping Title and Description editable;
+only media and actions became slots.
+
+Confusingly, a binding created *before* conversion can survive — Card's `Body` sits inside a slot and still
+works — while Item's labels were stripped by the same operation. Treat survival as unreliable and re-check
+every conversion rather than assuming either outcome.
+
+### Two more API traps
+
+- **`findAll()` does not traverse into component-set variants; `findAllWithCriteria()` does.** A slot health
+  check written with `findAll` reported "wired 0" for slots that were correctly wired across all six
+  variants. Use `findAllWithCriteria` for anything inside a set.
+- **`layoutAlign = 'MAX'` silently does not stick** on an auto-layout child — it stays `INHERIT` and the
+  parent's `counterAxisAlignItems` wins. To reproduce CSS `align-self: flex-end`, make the child FILL the
+  width and set its own `primaryAxisAlignItems = 'MAX'`.
 
 ### Slot gotchas found the hard way
 
@@ -464,7 +484,10 @@ Sweep the new page + set (skip nodes inside instances):
   rings get cut.
 - **Horizontal AL: `counterAxisSizingMode='FIXED'` freezes HEIGHT** (wrapped text
   clips). Fixed-width/hug-height = `primaryAxisSizingMode='FIXED'` +
-  `counterAxisSizingMode='AUTO'`.
+  `counterAxisSizingMode='AUTO'`. **The axes FLIP on a VERTICAL frame** — there primary is *height* and
+  counter is *width*, so fixed-width/hug-height becomes `counterAxisSizingMode='FIXED'` +
+  `primaryAxisSizingMode='AUTO'`. Reusing one pair for both orientations gave Attachment's vertical variants
+  a frozen 100px height and a hugging width.
 - **REST `get_screenshot` serves stale renders for freshly *modified* nodes**
   (fresh-created nodes are fine). Fallback: `node.exportAsync` — but base64 >20 kb
   truncates in tool output; export small crops or decode via a saved file.
@@ -475,7 +498,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Attachment**).
+1. Read the ledger → next component in the phase queue (next up: **Collapsible**).
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).
