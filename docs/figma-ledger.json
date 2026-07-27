@@ -945,15 +945,31 @@
       "newComponent": "YES — 58th component, added 2026-07-27. Extracted from the boxed icon-tile pattern hand-rolled in Empty, Item and Attachment media. Owner requested it after spotting the Empty tile. Index board got a new FeaturedIcon row (444:289).",
       "notes": "Reuses Alert/Badge -light tint tokens, no new tokens. Icon is half the box at every size (16/20/24). Square radius scales md/lg/xl; circle is full. brand binds to Theme collection like Alert/Banner. Follow-up chip spawned to consolidate Item/Attachment/EmptyMedia tiles onto it.",
       "composedBy": "WHERE FeaturedIcon should appear as a composed element / slot preferred value: Empty (icon media — code composes it; slot pref + uses-inside updated 2026-07-27), Card (ui-card__header-media slot — pref added 2026-07-27). TODO when built: Dialog + AlertDialog (a featured icon atop a confirmation — especially a red error tile for destructive confirms), ChatGreeting (centered featured icon on the start screen). Wire FeaturedIcon into those header/greeting areas + their slot preferredValues when their pages are built."
+    },
+    "Tabs": {
+      "status": "done-v4",
+      "pageId": "451:44",
+      "setIds": [
+        "451:69"
+      ],
+      "frames": {
+        "overview": "452:44",
+        "spec": "452:100",
+        "examplesDocsHistory": "453:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — the active pill is --background, not --primary; all neutral. Stated in TOKENS.",
+      "props": "VARIANT Orientation (horizontal|vertical) = 2. value/defaultValue/onValueChange/activationMode are code-only (selection + automatic-vs-manual activation aren't drawable). TabsContent unmounts unless forceMount.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — full WAI-ARIA tab pattern verified: roving tabindex (active=0, rest=-1), arrow + Home/End, automatic (arrow selects) vs manual (Enter/Space selects), focusable tabpanel. Active trigger is a lifted --background pill with --shadow-sm on a --muted list; inactive --muted-foreground. The trigger COLOUR is deliberately NOT transitioned (only bg+shadow) to dodge the Chromium var()-freeze on a live mode switch — documented on the page."
     }
   },
   "queue": {
-    "nextUp": "Tabs (Phase 3)",
+    "nextUp": "Breadcrumb (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Tabs",
       "Breadcrumb",
       "Pagination",
       "Field"
@@ -980,7 +996,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress shipped; 4 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs shipped; 3 composites remain."
   },
   "iconLibrary": {
     "page": "275:32",
