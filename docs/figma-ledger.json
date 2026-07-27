@@ -167,7 +167,8 @@
     "layoutAlign='MAX' silently does not stick on an auto-layout child (stays INHERIT); the parent's counterAxisAlignItems wins. To reproduce CSS align-self:flex-end, make the child FILL the width and set its own primaryAxisAlignItems='MAX'.",
     "CloseButton hard-codes an <X> — it is a close button, not an icon-button primitive, and its two variants differ only in hover background. Splitting them would yield two close buttons. When a component looks like it should be shared but its icon is fixed, the reusable thing is the SHELL underneath, not the component: `.ui-icon-button` in src/styles/icon-button.scss now carries the box, hover tint, focus ring, disabled state and hit-target expansion for CloseButton, AttachmentAction and the Chat composer tools.",
     "Instance sublayers cannot be removed — figma throws 'Node with id I…;… not found' on remove(). To change what is inside an instance you need a slot, a boolean-bound visibility, or an INSTANCE_SWAP; there is no deleting.",
-    "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring."
+    "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring.",
+    "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it."
   ],
   "components": {
     "Button": {
@@ -787,15 +788,35 @@
         "AttachmentTrigger's accessible name is entirely whatever children the consumer passes into the sr-only span; an empty trigger announces as a blank link the size of the card. Nothing enforces it."
       ],
       "codeChanges": "Three fixes shipped with this page: the error description no longer fades to 3.68:1 (last component applying o-80 to semantic text); AttachmentGroup is a keyboard-reachable scroll region; and the action button's hit target expands to 24x24 at xs. That last one exposed that CloseButton, AttachmentAction and the Chat composer tools had each hand-rolled the same shell, so `.ui-icon-button` was extracted to src/styles/icon-button.scss and all three now sit on it."
+    },
+    "Collapsible": {
+      "status": "done-v4",
+      "pageId": "404:44",
+      "setIds": [
+        "404:77"
+      ],
+      "frames": {
+        "overview": "405:44",
+        "spec": "405:100",
+        "examplesDocsHistory": "406:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — reads no colour beyond --foreground on the root. Stated in TOKENS.",
+      "props": "VARIANT State (closed|open) = 2. EVERY prop is code-only: open/defaultOpen drive the one visual axis, onOpenChange and disabled have no resting appearance — a disabled Collapsible looks exactly like a closed one, because the disabled styling belongs to whatever Button was passed to the trigger.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Spec IS the three-layer clip — that is the whole component. Also documents that CollapsibleTrigger renders no markup at all: it clones its single child and injects id / aria-expanded / aria-controls / data-state / disabled / onClick (the consumer's handler runs first, then the toggle). The header row in every example is labelled 'YOUR markup, not the component' because it genuinely is — Collapsible owns only the flex column and the clip. Ships with a code fix: the third clip layer was missing.",
+      "openQuestions": [
+        "CollapsibleTrigger clones its child with `disabled`. Give it a non-button element and React warns about an unknown DOM attribute; nothing in the types prevents it.",
+        "`disabled` has no root-level styling — a disabled Collapsible is visually identical to a closed one. Consumers who care must style off data-disabled themselves."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Collapsible (Phase 3)",
+    "nextUp": "Accordion (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Collapsible",
       "Accordion",
       "Alert",
       "Banner",
@@ -828,7 +849,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment shipped; 10 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible shipped; 9 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",
