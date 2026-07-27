@@ -170,7 +170,8 @@
     "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring.",
     "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it.",
     "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use.",
-    "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops."
+    "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops.",
+    "The 'clear stale slot heights with layoutSizingVertical=HUG' trick is safe ONLY when the slot holds an instance (which carries its own size). When a slot holds DRAWN content with a deliberate aspect (Empty's 48x48 icon tile), HUG collapses one axis to the content and distorts it. Empty's tile rendered 48x32 until the height was re-fixed. Check what a slot contains before hugging it."
   ],
   "components": {
     "Button": {
@@ -898,7 +899,8 @@
       "openQuestions": [
         "Empty is a plain <div> with no role — correct for a presentational block, but when it replaces a live region (a search-results list) the announcement must happen on that region, not here. Nothing enforces it.",
         "The description is capped in Figma at a fixed 250px width; in code it is --max-w-sm (384) and wraps fluidly. The fixed width is a Figma approximation, not the code cap."
-      ]
+      ],
+      "fixNote": "2026-07-27: the icon media tile rendered 48x32 (a wide blob) not 48x48. Cause: after converting ui-empty__media to a SLOT, a blanket layoutSizingVertical='HUG' pass (meant to clear stale slot heights) collapsed the height to hug the 24px glyph while the width stayed pinned at --w-12. Restored to a fixed 48x48 square, both axes bound. Empty was the ONLY slot affected — Item/Attachment media slots hold square Media INSTANCES, so hugging them stays square; Empty's slot held the tile styling directly."
     },
     "Progress": {
       "status": "done-v4",
