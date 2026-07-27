@@ -1131,16 +1131,33 @@
       "props": "Instanceable card: Popover/Content — a single COMPONENT (NO Side variant: there is no arrow, so side/align change position only, not appearance) + a Body SLOT (default = title + description). min-width 256 (--w-64), max-width 384 (--max-w-sm). side/align/sideOffset/open/defaultOpen/onOpenChange are code-only (position + open state). Trigger is consumer-provided.",
       "version": "1.0 · 2026-07-27",
       "notes": "Fifth Overlays page. NO code change. First computePosition floating surface. Modelled as ONE card (no variants) because Popover has NO arrow — side/align only move it, shown via a 4-position 'POSITIONING' diagram (a Trigger with default popovers on top/right/bottom/left, labelled). Non-modal (no scrim); demos are trigger+popover stages. The Body SLOT swaps to a real form (Dimensions: Label+Input rows + Cancel/Save) and a share-link field. KEY SLOT LESSON: the slot's default content had TWO loose children (title+desc); appending re-renders the slot and INVALIDATES the remaining default refs, so hide-after-append throws 'node not found' AND even .find over slot.children throws on the stale node. Fix: (1) restructure the master so slot default content is a SINGLE wrapper frame; (2) hide the wrapper BEFORE appending the new content (grabbing the ref after append stales it). Lint all-zeros, no overflow, index 125:439 linked."
+    },
+    "HoverCard": {
+      "status": "done-v4",
+      "pageId": "534:44",
+      "componentIds": {
+        "content": "534:45"
+      },
+      "setIds": [],
+      "frames": {
+        "overview": "535:50",
+        "spec": "536:107",
+        "examplesDocsHistory": "537:168"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — same neutral --popover surface as Popover / DropdownMenu; no --primary.",
+      "props": "Instanceable card: HoverCard/Content — a single COMPONENT (no arrow, no variants; side/align position only) + a Body SLOT (default = a profile preview: Avatar + handle + bio + joined). FIXED width 256 (--w-64) — unlike Popover's MIN width. role=tooltip. openDelay/closeDelay/side/align/sideOffset/open/onOpenChange are code-only. Trigger is consumer-provided (a link/@mention/avatar).",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Sixth Overlays page. NO code change. A near-clone of Popover — same --popover card, built the same way — differing only in behaviour (hover-intent open with openDelay 700 / closeDelay 300 grace period, documented in a HOVER-INTENT note), a FIXED 256 width, role=tooltip, and being non-interactive. Default slot content is a profile preview using a real Avatar instance + calendar icon; the Body slot swaps to a repo preview and a definition. RE-HIT the multi-child-slot trap from Popover: the default content was a HORIZONTAL profile frame whose TWO children (Avatar + text column) were the slot's loose default content, so swaps leaked (and the horizontal slot laid the leak out SIDE-BY-SIDE). Fixed the same way — wrapped the profile in a SINGLE 'profile' frame and made the slot VERTICAL, then hide-before-append. Applied the Popover lesson but should have modelled it right the first time. Lint all-zeros, no overflow, index 125:444 linked."
     }
   },
   "queue": {
-    "nextUp": "HoverCard (Phase 4 — Overlays)",
+    "nextUp": "DropdownMenu (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "HoverCard",
       "DropdownMenu",
       "ContextMenu",
       "Menubar",
@@ -1157,7 +1174,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover shipped. HoverCard next (near-identical to Popover; a --popover card opened on hover-intent)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard shipped. DropdownMenu next (the first MENU: --popover surface + menu items; ContextMenu/Menubar/Select/Command/Combobox follow the same item styling)."
   },
   "iconLibrary": {
     "page": "275:32",
