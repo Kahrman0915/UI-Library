@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 56/58 done (FeaturedIcon added). Phases 1–4 COMPLETE; Phase 5 (final) under way — ModeToggler + Direction + Sidebar shipped. Only **Chat** remains (the final component). Queue in the ledger.
+- **Status:** COMPLETE (2026-07-27) — every component has a v4 doc page. Phases 1–5 all shipped; Chat was the final component. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -498,7 +498,7 @@ Sweep the new page + set (skip nodes inside instances):
 
 ## Per-component workflow (next session starts here)
 
-1. Read the ledger → next component in the phase queue (next up: **Chat** — the final one).
+1. Read the ledger → the push is COMPLETE; there is no next component. For NEW components, follow the recipe below and record them in the ledger.
 2. Read `src/components/{Name}/{Name}.types.ts` (props → set properties),
    `{Name}.scss` (tokens consumed, BEM parts), `{Name}.stories.tsx` (matrices),
    CLAUDE.md's roster row + routing/composition notes (Used-by, Do/Don't, theming).

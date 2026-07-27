@@ -1392,22 +1392,53 @@
         "exampleAppLight": "638:618",
         "exampleAppDark": "638:654"
       }
+    },
+    "Chat": {
+      "status": "done-v4",
+      "pageId": "643:44",
+      "componentIds": {
+        "message": "643:58",
+        "marker": "643:74",
+        "suggestion": "643:59",
+        "toolCall": "644:88",
+        "source": "644:89",
+        "composer": "644:95"
+      },
+      "setIds": [
+        "643:58",
+        "643:74",
+        "644:88"
+      ],
+      "templateFrames": {
+        "transcript": "645:72",
+        "greetingLight": "in 651:247",
+        "greetingDark": "in 651:247"
+      },
+      "frames": {
+        "overview": "648:126",
+        "spec": "650:160",
+        "examplesDocsHistory": "651:247"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chat chrome (--chat-bubble-user + card/secondary/border); the aiden send button reads --primary (documented as variant=aiden gradient in code). No per-theme remap frame.",
+      "props": "Instanceable atoms: Chat/Message — VARIANT State (user|assistant|system|pending) + TEXT Text. Chat/Marker — VARIANT (divider|system|status) + TEXT Label. Chat/ToolCall — VARIANT State (running|success|error) + TEXT Name. Chat/Source (Title/Domain/Index). Chat/Suggestion (Label + Show icon). Chat/Composer (input box + toolbar + send). The 27-part family (density/sender context, ChatBubble streaming caret, ChatMessageEdit, ChatMessageVersions, ChatReasoning, ChatCitation, ChatLayout, ChatComposerDictation/Drawer, useStreamingText type-out, stick-to-bottom, autosize) is code-only / presentational.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "THE FINAL COMPONENT of the whole push. Largest family (27 exports). NO code change. Claude-style transcript: assistant = full-width bubble-less prose, user = contained bubble on the trailing edge (--chat-bubble-user 52:61, radius 2xl), system = centered pill, pending = 3 typing dots; centered max-w-3xl column. Built 6 atom masters (Message/Marker/ToolCall sets + Source/Suggestion/Composer). The assembled transcript (645:72) is an EDITABLE TEMPLATE FRAME (applying the Sidebar lesson — Figma has no children-slot, so the message list is an open auto-layout of Message instances you copy + extend), NOT a locked component. Overview: transcript hero on a stage + masters nested under SOURCE. Spec: message states (user/assistant/system/pending) light+dark + tool-call states + marker variants + suggestions. Examples: the ChatGreeting start screen light+dark. Send button = --primary (aiden gradient in code). Composer send pinned trailing via a grow spacer. GOTCHA: ToolCall card hugged too narrow -> the mono name wrapped char-by-char; fixed by giving the ToolCall variants a FIXED 360 width (and the transcript instance FILL). Icons: sparkles/wrench/loader/circle-check/circle-x/globe/paperclip/mic/maximize-2/arrow-up/chevron-right. Lint all-zeros, no overflow, index 125:507 linked."
     }
   },
   "queue": {
-    "nextUp": "Chat (Phase 5 — the final component)",
+    "nextUp": "— PUSH COMPLETE",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [],
-    "phase5": [
-      "Chat"
-    ],
+    "phase5": [],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
     "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
-    "phase5Status": "IN PROGRESS — ModeToggler + Direction + Sidebar shipped. Only Chat remains — the largest family (Astryx AI chat, ~40 parts). It is the FINAL component of the whole push."
+    "phase5Status": "COMPLETE — ModeToggler, Direction, Sidebar, Chat all shipped.",
+    "status": "COMPLETE — every component in the roster has a v4 doc page (all 5 phases). Chat was the final component (2026-07-27). Nothing queued."
   },
   "iconLibrary": {
     "page": "275:32",
