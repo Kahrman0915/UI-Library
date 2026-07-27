@@ -853,15 +853,37 @@
         "The dismiss X inherits the variant colour at --o-70; on a filled error the muted X is coloured error too. Legible but worth a glance in a real red alert.",
         "Icon is a LucideIcon prop with a per-variant default; the Figma set draws the default but does not model icon-swap (no INSTANCE_SWAP) — a designer changing the icon detaches."
       ]
+    },
+    "Banner": {
+      "status": "done-v4",
+      "pageId": "423:44",
+      "setIds": [
+        "423:93"
+      ],
+      "frames": {
+        "overview": "424:44",
+        "spec": "424:104",
+        "theming": "426:44",
+        "examplesDocsHistory": "426:155"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — brand variant only, same rule as Alert. The theme grid shows full-bleed brand bars across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|info|success|warning|error) = 6 (NO style axis, unlike Alert). TEXT Title, BOOLEAN Show icon. Icon, action, onClose and `centered` are code-only. `centered` is a LAYOUT mode (caps content at --max-w-5xl + centres), not a boolean-toggleable property, so it is shown in Examples not modelled as an axis. role derived: alert for error/warning, status otherwise.",
+      "version": "1.0 · 2026-07-27",
+      "supersedes": "Parked pre-v4 Banner set 15:90 DELETED from page 14:60. Both parked sets (Alert + Banner) now retired; the migrate page 14:60 is empty.",
+      "notes": "NO code change — the page-level cousin of Alert, verified sound. Full-bleed: a BOTTOM hairline (border-bottom-color) instead of Alert's all-round border, no radius, spans 100% width. Reuses Alert's semantic tint tokens verbatim (do not fork them). No muted description — the whole message takes the accent colour, AA-gated the same way. __close sits OUTSIDE __inner so it stays right-pinned when centred. Same THEME-collection binding for brand as Alert.",
+      "openQuestions": [
+        "A Banner mounted at page load with role=alert (error/warning) announces immediately — intended for an outage bar, but a designer must not set a marketing message to error/warning or it interrupts on load.",
+        "`centered` cannot be a Figma property (it changes layout, not visibility); shown in Examples only, so an instance cannot be toggled to centred — a designer wanting it detaches or rebuilds."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Banner (Phase 3)",
+    "nextUp": "Empty (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Banner",
       "Empty",
       "Progress",
       "Tabs",
@@ -891,11 +913,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert shipped; 7 composites remain."
-  },
-  "migrateExisting": {
-    "Banner": "15:90",
-    "note": "Alert set removed 2026-07-27 (superseded by the 3 · Alert page). Banner set 15:90 remains on page 14:60 until the Banner page is built; fold it in then."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner shipped; 6 composites remain."
   },
   "iconLibrary": {
     "page": "275:32",
@@ -916,5 +934,6 @@
     "colourDurability": "RESOLVED / was a mis-diagnosis. I previously recorded that an INSTANCE_SWAP discards the icon's stroke colour. Re-tested 2026-07-25 on Default/Default/Default, Error/Ghost/Small and Aiden/Default/Default, for both the icon-only set and the labelled Button's leading slot: swapping via the PROPERTY preserves the bound stroke colour AND the bound stroke weight in every case. The broken instances I originally measured had been damaged by my own swapComponent() rewire step, not by the property mechanism — I diagnosed the mechanism from wreckage I had created. The real, still-true caveat is narrower: swapping the nested icon LAYER directly (right panel, with the layer selected) drops the strokeWeight binding. Use the property.",
     "colourModel": "OWNER DECISION 2026-07-25: icons do NOT auto-tint. They arrive as --foreground and the designer sets the colour after placing. Automatic per-variant tinting was attempted five ways and abandoned: (1) per-layer stroke overrides — only reach layers present on the DEFAULT swap target, so a richer glyph rendered half-tinted; (2) a variable-mode colour collection — Figma caps a collection at 10 modes and 13 icon colours are needed; (3) empty path-2 stubs so an override had somewhere to land — verified not to carry through a swap; (4) manual vectorPaths concatenation to force one path — CORRUPTED all 1,746 icons (see lesson) and forced a full rebuild; (5) figma.flatten + re-sync — geometry survived but the nested instances inside component-set variants became unreadable to the API. Stroke WEIGHT is unaffected and remains variable-driven and correct.",
     "apiCaveat": "The plugin API cannot reliably read or write the subtree of an instance nested inside a COMPONENT-SET VARIANT — findAll() returns 0 vectors for 238 of 240 slots even though they render correctly on canvas. Only the set's DEFAULT variant is reachable. Page-level instances are fully reachable. Any per-variant nested styling must therefore be applied at instance-creation time, before the instance is inserted into the variant."
-  }
+  },
+  "migrateComplete": "Both parked sets (Alert 16:97, Banner 15:90) retired 2026-07-27 as their v4 pages shipped. Page 14:60 is now empty and can be deleted by the owner."
 }
