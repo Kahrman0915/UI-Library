@@ -1009,16 +1009,38 @@
       "props": "Instanceable, composes real controls: Field — VARIANT Orientation (vertical|horizontal) + a Control SLOT (default = an Input instance, preferredValues Input/Checkbox/Switch) + TEXT Label/Description/Error + BOOL Required/Show description/Show error. Field/Legend — VARIANT (legend|label) + TEXT. invalid + disabled are DEMONSTRATED states (override the label fill to --error / set opacity 0.5), not variants. FieldSet/FieldGroup/FieldContent are spacing frames; FieldSeparator reuses the Separator component.",
       "version": "1.0 · 2026-07-27",
       "notes": "NO code change. Built instanceable per the Breadcrumb lesson: every field on the page (overview, spec cells, all example forms) is a real Field INSTANCE with a real control in the slot. The Control slot holds an Input instance by default with its built-in label turned OFF via 'Show label#192:0'=false (else Field's label doubles the Input's). The Checkbox example swaps the slot: hide slot.children[0] (the default Input), then slot.appendChild(Checkbox instance) — appending does NOT replace, so the default must be hidden. Dark frames set Mode=Dark and the nested control + text instances flip automatically (verified). GOTCHAS hit: resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — the vertical variant's height froze at 10px until primaryAxisSizingMode was re-set to AUTO after the resize; and a hug-width group must be counterAxisSizingMode=AUTO with children NOT set to FILL, or the wrapped inputs squish. Lint all-zeros, no overflow, index row 125:406 linked."
+    },
+    "Pagination": {
+      "status": "done-v4",
+      "pageId": "483:44",
+      "componentIds": {
+        "cell": "483:49",
+        "prev": "483:50",
+        "next": "483:55",
+        "ellipsis": "483:60"
+      },
+      "setIds": [
+        "483:49"
+      ],
+      "frames": {
+        "overview": "484:50",
+        "spec": "487:100",
+        "theming": "488:182",
+        "examplesDocsHistory": "489:229"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT (488:182) — the active cell borders/text read --primary-border / --primary-text, so it themes; shown under Main/db/dr/ph. Ghost cells + prev/next stay neutral.",
+      "props": "Instanceable atoms, cells reuse the Button visual: Pagination/Cell — VARIANT State (default|active) + TEXT Number (default=ghost --secondary-foreground; active=outline inset --primary-border + --primary-text + semibold, aria-current). Pagination/Prev + /Next — BOOL Show label (chevron + optional text; false = icon-only pager). Pagination/Ellipsis — single component. isActive/disabled/showLabel are the code props; the current page is app state.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Built instanceable per the Breadcrumb lesson — overview, spec cells, theming rows and every example pager are real atom instances; dark frames set Mode=Dark and flip automatically. Cells are DEDICATED atoms styled to match the Button ghost/outline-small look (transparent + --secondary-foreground; active = inset --primary-border stroke strokeAlign=INSIDE + --primary-text + semibold) rather than instancing the Button set, since pagination adds a square 36px cell + semibold-active. Theming frame proves the active cell picks up the theme (setExplicitVariableModeForCollection on the Theme collection: Main 2:2 / DB 2:3 / DR 51:0 / PH 51:4). GOTCHA repeat: resize() froze Prev/Next width to 10px until primaryAxisSizingMode was re-set to AUTO after the resize. Lint all-zeros, no overflow, index 125:401 linked."
     }
   },
   "queue": {
-    "nextUp": "Pagination (Phase 3)",
+    "nextUp": "Tooltip (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
-    "phase3": [
-      "Pagination"
-    ],
+    "phase3": [],
     "phase4": [
       "Tooltip",
       "Dialog",
@@ -1041,7 +1063,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — 12 of 13 composites shipped; only Pagination remains (Field was done before it at the user’s request)."
+    "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next."
   },
   "iconLibrary": {
     "page": "275:32",
