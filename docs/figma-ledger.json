@@ -1205,16 +1205,37 @@
       "props": "Its OWN copy of the menu atoms (the sanctioned 4x duplication) + two additions. ContextMenu/Item — VARIANT State (default|hover|disabled|destructive|destructive-hover) + Label/icon/shortcut. ContextMenu/SubTrigger — VARIANT State (default|open) + Label + chevron (opens a nested SubContent). ContextMenu/CheckboxItem (checked|unchecked), /RadioItem (selected|unselected, 6px dot), /Label (xs medium, NOT uppercase — differs from DropdownMenu), /Separator, /Content (min-width 192 --w-48). Right-click trigger + submenu open state are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "Eighth Overlays page. NO code change. Parallel copy of DropdownMenu's item styling (the code duplicates it; so does Figma) PLUS the three ContextMenu additions: a destructive Item variant (--error text / --error-light hover), SubTrigger with a trailing chevron, and the right-click framing. Flagship Overview demo shows a menu with the 'Share' SubTrigger set to OPEN and a SubContent floating to its right (positioned by reading the subtrigger's absoluteBoundingBox). GOTCHA: setProperties (variant swap) STALES the node ref — read the box BEFORE opening the subtrigger, else absoluteBoundingBox throws 'node not found' on the stale ref. Example element menu swaps nested icons and binds the destructive icon stroke to --error (not --foreground). Lint all-zeros, no overflow, index 125:454 linked."
+    },
+    "Menubar": {
+      "status": "done-v4",
+      "pageId": "567:44",
+      "componentIds": {
+        "bar": "567:50",
+        "trigger": "567:49"
+      },
+      "setIds": [
+        "567:49"
+      ],
+      "reusesMaster": "DropdownMenu — Content 546:52, Item 544:63, CheckboxItem 545:59, RadioItem 545:67, Label 544:64, Separator 544:66 (the menu surface)",
+      "frames": {
+        "overview": "568:48",
+        "spec": "569:118",
+        "examplesDocsHistory": "570:174"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral --background bar + --accent trigger hover; no --primary. Menus are DropdownMenus (also neutral).",
+      "props": "Only TWO new atoms — the rest is reuse (like the code): Menubar (the bar — --background, --border, --rounded-md, a row of triggers File/Edit/View/Help) + Menubar/Trigger (VARIANT State default|open, TEXT Label; hover/open = --accent). Every open menu is a DropdownMenu instance (Content + Items + Checkbox/Radio/Label/Separator reused). side/align/open coordination are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Ninth Overlays page and the SECOND preset-style page (after AlertDialog): Menubar reuses DropdownMenu WHOLESALE — the Figma page has only the bar + trigger, and every demo menu is a real DropdownMenu Content instance with DropdownMenu Item/Checkbox/Radio/Label swapped into its slot (matching the code, where MenubarContent etc. ARE DropdownMenu's re-exported). Overview + examples position the open menu below the opened trigger by reading the trigger's absoluteBoundingBox BEFORE flipping it to open (the variant-swap-stales-the-ref gotcha). Example View menu reuses DropdownMenu checkbox + radio + label to show toggles. No submenus (v1). Lint all-zeros, no overflow, index 125:459 linked."
     }
   },
   "queue": {
-    "nextUp": "Menubar (Phase 4 — Overlays)",
+    "nextUp": "Select (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Menubar",
       "Select",
       "Combobox",
       "Command",
@@ -1228,7 +1249,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu shipped. Menubar next (reuses DropdownMenu wholesale in code — a bar of triggers each opening a DropdownMenu)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar shipped. Select next (a menu-styled listbox: a trigger showing the value + a --popover list of options with a check on the selected one)."
   },
   "iconLibrary": {
     "page": "275:32",
