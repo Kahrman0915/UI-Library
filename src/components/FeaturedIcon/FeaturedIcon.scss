@@ -1,0 +1,104 @@
+// A boxed icon tile. The tile owns the size and the colour; the glyph fills a
+// fixed fraction of it. Reuses the same -light tint tokens Alert and Badge use
+// — no tile-specific colours.
+
+.ui-featured-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: var(--border-w-100) solid transparent;
+
+  svg {
+    display: block;
+  }
+
+  // ---- Sizes: tile box, icon glyph, and the square radius ----
+
+  &--sz-sm {
+    width: var(--w-8); // 32
+    height: var(--h-8);
+
+    svg {
+      width: var(--w-4); // 16
+      height: var(--h-4);
+    }
+  }
+
+  &--sz-default {
+    width: var(--w-10); // 40
+    height: var(--h-10);
+
+    svg {
+      width: var(--w-5); // 20
+      height: var(--h-5);
+    }
+  }
+
+  &--sz-lg {
+    width: var(--w-12); // 48
+    height: var(--h-12);
+
+    svg {
+      width: var(--w-6); // 24
+      height: var(--h-6);
+    }
+  }
+
+  // ---- Shape: square radius scales with size; circle is always full ----
+
+  &--shape-square {
+    &.ui-featured-icon--sz-sm {
+      border-radius: var(--rounded-md);
+    }
+    &.ui-featured-icon--sz-default {
+      border-radius: var(--rounded-lg);
+    }
+    &.ui-featured-icon--sz-lg {
+      border-radius: var(--rounded-xl);
+    }
+  }
+
+  &--shape-circle {
+    border-radius: var(--rounded-full);
+  }
+
+  // ---- Variants: tile fill + icon colour + border ----
+
+  &--default {
+    background: var(--muted);
+    color: var(--muted-foreground);
+    border-color: var(--border);
+  }
+
+  // Brand — reads --primary, so it follows data-theme.
+  &--brand {
+    background: var(--primary-light);
+    color: var(--primary-text);
+    border-color: var(--primary-border);
+  }
+
+  &--success {
+    background: var(--success-light);
+    color: var(--success);
+    border-color: var(--success-border);
+  }
+
+  &--warning {
+    background: var(--warning-light);
+    color: var(--warning);
+    border-color: var(--warning-border);
+  }
+
+  &--error {
+    background: var(--error-light);
+    color: var(--error);
+    border-color: var(--error-border);
+  }
+
+  &--info {
+    background: var(--info-light);
+    color: var(--info);
+    border-color: var(--info-border);
+  }
+}

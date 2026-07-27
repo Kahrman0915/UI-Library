@@ -554,6 +554,14 @@ export type {
   EmptyMediaVariant,
 } from './components/Empty';
 
+export { default as FeaturedIcon } from './components/FeaturedIcon';
+export type {
+  FeaturedIconProps,
+  FeaturedIconSize,
+  FeaturedIconShape,
+  FeaturedIconVariant,
+} from './components/FeaturedIcon';
+
 export {
   default as DropdownMenu,
   DropdownMenuTrigger,
