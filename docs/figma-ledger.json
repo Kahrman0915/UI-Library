@@ -172,7 +172,8 @@
     "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use.",
     "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops.",
     "The 'clear stale slot heights with layoutSizingVertical=HUG' trick is safe ONLY when the slot holds an instance (which carries its own size). When a slot holds DRAWN content with a deliberate aspect (Empty's 48x48 icon tile), HUG collapses one axis to the content and distorts it. Empty's tile rendered 48x32 until the height was re-fixed. Check what a slot contains before hugging it.",
-    "After extracting a shared primitive (FeaturedIcon), sweep for slots it should fill: add it to the preferredValues of any leading-visual slot where it fits (Empty media, Card header-media) and update the 'Uses inside' pills + slot descriptions. NOT every media slot — Item/Attachment media are the compact list-tile pattern and deliberately do NOT suggest FeaturedIcon. Record future homes (Dialog/AlertDialog/ChatGreeting) so the wiring happens when they're built."
+    "After extracting a shared primitive (FeaturedIcon), sweep for slots it should fill: add it to the preferredValues of any leading-visual slot where it fits (Empty media, Card header-media) and update the 'Uses inside' pills + slot descriptions. NOT every media slot — Item/Attachment media are the compact list-tile pattern and deliberately do NOT suggest FeaturedIcon. Record future homes (Dialog/AlertDialog/ChatGreeting) so the wiring happens when they're built.",
+    "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.)."
   ],
   "components": {
     "Button": {
@@ -966,8 +967,10 @@
     "Breadcrumb": {
       "status": "done-v4",
       "pageId": "458:44",
-      "componentId": "458:45",
-      "setIds": [],
+      "setIds": [
+        "464:226",
+        "464:235"
+      ],
       "frames": {
         "overview": "458:55",
         "spec": "459:84",
@@ -975,9 +978,14 @@
       },
       "themed": false,
       "themingFrame": "ABSENT — neutral chrome, no --primary. Links --muted-foreground, current page --foreground. Same stance as Tooltip / Sidebar; stated in TOKENS.",
-      "props": "NO variant props — Breadcrumb is pure composition. Modelled as a single COMPONENT (the assembled trail Home > Components > current), NOT a variant set. 7 parts: Breadcrumb/List/Item/Link/Page/Separator/Ellipsis; every part takes only className + children + native attrs.",
+      "props": "Atom components (mirrors the compound code, NOT one fixed trail): Breadcrumb/Crumb — VARIANT Type (link|current) + TEXT Label (link=--muted-foreground <a>, current=--foreground <span aria-current>); Breadcrumb/Separator — VARIANT Glyph (chevron|slash), aria-hidden; Breadcrumb/Ellipsis — single component. Every trail on the page (overview, spec cells, all six example trails) is COMPOSED FROM REAL INSTANCES of these, so they stay in sync with the masters and a designer drags atoms to build any depth.",
       "version": "1.0 · 2026-07-27",
-      "notes": "NO code change. Verified in-browser that the link's `transition: color` does NOT hit the Chromium var()-transition freeze that Tabs had to dodge: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent, which recomputes instantly), so a plain mode flip settles to the correct dark value (8.93:1 on dark bg) — documented on the a11y frame so nobody 'fixes' the non-bug. Separators/ellipsis are lucide icon INSTANCES (chevron-right 312:18466, ellipsis 312:18936, slash 312:20530) resized to 14/16px with stroke re-weighted (2 x rendered/24) and stroke bound to --muted-foreground so they flip correctly in the Dark table + Dark examples. Spec = anatomy + Light/Dark tables (LINK states default/hover/focus + OTHER PARTS page/separator/ellipsis). Focus cell uses the Focus/Default effect style; its 2px pad bound to spacing/0-5. Lint all-zeros, no overflow, index row 125:396 linked."
+      "notes": "NO code change. Verified in-browser the link's `transition: color` does NOT hit the Chromium var()-transition freeze Tabs dodged: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent), so a plain mode flip settles to the correct dark value (8.93:1) — documented on the a11y frame. REBUILT from a fixed hand-drawn trail to instanceable ATOMS after the owner asked why examples weren't the real component: Crumb/Separator/Ellipsis are real components, and overview + spec + examples compose instances (dark frames set Mode=Dark so the instances flip automatically — verified). Separator glyphs are lucide icon instances (chevron 312:18466, slash 312:20530, ellipsis 312:18936) stroke re-weighted (2·rendered/24) and bound to --muted-foreground. Hover cell overrides the link instance text fill to --foreground; focus cell wraps a link instance in a Focus/Default effect frame (2px pad bound to spacing/0-5). Lint all-zeros, no overflow, index row 125:396 linked.",
+      "componentIds": {
+        "crumb": "464:226",
+        "separator": "464:235",
+        "ellipsis": "464:236"
+      }
     }
   },
   "queue": {
