@@ -9,7 +9,7 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** 38/58 done (FeaturedIcon added). Phases 1 and 2 COMPLETE; Phase 3 under way through Breadcrumb. Next up: **Pagination**. Queue in the ledger.
+- **Status:** 39/58 done (FeaturedIcon added). Phases 1 and 2 COMPLETE; Phase 3 at 12/13 — only Pagination remains. Next up: **Pagination**. Queue in the ledger.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components

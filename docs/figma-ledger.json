@@ -173,7 +173,8 @@
     "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops.",
     "The 'clear stale slot heights with layoutSizingVertical=HUG' trick is safe ONLY when the slot holds an instance (which carries its own size). When a slot holds DRAWN content with a deliberate aspect (Empty's 48x48 icon tile), HUG collapses one axis to the content and distorts it. Empty's tile rendered 48x32 until the height was re-fixed. Check what a slot contains before hugging it.",
     "After extracting a shared primitive (FeaturedIcon), sweep for slots it should fill: add it to the preferredValues of any leading-visual slot where it fits (Empty media, Card header-media) and update the 'Uses inside' pills + slot descriptions. NOT every media slot — Item/Attachment media are the compact list-tile pattern and deliberately do NOT suggest FeaturedIcon. Record future homes (Dialog/AlertDialog/ChatGreeting) so the wiring happens when they're built.",
-    "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.)."
+    "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.).",
+    "A component that WRAPS another control (Field) is modelled with a Figma SLOT for the control (default content = a real control instance), so examples compose real instances. Two gotchas: (1) if the wrapped control has its OWN label (Input's 'Show label' defaults true), turn it off or it doubles the wrapper's label. (2) Filling a slot on an INSTANCE is append-not-replace: slot.appendChild(newControl) leaves the master's default content visible, so hide slot.children[0] first. Also: resize() on an auto-layout frame freezes BOTH axes to FIXED — re-assert the hug axis AFTER any resize()."
   ],
   "components": {
     "Button": {
@@ -986,6 +987,28 @@
         "separator": "464:235",
         "ellipsis": "464:236"
       }
+    },
+    "Field": {
+      "status": "done-v4",
+      "pageId": "469:44",
+      "componentIds": {
+        "field": "469:91",
+        "legend": "469:49"
+      },
+      "setIds": [
+        "469:91",
+        "469:49"
+      ],
+      "frames": {
+        "overview": "473:60",
+        "spec": "474:119",
+        "examplesDocsHistory": "476:338"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral scaffolding, drives no --primary. The only colour it owns is --error (invalid label + FieldError). Stated in TOKENS.",
+      "props": "Instanceable, composes real controls: Field — VARIANT Orientation (vertical|horizontal) + a Control SLOT (default = an Input instance, preferredValues Input/Checkbox/Switch) + TEXT Label/Description/Error + BOOL Required/Show description/Show error. Field/Legend — VARIANT (legend|label) + TEXT. invalid + disabled are DEMONSTRATED states (override the label fill to --error / set opacity 0.5), not variants. FieldSet/FieldGroup/FieldContent are spacing frames; FieldSeparator reuses the Separator component.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change. Built instanceable per the Breadcrumb lesson: every field on the page (overview, spec cells, all example forms) is a real Field INSTANCE with a real control in the slot. The Control slot holds an Input instance by default with its built-in label turned OFF via 'Show label#192:0'=false (else Field's label doubles the Input's). The Checkbox example swaps the slot: hide slot.children[0] (the default Input), then slot.appendChild(Checkbox instance) — appending does NOT replace, so the default must be hidden. Dark frames set Mode=Dark and the nested control + text instances flip automatically (verified). GOTCHAS hit: resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — the vertical variant's height froze at 10px until primaryAxisSizingMode was re-set to AUTO after the resize; and a hug-width group must be counterAxisSizingMode=AUTO with children NOT set to FILL, or the wrapped inputs squish. Lint all-zeros, no overflow, index row 125:406 linked."
     }
   },
   "queue": {
@@ -994,8 +1017,7 @@
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Pagination",
-      "Field"
+      "Pagination"
     ],
     "phase4": [
       "Tooltip",
@@ -1019,7 +1041,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb shipped; 2 composites remain (Pagination, Field)."
+    "phase3Status": "IN PROGRESS — 12 of 13 composites shipped; only Pagination remains (Field was done before it at the user’s request)."
   },
   "iconLibrary": {
     "page": "275:32",
