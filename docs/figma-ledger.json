@@ -1252,16 +1252,39 @@
       "props": "Instanceable: Select/Trigger — VARIANT State (default|open) + TEXT Value (open adds --ring border + Focus/Default ring + chevron rotated 180; placeholder = override value fill to --muted-foreground). Select/Content — --popover listbox (min-width 128) with a Body SLOT (default fruit list). Select/Item — VARIANT State (default|hover|disabled) + TEXT Label + BOOL Selected (leading --foreground check, 16px reserved indicator). Select/Label + Separator. value/onValueChange/placeholder/side/align/disabled are code-only. Distinct from NativeSelect (the styled native <select>).",
       "version": "1.0 · 2026-07-27",
       "notes": "Tenth Overlays page. NO code change. The FLOATING custom select (vs NativeSelect's real <select>): a bordered input-wrap trigger + a --popover listbox. Reuses the menu-item styling (4th of the 4 copies: DropdownMenu/ContextMenu/Command/Select) with a leading check on the SELECTED option. Trigger chevron rotates 180 on open (icon inst.rotation=180) and gets the Focus/Default ring + --ring border. Content Body slot swaps to grouped lists (Label + Separator). Examples: grouped-open, resting-in-a-field, and a muted placeholder (value fill overridden to --muted-foreground). Docs steer toward NativeSelect when a plain option list suffices. Lint all-zeros, no overflow, index 125:464 linked."
+    },
+    "Combobox": {
+      "status": "done-v4",
+      "pageId": "581:44",
+      "componentIds": {
+        "trigger": "581:61",
+        "content": "582:58",
+        "item": "581:86",
+        "empty": "581:87"
+      },
+      "setIds": [
+        "581:61",
+        "581:86"
+      ],
+      "frames": {
+        "overview": "583:79",
+        "spec": "584:158",
+        "examplesDocsHistory": "585:295"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — same neutral recipe as Select (input-wrap trigger + --popover listbox + --accent highlight); no --primary.",
+      "props": "Instanceable, a searchable Select: Combobox/Trigger — VARIANT State (default|open) + TEXT Value + BOOL Show clear (an X). Combobox/Content — a --popover panel (min-width 256) with a search-input row on top (border-bottom, h-10) + a Body SLOT listbox. Combobox/Item — VARIANT State (default|highlighted|disabled) + TEXT Label + TEXT Description + BOOL Selected (check) + BOOL Show description. Combobox/Empty — the no-results text. value/onValueChange/placeholder/searchPlaceholder/clearable/side/align + the live filtering are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Eleventh Overlays page. NO code change. Select + search: the trigger is Select's input-wrap field plus an optional clear (X); the Content adds a search row (search icon + input) above the listbox and an Empty state, and items carry an optional description line. Reuses the menu-item styling (a parallel copy, like the others). Examples demonstrate LIVE FILTERING by overriding the Content's search-input text to a query (fill flipped to --foreground) + swapping the Body slot to the matching item(s) (search 'sv' -> Svelte highlighted; 'qwerty' -> Empty). Trigger chevron rotates 180 on open + Focus/Default ring. Lint all-zeros, no overflow, index 125:469 linked."
     }
   },
   "queue": {
-    "nextUp": "Combobox (Phase 4 — Overlays)",
+    "nextUp": "Command (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Combobox",
       "Command",
       "Toast"
     ],
@@ -1273,7 +1296,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select shipped. Combobox next (a Select with a search input at the top that filters the option list)."
+    "phase4Status": "IN PROGRESS — Tooltip through Combobox shipped (11 overlays). Command next (a command palette: a Dialog holding a Combobox-like search + grouped command list — the LAST Phase 4 item before Toast)."
   },
   "iconLibrary": {
     "page": "275:32",
