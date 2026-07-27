@@ -242,6 +242,12 @@ const AttachmentGroup = forwardRef<HTMLDivElement, AttachmentGroupProps>(
     <div
       {...rest}
       ref={ref}
+      // The group scrolls horizontally (overflow-x: auto), and a row of plain
+      // display attachments contains nothing focusable — so without a tab stop
+      // a keyboard user cannot reach the overflow at all (WCAG 2.1.1). Same
+      // fix ScrollArea and CodeBlock carry. It is unconditional because
+      // whether the children happen to be focusable is a runtime question.
+      tabIndex={0}
       className={`ui-attachment-group${className ? ' ' + className : ''}`}
     >
       {children}

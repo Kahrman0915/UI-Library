@@ -54,9 +54,13 @@
     border-color: var(--error-border);
     color: var(--error);
 
+    // No opacity here. Fading --error onto its own --error-light tint drops
+    // this to 3.68:1 — under AA for 12px text. Full opacity clears it at
+    // 4.72:1, and size plus weight already separate the description from the
+    // title. Same fix the five Alert variants took; Attachment was the last
+    // component still doing it.
     .ui-attachment__description {
       color: var(--error);
-      opacity: var(--o-80);
     }
   }
 }
@@ -325,6 +329,15 @@
   gap: var(--p-2);
   overflow-x: auto;
   padding-bottom: var(--p-1);
+
+  // The group is a tab stop so the overflow is keyboard-reachable, so it needs
+  // a visible ring. Inset, because an outward one would be clipped by the
+  // scroll container itself.
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+    border-radius: var(--rounded-md);
+  }
 
   > * {
     flex-shrink: 0;
