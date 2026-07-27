@@ -809,15 +809,35 @@
         "CollapsibleTrigger clones its child with `disabled`. Give it a non-button element and React warns about an unknown DOM attribute; nothing in the types prevents it.",
         "`disabled` has no root-level styling — a disabled Collapsible is visually identical to a closed one. Consumers who care must style off data-disabled themselves."
       ]
+    },
+    "Accordion": {
+      "status": "done-v4",
+      "pageId": "410:44",
+      "setIds": [
+        "410:70"
+      ],
+      "frames": {
+        "overview": "410:71",
+        "spec": "410:156",
+        "examplesDocsHistory": "412:44"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — reads only neutral tokens. Stated in TOKENS.",
+      "props": "The SET is Accordion/Item with VARIANT State (closed|open|disabled) = 3 — that is the one visual axis. type (single|multiple), collapsible, value, defaultValue and disabled are all CODE-ONLY: single vs multiple look identical, the difference is purely whether opening one item closes the others.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — the component was already sound: three-layer clip, inert-when-closed, roving arrow-key focus (Up/Down + Home/End, disabled triggers skipped), single/multiple modes, all verified in the browser. Modelled as Accordion/Item (the repeating unit with the visual decisions) plus assembled 3-item lists drawn from mkItem, since the divider hairline is per-item (removed on the last). Shares Collapsible's grid-rows clip; the page cross-references it rather than re-explaining.",
+      "openQuestions": [
+        "The trigger is a <button>, not a heading — the component makes no assumption about heading level, so a document that needs an outline must wrap the AccordionTrigger in its own <h3>.",
+        "A full-width trigger's 3px focus ring exits the container on both sides; fine standalone, but a consumer who wraps the Accordion in an overflow:hidden card will clip it left and right."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Accordion (Phase 3)",
+    "nextUp": "Alert (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Accordion",
       "Alert",
       "Banner",
       "Empty",
@@ -849,7 +869,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible shipped; 9 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion shipped; 8 composites remain."
   },
   "migrateExisting": {
     "Banner": "15:90",
