@@ -169,7 +169,8 @@
     "Instance sublayers cannot be removed — figma throws 'Node with id I…;… not found' on remove(). To change what is inside an instance you need a slot, a boolean-bound visibility, or an INSTANCE_SWAP; there is no deleting.",
     "Do NOT read a transitioned property immediately after toggling a class — getComputedStyle returns the pre-transition value and it looks like a specificity bug. Chat's recording colour read as muted right after the class change and settled to --error 300ms later. Wait out the transition before measuring.",
     "A grid-template-rows 0fr→1fr disclosure needs THREE layers, and the third is not optional: grid / clip / body. Collapsible shipped with two, so the consumer's className landed on the clip context and 16px of padding left a 32px phantom gap when closed. The tell that it was real rather than theoretical: both internal consumers had already added their own third div to work around it. When two consumers independently work around the same thing, the component is missing it.",
-    "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use."
+    "A HORIZONTAL wrap frame (examples bar) with counterAxisSizingMode='FIXED' freezes its HEIGHT, so cells taller than the frozen height overflow vertically — the inverse of the width case. For a wrap row that must grow to its tallest cell, counterAxisSizingMode must be 'AUTO' (hug height). Also: a fixed-width TEXT node inside a padded root overflows when the root is resized narrower than textWidth + padding — cap the text below the narrowest root you will use.",
+    "First reuse of the aiden dark-overlay pattern outside Button. A gradient fill (GRADIENT_LINEAR) is NOT caught by the unbound-solid-fill lint — only SOLID fills without a bound variable are. So the aiden light gradient (literal stops, un-bindable) passes clean, but a literal-hex SOLID indicator does NOT — the success example bar used #047857 and got flagged until bound to --success. Draw semantic bars with the bound variable; only the aiden gradient gets literal stops."
   ],
   "components": {
     "Button": {
@@ -898,15 +899,37 @@
         "Empty is a plain <div> with no role — correct for a presentational block, but when it replaces a live region (a search-results list) the announcement must happen on that region, not here. Nothing enforces it.",
         "The description is capped in Figma at a fixed 250px width; in code it is --max-w-sm (384) and wraps fluidly. The fixed width is a Figma approximation, not the code cap."
       ]
+    },
+    "Progress": {
+      "status": "done-v4",
+      "pageId": "435:44",
+      "setIds": [
+        "435:90"
+      ],
+      "frames": {
+        "overview": "436:44",
+        "spec": "436:106",
+        "theming": "437:44",
+        "examplesDocsHistory": "437:99"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — the DEFAULT variant themes (indicator reads --primary), recoloured across all 9 codes; semantic variants keep their own hue.",
+      "aiden": "YES — first Phase 3 component with an aiden gradient. The default determinate bar's indicator takes the violet→blue gradient under data-surface=aiden, built with the dark-overlay pattern (aiden-dark-gradient rect, visibility bound to flag/is-dark 175:26). Plus a completion particle burst (aiden-gated, not drawable). Documented in a dedicated AIDEN SURFACE card, since the flow + particles are animated.",
+      "props": "VARIANT Variant (default|success|warning|error|info) × Size (sm|default|lg) = 15, laid out as a 5-row × 3-col grid (manual positioning after combineAsVariants). value/max/indeterminate/valueFormatter are code-only; label + showValue are header shortcuts.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "NO code change — the July a11y sweep already wired aria-labelledby to the rendered label via useId. Track --muted, indicator --primary (or variant colour), heights --h-1/-2/-3. The set cells are bare track+indicator (header shown once in anatomy) to keep the 15-grid tight. indeterminate is a 40% sliding bar with NO aria-valuenow — shown as its resting 40% frame, not drawable. value text uses tabular-nums.",
+      "openQuestions": [
+        "Naming: `label` auto-wires aria-labelledby, but the compound API or a label-less bar needs a consumer aria-label — an unnamed progressbar announces only 'progress bar, 62%'.",
+        "The set cells omit the header row for grid density; a designer wanting the label+value composes it (shown in anatomy and examples) rather than toggling a property."
+      ]
     }
   },
   "queue": {
-    "nextUp": "Progress (Phase 3)",
+    "nextUp": "Tabs (Phase 3)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [
-      "Progress",
       "Tabs",
       "Breadcrumb",
       "Pagination",
@@ -934,7 +957,7 @@
       "Chat"
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
-    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty shipped; 5 composites remain."
+    "phase3Status": "IN PROGRESS — Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress shipped; 4 composites remain."
   },
   "iconLibrary": {
     "page": "275:32",
