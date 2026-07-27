@@ -1476,5 +1476,11 @@
       "4-input-baked-search-glyph": "REAL — FIXED (owner: do the surgery). See Input note above; glyphs are now swappable."
     },
     "outOfScopeNoted": "The Phase-1 Input page (192:32) carries some PRE-EXISTING lint items unrelated to this change: 4 doc-frame nodes named 'Input' with unbound padding(24)/radius(5), and the 12 Input variant COMPONENTs lack individual descriptions. Not caused by the glyph surgery (which only added lint-skipped instances); flagged for a later Phase-1 cleanup pass."
+  },
+  "guidance": {
+    "figmaPage": "🧭 Choosing components (675:44), frame 675:45 — a designer-facing reference placed right after the Rebuild Order index.",
+    "covers": "Two 'pick by behavior, not looks' decision blocks with real component instances + use-when captions + rule-of-thumb: (1) Dropdowns — NativeSelect vs Select vs Combobox; (2) Filters & toggles — Chip vs Toggle vs ToggleGroup.",
+    "mirroredIn": "CLAUDE.md 'Design decisions' section (two notes) — keep the two in sync if either changes.",
+    "origin": "Surfaced by the Settings + Team-list handoff test-drives (both confusable clusters)."
   }
 }
