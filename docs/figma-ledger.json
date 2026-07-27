@@ -1176,16 +1176,44 @@
       "props": "Instanceable menu atoms (the BASE the whole menu family reuses): DropdownMenu/Content — a --popover panel (min-width 224) with a Body SLOT (default = an assembled actions menu). DropdownMenu/Item — VARIANT State (default|hover|disabled) + TEXT Label + BOOL Show icon (swappable leading glyph) + BOOL Show shortcut + TEXT Shortcut. DropdownMenu/CheckboxItem — VARIANT Checked (checked|unchecked) + Label. DropdownMenu/RadioItem — VARIANT Selected (selected|unselected) + Label. DropdownMenu/Label + Separator single components. side/align/open state/keyboard nav are code-only.",
       "version": "1.0 · 2026-07-27",
       "notes": "Seventh Overlays page — the FIRST menu and the meatiest overlay: it establishes the item styling ContextMenu/Command/Select reuse (documented 4x-duplication, don't extract until a 5th needs it). Built 6 atoms; hover item paints --accent/--accent-foreground, disabled 50% opacity, shortcut pushed right via label layoutGrow=1, checkbox/radio reserve a 16px indicator (check icon / 8px dot). Content Body slot swaps to real menus; example row-actions menu SWAPS the nested item icon per row (swapComponent to pencil/copy/archive/trash, then re-bind the stroke to --foreground since swap discards the colour binding — verified). Menu-item icons default to a settings glyph; a designer swaps the nested 'icon' instance. Applied the single-wrapper slot rule up front (Content's slot = one 'menu-items' frame). GOTCHA: a Label instance is a COMPONENT (not a set) so find it by mainComponent.id, not mainComponent.parent — set group-label text at CREATION instead of post-hoc find. Lint all-zeros, no overflow, index 125:449 linked."
+    },
+    "ContextMenu": {
+      "status": "done-v4",
+      "pageId": "557:44",
+      "componentIds": {
+        "content": "559:64",
+        "item": "557:75",
+        "subTrigger": "557:92",
+        "checkboxItem": "558:71",
+        "radioItem": "558:79",
+        "label": "557:93",
+        "separator": "557:95"
+      },
+      "setIds": [
+        "557:75",
+        "557:92",
+        "558:71",
+        "558:79"
+      ],
+      "frames": {
+        "overview": "561:81",
+        "spec": "562:167",
+        "examplesDocsHistory": "563:301"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral --popover + --accent hover; the only semantic colour is the destructive --error / --error-light. No --primary.",
+      "props": "Its OWN copy of the menu atoms (the sanctioned 4x duplication) + two additions. ContextMenu/Item — VARIANT State (default|hover|disabled|destructive|destructive-hover) + Label/icon/shortcut. ContextMenu/SubTrigger — VARIANT State (default|open) + Label + chevron (opens a nested SubContent). ContextMenu/CheckboxItem (checked|unchecked), /RadioItem (selected|unselected, 6px dot), /Label (xs medium, NOT uppercase — differs from DropdownMenu), /Separator, /Content (min-width 192 --w-48). Right-click trigger + submenu open state are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Eighth Overlays page. NO code change. Parallel copy of DropdownMenu's item styling (the code duplicates it; so does Figma) PLUS the three ContextMenu additions: a destructive Item variant (--error text / --error-light hover), SubTrigger with a trailing chevron, and the right-click framing. Flagship Overview demo shows a menu with the 'Share' SubTrigger set to OPEN and a SubContent floating to its right (positioned by reading the subtrigger's absoluteBoundingBox). GOTCHA: setProperties (variant swap) STALES the node ref — read the box BEFORE opening the subtrigger, else absoluteBoundingBox throws 'node not found' on the stale ref. Example element menu swaps nested icons and binds the destructive icon stroke to --error (not --foreground). Lint all-zeros, no overflow, index 125:454 linked."
     }
   },
   "queue": {
-    "nextUp": "ContextMenu (Phase 4 — Overlays)",
+    "nextUp": "Menubar (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "ContextMenu",
       "Menubar",
       "Select",
       "Combobox",
@@ -1200,7 +1228,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu shipped. ContextMenu next (reuses the DropdownMenu item atoms; adds right-click trigger + submenus + a destructive variant)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu shipped. Menubar next (reuses DropdownMenu wholesale in code — a bar of triggers each opening a DropdownMenu)."
   },
   "iconLibrary": {
     "page": "275:32",
