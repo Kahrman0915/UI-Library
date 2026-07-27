@@ -175,7 +175,8 @@
     "After extracting a shared primitive (FeaturedIcon), sweep for slots it should fill: add it to the preferredValues of any leading-visual slot where it fits (Empty media, Card header-media) and update the 'Uses inside' pills + slot descriptions. NOT every media slot — Item/Attachment media are the compact list-tile pattern and deliberately do NOT suggest FeaturedIcon. Record future homes (Dialog/AlertDialog/ChatGreeting) so the wiring happens when they're built.",
     "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.).",
     "A component that WRAPS another control (Field) is modelled with a Figma SLOT for the control (default content = a real control instance), so examples compose real instances. Two gotchas: (1) if the wrapped control has its OWN label (Input's 'Show label' defaults true), turn it off or it doubles the wrapper's label. (2) Filling a slot on an INSTANCE is append-not-replace: slot.appendChild(newControl) leaves the master's default content visible, so hide slot.children[0] first. Also: resize() on an auto-layout frame freezes BOTH axes to FIXED — re-assert the hug axis AFTER any resize().",
-    "A rotated node's .x/.y is NOT its visual top-left — Figma's rotation origin shifts it, so positioning a rotated shape (a tooltip/popover arrow) by x/y math lands it wrong (the tooltip top arrow ended ~4px inside the bubble and was invisible). Position it in two passes: set an approximate x/y, read the node's absoluteBoundingBox to get its TRUE rendered center, then add (targetCenter - currentCenter) to x/y. Use a plain square (cornerRadius 0) for the arrow — a same-colour diamond centered on the bubble edge reads as a clean triangle; a rounded corner makes it a pentagon. Applies to every Overlay arrow ahead (Popover / HoverCard / DropdownMenu / Select / Combobox)."
+    "A rotated node's .x/.y is NOT its visual top-left — Figma's rotation origin shifts it, so positioning a rotated shape (a tooltip/popover arrow) by x/y math lands it wrong (the tooltip top arrow ended ~4px inside the bubble and was invisible). Position it in two passes: set an approximate x/y, read the node's absoluteBoundingBox to get its TRUE rendered center, then add (targetCenter - currentCenter) to x/y. Use a plain square (cornerRadius 0) for the arrow — a same-colour diamond centered on the bubble edge reads as a clean triangle; a rounded corner makes it a pentagon. Applies to every Overlay arrow ahead (Popover / HoverCard / DropdownMenu / Select / Combobox).",
+    "resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — this has now bitten on Field, Dialog panels AND the Dialog scrim stage. Standing rule: after ANY resize() on an auto-layout node, re-assert the axis that should hug (primaryAxisSizingMode/counterAxisSizingMode='AUTO'); better, avoid resize entirely — append the frame to its parent, then set layoutSizingHorizontal='FILL' (or a width via the parent) and the hug axis to AUTO. A frozen axis shows as a 10px-tall strip with content spilling."
   ],
   "components": {
     "Button": {
@@ -1054,16 +1055,35 @@
       "props": "Tooltip/Content — VARIANT Side (top|bottom|left|right) + TEXT Label. Each variant is the slate bubble + an 8px rotated-square arrow on the edge facing the trigger (absolute child, centered via constraints). align (start|center|end), sideOffset, delayDuration, disabled and the open state are code-only. The trigger is consumer-provided.",
       "version": "1.0 · 2026-07-27",
       "notes": "First Phase-4 (Overlays) page. NO code change. Built instanceable per the lesson — overview/spec/examples all use real Tooltip/Content instances, positioned with the STAGE re-anchoring pattern: a relative frame holds a placeholder trigger + the tooltip as an ABSOLUTE child offset by side (the real component portals to <body>). The bubble is the neutral slate inverse (tooltip-background 7:34 / -foreground 7:35), so the dark spec/example frames flip it to a LIGHT chip — the carve-out, shown not just told. Arrow is a rotated 8px rect with center/edge constraints so it tracks the bubble as the Label resizes. Overlay gotchas: the arrow overflows the master's bounds (fine in a stage); stage clipsContent clips a long side-tooltip (moved the long help example to side=top). align is NOT modelled as variants (arrow stays centered) — noted as a shortcut. ADDED the missing Tooltip row to the index board (Phase 4 had none — jumped Floating-layer→Dialog); cloned the Dialog row, retitled + linked to 492:44. Lint all-zeros, no overflow. ARROW FIX: the first cut had no top arrow and pentagon-shaped side arrows — a rotated node's x/y is NOT its visual top-left (the rotation origin shifts it), so center-on-edge math via x/y put the arrow ~4px inside the bubble. Corrected with a two-pass snap: place the rotated 8px square, read its absoluteBoundingBox center, then add (edgeCenter - currentCenter) to x/y. Also dropped the rounded corner — a plain square gives a clean diamond that, same-colour and centered on the edge, reads as a triangle. Instances re-mirrored the master automatically."
+    },
+    "Dialog": {
+      "status": "done-v4",
+      "pageId": "503:44",
+      "componentIds": {
+        "dialog": "503:150"
+      },
+      "setIds": [
+        "503:150"
+      ],
+      "frames": {
+        "overview": "504:68",
+        "spec": "506:128",
+        "examplesDocsHistory": "508:327"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral card chrome, no --primary. Panel --card, scrim --bg-overlay, footer --bg-input-50, all mode-aware but never themed. The footer's primary CTA is a Button, which themes on its own.",
+      "props": "Instanceable panel: Dialog — VARIANT Alignment (left|center) + TEXT Title/Description + BOOL Show description/Show close/Show footer + SLOT Body (default paragraph). Header composes a CloseButton (background variant); footer bakes Cancel (outline) + Delete (default) Button instances, overridable per instance (e.g. Variant=Error for destructive). open/onClose/closeOnOutsideClick/role/inline are code-only. AlertDialog is a preset (role=alertdialog, center, no outside-click, no X) — documented, not a separate master.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Second Overlays page. NO code change. Built instanceable — overview/spec/examples all use real Dialog instances; the scrim-stage pattern (a --bg-overlay frame with a BACKGROUND_BLUR effect, dialog centered via auto-layout) stands in for the portal. The Body SLOT swaps to a real Input for the form example; the footer's second Button overrides to Variant=Error for the destructive example. Header/footer borders use per-edge stroke weights (strokeBottomWeight/strokeTopWeight) on a bound border paint. RESIZE GOTCHA hit TWICE more (panel variants + scrim stage both froze a hug axis to 10px after resize) — re-assert the hug axis AFTER resize, or avoid resize by appending then setting FILL + AUTO. Also: REST screenshots render stale for freshly-modified nodes — a Show-footer=false cell looked like it still had a footer until re-shot; the node data (footerFound:false) is the source of truth, not the first screenshot. Lint all-zeros, no overflow, index 125:424 linked."
     }
   },
   "queue": {
-    "nextUp": "Dialog (Phase 4 — Overlays)",
+    "nextUp": "AlertDialog (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Dialog",
       "AlertDialog",
       "Drawer",
       "Popover",
@@ -1084,7 +1104,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip shipped (first overlay; established the stage re-anchoring pattern). Dialog next."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog shipped. AlertDialog next (a thin preset of Dialog — reuse the panel master)."
   },
   "iconLibrary": {
     "page": "275:32",
