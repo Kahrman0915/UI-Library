@@ -176,7 +176,8 @@
     "Compound components (Breadcrumb) must be modelled as instanceable ATOMS, not one fixed hand-drawn composition. First cut built Breadcrumb as a single component locked to one trail with no text props/slots — so every example had to be hand-rebuilt from raw frames and drifted from the master. The owner caught it: 'why aren't you using the actual component in the examples?' Fix: expose the reusable parts as components (Crumb with Type variant + Label text prop, Separator with Glyph variant, Ellipsis) and COMPOSE every trail — overview, spec, examples — from real instances. Rule: if a doc page's examples are hand-drawn rather than instances, the component is under-modelled. Applies to every compound family (Breadcrumb/Chat/etc.).",
     "A component that WRAPS another control (Field) is modelled with a Figma SLOT for the control (default content = a real control instance), so examples compose real instances. Two gotchas: (1) if the wrapped control has its OWN label (Input's 'Show label' defaults true), turn it off or it doubles the wrapper's label. (2) Filling a slot on an INSTANCE is append-not-replace: slot.appendChild(newControl) leaves the master's default content visible, so hide slot.children[0] first. Also: resize() on an auto-layout frame freezes BOTH axes to FIXED — re-assert the hug axis AFTER any resize().",
     "A rotated node's .x/.y is NOT its visual top-left — Figma's rotation origin shifts it, so positioning a rotated shape (a tooltip/popover arrow) by x/y math lands it wrong (the tooltip top arrow ended ~4px inside the bubble and was invisible). Position it in two passes: set an approximate x/y, read the node's absoluteBoundingBox to get its TRUE rendered center, then add (targetCenter - currentCenter) to x/y. Use a plain square (cornerRadius 0) for the arrow — a same-colour diamond centered on the bubble edge reads as a clean triangle; a rounded corner makes it a pentagon. Applies to every Overlay arrow ahead (Popover / HoverCard / DropdownMenu / Select / Combobox).",
-    "resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — this has now bitten on Field, Dialog panels AND the Dialog scrim stage. Standing rule: after ANY resize() on an auto-layout node, re-assert the axis that should hug (primaryAxisSizingMode/counterAxisSizingMode='AUTO'); better, avoid resize entirely — append the frame to its parent, then set layoutSizingHorizontal='FILL' (or a width via the parent) and the hug axis to AUTO. A frozen axis shows as a 10px-tall strip with content spilling."
+    "resize() on an auto-layout frame freezes BOTH sizing axes to FIXED — this has now bitten on Field, Dialog panels AND the Dialog scrim stage. Standing rule: after ANY resize() on an auto-layout node, re-assert the axis that should hug (primaryAxisSizingMode/counterAxisSizingMode='AUTO'); better, avoid resize entirely — append the frame to its parent, then set layoutSizingHorizontal='FILL' (or a width via the parent) and the hug axis to AUTO. A frozen axis shows as a 10px-tall strip with content spilling.",
+    "A Figma SLOT whose default content is MULTIPLE loose nodes is unswappable: hiding one default child re-renders the slot and invalidates the OTHER defaults' node refs, so the next .visible read throws 'node not found' — even iterating slot.children with .find throws on the stale node. Two rules: (1) give a swappable slot a SINGLE wrapper frame as its default content, not loose siblings; (2) hide that wrapper BEFORE appending the replacement (a ref grabbed before an append goes stale after it). Dialog/Field slots worked only because each had exactly one default child."
   ],
   "components": {
     "Button": {
@@ -1112,16 +1113,33 @@
       "props": "Instanceable edge panel: Drawer — VARIANT Side (right|left|top|bottom) + TEXT Title/Description + BOOL Show description/Show close/Show footer + SLOT Body. Header composes CloseButton (background); footer bakes Reset (outline) + Apply (default) Buttons, overridable. right/left variants are 360x460 (cap --max-w-sm), top/bottom 640x260 (cap 85vh); border on the INNER edge; --shadow-lg. side/open/onClose/closeOnOutsideClick are code-only; the slide-in/out animation isn't drawable.",
       "version": "1.0 · 2026-07-27",
       "notes": "Fourth Overlays page. NO code change. Nearly Dialog's structure (header/body-slot/footer, same CloseButton + Button, same bg-input-50 footer) but EDGE-pinned: per-side interior border via strokeTop/Bottom/Left/RightWeight, --shadow-lg (vs Dialog --shadow-xs), no radius, and 4 Side variants with two shape archetypes. Reuses Dialog's portal/focus-trap/scroll-lock and Tooltip's closed->open->closing exit machine IN CODE (documented, not drawable). Demos use the edge-anchor stage: a --background frame with faint --secondary page-bars, a --bg-overlay scrim, and the drawer anchored flush to its edge (absolute). Spec/example drawer INSTANCES are resize()'d to fit compact stages (instances resize fine; the body's layoutGrow=1 keeps header/footer pinned). Body SLOT swaps to a real Input for the filters example. Hit the resize()-freezes-both-axes gotcha again on the panel masters (wanted fixed W+H anyway, so fine). Lint all-zeros (after binding the decorative page-bar radii), no overflow, index 125:434 linked."
+    },
+    "Popover": {
+      "status": "done-v4",
+      "pageId": "522:44",
+      "componentIds": {
+        "content": "522:45"
+      },
+      "setIds": [],
+      "frames": {
+        "overview": "523:44",
+        "spec": "525:87",
+        "examplesDocsHistory": "529:139"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral --popover surface (shared with DropdownMenu/Select), no --primary. Colour comes from content (a footer Button themes).",
+      "props": "Instanceable card: Popover/Content — a single COMPONENT (NO Side variant: there is no arrow, so side/align change position only, not appearance) + a Body SLOT (default = title + description). min-width 256 (--w-64), max-width 384 (--max-w-sm). side/align/sideOffset/open/defaultOpen/onOpenChange are code-only (position + open state). Trigger is consumer-provided.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Fifth Overlays page. NO code change. First computePosition floating surface. Modelled as ONE card (no variants) because Popover has NO arrow — side/align only move it, shown via a 4-position 'POSITIONING' diagram (a Trigger with default popovers on top/right/bottom/left, labelled). Non-modal (no scrim); demos are trigger+popover stages. The Body SLOT swaps to a real form (Dimensions: Label+Input rows + Cancel/Save) and a share-link field. KEY SLOT LESSON: the slot's default content had TWO loose children (title+desc); appending re-renders the slot and INVALIDATES the remaining default refs, so hide-after-append throws 'node not found' AND even .find over slot.children throws on the stale node. Fix: (1) restructure the master so slot default content is a SINGLE wrapper frame; (2) hide the wrapper BEFORE appending the new content (grabbing the ref after append stales it). Lint all-zeros, no overflow, index 125:439 linked."
     }
   },
   "queue": {
-    "nextUp": "Popover (Phase 4 — Overlays)",
+    "nextUp": "HoverCard (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "Popover",
       "HoverCard",
       "DropdownMenu",
       "ContextMenu",
@@ -1139,7 +1157,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer shipped. Popover next (computePosition floating surface; arrow uses the rotated-node two-pass positioning lesson)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog, Drawer, Popover shipped. HoverCard next (near-identical to Popover; a --popover card opened on hover-intent)."
   },
   "iconLibrary": {
     "page": "275:32",
