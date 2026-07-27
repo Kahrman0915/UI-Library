@@ -1,7 +1,7 @@
 {
   "runId": "uilib-component-push-2026-07",
   "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
-  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page.",
+  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster now 58 — FeaturedIcon added 2026-07-27.)",
   "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
   "v4": {
     "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",
@@ -924,6 +924,25 @@
         "Naming: `label` auto-wires aria-labelledby, but the compound API or a label-less bar needs a consumer aria-label — an unnamed progressbar announces only 'progress bar, 62%'.",
         "The set cells omit the header row for grid density; a designer wanting the label+value composes it (shown in anatomy and examples) rather than toggling a property."
       ]
+    },
+    "FeaturedIcon": {
+      "status": "done-v4",
+      "pageId": "442:44",
+      "setIds": [
+        "442:105"
+      ],
+      "frames": {
+        "overview": "443:44",
+        "spec": "443:102",
+        "theming": "443:288",
+        "examplesDocsHistory": "443:361"
+      },
+      "themed": true,
+      "themingFrame": "PRESENT — brand variant only; reads --primary, recoloured across all 9 codes.",
+      "props": "VARIANT Variant (default|brand|success|warning|error|info) × Shape (square|circle) = 12 at default size. Size (sm|default|lg = 32/40/48) shown in Spec, not a variant axis (would be 36). Icon + label code-only.",
+      "version": "1.0 · 2026-07-27",
+      "newComponent": "YES — 58th component, added 2026-07-27. Extracted from the boxed icon-tile pattern hand-rolled in Empty, Item and Attachment media. Owner requested it after spotting the Empty tile. Index board got a new FeaturedIcon row (444:289).",
+      "notes": "Reuses Alert/Badge -light tint tokens, no new tokens. Icon is half the box at every size (16/20/24). Square radius scales md/lg/xl; circle is full. brand binds to Theme collection like Alert/Banner. Follow-up chip spawned to consolidate Item/Attachment/EmptyMedia tiles onto it."
     }
   },
   "queue": {
