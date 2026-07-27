@@ -1323,17 +1323,36 @@
       "props": "Instanceable atom is Toast/Card — VARIANT Variant (default|info|success|warning|error) + TEXT Title + TEXT Description + BOOL Show icon / Show description / Show actions / Show progress. Composes real Button (xsmall: outline cancel + solid action), CloseButton (top-right, absolute) and Progress (sm, revealed by Show progress). The imperative API — <Toaster position|visibleToasts|gap|duration> + toast(title,{variant,description,action,cancel,duration,progress,Icon,id,onDismiss}) and toast.success/info/warning/error/loading/promise/dismiss — is code-only (stacking, timers, dedupe-by-id).",
       "version": "1.0 · 2026-07-27",
       "notes": "FINAL Phase 4 (Overlays) page — Phase 4 COMPLETE. Toast is imperative (render <Toaster/> once, call toast() anywhere), so the Figma atom is the CARD, not a compound tree. NO code change. Composition-forward: the card set composes real Button/CloseButton/Progress INSTANCES (Button set 76:300, CloseButton 325:259, Progress 435:90) — instances are lint-skipped and give free fidelity/theming. Five semantic variants recolor border + icon + title only; surface stays --popover; error/warning are aria-live=assertive. Overview renders a corner Toaster stack on a dark backdrop (bottom-right feel). Spec = 5 variants light+dark (dark col via setExplicitVariableModeForCollection Mode 2:2->2:1) + anatomy + the 6 positions. Examples: success+Undo, a LOADING toast (nested 'icon' instance swapComponent-ed to Icon/loader-circle 312:19640, stroke rebound to --muted after swap), and a determinate progress toast (Show progress reveals the Progress instance). Custom action labels (Undo/Retry/Dismiss) set by reaching into the card instance's 'actions' frame and setting the nested Button Label#79:0 — the card set does NOT expose action labels as its own props. shadow-lg via 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:479 linked. [Fix 2026-07-27] Atom masters were initially left as loose top-level components at y~3200 (stranded far below the frames); relocated INSIDE the Overview frame under a 'SOURCE · Component master(s)' section, matching the convention (masters live nested in Overview, never loose on the canvas)."
+    },
+    "ModeToggler": {
+      "status": "done-v4",
+      "pageId": "611:44",
+      "componentIds": {
+        "set": "611:117"
+      },
+      "setIds": [
+        "611:117"
+      ],
+      "frames": {
+        "overview": "613:80",
+        "spec": "615:127",
+        "examplesDocsHistory": "617:188"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — neutral chrome (secondary/border/accent/foreground); no --primary. Like Tooltip/Sidebar it is not remapped by data-theme.",
+      "props": "Instanceable. ModeToggler set — VARIANT Variant (default|outline|ghost) × Size (sm|default|lg) × Mode (light|dark) = 18. default = --secondary fill (hover --muted); outline = --border (hover --accent); ghost = transparent (hover --accent). Size scales padding + icon (16/20/24). Mode drives which icon shows (sun light / moon dark). id/variant/size/mode/defaultMode/onModeChange/storageKey/disableAnimation are the code props; the localStorage persistence, MutationObserver sync, and startViewTransition circular reveal are code-only.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "FIRST Phase 5 page. NO code change. The one component that owns the html data-mode attribute; an icon-only role=switch. Modeled as a full 3×3×2 variant set (Variant×Size×Mode) — Mode is a variant axis (not a boolean) so the sun/moon icon is baked per variant, not toggled. GOTCHA: the Mode axis value is the STRING 'light'/'dark'; passing the JS boolean from a grid(dark) helper throws 'Unable to find a variant' (convert first). Set reflowed to HORIZONTAL layoutWrap so the 18 variants tile (default combineAsVariants is a 1-col strip). Overview: light/dark demo trios (dark trio via setExplicitVariableModeForCollection Mode 2:2->2:1) + the master nested under a SOURCE section. Spec: a 3-variant×3-size grid in light (sun) and dark (moon) side by side. Examples: an app-header bar (title + ghost toggler) in light and dark showing the icon follow the mode. Icons Sun 312:20798 / Moon 312:19868. Lint all-zeros, no overflow, index 125:492 linked."
     }
   },
   "queue": {
-    "nextUp": "ModeToggler (Phase 5)",
+    "nextUp": "Direction (Phase 5)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [],
     "phase5": [
-      "ModeToggler",
       "Direction",
       "Sidebar",
       "Chat"
@@ -1341,7 +1360,7 @@
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
     "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
-    "phase5Status": "NOT STARTED — the final phase. ModeToggler next, then Direction, Sidebar, and the Chat family (largest, last)."
+    "phase5Status": "IN PROGRESS — ModeToggler shipped. Next: Direction (RTL/LTR provider — likely a concept/usage page since it renders no visible chrome of its own), then Sidebar, then the Chat family (largest, last)."
   },
   "iconLibrary": {
     "page": "275:32",
