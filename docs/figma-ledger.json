@@ -1075,16 +1075,32 @@
       "props": "Instanceable panel: Dialog — VARIANT Alignment (left|center) + TEXT Title/Description + BOOL Show description/Show close/Show footer + SLOT Body (default paragraph). Header composes a CloseButton (background variant); footer bakes Cancel (outline) + Delete (default) Button instances, overridable per instance (e.g. Variant=Error for destructive). open/onClose/closeOnOutsideClick/role/inline are code-only. AlertDialog is a preset (role=alertdialog, center, no outside-click, no X) — documented, not a separate master.",
       "version": "1.0 · 2026-07-27",
       "notes": "Second Overlays page. NO code change. Built instanceable — overview/spec/examples all use real Dialog instances; the scrim-stage pattern (a --bg-overlay frame with a BACKGROUND_BLUR effect, dialog centered via auto-layout) stands in for the portal. The Body SLOT swaps to a real Input for the form example; the footer's second Button overrides to Variant=Error for the destructive example. Header/footer borders use per-edge stroke weights (strokeBottomWeight/strokeTopWeight) on a bound border paint. RESIZE GOTCHA hit TWICE more (panel variants + scrim stage both froze a hug axis to 10px after resize) — re-assert the hug axis AFTER resize, or avoid resize by appending then setting FILL + AUTO. Also: REST screenshots render stale for freshly-modified nodes — a Show-footer=false cell looked like it still had a footer until re-shot; the node data (footerFound:false) is the source of truth, not the first screenshot. Lint all-zeros, no overflow, index 125:424 linked."
+    },
+    "AlertDialog": {
+      "status": "done-v4",
+      "pageId": "510:44",
+      "componentIds": {},
+      "setIds": [],
+      "reusesMaster": "Dialog (503:150) — NO separate AlertDialog master",
+      "frames": {
+        "overview": "510:45",
+        "spec": "511:109",
+        "examplesDocsHistory": "511:454"
+      },
+      "themed": false,
+      "themingFrame": "ABSENT — inherits Dialog's neutral chrome; no tokens of its own. The only accent is the destructive footer CTA (a Button, error-red).",
+      "props": "PRESET of Dialog — no new component. Every instance on the page is a Dialog (503:150) instance with Show close=false (the visual signature of an alert dialog). Carve-outs vs Dialog: role='alertdialog', closeOnOutsideClick=false, showCloseButton=false. AlertDialog's own props are just open/onClose/inline; it drops closeOnOutsideClick/role/showCloseButton.",
+      "version": "1.0 · 2026-07-27",
+      "notes": "Third Overlays page and the FIRST preset page — reuses the Dialog panel master wholesale (like Menubar reused DropdownMenu), matching the code where AlertDialog renders a <Dialog role='alertdialog' closeOnOutsideClick={false}> with showCloseButton={false}. Deliberately did NOT mint a second master. Spec is a Dialog-vs-AlertDialog comparison (X present vs absent, outside-click vs none); Overview + examples are Dialog instances with Show close off + destructive footer overrides (Variant=Error). Anatomy/tokens/sizes are intentionally NOT duplicated — the page points to Dialog for those. Lint all-zeros, no overflow, index 125:429 linked."
     }
   },
   "queue": {
-    "nextUp": "AlertDialog (Phase 4 — Overlays)",
+    "nextUp": "Drawer (Phase 4 — Overlays)",
     "phase1": [],
     "phase1Status": "COMPLETE — all 7 hubs shipped (Button, Spinner, Label, Input, Textarea, NativeSelect, InputGroup, InputOTP). All lint clean; all index rows linked.",
     "phase2": [],
     "phase3": [],
     "phase4": [
-      "AlertDialog",
       "Drawer",
       "Popover",
       "HoverCard",
@@ -1104,7 +1120,7 @@
     ],
     "phase2Status": "COMPLETE — all Phase 2 atoms shipped. Phase 3 (Composites) is next; queue below.",
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
-    "phase4Status": "IN PROGRESS — Tooltip, Dialog shipped. AlertDialog next (a thin preset of Dialog — reuse the panel master)."
+    "phase4Status": "IN PROGRESS — Tooltip, Dialog, AlertDialog shipped. Drawer next (edge panel; reuses Dialog portal + Tooltip exit state machine in code)."
   },
   "iconLibrary": {
     "page": "275:32",
