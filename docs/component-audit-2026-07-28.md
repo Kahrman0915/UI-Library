@@ -147,9 +147,50 @@ wired describedby/invalid, Select same wiring, Dialog/Drawer conditional
 labelledby + wired describedby), plus two post-audit interaction fixes:
 `8750383` (Select/Combobox chevron dead strip) and `e58bda2` (floating surfaces
 stay anchored; new useFloatingReposition hook, Tooltip migrated onto it).
-Remaining open: wave 5 (JSDoc the ~20 bare
-types files), wave 6 (stories: Menubar keyboard demo, Drawer, disabled-state +
-controlled-usage stories), wave 7 (size-vocabulary decision).
+
+Also fixed along the way, though not called out in those commit messages:
+cross-cutting **#3** (Alert and Card now wire their minted ids), **#9** (both
+Accordion and ToggleGroup extract values out of the `useCallback` deps), and
+the Spinner half of **#6** (its `role`/`aria-label` now sit *before* `{...rest}`
+so consumers can localize or hide it). Pagination's ellipsis half of **#5** is
+fixed; Breadcrumb's is not.
+
+### Re-verified against source 2026-07-28 (later) — what is actually still open
+
+**A11y items the wave-4 commit never touched.** These are in the
+High-severity list above and remain unfixed:
+
+| Item | Where | State |
+|---|---|---|
+| `role="tooltip"` on a surface containing Buttons; keyboard users can't reach the content | HoverCard.tsx:271 | open |
+| `PopoverClose` drops focus to `<body>` instead of the trigger | Popover.tsx | open |
+| Accordion triggers not wrapped in headings (APG requirement) | Accordion.tsx | open |
+| AlertDialog has no initial-focus control | AlertDialog | open — `aria-describedby` **is** covered, inherited from Dialog.tsx:184 |
+
+**Cross-cutting still open:** **#4** — error messages are live regions in
+**0 of 5** components (Input, Textarea, NativeSelect, Select, Combobox have no
+`role="alert"`/`aria-live` at all). **#5** — Breadcrumb's ellipsis still wraps
+its `sr-only` "More" in `aria-hidden` + `role="presentation"`, so the text is
+silenced; either drop the span or drop the `aria-hidden`. **#6** — Pagination
+prev/next, Command root and the Toaster region still hard-code `aria-label`
+*after* the spread (Spinner is the fixed reference). **#7** — the size-
+vocabulary split is still undecided. **#8** — `ui-input-wrap--has-left/right`
+is emitted by Input.tsx:49 and appears **zero** times in Input.scss;
+`.ui-dialog__*--sticky` exists twice in Dialog.scss and is emitted **nowhere**.
+
+**Wave 5 (JSDoc) is bigger than the original "~20" estimate: 29 of 59 types
+files** still carry fewer than three doc lines. The heavy ones are Chat (31
+exported types), Sidebar (21), ContextMenu (17), Item and Attachment (13 each),
+Field (12). Button and Select are the model.
+
+**Wave 6 (stories):** Menubar has 1 story and Drawer has 2 (no keyboard demo,
+no side matrix). No disabled-state story exists for InputGroup, Fab, Pagination,
+Menubar or Drawer — each of the first three shipped a bug a disabled story would
+have caught. DropdownMenu has no controlled-usage story.
+
+Separately, **`parameters.ui` prose now exists for all 59 components**
+(description + tags); Button and Select additionally carry usage / composition /
+a11y and are the template for the rest.
 
 ## Priority actions
 
