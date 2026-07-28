@@ -24,6 +24,12 @@
       transform: translateY(calc(-1 * var(--motion-slide-sm)));
     }
 
+    // Press — a gentler shrink than the small controls (a big surface at 0.97
+    // would move too much); pushes the lifted card back toward the page.
+    &:active {
+      transform: scale(var(--motion-scale-press-subtle));
+    }
+
     // `interactive` is a VISUAL AFFORDANCE ONLY — the card stays a plain
     // <div> with no role and no tab stop. The real click target belongs
     // inside the card, as a link or button, because a card that carries its
@@ -45,7 +51,8 @@
   // zeroes durations — the translate itself would still jump). Border + shadow
   // aren't motion, so they stay.
   @media (prefers-reduced-motion: reduce) {
-    &--interactive:hover {
+    &--interactive:hover,
+    &--interactive:active {
       transform: none;
     }
   }

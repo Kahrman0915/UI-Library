@@ -336,8 +336,11 @@ html {
   --motion-slide-lg: 12px;
   /* Enter scale for pop-in surfaces (menus) */
   --motion-scale-in: 0.97;
-  /* Press scale — tactile "pushed" feedback on :active (Button now; Chip/Toggle/Card next) */
+  /* Press scale — tactile "pushed" feedback on :active. -press for small controls
+     (Button/Chip/Toggle/Fab/icon-button); -press-subtle for large surfaces (Card),
+     where a 3% shrink would read as too much movement. */
   --motion-scale-press: 0.97;
+  --motion-scale-press-subtle: 0.99;
 
   /* -----------------------------------------------------------------------
      Effects (focus ring width, overlay blur, motion offsets)

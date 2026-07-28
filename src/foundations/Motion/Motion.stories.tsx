@@ -117,6 +117,13 @@ export const Motion: Story = {
         <strong>Try before/after:</strong> the whole upgrade is two token references and a <M>:active</M> rule on{' '}
         <M>.ui-button</M> — no new dependency, no JS. Reduced-motion users get the press state instantly and skip the easing.
       </P>
+      <P>
+        The same <M>:active</M> press now lives on every pressable control — <strong>Button, Chip, Toggle / ToggleGroup, Fab,
+        and every icon button</strong> (CloseButton, Attachment actions, Chat composer tools) scale to{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-press</code> (0.97); interactive <strong>Card</strong> uses the gentler{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-press-subtle</code> (0.99), since a big surface at 0.97 would move too much.
+        Try pressing a Chip or a Toggle — the pill physically depresses.
+      </P>
 
       <H2>Overlay entrances</H2>
       <P>

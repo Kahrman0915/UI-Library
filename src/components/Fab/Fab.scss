@@ -21,7 +21,7 @@
     box-shadow: var(--shadow-xl);
   }
   &:active {
-    transform: scale(0.98);
+    transform: scale(var(--motion-scale-press));
   }
   &:focus-visible {
     outline: none;
