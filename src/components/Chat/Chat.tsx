@@ -141,6 +141,15 @@ const ChatMessageList = forwardRef<HTMLDivElement, ChatMessageListProps>(
     return (
       <div className="ui-chat__list-wrap">
         <div
+          // Overridable defaults sit BEFORE the spread. role="log" makes the
+          // transcript a live region (implicit aria-live=polite), so incoming
+          // assistant messages are actually announced; tabIndex makes the
+          // scroll container keyboard-reachable (WCAG 2.1.1 — a scrollable
+          // region with no tab stop can't be scrolled without a mouse); the
+          // label names the region a keyboard user lands in.
+          role="log"
+          aria-label="Chat messages"
+          tabIndex={0}
           {...rest}
           ref={setScrollNode}
           className={`ui-chat__list${className ? ' ' + className : ''}`}

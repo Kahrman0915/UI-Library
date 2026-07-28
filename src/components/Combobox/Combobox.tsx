@@ -259,7 +259,14 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
               )}
             </span>
             {description && (
-              <span id={descriptionId} className="ui-label__description">
+              // aria-hidden keeps the helper out of the trigger's accessible
+              // NAME (it sits inside the <label>); the trigger re-exposes it
+              // as a description via aria-describedby.
+              <span
+                id={descriptionId}
+                className="ui-label__description"
+                aria-hidden="true"
+              >
                 {description}
               </span>
             )}
@@ -281,9 +288,16 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
             role="combobox"
             aria-expanded={open}
             aria-haspopup="listbox"
-            aria-controls={listboxId}
+            // Only reference the listbox while it exists in the DOM.
+            aria-controls={open ? listboxId : undefined}
             aria-required={required || undefined}
             aria-disabled={disabled || undefined}
+            aria-invalid={error || undefined}
+            aria-describedby={
+              [description ? descriptionId : null, error && errorMessage ? errorId : null]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             disabled={disabled}
             className="ui-combobox__trigger"
             onClick={() => {
@@ -360,10 +374,14 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                   ref={searchRef}
                   id={searchInputId}
                   type="text"
-                  role="combobox"
+                  // NOT role="combobox" — the trigger button already carries
+                  // it, and APG allows exactly one per pattern. This is the
+                  // popup's filter field: a named searchbox that still drives
+                  // the listbox via aria-activedescendant.
+                  role="searchbox"
+                  aria-label={searchPlaceholder}
                   autoComplete="off"
                   spellCheck={false}
-                  aria-expanded="true"
                   aria-controls={listboxId}
                   aria-activedescendant={activeDescendantId}
                   className="ui-combobox__search-input"

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
@@ -41,6 +41,17 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
     const panelRef = useRef<HTMLDivElement | null>(null);
     const mounted = useMounted();
 
+    // aria-labelledby/-describedby must only reference ids that EXIST — the
+    // old unconditional `${id}-title` dangled whenever DialogHeader was
+    // omitted (or given a mismatched id), leaving the dialog with no
+    // accessible name at all. Detect what the consumer actually rendered.
+    // Layout effect: resolves before the focus-trap effect focuses the panel,
+    // so the name/description are correct when the dialog is announced.
+    const [refIds, setRefIds] = useState<{ title: boolean; desc: boolean }>({
+      title: false,
+      desc: false,
+    });
+
     // Exit-animation state machine (mirrors Drawer): the panel stays mounted
     // through `closing` so it can play its exit keyframes before unmount. React
     // would otherwise remove it instantly and the close would have no motion.
@@ -59,6 +70,21 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       const t = setTimeout(() => setState('closed'), 400);
       return () => clearTimeout(t);
     }, [state]);
+
+    // Detect what the consumer actually rendered, AFTER the panel is mounted —
+    // keyed on the machine's `state` (the panel mounts a commit after `open`
+    // flips, so keying on `open` would query a null panel and never re-run).
+    // Layout effect: resolves before the focus-trap effect announces the dialog.
+    useLayoutEffect(() => {
+      const panel = panelRef.current;
+      if (state !== 'open' || !panel) return;
+      const esc =
+        typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id;
+      setRefIds({
+        title: !!panel.querySelector(`#${esc}-title`),
+        desc: !!panel.querySelector(`#${esc}-description`),
+      });
+    }, [state, id, children]);
 
     // Escape to close (both inline and overlay modes)
     useEffect(() => {
@@ -154,7 +180,8 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         }}
         role={role}
         aria-modal={!inline}
-        aria-labelledby={`${id}-title`}
+        aria-labelledby={refIds.title ? `${id}-title` : undefined}
+        aria-describedby={refIds.desc ? `${id}-description` : undefined}
       >
         {children}
       </div>
@@ -206,7 +233,9 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
             {title}
           </h2>
           {description && (
-            <p className="ui-dialog__description">{description}</p>
+            <p id={`${id}-description`} className="ui-dialog__description">
+              {description}
+            </p>
           )}
         </div>
         {showCloseButton && onClose && (

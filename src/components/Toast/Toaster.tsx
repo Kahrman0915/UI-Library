@@ -28,6 +28,15 @@ const Toaster = ({
   // the emitter handlers never have to read state from inside an updater.
   const toastsRef = useRef<ToastRecord[]>([]);
   const timersRef = useRef<Map<string, number>>(new Map());
+  // Pause plumbing (WCAG 2.2.1): hovering or focusing the stack suspends
+  // auto-dismiss so a toast can't vanish while the user reaches for its action.
+  const pausedRef = useRef(false);
+  const hoverRef = useRef(false);
+  const focusRef = useRef(false);
+  const pauseApiRef = useRef<{ pause: () => void; resume: () => void } | null>(
+    null,
+  );
+  const containerRef = useRef<HTMLDivElement | null>(null);
   const mounted = useMounted();
 
   useEffect(() => {
@@ -41,6 +50,8 @@ const Toaster = ({
 
     const scheduleDismiss = (record: ToastRecord) => {
       clearTimer(record.id);
+      // While paused, don't arm the timer — resume() re-schedules everything.
+      if (pausedRef.current) return;
       // A record with no duration of its own defers to this Toaster's prop.
       const ms = record.duration ?? duration;
       if (!Number.isFinite(ms)) return;
@@ -48,6 +59,29 @@ const Toaster = ({
         emit({ type: 'DISMISS', id: record.id });
       }, ms);
       timersRef.current.set(record.id, timer);
+    };
+
+    // Suspend auto-dismiss for every live (non-leaving) toast; exit timers on
+    // `leaving` toasts keep running so mid-exit cards still unmount. Resume
+    // restarts each live toast's full duration — simpler than tracking
+    // remaining time, and strictly more generous to the user.
+    pauseApiRef.current = {
+      pause: () => {
+        if (pausedRef.current) return;
+        pausedRef.current = true;
+        containerRef.current?.setAttribute('data-paused', '');
+        for (const t of toastsRef.current) {
+          if (!t.leaving) clearTimer(t.id);
+        }
+      },
+      resume: () => {
+        if (!pausedRef.current) return;
+        pausedRef.current = false;
+        containerRef.current?.removeAttribute('data-paused');
+        for (const t of toastsRef.current) {
+          if (!t.leaving) scheduleDismiss(t);
+        }
+      },
     };
 
     // Single funnel for state writes. `toastsRef` is kept in lockstep so the
@@ -149,13 +183,45 @@ const Toaster = ({
   }, [visibleToasts, duration]);
 
   if (!mounted) return null;
-  if (toasts.length === 0) return null;
+
+  // The container stays mounted even when empty — several screen-reader/browser
+  // pairs miss content inserted at the same moment its live region is created,
+  // so the region must pre-exist the first toast. It's pointer-events: none and
+  // visually nothing when empty.
+  const updatePaused = () => {
+    const shouldPause = hoverRef.current || focusRef.current;
+    if (shouldPause) pauseApiRef.current?.pause();
+    else pauseApiRef.current?.resume();
+  };
 
   return createPortal(
     <div
+      ref={containerRef}
+      role="region"
+      aria-label="Notifications"
       data-position={position}
       className={`ui-toaster ui-toaster--${position}${className ? ' ' + className : ''}`}
       style={{ gap }}
+      // Pause auto-dismiss while the pointer or keyboard focus is on the stack
+      // (WCAG 2.2.1 — the toast can't race the user to its own action button).
+      onMouseEnter={() => {
+        hoverRef.current = true;
+        updatePaused();
+      }}
+      onMouseLeave={() => {
+        hoverRef.current = false;
+        updatePaused();
+      }}
+      onFocusCapture={() => {
+        focusRef.current = true;
+        updatePaused();
+      }}
+      onBlurCapture={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+          focusRef.current = false;
+          updatePaused();
+        }
+      }}
     >
       {toasts.map((t) => (
         <ToastCard

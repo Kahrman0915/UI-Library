@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
@@ -44,6 +44,26 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     const previouslyFocused = useRef<HTMLElement | null>(null);
     const mounted = useMounted();
     const [state, setState] = useState<DrawerState>(open ? 'open' : 'closed');
+
+    // Only reference ids that exist (same fix as Dialog): the unconditional
+    // `${id}-title` dangled when DrawerHeader was omitted, leaving the drawer
+    // with no accessible name. Layout effect so it resolves before focus.
+    const [refIds, setRefIds] = useState<{ title: boolean; desc: boolean }>({
+      title: false,
+      desc: false,
+    });
+    useLayoutEffect(() => {
+      const panel = panelRef.current;
+      // Keyed on the machine's `state` — the panel mounts a commit after
+      // `open` flips, so keying on `open` would query a null panel.
+      if (state !== 'open' || !panel) return;
+      const esc =
+        typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id;
+      setRefIds({
+        title: !!panel.querySelector(`#${esc}-title`),
+        desc: !!panel.querySelector(`#${esc}-description`),
+      });
+    }, [state, id, children]);
 
     // Drive the state machine from the controlled `open` prop. Closing an
     // already-closed drawer is a no-op; otherwise we route through `closing`
@@ -169,7 +189,8 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           }}
           role="dialog"
           aria-modal="true"
-          aria-labelledby={`${id}-title`}
+          aria-labelledby={refIds.title ? `${id}-title` : undefined}
+          aria-describedby={refIds.desc ? `${id}-description` : undefined}
           data-side={side}
           data-state={state}
           className={`ui-drawer ui-drawer--${side}${isClosing ? ' ui-drawer--closing' : ''}${className ? ' ' + className : ''}`}
@@ -207,7 +228,9 @@ const DrawerHeader = forwardRef<HTMLDivElement, DrawerHeaderProps>(
             {title}
           </h2>
           {description && (
-            <p className="ui-drawer__description">{description}</p>
+            <p id={`${id}-description`} className="ui-drawer__description">
+              {description}
+            </p>
           )}
         </div>
         {showCloseButton && onClose && (

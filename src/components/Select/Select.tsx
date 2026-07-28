@@ -144,6 +144,14 @@ const Select = ({
     [itemLabels],
   );
 
+  const errorId = errorMessage ? `${id}-error` : undefined;
+  const descriptionId = description ? `${id}-description` : undefined;
+  // These ids were minted and rendered but never referenced — the trigger now
+  // exposes them via aria-describedby (description always, error when shown).
+  const describedBy =
+    [descriptionId, error ? errorId : undefined].filter(Boolean).join(' ') ||
+    undefined;
+
   const ctxValue = useMemo(
     () => ({
       id,
@@ -158,6 +166,7 @@ const Select = ({
       required,
       size,
       error,
+      describedBy,
       triggerNode,
       setTriggerNode,
       registerItem,
@@ -174,15 +183,13 @@ const Select = ({
       required,
       size,
       error,
+      describedBy,
       triggerNode,
       registerItem,
       getItemLabel,
       itemsVersion,
     ],
   );
-
-  const errorId = errorMessage ? `${id}-error` : undefined;
-  const descriptionId = description ? `${id}-description` : undefined;
 
   return (
     <SelectContext.Provider value={ctxValue}>
@@ -203,7 +210,15 @@ const Select = ({
               )}
             </span>
             {description && (
-              <span id={descriptionId} className="ui-label__description">
+              // aria-hidden keeps the helper out of the trigger's accessible
+              // NAME (it sits inside the <label>); the trigger re-exposes it as
+              // a description via aria-describedby (see Label.tsx for the
+              // pattern rationale).
+              <span
+                id={descriptionId}
+                className="ui-label__description"
+                aria-hidden="true"
+              >
                 {description}
               </span>
             )}
@@ -265,9 +280,12 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           role="combobox"
           aria-expanded={ctx.open}
           aria-haspopup="listbox"
-          aria-controls={ctx.contentId}
+          // Only reference the listbox while it exists in the DOM.
+          aria-controls={ctx.open ? ctx.contentId : undefined}
           aria-required={ctx.required || undefined}
           aria-disabled={ctx.disabled || undefined}
+          aria-invalid={ctx.error || undefined}
+          aria-describedby={ctx.describedBy}
           disabled={ctx.disabled}
           className={`ui-select__trigger${className ? ' ' + className : ''}`}
           onClick={(e) => {
