@@ -1482,5 +1482,12 @@
     "covers": "Two 'pick by behavior, not looks' decision blocks with real component instances + use-when captions + rule-of-thumb: (1) Dropdowns — NativeSelect vs Select vs Combobox; (2) Filters & toggles — Chip vs Toggle vs ToggleGroup.",
     "mirroredIn": "CLAUDE.md 'Design decisions' section (two notes) — keep the two in sync if either changes.",
     "origin": "Surfaced by the Settings + Team-list handoff test-drives (both confusable clusters)."
+  },
+  "exampleScreens": {
+    "chat": {
+      "figmaPage": "🧪 Example — Chat (688:44): Landing view 688:45 + Conversation view 689:89",
+      "code": "src/prototypes/AiChatShowcase.stories.tsx (Landing + Conversation)",
+      "note": "Composes the Chat atoms (message/marker/toolCall/source/suggestion/composer) + an Attachment as the AI-delivered downloadable file. Figma Attachment's baked action glyph is X (slot default) not Download — same slot limitation as Card/Item/Accordion; code uses a real Download AttachmentAction."
+    }
   }
 }
