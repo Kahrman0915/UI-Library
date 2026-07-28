@@ -610,9 +610,7 @@ html {
   --aiden-gradient-start: #8455f0;
   --aiden-gradient-mid: #5a37e6;
   --aiden-gradient-end: #2c6dea;
-  --aiden-outline-hover: linear-gradient(135deg, #ece9fe 29%, #dbeafe 100%);
   --aiden-outline-border: #5a37e6;
-  --aiden-outline-hover-foreground: #0f172a;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
@@ -870,11 +868,7 @@ html {
   --aiden-gradient-start: #9076f9;
   --aiden-gradient-mid: #9076f9;
   --aiden-gradient-end: #93c5fd;
-  /* Secondary-button hover: deepen the --aiden-secondary tint (0.1 → 0.18), NOT a
-     bright fill — a tint button should intensify on hover, not flash light. */
-  --aiden-outline-hover: linear-gradient(135deg, rgba(144, 118, 249, 0.18) 0%, rgba(147, 197, 253, 0.18) 100%);
   --aiden-outline-border: #9076f9;
-  --aiden-outline-hover-foreground: #0f172a;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
