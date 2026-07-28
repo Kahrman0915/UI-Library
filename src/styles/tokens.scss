@@ -341,6 +341,9 @@ html {
      where a 3% shrink would read as too much movement. */
   --motion-scale-press: 0.97;
   --motion-scale-press-subtle: 0.99;
+  /* Per-child delay for staggered list entrances (.ui-stagger) — fast enough to
+     read as one orchestrated motion, not a slow cascade. */
+  --stagger-step: 25ms;
 
   /* -----------------------------------------------------------------------
      Effects (focus ring width, overlay blur, motion offsets)

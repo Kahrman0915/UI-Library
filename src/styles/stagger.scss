@@ -1,0 +1,28 @@
+// Staggered list entrance — direct children of `.ui-stagger` rise + fade in one
+// after another, so a list reads as one orchestrated motion instead of popping.
+//
+// Pure CSS via :nth-child (no JS, no index prop): the first 12 children each get
+// a delay of index × --stagger-step. Children 13+ get NO animation and simply
+// appear — a long list shouldn't cascade for seconds, and rows past the first
+// dozen are usually below the fold anyway. Plays once on mount (CSS animations
+// don't replay on re-render), and reduced-motion collapses the duration globally.
+
+@keyframes ui-stagger-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-stagger {
+  @for $i from 1 through 12 {
+    > *:nth-child(#{$i}) {
+      animation: ui-stagger-rise var(--duration-normal) var(--ease-premium) both;
+      animation-delay: calc(#{$i - 1} * var(--stagger-step));
+    }
+  }
+}

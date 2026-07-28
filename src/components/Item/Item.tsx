@@ -12,6 +12,7 @@ import type {
   ItemTitleProps,
 } from './Item.types';
 import './Item.scss';
+import '../../styles/stagger.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Root — dispatches to <a>, <button>, or <div> based on props.
@@ -99,7 +100,7 @@ const ItemGroup = forwardRef<HTMLDivElement, ItemGroupProps>(
       {...rest}
       ref={ref}
       role="list"
-      className={`ui-item-group${className ? ' ' + className : ''}`}
+      className={`ui-item-group ui-stagger${className ? ' ' + className : ''}`}
     >
       {children}
     </div>

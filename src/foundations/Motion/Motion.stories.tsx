@@ -135,6 +135,20 @@ export const Motion: Story = {
         them</strong> to watch the pill travel — the signature "expensive" continuity move.
       </P>
 
+      <H2>Staggered lists</H2>
+      <P>
+        List-row families — <strong>ItemGroup and AttachmentGroup</strong> — now carry <M>.ui-stagger</M>, so their rows rise +
+        fade in one after another (<code style={{ fontFamily: mono }}>--stagger-step</code>, 25ms apart) and read as one orchestrated
+        motion. Pure CSS via <M>:nth-child</M> — the first 12 rows stagger, the rest just appear (a long list shouldn't cascade for
+        seconds), and it plays once on mount. Reload an Item or Attachment list story to watch it. The utility is reusable — add{' '}
+        <M>.ui-stagger</M> to any container.
+      </P>
+      <P>
+        <strong>Deliberately not staggered:</strong> menu items (the surface already scales + fades in from{' '}
+        <a href="#">Overlay entrances</a> — cascading items inside a scaling surface reads busy and makes menus feel <em>slower</em>,
+        which is the opposite of premium) and Toast stacks (toasts arrive asynchronously, so each animates in on its own).
+      </P>
+
       <H2>Overlay entrances</H2>
       <P>
         Every floating surface now shares one entrance choreography (
