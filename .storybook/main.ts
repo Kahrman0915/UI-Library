@@ -3,6 +3,11 @@ import type { StorybookConfig } from '@storybook/react-vite';
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(ts|tsx|mdx)'],
   addons: ['@storybook/addon-essentials', '@storybook/addon-themes'],
+  // Generate a Docs page per component. Without this the prop JSDoc has no
+  // home: the Controls panel only renders Name + Control, so the props TABLE
+  // (name / description / default / type) never appears anywhere. Remove this
+  // line to go back to canvas-only stories.
+  docs: { autodocs: true },
   framework: {
     name: '@storybook/react-vite',
     options: {},
