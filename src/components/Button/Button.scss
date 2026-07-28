@@ -11,8 +11,24 @@
   box-shadow: var(--shadow-xs);
   cursor: pointer;
 
+  // Motion: every touchable state change eases on the signature --ease-premium
+  // instead of snapping. transform is quicker (--duration-fast) so the press
+  // reads as immediate/tactile while colour + ring settle smoothly.
+  transition:
+    color var(--duration-instant) var(--ease-premium),
+    background-color var(--duration-instant) var(--ease-premium),
+    border-color var(--duration-instant) var(--ease-premium),
+    outline-color var(--duration-instant) var(--ease-premium),
+    box-shadow var(--duration-instant) var(--ease-premium),
+    transform var(--duration-fast) var(--ease-premium);
+
   &:focus-visible {
     outline: none;
+  }
+
+  // Tactile press — a subtle scale-down so the button feels physically pushed.
+  &:active:not(:disabled):not(.ui-button--loading) {
+    transform: scale(var(--motion-scale-press));
   }
 
   // ============================================================

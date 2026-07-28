@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import Button from '../../components/Button';
 
 const meta: Meta = {
   title: 'Foundations/Motion',
@@ -25,6 +26,7 @@ const DUR: [string, string, string][] = [
   ['--duration-instant', '150ms', 'hover colour shifts'],
   ['--duration-normal', '200ms', 'default UI transitions'],
   ['--duration-slow', '300ms', 'larger surfaces'],
+  ['--duration-entrance', '220ms', 'overlay entrances (dialog/menu/popover)'],
   ['--duration-reveal', '500ms', 'view-transition reveal (ModeToggler)'],
   ['--duration-ripple', '600ms', 'Button ripple expand'],
   ['--duration-spin', '900ms', 'Spinner rotation (loop)'],
@@ -38,6 +40,8 @@ const EASE: [string, string][] = [
   ['--ease-in-out', 'ease-in-out'],
   ['--ease-spring', 'cubic-bezier(.16,1,.3,1) — smooth, no overshoot'],
   ['--ease-spring-strong', 'cubic-bezier(.34,1.56,.64,1) — pop / overshoot'],
+  ['--ease-premium', 'cubic-bezier(.32,.72,0,1) — signature: interactive state changes'],
+  ['--ease-entrance', 'cubic-bezier(.34,1.35,.5,1) — surfaces landing (gentle overshoot)'],
 ];
 
 export const Motion: Story = {
@@ -84,6 +88,27 @@ export const Motion: Story = {
           </div>
         ))}
       </div>
+
+      <H2>Interactive feel — Button</H2>
+      <P>
+        Hover, then <strong>press and hold</strong> each button below. Every touchable state change now eases on{' '}
+        <code style={{ fontFamily: mono }}>--ease-premium</code> instead of snapping, and pressing scales the button to{' '}
+        <code style={{ fontFamily: mono }}>0.97</code> for a tactile "pushed" feel. Focus one with the keyboard (Tab) to watch the
+        ring settle in rather than blink. This is the foundation the rest of the motion work layers on — the most-touched
+        component in the system should feel considered.
+      </P>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--p-3)', alignItems: 'center' }}>
+        <Button id="mo-1" label="Primary" />
+        <Button id="mo-2" label="Secondary" style="secondary" />
+        <Button id="mo-3" label="Outline" style="outline" />
+        <Button id="mo-4" label="Ghost" style="ghost" />
+        <Button id="mo-5" label="Destructive" variant="error" />
+        <div data-surface="aiden"><Button id="mo-6" label="Ask Aiden" /></div>
+      </div>
+      <P>
+        <strong>Try before/after:</strong> the whole upgrade is two token references and a <M>:active</M> rule on{' '}
+        <M>.ui-button</M> — no new dependency, no JS. Reduced-motion users get the press state instantly and skip the easing.
+      </P>
 
       <H2>Reduced motion</H2>
       <P>
