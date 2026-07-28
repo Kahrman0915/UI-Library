@@ -15,7 +15,10 @@ export type TooltipTriggerProps = {
   children: React.ReactElement;
 };
 
-export type TooltipContentProps = {
+export type TooltipContentProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children'
+> & {
   children: React.ReactNode;
   className?: string;
 };

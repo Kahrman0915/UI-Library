@@ -34,6 +34,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       role = 'dialog',
       inline = false,
       className,
+      ...rest
     },
     ref,
   ) => {
@@ -137,6 +138,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     const dialogPanel = (
       <div
+        {...rest}
         id={id}
         ref={(node) => {
           panelRef.current = node;
@@ -187,11 +189,13 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
       showCloseButton = true,
       onClose,
       className,
+      ...rest
     },
     ref,
   ) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__header${className ? ' ' + className : ''}`}
       >
@@ -221,9 +225,10 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
 DialogHeader.displayName = 'DialogHeader';
 
 const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(
-  ({ children, alignment = 'left', className }, ref) => {
+  ({ children, alignment = 'left', className, ...rest }, ref) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__body ui-dialog__body--${alignment}${className ? ' ' + className : ''}`}
       >
@@ -236,9 +241,10 @@ const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(
 DialogBody.displayName = 'DialogBody';
 
 const DialogFooter = forwardRef<HTMLDivElement, DialogFooterProps>(
-  ({ children, className }, ref) => {
+  ({ children, className, ...rest }, ref) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__footer${className ? ' ' + className : ''}`}
       >

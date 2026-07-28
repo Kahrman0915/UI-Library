@@ -194,7 +194,7 @@ const TooltipTrigger = ({ children }: TooltipTriggerProps) => {
 };
 
 const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
-  ({ children, className }, ref) => {
+  ({ children, className, style: styleProp, onAnimationEnd, ...rest }, ref) => {
     const {
       state,
       contentId,
@@ -247,6 +247,7 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
 
     return createPortal(
       <div
+        {...rest}
         ref={(node) => {
           contentRef.current = node;
           if (typeof ref === 'function') ref(node);
@@ -261,11 +262,14 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
         data-state={state}
         className={`ui-tooltip ui-tooltip--${side}${isClosing ? ' ui-tooltip--closing' : ''}${className ? ' ' + className : ''}`}
         style={{
+          // Consumer style first; positioning must win (it IS the placement).
+          ...styleProp,
           top: position?.top ?? 0,
           left: position?.left ?? 0,
           visibility: position ? 'visible' : 'hidden',
         }}
         onAnimationEnd={(e) => {
+          onAnimationEnd?.(e);
           // Only unmount when the exit animation completes. Ignore in-anim end.
           if (isClosing && e.animationName.startsWith('ui-tooltip-out')) {
             finishClose();

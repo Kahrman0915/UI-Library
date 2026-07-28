@@ -19,18 +19,14 @@ import type {
  * action in the footer. No new machinery of its own.
  */
 const AlertDialog = forwardRef<HTMLDivElement, AlertDialogProps>(
-  ({ id, open, onClose, children, inline = false, className }, ref) => {
+  ({ children, ...rest }, ref) => {
     return (
       <Dialog
+        {...rest}
         ref={ref}
-        id={id}
-        open={open}
-        onClose={onClose}
         role="alertdialog"
         // The two carve-outs vs a plain Dialog: overlay click never dismisses.
         closeOnOutsideClick={false}
-        inline={inline}
-        className={className}
       >
         {children}
       </Dialog>
@@ -43,39 +39,21 @@ AlertDialog.displayName = 'AlertDialog';
 // The header omits the close button (the other carve-out) — an alert dialog is
 // dismissed only through a footer action or Escape.
 const AlertDialogHeader = forwardRef<HTMLDivElement, AlertDialogHeaderProps>(
-  ({ id, title, description, alignment, className }, ref) => {
-    return (
-      <DialogHeader
-        ref={ref}
-        id={id}
-        title={title}
-        description={description}
-        alignment={alignment}
-        showCloseButton={false}
-        className={className}
-      />
-    );
+  (props, ref) => {
+    return <DialogHeader {...props} ref={ref} showCloseButton={false} />;
   },
 );
 
 AlertDialogHeader.displayName = 'AlertDialogHeader';
 
 const AlertDialogBody = forwardRef<HTMLDivElement, AlertDialogBodyProps>(
-  ({ children, alignment, className }, ref) => (
-    <DialogBody ref={ref} alignment={alignment} className={className}>
-      {children}
-    </DialogBody>
-  ),
+  (props, ref) => <DialogBody {...props} ref={ref} />,
 );
 
 AlertDialogBody.displayName = 'AlertDialogBody';
 
 const AlertDialogFooter = forwardRef<HTMLDivElement, AlertDialogFooterProps>(
-  ({ children, className }, ref) => (
-    <DialogFooter ref={ref} className={className}>
-      {children}
-    </DialogFooter>
-  ),
+  (props, ref) => <DialogFooter {...props} ref={ref} />,
 );
 
 AlertDialogFooter.displayName = 'AlertDialogFooter';
