@@ -153,6 +153,9 @@ const ContextMenuTrigger = forwardRef<HTMLDivElement, ContextMenuTriggerProps>(
       <div
         {...rest}
         ref={ref}
+        // The root's required id previously went nowhere — the trigger now
+        // carries `{id}-trigger` and the menu content `{id}-content`.
+        id={`${ctx.rootId}-trigger`}
         data-disabled={disabled ? '' : undefined}
         className={`ui-context-menu__trigger${className ? ' ' + className : ''}`}
         onContextMenu={(e) => {
@@ -308,6 +311,7 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
             (ref as React.MutableRefObject<HTMLDivElement | null>).current =
               node;
         }}
+        id={`${ctx.rootId}-content`}
         role="menu"
         tabIndex={-1}
         onAnimationEnd={onExitAnimationEnd}

@@ -411,7 +411,9 @@ const DropdownMenuCheckboxItem = forwardRef<
     { children, checked = false, onCheckedChange, disabled, className, ...rest },
     ref,
   ) => {
-    const ctx = useDropdownMenu();
+    // Assert we're inside a DropdownMenu (throws otherwise); the value itself
+    // isn't needed — checkbox items deliberately don't close the menu.
+    useDropdownMenu();
     const activate = (e: React.SyntheticEvent) => {
       if (disabled) return;
       onCheckedChange?.(!checked);
@@ -444,7 +446,6 @@ const DropdownMenuCheckboxItem = forwardRef<
         {children}
       </div>
     );
-    void ctx;
   },
 );
 

@@ -73,7 +73,16 @@ const Toaster = ({
           commit(next);
         } else {
           // Newer toasts render at the top of the stack; overflow drops off the tail.
-          commit([action.toast, ...prev].slice(0, visibleToasts));
+          const combined = [action.toast, ...prev];
+          const kept = combined.slice(0, visibleToasts);
+          // Overflowed toasts must be dismissed PROPERLY, not silently removed:
+          // clear their timers (else they leak until unmount) and honour the
+          // consumer's onDismiss contract.
+          for (const dropped of combined.slice(visibleToasts)) {
+            clearTimer(dropped.id);
+            dropped.onDismiss?.();
+          }
+          commit(kept);
         }
         scheduleDismiss(action.toast);
       } else if (action.type === 'DISMISS') {
@@ -115,6 +124,22 @@ const Toaster = ({
         if (updated) scheduleDismiss(updated);
       }
     });
+
+    // When the effect re-runs (a `duration`/`visibleToasts` prop change), the
+    // cleanup below has just cleared every timer while the visible toasts
+    // survive in state — reschedule them or they'd be stranded on screen
+    // forever. (`leaving` toasts are mid-exit; their removal is re-armed too.)
+    for (const t of toastsRef.current) {
+      if (t.leaving) {
+        const timer = window.setTimeout(() => {
+          commit(toastsRef.current.filter((x) => x.id !== t.id));
+          timersRef.current.delete(t.id);
+        }, EXIT_MS);
+        timersRef.current.set(t.id, timer);
+      } else {
+        scheduleDismiss(t);
+      }
+    }
 
     return () => {
       unsubscribe();

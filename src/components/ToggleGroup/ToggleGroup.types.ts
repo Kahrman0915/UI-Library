@@ -16,6 +16,11 @@ type ToggleGroupSingleProps = ToggleGroupCommonProps & {
   type: 'single';
   value?: string;
   defaultValue?: string;
+  /**
+   * Fires with the newly selected value. Re-clicking the active item CLEARS
+   * the selection and fires with `''` (empty string = nothing selected) — a
+   * single toggle group has no required selection.
+   */
   onValueChange?: (value: string) => void;
 };
 

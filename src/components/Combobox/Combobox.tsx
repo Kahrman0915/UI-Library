@@ -240,6 +240,9 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       <div
         {...rest}
         ref={ref}
+        // The required id previously never reached the DOM (it only seeded
+        // child ids) — <Combobox id="x"> now renders an element with id="x".
+        id={id}
         className={`ui-input-field ui-input-field--sz-${size}${className ? ' ' + className : ''}`}
       >
         {label && (

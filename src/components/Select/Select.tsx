@@ -506,7 +506,9 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
         <span className="ui-select__item-indicator" aria-hidden="true">
           {selected && <Check />}
         </span>
-        <span className="ui-select__item-content">{children}</span>
+        {/* Fall back to `label` — an item given only `label` used to register a
+            correct trigger label but render an EMPTY row. */}
+        <span className="ui-select__item-content">{children ?? label}</span>
       </div>
     );
   },

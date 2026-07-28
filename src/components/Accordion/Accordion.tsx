@@ -83,54 +83,63 @@ const Accordion = forwardRef<HTMLDivElement, AccordionProps>((props, ref) => {
     type === 'multiple' ? (props.defaultValue ?? []) : [],
   );
 
+  // Extracted so the useCallback deps track the VALUES, not the whole `props`
+  // object — `props` is fresh every render, which made these callbacks (and
+  // therefore the context memo) new objects each time, re-rendering every item.
+  const valueProp = props.value;
+  const onValueChangeProp =
+    'onValueChange' in props ? props.onValueChange : undefined;
+  const collapsibleProp = 'collapsible' in props ? props.collapsible : false;
+
   const isOpen = useCallback(
     (itemValue: string): boolean => {
       if (type === 'single') {
-        const current =
-          props.value !== undefined ? props.value : singleInternal;
+        const current = valueProp !== undefined ? valueProp : singleInternal;
         return current === itemValue;
       }
       const current =
-        props.value !== undefined
-          ? (props.value as string[])
-          : multipleInternal;
+        valueProp !== undefined ? (valueProp as string[]) : multipleInternal;
       return current.includes(itemValue);
     },
-    [type, props, singleInternal, multipleInternal],
+    [type, valueProp, singleInternal, multipleInternal],
   );
 
   const toggle = useCallback(
     (itemValue: string) => {
       if (type === 'single') {
-        const controlled = props.value !== undefined;
-        const current = controlled ? props.value : singleInternal;
-        const collapsible = 'collapsible' in props ? props.collapsible : false;
+        const controlled = valueProp !== undefined;
+        const current = controlled ? valueProp : singleInternal;
         let next: string | undefined;
         if (current === itemValue) {
-          next = collapsible ? undefined : itemValue;
-          if (!collapsible) return; // no-op — item stays open, no callback
+          next = collapsibleProp ? undefined : itemValue;
+          if (!collapsibleProp) return; // no-op — item stays open, no callback
         } else {
           next = itemValue;
         }
         if (!controlled) setSingleInternal(next);
-        if (next !== undefined && 'onValueChange' in props) {
-          (props.onValueChange as ((v: string) => void) | undefined)?.(next);
+        if (next !== undefined) {
+          (onValueChangeProp as ((v: string) => void) | undefined)?.(next);
         }
       } else {
-        const controlled = props.value !== undefined;
+        const controlled = valueProp !== undefined;
         const current = controlled
-          ? (props.value as string[])
+          ? (valueProp as string[])
           : multipleInternal;
         const next = current.includes(itemValue)
           ? current.filter((v) => v !== itemValue)
           : [...current, itemValue];
         if (!controlled) setMultipleInternal(next);
-        if ('onValueChange' in props) {
-          (props.onValueChange as ((v: string[]) => void) | undefined)?.(next);
-        }
+        (onValueChangeProp as ((v: string[]) => void) | undefined)?.(next);
       }
     },
-    [type, props, singleInternal, multipleInternal],
+    [
+      type,
+      valueProp,
+      onValueChangeProp,
+      collapsibleProp,
+      singleInternal,
+      multipleInternal,
+    ],
   );
 
   const ctxValue = useMemo(

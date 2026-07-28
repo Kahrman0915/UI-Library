@@ -60,4 +60,12 @@
     white-space: nowrap;
     border: 0;
   }
+
+  // Disabled cell (aria-disabled since these are <a>s, not <button>s) — mirrors
+  // Button's :disabled treatment. The TSX also drops href + swallows the click.
+  &__link[aria-disabled='true'] {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+    pointer-events: none;
+  }
 }

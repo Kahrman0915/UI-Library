@@ -57,6 +57,11 @@ const ModeToggler = forwardRef<HTMLButtonElement, ModeTogglerProps>(
 
       if (defaultMode === undefined) {
         setInternal(readInitialMode(storageKey));
+      } else {
+        // An explicit defaultMode must actually take effect: previously the
+        // icon showed defaultMode while <html data-mode> kept whatever it had,
+        // desynced until the first click.
+        document.documentElement.setAttribute('data-mode', defaultMode);
       }
 
       const el = document.documentElement;
