@@ -4,6 +4,13 @@
 **Method:** mechanical sweep (structure, conventions, exports, tokens, guardrails) + four parallel deep reviews reading every component's `.tsx`, `.types.ts`, `.scss`, `.stories.tsx`, `index.ts`. The 9 highest-severity findings were independently re-verified in source before publishing.
 **House rules respected:** accepted owner decisions (documented in CLAUDE.md) were not re-flagged.
 
+> **⚠ Known blind spot in this audit — it was static-only.** Every reviewer read
+> source: props, types, SCSS rules, ARIA attributes, story exports. **Nobody drove
+> the components.** Two real bugs were found by the owner within hours of the audit
+> shipping, both invisible to source reading and both in the same class — *live
+> interaction geometry*. See "Post-audit findings" at the end. Any future audit
+> must include an interaction pass (below).
+
 ## Summary
 
 **Components reviewed: 59 · Findings: ~150 · Overall score: 78/100**
@@ -137,7 +144,10 @@ Alert style Omit), `78d17a4` (the 16 functional bugs), `8afc226` (a11y
 patterns: Chat role=log + tab stop, Toast pause-on-hover + persistent labeled
 region, ContextMenu Shift+F10 + menu name, Combobox single combobox role +
 wired describedby/invalid, Select same wiring, Dialog/Drawer conditional
-labelledby + wired describedby). Remaining open: wave 5 (JSDoc the ~20 bare
+labelledby + wired describedby), plus two post-audit interaction fixes:
+`8750383` (Select/Combobox chevron dead strip) and `e58bda2` (floating surfaces
+stay anchored; new useFloatingReposition hook, Tooltip migrated onto it).
+Remaining open: wave 5 (JSDoc the ~20 bare
 types files), wave 6 (stories: Menubar keyboard demo, Drawer, disabled-state +
 controlled-usage stories), wave 7 (size-vocabulary decision).
 
@@ -150,3 +160,48 @@ controlled-usage stories), wave 7 (size-vocabulary decision).
 5. **Docs wave:** JSDoc the ~20 bare types files, prioritizing the confusing props surfaced here (Button variant×style, Tabs activationMode, ScrollArea type, Drawer closeOnOutsideClick, InputGroup align).
 6. **Stories wave:** Menubar (keyboard demo), Drawer, disabled-state stories (InputGroup, Fab, Pagination — each would have caught a shipped bug), controlled-usage stories (Select, Combobox, DropdownMenu, Toggle, ModeToggler).
 7. **Decide the size-vocabulary split** (document as accepted, or plan an alias migration).
+
+---
+
+## Post-audit findings — the interaction blind spot
+
+Two pre-existing bugs surfaced **after** the audit shipped, both reported by the
+owner from ordinary use, both missed by all four reviewers. Neither was findable
+by reading source, and that is the point: they only exist in *rendered geometry
+and live event flow*.
+
+| # | Bug | Why static review missed it | Fixed |
+|---|---|---|---|
+| 1 | **Select/Combobox: chevron + right padding were an unclickable dead strip** (~37px). Clicking the chevron did nothing; clicking the text opened the menu. | The chevron *has* `pointer-events: none` — which reads as correct, and is correct in NativeSelect. But it's a flex **sibling**, not an overlay: the button ends at x=299, the chevron sits at 307→323. They never overlap, so the click fell through to a wrap with no handler. Only measuring the rendered boxes reveals this. | `8750383` |
+| 2 | **Every floating surface came unanchored when the layout moved.** Dragging the Storybook panel with a menu open left it stranded away from its trigger. | `computePosition` runs in a layout effect keyed on `open` — correct-looking code. The defect is the *absence* of a listener, and absence doesn't show up when you're reading what's there. Tooltip happened to have one; the other six didn't. | `e58bda2` |
+
+**Root cause of the miss:** the review prompts asked for API shape, state
+coverage, ARIA wiring, story completeness, and handoff. All static. A component
+can pass every one of those and still be unusable.
+
+### Required additions to the next audit
+
+1. **Hit-target pass.** For every composite control, measure the rendered boxes
+   of the interactive element and its decorations. Assert the click target covers
+   the full visual affordance. `cursor: pointer` on a region that doesn't respond
+   is the specific smell — the field *looks* clickable, so users report it as
+   "broken", not as "small target".
+2. **Live interaction pass.** Drive each component with real event sequences
+   (`pointerdown → mousedown → mouseup → click`), not synthetic `.click()`.
+   Synthetic clicks skip the pointer/mouse phases where outside-click handlers,
+   focus management, and open/close races actually live. During this session a
+   synthetic click reported Select as working when a real one did not.
+3. **Layout-change pass.** With each overlay open: resize the viewport, scroll an
+   ancestor, and confirm the surface stays anchored.
+4. **Absence checks.** Static review is good at "is this code right?" and bad at
+   "is code missing?". Explicitly enumerate what *should* exist per pattern
+   (reposition listeners, live regions, pause-on-hover, keyboard entry points)
+   and check each off, rather than only reviewing what's written.
+
+### Follow-up work these produced
+
+- New `src/hooks/useFloatingReposition` — extracted rather than copied a 6th time;
+  now used by Select, Combobox, Popover, DropdownMenu, HoverCard **and Tooltip**
+  (migrated off its bespoke listeners, so there is one mechanism system-wide).
+- **ContextMenu is deliberately not on it** — it anchors to a pointer position,
+  not an element, so there is no trigger rect to re-measure.

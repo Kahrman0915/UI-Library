@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import type {
   TooltipAlign,
@@ -214,34 +215,24 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
     );
     const mounted = useMounted();
 
-    useLayoutEffect(() => {
-      if (!isOpen || !triggerNode || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!triggerNode || !contentRef.current) return;
       const triggerRect = triggerNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
-    }, [isOpen, triggerNode, side, align, sideOffset, children]);
+    }, [triggerNode, side, align, sideOffset]);
 
-    // Reposition on scroll/resize while open (skip during exit — position
-    // is frozen so the tooltip animates out from where it was resting).
-    useEffect(() => {
-      if (!isOpen || !triggerNode) return;
-      const reposition = () => {
-        if (!contentRef.current) return;
-        const triggerRect = triggerNode.getBoundingClientRect();
-        const contentRect = contentRef.current.getBoundingClientRect();
-        setPosition(
-          computePosition(triggerRect, contentRect, side, align, sideOffset),
-        );
-      };
-      window.addEventListener('scroll', reposition, true);
-      window.addEventListener('resize', reposition);
-      return () => {
-        window.removeEventListener('scroll', reposition, true);
-        window.removeEventListener('resize', reposition);
-      };
-    }, [isOpen, triggerNode, side, align, sideOffset]);
+    useLayoutEffect(() => {
+      if (!isOpen) return;
+      reposition();
+    }, [isOpen, reposition, children]);
+
+    // Stay anchored while open. Deliberately keyed on `isOpen` rather than the
+    // mounted state: during the exit animation the position is frozen so the
+    // tooltip animates out from where it was resting.
+    useFloatingReposition(isOpen, reposition, triggerNode);
 
     if (!isMountedInDom || !mounted) return null;
 
