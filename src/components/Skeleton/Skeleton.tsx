@@ -1,6 +1,9 @@
 import { forwardRef } from 'react';
 import type { SkeletonProps } from './Skeleton.types';
 import './Skeleton.scss';
+// Loads the `.ui-reveal` content-reveal utility so consumers can crossfade real
+// content in when it replaces a skeleton. See src/styles/reveal.scss.
+import '../../styles/reveal.scss';
 
 const toCssLength = (v: number | string | undefined) =>
   v === undefined ? undefined : typeof v === 'number' ? `${v}px` : v;

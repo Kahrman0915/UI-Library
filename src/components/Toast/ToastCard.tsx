@@ -21,7 +21,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
         role={assertive ? 'alert' : 'status'}
         aria-live={assertive ? 'assertive' : 'polite'}
         data-variant={variant}
-        className={`ui-toast ui-toast--${variant}`}
+        className={`ui-toast ui-toast--${variant}${toast.leaving ? ' ui-toast--leaving' : ''}`}
       >
         {Icon && (
           <span className="ui-toast__icon" aria-hidden="true">

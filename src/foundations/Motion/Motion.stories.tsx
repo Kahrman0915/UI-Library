@@ -1,5 +1,47 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Button from '../../components/Button';
+import Skeleton from '../../components/Skeleton';
+
+// Skeleton → content reveal: toggle to watch real content materialize (fade +
+// rise via .ui-reveal) instead of hard-swapping in.
+function RevealDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div style={{ display: 'grid', gap: 12, maxWidth: 360 }}>
+      <Button
+        id="reveal-toggle"
+        label={loaded ? 'Reset to skeleton' : 'Load content'}
+        size="small"
+        style="outline"
+        onClick={() => setLoaded((l) => !l)}
+      />
+      {loaded ? (
+        <div
+          className="ui-reveal"
+          style={{
+            display: 'grid',
+            gap: 6,
+            padding: 16,
+            background: 'var(--card)',
+            border: 'var(--border-w-100) solid var(--border)',
+            borderRadius: 'var(--rounded-lg)',
+          }}
+        >
+          <strong style={{ fontSize: 'var(--text-sm)' }}>Monthly revenue</strong>
+          <span style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)' }}>$48,210</span>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>+12.4% vs last month</span>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: 8, padding: 16, border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)' }}>
+          <Skeleton shape="text" style={{ width: '40%' }} />
+          <Skeleton style={{ width: '60%', height: 28 }} />
+          <Skeleton shape="text" style={{ width: '50%' }} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const meta: Meta = {
   title: 'Foundations/Motion',
@@ -147,6 +189,25 @@ export const Motion: Story = {
         <strong>Deliberately not staggered:</strong> menu items (the surface already scales + fades in from{' '}
         <a href="#">Overlay entrances</a> — cascading items inside a scaling surface reads busy and makes menus feel <em>slower</em>,
         which is the opposite of premium) and Toast stacks (toasts arrive asynchronously, so each animates in on its own).
+      </P>
+
+      <H2>Exit &amp; reveal</H2>
+      <P>
+        <strong>Toast</strong> now animates <em>out</em>, not just in: dismissing one flags it{' '}
+        <M>ui-toast--leaving</M>, the Toaster keeps it mounted ~260ms to play a fade + shrink exit, then removes it (mirrors the
+        Dialog / Drawer close machine; <M>onDismiss</M> still fires once). Fire and dismiss a toast to see it recede rather than
+        vanish.
+      </P>
+      <P>
+        <strong>Skeleton → content:</strong> when real content replaces a skeleton, wrap it in <M>.ui-reveal</M> and it materializes
+        (fade + rise) instead of hard-swapping. Toggle below:
+      </P>
+      <div style={{ marginTop: 16 }}>
+        <RevealDemo />
+      </div>
+      <P>
+        A true overlapping crossfade (skeleton fading out <em>under</em> content) needs both mounted at once — a wrapper component,
+        i.e. an API decision — so this reveal is the tasteful dependency-free 90%.
       </P>
 
       <H2>Overlay entrances</H2>

@@ -6,6 +6,11 @@ import { emit, subscribe } from './toast-emitter';
 import type { ToastRecord, ToasterProps } from './Toast.types';
 import './Toast.scss';
 
+// How long a dismissed toast stays mounted to play its exit before removal.
+// Must comfortably exceed the CSS exit animation (--duration-normal, 200ms); the
+// buffer covers reduced-motion / backgrounded tabs where animationend is flaky.
+const EXIT_MS = 260;
+
 /**
  * Toaster — mount once at the app root. Owns the visible toast stack and
  * subscribes to the global toast emitter. Consumers fire notifications by
@@ -73,18 +78,33 @@ const Toaster = ({
         scheduleDismiss(action.toast);
       } else if (action.type === 'DISMISS') {
         if (action.id === undefined) {
-          commit([]);
+          // Mark every toast leaving so the whole stack animates out together,
+          // then remove them once the exit has played.
+          const ids = prev.map((t) => t.id);
           prev.forEach((t) => {
             clearTimer(t.id);
             t.onDismiss?.();
           });
+          commit(prev.map((t) => ({ ...t, leaving: true })));
+          const timer = window.setTimeout(() => {
+            commit(toastsRef.current.filter((t) => !ids.includes(t.id)));
+            timersRef.current.delete('*');
+          }, EXIT_MS);
+          timersRef.current.set('*', timer);
           return;
         }
         const target = prev.find((t) => t.id === action.id);
-        if (!target) return;
-        commit(prev.filter((t) => t.id !== action.id));
-        clearTimer(target.id);
+        if (!target || target.leaving) return;
+        const id = target.id;
+        clearTimer(id);
         target.onDismiss?.();
+        // Flag the card so it plays its exit keyframes, then drop it once done.
+        commit(prev.map((t) => (t.id === id ? { ...t, leaving: true } : t)));
+        const timer = window.setTimeout(() => {
+          commit(toastsRef.current.filter((t) => t.id !== id));
+          timersRef.current.delete(id);
+        }, EXIT_MS);
+        timersRef.current.set(id, timer);
       } else if (action.type === 'UPDATE') {
         const next = prev.map((t) =>
           t.id === action.id ? { ...t, ...action.patch } : t,
