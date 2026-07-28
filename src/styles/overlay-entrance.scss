@@ -76,6 +76,29 @@
   }
 }
 
+// Exit — centered surfaces only (Dialog/Command), driven by the component's
+// closed→open→closing state machine. `forwards` parks the end state (invisible)
+// so there's no flash back to visible before React unmounts. Concrete scale/
+// opacity keyframes (not a var()-held whole-transform) so animationend fires.
+@keyframes ui-overlay-out-center {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in));
+  }
+}
+@keyframes ui-overlay-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 // Positioned surfaces — crisp, no overshoot (sophisticated over playful).
 .ui-overlay-enter {
   animation: ui-overlay-in-bottom var(--duration-entrance) var(--ease-premium);
@@ -109,4 +132,14 @@
 // The dim/blur layer blooms in rather than snapping on.
 .ui-overlay-backdrop {
   animation: ui-overlay-backdrop-in var(--duration-entrance) var(--ease-premium);
+}
+
+// Exit variants — applied by the component during its `closing` state instead of
+// the enter class. Slightly quicker than the entrance so the close feels decisive.
+.ui-overlay-exit--center {
+  animation: ui-overlay-out-center var(--duration-normal) var(--ease-premium) forwards;
+  transform-origin: center;
+}
+.ui-overlay-backdrop-out {
+  animation: ui-overlay-backdrop-out var(--duration-normal) var(--ease-premium) forwards;
 }

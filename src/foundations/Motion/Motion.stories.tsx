@@ -120,7 +120,13 @@ export const Motion: Story = {
         <M>data-side</M> and use <code style={{ fontFamily: mono }}>--ease-premium</code> (crisp, no bounce); Dialog and
         Command scale in from center with a hint of arrival (<code style={{ fontFamily: mono }}>--ease-entrance</code>) and their
         backdrop blooms. <strong>Open any of those components to feel it</strong> — this is what replaced eight surfaces that used
-        to blink into existence. Exit stays instant for now (React unmounts the portal); adding exit is the next pass.
+        to blink into existence.
+      </P>
+      <P>
+        <strong>Exit:</strong> Dialog and Command now animate <em>out</em> too — a <code style={{ fontFamily: mono }}>closed → open → closing</code>{' '}
+        state machine (mirroring Drawer) keeps the panel mounted through the close so it can scale down + fade while the backdrop
+        clears, then unmounts on <M>animationend</M> (with a duration timer as the reduced-motion / backgrounded-tab safety net) and
+        restores focus to the trigger. Positioned menus still exit instantly — extending the closing-state machine to them is the next pass.
       </P>
 
       <H2>Reduced motion</H2>
