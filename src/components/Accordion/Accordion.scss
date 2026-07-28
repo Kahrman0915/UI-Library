@@ -35,7 +35,7 @@
   color: var(--foreground);
   cursor: pointer;
   text-align: left;
-  transition: color var(--duration-fast) var(--ease-out);
+  transition: color var(--duration-fast) var(--ease-premium);
 
   &:hover:not(:disabled) {
     text-decoration: underline;
@@ -63,7 +63,7 @@
   align-items: center;
   justify-content: center;
   color: var(--muted-foreground);
-  transition: transform var(--duration-normal) var(--ease-out);
+  transition: transform var(--duration-normal) var(--ease-premium);
 
   svg {
     width: var(--w-4);
@@ -81,8 +81,8 @@
   display: grid;
   grid-template-rows: 0fr;
   transition:
-    grid-template-rows var(--duration-normal) var(--ease-out),
-    opacity var(--duration-fast) var(--ease-out);
+    grid-template-rows var(--duration-normal) var(--ease-premium),
+    opacity var(--duration-fast) var(--ease-premium);
   opacity: 0;
 
   &[data-state='open'] {

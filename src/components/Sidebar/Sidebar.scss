@@ -166,7 +166,7 @@
   background: transparent;
   color: var(--foreground);
   cursor: pointer;
-  transition: background var(--duration-instant) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-premium);
 
   svg {
     width: var(--w-4);
@@ -199,7 +199,7 @@
     left: 50%; // grab line centered in the hit strip so clicking it always lands
     width: var(--border-w-100);
     background: transparent;
-    transition: background var(--duration-instant) var(--ease-out);
+    transition: background var(--duration-instant) var(--ease-premium);
   }
   &:hover::after {
     background: var(--sidebar-border);
@@ -381,7 +381,7 @@
   text-decoration: none;
   cursor: pointer;
   overflow: hidden;
-  transition: background var(--duration-instant) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-premium);
 
   svg {
     width: var(--w-4);
@@ -446,7 +446,7 @@
   }
   &--hover {
     opacity: 0;
-    transition: opacity var(--duration-instant) var(--ease-out);
+    transition: opacity var(--duration-instant) var(--ease-premium);
   }
 }
 .ui-sidebar__menu-item:hover .ui-sidebar__menu-action--hover,
@@ -504,7 +504,7 @@
   text-decoration: none;
   overflow: hidden;
   cursor: pointer;
-  transition: background var(--duration-instant) var(--ease-out);
+  transition: background var(--duration-instant) var(--ease-premium);
 
   svg {
     width: var(--w-4);

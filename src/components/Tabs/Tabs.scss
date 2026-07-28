@@ -58,8 +58,8 @@
   // colour (1.36:1 in dark) until the next recalc. Transitioning only background +
   // box-shadow keeps the active-pill animation without the freeze.
   transition:
-    background var(--duration-fast) var(--ease-out),
-    box-shadow var(--duration-fast) var(--ease-out);
+    background var(--duration-fast) var(--ease-premium),
+    box-shadow var(--duration-fast) var(--ease-premium);
 
   &:hover:not(:disabled):not([data-state='active']) {
     color: var(--foreground);

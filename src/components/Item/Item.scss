@@ -40,8 +40,8 @@
   background: transparent;
   min-width: 0;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    border-color var(--duration-fast) var(--ease-out);
+    background var(--duration-fast) var(--ease-premium),
+    border-color var(--duration-fast) var(--ease-premium);
 
   // Reset button-in-item defaults.
   &,

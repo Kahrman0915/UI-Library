@@ -32,8 +32,8 @@
   cursor: pointer;
   line-height: 0;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+    background var(--duration-fast) var(--ease-premium),
+    color var(--duration-fast) var(--ease-premium);
 
   // Widens the pointer target without changing anything that renders.
   &::after {

@@ -34,7 +34,7 @@
     color: var(--foreground);
     cursor: default;
     outline: none;
-    transition: background var(--duration-fast) var(--ease-out);
+    transition: background var(--duration-fast) var(--ease-premium);
 
     &:focus-visible,
     &:hover:not([data-disabled]) {

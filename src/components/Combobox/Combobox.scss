@@ -54,7 +54,7 @@
   color: var(--muted-foreground);
   flex-shrink: 0;
   pointer-events: none;
-  transition: transform var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-premium);
 
   svg {
     width: var(--w-4);
@@ -78,8 +78,8 @@
   line-height: 0;
   flex-shrink: 0;
   transition:
-    color var(--duration-fast) var(--ease-out),
-    background var(--duration-fast) var(--ease-out);
+    color var(--duration-fast) var(--ease-premium),
+    background var(--duration-fast) var(--ease-premium);
 
   &:hover {
     color: var(--foreground);
@@ -190,7 +190,7 @@
   cursor: pointer;
   user-select: none;
   color: var(--popover-foreground);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-premium);
 
   &[data-highlighted]:not([data-disabled]) {
     background: var(--accent);

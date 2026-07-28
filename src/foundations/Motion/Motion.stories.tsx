@@ -74,7 +74,15 @@ export const Motion: Story = {
       </div>
 
       <H2>Easings</H2>
-      <P>Same duration (600ms), different curve — watch the acceleration. Spring-strong overshoots and settles back.</P>
+      <P>
+        Same duration (600ms), different curve — watch the acceleration. Spring-strong overshoots and settles back.{' '}
+        <strong>
+          <code style={{ fontFamily: mono }}>--ease-premium</code> is now the house easing
+        </strong>{' '}
+        for interactive state changes — hover, focus, press, toggle, and disclosure across the whole library read on it instead of
+        bare <code style={{ fontFamily: mono }}>ease-out</code>. Only continuous loops (spinner, shimmer, pulses), the ripple, the
+        Progress fill and Drawer's slide keep <code style={{ fontFamily: mono }}>--ease-out</code>.
+      </P>
       <div style={{ display: 'grid', gap: 6 }}>
         {EASE.map(([tok, desc]) => (
           <div key={tok} style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'var(--p-3)', alignItems: 'center' }}>
