@@ -1528,5 +1528,21 @@
    "model picker",
    "message error/retry"
   ]
+ },
+ "aiden": {
+  "blurpleSync": {
+   "date": "2026-07-28",
+   "note": "Aiden identity moved violet→blurple. Figma gradients synced on ALL pages that show aiden: Fab (693:44), 1·Button (0:1), 2·Badge (236:32), 3·Progress (435:44). Verified 0 old-violet stops remain.",
+   "stops": {
+    "lightMid": "#5f61ef → #5a37e6",
+    "darkStart": "#a78bfa → #9076f9",
+    "lightTintStart": "#8455f0 → #5a37e6 (tints only; primary gradient keeps #8455f0 start)"
+   },
+   "rgb": {
+    "blurple": "#5a37e6 (0.353,0.216,0.902)",
+    "darkBlurple": "#9076f9 (0.565,0.463,0.976)"
+   },
+   "caution": "In the light PRIMARY 3-stop gradient the #8455f0 START stays; only the #5f61ef MID moves. In the light TINT gradients (secondary/border/ring, no mid stop) the #8455f0 start DOES move to blurple. Match on presence of the #5f61ef mid to tell them apart."
+  }
  }
 }
