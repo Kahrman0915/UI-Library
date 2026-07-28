@@ -307,17 +307,17 @@
   padding-bottom: var(--p-16);
 }
 
+// Positioning lives HERE, on the wrapper — never on the Button itself.
+// `.ui-button:active` sets `transform: scale(…)` at a higher specificity, which
+// replaces (not composes with) a centring `translate(-50%, -50%)` on the same
+// element: the button jumped out from under the cursor on mousedown, so mouseup
+// landed elsewhere and the click never fired.
 .ui-docs-code__toggle {
   position: absolute;
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   z-index: 1;
-  // An outline button is transparent by design; floating over code it needs an
-  // opaque backdrop of its own to stay legible.
-  background: var(--card);
-  border-radius: var(--rounded-full);
-  box-shadow: var(--shadow-md);
 }
 
 .ui-docs-code--open .ui-docs-code__toggle {
@@ -326,73 +326,48 @@
   transform: translate(-50%, 0);
 }
 
-// ---------------------------------------------------------------------------
-// Usage — the when / avoid pair
-// ---------------------------------------------------------------------------
-.ui-docs-usage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: var(--p-4);
-}
-
-@media (min-width: 720px) {
-  .ui-docs-usage {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-.ui-docs-usage__col {
-  padding: var(--p-5);
+// An outline button is transparent by design; floating over code it needs an
+// opaque backdrop of its own to stay legible.
+.ui-docs-code__toggle .ui-button {
   background: var(--card);
-  border: var(--border-w-100) solid var(--border);
-  border-radius: var(--rounded-lg);
-}
-
-.ui-docs-usage__head {
-  display: flex;
-  align-items: center;
-  gap: var(--p-2);
-  margin-bottom: var(--p-3);
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-.ui-docs-usage__col--when .ui-docs-usage__head {
-  color: var(--success);
-}
-
-.ui-docs-usage__col--avoid .ui-docs-usage__head {
-  color: var(--error);
-}
-
-.ui-docs-usage__list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--p-2-5);
-}
-
-.ui-docs-usage__item {
-  position: relative;
-  padding-inline-start: var(--p-4);
-  font-size: var(--text-sm);
-  line-height: var(--leading-6);
-  color: var(--muted-foreground);
-}
-
-.ui-docs-usage__item::before {
-  content: '';
-  position: absolute;
-  inset-inline-start: 0;
-  top: var(--p-2-5);
-  width: var(--w-1-5);
-  height: var(--h-1-5);
   border-radius: var(--rounded-full);
-  background: currentColor;
-  opacity: var(--opacity-50);
+  box-shadow: var(--shadow-md);
+}
+
+// ---------------------------------------------------------------------------
+// Storybook's copy button
+//
+// Storybook wraps it in its own absolutely-positioned div and anchors that to
+// `.docblock-source`, which in our flex row is the horizontally-scrolling code
+// column — so the control drifted to the bottom of the pane and slid sideways
+// with long lines. Dropping `.docblock-source` to `position: static` hands the
+// containing block to `.ui-docs-code`, which pins the button to the pane and
+// (since the pane is not the scroller) also lifts it out of the viewport's
+// `overflow: hidden`.
+//
+// Visible whenever the pane is hovered or expanded: once you've opened the
+// code, copying it is the whole point, and a control you have to hunt for by
+// hovering isn't discoverable.
+// ---------------------------------------------------------------------------
+.ui-docs-code .docblock-source {
+  position: static;
+}
+
+.ui-docs-code .docblock-source > div:has(button) {
+  position: absolute;
+  top: var(--p-2-5);
+  inset-inline-end: var(--p-2-5);
+  inset-inline-start: auto;
+  bottom: auto;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--duration-instant) var(--ease-premium);
+}
+
+.ui-docs-code--open .docblock-source > div:has(button),
+.ui-docs-code:hover .docblock-source > div:has(button),
+.ui-docs-code .docblock-source > div:has(button:focus-visible) {
+  opacity: 1;
 }
 
 // ---------------------------------------------------------------------------

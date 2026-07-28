@@ -68,16 +68,26 @@ export function CodePane({
       {collapsible ? (
         <>
           <div className="ui-docs-code__fade" aria-hidden="true" />
-          <Button
-            id={`${id}-toggle`}
-            size="small"
-            style="outline"
-            label={open ? 'Collapse' : 'View Code'}
-            onClick={() => setOpen((v) => !v)}
-            aria-expanded={open}
-            aria-controls={viewportId}
-            className="ui-docs-code__toggle"
-          />
+          {/*
+            The centring lives on this wrapper, NOT on the Button. Button's
+            press state is `transform: scale(…)` at a higher specificity, which
+            REPLACES a `transform: translate(-50%, -50%)` set on the same
+            element — so on mousedown the button jumped half its own size down
+            and right, out from under the cursor, mouseup landed on something
+            else, and no click ever fired. Keep position and press transform on
+            separate elements.
+          */}
+          <div className="ui-docs-code__toggle">
+            <Button
+              id={`${id}-toggle`}
+              size="small"
+              style="outline"
+              label={open ? 'Collapse' : 'View Code'}
+              onClick={() => setOpen((v) => !v)}
+              aria-expanded={open}
+              aria-controls={viewportId}
+            />
+          </div>
         </>
       ) : null}
     </div>
