@@ -271,6 +271,18 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
     return (
       <div
         className={`ui-input-wrap ui-select__trigger-wrap${ctx.disabled ? ' ui-input-wrap--disabled' : ''}${ctx.error ? ' ui-input-wrap--error' : ''}${ctx.open ? ' ui-select__trigger-wrap--open' : ''}`}
+        // The whole field is the click target, like a native select. The
+        // button is `flex: 1` and the chevron is a SIBLING, so clicks on the
+        // chevron (pointer-events: none) and on the wrap's padding previously
+        // landed here and did nothing — a dead strip down the right edge.
+        // Clicks originating in any real button (the trigger itself, or a
+        // sibling like Combobox's clear) are ignored so nothing double-fires.
+        onClick={(e) => {
+          if (ctx.disabled) return;
+          if ((e.target as HTMLElement).closest('button')) return;
+          ctx.toggle();
+          ctx.triggerNode?.focus();
+        }}
       >
         <button
           {...rest}
@@ -377,7 +389,12 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
         const target = e.target as Node;
         if (
           contentRef.current?.contains(target) ||
-          ctx.triggerNode?.contains(target)
+          // The whole field counts as "inside", not just the button — the
+          // chevron and the wrap's padding are siblings of the trigger, so a
+          // mousedown there would otherwise close the menu and the following
+          // click would re-toggle it. parentElement is this instance's wrap,
+          // so a click on a DIFFERENT select still closes this one.
+          ctx.triggerNode?.parentElement?.contains(target)
         )
           return;
         ctx.close();

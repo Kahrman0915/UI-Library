@@ -151,7 +151,10 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
         const target = e.target as Node;
         if (
           contentRef.current?.contains(target) ||
-          triggerRef.current?.contains(target)
+          // Whole field is "inside" — the chevron and clear button are
+          // siblings of the trigger, so a mousedown there would otherwise
+          // close and the following click would re-toggle.
+          triggerRef.current?.parentElement?.contains(target)
         )
           return;
         setOpen(false);
@@ -280,6 +283,16 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
 
         <div
           className={`ui-input-wrap ui-combobox__trigger-wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}${open ? ' ui-combobox__trigger-wrap--open' : ''}`}
+          // Whole field is the click target — the chevron is a sibling with
+          // pointer-events: none, so clicks on it (and on the wrap's padding)
+          // used to land here and do nothing. Clicks from a real button (the
+          // trigger, or the clear button) are ignored so nothing double-fires.
+          onClick={(e) => {
+            if (disabled) return;
+            if ((e.target as HTMLElement).closest('button')) return;
+            setOpen(!open);
+            triggerRef.current?.focus();
+          }}
         >
           <button
             ref={triggerRef}
