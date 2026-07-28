@@ -15,6 +15,7 @@ import { createPortal } from 'react-dom';
 import { Check } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import type {
   DropdownMenuCheckboxItemProps,
@@ -190,14 +191,22 @@ const DropdownMenuContent = forwardRef<HTMLDivElement, DropdownMenuContentProps>
     );
     const mounted = useMounted();
 
-    useLayoutEffect(() => {
-      if (!ctx.open || !ctx.triggerNode || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
-    }, [ctx.open, ctx.triggerNode, side, align, sideOffset, children]);
+    }, [ctx.triggerNode, side, align, sideOffset]);
+
+    useLayoutEffect(() => {
+      if (!ctx.open) return;
+      reposition();
+    }, [ctx.open, reposition, children]);
+
+    // Stay anchored while open (window/panel resize, ancestor scroll).
+    useFloatingReposition(ctx.open, reposition, ctx.triggerNode);
 
     // On open, focus the menu container itself (not the first item) so
     // nothing looks "selected" until the user navigates with the keyboard.

@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import type { ComboboxOption, ComboboxProps } from './Combobox.types';
 import '../Input/Input.scss';
@@ -134,15 +135,23 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     }, [open, value, options]);
 
     // Position the popup.
-    useLayoutEffect(() => {
-      if (!open || !triggerRef.current || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!triggerRef.current || !contentRef.current) return;
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
       if (matchTriggerWidth) setMinWidth(triggerRect.width);
-    }, [open, side, align, sideOffset, matchTriggerWidth, filtered.length]);
+    }, [side, align, sideOffset, matchTriggerWidth]);
+
+    useLayoutEffect(() => {
+      if (!open) return;
+      reposition();
+    }, [open, reposition, filtered.length]);
+
+    // Stay anchored while open (window/panel resize, ancestor scroll).
+    useFloatingReposition(open, reposition, triggerRef.current);
 
     // Outside click closes.
     useEffect(() => {

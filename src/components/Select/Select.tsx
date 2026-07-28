@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { Check, ChevronDown } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import { SelectContext } from './Select.context';
 import type {
@@ -358,15 +359,24 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     const [minWidth, setMinWidth] = useState<number | undefined>(undefined);
     const mounted = useMounted();
 
-    useLayoutEffect(() => {
-      if (!ctx.open || !ctx.triggerNode || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
       if (matchTriggerWidth) setMinWidth(triggerRect.width);
-    }, [ctx.open, ctx.triggerNode, side, align, sideOffset, matchTriggerWidth, children]);
+    }, [ctx.triggerNode, side, align, sideOffset, matchTriggerWidth]);
+
+    useLayoutEffect(() => {
+      if (!ctx.open) return;
+      reposition();
+    }, [ctx.open, reposition, children]);
+
+    // Stay anchored while open — the trigger moves when the window or a
+    // surrounding panel resizes, or when an ancestor scrolls.
+    useFloatingReposition(ctx.open, reposition, ctx.triggerNode);
 
     // Focus the listbox container on open so keyboard nav starts here.
     // Move focus onto the selected item if any so screen readers announce it.

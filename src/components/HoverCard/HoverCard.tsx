@@ -14,6 +14,7 @@ import {
 import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import type {
   HoverCardContentProps,
@@ -222,14 +223,22 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
     );
     const mounted = useMounted();
 
-    useLayoutEffect(() => {
-      if (!ctx.open || !ctx.triggerNode || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
-    }, [ctx.open, ctx.triggerNode, side, align, sideOffset, children]);
+    }, [ctx.triggerNode, side, align, sideOffset]);
+
+    useLayoutEffect(() => {
+      if (!ctx.open) return;
+      reposition();
+    }, [ctx.open, reposition, children]);
+
+    // Stay anchored while open (window/panel resize, ancestor scroll).
+    useFloatingReposition(ctx.open, reposition, ctx.triggerNode);
 
     // Escape closes.
     useEffect(() => {
