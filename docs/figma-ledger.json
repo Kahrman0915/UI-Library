@@ -1446,8 +1446,13 @@
    "themingFrame": "ABSENT — neutral --primary fill by default; under data-surface=aiden the fill becomes the aiden violet→blue gradient (raw gradient paint, not a Figma variable — aiden solids live only in SCSS). Pulse halo rings painted with the same gradient at low opacity.",
    "lessons": [
     "aiden-outline-border / aiden solids are NOT Figma variables (SCSS-only) — getVariableByIdAsync returns null. Paint aiden fills/halos with the raw AIDEN_GRAD gradient (lint does not check gradient fills), never a bound variable.",
-    "Name every decorative ELLIPSE (pulse-ring) — bare \"Ellipse\" trips the generic-name lint."
-   ]
+    "Name every decorative ELLIPSE (pulse-ring) — bare \"Ellipse\" trips the generic-name lint.",
+    "Aiden solid accent is the blurple #5a37e6 (light) / #9076f9 (dark), not the old violet #8455f0/#a78bfa — see tokens.scss --aiden-* and CLAUDE.md 2026-07-28 decision."
+   ],
+   "gradientStops": {
+    "note": "Aiden gradient on the Fab page (demo FAB bodies + halo rings) = blurple, updated 2026-07-28. Only the MID stop moved from the old violet #5f61ef to blurple #5a37e6; start #8455f0 and end #2c6dea unchanged.",
+    "figmaStops": "[#8455f0 (0.5176,0.3333,0.9412) @0, #5a37e6 (0.3529,0.2157,0.9020) @0.5, #2c6dea (0.1725,0.4275,0.9176) @1]"
+   }
   }
  },
  "queue": {
