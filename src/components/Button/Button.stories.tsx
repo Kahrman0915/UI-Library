@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ArrowLeft, ArrowRight, Plus } from 'lucide-react';
 import Button from './Button';
 import type { ButtonVariant, ButtonStyle } from './Button.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const variants: ButtonVariant[] = [
   'default',
@@ -23,7 +24,37 @@ const styles: ButtonStyle[] = [
 const meta: Meta<typeof Button> = {
   title: 'Components/Button',
   component: Button,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The primary way a user commits to an action. Six variants crossed with five emphasis styles and four sizes cover every rung of the hierarchy, from the page’s single call to action down to a quiet inline link.',
+      tags: ['6 variants', '5 styles', '4 sizes'],
+      usage: {
+        when: [
+          'The control performs an action — submit, save, open a dialog, add a row.',
+          'You need a visible emphasis ladder on one screen: default for the commit, secondary or outline for supporting actions, ghost for the quiet companion (Cancel).',
+          'The action can fail or take time — `isLoading` swaps in a spinner and blocks re-entry.',
+        ],
+        avoid: [
+          'The control navigates somewhere — render an `<a>`, or use `style="link"` on an anchor so it reads as a destination.',
+          'The control has a persistent on/off state — that is `Toggle` (one), `ToggleGroup` (one-of-N) or `Chip` (many-on).',
+          'The control only carries an icon inside a surface that already has its own affordance — `CloseButton` and the shared `.ui-icon-button` shell handle those.',
+        ],
+        notes:
+          'Themes reach Button through `--primary`: wrap a subtree in `data-theme="{code}"` and default, secondary, outline and link all pick up the brand colour. Ghost is the deliberate exception — it stays neutral slate so a Cancel never competes with the themed commit. Error stays red under every theme.',
+      },
+      a11y: {
+        notes:
+          'Renders a real `<button type="button">`, so Enter and Space activate it and it lands in the tab order for free. `isLoading` sets `aria-busy` and keeps the label in the accessible name rather than replacing it with the spinner. An icon-only button has no visible text — give it an `aria-label`.',
+        keyboard: [
+          { keys: ['Tab'], description: 'Move focus to the button.' },
+          { keys: ['Enter'], description: 'Activate.' },
+          { keys: ['Space'], description: 'Activate.' },
+        ],
+      },
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: { control: 'select', options: variants },
     style: { control: 'select', options: styles },

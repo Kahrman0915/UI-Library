@@ -25,8 +25,22 @@ const config: StorybookConfig = {
       savePropValueAsString: true,
       shouldExtractLiteralValuesFromEnum: true,
       shouldRemoveUndefinedFromOptional: true,
-      propFilter: (prop) =>
-        prop.parent ? !/node_modules/.test(prop.parent.fileName) : true,
+      // Filter on the prop's DECLARATIONS, not its `parent`. Every props type
+      // is an intersection with a React DOM interface, and for a key we
+      // redeclare — `id`, `className`, `type` — docgen reports `parent` as the
+      // @types/react interface it first saw. A `parent`-based filter therefore
+      // dropped exactly the props a consumer most needs (Button lost `id`,
+      // `className` and `type`). `declarations` lists every site the key is
+      // declared at, so "declared anywhere in src/" keeps ours and still drops
+      // the inherited DOM attributes.
+      propFilter: (prop) => {
+        if (prop.declarations && prop.declarations.length > 0) {
+          return prop.declarations.some(
+            (d) => !d.fileName.includes('node_modules'),
+          );
+        }
+        return prop.parent ? !/node_modules/.test(prop.parent.fileName) : true;
+      },
     },
   },
   // Tell Vite's Sass integration to use the modern API. Silences the

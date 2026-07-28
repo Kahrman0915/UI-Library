@@ -1,0 +1,527 @@
+// Chrome for the bespoke Docs template (.storybook/docs/DocsPage.tsx).
+//
+// Dev-only: `.storybook/` never enters the published bundle, but the rules here
+// still obey the library's own constraints — every value is a token from
+// `src/styles/tokens.scss`, class names are BEM under a `ui-` prefix. The page
+// is meant to read as a piece of the design system, not as Storybook chrome.
+
+// ---------------------------------------------------------------------------
+// Reset Storybook's own docs chrome
+//
+// The docs iframe root is `#storybook-docs`; `preview.scss` only ever styled
+// `#storybook-root`, so a docs page kept a white background in dark mode.
+// ---------------------------------------------------------------------------
+// Storybook paints the wrapper from its own emotion theme, so these need the
+// `#storybook-docs` id to outrank it — a bare `.sbdocs-wrapper` ties on
+// specificity and loses or wins by stylesheet order.
+#storybook-docs {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+#storybook-docs .sbdocs-wrapper {
+  background: var(--background);
+  color: var(--foreground);
+  padding: 0;
+}
+
+#storybook-docs .sbdocs.sbdocs-content {
+  max-width: none;
+  padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Page shell
+// ---------------------------------------------------------------------------
+.ui-docs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-10);
+  padding: var(--p-12) var(--p-8) var(--p-24);
+  margin-inline: auto;
+  max-width: var(--max-w-6xl);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+@media (min-width: 1100px) {
+  .ui-docs {
+    grid-template-columns: minmax(0, 1fr) var(--w-48);
+  }
+}
+
+.ui-docs__main {
+  min-width: 0;
+  max-width: var(--max-w-4xl);
+}
+
+// Foundations / Prototypes pages lay out their own wide content — the reading
+// column that suits prose would crush them.
+.ui-docs--showcase {
+  max-width: none;
+}
+
+.ui-docs--showcase .ui-docs__main {
+  max-width: none;
+}
+
+.ui-docs__rail {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .ui-docs__rail {
+    display: block;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+.ui-docs__header {
+  padding-bottom: var(--p-8);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.ui-docs__title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-10);
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+}
+
+.ui-docs__lede {
+  margin: var(--p-4) 0 0;
+  max-width: var(--max-w-2xl);
+  font-size: var(--text-lg);
+  line-height: var(--leading-8);
+  color: var(--muted-foreground);
+}
+
+.ui-docs__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-2);
+  margin-top: var(--p-5);
+}
+
+// ---------------------------------------------------------------------------
+// Section
+// ---------------------------------------------------------------------------
+.ui-docs-section {
+  padding-top: var(--p-12);
+  // Anchored jumps from the TOC shouldn't tuck the heading under the top edge.
+  scroll-margin-top: var(--p-6);
+}
+
+.ui-docs-section__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+}
+
+.ui-docs-section__desc {
+  margin: var(--p-2) 0 0;
+  max-width: var(--max-w-2xl);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-section__body {
+  margin-top: var(--p-6);
+}
+
+.ui-docs-p {
+  margin: 0 0 var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-p:last-child {
+  margin-bottom: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Stage — the framed live-demo surface. The "expensive" beat of the page.
+// ---------------------------------------------------------------------------
+.ui-docs-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--h-48);
+  padding: var(--p-10) var(--p-8);
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+// Stories that lay out their own page (Sidebar, Chat, Dialog triggers) need the
+// full width rather than a centred specimen.
+.ui-docs-stage--fill {
+  display: block;
+  padding: var(--p-6);
+}
+
+.ui-docs-stage__inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// Storybook's <Source> block ships its own surface; give it the same footprint
+// as the stage it sits under.
+.ui-docs-code {
+  margin-top: var(--p-3);
+}
+
+.ui-docs-code .docblock-source,
+.ui-docs-code pre {
+  margin: 0;
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-xs);
+}
+
+// ---------------------------------------------------------------------------
+// Preview / Code tab pair
+// ---------------------------------------------------------------------------
+.ui-docs-preview__panel {
+  margin-top: var(--p-4);
+}
+
+// A full-bleed tablist reads as a toolbar; two tabs want to sit at their own
+// width, tucked against the start edge above the stage.
+// `.ui-tabs` is a column flex container, so the list stretches on the cross
+// axis — `width: auto` alone won't shrink it; `align-self` is what does.
+.ui-docs-preview .ui-tabs__list {
+  display: inline-flex;
+  width: auto;
+  align-self: flex-start;
+}
+
+// ---------------------------------------------------------------------------
+// Usage — the when / avoid pair
+// ---------------------------------------------------------------------------
+.ui-docs-usage {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-4);
+}
+
+@media (min-width: 720px) {
+  .ui-docs-usage {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ui-docs-usage__col {
+  padding: var(--p-5);
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+}
+
+.ui-docs-usage__head {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  margin-bottom: var(--p-3);
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ui-docs-usage__col--when .ui-docs-usage__head {
+  color: var(--success);
+}
+
+.ui-docs-usage__col--avoid .ui-docs-usage__head {
+  color: var(--error);
+}
+
+.ui-docs-usage__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2-5);
+}
+
+.ui-docs-usage__item {
+  position: relative;
+  padding-inline-start: var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-usage__item::before {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+  top: var(--p-2-5);
+  width: var(--w-1-5);
+  height: var(--h-1-5);
+  border-radius: var(--rounded-full);
+  background: currentColor;
+  opacity: var(--opacity-50);
+}
+
+// ---------------------------------------------------------------------------
+// Composition rows
+// ---------------------------------------------------------------------------
+// Badge renders a <div>, so without a flex row the "required" pill drops to its
+// own line under the part name.
+.ui-docs-part__title {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+.ui-docs-part__name {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+}
+
+// ---------------------------------------------------------------------------
+// Props table
+// ---------------------------------------------------------------------------
+.ui-docs-props {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  font-size: var(--text-sm);
+  background: var(--card);
+}
+
+.ui-docs-props__wrap + .ui-docs-props__wrap {
+  margin-top: var(--p-6);
+}
+
+.ui-docs-props__caption {
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-docs-props th {
+  padding: var(--p-3) var(--p-4);
+  text-align: start;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  background: var(--secondary);
+  border-bottom: var(--border-w-100) solid var(--border);
+  white-space: nowrap;
+}
+
+.ui-docs-props td {
+  padding: var(--p-4);
+  vertical-align: top;
+  border-bottom: var(--border-w-100) solid var(--border);
+  color: var(--muted-foreground);
+  line-height: var(--leading-6);
+}
+
+.ui-docs-props tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ui-docs-props__name {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-props__req {
+  color: var(--error);
+  font-weight: var(--font-bold);
+}
+
+.ui-docs-props__type {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-5);
+  color: var(--primary-text);
+  word-break: break-word;
+  max-width: var(--max-w-xs);
+  display: inline-block;
+}
+
+.ui-docs-props__default {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-props__desc {
+  min-width: var(--w-64);
+}
+
+.ui-docs-props__empty {
+  padding: var(--p-6);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: var(--border-w-100) dashed var(--border);
+  border-radius: var(--rounded-lg);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard table
+// ---------------------------------------------------------------------------
+.ui-docs-keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.ui-docs-keys__row {
+  display: grid;
+  grid-template-columns: var(--w-32) minmax(0, 1fr);
+  gap: var(--p-4);
+  align-items: baseline;
+  padding: var(--p-3-5) var(--p-4);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-keys__row:last-child {
+  border-bottom: none;
+}
+
+.ui-docs-keys__combo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+.ui-docs-keys__sep {
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-keys__desc {
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
+// Examples
+// ---------------------------------------------------------------------------
+.ui-docs-example + .ui-docs-example {
+  margin-top: var(--p-10);
+}
+
+.ui-docs-example__title {
+  margin: 0 0 var(--p-1);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ui-docs-example__desc {
+  margin: 0 0 var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
+// Table of contents rail
+// ---------------------------------------------------------------------------
+.ui-docs-toc {
+  position: sticky;
+  top: var(--p-8);
+}
+
+.ui-docs-toc__title {
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.ui-docs-toc__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-inline-start: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-toc__link {
+  display: block;
+  padding: var(--p-1-5) var(--p-3);
+  margin-inline-start: calc(var(--border-w-100) * -1);
+  border-inline-start: var(--border-w-100) solid transparent;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition:
+    color var(--duration-instant) var(--ease-premium),
+    border-color var(--duration-instant) var(--ease-premium);
+}
+
+.ui-docs-toc__link:hover {
+  color: var(--foreground);
+}
+
+.ui-docs-toc__link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  border-radius: var(--rounded-sm);
+}
+
+.ui-docs-toc__link--active {
+  color: var(--primary-text);
+  border-inline-start-color: var(--primary);
+  font-weight: var(--font-medium);
+}
