@@ -20,6 +20,17 @@ export type DialogProps = Omit<
    */
   role?: DialogRole;
   /**
+   * Element to focus when the dialog opens. Defaults to the first focusable
+   * element in the panel.
+   *
+   * **Set this on every `AlertDialog`.** APG asks that a confirmation open with
+   * focus on the *least destructive* action, and the first focusable element is
+   * usually the opposite — in a "Cancel / Delete" footer it lands on Cancel only
+   * by accident of source order, and any header content moves it somewhere else
+   * entirely. Point it at the button you want a keyboard user to hit by reflex.
+   */
+  initialFocusRef?: React.RefObject<HTMLElement | null>;
+  /**
    * Render in-flow (no portal, no overlay, no focus trap, no scroll lock).
    * For embedding the panel chrome inside a page section.
    */

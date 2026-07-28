@@ -10,18 +10,7 @@ import type {
 } from './Dialog.types';
 import './Dialog.scss';
 import '../../styles/overlay-entrance.scss';
-
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
-const getFocusable = (container: HTMLElement): HTMLElement[] =>
-  Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+import { getFocusable } from '#/utils/focus';
 
 const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   (
@@ -33,6 +22,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       closeOnOutsideClick = false,
       role = 'dialog',
       inline = false,
+      initialFocusRef,
       className,
       ...rest
     },
@@ -96,17 +86,29 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       return () => document.removeEventListener('keydown', handleKeyDown);
     }, [open, onClose]);
 
-    // Focus trap + scroll lock (overlay mode only)
+    // Focus trap + scroll lock (overlay mode only).
+    //
+    // Keyed on the machine's `state`, NOT on `open` — the same trap the refIds
+    // effect above documents. `state` is still 'closed' on the commit where
+    // `open` flips true, so the panel isn't in the DOM yet; keyed on `open`
+    // this effect ran once against a null panel, bailed, and never re-ran
+    // because its deps hadn't changed. The result was a dialog with no initial
+    // focus, no Tab containment, no scroll lock and no focus restore.
     useEffect(() => {
-      if (!open || inline) return;
+      if (state !== 'open' || inline) return;
       const panel = panelRef.current;
       if (!panel) return;
 
       const previouslyFocused = document.activeElement as HTMLElement | null;
 
-      // Focus first focusable, or the panel itself as a fallback
+      // Consumer's choice first (an alert dialog should open on the least
+      // destructive action, which is rarely the first in source order), then the
+      // first focusable, then the panel itself.
+      const requested = initialFocusRef?.current;
       const focusables = getFocusable(panel);
-      if (focusables.length > 0) {
+      if (requested && panel.contains(requested)) {
+        requested.focus();
+      } else if (focusables.length > 0) {
         focusables[0].focus();
       } else {
         panel.setAttribute('tabindex', '-1');
@@ -150,7 +152,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         document.body.style.paddingRight = previousPaddingRight;
         previouslyFocused?.focus?.();
       };
-    }, [open, inline]);
+    }, [state, inline, initialFocusRef]);
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (closeOnOutsideClick && e.target === e.currentTarget) {

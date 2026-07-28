@@ -16,6 +16,14 @@
   }
 }
 
+// Header — the APG-required heading wrapper around the trigger. Purely
+// structural: it must not impose a heading's own margins or type ramp, since
+// the button inside owns all of that.
+.ui-accordion__header {
+  margin: 0;
+  font: inherit;
+}
+
 // Trigger — full-width button, chevron right-aligned.
 // Alignment + gap + rounded corners tuned for a compact disclosure list.
 .ui-accordion__trigger {

@@ -245,11 +245,16 @@ AccordionItem.displayName = 'AccordionItem';
 // ═════════════════════════════════════════════════════════════════════════════
 
 const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
-  ({ className, onClick, children, ...rest }, ref) => {
+  ({ className, onClick, children, headingLevel = 3, ...rest }, ref) => {
     const root = useAccordionRoot();
     const item = useAccordionItem();
+    // APG requires the trigger to sit inside a heading, so the panels are
+    // reachable by screen-reader heading navigation. The rank is a prop because
+    // only the consumer knows where the accordion sits in the page outline.
+    const Heading = `h${headingLevel}` as const;
 
     return (
+      <Heading className="ui-accordion__header">
       <button
         {...rest}
         ref={ref}
@@ -271,6 +276,7 @@ const AccordionTrigger = forwardRef<HTMLButtonElement, AccordionTriggerProps>(
           <ChevronDown />
         </span>
       </button>
+      </Heading>
     );
   },
 );

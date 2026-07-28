@@ -21,6 +21,7 @@ import type {
   HoverCardProps,
   HoverCardTriggerProps,
 } from './HoverCard.types';
+import { getFocusable } from '#/utils/focus';
 import './HoverCard.scss';
 import '../../styles/overlay-entrance.scss';
 
@@ -31,6 +32,8 @@ import '../../styles/overlay-entrance.scss';
 type HoverCardContextValue = {
   open: boolean;
   openWithDelay: () => void;
+  /** Immediate close, no grace period — for Escape and focus-out. */
+  close: () => void;
   closeWithDelay: () => void;
   cancelClose: () => void;
   triggerId: string;
@@ -117,6 +120,12 @@ const HoverCard = ({
     clearCloseTimer();
   }, []);
 
+  const close = useCallback(() => {
+    clearOpenTimer();
+    clearCloseTimer();
+    setOpen(false);
+  }, [setOpen]);
+
   // Clean up on unmount.
   useEffect(
     () => () => {
@@ -132,6 +141,7 @@ const HoverCard = ({
     () => ({
       open,
       openWithDelay,
+      close,
       closeWithDelay,
       cancelClose,
       triggerId: `${id}-trigger`,
@@ -139,7 +149,7 @@ const HoverCard = ({
       triggerNode,
       setTriggerNode,
     }),
-    [open, openWithDelay, closeWithDelay, cancelClose, id, triggerNode],
+    [open, openWithDelay, close, closeWithDelay, cancelClose, id, triggerNode],
   );
 
   return (
@@ -161,6 +171,7 @@ const HoverCardTrigger = ({ children }: HoverCardTriggerProps) => {
     onMouseLeave?: (e: React.MouseEvent) => void;
     onFocus?: (e: React.FocusEvent) => void;
     onBlur?: (e: React.FocusEvent) => void;
+    onKeyDown?: (e: React.KeyboardEvent) => void;
   };
   const originalRef = (
     child as React.ReactElement & { ref?: React.Ref<HTMLElement> }
@@ -178,7 +189,13 @@ const HoverCardTrigger = ({ children }: HoverCardTriggerProps) => {
   return cloneElement(child, {
     ref: composedRef,
     id: ctx.triggerId,
-    'aria-describedby': ctx.open ? ctx.contentId : undefined,
+    // NOT aria-describedby. That flattens the whole card — links, buttons and
+    // all — into one description string on the trigger, the same accessible-name
+    // pollution the Label fix removed. Now that Tab reaches the content, the
+    // honest signal is a disclosure relationship. Requires the trigger to be a
+    // genuinely interactive element (button/link), which it must be anyway.
+    'aria-expanded': ctx.open,
+    'aria-controls': ctx.open ? ctx.contentId : undefined,
     onMouseEnter: (e: React.MouseEvent) => {
       childProps.onMouseEnter?.(e);
       ctx.openWithDelay();
@@ -194,6 +211,27 @@ const HoverCardTrigger = ({ children }: HoverCardTriggerProps) => {
     onBlur: (e: React.FocusEvent) => {
       childProps.onBlur?.(e);
       ctx.closeWithDelay();
+    },
+    onKeyDown: (e: React.KeyboardEvent) => {
+      childProps.onKeyDown?.(e);
+      if (e.defaultPrevented || !ctx.open) return;
+      if (e.key === 'Escape') {
+        ctx.close();
+        return;
+      }
+      // The content is portaled to the end of <body>, so the natural Tab order
+      // runs straight past it — a keyboard user could open the card and never
+      // reach the links inside. Hand focus to its first focusable element
+      // instead. Shift+Tab is left alone so backwards traversal still works.
+      if (e.key === 'Tab' && !e.shiftKey) {
+        const content = document.getElementById(ctx.contentId);
+        const first = content ? getFocusable(content)[0] : undefined;
+        if (first) {
+          e.preventDefault();
+          ctx.cancelClose();
+          first.focus();
+        }
+      }
     },
   } as Partial<typeof childProps> & { ref: typeof composedRef });
 };
@@ -268,7 +306,13 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
             ).current = node;
         }}
         id={ctx.contentId}
-        role="tooltip"
+        // NOT `role="tooltip"` — a tooltip may not contain focusable content,
+        // and hover cards routinely hold links and buttons. A non-modal dialog
+        // is the role that actually describes this. Named from the trigger so
+        // it is never announced as an anonymous dialog; pass `aria-label` or
+        // `aria-labelledby` via ...rest to override.
+        role="dialog"
+        aria-labelledby={ctx.triggerId}
         data-side={side}
         onAnimationEnd={onExitAnimationEnd}
         className={`ui-hover-card__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
@@ -284,6 +328,20 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
         onMouseLeave={(e) => {
           onMouseLeave?.(e);
           ctx.closeWithDelay();
+        }}
+        // Focus inside the card keeps it open; focus leaving it closes, unless
+        // it moved to another element still within the card.
+        onFocusCapture={() => ctx.cancelClose()}
+        onBlurCapture={(e) => {
+          const next = e.relatedTarget as Node | null;
+          if (next && e.currentTarget.contains(next)) return;
+          ctx.closeWithDelay();
+        }}
+        onKeyDown={(e) => {
+          if (e.key !== 'Escape') return;
+          e.stopPropagation();
+          ctx.close();
+          ctx.triggerNode?.focus();
         }}
       >
         {children}

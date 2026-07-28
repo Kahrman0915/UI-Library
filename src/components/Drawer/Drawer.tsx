@@ -9,22 +9,11 @@ import type {
   DrawerFooterProps,
 } from './Drawer.types';
 import './Drawer.scss';
+import { getFocusable } from '#/utils/focus';
 
 // closed → open (slide in) → closing (slide out) → closed. The `closing` state
 // keeps the panel mounted so its exit animation can play, mirroring Tooltip.
 type DrawerState = 'closed' | 'open' | 'closing';
-
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
-const getFocusable = (container: HTMLElement): HTMLElement[] =>
-  Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
 
 const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
   (

@@ -66,8 +66,18 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             onChange={handleChange}
           />
         </div>
+        {/*
+          `role="alert"` so a validation error that appears after submit is
+          announced. It is also referenced by the control's aria-describedby,
+          which only covers the case where focus lands on the field afterwards —
+          without the live role, an error the user never focuses is silent.
+          Rendered conditionally on purpose: inserting the node IS the live-region
+          trigger, and an always-present empty <p> would carry this element's
+          layout. (Toast's region is persistent instead because it is a portal
+          container that has to exist to receive anything.)
+        */}
         {error && errorMessage && (
-          <p id={`${id}-error`} className="ui-input__error">
+          <p id={`${id}-error`} className="ui-input__error" role="alert">
             {errorMessage}
           </p>
         )}

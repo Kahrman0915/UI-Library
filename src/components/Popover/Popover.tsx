@@ -265,6 +265,11 @@ const PopoverClose = ({ children }: PopoverCloseProps) => {
     onClick: (e: React.MouseEvent) => {
       childProps.onClick?.(e);
       ctx.close();
+      // Closing unmounts the portal the button lived in, so focus would fall to
+      // <body> and a keyboard user would restart from the top of the document.
+      // Escape already restores focus to the trigger; this makes the explicit
+      // close button behave the same way.
+      ctx.triggerNode?.focus();
     },
   } as Partial<typeof childProps>);
 };

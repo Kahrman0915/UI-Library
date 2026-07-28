@@ -157,19 +157,35 @@ fixed; Breadcrumb's is not.
 
 ### Re-verified against source 2026-07-28 (later) — what is actually still open
 
-**A11y items the wave-4 commit never touched.** These are in the
-High-severity list above and remain unfixed:
+**A11y items the wave-4 commit never touched — FIXED in wave 5a:**
 
-| Item | Where | State |
-|---|---|---|
-| `role="tooltip"` on a surface containing Buttons; keyboard users can't reach the content | HoverCard.tsx:271 | open |
-| `PopoverClose` drops focus to `<body>` instead of the trigger | Popover.tsx | open |
-| Accordion triggers not wrapped in headings (APG requirement) | Accordion.tsx | open |
-| AlertDialog has no initial-focus control | AlertDialog | open — `aria-describedby` **is** covered, inherited from Dialog.tsx:184 |
+| Item | Fix |
+|---|---|
+| HoverCard `role="tooltip"` on a surface containing Buttons | now `role="dialog"` named from the trigger; the trigger swapped `aria-describedby` (which flattened the whole card into one description string) for `aria-expanded` + `aria-controls` |
+| HoverCard content unreachable by keyboard | Tab from the trigger now moves focus into the card — it is portaled to the end of `<body>`, so the natural tab order ran straight past it. Escape closes and restores focus; focus inside keeps it open |
+| `PopoverClose` drops focus to `<body>` | restores focus to the trigger, matching what Escape already did |
+| Accordion triggers not wrapped in headings | wrapped in a heading; new `headingLevel` prop (default `3`) so the page outline stays sequential |
+| AlertDialog has no initial-focus control | new `initialFocusRef` on `DialogProps` (inherited by AlertDialog); the Destructive story opens on Cancel |
 
-**Cross-cutting still open:** **#4** — error messages are live regions in
-**0 of 5** components (Input, Textarea, NativeSelect, Select, Combobox have no
-`role="alert"`/`aria-live` at all). **#5** — Breadcrumb's ellipsis still wraps
+**Found while fixing the above — Dialog's focus trap was entirely inert.** The
+focus/scroll-lock effect was keyed on `open`, but `state` is still `'closed'` on
+the commit where `open` flips, so `if (state === 'closed') return null` meant no
+panel in the DOM: the effect ran once against a null `panelRef`, bailed, and
+never re-ran because its deps hadn't changed. **No initial focus, no Tab
+containment, no scroll lock and no focus restore — on every Dialog and
+AlertDialog.** Now keyed on `state`, which is exactly what the `refIds` effect
+directly above it was already fixed to do, and what Drawer had always done.
+Verified end-to-end: opens on the requested element, Tab wraps inside the panel,
+Escape closes and restores focus, scroll lock engages and releases.
+
+**Cross-cutting #4 — FIXED.** All five (Input, Textarea, NativeSelect, Select,
+Combobox) now render their error message with `role="alert"`, so a validation
+error that appears after submit is announced. Conditionally rendered on purpose:
+inserting the node *is* the live-region trigger, and an always-present empty
+`<p>` would carry the element's layout. (Toast's region is persistent instead,
+because it is a portal container that has to exist to receive anything.)
+
+**Cross-cutting still open:** **#5** — Breadcrumb's ellipsis still wraps
 its `sr-only` "More" in `aria-hidden` + `role="presentation"`, so the text is
 silenced; either drop the span or drop the `aria-hidden`. **#6** — Pagination
 prev/next, Command root and the Toaster region still hard-code `aria-label`
