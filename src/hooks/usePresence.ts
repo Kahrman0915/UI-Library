@@ -27,10 +27,17 @@ export function usePresence(open: boolean, exitFallbackMs = 260) {
     open ? 'open' : 'closed',
   );
 
-  useEffect(() => {
-    if (open) setStatus('open');
-    else setStatus((prev) => (prev === 'closed' ? 'closed' : 'closing'));
-  }, [open]);
+  // Adjust state DURING render (React re-renders immediately, before commit —
+  // no extra frame), not in an effect. Opening must be synchronous: the content
+  // has to mount the same tick so its positioning layout-effect (keyed on the
+  // real `open`) runs with a live ref. A deferred effect would mount it a render
+  // late, after that effect already ran against a null ref — leaving it unplaced
+  // (visibility:hidden). Closing flips to `closing` so it stays present to exit.
+  if (open && status !== 'open') {
+    setStatus('open');
+  } else if (!open && status === 'open') {
+    setStatus('closing');
+  }
 
   useEffect(() => {
     if (status !== 'closing') return;
