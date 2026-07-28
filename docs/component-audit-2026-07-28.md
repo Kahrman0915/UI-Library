@@ -129,6 +129,15 @@
 - **Popover:** `PopoverClose` drops focus to `<body>`; `role="dialog"` with no containment.
 - **Accordion:** triggers not wrapped in headings (APG requirement).
 
+## Status
+
+**Waves 1–3 FIXED on branch `audit-fixes` (2026-07-28):** commits `c72e444`
+(Label description / accessible names), `4c95b53` (closed prop surfaces +
+Alert style Omit), `78d17a4` (the 16 functional bugs). Remaining open: wave 4
+(a11y patterns: Chat log role, Toast pause-on-hover, ContextMenu keyboard
+trigger, Combobox duplicate role, Dialog/Drawer conditional labelledby),
+wave 5 (JSDoc), wave 6 (stories), wave 7 (size-vocabulary decision).
+
 ## Priority actions
 
 1. **Fix the Label description pattern** (sibling + `aria-describedby`) — repairs Input, NativeSelect, Checkbox, Switch, RadioGroup in one change.
