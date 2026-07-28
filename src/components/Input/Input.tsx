@@ -39,6 +39,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             required={required}
             disabled={disabled}
             description={description}
+            descriptionId={description ? `${id}-description` : undefined}
             size={size}
           >
             {label}
@@ -61,7 +62,12 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             disabled={disabled}
             aria-invalid={error || undefined}
             aria-describedby={
-              error && errorMessage ? `${id}-error` : undefined
+              [
+                label && description ? `${id}-description` : null,
+                error && errorMessage ? `${id}-error` : null,
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined
             }
             onChange={handleChange}
           />

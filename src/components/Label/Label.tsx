@@ -11,6 +11,7 @@ const Label = forwardRef<HTMLLabelElement, LabelProps>(
       required = false,
       disabled = false,
       description,
+      descriptionId,
       className,
       ...rest
     },
@@ -32,7 +33,18 @@ const Label = forwardRef<HTMLLabelElement, LabelProps>(
           )}
         </span>
         {description && (
-          <span className="ui-label__description">{description}</span>
+          // aria-hidden removes the helper text from the control's accessible
+          // NAME (label-content computation skips hidden descendants), while the
+          // id lets the control expose it as a DESCRIPTION via aria-describedby —
+          // directly-referenced hidden nodes are still read (accname §2A). This
+          // keeps the DOM/layout identical while un-polluting the name.
+          <span
+            className="ui-label__description"
+            id={descriptionId}
+            aria-hidden="true"
+          >
+            {description}
+          </span>
         )}
       </label>
     );

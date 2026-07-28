@@ -40,6 +40,7 @@ const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           required={required}
           name={name}
           value={value}
+          aria-describedby={description ? `${id}-description` : undefined}
           onChange={(e) => onCheckedChange?.(e.target.checked)}
         />
         <span className="ui-switch" aria-hidden="true">
@@ -51,7 +52,16 @@ const Switch = forwardRef<HTMLInputElement, SwitchProps>(
           >
             {label && <span className="ui-label__text">{label}</span>}
             {description && (
-              <span className="ui-label__description">{description}</span>
+              // aria-hidden keeps the helper out of the switch's accessible NAME
+              // (we're inside the wrapping <label>); the id re-exposes it as a
+              // description via the input's aria-describedby.
+              <span
+                className="ui-label__description"
+                id={`${id}-description`}
+                aria-hidden="true"
+              >
+                {description}
+              </span>
             )}
           </span>
         )}

@@ -38,6 +38,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             required={required}
             disabled={disabled}
             description={description}
+            descriptionId={description ? `${id}-description` : undefined}
             size={size}
           >
             {label}
@@ -55,7 +56,12 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             disabled={disabled}
             aria-invalid={error || undefined}
             aria-describedby={
-              error && errorMessage ? `${id}-error` : undefined
+              [
+                label && description ? `${id}-description` : null,
+                error && errorMessage ? `${id}-error` : null,
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined
             }
             onChange={handleChange}
           />

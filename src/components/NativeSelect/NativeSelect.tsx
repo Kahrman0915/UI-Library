@@ -44,6 +44,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             required={required}
             disabled={disabled}
             description={description}
+            descriptionId={description ? `${id}-description` : undefined}
             size={size}
           >
             {label}
@@ -60,7 +61,14 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             required={required}
             disabled={disabled}
             aria-invalid={error || undefined}
-            aria-describedby={error && errorMessage ? `${id}-error` : undefined}
+            aria-describedby={
+              [
+                label && description ? `${id}-description` : null,
+                error && errorMessage ? `${id}-error` : null,
+              ]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             onChange={handleChange}
           >
             {children}
