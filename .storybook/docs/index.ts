@@ -1,3 +1,4 @@
+export { CodePane } from './CodePane';
 export { DocsPage } from './DocsPage';
 export { PropsTable, SubcomponentPropsTable } from './PropsTable';
 export { Toc } from './Toc';

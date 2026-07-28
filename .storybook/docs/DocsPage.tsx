@@ -19,6 +19,7 @@ import type {
   UiDocsParameters,
   UiDocsStatus,
 } from '../../src/types/DocsTypes';
+import { CodePane } from './CodePane';
 import { PropsTable, SubcomponentPropsTable } from './PropsTable';
 import { Toc, type TocEntry } from './Toc';
 import { P, Section, Stage } from './kit';
@@ -231,9 +232,9 @@ export function DocsPage() {
                   <StoryStage story={primary} />
                 </TabsContent>
                 <TabsContent value="code" className="ui-docs-preview__panel">
-                  <div className="ui-docs-code">
+                  <CodePane collapsible={false}>
                     <Source of={primary.moduleExport} dark={isDark} />
-                  </div>
+                  </CodePane>
                 </TabsContent>
               </Tabs>
             </Section>
@@ -337,9 +338,9 @@ export function DocsPage() {
                     </p>
                   ) : null}
                   <StoryStage story={story} />
-                  <div className="ui-docs-code">
+                  <CodePane>
                     <Source of={story.moduleExport} dark={isDark} />
-                  </div>
+                  </CodePane>
                 </article>
               ))}
             </Section>

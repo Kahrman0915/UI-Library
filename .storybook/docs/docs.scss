@@ -193,17 +193,61 @@
   justify-content: center;
 }
 
-// Storybook's <Source> block ships its own surface; give it the same footprint
-// as the stage it sits under.
+// ---------------------------------------------------------------------------
+// Code pane — collapsed strip → scrollable pane (see CodePane.tsx)
+//
+// The wrapper owns the surface so the fade gradient can match it exactly, and
+// so the code sits on the same `--card` as the preview stage above it.
+// Storybook's own `.docblock-source` background is dropped to transparent.
+// ---------------------------------------------------------------------------
 .ui-docs-code {
+  position: relative;
   margin-top: var(--p-3);
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.ui-docs-code__viewport {
+  // Roughly seven lines — enough to recognise the snippet, not enough to bury
+  // the next example.
+  max-height: var(--h-40);
+  overflow: hidden;
+  transition: max-height var(--duration-slow) var(--ease-premium);
+}
+
+.ui-docs-code--open .ui-docs-code__viewport {
+  max-height: var(--h-96);
+  overflow: auto;
 }
 
 .ui-docs-code .docblock-source,
 .ui-docs-code pre {
   margin: 0;
-  border-radius: var(--rounded-xl);
-  box-shadow: var(--shadow-xs);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.ui-docs-code__fade {
+  position: absolute;
+  inset-inline: 0;
+  // Sits directly above the button bar.
+  bottom: var(--h-10);
+  height: var(--h-12);
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent, var(--card));
+}
+
+.ui-docs-code__bar {
+  display: flex;
+  justify-content: center;
+  padding: var(--p-2);
+  border-top: var(--border-w-100) solid var(--border);
+  background: var(--card);
 }
 
 // ---------------------------------------------------------------------------
