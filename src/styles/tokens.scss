@@ -309,6 +309,7 @@ html {
   --duration-shimmer: 1400ms; /* skeleton / progress / attachment shimmer */
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
+  --duration-pulse: 2800ms;   /* Fab "sonar" ring pulse — slow + elegant */
   /* Easing curves */
   --ease-default: ease;
   --ease-in: ease-in;

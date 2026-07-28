@@ -92,13 +92,13 @@
     border-radius: var(--rounded-full);
     background: var(--primary);
     opacity: 0;
-    animation: ui-fab-pulse var(--duration-shimmer) var(--ease-out) infinite;
+    animation: ui-fab-pulse var(--duration-pulse) var(--ease-out) infinite;
 
     &:nth-child(2) {
-      animation-delay: calc(var(--duration-shimmer) * -0.33);
+      animation-delay: calc(var(--duration-pulse) * -0.33);
     }
     &:nth-child(3) {
-      animation-delay: calc(var(--duration-shimmer) * -0.66);
+      animation-delay: calc(var(--duration-pulse) * -0.66);
     }
   }
 
