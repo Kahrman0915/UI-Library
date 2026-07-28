@@ -19,6 +19,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-tabs__list {
+  position: relative; // positioning context for the sliding indicator
   display: inline-flex;
   align-items: center;
   gap: var(--p-1);
@@ -32,11 +33,35 @@
   }
 }
 
+// One shared "pill" that slides between triggers (positioned in Tabs.tsx from
+// the active trigger's offset box). Sits BEHIND the triggers; the active
+// trigger's transparent background lets it show through.
+.ui-tabs__indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 0;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  background: var(--background);
+  border-radius: var(--rounded-sm);
+  box-shadow: var(--shadow-sm);
+  transition:
+    transform var(--duration-normal) var(--ease-premium),
+    width var(--duration-normal) var(--ease-premium),
+    height var(--duration-normal) var(--ease-premium);
+  will-change: transform, width, height;
+  pointer-events: none;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Trigger
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-tabs__trigger {
+  position: relative; // above the sliding indicator
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -75,10 +100,10 @@
     cursor: not-allowed;
   }
 
+  // The pill (background + shadow) is now the shared .ui-tabs__indicator; the
+  // active trigger only owns its text colour.
   &[data-state='active'] {
-    background: var(--background);
     color: var(--foreground);
-    box-shadow: var(--shadow-sm);
   }
 }
 

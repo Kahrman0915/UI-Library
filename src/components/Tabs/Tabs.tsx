@@ -2,11 +2,18 @@ import {
   forwardRef,
   useCallback,
   useContext,
+  useEffect,
+  useLayoutEffect,
   useMemo,
   useRef,
   useState,
 } from 'react';
 import { TabsContext } from './Tabs.context';
+
+// SSR-safe layout effect: useLayoutEffect on the client (no flash of an
+// unpositioned indicator), useEffect on the server (avoids the React warning).
+const useIsoLayoutEffect =
+  typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 import type {
   TabsContentProps,
   TabsListProps,
@@ -86,6 +93,8 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
   ({ children, className, onKeyDown, ...rest }, ref) => {
     const ctx = useTabs();
     const listRef = useRef<HTMLDivElement | null>(null);
+    const indicatorRef = useRef<HTMLSpanElement | null>(null);
+    const firstRef = useRef(true);
 
     const composedRef = (node: HTMLDivElement | null) => {
       listRef.current = node;
@@ -93,6 +102,52 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
       else if (ref)
         (ref as React.MutableRefObject<HTMLDivElement | null>).current = node;
     };
+
+    // One shared indicator that SLIDES between triggers. It's positioned
+    // imperatively from the active trigger's offset box (behind the triggers),
+    // so switching tabs animates the pill across instead of cross-fading two.
+    const positionIndicator = useCallback((animate: boolean) => {
+      const list = listRef.current;
+      const indicator = indicatorRef.current;
+      if (!list || !indicator) return;
+      const active = list.querySelector<HTMLElement>(
+        '[role="tab"][data-state="active"]',
+      );
+      if (!active) {
+        indicator.style.opacity = '0';
+        return;
+      }
+      const apply = () => {
+        indicator.style.opacity = '1';
+        indicator.style.width = `${active.offsetWidth}px`;
+        indicator.style.height = `${active.offsetHeight}px`;
+        indicator.style.transform = `translate(${active.offsetLeft}px, ${active.offsetTop}px)`;
+      };
+      if (animate) {
+        apply();
+      } else {
+        // First paint / resize: jump into place without sliding from 0.
+        indicator.style.transition = 'none';
+        apply();
+        void indicator.offsetWidth; // force reflow so the next change transitions
+        indicator.style.transition = '';
+      }
+    }, []);
+
+    useIsoLayoutEffect(() => {
+      positionIndicator(!firstRef.current);
+      firstRef.current = false;
+    }, [ctx.value, ctx.orientation, positionIndicator]);
+
+    // Keep the indicator aligned when the list reflows (container resize, font
+    // load). Re-measure without sliding — a reflow isn't a tab change.
+    useEffect(() => {
+      const list = listRef.current;
+      if (!list || typeof ResizeObserver === 'undefined') return;
+      const ro = new ResizeObserver(() => positionIndicator(false));
+      ro.observe(list);
+      return () => ro.disconnect();
+    }, [positionIndicator]);
 
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
       onKeyDown?.(e);
@@ -141,6 +196,11 @@ const TabsList = forwardRef<HTMLDivElement, TabsListProps>(
         className={`ui-tabs__list${className ? ' ' + className : ''}`}
         onKeyDown={handleKeyDown}
       >
+        <span
+          ref={indicatorRef}
+          className="ui-tabs__indicator"
+          aria-hidden="true"
+        />
         {children}
       </div>
     );

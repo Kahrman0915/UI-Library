@@ -125,6 +125,16 @@ export const Motion: Story = {
         Try pressing a Chip or a Toggle — the pill physically depresses.
       </P>
 
+      <H2>Shared-element motion — Tabs</H2>
+      <P>
+        The active-tab pill is now a single <M>.ui-tabs__indicator</M> that <strong>slides</strong> between triggers instead of
+        cross-fading two separate pills. It's positioned imperatively from the active trigger's offset box (behind the triggers, so
+        their transparent background shows it through), transitions <M>transform</M> + <M>width</M> + <M>height</M> on{' '}
+        <code style={{ fontFamily: mono }}>--ease-premium</code>, and works in both orientations. First paint lands instantly (no
+        slide-in from the edge); a <M>ResizeObserver</M> re-measures on reflow without sliding. <strong>Open Tabs and click between
+        them</strong> to watch the pill travel — the signature "expensive" continuity move.
+      </P>
+
       <H2>Overlay entrances</H2>
       <P>
         Every floating surface now shares one entrance choreography (
