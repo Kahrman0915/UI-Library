@@ -1,10 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Skeleton from './Skeleton';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Skeleton> = {
   title: 'Components/Skeleton',
   component: Skeleton,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A placeholder in the shape of the content that is loading, so nothing jumps ' +
+        'when the real thing arrives.',
+      tags: ['3 shapes', 'loading'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     shape: { control: 'inline-radio', options: ['default', 'circle', 'text'] },
     width: { control: 'text' },

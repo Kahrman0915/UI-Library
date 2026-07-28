@@ -3,13 +3,23 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Check, Plus, X } from 'lucide-react';
 import Chip from './Chip';
 import type { ChipSize } from './Chip.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const sizes: ChipSize[] = ['xsmall', 'small', 'default'];
 
 const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
   component: Chip,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A pressable pill for filters and tags where any number can be active at ' +
+        'once. One standalone on/off control is a `Toggle`; one-of-N mutually ' +
+        'exclusive options is a `ToggleGroup`.',
+      tags: ['multi-select'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: sizes },
     active: { control: 'boolean' },

@@ -20,11 +20,21 @@ import Attachment, {
   AttachmentTrigger,
 } from './Attachment';
 import Progress from '../Progress';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Attachment> = {
   title: 'Components/Attachment',
   component: Attachment,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A file attachment rendered as a row or a tile: its type or thumbnail, its ' +
+        'name and size, and any actions on it. `AttachmentGroup` stacks several. The ' +
+        'parallel family to `Item`, specialised for files.',
+      tags: ['compound', '9 parts', '3 sizes'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     state: {
       control: 'inline-radio',

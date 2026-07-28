@@ -6,11 +6,22 @@ import AlertDialog, {
   AlertDialogFooter,
 } from './AlertDialog';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof AlertDialog> = {
   title: 'Components/AlertDialog',
   component: AlertDialog,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A modal that asks the user to confirm or cancel before something ' +
+        'consequential happens. A thin preset of `Dialog` with the two carve-outs the ' +
+        'pattern requires: `role="alertdialog"`, and no way to dismiss it by clicking ' +
+        'away or pressing an X — the user has to answer.',
+      tags: ['compound', 'modal', 'portal'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

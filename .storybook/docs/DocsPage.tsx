@@ -18,7 +18,7 @@ import type {
 import { CodePane } from './CodePane';
 import { PropsTable, SubcomponentPropsTable } from './PropsTable';
 import { Toc, type TocEntry } from './Toc';
-import { Block, P, Section, Stage } from './kit';
+import { Block, P, Section, Stage, prose } from './kit';
 import { useDocsMode } from './useDocsMode';
 import './docs.scss';
 
@@ -108,7 +108,7 @@ function ShowcasePage({
             <p className="ui-docs__eyebrow">{group}</p>
             <h1 className="ui-docs__title">{name}</h1>
             {description ? (
-              <p className="ui-docs__lede">{description}</p>
+              <p className="ui-docs__lede">{prose(description)}</p>
             ) : null}
           </header>
 
@@ -205,7 +205,7 @@ export function DocsPage() {
             <p className="ui-docs__eyebrow">{group}</p>
             <h1 className="ui-docs__title">{name}</h1>
             {ui.description ? (
-              <p className="ui-docs__lede">{ui.description}</p>
+              <p className="ui-docs__lede">{prose(ui.description)}</p>
             ) : null}
             <div className="ui-docs__pills">
               <Badge
@@ -260,7 +260,7 @@ export function DocsPage() {
                       <ul className="ui-docs-usage__list">
                         {ui.usage.when.map((line) => (
                           <li key={line} className="ui-docs-usage__item">
-                            {line}
+                            {prose(line)}
                           </li>
                         ))}
                       </ul>
@@ -272,7 +272,7 @@ export function DocsPage() {
                       <ul className="ui-docs-usage__list">
                         {ui.usage.avoid.map((line) => (
                           <li key={line} className="ui-docs-usage__item">
-                            {line}
+                            {prose(line)}
                           </li>
                         ))}
                       </ul>
@@ -282,7 +282,7 @@ export function DocsPage() {
               ) : null}
               {ui.usage?.notes ? (
                 <div style={{ marginTop: 'var(--p-5)' }}>
-                  <P>{ui.usage.notes}</P>
+                  <P>{prose(ui.usage.notes)}</P>
                 </div>
               ) : null}
             </Section>
@@ -315,7 +315,7 @@ export function DocsPage() {
                         ) : null}
                       </ItemTitle>
                       {part.description ? (
-                        <ItemDescription>{part.description}</ItemDescription>
+                        <ItemDescription>{prose(part.description)}</ItemDescription>
                       ) : null}
                     </ItemContent>
                   </Item>
@@ -331,7 +331,7 @@ export function DocsPage() {
                   <h3 className="ui-docs-example__title">{story.name}</h3>
                   {story.parameters?.docs?.description?.story ? (
                     <p className="ui-docs-example__desc">
-                      {story.parameters.docs.description.story}
+                      {prose(story.parameters.docs.description.story)}
                     </p>
                   ) : null}
                   <StoryBlock story={story} isDark={isDark} />
@@ -360,7 +360,7 @@ export function DocsPage() {
 
           {hasA11y ? (
             <Section id="accessibility" title="Accessibility">
-              {ui.a11y?.notes ? <P>{ui.a11y.notes}</P> : null}
+              {ui.a11y?.notes ? <P>{prose(ui.a11y.notes)}</P> : null}
               {ui.a11y?.keyboard?.length ? (
                 <div className="ui-docs-keys">
                   {ui.a11y.keyboard.map((row) => (
@@ -375,7 +375,7 @@ export function DocsPage() {
                           </span>
                         ))}
                       </div>
-                      <div className="ui-docs-keys__desc">{row.description}</div>
+                      <div className="ui-docs-keys__desc">{prose(row.description)}</div>
                     </div>
                   ))}
                 </div>

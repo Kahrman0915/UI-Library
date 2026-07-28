@@ -36,11 +36,22 @@ import Sidebar, {
   SidebarTrigger,
 } from './Sidebar';
 import type { SidebarCollapsible, SidebarVariant, SidebarSide } from './Sidebar.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Sidebar> = {
   title: 'Components/Sidebar',
   component: Sidebar,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'The full app-sidebar subsystem: collapsible to icons or off-canvas, ⌘B to ' +
+        'toggle, persisted to localStorage, and swapped for a `Drawer` under 768px. ' +
+        'Has its own neutral `--sidebar-*` token surface, which a brand theme ' +
+        'deliberately does not remap.',
+      tags: ['compound', '23 parts', 'navigation'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

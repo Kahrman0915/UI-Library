@@ -1,11 +1,20 @@
 import { Bold, Italic, Underline } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Toggle from './Toggle';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Toggle> = {
   title: 'Components/Toggle',
   component: Toggle,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A single two-state button — bold, mute, show archived. Many-on is `Chip`; ' +
+        'one-of-N is `ToggleGroup`.',
+      tags: ['aria-pressed'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: { control: 'select', options: ['default', 'outline'] },
     size: { control: 'select', options: ['sm', 'default', 'lg'] },

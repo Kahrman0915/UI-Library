@@ -1,11 +1,21 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import CloseButton from './CloseButton';
 import Card, { CardBody } from '../Card';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof CloseButton> = {
   title: 'Components/CloseButton',
   component: CloseButton,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The dismissal X. It hard-codes the icon and exists only to close something — ' +
+        'anything else needing a small icon-only button should take the shared ' +
+        '`.ui-icon-button` shell directly rather than wrapping this.',
+      tags: ['icon button'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: { control: 'select', options: ['default', 'background'] },
     disabled: { control: 'boolean' },

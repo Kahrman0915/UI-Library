@@ -5,11 +5,22 @@ import Accordion, {
   AccordionTrigger,
   AccordionContent,
 } from './Accordion';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Accordion> = {
   title: 'Components/Accordion',
   component: Accordion,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A vertical stack of disclosure sections. `type="single"` keeps one open at a ' +
+        'time — add `collapsible` to allow none — while `type="multiple"` lets any ' +
+        'number sit open at once. Height animates with a CSS grid trick, so there is ' +
+        'no measurement and no JavaScript in the open/close path.',
+      tags: ['compound', 'animated'],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-accordion',
     type: 'single',

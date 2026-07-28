@@ -1,10 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Kbd from './Kbd';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Kbd> = {
   title: 'Components/Kbd',
   component: Kbd,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A keycap for a keyboard shortcut. Purely presentational — it displays the ' +
+        'accelerator, it does not bind it.',
+      tags: ['3 sizes'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
   },

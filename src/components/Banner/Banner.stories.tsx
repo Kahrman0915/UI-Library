@@ -3,11 +3,22 @@ import { Info, Megaphone, Sparkles } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Banner from './Banner';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Banner> = {
   title: 'Components/Banner',
   component: Banner,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'A full-bleed bar for something that affects the whole page — planned ' +
+        'maintenance, a trial about to expire, an action the user must take before ' +
+        'continuing. Distinct from `Alert`, which sits inline beside the thing it ' +
+        'describes.',
+      tags: ['5 variants', 'dismissible'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: {
       control: 'select',

@@ -3,11 +3,21 @@ import { Info } from 'lucide-react';
 import Tooltip, { TooltipTrigger, TooltipContent } from './Tooltip';
 import Button from '../Button/Button';
 import type { TooltipSide, TooltipAlign } from './Tooltip.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Tooltip> = {
   title: 'Components/Tooltip',
   component: Tooltip,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A short label describing what a control does, shown on hover or focus. For ' +
+        'anything richer — or anything the user needs to click into — use `HoverCard` ' +
+        'or `Popover`. Deliberately never picks up the brand theme.',
+      tags: ['compound', '3 parts', 'portal'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     side: { control: 'select', options: ['top', 'right', 'bottom', 'left'] },
     align: { control: 'select', options: ['start', 'center', 'end'] },

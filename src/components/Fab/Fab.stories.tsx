@@ -14,11 +14,21 @@ import {
   ChatMessage,
   ChatMessageList,
 } from '../Chat/Chat';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Fab> = {
   title: 'Components/Fab',
   component: Fab,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'The floating action button — a viewport-pinned launcher for the one action ' +
+        'that should always be within reach. Carries the Aiden gradient, which is ' +
+        'rather the point of it.',
+      tags: ['aiden', 'floating'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     position: { control: 'inline-radio', options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'] },
     size: { control: 'inline-radio', options: ['default', 'lg'] },

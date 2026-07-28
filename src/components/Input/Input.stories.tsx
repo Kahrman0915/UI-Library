@@ -6,11 +6,21 @@ import Label from '../Label/Label';
 import Checkbox from '../Checkbox/Checkbox';
 import Button from '../Button/Button';
 import Card, { CardHeader, CardBody, CardFooter } from '../Card';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Input> = {
   title: 'Components/Input',
   component: Input,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A single-line text field, with its label, description, error message and ' +
+        'optional leading or trailing icons built in. For multi-line text use ' +
+        '`Textarea`.',
+      tags: ['form control', '3 sizes'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     error: { control: 'boolean' },

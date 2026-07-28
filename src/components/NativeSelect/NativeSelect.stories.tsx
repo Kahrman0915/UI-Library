@@ -3,11 +3,22 @@ import NativeSelect, {
   NativeSelectOption,
   NativeSelectOptGroup,
 } from './NativeSelect';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof NativeSelect> = {
   title: 'Components/NativeSelect',
   component: NativeSelect,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The OS-native `<select>`, styled to match the rest of the fields. The ' +
+        'default choice for short option lists and the best one on mobile — reach for ' +
+        '`Select` when items need icons or descriptions, and `Combobox` when the list ' +
+        'needs searching.',
+      tags: ['form control', '3 sizes'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     children: { table: { disable: true } },

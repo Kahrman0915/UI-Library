@@ -8,11 +8,20 @@ import {
 } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import ToggleGroup, { ToggleGroupItem } from './ToggleGroup';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof ToggleGroup> = {
   title: 'Components/ToggleGroup',
   component: ToggleGroup,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A segmented control: exactly one of N selected, or explicitly multiple. The ' +
+        'right pick for view switchers and status filters.',
+      tags: ['compound', 'segmented'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

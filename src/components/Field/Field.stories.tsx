@@ -23,11 +23,21 @@ import Select, {
   SelectTrigger,
 } from '../Select';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Field> = {
   title: 'Components/Field',
   component: Field,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'The scaffolding around a form control: its label, description, error message ' +
+        'and the layout holding them together. `FieldSet` and `FieldGroup` handle ' +
+        'related groups of them.',
+      tags: ['compound', '10 parts', 'form'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: {
       control: 'inline-radio',

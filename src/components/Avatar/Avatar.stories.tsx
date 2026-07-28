@@ -1,10 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Avatar, { AvatarGroup } from './Avatar';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Avatar> = {
   title: 'Components/Avatar',
   component: Avatar,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A person or entity’s picture, falling back to their initials when there is ' +
+        'no image or it fails to load. `AvatarGroup` overlaps several into a stack ' +
+        'with a `+N` overflow chip.',
+      tags: ['3 sizes', 'fallback'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     shape: { control: 'select', options: ['circle', 'square'] },

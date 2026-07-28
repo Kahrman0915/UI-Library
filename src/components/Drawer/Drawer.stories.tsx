@@ -4,11 +4,21 @@ import Drawer, { DrawerHeader, DrawerBody, DrawerFooter } from './Drawer';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import type { DrawerSide } from './Drawer.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Drawer> = {
   title: 'Components/Drawer',
   component: Drawer,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A panel that slides in from any edge. Reuses Dialog’s focus trap, scroll ' +
+        'lock and Escape handling, and unlike the other portals it animates out ' +
+        'before unmounting.',
+      tags: ['compound', 'modal', '4 sides'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     side: {
       control: 'select',

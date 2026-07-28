@@ -12,11 +12,21 @@ import Menubar, {
   MenubarShortcut,
   MenubarTrigger,
 } from './Menubar';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Menubar> = {
   title: 'Components/Menubar',
   component: Menubar,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'The desktop-style horizontal menu bar. Once one menu is open, hovering the ' +
+        'others switches between them, and arrow keys move across the triggers. Built ' +
+        'on `DropdownMenu`, so positioning and item behaviour come along for free.',
+      tags: ['compound', '11 parts'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

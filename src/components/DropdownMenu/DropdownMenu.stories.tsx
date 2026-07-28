@@ -14,11 +14,20 @@ import DropdownMenu, {
   DropdownMenuTrigger,
 } from './DropdownMenu';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof DropdownMenu> = {
   title: 'Components/DropdownMenu',
   component: DropdownMenu,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A menu of actions opened from a button. A menu is for *doing* things — when ' +
+        'the user is choosing a value, use `Select` instead.',
+      tags: ['compound', '11 parts', 'portal'],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-dropdown',
   },

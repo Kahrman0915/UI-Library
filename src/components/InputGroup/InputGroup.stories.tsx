@@ -16,11 +16,20 @@ import InputGroup, {
   InputGroupText,
   InputGroupTextarea,
 } from './InputGroup';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof InputGroup> = {
   title: 'Components/InputGroup',
   component: InputGroup,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A field flanked by addons — a currency symbol, a unit, a prefix, an inline ' +
+        'button — all sharing one border with the input.',
+      tags: ['compound', '6 parts', 'form'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: {
       control: 'inline-radio',

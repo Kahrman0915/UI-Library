@@ -106,11 +106,15 @@
   color: var(--foreground);
 }
 
+// `--leading-8` (32px) on 18px type is a 1.78 ratio — body-copy leading applied
+// to lede-sized text, which pulls the lines apart and detaches the paragraph
+// from the title above it. `--leading-7` is 1.56, and the tighter block lets the
+// gap under the title close up too.
 .ui-docs__lede {
-  margin: var(--p-4) 0 0;
+  margin: var(--p-3) 0 0;
   max-width: var(--max-w-2xl);
   font-size: var(--text-lg);
-  line-height: var(--leading-8);
+  line-height: var(--leading-7);
   color: var(--muted-foreground);
 }
 
@@ -472,6 +476,13 @@
 
 .ui-docs-props__desc {
   min-width: var(--w-64);
+}
+
+// `.ui-code` is `white-space: nowrap` so a snippet never breaks mid-token. In a
+// description cell that's the wrong trade — a long backticked type would push
+// the table into a horizontal scroll — so let it wrap here.
+.ui-docs-props__desc .ui-code {
+  white-space: normal;
 }
 
 .ui-docs-props__empty {

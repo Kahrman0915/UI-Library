@@ -15,11 +15,20 @@ import ContextMenu, {
   ContextMenuSubTrigger,
   ContextMenuTrigger,
 } from './ContextMenu';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof ContextMenu> = {
   title: 'Components/ContextMenu',
   component: ContextMenu,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The right-click menu, anchored to the pointer position rather than to a ' +
+        'trigger element. The only menu family in the library with submenus.',
+      tags: ['compound', '14 parts', 'submenus'],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-context-menu',
   },

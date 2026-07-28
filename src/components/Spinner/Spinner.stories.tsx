@@ -1,10 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Spinner from './Spinner';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Spinner> = {
   title: 'Components/Spinner',
   component: Spinner,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'An indeterminate loading indicator. Deliberately keeps animating under ' +
+        '`prefers-reduced-motion` — it is a status indicator, and a frozen one reads ' +
+        'as “nothing is happening”.',
+      tags: ['loading', 'status'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: { type: 'number', min: 8, max: 64, step: 2 } },
   },

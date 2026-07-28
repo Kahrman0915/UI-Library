@@ -5,11 +5,21 @@ import ButtonGroup, {
   ButtonGroupText,
 } from './ButtonGroup';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof ButtonGroup> = {
   title: 'Components/ButtonGroup',
   component: ButtonGroup,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'Joins adjacent buttons into a single unit, flattening the corners where they ' +
+        'meet. Purely presentational — it has no selection state, so for one-of-N use ' +
+        '`ToggleGroup`.',
+      tags: ['compound', '3 parts'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: { control: 'select', options: ['horizontal', 'vertical'] },
     children: { control: false, table: { disable: true } },

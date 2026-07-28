@@ -1,10 +1,20 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import AspectRatio from './AspectRatio';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof AspectRatio> = {
   title: 'Components/AspectRatio',
   component: AspectRatio,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'Locks a box to a fixed width-to-height ratio so media reserves its space ' +
+        'before it loads and never shifts the layout underneath it. Pass `ratio` as a ' +
+        'division expression — `16 / 9`.',
+      tags: ['layout'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     ratio: { control: 'number' },
   },

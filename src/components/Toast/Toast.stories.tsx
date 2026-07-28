@@ -2,11 +2,21 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { CircleCheck, Info, TriangleAlert, CircleX } from 'lucide-react';
 import Toaster from './Toaster';
 import { toast } from './toast';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Toaster> = {
   title: 'Components/Toast',
   component: Toaster,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'Transient notifications, driven imperatively: render `<Toaster>` once, then ' +
+        'call `toast()` from anywhere. For a message that belongs beside the thing it ' +
+        'describes, use `Alert`.',
+      tags: ['imperative', 'portal'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     position: {
       control: 'select',

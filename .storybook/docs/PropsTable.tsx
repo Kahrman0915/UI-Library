@@ -1,4 +1,5 @@
 import { useOf } from '@storybook/blocks';
+import { prose } from './kit';
 import type { StrictArgTypes } from 'storybook/internal/types';
 import './docs.scss';
 
@@ -111,7 +112,9 @@ export function PropsTable({
                   <span className="ui-docs-props__default">—</span>
                 )}
               </td>
-              <td className="ui-docs-props__desc">{row.description || '—'}</td>
+              <td className="ui-docs-props__desc">
+                {row.description ? prose(row.description) : '—'}
+              </td>
             </tr>
           ))}
         </tbody>

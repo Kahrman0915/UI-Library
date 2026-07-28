@@ -8,11 +8,21 @@ import Pagination, {
   PaginationNext,
   PaginationEllipsis,
 } from './Pagination';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Pagination> = {
   title: 'Components/Pagination',
   component: Pagination,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'Page navigation for a long list or table. Cells are anchors styled as ' +
+        'buttons, so every page is a real, shareable link rather than a piece of ' +
+        'client state.',
+      tags: ['compound', '7 parts', 'navigation'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

@@ -5,11 +5,20 @@ import Popover, { PopoverTrigger, PopoverContent, PopoverClose } from './Popover
 import Button from '../Button';
 import Input from '../Input';
 import Label from '../Label';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Popover> = {
   title: 'Components/Popover',
   component: Popover,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A floating panel anchored to a trigger, for content the user clicks open — a ' +
+        'small form, a filter, a set of options too rich for a menu.',
+      tags: ['compound', '4 parts', 'portal'],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-popover',
   },

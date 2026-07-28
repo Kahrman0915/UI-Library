@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Inbox, Sparkles, Check, TriangleAlert, CircleAlert, Info } from 'lucide-react';
 import FeaturedIcon from './FeaturedIcon';
 import type { FeaturedIconSize, FeaturedIconVariant } from './FeaturedIcon.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const sizes: FeaturedIconSize[] = ['sm', 'default', 'lg'];
 const variants: FeaturedIconVariant[] = [
@@ -24,7 +25,15 @@ const variantIcon = {
 const meta: Meta<typeof FeaturedIcon> = {
   title: 'Components/FeaturedIcon',
   component: FeaturedIcon,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'An icon inside a decorative container — the visual anchor at the top of an ' +
+        'empty state, a dialog, or a feature row.',
+      tags: ['decorative'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: sizes },
     shape: { control: 'select', options: ['square', 'circle'] },

@@ -1,10 +1,18 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Separator from './Separator';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Separator> = {
   title: 'Components/Separator',
   component: Separator,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A hairline divider, with an optional label sitting in the middle of it.',
+      tags: ['layout'],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: { control: 'inline-radio', options: ['horizontal', 'vertical'] },
     decorative: { control: 'boolean' },

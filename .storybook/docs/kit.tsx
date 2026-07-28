@@ -1,5 +1,27 @@
-import type { ReactNode } from 'react';
+import { Fragment, type ReactNode } from 'react';
+import { Code } from '../../src/index';
 import './docs.scss';
+
+/**
+ * Render a `parameters.ui` string, turning `backticked` spans into inline code.
+ *
+ * The prose in `parameters.ui` is plain strings by design — parameters cross
+ * Storybook's channel on every prepared-story message, so React elements don't
+ * belong in them. Markdown's one useful affordance here is inline code (naming
+ * a sibling component, a prop, a token), so that much is parsed back out at
+ * render time and handed to our own `Code`.
+ */
+export function prose(text: string): ReactNode {
+  if (!text.includes('`')) return text;
+  return text.split(/`([^`]+)`/g).map((part, i) =>
+    // Odd indices are the captured group — the contents of a backtick pair.
+    i % 2 === 1 ? (
+      <Code key={i}>{part}</Code>
+    ) : (
+      <Fragment key={i}>{part}</Fragment>
+    ),
+  );
+}
 
 /**
  * Layout primitives shared by the Docs template.

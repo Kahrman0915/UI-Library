@@ -1,10 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Blockquote from './Blockquote';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Blockquote> = {
   title: 'Components/Blockquote',
   component: Blockquote,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A quoted passage, set off with an accent rule and italic body text. Pass ' +
+        '`cite` to render an attribution footer under it.',
+      tags: ['typography'],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

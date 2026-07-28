@@ -20,11 +20,20 @@ import Command, {
   CommandSeparator,
   CommandShortcut,
 } from './Command';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Command> = {
   title: 'Components/Command',
   component: Command,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'The ⌘K palette: a search field over a grouped, keyboard-driven list of ' +
+        'actions. `CommandDialog` mounts it in a modal for the app-wide shortcut.',
+      tags: ['compound', '9 parts', 'portal'],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-command',
   },
