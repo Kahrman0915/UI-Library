@@ -309,6 +309,7 @@ html {
   --duration-shimmer: 1400ms; /* skeleton / progress / attachment shimmer */
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
+  --duration-pulse: 2800ms;   /* Fab "sonar" ring pulse — slow + elegant */
   /* Easing curves */
   --ease-default: ease;
   --ease-in: ease-in;
@@ -592,21 +593,24 @@ html {
   --rm-primary: #7c3aed;
   --rm-primary-foreground: #ffffff;
 
-  /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback */
-  --aiden-primary: linear-gradient(135deg, #8455f0 0%, #5f61ef 50%, #2c6dea 100%);
+  /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback.
+     Identity is "blurple" #5a37e6 (hue 252°) — deliberately between violet and db's
+     indigo, kept distinct from db-primary by sitting darker (L56 vs db's L66). The
+     gradient opens bright on the base violet #8455f0, lands on the blurple identity,
+     resolves to blue (kept airy — not anchored deep — so the signature fill stays
+     energetic); the solid (outline-border) is the deep blurple itself. */
+  --aiden-primary: linear-gradient(135deg, #8455f0 0%, #5a37e6 50%, #2c6dea 100%);
   --aiden-primary-foreground: #ffffff;
-  --aiden-secondary: linear-gradient(135deg, rgba(132, 85, 240, 0.08) 0%, rgba(44, 109, 234, 0.08) 100%);
+  --aiden-secondary: linear-gradient(135deg, rgba(90, 55, 230, 0.08) 0%, rgba(44, 109, 234, 0.08) 100%);
   --aiden-secondary-foreground: #0f172a;
-  --aiden-border: linear-gradient(135deg, rgba(132, 85, 240, 0.8) 0%, rgba(44, 109, 234, 0.8) 100%);
-  --aiden-hover: linear-gradient(135deg, #7c3aed 0%, #4f46e5 50%, #2563eb 100%);
-  --aiden-ring: linear-gradient(135deg, rgba(132, 85, 240, 0.5) 0%, rgba(44, 109, 234, 0.5) 100%);
-  --aiden-focus: 0 0 0 3px rgba(132, 85, 240, 0.5);
+  --aiden-border: linear-gradient(135deg, rgba(90, 55, 230, 0.8) 0%, rgba(44, 109, 234, 0.8) 100%);
+  --aiden-hover: linear-gradient(135deg, #6d28d9 0%, #4a29c9 50%, #1d4ed8 100%);
+  --aiden-ring: linear-gradient(135deg, rgba(90, 55, 230, 0.5) 0%, rgba(44, 109, 234, 0.5) 100%);
+  --aiden-focus: 0 0 0 3px rgba(90, 55, 230, 0.5);
   --aiden-gradient-start: #8455f0;
-  --aiden-gradient-mid: #5f61ef;
+  --aiden-gradient-mid: #5a37e6;
   --aiden-gradient-end: #2c6dea;
-  --aiden-outline-hover: linear-gradient(135deg, #ede9fe 29%, #dbeafe 100%);
-  --aiden-outline-border: #8455f0;
-  --aiden-outline-hover-foreground: #0f172a;
+  --aiden-outline-border: #5a37e6;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
@@ -849,21 +853,22 @@ html {
   --rm-primary: #a78bfa;
   --rm-primary-foreground: #0f172a;
 
-  /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback */
-  --aiden-primary: linear-gradient(135deg, #a78bfa 0%, #93c5fd 100%);
+  /* Aiden AI surface (data-surface='aiden') — dark blurple #9076f9 (hue 252°), the
+     light-on-dark twin of the light blurple. Saturated enough to read as a deliberate
+     blurple (not a whisper) while staying light enough that dark text clears AA (5.22
+     on the solid); kept 13° off db-dark. Blue end unchanged for the violet→blue movement. */
+  --aiden-primary: linear-gradient(135deg, #9076f9 0%, #93c5fd 100%);
   --aiden-primary-foreground: #0f172a;
-  --aiden-secondary: linear-gradient(135deg, rgba(167, 139, 250, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
+  --aiden-secondary: linear-gradient(135deg, rgba(144, 118, 249, 0.1) 0%, rgba(147, 197, 253, 0.1) 100%);
   --aiden-secondary-foreground: #ffffff;
-  --aiden-border: linear-gradient(135deg, rgba(167, 139, 250, 0.8) 0%, rgba(147, 197, 253, 0.8) 100%);
-  --aiden-hover: linear-gradient(135deg, #c4b5fd 0%, #bae6fd 100%);
-  --aiden-ring: linear-gradient(135deg, rgba(167, 139, 250, 0.5) 0%, rgba(147, 197, 253, 0.5) 100%);
-  --aiden-focus: 0 0 0 3px rgba(167, 139, 250, 0.5);
-  --aiden-gradient-start: #a78bfa;
-  --aiden-gradient-mid: #a78bfa;
+  --aiden-border: linear-gradient(135deg, rgba(144, 118, 249, 0.8) 0%, rgba(147, 197, 253, 0.8) 100%);
+  --aiden-hover: linear-gradient(135deg, #b3a2fa 0%, #bae6fd 100%);
+  --aiden-ring: linear-gradient(135deg, rgba(144, 118, 249, 0.5) 0%, rgba(147, 197, 253, 0.5) 100%);
+  --aiden-focus: 0 0 0 3px rgba(144, 118, 249, 0.5);
+  --aiden-gradient-start: #9076f9;
+  --aiden-gradient-mid: #9076f9;
   --aiden-gradient-end: #93c5fd;
-  --aiden-outline-hover: linear-gradient(135deg, #c4b5fd 0%, #bae6fd 100%);
-  --aiden-outline-border: #a78bfa;
-  --aiden-outline-hover-foreground: #0f172a;
+  --aiden-outline-border: #9076f9;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);

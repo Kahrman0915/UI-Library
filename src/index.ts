@@ -562,6 +562,9 @@ export type {
   FeaturedIconVariant,
 } from './components/FeaturedIcon';
 
+export { default as Fab } from './components/Fab';
+export type { FabProps, FabPosition, FabSize } from './components/Fab';
+
 export {
   default as DropdownMenu,
   DropdownMenuTrigger,

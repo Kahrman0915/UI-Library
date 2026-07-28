@@ -465,7 +465,12 @@
   }
 
   &--aiden-secondary:hover:not(:disabled) {
-    background: var(--aiden-outline-hover);
+    // Match every other secondary button: the mode-aware --opacity-50 overlay
+    // (white in light, dark slate in dark) so hover LIGHTENS in light and
+    // DARKENS in dark — never a bright flash.
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--aiden-secondary);
     color: var(--aiden-outline-border);
   }
 
@@ -594,4 +599,20 @@
 }
 [data-surface='aiden'] .ui-button--default-default:hover:not(:disabled) {
   background: var(--aiden-hover);
+}
+// Secondary must mirror the standalone `variant="aiden"` secondary, or a
+// `data-surface='aiden'` default-secondary and a `variant="aiden"` secondary
+// render differently (the surface was only overriding the primary CTA, so
+// secondary fell through to the generic --primary-soft tint). Same aiden tokens:
+// the gradient-tint fill, solid-blurple text/border, and the same mode-aware
+// --opacity-50 hover as every other secondary (lightens in light, darkens in dark).
+[data-surface='aiden'] .ui-button--default-secondary {
+  background: var(--aiden-secondary);
+  color: var(--aiden-outline-border);
+  outline-color: var(--aiden-outline-border);
+}
+[data-surface='aiden'] .ui-button--default-secondary:hover:not(:disabled) {
+  background:
+    linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+    var(--aiden-secondary);
 }
