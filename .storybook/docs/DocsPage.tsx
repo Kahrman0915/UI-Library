@@ -10,10 +10,6 @@ import {
   ItemGroup,
   ItemTitle,
   Kbd,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
 } from '../../src/index';
 import type {
   UiDocsParameters,
@@ -22,7 +18,7 @@ import type {
 import { CodePane } from './CodePane';
 import { PropsTable, SubcomponentPropsTable } from './PropsTable';
 import { Toc, type TocEntry } from './Toc';
-import { P, Section, Stage } from './kit';
+import { Block, P, Section, Stage } from './kit';
 import { useDocsMode } from './useDocsMode';
 import './docs.scss';
 
@@ -57,11 +53,29 @@ const STATUS_VARIANT: Record<UiDocsStatus, 'success' | 'info' | 'warning' | 'err
 /** Stories whose canvas wants the full column rather than a centred specimen. */
 const FILL_TITLES = /Sidebar|Chat|Layout|Menubar|Command|Pagination|Breadcrumb/;
 
-function StoryStage({ story }: { story: PreparedStory }) {
+/**
+ * One example: the rendered story over its own source, in a single card.
+ *
+ * The same block serves the page's primary preview and every example below it,
+ * so the page reads as one repeating unit rather than switching format halfway
+ * down.
+ */
+function StoryBlock({
+  story,
+  isDark,
+}: {
+  story: PreparedStory;
+  isDark: boolean;
+}) {
   return (
-    <Stage fill={FILL_TITLES.test(story.title)}>
-      <Story of={story.moduleExport} />
-    </Stage>
+    <Block>
+      <Stage fill={FILL_TITLES.test(story.title)}>
+        <Story of={story.moduleExport} />
+      </Stage>
+      <CodePane>
+        <Source of={story.moduleExport} dark={isDark} />
+      </CodePane>
+    </Block>
   );
 }
 
@@ -219,24 +233,7 @@ export function DocsPage() {
 
           {primary ? (
             <Section id="preview" title="Preview">
-              <Tabs
-                id="docs-preview-tabs"
-                defaultValue="preview"
-                className="ui-docs-preview"
-              >
-                <TabsList>
-                  <TabsTrigger value="preview">Preview</TabsTrigger>
-                  <TabsTrigger value="code">Code</TabsTrigger>
-                </TabsList>
-                <TabsContent value="preview" className="ui-docs-preview__panel">
-                  <StoryStage story={primary} />
-                </TabsContent>
-                <TabsContent value="code" className="ui-docs-preview__panel">
-                  <CodePane collapsible={false}>
-                    <Source of={primary.moduleExport} dark={isDark} />
-                  </CodePane>
-                </TabsContent>
-              </Tabs>
+              <StoryBlock story={primary} isDark={isDark} />
             </Section>
           ) : null}
 
@@ -337,10 +334,7 @@ export function DocsPage() {
                       {story.parameters.docs.description.story}
                     </p>
                   ) : null}
-                  <StoryStage story={story} />
-                  <CodePane>
-                    <Source of={story.moduleExport} dark={isDark} />
-                  </CodePane>
+                  <StoryBlock story={story} isDark={isDark} />
                 </article>
               ))}
             </Section>

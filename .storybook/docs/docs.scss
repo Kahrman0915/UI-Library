@@ -164,18 +164,26 @@
 }
 
 // ---------------------------------------------------------------------------
-// Stage — the framed live-demo surface. The "expensive" beat of the page.
+// Example block — the demo and the source that produced it, as ONE card.
+//
+// Two separate framed boxes with a gap between them read as a list of
+// unrelated panels; the block owns the border / radius / shadow so the stage
+// and the code strip below it are visibly the same object.
 // ---------------------------------------------------------------------------
-.ui-docs-stage {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: var(--h-48);
-  padding: var(--p-10) var(--p-8);
+.ui-docs-block {
   background: var(--card);
   border: var(--border-w-100) solid var(--border);
   border-radius: var(--rounded-xl);
   box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.ui-docs-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--h-56);
+  padding: var(--p-10) var(--p-8);
   overflow: hidden;
 }
 
@@ -194,77 +202,128 @@
 }
 
 // ---------------------------------------------------------------------------
-// Code pane — collapsed strip → scrollable pane (see CodePane.tsx)
+// Code pane — a three-line strip that expands into a scrolling pane.
 //
-// The wrapper owns the surface so the fade gradient can match it exactly, and
-// so the code sits on the same `--card` as the preview stage above it.
-// Storybook's own `.docblock-source` background is dropped to transparent.
+// The pane owns the surface (`--card`) and Storybook's own `.docblock-source`
+// background is dropped to transparent, which is what lets the fade gradient
+// end on exactly the right colour. Don't give that background back.
 // ---------------------------------------------------------------------------
 .ui-docs-code {
   position: relative;
-  margin-top: var(--p-3);
+  border-top: var(--border-w-100) solid var(--border);
   background: var(--card);
-  border: var(--border-w-100) solid var(--border);
-  border-radius: var(--rounded-xl);
-  box-shadow: var(--shadow-xs);
-  overflow: hidden;
 }
 
 .ui-docs-code__viewport {
-  // Roughly seven lines — enough to recognise the snippet, not enough to bury
-  // the next example.
-  max-height: var(--h-40);
+  display: flex;
+  align-items: flex-start;
+  // Three lines plus the block's padding — enough to recognise the snippet,
+  // little enough that the next example stays on screen.
+  max-height: var(--h-28);
   overflow: hidden;
   transition: max-height var(--duration-slow) var(--ease-premium);
 }
 
 .ui-docs-code--open .ui-docs-code__viewport {
   max-height: var(--h-96);
-  overflow: auto;
+  overflow-y: auto;
 }
 
+// Pin the type ramp so the gutter can align to it. Storybook's default is
+// `monospace` at an inherited line-height, which drifts per platform.
 .ui-docs-code .docblock-source,
-.ui-docs-code pre {
+.ui-docs-code pre,
+.ui-docs-code code {
   margin: 0;
   background: transparent;
   border: none;
   border-radius: 0;
   box-shadow: none;
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  line-height: var(--leading-5);
 }
 
+// The code column scrolls horizontally on its own so the gutter never slides
+// out of view with it.
+.ui-docs-code .docblock-source {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.ui-docs-code pre {
+  padding: var(--p-5) var(--p-5) var(--p-5) var(--p-0);
+}
+
+// Line numbers. `<Source>` emits one `<pre>` of highlighted text with no
+// per-line elements, so a CSS counter has nothing to count — CodePane counts
+// the newlines and stacks them here at the same leading. Alignment depends on
+// this padding matching the `pre` above and on `white-space: pre` (no wrapping).
+.ui-docs-code__gutter {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  padding: var(--p-5) var(--p-4) var(--p-5) var(--p-5);
+  text-align: end;
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+  opacity: var(--opacity-50);
+  user-select: none;
+}
+
+.ui-docs-code__gutter span {
+  display: block;
+  height: var(--leading-5);
+}
+
+// Dims the strip behind the floating toggle so the label always reads, whatever
+// the code underneath happens to be.
 .ui-docs-code__fade {
   position: absolute;
-  inset-inline: 0;
-  // Sits directly above the button bar.
-  bottom: var(--h-10);
-  height: var(--h-12);
+  inset: 0;
   pointer-events: none;
-  background: linear-gradient(to bottom, transparent, var(--card));
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--card) 85%,
+    var(--card)
+  );
 }
 
-.ui-docs-code__bar {
-  display: flex;
-  justify-content: center;
-  padding: var(--p-2);
-  border-top: var(--border-w-100) solid var(--border);
+// Expanded, the toggle floats at the bottom of the scrolling pane rather than
+// over its middle, so it never covers the line you're reading.
+.ui-docs-code--open .ui-docs-code__fade {
+  top: auto;
+  height: var(--h-20);
+}
+
+// Expanded, the floating toggle and its fade would sit on top of the last
+// couple of lines. Reserve room under the code instead of dimming it.
+.ui-docs-code--open pre,
+.ui-docs-code--open .ui-docs-code__gutter {
+  padding-bottom: var(--p-16);
+}
+
+.ui-docs-code__toggle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  // An outline button is transparent by design; floating over code it needs an
+  // opaque backdrop of its own to stay legible.
   background: var(--card);
+  border-radius: var(--rounded-full);
+  box-shadow: var(--shadow-md);
 }
 
-// ---------------------------------------------------------------------------
-// Preview / Code tab pair
-// ---------------------------------------------------------------------------
-.ui-docs-preview__panel {
-  margin-top: var(--p-4);
-}
-
-// A full-bleed tablist reads as a toolbar; two tabs want to sit at their own
-// width, tucked against the start edge above the stage.
-// `.ui-tabs` is a column flex container, so the list stretches on the cross
-// axis — `width: auto` alone won't shrink it; `align-self` is what does.
-.ui-docs-preview .ui-tabs__list {
-  display: inline-flex;
-  width: auto;
-  align-self: flex-start;
+.ui-docs-code--open .ui-docs-code__toggle {
+  top: auto;
+  bottom: var(--p-4);
+  transform: translate(-50%, 0);
 }
 
 // ---------------------------------------------------------------------------

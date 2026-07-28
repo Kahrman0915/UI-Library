@@ -45,11 +45,27 @@ export type StageProps = {
   children: ReactNode;
 };
 
-/** The framed live-demo surface. */
+/**
+ * The live-demo surface.
+ *
+ * Carries no chrome of its own — the surrounding `Block` owns the border,
+ * radius and shadow so the demo and the code strip below it read as one card.
+ */
 export function Stage({ fill, children }: StageProps) {
   return (
     <div className={`ui-docs-stage${fill ? ' ui-docs-stage--fill' : ''}`}>
       {fill ? children : <div className="ui-docs-stage__inner">{children}</div>}
     </div>
   );
+}
+
+/**
+ * One example: a `Stage` and a `CodePane` inside a single bordered card.
+ *
+ * The two are deliberately not separate cards. A demo and the source that
+ * produced it are one thing, and stacking two framed boxes with a gap between
+ * them made the page read as a list of unrelated panels.
+ */
+export function Block({ children }: { children: ReactNode }) {
+  return <div className="ui-docs-block">{children}</div>;
 }
