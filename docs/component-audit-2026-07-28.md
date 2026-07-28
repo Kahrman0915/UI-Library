@@ -131,12 +131,15 @@
 
 ## Status
 
-**Waves 1–3 FIXED on branch `audit-fixes` (2026-07-28):** commits `c72e444`
+**Waves 1–4 FIXED on branch `audit-fixes` (2026-07-28):** commits `c72e444`
 (Label description / accessible names), `4c95b53` (closed prop surfaces +
-Alert style Omit), `78d17a4` (the 16 functional bugs). Remaining open: wave 4
-(a11y patterns: Chat log role, Toast pause-on-hover, ContextMenu keyboard
-trigger, Combobox duplicate role, Dialog/Drawer conditional labelledby),
-wave 5 (JSDoc), wave 6 (stories), wave 7 (size-vocabulary decision).
+Alert style Omit), `78d17a4` (the 16 functional bugs), `8afc226` (a11y
+patterns: Chat role=log + tab stop, Toast pause-on-hover + persistent labeled
+region, ContextMenu Shift+F10 + menu name, Combobox single combobox role +
+wired describedby/invalid, Select same wiring, Dialog/Drawer conditional
+labelledby + wired describedby). Remaining open: wave 5 (JSDoc the ~20 bare
+types files), wave 6 (stories: Menubar keyboard demo, Drawer, disabled-state +
+controlled-usage stories), wave 7 (size-vocabulary decision).
 
 ## Priority actions
 
