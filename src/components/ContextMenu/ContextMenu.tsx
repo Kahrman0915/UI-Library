@@ -34,6 +34,7 @@ import type {
   ContextMenuTriggerProps,
 } from './ContextMenu.types';
 import './ContextMenu.scss';
+import '../../styles/overlay-entrance.scss';
 
 const useRoot = () => {
   const ctx = useContext(ContextMenuRootContext);
@@ -307,7 +308,7 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
         }}
         role="menu"
         tabIndex={-1}
-        className={`ui-context-menu__content${className ? ' ' + className : ''}`}
+        className={`ui-context-menu__content ui-overlay-enter${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

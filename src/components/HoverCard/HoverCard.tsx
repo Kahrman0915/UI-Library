@@ -20,6 +20,7 @@ import type {
   HoverCardTriggerProps,
 } from './HoverCard.types';
 import './HoverCard.scss';
+import '../../styles/overlay-entrance.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Context
@@ -258,7 +259,7 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
         id={ctx.contentId}
         role="tooltip"
         data-side={side}
-        className={`ui-hover-card__content${className ? ' ' + className : ''}`}
+        className={`ui-hover-card__content ui-overlay-enter${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

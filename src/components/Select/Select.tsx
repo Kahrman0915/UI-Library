@@ -27,6 +27,7 @@ import type {
 import '../Input/Input.scss';
 import '../Label/Label.scss';
 import './Select.scss';
+import '../../styles/overlay-entrance.scss';
 
 const useSelect = () => {
   const ctx = useContext(SelectContext);
@@ -446,7 +447,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-select__content${className ? ' ' + className : ''}`}
+        className={`ui-select__content ui-overlay-enter${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

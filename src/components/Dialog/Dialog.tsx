@@ -9,6 +9,7 @@ import type {
   DialogFooterProps,
 } from './Dialog.types';
 import './Dialog.scss';
+import '../../styles/overlay-entrance.scss';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -124,7 +125,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
               ref as unknown as React.MutableRefObject<HTMLDivElement | null>
             ).current = node;
         }}
-        className={`ui-dialog${className ? ' ' + className : ''}`}
+        className={`ui-dialog ui-overlay-enter--center${className ? ' ' + className : ''}`}
         role={role}
         aria-modal={!inline}
         aria-labelledby={`${id}-title`}
@@ -139,7 +140,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     return createPortal(
       <div
-        className="ui-dialog-overlay"
+        className="ui-dialog-overlay ui-overlay-backdrop"
         onClick={handleOverlayClick}
         role="presentation"
       >

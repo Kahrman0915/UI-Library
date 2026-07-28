@@ -15,6 +15,7 @@ import type { ComboboxOption, ComboboxProps } from './Combobox.types';
 import '../Input/Input.scss';
 import '../Label/Label.scss';
 import './Combobox.scss';
+import '../../styles/overlay-entrance.scss';
 
 const optionSearchKey = (option: ComboboxOption): string => {
   if (option.searchText) return option.searchText;
@@ -336,7 +337,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           createPortal(
             <div
               ref={contentRef}
-              className="ui-combobox__content"
+              className="ui-combobox__content ui-overlay-enter"
               data-side={side}
               style={{
                 top: position?.top ?? 0,

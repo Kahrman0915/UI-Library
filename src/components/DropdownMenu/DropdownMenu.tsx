@@ -29,6 +29,7 @@ import type {
   DropdownMenuTriggerProps,
 } from './DropdownMenu.types';
 import './DropdownMenu.scss';
+import '../../styles/overlay-entrance.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Context
@@ -279,7 +280,7 @@ const DropdownMenuContent = forwardRef<HTMLDivElement, DropdownMenuContentProps>
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-dropdown-menu__content${className ? ' ' + className : ''}`}
+        className={`ui-dropdown-menu__content ui-overlay-enter${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

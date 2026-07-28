@@ -110,6 +110,19 @@ export const Motion: Story = {
         <M>.ui-button</M> — no new dependency, no JS. Reduced-motion users get the press state instantly and skip the easing.
       </P>
 
+      <H2>Overlay entrances</H2>
+      <P>
+        Every floating surface now shares one entrance choreography (
+        <code style={{ fontFamily: mono }}>src/styles/overlay-entrance.scss</code>) — fade + scale from{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-in</code> + a few px slide <em>from the trigger</em>, with{' '}
+        <code style={{ fontFamily: mono }}>transform-origin</code> pinned toward it so the surface reads as growing out of it.
+        Positioned menus (Popover, DropdownMenu, Menubar, Select, HoverCard, Combobox, ContextMenu) key off{' '}
+        <M>data-side</M> and use <code style={{ fontFamily: mono }}>--ease-premium</code> (crisp, no bounce); Dialog and
+        Command scale in from center with a hint of arrival (<code style={{ fontFamily: mono }}>--ease-entrance</code>) and their
+        backdrop blooms. <strong>Open any of those components to feel it</strong> — this is what replaced eight surfaces that used
+        to blink into existence. Exit stays instant for now (React unmounts the portal); adding exit is the next pass.
+      </P>
+
       <H2>Reduced motion</H2>
       <P>
         The library honours <code style={{ fontFamily: mono }}>prefers-reduced-motion: reduce</code> globally — all durations

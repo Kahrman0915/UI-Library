@@ -21,6 +21,7 @@ import type {
   PopoverTriggerProps,
 } from './Popover.types';
 import './Popover.scss';
+import '../../styles/overlay-entrance.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Context
@@ -222,7 +223,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-popover__content${className ? ' ' + className : ''}`}
+        className={`ui-popover__content ui-overlay-enter${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,
