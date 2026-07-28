@@ -751,6 +751,7 @@ export type { Size, CategoryColor, ChildrenAsPropsType } from './types/GlobalTyp
 
 export { useRipple } from './hooks/useRipple';
 export type { UseRippleResult } from './hooks/useRipple';
+export { usePresence } from './hooks/usePresence';
 
 export { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
 export type { UseAutosizeTextareaOptions } from './hooks/useAutosizeTextarea';

@@ -10,6 +10,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import type { ComboboxOption, ComboboxProps } from './Combobox.types';
 import '../Input/Input.scss';
@@ -107,6 +108,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     } | null>(null);
     const [minWidth, setMinWidth] = useState<number | undefined>(undefined);
     const mounted = useMounted();
+    const { present, status, onExitAnimationEnd } = usePresence(open);
 
     // Filter options against the current search.
     const filtered = useMemo(
@@ -332,12 +334,13 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           </p>
         )}
 
-        {open &&
+        {present &&
           mounted &&
           createPortal(
             <div
               ref={contentRef}
-              className="ui-combobox__content ui-overlay-enter"
+              onAnimationEnd={onExitAnimationEnd}
+              className={`ui-combobox__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}`}
               data-side={side}
               style={{
                 top: position?.top ?? 0,

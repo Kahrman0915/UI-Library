@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import type {
   HoverCardContentProps,
@@ -243,7 +244,8 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
       return () => document.removeEventListener('keydown', onKey);
     }, [ctx.open, ctx.closeWithDelay]);
 
-    if (!ctx.open || !mounted) return null;
+    const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
+    if (!present || !mounted) return null;
 
     return createPortal(
       <div
@@ -259,7 +261,8 @@ const HoverCardContent = forwardRef<HTMLDivElement, HoverCardContentProps>(
         id={ctx.contentId}
         role="tooltip"
         data-side={side}
-        className={`ui-hover-card__content ui-overlay-enter${className ? ' ' + className : ''}`}
+        onAnimationEnd={onExitAnimationEnd}
+        className={`ui-hover-card__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

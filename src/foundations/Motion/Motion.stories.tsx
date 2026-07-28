@@ -223,10 +223,14 @@ export const Motion: Story = {
         to blink into existence.
       </P>
       <P>
-        <strong>Exit:</strong> Dialog and Command now animate <em>out</em> too — a <code style={{ fontFamily: mono }}>closed → open → closing</code>{' '}
-        state machine (mirroring Drawer) keeps the panel mounted through the close so it can scale down + fade while the backdrop
-        clears, then unmounts on <M>animationend</M> (with a duration timer as the reduced-motion / backgrounded-tab safety net) and
-        restores focus to the trigger. Positioned menus still exit instantly — extending the closing-state machine to them is the next pass.
+        <strong>Exit:</strong> every overlay now animates <em>out</em>, not just in. A shared{' '}
+        <M>usePresence</M> hook runs the <code style={{ fontFamily: mono }}>closed → open → closing</code> machine — the surface
+        stays mounted through the close to play its exit (positioned menus reverse their enter via <M>.ui-overlay-exit</M>; Dialog /
+        Command scale down while the backdrop clears), then unmounts on <M>animationend</M> (with a duration timer as the
+        reduced-motion / backgrounded-tab safety net); focus still returns to the trigger. <strong>Popover, DropdownMenu, Menubar,
+        Select, Combobox, ContextMenu, Dialog, Command, and Drawer</strong> all animate both directions now. Drawer's entrance was
+        harmonized onto <code style={{ fontFamily: mono }}>--ease-premium</code> (its exit keeps <M>--ease-in</M> — a big panel reads
+        better accelerating away).
       </P>
 
       <H2>Reduced motion</H2>

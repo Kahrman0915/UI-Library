@@ -14,6 +14,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Check } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import type {
   DropdownMenuCheckboxItemProps,
@@ -262,7 +263,8 @@ const DropdownMenuContent = forwardRef<HTMLDivElement, DropdownMenuContentProps>
       }
     };
 
-    if (!ctx.open || !mounted) return null;
+    const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
+    if (!present || !mounted) return null;
 
     return createPortal(
       <div
@@ -280,7 +282,8 @@ const DropdownMenuContent = forwardRef<HTMLDivElement, DropdownMenuContentProps>
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-dropdown-menu__content ui-overlay-enter${className ? ' ' + className : ''}`}
+        onAnimationEnd={onExitAnimationEnd}
+        className={`ui-dropdown-menu__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

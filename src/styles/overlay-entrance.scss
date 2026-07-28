@@ -99,6 +99,50 @@
   }
 }
 
+// Exit for POSITIONED surfaces — the reverse of the enter: fade + scale down +
+// slide back toward the trigger. Driven by usePresence (closing state); the
+// component swaps .ui-overlay-enter → .ui-overlay-exit for the closing phase.
+@keyframes ui-overlay-out-bottom {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(calc(-1 * var(--motion-slide-sm)));
+  }
+}
+@keyframes ui-overlay-out-top {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(var(--motion-slide-sm));
+  }
+}
+@keyframes ui-overlay-out-left {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(var(--motion-slide-sm));
+  }
+}
+@keyframes ui-overlay-out-right {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(calc(-1 * var(--motion-slide-sm)));
+  }
+}
+
 // Positioned surfaces — crisp, no overshoot (sophisticated over playful).
 .ui-overlay-enter {
   animation: ui-overlay-in-bottom var(--duration-entrance) var(--ease-premium);
@@ -126,6 +170,30 @@
   &--center {
     animation: ui-overlay-in-center var(--duration-entrance) var(--ease-entrance);
     transform-origin: center;
+  }
+}
+
+// Positioned-surface exit — slightly quicker than the entrance so closing feels
+// decisive; `forwards` parks it invisible until usePresence unmounts it.
+.ui-overlay-exit {
+  animation: ui-overlay-out-bottom var(--duration-normal) var(--ease-premium) forwards;
+  transform-origin: top center;
+
+  &[data-side='bottom'] {
+    transform-origin: top center;
+    animation-name: ui-overlay-out-bottom;
+  }
+  &[data-side='top'] {
+    transform-origin: bottom center;
+    animation-name: ui-overlay-out-top;
+  }
+  &[data-side='left'] {
+    transform-origin: center right;
+    animation-name: ui-overlay-out-left;
+  }
+  &[data-side='right'] {
+    transform-origin: center left;
+    animation-name: ui-overlay-out-right;
   }
 }
 

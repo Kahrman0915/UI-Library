@@ -11,6 +11,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import {
   ContextMenuRootContext,
@@ -294,7 +295,8 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
       }
     };
 
-    if (!ctx.open || !mounted) return null;
+    const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
+    if (!present || !mounted) return null;
 
     return createPortal(
       <div
@@ -308,7 +310,8 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
         }}
         role="menu"
         tabIndex={-1}
-        className={`ui-context-menu__content ui-overlay-enter${className ? ' ' + className : ''}`}
+        onAnimationEnd={onExitAnimationEnd}
+        className={`ui-context-menu__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

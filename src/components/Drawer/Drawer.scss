@@ -4,7 +4,7 @@
   background: var(--bg-overlay);
   backdrop-filter: blur(var(--overlay-blur));
   z-index: var(--z-50);
-  animation: ui-drawer-overlay-in var(--duration-slow) var(--ease-out);
+  animation: ui-drawer-overlay-in var(--duration-slow) var(--ease-premium);
 
   &--closing {
     animation: ui-drawer-overlay-out var(--duration-slow) var(--ease-in)
@@ -30,7 +30,7 @@
     width: 100%;
     max-width: var(--max-w-sm);
     border-left: var(--border-w-100) solid var(--border);
-    animation: ui-drawer-in-right var(--duration-slow) var(--ease-out);
+    animation: ui-drawer-in-right var(--duration-slow) var(--ease-premium);
   }
 
   &--left {
@@ -38,21 +38,21 @@
     width: 100%;
     max-width: var(--max-w-sm);
     border-right: var(--border-w-100) solid var(--border);
-    animation: ui-drawer-in-left var(--duration-slow) var(--ease-out);
+    animation: ui-drawer-in-left var(--duration-slow) var(--ease-premium);
   }
 
   &--top {
     inset: 0 0 auto 0;
     max-height: 85vh;
     border-bottom: var(--border-w-100) solid var(--border);
-    animation: ui-drawer-in-top var(--duration-slow) var(--ease-out);
+    animation: ui-drawer-in-top var(--duration-slow) var(--ease-premium);
   }
 
   &--bottom {
     inset: auto 0 0 0;
     max-height: 85vh;
     border-top: var(--border-w-100) solid var(--border);
-    animation: ui-drawer-in-bottom var(--duration-slow) var(--ease-out);
+    animation: ui-drawer-in-bottom var(--duration-slow) var(--ease-premium);
   }
 
   // Exit animations — two classes, so they outrank the single-class enter rule
