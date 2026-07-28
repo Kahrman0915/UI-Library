@@ -32,8 +32,15 @@
   cursor: pointer;
   line-height: 0;
   transition:
-    background var(--duration-fast) var(--ease-out),
-    color var(--duration-fast) var(--ease-out);
+    background var(--duration-fast) var(--ease-premium),
+    color var(--duration-fast) var(--ease-premium),
+    transform var(--duration-fast) var(--ease-premium);
+
+  // Tactile press for every icon button (CloseButton, AttachmentAction, Chat
+  // composer tools). Momentary on mousedown — visible even on close-on-click.
+  &:active:not(:disabled) {
+    transform: scale(var(--motion-scale-press));
+  }
 
   // Widens the pointer target without changing anything that renders.
   &::after {

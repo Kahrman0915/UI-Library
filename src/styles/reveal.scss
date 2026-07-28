@@ -1,0 +1,25 @@
+// Content reveal — a subtle fade + rise for content appearing on the page. The
+// practical, dependency-free version of a "crossfade": when real content replaces
+// a Skeleton (or lands after a fetch), wrap it in `.ui-reveal` and it materializes
+// instead of hard-swapping. Plays once on mount; reduced-motion collapses it.
+//
+//   {loading ? <Skeleton … /> : <div className="ui-reveal">{content}</div>}
+//
+// A true overlapping crossfade (skeleton fading out *under* content fading in)
+// needs both mounted at once — i.e. a wrapper component — which is an API
+// decision, not a utility. This reveal is the tasteful 90% without that surface.
+
+@keyframes ui-reveal-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ui-reveal {
+  animation: ui-reveal-in var(--duration-normal) var(--ease-premium) both;
+}

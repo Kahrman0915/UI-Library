@@ -13,6 +13,7 @@ import type {
 } from './Attachment.types';
 import '../../styles/icon-button.scss';
 import './Attachment.scss';
+import '../../styles/stagger.scss';
 
 const useAttachment = () => {
   const ctx = useContext(AttachmentContext);
@@ -250,7 +251,7 @@ const AttachmentGroup = forwardRef<HTMLDivElement, AttachmentGroupProps>(
       // fix ScrollArea and CodeBlock carry. It is unconditional because
       // whether the children happen to be focusable is a runtime question.
       tabIndex={0}
-      className={`ui-attachment-group${className ? ' ' + className : ''}`}
+      className={`ui-attachment-group ui-stagger${className ? ' ' + className : ''}`}
     >
       {children}
     </div>

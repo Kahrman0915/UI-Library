@@ -54,7 +54,7 @@
   color: var(--muted-foreground);
   flex-shrink: 0;
   pointer-events: none;
-  transition: transform var(--duration-fast) var(--ease-out);
+  transition: transform var(--duration-fast) var(--ease-premium);
 
   svg {
     width: var(--w-4);
@@ -103,7 +103,7 @@
   outline: none;
   user-select: none;
   color: var(--popover-foreground);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-premium);
 
   &:hover:not([data-disabled]),
   &:focus-visible:not([data-disabled]) {

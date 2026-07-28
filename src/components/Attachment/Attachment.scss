@@ -279,7 +279,7 @@
   cursor: pointer;
   text-decoration: none;
   border-radius: inherit;
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-premium);
 
   &:hover {
     background: var(--accent);

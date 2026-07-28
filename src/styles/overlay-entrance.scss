@@ -1,0 +1,213 @@
+// Shared entrance choreography for floating surfaces — one vocabulary across
+// every overlay so the whole system feels considered, not ad-hoc.
+//
+// Positioned surfaces (Popover, DropdownMenu/Menubar, Select, HoverCard,
+// Combobox, ContextMenu) expose `data-side` from computePosition; the surface
+// fades + scales up from --motion-scale-in and slides a few px FROM the trigger,
+// with transform-origin pinned toward the trigger so it reads as "growing out"
+// of it. Positioning is via top/left (computePosition), so the animated
+// transform here never fights the placement.
+//
+// Centered surfaces (Dialog, and Command which reuses it) use the `--center`
+// variant — scale + fade with a hint of arrival — plus the `--backdrop` fade on
+// the dim/blur layer.
+//
+// Entrance only. Exit stays instant (React unmounts the portal) except where a
+// component runs the closing-state machine (Tooltip / Drawer) — adding exit
+// everywhere is the documented larger follow-up. Reduced motion collapses the
+// duration globally (tokens.scss), so these play near-instantly there.
+
+@keyframes ui-overlay-in-bottom {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(calc(-1 * var(--motion-slide-sm)));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ui-overlay-in-top {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ui-overlay-in-left {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(var(--motion-slide-sm));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ui-overlay-in-right {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(calc(-1 * var(--motion-slide-sm)));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ui-overlay-in-center {
+  from {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ui-overlay-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// Exit — centered surfaces only (Dialog/Command), driven by the component's
+// closed→open→closing state machine. `forwards` parks the end state (invisible)
+// so there's no flash back to visible before React unmounts. Concrete scale/
+// opacity keyframes (not a var()-held whole-transform) so animationend fires.
+@keyframes ui-overlay-out-center {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in));
+  }
+}
+@keyframes ui-overlay-backdrop-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+// Exit for POSITIONED surfaces — the reverse of the enter: fade + scale down +
+// slide back toward the trigger. Driven by usePresence (closing state); the
+// component swaps .ui-overlay-enter → .ui-overlay-exit for the closing phase.
+@keyframes ui-overlay-out-bottom {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(calc(-1 * var(--motion-slide-sm)));
+  }
+}
+@keyframes ui-overlay-out-top {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateY(var(--motion-slide-sm));
+  }
+}
+@keyframes ui-overlay-out-left {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(var(--motion-slide-sm));
+  }
+}
+@keyframes ui-overlay-out-right {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--motion-scale-in)) translateX(calc(-1 * var(--motion-slide-sm)));
+  }
+}
+
+// Positioned surfaces — crisp, no overshoot (sophisticated over playful).
+.ui-overlay-enter {
+  animation: ui-overlay-in-bottom var(--duration-entrance) var(--ease-premium);
+  transform-origin: top center;
+
+  &[data-side='bottom'] {
+    transform-origin: top center;
+    animation-name: ui-overlay-in-bottom;
+  }
+  &[data-side='top'] {
+    transform-origin: bottom center;
+    animation-name: ui-overlay-in-top;
+  }
+  &[data-side='left'] {
+    transform-origin: center right;
+    animation-name: ui-overlay-in-left;
+  }
+  &[data-side='right'] {
+    transform-origin: center left;
+    animation-name: ui-overlay-in-right;
+  }
+
+  // Centered modal surface (Dialog / Command) — a touch of arrival via
+  // --ease-entrance, which fits a large ceremonial surface.
+  &--center {
+    animation: ui-overlay-in-center var(--duration-entrance) var(--ease-entrance);
+    transform-origin: center;
+  }
+}
+
+// Positioned-surface exit — slightly quicker than the entrance so closing feels
+// decisive; `forwards` parks it invisible until usePresence unmounts it.
+.ui-overlay-exit {
+  animation: ui-overlay-out-bottom var(--duration-normal) var(--ease-premium) forwards;
+  transform-origin: top center;
+
+  &[data-side='bottom'] {
+    transform-origin: top center;
+    animation-name: ui-overlay-out-bottom;
+  }
+  &[data-side='top'] {
+    transform-origin: bottom center;
+    animation-name: ui-overlay-out-top;
+  }
+  &[data-side='left'] {
+    transform-origin: center right;
+    animation-name: ui-overlay-out-left;
+  }
+  &[data-side='right'] {
+    transform-origin: center left;
+    animation-name: ui-overlay-out-right;
+  }
+}
+
+// The dim/blur layer blooms in rather than snapping on.
+.ui-overlay-backdrop {
+  animation: ui-overlay-backdrop-in var(--duration-entrance) var(--ease-premium);
+}
+
+// Exit variants — applied by the component during its `closing` state instead of
+// the enter class. Slightly quicker than the entrance so the close feels decisive.
+.ui-overlay-exit--center {
+  animation: ui-overlay-out-center var(--duration-normal) var(--ease-premium) forwards;
+  transform-origin: center;
+}
+.ui-overlay-backdrop-out {
+  animation: ui-overlay-backdrop-out var(--duration-normal) var(--ease-premium) forwards;
+}

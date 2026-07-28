@@ -304,6 +304,7 @@ html {
   --duration-fast: 100ms;
   --duration-normal: 200ms;
   --duration-slow: 300ms;
+  --duration-entrance: 220ms; /* overlay entrances (dialog/popover/menu fade+scale+slide) */
   /* Loop durations — continuous animations, not enter/exit transitions */
   --duration-spin: 900ms;     /* spinner rotation */
   --duration-shimmer: 1400ms; /* skeleton / progress / attachment shimmer */
@@ -320,12 +321,29 @@ html {
   --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);          /* smooth, no overshoot */
   --ease-spring-strong: cubic-bezier(0.34, 1.56, 0.64, 1); /* slight overshoot / pop */
 
+  /* Signature "expensive" curves — the house easings for a premium feel.
+     --ease-premium: confident, fast start with a long smooth settle. The default
+       for INTERACTIVE state changes (hover / press / focus) — reach for this over
+       bare --ease-out on anything the user touches.
+     --ease-entrance: a gentle overshoot so surfaces (menus, dialogs, popovers)
+       feel like they "land" rather than blink in. Softer than --ease-spring-strong. */
+  --ease-premium: cubic-bezier(0.32, 0.72, 0, 1);
+  --ease-entrance: cubic-bezier(0.34, 1.35, 0.5, 1);
+
   /* Motion slide distances — how far an element travels during enter/exit */
   --motion-slide-sm: 4px;
   --motion-slide-md: 8px;
   --motion-slide-lg: 12px;
   /* Enter scale for pop-in surfaces (menus) */
   --motion-scale-in: 0.97;
+  /* Press scale — tactile "pushed" feedback on :active. -press for small controls
+     (Button/Chip/Toggle/Fab/icon-button); -press-subtle for large surfaces (Card),
+     where a 3% shrink would read as too much movement. */
+  --motion-scale-press: 0.97;
+  --motion-scale-press-subtle: 0.99;
+  /* Per-child delay for staggered list entrances (.ui-stagger) — fast enough to
+     read as one orchestrated motion, not a slow cascade. */
+  --stagger-step: 25ms;
 
   /* -----------------------------------------------------------------------
      Effects (focus ring width, overlay blur, motion offsets)

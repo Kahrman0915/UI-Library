@@ -14,14 +14,20 @@
   &--interactive {
     cursor: pointer;
     transition:
-      border-color var(--duration-normal) var(--ease-out),
-      box-shadow var(--duration-normal) var(--ease-out),
-      transform var(--duration-normal) var(--ease-out);
+      border-color var(--duration-normal) var(--ease-premium),
+      box-shadow var(--duration-normal) var(--ease-premium),
+      transform var(--duration-normal) var(--ease-premium);
 
     &:hover {
       border-color: var(--border-hover);
       box-shadow: var(--shadow-md);
       transform: translateY(calc(-1 * var(--motion-slide-sm)));
+    }
+
+    // Press — a gentler shrink than the small controls (a big surface at 0.97
+    // would move too much); pushes the lifted card back toward the page.
+    &:active {
+      transform: scale(var(--motion-scale-press-subtle));
     }
 
     // `interactive` is a VISUAL AFFORDANCE ONLY — the card stays a plain
@@ -45,7 +51,8 @@
   // zeroes durations — the translate itself would still jump). Border + shadow
   // aren't motion, so they stay.
   @media (prefers-reduced-motion: reduce) {
-    &--interactive:hover {
+    &--interactive:hover,
+    &--interactive:active {
       transform: none;
     }
   }

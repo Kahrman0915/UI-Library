@@ -42,7 +42,7 @@
   outline: none;
   user-select: none;
   color: var(--popover-foreground);
-  transition: background var(--duration-fast) var(--ease-out);
+  transition: background var(--duration-fast) var(--ease-premium);
 
   &:hover:not([data-disabled]),
   &:focus-visible:not([data-disabled]) {

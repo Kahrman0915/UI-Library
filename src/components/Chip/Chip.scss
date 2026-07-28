@@ -12,8 +12,14 @@
   gap: var(--p-1);
   cursor: pointer;
   transition:
-    background var(--duration-instant) var(--ease-default),
-    color var(--duration-instant) var(--ease-default);
+    background var(--duration-instant) var(--ease-premium),
+    color var(--duration-instant) var(--ease-premium),
+    transform var(--duration-fast) var(--ease-premium);
+
+  // Tactile press — the pill physically depresses when tapped.
+  &:active:not(:disabled) {
+    transform: scale(var(--motion-scale-press));
+  }
 
   svg {
     width: var(--w-3);

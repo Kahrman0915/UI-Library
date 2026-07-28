@@ -13,6 +13,7 @@ import {
 import { createPortal } from 'react-dom';
 import { Check, ChevronDown } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import { SelectContext } from './Select.context';
 import type {
@@ -27,6 +28,7 @@ import type {
 import '../Input/Input.scss';
 import '../Label/Label.scss';
 import './Select.scss';
+import '../../styles/overlay-entrance.scss';
 
 const useSelect = () => {
   const ctx = useContext(SelectContext);
@@ -429,7 +431,8 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
       }
     };
 
-    if (!ctx.open || !mounted) return null;
+    const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
+    if (!present || !mounted) return null;
 
     return createPortal(
       <div
@@ -446,7 +449,8 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-select__content${className ? ' ' + className : ''}`}
+        onAnimationEnd={onExitAnimationEnd}
+        className={`ui-select__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

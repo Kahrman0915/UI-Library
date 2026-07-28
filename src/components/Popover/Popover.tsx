@@ -13,6 +13,7 @@ import {
 } from 'react';
 import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
+import { usePresence } from '#/hooks/usePresence';
 import { computePosition } from '#/utils/computePosition';
 import type {
   PopoverCloseProps,
@@ -21,6 +22,7 @@ import type {
   PopoverTriggerProps,
 } from './Popover.types';
 import './Popover.scss';
+import '../../styles/overlay-entrance.scss';
 
 // ═════════════════════════════════════════════════════════════════════════════
 // Context
@@ -155,6 +157,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
       null,
     );
     const mounted = useMounted();
+    const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
 
     useLayoutEffect(() => {
       if (!ctx.open || !ctx.triggerNode || !contentRef.current) return;
@@ -204,7 +207,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
       return () => document.removeEventListener('keydown', onKey);
     }, [ctx.open, ctx.triggerNode, ctx.close]);
 
-    if (!ctx.open || !mounted) return null;
+    if (!present || !mounted) return null;
 
     return createPortal(
       <div
@@ -222,7 +225,8 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
         tabIndex={-1}
         aria-labelledby={ctx.triggerId}
         data-side={side}
-        className={`ui-popover__content${className ? ' ' + className : ''}`}
+        onAnimationEnd={onExitAnimationEnd}
+        className={`ui-popover__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}${className ? ' ' + className : ''}`}
         style={{
           top: position?.top ?? 0,
           left: position?.left ?? 0,

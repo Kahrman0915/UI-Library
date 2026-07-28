@@ -63,6 +63,8 @@ export type ToastRecord = {
   progress?: number;
   onDismiss?: () => void;
   createdAt: number;
+  /** Internal: set by the Toaster while the card plays its exit before removal. */
+  leaving?: boolean;
 };
 
 export type ToasterProps = {

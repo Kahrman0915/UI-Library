@@ -135,3 +135,23 @@
     transform: translateY(0);
   }
 }
+
+// Exit — the dismissed card recedes (fades + shrinks) instead of vanishing. The
+// Toaster keeps it mounted for --duration-normal (see EXIT_MS) so this can play,
+// then removes it. `forwards` parks it invisible so there's no flash before
+// unmount; `!important` on the animation guarantees it overrides the enter one.
+.ui-toast--leaving {
+  animation: ui-toast-exit var(--duration-normal) var(--ease-premium) forwards !important;
+  pointer-events: none;
+}
+
+@keyframes ui-toast-exit {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.9) translateY(var(--motion-slide-sm));
+  }
+}

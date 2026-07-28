@@ -1,4 +1,47 @@
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import Button from '../../components/Button';
+import Skeleton from '../../components/Skeleton';
+
+// Skeleton → content reveal: toggle to watch real content materialize (fade +
+// rise via .ui-reveal) instead of hard-swapping in.
+function RevealDemo() {
+  const [loaded, setLoaded] = useState(false);
+  return (
+    <div style={{ display: 'grid', gap: 12, maxWidth: 360 }}>
+      <Button
+        id="reveal-toggle"
+        label={loaded ? 'Reset to skeleton' : 'Load content'}
+        size="small"
+        style="outline"
+        onClick={() => setLoaded((l) => !l)}
+      />
+      {loaded ? (
+        <div
+          className="ui-reveal"
+          style={{
+            display: 'grid',
+            gap: 6,
+            padding: 16,
+            background: 'var(--card)',
+            border: 'var(--border-w-100) solid var(--border)',
+            borderRadius: 'var(--rounded-lg)',
+          }}
+        >
+          <strong style={{ fontSize: 'var(--text-sm)' }}>Monthly revenue</strong>
+          <span style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-bold)' }}>$48,210</span>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>+12.4% vs last month</span>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gap: 8, padding: 16, border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)' }}>
+          <Skeleton shape="text" style={{ width: '40%' }} />
+          <Skeleton style={{ width: '60%', height: 28 }} />
+          <Skeleton shape="text" style={{ width: '50%' }} />
+        </div>
+      )}
+    </div>
+  );
+}
 
 const meta: Meta = {
   title: 'Foundations/Motion',
@@ -25,6 +68,7 @@ const DUR: [string, string, string][] = [
   ['--duration-instant', '150ms', 'hover colour shifts'],
   ['--duration-normal', '200ms', 'default UI transitions'],
   ['--duration-slow', '300ms', 'larger surfaces'],
+  ['--duration-entrance', '220ms', 'overlay entrances (dialog/menu/popover)'],
   ['--duration-reveal', '500ms', 'view-transition reveal (ModeToggler)'],
   ['--duration-ripple', '600ms', 'Button ripple expand'],
   ['--duration-spin', '900ms', 'Spinner rotation (loop)'],
@@ -38,6 +82,8 @@ const EASE: [string, string][] = [
   ['--ease-in-out', 'ease-in-out'],
   ['--ease-spring', 'cubic-bezier(.16,1,.3,1) — smooth, no overshoot'],
   ['--ease-spring-strong', 'cubic-bezier(.34,1.56,.64,1) — pop / overshoot'],
+  ['--ease-premium', 'cubic-bezier(.32,.72,0,1) — signature: interactive state changes'],
+  ['--ease-entrance', 'cubic-bezier(.34,1.35,.5,1) — surfaces landing (gentle overshoot)'],
 ];
 
 export const Motion: Story = {
@@ -70,7 +116,15 @@ export const Motion: Story = {
       </div>
 
       <H2>Easings</H2>
-      <P>Same duration (600ms), different curve — watch the acceleration. Spring-strong overshoots and settles back.</P>
+      <P>
+        Same duration (600ms), different curve — watch the acceleration. Spring-strong overshoots and settles back.{' '}
+        <strong>
+          <code style={{ fontFamily: mono }}>--ease-premium</code> is now the house easing
+        </strong>{' '}
+        for interactive state changes — hover, focus, press, toggle, and disclosure across the whole library read on it instead of
+        bare <code style={{ fontFamily: mono }}>ease-out</code>. Only continuous loops (spinner, shimmer, pulses), the ripple, the
+        Progress fill and Drawer's slide keep <code style={{ fontFamily: mono }}>--ease-out</code>.
+      </P>
       <div style={{ display: 'grid', gap: 6 }}>
         {EASE.map(([tok, desc]) => (
           <div key={tok} style={{ display: 'grid', gridTemplateColumns: '200px 1fr', gap: 'var(--p-3)', alignItems: 'center' }}>
@@ -84,6 +138,100 @@ export const Motion: Story = {
           </div>
         ))}
       </div>
+
+      <H2>Interactive feel — Button</H2>
+      <P>
+        Hover, then <strong>press and hold</strong> each button below. Every touchable state change now eases on{' '}
+        <code style={{ fontFamily: mono }}>--ease-premium</code> instead of snapping, and pressing scales the button to{' '}
+        <code style={{ fontFamily: mono }}>0.97</code> for a tactile "pushed" feel. Focus one with the keyboard (Tab) to watch the
+        ring settle in rather than blink. This is the foundation the rest of the motion work layers on — the most-touched
+        component in the system should feel considered.
+      </P>
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--p-3)', alignItems: 'center' }}>
+        <Button id="mo-1" label="Primary" />
+        <Button id="mo-2" label="Secondary" style="secondary" />
+        <Button id="mo-3" label="Outline" style="outline" />
+        <Button id="mo-4" label="Ghost" style="ghost" />
+        <Button id="mo-5" label="Destructive" variant="error" />
+        <div data-surface="aiden"><Button id="mo-6" label="Ask Aiden" /></div>
+      </div>
+      <P>
+        <strong>Try before/after:</strong> the whole upgrade is two token references and a <M>:active</M> rule on{' '}
+        <M>.ui-button</M> — no new dependency, no JS. Reduced-motion users get the press state instantly and skip the easing.
+      </P>
+      <P>
+        The same <M>:active</M> press now lives on every pressable control — <strong>Button, Chip, Toggle / ToggleGroup, Fab,
+        and every icon button</strong> (CloseButton, Attachment actions, Chat composer tools) scale to{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-press</code> (0.97); interactive <strong>Card</strong> uses the gentler{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-press-subtle</code> (0.99), since a big surface at 0.97 would move too much.
+        Try pressing a Chip or a Toggle — the pill physically depresses.
+      </P>
+
+      <H2>Shared-element motion — Tabs</H2>
+      <P>
+        The active-tab pill is now a single <M>.ui-tabs__indicator</M> that <strong>slides</strong> between triggers instead of
+        cross-fading two separate pills. It's positioned imperatively from the active trigger's offset box (behind the triggers, so
+        their transparent background shows it through), transitions <M>transform</M> + <M>width</M> + <M>height</M> on{' '}
+        <code style={{ fontFamily: mono }}>--ease-premium</code>, and works in both orientations. First paint lands instantly (no
+        slide-in from the edge); a <M>ResizeObserver</M> re-measures on reflow without sliding. <strong>Open Tabs and click between
+        them</strong> to watch the pill travel — the signature "expensive" continuity move.
+      </P>
+
+      <H2>Staggered lists</H2>
+      <P>
+        List-row families — <strong>ItemGroup and AttachmentGroup</strong> — now carry <M>.ui-stagger</M>, so their rows rise +
+        fade in one after another (<code style={{ fontFamily: mono }}>--stagger-step</code>, 25ms apart) and read as one orchestrated
+        motion. Pure CSS via <M>:nth-child</M> — the first 12 rows stagger, the rest just appear (a long list shouldn't cascade for
+        seconds), and it plays once on mount. Reload an Item or Attachment list story to watch it. The utility is reusable — add{' '}
+        <M>.ui-stagger</M> to any container.
+      </P>
+      <P>
+        <strong>Deliberately not staggered:</strong> menu items (the surface already scales + fades in from{' '}
+        <a href="#">Overlay entrances</a> — cascading items inside a scaling surface reads busy and makes menus feel <em>slower</em>,
+        which is the opposite of premium) and Toast stacks (toasts arrive asynchronously, so each animates in on its own).
+      </P>
+
+      <H2>Exit &amp; reveal</H2>
+      <P>
+        <strong>Toast</strong> now animates <em>out</em>, not just in: dismissing one flags it{' '}
+        <M>ui-toast--leaving</M>, the Toaster keeps it mounted ~260ms to play a fade + shrink exit, then removes it (mirrors the
+        Dialog / Drawer close machine; <M>onDismiss</M> still fires once). Fire and dismiss a toast to see it recede rather than
+        vanish.
+      </P>
+      <P>
+        <strong>Skeleton → content:</strong> when real content replaces a skeleton, wrap it in <M>.ui-reveal</M> and it materializes
+        (fade + rise) instead of hard-swapping. Toggle below:
+      </P>
+      <div style={{ marginTop: 16 }}>
+        <RevealDemo />
+      </div>
+      <P>
+        A true overlapping crossfade (skeleton fading out <em>under</em> content) needs both mounted at once — a wrapper component,
+        i.e. an API decision — so this reveal is the tasteful dependency-free 90%.
+      </P>
+
+      <H2>Overlay entrances</H2>
+      <P>
+        Every floating surface now shares one entrance choreography (
+        <code style={{ fontFamily: mono }}>src/styles/overlay-entrance.scss</code>) — fade + scale from{' '}
+        <code style={{ fontFamily: mono }}>--motion-scale-in</code> + a few px slide <em>from the trigger</em>, with{' '}
+        <code style={{ fontFamily: mono }}>transform-origin</code> pinned toward it so the surface reads as growing out of it.
+        Positioned menus (Popover, DropdownMenu, Menubar, Select, HoverCard, Combobox, ContextMenu) key off{' '}
+        <M>data-side</M> and use <code style={{ fontFamily: mono }}>--ease-premium</code> (crisp, no bounce); Dialog and
+        Command scale in from center with a hint of arrival (<code style={{ fontFamily: mono }}>--ease-entrance</code>) and their
+        backdrop blooms. <strong>Open any of those components to feel it</strong> — this is what replaced eight surfaces that used
+        to blink into existence.
+      </P>
+      <P>
+        <strong>Exit:</strong> every overlay now animates <em>out</em>, not just in. A shared{' '}
+        <M>usePresence</M> hook runs the <code style={{ fontFamily: mono }}>closed → open → closing</code> machine — the surface
+        stays mounted through the close to play its exit (positioned menus reverse their enter via <M>.ui-overlay-exit</M>; Dialog /
+        Command scale down while the backdrop clears), then unmounts on <M>animationend</M> (with a duration timer as the
+        reduced-motion / backgrounded-tab safety net); focus still returns to the trigger. <strong>Popover, DropdownMenu, Menubar,
+        Select, Combobox, ContextMenu, Dialog, Command, and Drawer</strong> all animate both directions now. Drawer's entrance was
+        harmonized onto <code style={{ fontFamily: mono }}>--ease-premium</code> (its exit keeps <M>--ease-in</M> — a big panel reads
+        better accelerating away).
+      </P>
 
       <H2>Reduced motion</H2>
       <P>

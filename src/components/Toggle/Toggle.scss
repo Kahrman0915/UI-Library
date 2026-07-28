@@ -12,13 +12,19 @@
   cursor: pointer;
   white-space: nowrap;
   transition:
-    background var(--duration-instant) var(--ease-default),
-    color var(--duration-instant) var(--ease-default),
-    border-color var(--duration-instant) var(--ease-default);
+    background var(--duration-instant) var(--ease-premium),
+    color var(--duration-instant) var(--ease-premium),
+    border-color var(--duration-instant) var(--ease-premium),
+    transform var(--duration-fast) var(--ease-premium);
 
   &:hover:not(:disabled) {
     background: var(--accent);
     color: var(--accent-foreground);
+  }
+
+  // Tactile press (also covers ToggleGroupItem, which reuses .ui-toggle).
+  &:active:not(:disabled) {
+    transform: scale(var(--motion-scale-press));
   }
 
   // Pressed = neutral accent fill (formatting controls shouldn't compete with

@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
@@ -9,6 +9,7 @@ import type {
   DialogFooterProps,
 } from './Dialog.types';
 import './Dialog.scss';
+import '../../styles/overlay-entrance.scss';
 
 const FOCUSABLE_SELECTOR = [
   'a[href]',
@@ -38,6 +39,25 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   ) => {
     const panelRef = useRef<HTMLDivElement | null>(null);
     const mounted = useMounted();
+
+    // Exit-animation state machine (mirrors Drawer): the panel stays mounted
+    // through `closing` so it can play its exit keyframes before unmount. React
+    // would otherwise remove it instantly and the close would have no motion.
+    const [state, setState] = useState<'closed' | 'open' | 'closing'>(
+      open ? 'open' : 'closed',
+    );
+    useEffect(() => {
+      if (open) setState('open');
+      else setState((prev) => (prev === 'closed' ? 'closed' : 'closing'));
+    }, [open]);
+    // Safety net: animationend doesn't fire on a backgrounded/occluded tab or an
+    // interrupted animation. A duration-based timer guarantees the unmount; both
+    // paths are idempotent (whichever fires first wins).
+    useEffect(() => {
+      if (state !== 'closing') return;
+      const t = setTimeout(() => setState('closed'), 400);
+      return () => clearTimeout(t);
+    }, [state]);
 
     // Escape to close (both inline and overlay modes)
     useEffect(() => {
@@ -111,7 +131,9 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       }
     };
 
-    if (!open) return null;
+    if (state === 'closed') return null;
+
+    const closing = state === 'closing';
 
     const dialogPanel = (
       <div
@@ -124,7 +146,10 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
               ref as unknown as React.MutableRefObject<HTMLDivElement | null>
             ).current = node;
         }}
-        className={`ui-dialog${className ? ' ' + className : ''}`}
+        className={`ui-dialog ${closing ? 'ui-overlay-exit--center' : 'ui-overlay-enter--center'}${className ? ' ' + className : ''}`}
+        onAnimationEnd={(e) => {
+          if (e.animationName === 'ui-overlay-out-center') setState('closed');
+        }}
         role={role}
         aria-modal={!inline}
         aria-labelledby={`${id}-title`}
@@ -139,7 +164,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     return createPortal(
       <div
-        className="ui-dialog-overlay"
+        className={`ui-dialog-overlay ${closing ? 'ui-overlay-backdrop-out' : 'ui-overlay-backdrop'}`}
         onClick={handleOverlayClick}
         role="presentation"
       >

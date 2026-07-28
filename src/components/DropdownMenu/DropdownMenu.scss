@@ -18,7 +18,8 @@
     &:focus-visible {
       outline: none;
     }
-    animation: ui-dropdown-menu-fade-in var(--duration-fast) var(--ease-out);
+    // Entrance is now the shared `.ui-overlay-enter` (data-side keyed) applied in
+    // DropdownMenu.tsx — see src/styles/overlay-entrance.scss.
   }
 
   &__item {
@@ -33,7 +34,7 @@
     color: var(--foreground);
     cursor: default;
     outline: none;
-    transition: background var(--duration-fast) var(--ease-out);
+    transition: background var(--duration-fast) var(--ease-premium);
 
     &:focus-visible,
     &:hover:not([data-disabled]) {
@@ -116,13 +117,3 @@
   }
 }
 
-@keyframes ui-dropdown-menu-fade-in {
-  from {
-    opacity: 0;
-    transform: scale(var(--motion-scale-in)) translateY(calc(-1 * var(--motion-slide-sm)));
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
