@@ -1,5 +1,7 @@
 import {
+  Children,
   forwardRef,
+  isValidElement,
   useCallback,
   useContext,
   useEffect,
@@ -96,23 +98,48 @@ const Select = ({
   const [triggerNode, setTriggerNode] = useState<HTMLElement | null>(null);
 
   // Item registry: SelectItem calls registerItem on mount so the trigger can
-  // display the label matching the current `value`.
+  // display the label matching the current `value`. `itemsVersion` bumps on every
+  // (de)registration and feeds the ctx memo below, so the trigger re-renders once
+  // items mount — otherwise a pre-set `value` shows the placeholder until the user
+  // interacts (the ctx object was memoized without the registry as a dependency).
   const itemsRef = useRef<Map<string, React.ReactNode>>(new Map());
-  const [, forceRerender] = useState(0);
+  const [itemsVersion, setItemsVersion] = useState(0);
   const registerItem = useCallback(
     (itemValue: string, itemLabel: React.ReactNode) => {
       itemsRef.current.set(itemValue, itemLabel);
-      forceRerender((n) => n + 1);
+      setItemsVersion((n) => n + 1);
       return () => {
         itemsRef.current.delete(itemValue);
-        forceRerender((n) => n + 1);
+        setItemsVersion((n) => n + 1);
       };
     },
     [],
   );
+  // Resolve labels eagerly from the children tree too: the options are only
+  // mounted (portalled) while the listbox is open, so `registerItem` alone never
+  // sees them before the first open — a pre-set `value` would show the
+  // placeholder until the user interacts. Walking children fixes that; the ref
+  // registry stays as a fallback for any dynamically-injected items.
+  const itemLabels = useMemo(() => {
+    const map = new Map<string, React.ReactNode>();
+    const walk = (nodes: React.ReactNode) => {
+      Children.forEach(nodes, (child) => {
+        if (!isValidElement(child)) return;
+        if (child.type === SelectItem) {
+          const p = child.props as SelectItemProps;
+          map.set(p.value, p.label ?? p.children);
+        } else {
+          const kids = (child.props as { children?: React.ReactNode })?.children;
+          if (kids) walk(kids);
+        }
+      });
+    };
+    walk(children);
+    return map;
+  }, [children]);
   const getItemLabel = useCallback(
-    (v: string) => itemsRef.current.get(v),
-    [],
+    (v: string) => itemLabels.get(v) ?? itemsRef.current.get(v),
+    [itemLabels],
   );
 
   const ctxValue = useMemo(
@@ -148,6 +175,7 @@ const Select = ({
       triggerNode,
       registerItem,
       getItemLabel,
+      itemsVersion,
     ],
   );
 
