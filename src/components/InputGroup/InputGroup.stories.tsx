@@ -250,3 +250,53 @@ export const WithBlockStart: Story = {
     </div>
   ),
 };
+
+export const Disabled: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          '`disabled` on the group reaches every control inside it through context — ' +
+          'the input, the textarea and any `InputGroupButton`. A child’s own ' +
+          '`disabled` still wins, so you can disable one button in an otherwise live ' +
+          'group.\n\n' +
+          'Worth a story of its own because the prop shipped doing **nothing**: it ' +
+          'painted the group grey while the input stayed typeable and the buttons ' +
+          'stayed clickable. A rendered disabled state is the cheapest way to catch ' +
+          'that class of bug — try typing in the fields below.',
+      },
+    },
+  },
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-4)', maxWidth: 'var(--max-w-sm)' }}>
+      <InputGroup id="ig-disabled" disabled>
+        <InputGroupAddon align="inline-start">
+          <Search />
+        </InputGroupAddon>
+        <InputGroupInput placeholder="Search is unavailable" />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton aria-label="Clear">
+            <Copy />
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+
+      <InputGroup id="ig-partly">
+        <InputGroupAddon align="inline-start">
+          <InputGroupText>https://</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupInput placeholder="example.com" />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton disabled aria-label="Copy link">
+            <Copy />
+          </InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+
+      <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+        The first group is disabled entirely. The second is live, with only its
+        trailing button disabled.
+      </p>
+    </div>
+  ),
+};

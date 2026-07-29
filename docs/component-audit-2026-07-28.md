@@ -245,10 +245,26 @@ files** still carry fewer than three doc lines. The heavy ones are Chat (31
 exported types), Sidebar (21), ContextMenu (17), Item and Attachment (13 each),
 Field (12). Button and Select are the model.
 
-**Wave 6 (stories):** Menubar has 1 story and Drawer has 2 (no keyboard demo,
-no side matrix). No disabled-state story exists for InputGroup, Fab, Pagination,
-Menubar or Drawer — each of the first three shipped a bug a disabled story would
-have caught. DropdownMenu has no controlled-usage story.
+**Wave 6 (stories) — DONE.** Eight stories added: Menubar `KeyboardNavigation`
+(roving tabindex, hover-to-switch, the two v1 gaps) + `DisabledItems`; Drawer
+`LongContent` + `NoCloseButton`; disabled-state stories for InputGroup, Fab and
+Pagination; DropdownMenu `Controlled`.
+
+**Writing them found two things, which is the point of the wave:**
+
+1. **A disabled `Fab` kept pulsing.** Sonar rings advertising an action you
+   can't take. Fixed in Fab.scss (`&:disabled &__rings { display: none }`).
+2. **A claim in the Menubar story was wrong, and the component was right.** The
+   draft said a disabled *trigger* is skipped by ArrowLeft/Right. It isn't —
+   `moveFocus` walks every registered value — and that follows the APG menubar
+   pattern, where disabled items stay focusable so a keyboard user learns the
+   option exists. Disabled *items* **are** skipped, because `ITEM_SELECTOR`
+   excludes `[data-disabled]`. The story now states both, and why they differ.
+
+The three disabled stories each pin a bug that shipped: InputGroup's `disabled`
+did nothing at all, Pagination spread `disabled` onto an `<a>` (invalid
+attribute, React warning, link still clickable), and Fab's pulse ignored it.
+All three are now asserted in the browser, not just eyeballed.
 
 Separately, **`parameters.ui` prose now exists for all 59 components**
 (description + tags); Button and Select additionally carry usage / composition /
