@@ -35,6 +35,14 @@ const UNIVERSAL: Record<string, string> = {
     'Fires with the new value on every change. Pair with `value` for controlled use, or use it alone alongside `defaultValue`.',
   onCheckedChange:
     'Fires with the new checked state on every change. Pair with `checked`.',
+  children: 'The content this component renders.',
+  // Native attributes a component doesn't redeclare, but which its story
+  // exercises — Storybook surfaces anything in `args`, docgen or not.
+  placeholder:
+    'Native placeholder text. Not a substitute for a `label` — it disappears the moment the user types.',
+  required:
+    'Native HTML validation. Components that render their own label also show a `*` indicator for it.',
+  type: 'Native input type. Determines the on-screen keyboard and the browser’s built-in validation.',
 };
 
 /** Squash a union summary onto one line so the type column stays scannable. */

@@ -12,15 +12,19 @@ import './docs.scss';
  * render time and handed to our own `Code`.
  */
 export function prose(text: string): ReactNode {
-  if (!text.includes('`')) return text;
-  return text.split(/`([^`]+)`/g).map((part, i) =>
-    // Odd indices are the captured group — the contents of a backtick pair.
-    i % 2 === 1 ? (
-      <Code key={i}>{part}</Code>
-    ) : (
-      <Fragment key={i}>{part}</Fragment>
-    ),
-  );
+  if (!text.includes('`') && !text.includes('{@link')) return text;
+  // Backticked spans, plus JSDoc `{@link Name}` — which is a real cross-reference
+  // in an editor but renders as literal braces in a table. Both become inline
+  // code; the split keeps one capture group so odd indices are the matches.
+  return text
+    .split(/`([^`]+)`|\{@link\s+([^}]+)\}/g)
+    .map((part, i) =>
+      part === undefined ? null : i % 3 === 0 ? (
+        <Fragment key={i}>{part}</Fragment>
+      ) : (
+        <Code key={i}>{part.trim()}</Code>
+      ),
+    );
 }
 
 /**
