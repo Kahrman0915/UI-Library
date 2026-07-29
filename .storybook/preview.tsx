@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import type { Preview, Decorator } from '@storybook/react';
+import { DocsPage } from './docs';
 import '../src/styles/fonts.scss';
 import '../src/styles/tokens.scss';
 import './preview.scss';
@@ -37,6 +38,17 @@ const preview: Preview = {
       },
     },
     backgrounds: { disable: true },
+    // Replace Storybook's stock autodocs layout with our own template. It reads
+    // `parameters.ui` (see src/types/DocsTypes.ts) and is composed from the
+    // library's own components. See .storybook/docs/DocsPage.tsx.
+    docs: {
+      page: DocsPage,
+      // 93% of our stories use a custom `render`, and with the default `auto`
+      // Storybook prints the raw CSF export for those — the reader gets
+      // `{ parameters: {...}, render: () => ... }` instead of the JSX. `dynamic`
+      // snapshots what actually rendered, which is what a consumer wants to copy.
+      source: { type: 'dynamic' },
+    },
     options: {
       storySort: {
         order: [

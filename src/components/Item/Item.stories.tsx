@@ -21,11 +21,29 @@ import Item, {
 } from './Item';
 import Avatar from '../Avatar';
 import Badge from '../Badge';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Item> = {
   title: 'Components/Item',
   component: Item,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A generic list row: media, a title and description, and actions on the ' +
+        'trailing edge. The building block for settings lists, pickers and result ' +
+        'lists.',
+      tags: ['compound', '10 parts', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: {
       control: 'inline-radio',

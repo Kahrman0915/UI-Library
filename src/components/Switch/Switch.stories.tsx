@@ -3,11 +3,28 @@ import type { Meta, StoryObj } from '@storybook/react';
 import Switch from './Switch';
 import Button from '../Button';
 import Card, { CardBody } from '../Card';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Switch> = {
   title: 'Components/Switch',
   component: Switch,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A setting that takes effect the moment it is flipped. For a choice that ' +
+        'applies when the form is submitted, use `Checkbox`.',
+      tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     checked: { control: 'boolean' },
     disabled: { control: 'boolean' },

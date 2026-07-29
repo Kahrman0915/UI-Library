@@ -4,11 +4,29 @@ import Drawer, { DrawerHeader, DrawerBody, DrawerFooter } from './Drawer';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import type { DrawerSide } from './Drawer.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Drawer> = {
   title: 'Components/Drawer',
   component: Drawer,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A panel that slides in from any edge. Reuses Dialog’s focus trap, scroll ' +
+        'lock and Escape handling, and unlike the other portals it animates out ' +
+        'before unmounting.',
+      tags: ['compound', 'modal', '4 sides'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     side: {
       control: 'select',
@@ -116,6 +134,107 @@ export const Sides: Story = {
           </DrawerFooter>
         </Drawer>
       </div>
+    );
+  },
+};
+
+export const LongContent: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Only `DrawerBody` scrolls. The header and footer are `flex-shrink: 0` ' +
+          'outside the scroll container, so they stay put without needing ' +
+          '`position: sticky` — scroll to the bottom and neither moves. Same ' +
+          'structure as `Dialog`.',
+      },
+    },
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button
+          id="open-long"
+          label="Open long drawer"
+          onClick={() => setOpen(true)}
+        />
+        <Drawer {...args} open={open} onClose={() => setOpen(false)}>
+          <DrawerHeader
+            id={args.id}
+            title="Release notes"
+            description="Stays pinned while the body scrolls."
+            onClose={() => setOpen(false)}
+          />
+          <DrawerBody>
+            {Array.from({ length: 12 }, (_, i) => (
+              <p key={i} style={{ margin: 0 }}>
+                <strong>2026.{12 - i}</strong> — Lorem ipsum dolor sit amet,
+                consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut
+                labore et dolore magna aliqua. Ut enim ad minim veniam, quis
+                nostrud exercitation ullamco laboris.
+              </p>
+            ))}
+          </DrawerBody>
+          <DrawerFooter>
+            <Button id="long-close" label="Done" onClick={() => setOpen(false)} />
+          </DrawerFooter>
+        </Drawer>
+      </>
+    );
+  },
+};
+
+export const NoCloseButton: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Dropping the header X leaves Escape and the backdrop as the ways out — ' +
+          'both still work, and focus still returns to the trigger. Use this when ' +
+          'the footer carries the real decision, so the X can’t be mistaken for ' +
+          '"cancel". If you want to remove *every* casual dismissal, use ' +
+          '`AlertDialog` instead: it locks off both the X and the backdrop.',
+      },
+    },
+  },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button
+          id="open-noclose"
+          label="Open drawer"
+          onClick={() => setOpen(true)}
+        />
+        <Drawer {...args} open={open} onClose={() => setOpen(false)}>
+          <DrawerHeader
+            id={args.id}
+            title="Choose a plan"
+            description="Pick one to continue."
+            showCloseButton={false}
+          />
+          <DrawerBody>
+            <p style={{ margin: 0 }}>
+              There is no X in the header. Escape and the backdrop still close
+              the panel.
+            </p>
+          </DrawerBody>
+          <DrawerFooter>
+            <Button
+              id="noclose-cancel"
+              label="Not now"
+              style="ghost"
+              onClick={() => setOpen(false)}
+            />
+            <Button
+              id="noclose-ok"
+              label="Choose plan"
+              onClick={() => setOpen(false)}
+            />
+          </DrawerFooter>
+        </Drawer>
+      </>
     );
   },
 };

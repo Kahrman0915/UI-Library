@@ -1,13 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta = {
   title: 'Foundations/Overview',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'A React + SCSS component library — 59 components, one shared token file, and zero third-party UI libraries. Every visual value comes from a design token and every component follows the same predictable API. This page is the whole system in one read; the other Foundations pages go deep on each layer.',
+    } satisfies UiDocsParameters,
+  },
 };
 export default meta;
 type Story = StoryObj;
 
-const font = 'var(--font-family)';
 const mono = 'var(--font-family-mono)';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
@@ -36,19 +42,7 @@ const Card = ({ children }: { children: React.ReactNode }) => (
 
 export const Overview: Story = {
   render: () => (
-    <div style={{ padding: 40, maxWidth: 900, margin: '0 auto', background: 'var(--background)', color: 'var(--foreground)', fontFamily: font }}>
-      <div style={{ fontFamily: mono, fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)', letterSpacing: 'var(--tracking-wide)', textTransform: 'uppercase' }}>
-        @ui/lib · Foundations
-      </div>
-      <h1 style={{ fontSize: 'var(--text-4xl)', fontWeight: 'var(--font-bold)', margin: '4px 0 8px', letterSpacing: 'var(--tracking-tight)' }}>
-        Start here
-      </h1>
-      <P>
-        A React + SCSS component library — <strong>53 components</strong>, one shared token file, and{' '}
-        <strong>zero third-party UI libraries</strong>. Every visual value comes from a design token; every
-        component follows the same predictable API. This page is the whole system in one read; the other
-        Foundations pages go deep on each layer.
-      </P>
+    <>
 
       <H2>What it is (and isn't)</H2>
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--p-3)', maxWidth: 720 }}>
@@ -137,7 +131,7 @@ import { Button, Card, Dialog } from '@ui/lib';`}</Pre>
           ['Motion', 'Durations, easings, reduced-motion.'],
           ['Tokens', 'The colour system + live contrast pairings.'],
           ['Themes', 'The three axes in depth + the Aiden surface.'],
-          ['Components', '53 components, each with stories.'],
+          ['Components', '59 components, each with stories.'],
         ].map(([t, d]) => (
           <Card key={t as string}>
             <div style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' }}>{t}</div>
@@ -145,6 +139,6 @@ import { Button, Card, Dialog } from '@ui/lib';`}</Pre>
           </Card>
         ))}
       </div>
-    </div>
+    </>
   ),
 };

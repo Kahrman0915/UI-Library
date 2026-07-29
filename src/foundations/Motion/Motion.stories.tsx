@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 import Button from '../../components/Button';
 import Skeleton from '../../components/Skeleton';
 
@@ -45,12 +46,17 @@ function RevealDemo() {
 
 const meta: Meta = {
   title: 'Foundations/Motion',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'Durations, easings and the motion patterns built on them. Every transition in the library reads from these tokens, so timing stays consistent and `prefers-reduced-motion` can collapse all of it in one place.',
+    } satisfies UiDocsParameters,
+  },
 };
 export default meta;
 type Story = StoryObj;
 
-const font = 'var(--font-family)';
 const mono = 'var(--font-family-mono)';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
@@ -88,11 +94,10 @@ const EASE: [string, string][] = [
 
 export const Motion: Story = {
   render: () => (
-    <div style={{ padding: 40, maxWidth: 1000, margin: '0 auto', background: 'var(--background)', color: 'var(--foreground)', fontFamily: font }}>
+    <>
       <style>{`
         @keyframes ui-fnd-run { 0%,15% { transform: translateX(0) } 85%,100% { transform: translateX(var(--run,220px)) } }
       `}</style>
-      <h1 style={{ fontSize: 'var(--text-4xl)', fontWeight: 'var(--font-bold)', margin: '0 0 8px', letterSpacing: 'var(--tracking-tight)' }}>Motion</h1>
       <P>
         Two token families: <code style={{ fontFamily: mono }}>--duration-*</code> (how long) and{' '}
         <code style={{ fontFamily: mono }}>--ease-*</code> (the curve). Plus <code style={{ fontFamily: mono }}>--motion-slide-sm/md/lg</code>{' '}
@@ -119,7 +124,7 @@ export const Motion: Story = {
       <P>
         Same duration (600ms), different curve — watch the acceleration. Spring-strong overshoots and settles back.{' '}
         <strong>
-          <code style={{ fontFamily: mono }}>--ease-premium</code> is now the house easing
+          <code style={{ fontFamily: mono }}>--ease-premium</code> is the house easing
         </strong>{' '}
         for interactive state changes — hover, focus, press, toggle, and disclosure across the whole library read on it instead of
         bare <code style={{ fontFamily: mono }}>ease-out</code>. Only continuous loops (spinner, shimmer, pulses), the ripple, the
@@ -141,11 +146,11 @@ export const Motion: Story = {
 
       <H2>Interactive feel — Button</H2>
       <P>
-        Hover, then <strong>press and hold</strong> each button below. Every touchable state change now eases on{' '}
-        <code style={{ fontFamily: mono }}>--ease-premium</code> instead of snapping, and pressing scales the button to{' '}
+        Hover, then <strong>press and hold</strong> each button below. Every touchable state change eases on{' '}
+        <code style={{ fontFamily: mono }}>--ease-premium</code> rather than snapping, and pressing scales the button to{' '}
         <code style={{ fontFamily: mono }}>0.97</code> for a tactile "pushed" feel. Focus one with the keyboard (Tab) to watch the
-        ring settle in rather than blink. This is the foundation the rest of the motion work layers on — the most-touched
-        component in the system should feel considered.
+        ring settle in rather than blink. Button is the base the rest of this page builds on — the most-touched component in the
+        system is where considered motion pays off most.
       </P>
       <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--p-3)', alignItems: 'center' }}>
         <Button id="mo-1" label="Primary" />
@@ -156,11 +161,11 @@ export const Motion: Story = {
         <div data-surface="aiden"><Button id="mo-6" label="Ask Aiden" /></div>
       </div>
       <P>
-        <strong>Try before/after:</strong> the whole upgrade is two token references and a <M>:active</M> rule on{' '}
-        <M>.ui-button</M> — no new dependency, no JS. Reduced-motion users get the press state instantly and skip the easing.
+        The whole effect is two token references and a <M>:active</M> rule on <M>.ui-button</M> — no dependency, no JavaScript.
+        Under <M>prefers-reduced-motion</M> the press state still applies, instantly, without the easing.
       </P>
       <P>
-        The same <M>:active</M> press now lives on every pressable control — <strong>Button, Chip, Toggle / ToggleGroup, Fab,
+        The same <M>:active</M> press applies to every pressable control — <strong>Button, Chip, Toggle / ToggleGroup, Fab,
         and every icon button</strong> (CloseButton, Attachment actions, Chat composer tools) scale to{' '}
         <code style={{ fontFamily: mono }}>--motion-scale-press</code> (0.97); interactive <strong>Card</strong> uses the gentler{' '}
         <code style={{ fontFamily: mono }}>--motion-scale-press-subtle</code> (0.99), since a big surface at 0.97 would move too much.
@@ -169,7 +174,7 @@ export const Motion: Story = {
 
       <H2>Shared-element motion — Tabs</H2>
       <P>
-        The active-tab pill is now a single <M>.ui-tabs__indicator</M> that <strong>slides</strong> between triggers instead of
+        The active-tab pill is a single <M>.ui-tabs__indicator</M> that <strong>slides</strong> between triggers rather than
         cross-fading two separate pills. It's positioned imperatively from the active trigger's offset box (behind the triggers, so
         their transparent background shows it through), transitions <M>transform</M> + <M>width</M> + <M>height</M> on{' '}
         <code style={{ fontFamily: mono }}>--ease-premium</code>, and works in both orientations. First paint lands instantly (no
@@ -179,7 +184,7 @@ export const Motion: Story = {
 
       <H2>Staggered lists</H2>
       <P>
-        List-row families — <strong>ItemGroup and AttachmentGroup</strong> — now carry <M>.ui-stagger</M>, so their rows rise +
+        List-row families — <strong>ItemGroup and AttachmentGroup</strong> — carry <M>.ui-stagger</M>, so their rows rise +
         fade in one after another (<code style={{ fontFamily: mono }}>--stagger-step</code>, 25ms apart) and read as one orchestrated
         motion. Pure CSS via <M>:nth-child</M> — the first 12 rows stagger, the rest just appear (a long list shouldn't cascade for
         seconds), and it plays once on mount. Reload an Item or Attachment list story to watch it. The utility is reusable — add{' '}
@@ -193,7 +198,7 @@ export const Motion: Story = {
 
       <H2>Exit &amp; reveal</H2>
       <P>
-        <strong>Toast</strong> now animates <em>out</em>, not just in: dismissing one flags it{' '}
+        <strong>Toast</strong> animates <em>out</em> as well as in: dismissing one flags it{' '}
         <M>ui-toast--leaving</M>, the Toaster keeps it mounted ~260ms to play a fade + shrink exit, then removes it (mirrors the
         Dialog / Drawer close machine; <M>onDismiss</M> still fires once). Fire and dismiss a toast to see it recede rather than
         vanish.
@@ -212,7 +217,7 @@ export const Motion: Story = {
 
       <H2>Overlay entrances</H2>
       <P>
-        Every floating surface now shares one entrance choreography (
+        Every floating surface shares one entrance choreography (
         <code style={{ fontFamily: mono }}>src/styles/overlay-entrance.scss</code>) — fade + scale from{' '}
         <code style={{ fontFamily: mono }}>--motion-scale-in</code> + a few px slide <em>from the trigger</em>, with{' '}
         <code style={{ fontFamily: mono }}>transform-origin</code> pinned toward it so the surface reads as growing out of it.
@@ -223,7 +228,7 @@ export const Motion: Story = {
         to blink into existence.
       </P>
       <P>
-        <strong>Exit:</strong> every overlay now animates <em>out</em>, not just in. A shared{' '}
+        <strong>Exit:</strong> every overlay animates <em>out</em> as well as in. A shared{' '}
         <M>usePresence</M> hook runs the <code style={{ fontFamily: mono }}>closed → open → closing</code> machine — the surface
         stays mounted through the close to play its exit (positioned menus reverse their enter via <M>.ui-overlay-exit</M>; Dialog /
         Command scale down while the backdrop clears), then unmounts on <M>animationend</M> (with a duration timer as the
@@ -240,6 +245,6 @@ export const Motion: Story = {
         still fire). <strong>Spinner is the one exception</strong> — a functional status indicator that keeps spinning.
         Turn the preference on in your OS to see this page's demos go still.
       </P>
-    </div>
+    </>
   ),
 };

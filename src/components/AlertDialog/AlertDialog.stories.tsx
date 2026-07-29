@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import AlertDialog, {
   AlertDialogHeader,
@@ -6,11 +6,30 @@ import AlertDialog, {
   AlertDialogFooter,
 } from './AlertDialog';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof AlertDialog> = {
   title: 'Components/AlertDialog',
   component: AlertDialog,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A modal that asks the user to confirm or cancel before something ' +
+        'consequential happens. A thin preset of `Dialog` with the two carve-outs the ' +
+        'pattern requires: `role="alertdialog"`, and no way to dismiss it by clicking ' +
+        'away or pressing an X — the user has to answer.',
+      tags: ['compound', 'modal', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;
@@ -40,12 +59,29 @@ export const Confirm: Story = {
 };
 
 export const Destructive: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Opens with focus on **Cancel**, not Delete. Without `initialFocusRef` the ' +
+          'dialog focuses the first focusable element in the panel, which is only the ' +
+          'safe choice by accident of source order — a keyboard user hitting Enter on ' +
+          'reflex would destroy the workspace. Set it on every destructive confirmation.',
+      },
+    },
+  },
   render: () => {
     const [open, setOpen] = useState(false);
+    const cancelRef = useRef<HTMLButtonElement>(null);
     return (
       <>
         <Button id="open-del" variant="error" label="Delete workspace" onClick={() => setOpen(true)} />
-        <AlertDialog id="del" open={open} onClose={() => setOpen(false)}>
+        <AlertDialog
+          id="del"
+          open={open}
+          onClose={() => setOpen(false)}
+          initialFocusRef={cancelRef}
+        >
           <AlertDialogHeader
             id="del"
             title="Delete workspace"
@@ -57,7 +93,13 @@ export const Destructive: Story = {
             </p>
           </AlertDialogBody>
           <AlertDialogFooter>
-            <Button id="del-cancel" style="ghost" label="Cancel" onClick={() => setOpen(false)} />
+            <Button
+              ref={cancelRef}
+              id="del-cancel"
+              style="ghost"
+              label="Cancel"
+              onClick={() => setOpen(false)}
+            />
             <Button id="del-ok" variant="error" label="Delete workspace" onClick={() => setOpen(false)} />
           </AlertDialogFooter>
         </AlertDialog>

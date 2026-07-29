@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useRef, useState } from 'react';
+import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
@@ -10,18 +10,7 @@ import type {
 } from './Dialog.types';
 import './Dialog.scss';
 import '../../styles/overlay-entrance.scss';
-
-const FOCUSABLE_SELECTOR = [
-  'a[href]',
-  'button:not([disabled])',
-  'input:not([disabled]):not([type="hidden"])',
-  'select:not([disabled])',
-  'textarea:not([disabled])',
-  '[tabindex]:not([tabindex="-1"])',
-].join(',');
-
-const getFocusable = (container: HTMLElement): HTMLElement[] =>
-  Array.from(container.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR));
+import { getFocusable } from '#/utils/focus';
 
 const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   (
@@ -33,12 +22,25 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       closeOnOutsideClick = false,
       role = 'dialog',
       inline = false,
+      initialFocusRef,
       className,
+      ...rest
     },
     ref,
   ) => {
     const panelRef = useRef<HTMLDivElement | null>(null);
     const mounted = useMounted();
+
+    // aria-labelledby/-describedby must only reference ids that EXIST — the
+    // old unconditional `${id}-title` dangled whenever DialogHeader was
+    // omitted (or given a mismatched id), leaving the dialog with no
+    // accessible name at all. Detect what the consumer actually rendered.
+    // Layout effect: resolves before the focus-trap effect focuses the panel,
+    // so the name/description are correct when the dialog is announced.
+    const [refIds, setRefIds] = useState<{ title: boolean; desc: boolean }>({
+      title: false,
+      desc: false,
+    });
 
     // Exit-animation state machine (mirrors Drawer): the panel stays mounted
     // through `closing` so it can play its exit keyframes before unmount. React
@@ -59,6 +61,21 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       return () => clearTimeout(t);
     }, [state]);
 
+    // Detect what the consumer actually rendered, AFTER the panel is mounted —
+    // keyed on the machine's `state` (the panel mounts a commit after `open`
+    // flips, so keying on `open` would query a null panel and never re-run).
+    // Layout effect: resolves before the focus-trap effect announces the dialog.
+    useLayoutEffect(() => {
+      const panel = panelRef.current;
+      if (state !== 'open' || !panel) return;
+      const esc =
+        typeof CSS !== 'undefined' && CSS.escape ? CSS.escape(id) : id;
+      setRefIds({
+        title: !!panel.querySelector(`#${esc}-title`),
+        desc: !!panel.querySelector(`#${esc}-description`),
+      });
+    }, [state, id, children]);
+
     // Escape to close (both inline and overlay modes)
     useEffect(() => {
       if (!open) return;
@@ -69,17 +86,29 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       return () => document.removeEventListener('keydown', handleKeyDown);
     }, [open, onClose]);
 
-    // Focus trap + scroll lock (overlay mode only)
+    // Focus trap + scroll lock (overlay mode only).
+    //
+    // Keyed on the machine's `state`, NOT on `open` — the same trap the refIds
+    // effect above documents. `state` is still 'closed' on the commit where
+    // `open` flips true, so the panel isn't in the DOM yet; keyed on `open`
+    // this effect ran once against a null panel, bailed, and never re-ran
+    // because its deps hadn't changed. The result was a dialog with no initial
+    // focus, no Tab containment, no scroll lock and no focus restore.
     useEffect(() => {
-      if (!open || inline) return;
+      if (state !== 'open' || inline) return;
       const panel = panelRef.current;
       if (!panel) return;
 
       const previouslyFocused = document.activeElement as HTMLElement | null;
 
-      // Focus first focusable, or the panel itself as a fallback
+      // Consumer's choice first (an alert dialog should open on the least
+      // destructive action, which is rarely the first in source order), then the
+      // first focusable, then the panel itself.
+      const requested = initialFocusRef?.current;
       const focusables = getFocusable(panel);
-      if (focusables.length > 0) {
+      if (requested && panel.contains(requested)) {
+        requested.focus();
+      } else if (focusables.length > 0) {
         focusables[0].focus();
       } else {
         panel.setAttribute('tabindex', '-1');
@@ -123,7 +152,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         document.body.style.paddingRight = previousPaddingRight;
         previouslyFocused?.focus?.();
       };
-    }, [open, inline]);
+    }, [state, inline, initialFocusRef]);
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (closeOnOutsideClick && e.target === e.currentTarget) {
@@ -137,6 +166,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     const dialogPanel = (
       <div
+        {...rest}
         id={id}
         ref={(node) => {
           panelRef.current = node;
@@ -152,7 +182,8 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         }}
         role={role}
         aria-modal={!inline}
-        aria-labelledby={`${id}-title`}
+        aria-labelledby={refIds.title ? `${id}-title` : undefined}
+        aria-describedby={refIds.desc ? `${id}-description` : undefined}
       >
         {children}
       </div>
@@ -187,11 +218,13 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
       showCloseButton = true,
       onClose,
       className,
+      ...rest
     },
     ref,
   ) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__header${className ? ' ' + className : ''}`}
       >
@@ -202,7 +235,9 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
             {title}
           </h2>
           {description && (
-            <p className="ui-dialog__description">{description}</p>
+            <p id={`${id}-description`} className="ui-dialog__description">
+              {description}
+            </p>
           )}
         </div>
         {showCloseButton && onClose && (
@@ -221,9 +256,10 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
 DialogHeader.displayName = 'DialogHeader';
 
 const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(
-  ({ children, alignment = 'left', className }, ref) => {
+  ({ children, alignment = 'left', className, ...rest }, ref) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__body ui-dialog__body--${alignment}${className ? ' ' + className : ''}`}
       >
@@ -236,9 +272,10 @@ const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(
 DialogBody.displayName = 'DialogBody';
 
 const DialogFooter = forwardRef<HTMLDivElement, DialogFooterProps>(
-  ({ children, className }, ref) => {
+  ({ children, className, ...rest }, ref) => {
     return (
       <div
+        {...rest}
         ref={ref}
         className={`ui-dialog__footer${className ? ' ' + className : ''}`}
       >

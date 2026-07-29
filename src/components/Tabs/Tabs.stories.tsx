@@ -2,6 +2,7 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Tabs, { TabsList, TabsTrigger, TabsContent } from './Tabs';
 import Card, { CardBody } from '../Card';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 // Wraps arbitrary content in a Card so every tab pane uses the real Card
 // component instead of duplicating card visuals inline.
@@ -14,7 +15,24 @@ const Pane = ({ id, children }: { id: string; children: React.ReactNode }) => (
 const meta: Meta<typeof Tabs> = {
   title: 'Components/Tabs',
   component: Tabs,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'Switches between panels occupying the same space. `activationMode` decides ' +
+        'whether the arrow keys select immediately or only move focus — use `manual` ' +
+        'when switching is expensive or destructive.',
+      tags: ['compound', '4 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: {
       control: 'inline-radio',

@@ -6,11 +6,29 @@ import Collapsible, {
   CollapsibleContent,
 } from './Collapsible';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Collapsible> = {
   title: 'Components/Collapsible',
   component: Collapsible,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A single show/hide disclosure. Same CSS-only height animation as ' +
+        '`Accordion`; reach for `Accordion` instead when you have a set of them that ' +
+        'coordinate.',
+      tags: ['compound', '3 parts', 'animated'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-collapsible',
     defaultOpen: false,

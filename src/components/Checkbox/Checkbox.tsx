@@ -58,6 +58,7 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           required={required}
           name={name}
           value={value}
+          aria-describedby={description ? `${id}-description` : undefined}
           onChange={(e) => onCheckedChange?.(e.target.checked)}
         />
         <span className="ui-checkbox" aria-hidden="true">
@@ -89,7 +90,16 @@ const Checkbox = forwardRef<HTMLInputElement, CheckboxProps>(
           >
             {label && <span className="ui-label__text">{label}</span>}
             {description && (
-              <span className="ui-label__description">{description}</span>
+              // aria-hidden keeps the helper out of the checkbox's accessible
+              // NAME (this whole block is inside the wrapping <label>); the id
+              // re-exposes it as a description via the input's aria-describedby.
+              <span
+                className="ui-label__description"
+                id={`${id}-description`}
+                aria-hidden="true"
+              >
+                {description}
+              </span>
             )}
           </span>
         )}

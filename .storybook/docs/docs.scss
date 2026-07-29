@@ -1,0 +1,692 @@
+// Chrome for the bespoke Docs template (.storybook/docs/DocsPage.tsx).
+//
+// Dev-only: `.storybook/` never enters the published bundle, but the rules here
+// still obey the library's own constraints — every value is a token from
+// `src/styles/tokens.scss`, class names are BEM under a `ui-` prefix. The page
+// is meant to read as a piece of the design system, not as Storybook chrome.
+
+// ---------------------------------------------------------------------------
+// Reset Storybook's own docs chrome
+//
+// The docs iframe root is `#storybook-docs`; `preview.scss` only ever styled
+// `#storybook-root`, so a docs page kept a white background in dark mode.
+// ---------------------------------------------------------------------------
+// Storybook paints the wrapper from its own emotion theme, so these need the
+// `#storybook-docs` id to outrank it — a bare `.sbdocs-wrapper` ties on
+// specificity and loses or wins by stylesheet order.
+#storybook-docs {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+#storybook-docs .sbdocs-wrapper {
+  background: var(--background);
+  color: var(--foreground);
+  padding: 0;
+}
+
+#storybook-docs .sbdocs.sbdocs-content {
+  max-width: none;
+  padding: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Page shell
+// ---------------------------------------------------------------------------
+.ui-docs {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--p-10);
+  padding: var(--p-12) var(--p-8) var(--p-24);
+  margin-inline: auto;
+  max-width: var(--max-w-6xl);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+@media (min-width: 1100px) {
+  // Only reserve the rail column when a rail is actually rendered — a
+  // single-story Foundations page has no TOC and shouldn't lose the width.
+  .ui-docs:has(.ui-docs__rail) {
+    grid-template-columns: minmax(0, 1fr) var(--w-48);
+  }
+}
+
+.ui-docs__main {
+  min-width: 0;
+  max-width: var(--max-w-4xl);
+}
+
+// Foundations / Prototypes lay out their own wide content, so the MAIN column
+// drops the prose reading width — but the page keeps `.ui-docs`'s own
+// `--max-w-6xl`, so it centres on exactly the same measure as a component page.
+// Setting `max-width: none` here left them flush against the viewport edge
+// while every component page sat centred.
+.ui-docs--showcase .ui-docs__main {
+  max-width: none;
+}
+
+.ui-docs__rail {
+  display: none;
+}
+
+@media (min-width: 1100px) {
+  .ui-docs__rail {
+    display: block;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+.ui-docs__header {
+  padding-bottom: var(--p-8);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.ui-docs__title {
+  margin: 0;
+  font-size: var(--text-4xl);
+  line-height: var(--leading-10);
+  font-weight: var(--font-bold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+}
+
+// `--leading-8` (32px) on 18px type is a 1.78 ratio — body-copy leading applied
+// to lede-sized text, which pulls the lines apart and detaches the paragraph
+// from the title above it. `--leading-7` is 1.56, and the tighter block lets the
+// gap under the title close up too.
+.ui-docs__lede {
+  margin: var(--p-3) 0 0;
+  max-width: var(--max-w-2xl);
+  font-size: var(--text-lg);
+  line-height: var(--leading-7);
+  color: var(--muted-foreground);
+}
+
+.ui-docs__pills {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-2);
+  margin-top: var(--p-5);
+}
+
+// ---------------------------------------------------------------------------
+// Section
+// ---------------------------------------------------------------------------
+.ui-docs-section {
+  padding-top: var(--p-12);
+  // Anchored jumps from the TOC shouldn't tuck the heading under the top edge.
+  scroll-margin-top: var(--p-6);
+}
+
+.ui-docs-section__title {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+}
+
+.ui-docs-section__desc {
+  margin: var(--p-2) 0 0;
+  max-width: var(--max-w-2xl);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-section__body {
+  margin-top: var(--p-6);
+}
+
+// Single-story Foundations pages render no section heading, so the body is the
+// section's first child — and its offset, meant to clear a heading that isn't
+// there, left a gap under the header rule half again too big.
+.ui-docs-section__body:first-child {
+  margin-top: 0;
+}
+
+// Those pages then open with their own `<h2>`, which carries its own top margin
+// for separating sections *within* the page — stacked under the section's
+// padding it doubled the gap again. Collapse whichever element the page renders
+// first; the `style +` arm covers Motion, which opens with a `<style>` block.
+// Storybook nests the story inside `.sb-story > div`, so the page's own first
+// element is two levels down — not one. The `style +` arm covers Motion, which
+// opens with a `<style>` block.
+//
+// `!important` because several Foundations pages set that margin **inline**
+// (`style={{ margin: '36px 0 8px' }}` on their local `H2` helper), and an inline
+// style outranks any stylesheet rule. This is the one case in the docs chrome
+// that needs it — everything else is ordinary cascade.
+.ui-docs-section__body:first-child .sb-story > * > *:first-child,
+.ui-docs-section__body:first-child .sb-story > * > style:first-child + * {
+  margin-top: 0 !important;
+}
+
+.ui-docs-p {
+  margin: 0 0 var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-p:last-child {
+  margin-bottom: 0;
+}
+
+// ---------------------------------------------------------------------------
+// Example block — the demo and the source that produced it, as ONE card.
+//
+// Two separate framed boxes with a gap between them read as a list of
+// unrelated panels; the block owns the border / radius / shadow so the stage
+// and the code strip below it are visibly the same object.
+// ---------------------------------------------------------------------------
+.ui-docs-block {
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-xs);
+  overflow: hidden;
+}
+
+.ui-docs-stage {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--h-56);
+  padding: var(--p-10) var(--p-8);
+  overflow: hidden;
+}
+
+// Stories that lay out their own page (Sidebar, Chat, Dialog triggers) need the
+// full width rather than a centred specimen.
+.ui-docs-stage--fill {
+  display: block;
+  padding: var(--p-6);
+}
+
+.ui-docs-stage__inner {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+// ---------------------------------------------------------------------------
+// Code pane — a three-line strip that expands into a scrolling pane.
+//
+// The pane owns the surface (`--card`) and Storybook's own `.docblock-source`
+// background is dropped to transparent, which is what lets the fade gradient
+// end on exactly the right colour. Don't give that background back.
+// ---------------------------------------------------------------------------
+.ui-docs-code {
+  position: relative;
+  border-top: var(--border-w-100) solid var(--border);
+  background: var(--card);
+}
+
+.ui-docs-code__viewport {
+  display: flex;
+  align-items: flex-start;
+  // Three lines plus the block's padding — enough to recognise the snippet,
+  // little enough that the next example stays on screen.
+  max-height: var(--h-28);
+  overflow: hidden;
+  transition: max-height var(--duration-slow) var(--ease-premium);
+}
+
+.ui-docs-code--open .ui-docs-code__viewport {
+  max-height: var(--h-96);
+  overflow-y: auto;
+}
+
+// Pin the type ramp so the gutter can align to it. Storybook's default is
+// `monospace` at an inherited line-height, which drifts per platform.
+.ui-docs-code .docblock-source,
+.ui-docs-code pre,
+.ui-docs-code code {
+  margin: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  line-height: var(--leading-5);
+}
+
+// The code column scrolls horizontally on its own so the gutter never slides
+// out of view with it.
+.ui-docs-code .docblock-source {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+}
+
+.ui-docs-code pre {
+  padding: var(--p-5) var(--p-5) var(--p-5) var(--p-0);
+}
+
+// Line numbers. `<Source>` emits one `<pre>` of highlighted text with no
+// per-line elements, so a CSS counter has nothing to count — CodePane counts
+// the newlines and stacks them here at the same leading. Alignment depends on
+// this padding matching the `pre` above and on `white-space: pre` (no wrapping).
+.ui-docs-code__gutter {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  padding: var(--p-5) var(--p-4) var(--p-5) var(--p-5);
+  text-align: end;
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+  opacity: var(--opacity-50);
+  user-select: none;
+}
+
+.ui-docs-code__gutter span {
+  display: block;
+  height: var(--leading-5);
+}
+
+// Dims the strip behind the floating toggle so the label always reads, whatever
+// the code underneath happens to be.
+.ui-docs-code__fade {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    var(--card) 85%,
+    var(--card)
+  );
+}
+
+// Expanded, the toggle floats at the bottom of the scrolling pane rather than
+// over its middle, so it never covers the line you're reading.
+.ui-docs-code--open .ui-docs-code__fade {
+  top: auto;
+  height: var(--h-20);
+}
+
+// Expanded, the floating toggle and its fade would sit on top of the last
+// couple of lines. Reserve room under the code instead of dimming it.
+.ui-docs-code--open pre,
+.ui-docs-code--open .ui-docs-code__gutter {
+  padding-bottom: var(--p-16);
+}
+
+// Positioning lives HERE, on the wrapper — never on the Button itself.
+// `.ui-button:active` sets `transform: scale(…)` at a higher specificity, which
+// replaces (not composes with) a centring `translate(-50%, -50%)` on the same
+// element: the button jumped out from under the cursor on mousedown, so mouseup
+// landed elsewhere and the click never fired.
+.ui-docs-code__toggle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+}
+
+.ui-docs-code--open .ui-docs-code__toggle {
+  top: auto;
+  bottom: var(--p-4);
+  transform: translate(-50%, 0);
+}
+
+// An outline button is transparent by design; floating over code it needs an
+// opaque backdrop of its own to stay legible.
+.ui-docs-code__toggle .ui-button {
+  background: var(--card);
+  border-radius: var(--rounded-full);
+  box-shadow: var(--shadow-md);
+}
+
+// ---------------------------------------------------------------------------
+// Storybook's copy button
+//
+// Storybook wraps it in its own absolutely-positioned div and anchors that to
+// `.docblock-source`, which in our flex row is the horizontally-scrolling code
+// column — so the control drifted to the bottom of the pane and slid sideways
+// with long lines. Dropping `.docblock-source` to `position: static` hands the
+// containing block to `.ui-docs-code`, which pins the button to the pane and
+// (since the pane is not the scroller) also lifts it out of the viewport's
+// `overflow: hidden`.
+//
+// Visible whenever the pane is hovered or expanded: once you've opened the
+// code, copying it is the whole point, and a control you have to hunt for by
+// hovering isn't discoverable.
+// ---------------------------------------------------------------------------
+.ui-docs-code .docblock-source {
+  position: static;
+}
+
+.ui-docs-code .docblock-source > div:has(button) {
+  position: absolute;
+  top: var(--p-2-5);
+  inset-inline-end: var(--p-2-5);
+  inset-inline-start: auto;
+  bottom: auto;
+  z-index: 2;
+  opacity: 0;
+  transition: opacity var(--duration-instant) var(--ease-premium);
+}
+
+.ui-docs-code--open .docblock-source > div:has(button),
+.ui-docs-code:hover .docblock-source > div:has(button),
+.ui-docs-code .docblock-source > div:has(button:focus-visible) {
+  opacity: 1;
+}
+
+// ---------------------------------------------------------------------------
+// Composition rows
+// ---------------------------------------------------------------------------
+// Badge renders a <div>, so without a flex row the "required" pill drops to its
+// own line under the part name.
+.ui-docs-part__title {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+.ui-docs-part__name {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+}
+
+// ---------------------------------------------------------------------------
+// Props table
+// ---------------------------------------------------------------------------
+.ui-docs-props {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  font-size: var(--text-sm);
+  background: var(--card);
+}
+
+.ui-docs-props__wrap + .ui-docs-props__wrap {
+  margin-top: var(--p-6);
+}
+
+.ui-docs-props__caption {
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-docs-props th {
+  padding: var(--p-3) var(--p-4);
+  text-align: start;
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+  background: var(--secondary);
+  border-bottom: var(--border-w-100) solid var(--border);
+  white-space: nowrap;
+}
+
+.ui-docs-props td {
+  padding: var(--p-4);
+  vertical-align: top;
+  border-bottom: var(--border-w-100) solid var(--border);
+  color: var(--muted-foreground);
+  line-height: var(--leading-6);
+}
+
+.ui-docs-props tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.ui-docs-props__name {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-code);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-props__req {
+  color: var(--error);
+  font-weight: var(--font-bold);
+}
+
+.ui-docs-props__type {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-5);
+  color: var(--primary-text);
+  word-break: break-word;
+  max-width: var(--max-w-xs);
+  display: inline-block;
+}
+
+.ui-docs-props__default {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-props__desc {
+  min-width: var(--w-64);
+}
+
+// `.ui-code` is `white-space: nowrap` so a snippet never breaks mid-token. In a
+// description cell that's the wrong trade — a long backticked type would push
+// the table into a horizontal scroll — so let it wrap here.
+.ui-docs-props__desc .ui-code {
+  white-space: normal;
+}
+
+.ui-docs-props__empty {
+  padding: var(--p-6);
+  text-align: center;
+  font-size: var(--text-sm);
+  color: var(--muted-foreground);
+  background: var(--card);
+  border: var(--border-w-100) dashed var(--border);
+  border-radius: var(--rounded-lg);
+}
+
+// ---------------------------------------------------------------------------
+// Keyboard table
+// ---------------------------------------------------------------------------
+.ui-docs-keys {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.ui-docs-keys__row {
+  display: grid;
+  grid-template-columns: var(--w-32) minmax(0, 1fr);
+  gap: var(--p-4);
+  align-items: baseline;
+  padding: var(--p-3-5) var(--p-4);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-keys__row:last-child {
+  border-bottom: none;
+}
+
+.ui-docs-keys__combo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+.ui-docs-keys__sep {
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-keys__desc {
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
+// Changelog
+//
+// Same two-column shape as the keyboard table, so the page has one "reference
+// list" form rather than two. Records no author by design — see UiDocsChange.
+// ---------------------------------------------------------------------------
+.ui-docs-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.ui-docs-log__row {
+  display: grid;
+  grid-template-columns: var(--w-28) minmax(0, 1fr);
+  gap: var(--p-4);
+  padding: var(--p-4);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-log__row:last-child {
+  border-bottom: none;
+}
+
+.ui-docs-log__date {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-log__summary {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--foreground);
+}
+
+// The maintainer-facing half — same content, one level quieter.
+.ui-docs-log__detail {
+  margin: var(--p-1-5) 0 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
+// Examples
+// ---------------------------------------------------------------------------
+.ui-docs-example + .ui-docs-example {
+  margin-top: var(--p-10);
+}
+
+.ui-docs-example__title {
+  margin: 0 0 var(--p-1);
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ui-docs-example__desc {
+  margin: 0 0 var(--p-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
+// Table of contents rail
+// ---------------------------------------------------------------------------
+.ui-docs-toc {
+  position: sticky;
+  top: var(--p-8);
+}
+
+.ui-docs-toc__title {
+  margin: 0 0 var(--p-3);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+.ui-docs-toc__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-inline-start: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-toc__link {
+  display: block;
+  padding: var(--p-1-5) var(--p-3);
+  margin-inline-start: calc(var(--border-w-100) * -1);
+  border-inline-start: var(--border-w-100) solid transparent;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+  text-decoration: none;
+  transition:
+    color var(--duration-instant) var(--ease-premium),
+    border-color var(--duration-instant) var(--ease-premium);
+}
+
+.ui-docs-toc__link:hover {
+  color: var(--foreground);
+}
+
+.ui-docs-toc__link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  border-radius: var(--rounded-sm);
+}
+
+.ui-docs-toc__link--active {
+  color: var(--primary-text);
+  border-inline-start-color: var(--primary);
+  font-weight: var(--font-medium);
+}

@@ -155,6 +155,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>((props, ref) => {
 
   const fmt = formatValue ?? ((v: number) => String(v));
   const labelId = `${id}-label`;
+  const descriptionId = description ? `${id}-description` : undefined;
 
   const thumb = (which: 'lower' | 'upper') => {
     const v = which === 'lower' ? lower : upper;
@@ -176,6 +177,7 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>((props, ref) => {
         aria-disabled={disabled || undefined}
         aria-label={isRange ? (which === 'lower' ? 'Minimum' : 'Maximum') : undefined}
         aria-labelledby={!isRange && label ? labelId : undefined}
+        aria-describedby={descriptionId}
         className="ui-slider__thumb"
         style={{ left: `${pct(v)}%` }}
         onKeyDown={onThumbKeyDown(which)}
@@ -198,7 +200,13 @@ const Slider = forwardRef<HTMLDivElement, SliderProps>((props, ref) => {
       {(label || showValue) && (
         <div className="ui-slider__header">
           {label ? (
-            <Label id={labelId} size={size} disabled={disabled} description={description}>
+            <Label
+              id={labelId}
+              size={size}
+              disabled={disabled}
+              description={description}
+              descriptionId={descriptionId}
+            >
               {label}
             </Label>
           ) : (

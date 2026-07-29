@@ -1,10 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import ScrollArea from './ScrollArea';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof ScrollArea> = {
   title: 'Components/ScrollArea',
   component: ScrollArea,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A scroll container with a custom thumb, so scrollbars look and behave the ' +
+        'same on every platform instead of appearing and vanishing per OS.',
+      tags: ['layout'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: {
       control: 'select',

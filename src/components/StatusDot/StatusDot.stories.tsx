@@ -1,10 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import StatusDot from './StatusDot';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof StatusDot> = {
   title: 'Components/StatusDot',
   component: StatusDot,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A presence or status dot — online, busy, away, offline. `pulse` adds a ring ' +
+        'for states that are live right now.',
+      tags: ['status'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     status: {
       control: 'select',

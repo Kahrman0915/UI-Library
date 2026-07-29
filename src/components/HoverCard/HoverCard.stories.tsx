@@ -3,11 +3,29 @@ import { CalendarDays } from 'lucide-react';
 import HoverCard, { HoverCardTrigger, HoverCardContent } from './HoverCard';
 import Button from '../Button';
 import Avatar from '../Avatar';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof HoverCard> = {
   title: 'Components/HoverCard',
   component: HoverCard,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A rich preview that opens on hover intent — a profile behind a mention, a ' +
+        'preview behind a link. For a short label use `Tooltip`; for something the ' +
+        'user deliberately clicks open, use `Popover`.',
+      tags: ['compound', '3 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-hover-card',
     openDelay: 500,

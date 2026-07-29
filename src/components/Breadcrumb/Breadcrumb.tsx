@@ -136,11 +136,13 @@ const BreadcrumbEllipsis = forwardRef<HTMLSpanElement, BreadcrumbEllipsisProps>(
     <span
       {...rest}
       ref={ref}
-      role="presentation"
-      aria-hidden="true"
       className={`ui-breadcrumb__ellipsis${className ? ' ' + className : ''}`}
     >
-      {children ?? <Ellipsis />}
+      {/* Hide the ICON, not the wrapper. `aria-hidden` on the wrapper removed
+          the whole subtree from the accessibility tree, sr-only text included —
+          so the collapsed-items marker announced nothing at all. Matches
+          PaginationEllipsis. */}
+      {children ?? <Ellipsis aria-hidden="true" />}
       <span className="ui-breadcrumb__sr-only">More</span>
     </span>
   ),

@@ -16,11 +16,29 @@ import DropdownMenu, {
 } from '../DropdownMenu';
 import Button from '../Button';
 import Card, { CardBody } from '../Card';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Breadcrumb> = {
   title: 'Components/Breadcrumb',
   component: Breadcrumb,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'The trail back up from wherever the user is now. Every level is a link ' +
+        'except the current page, which is marked `aria-current` and deliberately is ' +
+        'not clickable.',
+      tags: ['compound', '7 parts', 'navigation'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

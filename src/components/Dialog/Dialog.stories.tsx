@@ -2,11 +2,29 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Dialog, { DialogHeader, DialogBody, DialogFooter } from './Dialog';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Dialog> = {
   title: 'Components/Dialog',
   component: Dialog,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A modal window that interrupts the page for one focused task. Traps focus, ' +
+        'locks scroll, closes on Escape or an outside click, and returns focus to ' +
+        'whatever opened it. For a plain confirm/cancel prompt use `AlertDialog`.',
+      tags: ['compound', 'modal', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     open: { control: 'boolean' },
     closeOnOutsideClick: { control: 'boolean' },

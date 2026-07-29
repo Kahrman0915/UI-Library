@@ -3,6 +3,7 @@ import { Check, Dot, X } from 'lucide-react';
 import Badge from './Badge';
 import type { BadgeVariant } from './Badge.types';
 import type { CategoryColor } from '../../types/GlobalTypes';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const categories: CategoryColor[] = [
   'red', 'orange', 'amber', 'green', 'emerald', 'teal',
@@ -27,7 +28,25 @@ const variants: BadgeVariant[] = [
 const meta: Meta<typeof Badge> = {
   title: 'Components/Badge',
   component: Badge,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A small label carrying a status, a count or a category. Twelve variants pair ' +
+        'a solid fill with a transparent outline for each colour; `category` switches ' +
+        'to the 15-hue tag palette for topics and labels that need to be told apart ' +
+        'rather than ranked.',
+      tags: ['12 variants', '15 category hues'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: { control: 'select', options: variants },
     category: { control: 'select', options: [undefined, ...categories] },
@@ -82,7 +101,7 @@ export const AllVariants: Story = {
   ),
 };
 
-// The 17-hue category palette via the `category` prop (overrides `variant`).
+// The 15-hue category palette via the `category` prop (overrides `variant`).
 // `categoryStyle="soft"` = tint + AA `-text`; `"solid"` = vivid fill + AA
 // `-foreground`. Both cleared WCAG AA in both modes. For tags, labels, cells.
 export const Categories: Story = {

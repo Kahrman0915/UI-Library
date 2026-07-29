@@ -162,11 +162,24 @@ const Command = forwardRef<HTMLDivElement, CommandProps>(
       setActiveId((prev) => (prev && ids.includes(prev) ? prev : ids[0]));
     }, [search, getVisibleIds]);
 
-    // Visible count for CommandEmpty to hide/show itself.
+    // Visible count for CommandEmpty to hide/show itself. Two fixes here:
+    // (1) real deps — the old effect had NO dependency array, so it ran a DOM
+    //     query + setState after every single render;
+    // (2) count INCLUDES disabled items (unlike keyboard-nav's getVisibleIds) —
+    //     a search matching only disabled items is not "no results", and the
+    //     old count rendered the empty state over visibly matching rows.
     const [visibleCount, setVisibleCount] = useState(0);
     useEffect(() => {
-      setVisibleCount(getVisibleIds().length);
-    });
+      const list = listRef.current;
+      if (!list) {
+        setVisibleCount(0);
+        return;
+      }
+      setVisibleCount(
+        list.querySelectorAll('[data-ui-command-item][data-visible="true"]')
+          .length,
+      );
+    }, [search, children]);
 
     // Global keydown on the root — handles arrows + Enter even when the input isn't focused.
     const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -231,11 +244,14 @@ const Command = forwardRef<HTMLDivElement, CommandProps>(
     return (
       <CommandContext.Provider value={ctxValue}>
         <div
+          // Default label sits BEFORE {...rest} so a consumer can localize or
+          // replace it. After the spread it was unoverridable — the component
+          // hard-coded English into every app that used it.
+          aria-label="Command menu"
           {...rest}
           ref={ref}
           id={id}
           role="dialog"
-          aria-label="Command menu"
           className={`ui-command${className ? ' ' + className : ''}`}
           onKeyDown={handleKeyDown}
         >

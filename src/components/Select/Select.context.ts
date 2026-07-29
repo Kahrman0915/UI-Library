@@ -15,6 +15,8 @@ export type SelectContextValue = {
   required: boolean;
   size: SelectSize;
   error: boolean;
+  /** Space-joined description/error ids for the trigger's aria-describedby. */
+  describedBy: string | undefined;
   triggerNode: HTMLElement | null;
   setTriggerNode: (n: HTMLElement | null) => void;
   registerItem: (value: string, label: React.ReactNode) => () => void;

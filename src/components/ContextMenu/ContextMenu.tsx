@@ -153,12 +153,30 @@ const ContextMenuTrigger = forwardRef<HTMLDivElement, ContextMenuTriggerProps>(
       <div
         {...rest}
         ref={ref}
+        // The root's required id previously went nowhere — the trigger now
+        // carries `{id}-trigger` and the menu content `{id}-content`.
+        id={`${ctx.rootId}-trigger`}
         data-disabled={disabled ? '' : undefined}
         className={`ui-context-menu__trigger${className ? ' ' + className : ''}`}
         onContextMenu={(e) => {
           if (disabled) return;
           e.preventDefault();
           ctx.openAt(e.clientX, e.clientY);
+        }}
+        // Keyboard path (the menu was mouse/touch-only): Shift+F10 and the
+        // dedicated ContextMenu key open the menu when focus is anywhere
+        // inside the trigger, anchored to the focused element — matching the
+        // native context-menu keyboard convention. (The wrapper itself isn't
+        // forced focusable; wrap focusable content, or pass tabIndex via rest.)
+        onKeyDown={(e) => {
+          rest.onKeyDown?.(e);
+          if (disabled) return;
+          const isMenuKey =
+            e.key === 'ContextMenu' || (e.key === 'F10' && e.shiftKey);
+          if (!isMenuKey) return;
+          e.preventDefault();
+          const anchor = (e.target as HTMLElement).getBoundingClientRect();
+          ctx.openAt(anchor.left + anchor.width / 2, anchor.top + anchor.height / 2);
         }}
         onTouchStart={(e) => {
           if (disabled) return;
@@ -300,6 +318,9 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
 
     return createPortal(
       <div
+        // Default name for the menu (it had none) — sits BEFORE the spread so
+        // consumers can override/localize via aria-label or aria-labelledby.
+        aria-label="Context menu"
         {...rest}
         ref={(node) => {
           contentRef.current = node;
@@ -308,6 +329,7 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
             (ref as React.MutableRefObject<HTMLDivElement | null>).current =
               node;
         }}
+        id={`${ctx.rootId}-content`}
         role="menu"
         tabIndex={-1}
         onAnimationEnd={onExitAnimationEnd}

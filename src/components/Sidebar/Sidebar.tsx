@@ -58,6 +58,10 @@ export const useSidebar = (): SidebarContextValue => {
 
 // Merge our className / data-attrs / ref onto a single child element (the
 // `asChild` escape hatch — e.g. render a nav <a> as a menu button).
+// Standard Slot semantics: OUR props win for the attributes we own (data-*,
+// aria-*, className merge) — previously the child's props were spread last,
+// silently overwriting data-sidebar/data-active. Event handlers are COMPOSED
+// (child's first, then ours) so neither side loses its handler.
 const asSlot = (
   child: React.ReactNode,
   className: string,
@@ -66,10 +70,26 @@ const asSlot = (
 ): React.ReactElement | null => {
   if (!isValidElement(child)) return null;
   const el = child as React.ReactElement<Record<string, unknown>>;
-  const childClass = el.props.className as string | undefined;
+  const childProps = el.props;
+  const merged: Record<string, unknown> = { ...childProps, ...props };
+  // Compose event handlers instead of letting one clobber the other.
+  for (const key of Object.keys(props)) {
+    if (
+      /^on[A-Z]/.test(key) &&
+      typeof props[key] === 'function' &&
+      typeof childProps[key] === 'function'
+    ) {
+      const ours = props[key] as (...args: unknown[]) => void;
+      const theirs = childProps[key] as (...args: unknown[]) => void;
+      merged[key] = (...args: unknown[]) => {
+        theirs(...args);
+        ours(...args);
+      };
+    }
+  }
+  const childClass = childProps.className as string | undefined;
   return cloneElement(el, {
-    ...props,
-    ...el.props,
+    ...merged,
     className: `${className}${childClass ? ' ' + childClass : ''}`,
     ref,
   } as Record<string, unknown>);
@@ -208,6 +228,9 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
           }}
         >
           <div
+            // rest lands here too — it was silently dropped on the mobile
+            // path, so consumer data-*/handlers vanished below 768px.
+            {...rest}
             ref={ref}
             data-sidebar="sidebar"
             data-mobile="true"
@@ -254,10 +277,12 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
     const { toggleSidebar } = useSidebar();
     return (
       <button
+        // Default label sits BEFORE {...rest} so a consumer can localize or
+        // replace it. After the spread it was unoverridable.
+        aria-label="Toggle sidebar"
         {...rest}
         ref={ref}
         type="button"
-        aria-label="Toggle sidebar"
         className={`ui-sidebar__trigger${className ? ' ' + className : ''}`}
         onClick={(e) => {
           onClick?.(e);
@@ -277,12 +302,14 @@ const SidebarRail = forwardRef<HTMLButtonElement, SidebarRailProps>(
     const { toggleSidebar } = useSidebar();
     return (
       <button
+        // Default label sits BEFORE {...rest} so a consumer can localize or
+        // replace it. After the spread it was unoverridable.
+        aria-label="Toggle sidebar"
+        title="Toggle sidebar"
         {...rest}
         ref={ref}
         type="button"
-        aria-label="Toggle sidebar"
         tabIndex={-1}
-        title="Toggle sidebar"
         className={`ui-sidebar__rail${className ? ' ' + className : ''}`}
         onClick={toggleSidebar}
       />
@@ -467,7 +494,9 @@ const SidebarMenuButton = forwardRef<HTMLButtonElement, SidebarMenuButtonProps>(
     };
 
     const button = asChild ? (
-      asSlot(children, cls, { ...dataAttrs, ...rest }, ref)
+      // onClick goes into the slot too (it was silently dropped before);
+      // asSlot composes it with any handler the child already has.
+      asSlot(children, cls, { ...dataAttrs, ...rest, onClick }, ref)
     ) : (
       <button
         {...rest}
@@ -538,10 +567,17 @@ SidebarMenuBadge.displayName = 'SidebarMenuBadge';
 
 const SidebarMenuSkeleton = forwardRef<HTMLDivElement, SidebarMenuSkeletonProps>(
   ({ className, showIcon = false, ...rest }, ref) => {
-    const width = useMemo(
-      () => `${Math.floor(Math.random() * 40) + 50}%`,
-      [],
-    );
+    // Deterministic pseudo-random width derived from useId — SSR-stable, unlike
+    // Math.random() in render, which guaranteed a hydration mismatch (server and
+    // client each rolled their own width).
+    const skeletonId = useId();
+    const width = useMemo(() => {
+      let hash = 0;
+      for (let i = 0; i < skeletonId.length; i++) {
+        hash = (hash * 31 + skeletonId.charCodeAt(i)) | 0;
+      }
+      return `${(Math.abs(hash) % 40) + 50}%`;
+    }, [skeletonId]);
     return (
       <div
         {...rest}

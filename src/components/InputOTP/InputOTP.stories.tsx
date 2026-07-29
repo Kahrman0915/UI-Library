@@ -1,11 +1,28 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import InputOTP from './InputOTP';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof InputOTP> = {
   title: 'Components/InputOTP',
   component: InputOTP,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A one-time-code field drawn as separate slots but backed by a single real ' +
+        'input, so native paste, mobile autofill and text selection all keep working.',
+      tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'inline-radio', options: ['sm', 'default', 'lg'] },
     length: { control: { type: 'number', min: 2, max: 8 } },

@@ -86,6 +86,12 @@
     border-radius: inherit;
     pointer-events: none;
   }
+
+  // A disabled FAB must not keep advertising itself. Sonar rings drawing the
+  // eye to an action you can't take are worse than no rings at all.
+  &:disabled &__rings {
+    display: none;
+  }
   &__ring {
     position: absolute;
     inset: 0;

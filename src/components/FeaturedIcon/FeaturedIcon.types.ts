@@ -16,8 +16,11 @@ export type FeaturedIconProps = Omit<
 > & {
   /** The glyph — any lucide icon component. Sized by the tile, not by the icon. */
   Icon: LucideIcon;
+  /** Tile dimensions. The glyph scales with it. */
   size?: FeaturedIconSize;
+  /** Default `square` (rounded). `circle` for an avatar-adjacent context. */
   shape?: FeaturedIconShape;
+  /** Semantic tint. `brand` follows the active `data-theme`. */
   variant?: FeaturedIconVariant;
   /**
    * By default the tile is decorative (`aria-hidden`) — the surrounding title

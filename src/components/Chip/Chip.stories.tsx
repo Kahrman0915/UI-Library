@@ -3,15 +3,36 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Check, Plus, X } from 'lucide-react';
 import Chip from './Chip';
 import type { ChipSize } from './Chip.types';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
+// The three rungs Chip renders. `xs`/`sm` are accepted aliases that normalize
+// onto the first two — see utils/size.ts.
 const sizes: ChipSize[] = ['xsmall', 'small', 'default'];
+const sizeOptions: ChipSize[] = [...sizes, 'xs', 'sm'];
 
 const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
   component: Chip,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A pressable pill for filters and tags where any number can be active at ' +
+        'once. One standalone on/off control is a `Toggle`; one-of-N mutually ' +
+        'exclusive options is a `ToggleGroup`.',
+      tags: ['multi-select'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
-    size: { control: 'select', options: sizes },
+    size: { control: 'select', options: sizeOptions },
     active: { control: 'boolean' },
     disabled: { control: 'boolean' },
     IconLeft: { control: false, table: { disable: true } },

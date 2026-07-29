@@ -1,11 +1,29 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Slider from './Slider';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Slider> = {
   title: 'Components/Slider',
   component: Slider,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'A value picked along a range by dragging. `range` gives two thumbs for a ' +
+        'lower and upper bound, and each thumb’s announced range stops at its ' +
+        'neighbour.',
+      tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     min: { control: 'number' },

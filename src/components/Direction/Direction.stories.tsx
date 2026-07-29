@@ -6,6 +6,7 @@ import type { Direction } from './Direction.types';
 import Button from '../Button/Button';
 import Input from '../Input/Input';
 import Chip from '../Chip/Chip';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 /**
  * `DirectionProvider` sets the `dir` attribute on a layout-neutral wrapper and
@@ -16,7 +17,25 @@ import Chip from '../Chip/Chip';
 const meta: Meta<typeof DirectionProvider> = {
   title: 'Components/Direction',
   component: DirectionProvider,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'Sets `dir` on a subtree and shares it through context so RTL layouts mirror. ' +
+        'The wrapper is `display: contents`, so it adds no box of its own — and ' +
+        'because the library is built on CSS logical properties, most components ' +
+        'mirror without any change.',
+      tags: ['provider'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     dir: { control: 'inline-radio', options: ['ltr', 'rtl'] },
   },

@@ -57,6 +57,11 @@ const ModeToggler = forwardRef<HTMLButtonElement, ModeTogglerProps>(
 
       if (defaultMode === undefined) {
         setInternal(readInitialMode(storageKey));
+      } else {
+        // An explicit defaultMode must actually take effect: previously the
+        // icon showed defaultMode while <html data-mode> kept whatever it had,
+        // desynced until the first click.
+        document.documentElement.setAttribute('data-mode', defaultMode);
       }
 
       const el = document.documentElement;
@@ -143,15 +148,19 @@ const ModeToggler = forwardRef<HTMLButtonElement, ModeTogglerProps>(
 
     return (
       <button
+        // Default label sits BEFORE {...rest} so a consumer can localize or
+        // replace it. After the spread it was unoverridable — the component
+        // hard-coded English into every app that used it. `role`/`aria-checked`
+        // stay after the spread: they are derived state, not a preference.
+        aria-label={
+          mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
+        }
         {...rest}
         ref={ref}
         id={id}
         type="button"
         role="switch"
         aria-checked={mode === 'dark'}
-        aria-label={
-          mode === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'
-        }
         // Before mount we don't know the real theme; omit to avoid a flash.
         data-mode={mounted ? mode : undefined}
         className={`ui-mode-toggler ui-mode-toggler--${variant} ui-mode-toggler--sz-${size}${className ? ' ' + className : ''}`}

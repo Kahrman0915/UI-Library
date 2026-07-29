@@ -8,11 +8,30 @@ import {
 } from 'lucide-react';
 import Alert from './Alert';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Alert> = {
   title: 'Components/Alert',
   component: Alert,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'An inline message explaining a state or an outcome, sitting in the flow ' +
+        'right next to the thing it describes. For an announcement that affects the ' +
+        'whole page use `Banner`; for something transient that should get out of the ' +
+        'way on its own, call `toast()`.',
+      tags: ['5 variants', 'dismissible'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: {
       control: 'inline-radio',

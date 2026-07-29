@@ -47,11 +47,31 @@ import Attachment, {
   AttachmentMedia,
   AttachmentTitle,
 } from '../Attachment/Attachment';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Chat> = {
   title: 'Components/Chat',
   component: Chat,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The Aiden assistant chat family — transcript, composer, tool calls, ' +
+        'reasoning, citations and the full-page shell. Modelled on the Claude ' +
+        'conversation UI: assistant turns are full-width bubble-less prose, user ' +
+        'turns are contained bubbles on the trailing edge. Message content is yours ' +
+        'to provide; there is no Markdown parser, which would mean a dependency.',
+      tags: ['compound', 'aiden', '26 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     density: {
       control: 'inline-radio',

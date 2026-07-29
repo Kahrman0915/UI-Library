@@ -14,6 +14,7 @@ import { createPortal } from 'react-dom';
 import { Check, ChevronDown } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import { SelectContext } from './Select.context';
 import type {
@@ -144,6 +145,14 @@ const Select = ({
     [itemLabels],
   );
 
+  const errorId = errorMessage ? `${id}-error` : undefined;
+  const descriptionId = description ? `${id}-description` : undefined;
+  // These ids were minted and rendered but never referenced — the trigger now
+  // exposes them via aria-describedby (description always, error when shown).
+  const describedBy =
+    [descriptionId, error ? errorId : undefined].filter(Boolean).join(' ') ||
+    undefined;
+
   const ctxValue = useMemo(
     () => ({
       id,
@@ -158,6 +167,7 @@ const Select = ({
       required,
       size,
       error,
+      describedBy,
       triggerNode,
       setTriggerNode,
       registerItem,
@@ -174,15 +184,13 @@ const Select = ({
       required,
       size,
       error,
+      describedBy,
       triggerNode,
       registerItem,
       getItemLabel,
       itemsVersion,
     ],
   );
-
-  const errorId = errorMessage ? `${id}-error` : undefined;
-  const descriptionId = description ? `${id}-description` : undefined;
 
   return (
     <SelectContext.Provider value={ctxValue}>
@@ -203,7 +211,15 @@ const Select = ({
               )}
             </span>
             {description && (
-              <span id={descriptionId} className="ui-label__description">
+              // aria-hidden keeps the helper out of the trigger's accessible
+              // NAME (it sits inside the <label>); the trigger re-exposes it as
+              // a description via aria-describedby (see Label.tsx for the
+              // pattern rationale).
+              <span
+                id={descriptionId}
+                className="ui-label__description"
+                aria-hidden="true"
+              >
                 {description}
               </span>
             )}
@@ -223,8 +239,18 @@ const Select = ({
             required={required}
           />
         )}
+        {/*
+          `role="alert"` so a validation error that appears after submit is
+          announced. It is also referenced by the control's aria-describedby,
+          which only covers the case where focus lands on the field afterwards —
+          without the live role, an error the user never focuses is silent.
+          Rendered conditionally on purpose: inserting the node IS the live-region
+          trigger, and an always-present empty <p> would carry this element's
+          layout. (Toast's region is persistent instead because it is a portal
+          container that has to exist to receive anything.)
+        */}
         {errorMessage && (
-          <p id={errorId} className="ui-input__error">
+          <p id={errorId} className="ui-input__error" role="alert">
             {errorMessage}
           </p>
         )}
@@ -256,6 +282,18 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
     return (
       <div
         className={`ui-input-wrap ui-select__trigger-wrap${ctx.disabled ? ' ui-input-wrap--disabled' : ''}${ctx.error ? ' ui-input-wrap--error' : ''}${ctx.open ? ' ui-select__trigger-wrap--open' : ''}`}
+        // The whole field is the click target, like a native select. The
+        // button is `flex: 1` and the chevron is a SIBLING, so clicks on the
+        // chevron (pointer-events: none) and on the wrap's padding previously
+        // landed here and did nothing — a dead strip down the right edge.
+        // Clicks originating in any real button (the trigger itself, or a
+        // sibling like Combobox's clear) are ignored so nothing double-fires.
+        onClick={(e) => {
+          if (ctx.disabled) return;
+          if ((e.target as HTMLElement).closest('button')) return;
+          ctx.toggle();
+          ctx.triggerNode?.focus();
+        }}
       >
         <button
           {...rest}
@@ -265,9 +303,12 @@ const SelectTrigger = forwardRef<HTMLButtonElement, SelectTriggerProps>(
           role="combobox"
           aria-expanded={ctx.open}
           aria-haspopup="listbox"
-          aria-controls={ctx.contentId}
+          // Only reference the listbox while it exists in the DOM.
+          aria-controls={ctx.open ? ctx.contentId : undefined}
           aria-required={ctx.required || undefined}
           aria-disabled={ctx.disabled || undefined}
+          aria-invalid={ctx.error || undefined}
+          aria-describedby={ctx.describedBy}
           disabled={ctx.disabled}
           className={`ui-select__trigger${className ? ' ' + className : ''}`}
           onClick={(e) => {
@@ -328,15 +369,24 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     const [minWidth, setMinWidth] = useState<number | undefined>(undefined);
     const mounted = useMounted();
 
-    useLayoutEffect(() => {
-      if (!ctx.open || !ctx.triggerNode || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
       if (matchTriggerWidth) setMinWidth(triggerRect.width);
-    }, [ctx.open, ctx.triggerNode, side, align, sideOffset, matchTriggerWidth, children]);
+    }, [ctx.triggerNode, side, align, sideOffset, matchTriggerWidth]);
+
+    useLayoutEffect(() => {
+      if (!ctx.open) return;
+      reposition();
+    }, [ctx.open, reposition, children]);
+
+    // Stay anchored while open — the trigger moves when the window or a
+    // surrounding panel resizes, or when an ancestor scrolls.
+    useFloatingReposition(ctx.open, reposition, ctx.triggerNode);
 
     // Focus the listbox container on open so keyboard nav starts here.
     // Move focus onto the selected item if any so screen readers announce it.
@@ -359,7 +409,12 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
         const target = e.target as Node;
         if (
           contentRef.current?.contains(target) ||
-          ctx.triggerNode?.contains(target)
+          // The whole field counts as "inside", not just the button — the
+          // chevron and the wrap's padding are siblings of the trigger, so a
+          // mousedown there would otherwise close the menu and the following
+          // click would re-toggle it. parentElement is this instance's wrap,
+          // so a click on a DIFFERENT select still closes this one.
+          ctx.triggerNode?.parentElement?.contains(target)
         )
           return;
         ctx.close();
@@ -506,7 +561,9 @@ const SelectItem = forwardRef<HTMLDivElement, SelectItemProps>(
         <span className="ui-select__item-indicator" aria-hidden="true">
           {selected && <Check />}
         </span>
-        <span className="ui-select__item-content">{children}</span>
+        {/* Fall back to `label` — an item given only `label` used to register a
+            correct trigger label but render an EMPTY row. */}
+        <span className="ui-select__item-content">{children ?? label}</span>
       </div>
     );
   },

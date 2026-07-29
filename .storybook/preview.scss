@@ -1,6 +1,11 @@
+// `#storybook-root` is the canvas iframe's root; `#storybook-docs` is the docs
+// iframe's. Only the former used to be styled, so every Docs page ignored
+// `--background` and stayed white in dark mode. Docs chrome beyond this lives
+// in .storybook/docs/docs.scss.
 html,
 body,
-#storybook-root {
+#storybook-root,
+#storybook-docs {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-family);

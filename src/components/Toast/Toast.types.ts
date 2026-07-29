@@ -76,6 +76,16 @@ export type ToasterProps = {
   gap?: number;
   /** Fallback auto-dismiss duration if the individual toast didn't set one. Default 4000ms. */
   duration?: number;
+  /**
+   * Accessible name for the toast region. Default `'Notifications'`.
+   *
+   * A prop rather than a spread-through attribute because `Toaster` takes no
+   * `...rest` (it's a mount-once singleton — see CLAUDE.md). Without it the
+   * region's English name was unreachable from a localized app.
+   */
+  label?: string;
+  /** Accessible name for each toast's dismiss button. Default `'Dismiss'`. */
+  dismissLabel?: string;
   className?: string;
 };
 

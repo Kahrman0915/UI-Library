@@ -14,11 +14,29 @@ import {
   ChatMessage,
   ChatMessageList,
 } from '../Chat/Chat';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Fab> = {
   title: 'Components/Fab',
   component: Fab,
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'The floating action button — a viewport-pinned launcher for the one action ' +
+        'that should always be within reach. Carries the Aiden gradient, which is ' +
+        'rather the point of it.',
+      tags: ['aiden', 'floating'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     position: { control: 'inline-radio', options: ['bottom-right', 'bottom-left', 'top-right', 'top-left'] },
     size: { control: 'inline-radio', options: ['default', 'lg'] },
@@ -189,6 +207,62 @@ export const Plain: Story = {
       <Fab id="fab-plain" position="bottom-right" size="default" aria-label="Add">
         <Plus />
       </Fab>
+    </div>
+  ),
+};
+
+export const Disabled: Story = {
+  parameters: {
+    layout: 'padded',
+    docs: {
+      description: {
+        story:
+          'A disabled FAB dims and stops responding, and `pulse` stops with it — ' +
+          'sonar rings advertising an action you can’t take are worse than no rings ' +
+          'at all. Since the FAB is usually the page’s single always-available ' +
+          'action, prefer keeping it live and explaining the blocker on activation; ' +
+          'reach for `disabled` only while something is genuinely in flight.',
+      },
+    },
+  },
+  render: () => (
+    <div
+      style={{
+        position: 'relative',
+        height: 'var(--h-64)',
+        display: 'flex',
+        gap: 'var(--p-8)',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
+      <div style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+        <Fab
+          id="fab-live"
+          aria-label="Ask Aiden"
+          pulse
+          style={{ position: 'static' }}
+        >
+          <Sparkles />
+        </Fab>
+        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          live
+        </span>
+      </div>
+      <div style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+        <Fab
+          id="fab-disabled"
+          aria-label="Ask Aiden (unavailable)"
+          pulse
+          disabled
+          style={{ position: 'static' }}
+        >
+          <Sparkles />
+        </Fab>
+        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          disabled
+        </span>
+      </div>
     </div>
   ),
 };

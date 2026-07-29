@@ -1,10 +1,29 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Code, { CodeBlock } from './Code';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Code> = {
   title: 'Components/Code',
   component: Code,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        '`Code` for a symbol mentioned inside a sentence, `CodeBlock` for a fenced ' +
+        'snippet with an optional filename header and a copy button. No syntax ' +
+        'highlighting — that would need a dependency, and the trade-off was taken ' +
+        'deliberately.',
+      tags: ['typography', '2 exports'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;

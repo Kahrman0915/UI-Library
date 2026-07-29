@@ -41,47 +41,48 @@ const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>((props, ref) =>
     type === 'multiple' ? (props.defaultValue ?? []) : [],
   );
 
+  // Extracted so the useCallback deps track the VALUES, not the whole `props`
+  // object — `props` is a fresh object every render, which made these callbacks
+  // (and the context memo below) new on every render, re-rendering every item.
+  const valueProp = props.value;
+  const onValueChangeProp = props.onValueChange;
+
   const isPressed = useCallback(
     (itemValue: string): boolean => {
       if (type === 'single') {
-        const current =
-          props.value !== undefined ? props.value : singleInternal;
+        const current = valueProp !== undefined ? valueProp : singleInternal;
         return current === itemValue;
       }
       const current =
-        props.value !== undefined
-          ? (props.value as string[])
-          : multipleInternal;
+        valueProp !== undefined ? (valueProp as string[]) : multipleInternal;
       return current.includes(itemValue);
     },
-    [type, props, singleInternal, multipleInternal],
+    [type, valueProp, singleInternal, multipleInternal],
   );
 
   const toggle = useCallback(
     (itemValue: string) => {
       if (type === 'single') {
-        const controlled = props.value !== undefined;
-        const current = controlled ? props.value : singleInternal;
+        const controlled = valueProp !== undefined;
+        const current = controlled ? valueProp : singleInternal;
         // Re-selecting the active item clears it (a single toggle group has no
         // required selection).
         const next = current === itemValue ? undefined : itemValue;
         if (!controlled) setSingleInternal(next);
-        (props.onValueChange as ((v: string) => void) | undefined)?.(
-          next ?? '',
-        );
+        (onValueChangeProp as ((v: string) => void) | undefined)?.(next ?? '');
       } else {
-        const controlled = props.value !== undefined;
+        const controlled = valueProp !== undefined;
         const current = controlled
-          ? (props.value as string[])
+          ? (valueProp as string[])
           : multipleInternal;
         const next = current.includes(itemValue)
           ? current.filter((v) => v !== itemValue)
           : [...current, itemValue];
         if (!controlled) setMultipleInternal(next);
-        (props.onValueChange as ((v: string[]) => void) | undefined)?.(next);
+        (onValueChangeProp as ((v: string[]) => void) | undefined)?.(next);
       }
     },
-    [type, props, singleInternal, multipleInternal],
+    [type, valueProp, onValueChangeProp, singleInternal, multipleInternal],
   );
 
   const ctx = useMemo(

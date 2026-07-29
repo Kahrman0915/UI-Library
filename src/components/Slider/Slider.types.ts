@@ -1,3 +1,4 @@
+/** Track and thumb dimensions. */
 export type SliderSize = 'sm' | 'default' | 'lg';
 
 type SliderCommonProps = {
@@ -17,13 +18,17 @@ type SliderCommonProps = {
   showValue?: boolean;
   /** Format the displayed value. Defaults to `String(value)`. */
   formatValue?: (value: number) => string;
+  /** Default `default`. See {@link SliderSize}. */
   size?: SliderSize;
   className?: string;
 };
 
 type SliderSingleProps = SliderCommonProps & {
+  /** One thumb. The default. */
   range?: false;
+  /** Controlled value. Pair with `onValueChange`. */
   value?: number;
+  /** Uncontrolled initial value. Ignored when `value` is supplied. */
   defaultValue?: number;
   onValueChange?: (value: number) => void;
 };
@@ -31,7 +36,9 @@ type SliderSingleProps = SliderCommonProps & {
 type SliderRangeProps = SliderCommonProps & {
   /** Two thumbs. Values are `[lower, upper]` and can't cross. */
   range: true;
+  /** Controlled `[lower, upper]`. Pair with `onValueChange`. */
   value?: [number, number];
+  /** Uncontrolled initial `[lower, upper]`. Ignored when `value` is supplied. */
   defaultValue?: [number, number];
   onValueChange?: (value: [number, number]) => void;
 };

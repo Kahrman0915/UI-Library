@@ -1,11 +1,28 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Textarea from './Textarea';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Textarea> = {
   title: 'Components/Textarea',
   component: Textarea,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A multi-line text field. Reuses Input’s field chrome, so the two sit ' +
+        'together consistently in the same form.',
+      tags: ['form control'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     error: { control: 'boolean' },

@@ -26,7 +26,7 @@ const Fab = forwardRef<HTMLButtonElement, FabProps>(
       ref={ref}
       id={id}
       type="button"
-      className={`ui-fab ui-fab--pos-${position} ui-fab--sz-${size}${pulse ? ' ui-fab--pulse' : ''}${className ? ' ' + className : ''}`}
+      className={`ui-fab ui-fab--pos-${position} ui-fab--sz-${size}${className ? ' ' + className : ''}`}
     >
       {pulse && (
         <span className="ui-fab__rings" aria-hidden="true">

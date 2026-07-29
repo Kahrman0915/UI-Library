@@ -1,10 +1,27 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import ModeToggler from './ModeToggler';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof ModeToggler> = {
   title: 'Components/ModeToggler',
   component: ModeToggler,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'Owns the light/dark `data-mode` attribute on `<html>`. Render exactly one ' +
+        'per app.',
+      tags: ['3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     variant: { control: 'inline-radio', options: ['default', 'outline', 'ghost'] },
     size: { control: 'inline-radio', options: ['sm', 'default', 'lg'] },

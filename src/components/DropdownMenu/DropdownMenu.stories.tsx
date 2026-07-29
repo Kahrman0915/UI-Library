@@ -14,11 +14,28 @@ import DropdownMenu, {
   DropdownMenuTrigger,
 } from './DropdownMenu';
 import Button from '../Button/Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof DropdownMenu> = {
   title: 'Components/DropdownMenu',
   component: DropdownMenu,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A menu of actions opened from a button. A menu is for *doing* things — when ' +
+        'the user is choosing a value, use `Select` instead.',
+      tags: ['compound', '11 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   args: {
     id: 'story-dropdown',
   },
@@ -176,4 +193,73 @@ export const Complex: Story = {
       </DropdownMenuContent>
     </DropdownMenu>
   ),
+};
+
+export const Controlled: Story = {
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Pass `open` and `onOpenChange` to own the state — needed when something ' +
+          'other than the trigger has to open or close the menu, or when opening it ' +
+          'should also do something else (close a panel, fire analytics). ' +
+          '`onOpenChange` fires for **every** cause: the trigger, Escape, an outside ' +
+          'click, and selecting an item. Leave `open` off for the usual case; the ' +
+          'menu manages itself.',
+      },
+    },
+  },
+  render: () => {
+    const [open, setOpen] = useState(false);
+    const [lastAction, setLastAction] = useState('—');
+    return (
+      <div style={{ display: 'grid', gap: 'var(--p-4)', justifyItems: 'start' }}>
+        <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
+          <Button
+            id="ext-open"
+            label="Open from outside"
+            style="outline"
+            size="small"
+            onClick={() => setOpen(true)}
+          />
+          <Button
+            id="ext-close"
+            label="Close from outside"
+            style="outline"
+            size="small"
+            onClick={() => setOpen(false)}
+          />
+        </div>
+
+        <DropdownMenu id="dm-controlled" open={open} onOpenChange={setOpen}>
+          <DropdownMenuTrigger>
+            <Button id="dm-controlled-trigger" label="Actions" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem onClick={() => setLastAction('Rename')}>
+              Rename
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => setLastAction('Duplicate')}>
+              Duplicate
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => setLastAction('Delete')}>
+              Delete
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+
+        <p
+          style={{
+            margin: 0,
+            fontSize: 'var(--text-sm)',
+            color: 'var(--muted-foreground)',
+          }}
+        >
+          open: <strong>{String(open)}</strong> · last action:{' '}
+          <strong>{lastAction}</strong>
+        </p>
+      </div>
+    );
+  },
 };

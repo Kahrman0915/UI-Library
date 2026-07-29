@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { createContext, forwardRef, useContext } from 'react';
 import type {
   InputGroupAddonProps,
   InputGroupButtonProps,
@@ -9,6 +9,14 @@ import type {
 } from './InputGroup.types';
 import '../Input/Input.scss';
 import './InputGroup.scss';
+
+// Internal only — carries the group's `disabled` down to the real controls so
+// `<InputGroup disabled>` actually disables the input/textarea/buttons (it
+// previously only painted the classes, leaving everything typeable). A child's
+// own `disabled` prop still wins.
+const InputGroupContext = createContext<{ disabled: boolean }>({
+  disabled: false,
+});
 
 // ═════════════════════════════════════════════════════════════════════════════
 // InputGroup — reuses `.ui-input-wrap` for border/focus-within/hover, layers
@@ -27,20 +35,22 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
     },
     ref,
   ) => (
-    <div
-      {...rest}
-      ref={ref}
-      data-size={size}
-      data-disabled={disabled ? '' : undefined}
-      data-invalid={error ? '' : undefined}
-      className={`ui-input-field ui-input-field--sz-${size} ui-input-group${disabled ? ' ui-input-group--disabled' : ''}${error ? ' ui-input-group--error' : ''}${className ? ' ' + className : ''}`}
-    >
+    <InputGroupContext.Provider value={{ disabled }}>
       <div
-        className={`ui-input-wrap ui-input-group__wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}`}
+        {...rest}
+        ref={ref}
+        data-size={size}
+        data-disabled={disabled ? '' : undefined}
+        data-invalid={error ? '' : undefined}
+        className={`ui-input-field ui-input-field--sz-${size} ui-input-group${className ? ' ' + className : ''}`}
       >
-        {children}
+        <div
+          className={`ui-input-wrap ui-input-group__wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}`}
+        >
+          {children}
+        </div>
       </div>
-    </div>
+    </InputGroupContext.Provider>
   ),
 );
 
@@ -51,14 +61,18 @@ InputGroup.displayName = 'InputGroup';
 // ═════════════════════════════════════════════════════════════════════════════
 
 const InputGroupInput = forwardRef<HTMLInputElement, InputGroupInputProps>(
-  ({ className, ...rest }, ref) => (
-    <input
-      {...rest}
-      ref={ref}
-      data-slot="input-group-control"
-      className={`ui-input ui-input-group__input${className ? ' ' + className : ''}`}
-    />
-  ),
+  ({ className, disabled, ...rest }, ref) => {
+    const group = useContext(InputGroupContext);
+    return (
+      <input
+        {...rest}
+        ref={ref}
+        disabled={disabled ?? group.disabled}
+        data-slot="input-group-control"
+        className={`ui-input ui-input-group__input${className ? ' ' + className : ''}`}
+      />
+    );
+  },
 );
 
 InputGroupInput.displayName = 'InputGroupInput';
@@ -71,14 +85,18 @@ InputGroupInput.displayName = 'InputGroupInput';
 const InputGroupTextarea = forwardRef<
   HTMLTextAreaElement,
   InputGroupTextareaProps
->(({ className, ...rest }, ref) => (
-  <textarea
-    {...rest}
-    ref={ref}
-    data-slot="input-group-control"
-    className={`ui-input ui-input-group__textarea${className ? ' ' + className : ''}`}
-  />
-));
+>(({ className, disabled, ...rest }, ref) => {
+  const group = useContext(InputGroupContext);
+  return (
+    <textarea
+      {...rest}
+      ref={ref}
+      disabled={disabled ?? group.disabled}
+      data-slot="input-group-control"
+      className={`ui-input ui-input-group__textarea${className ? ' ' + className : ''}`}
+    />
+  );
+});
 
 InputGroupTextarea.displayName = 'InputGroupTextarea';
 
@@ -132,21 +150,26 @@ const InputGroupButton = forwardRef<HTMLButtonElement, InputGroupButtonProps>(
       className,
       children,
       type,
+      disabled,
       ...rest
     },
     ref,
-  ) => (
-    <button
-      {...rest}
-      ref={ref}
-      type={type ?? 'button'}
-      data-size={size}
-      data-variant={variant}
-      className={`ui-input-group__button ui-input-group__button--sz-${size} ui-input-group__button--${variant}${className ? ' ' + className : ''}`}
-    >
-      {children}
-    </button>
-  ),
+  ) => {
+    const group = useContext(InputGroupContext);
+    return (
+      <button
+        {...rest}
+        ref={ref}
+        type={type ?? 'button'}
+        disabled={disabled ?? group.disabled}
+        data-size={size}
+        data-variant={variant}
+        className={`ui-input-group__button ui-input-group__button--sz-${size} ui-input-group__button--${variant}${className ? ' ' + className : ''}`}
+      >
+        {children}
+      </button>
+    );
+  },
 );
 
 InputGroupButton.displayName = 'InputGroupButton';

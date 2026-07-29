@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 import { Save } from 'lucide-react';
 import Button from '../../components/Button';
 import Badge from '../../components/Badge';
@@ -24,12 +25,10 @@ const meta: Meta = {
   title: 'Foundations/Themes',
   parameters: {
     layout: 'padded',
-    docs: {
-      description: {
-        component:
-          "Three independent axes. **Mode** (`data-mode` = light/dark) ⊥ **Theme** (`data-theme=\"{code}\"` = a sub-brand's accent, remaps `--primary`) ⊥ **Surface** (`data-surface=\"aiden\"` = the AI surface, a gradient identity that layers *inside* any brand). A theme remaps `--primary` so every `--primary`-driven control (primary button, checkbox, switch, radio, active chip, progress) takes the accent automatically. The MAIN brand is the absence of `data-theme`: `--primary` stays neutral slate. Secondary/ghost/outline and Tooltip stay neutral in every theme. See the **Aiden Surface** story for the third axis.",
-      },
-    },
+    ui: {
+      description:
+        'Three independent, composable axes: `data-mode` (light/dark) ⊥ `data-theme` (a sub-brand’s accent) ⊥ `data-surface` (the Aiden AI identity, which layers inside any brand). A theme remaps only `--primary` and its derived family, so every `--primary`-driven control takes the accent on its own — no component changes. The main brand is the *absence* of `data-theme`.',
+    } satisfies UiDocsParameters,
   },
 };
 export default meta;

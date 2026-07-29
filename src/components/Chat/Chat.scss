@@ -26,6 +26,13 @@
   min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
+
+  // The list is a keyboard tab stop (scrollable region, WCAG 2.1.1) — inset
+  // ring so it doesn't clip against the wrap's overflow.
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+  }
 }
 
 .ui-chat__list-content {

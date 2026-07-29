@@ -30,6 +30,12 @@ const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(
       required = false,
       className,
       'aria-label': ariaLabel,
+      onFocus,
+      onBlur,
+      onKeyUp,
+      onClick,
+      onSelect,
+      ...rest
     },
     ref,
   ) => {
@@ -88,11 +94,13 @@ const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(
           data-invalid={error ? '' : undefined}
         >
           <input
+            {...rest}
             ref={setInputNode}
             id={id}
             className="ui-otp__input"
             value={value}
             disabled={disabled}
+            required={required}
             inputMode={inputMode}
             autoComplete="one-time-code"
             autoFocus={autoFocus}
@@ -101,14 +109,27 @@ const InputOTP = forwardRef<HTMLInputElement, InputOTPProps>(
             aria-invalid={error || undefined}
             aria-describedby={errorId ?? descId}
             onChange={handleInput}
-            onFocus={() => {
+            onFocus={(e) => {
+              onFocus?.(e);
               setFocused(true);
               syncCaret();
             }}
-            onBlur={() => setFocused(false)}
-            onKeyUp={syncCaret}
-            onClick={syncCaret}
-            onSelect={syncCaret}
+            onBlur={(e) => {
+              onBlur?.(e);
+              setFocused(false);
+            }}
+            onKeyUp={(e) => {
+              onKeyUp?.(e);
+              syncCaret();
+            }}
+            onClick={(e) => {
+              onClick?.(e);
+              syncCaret();
+            }}
+            onSelect={(e) => {
+              onSelect?.(e);
+              syncCaret();
+            }}
           />
 
           <div className="ui-otp__slots" aria-hidden="true">

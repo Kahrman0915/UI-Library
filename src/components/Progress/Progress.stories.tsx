@@ -7,11 +7,28 @@ import Progress, {
   ProgressTrack,
   ProgressIndicator,
 } from './Progress';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Progress> = {
   title: 'Components/Progress',
   component: Progress,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'How far along a task is. `indeterminate` shows motion without a percentage, ' +
+        'for work whose length you cannot predict.',
+      tags: ['compound', '5 parts', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     value: { control: { type: 'range', min: 0, max: 100 } },
     size: {

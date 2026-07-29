@@ -1,4 +1,4 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef, useEffect, useRef, useState } from 'react';
 import { Check, Copy } from 'lucide-react';
 import Button from '#components/Button/Button';
 import type { CodeProps, CodeBlockProps } from './Code.types';
@@ -33,6 +33,11 @@ const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(
     ref,
   ) => {
     const [copied, setCopied] = useState(false);
+    const copyTimer = useRef<number | undefined>(undefined);
+
+    // Clear the pending reset on unmount — the old bare setTimeout fired a
+    // state update on a dead component if the block unmounted within 2s.
+    useEffect(() => () => window.clearTimeout(copyTimer.current), []);
 
     // Prefer `code`; fall back to a string child for the clipboard payload.
     const text = code ?? (typeof children === 'string' ? children : '');
@@ -41,7 +46,8 @@ const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(
       try {
         await navigator.clipboard.writeText(text);
         setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
+        window.clearTimeout(copyTimer.current);
+        copyTimer.current = window.setTimeout(() => setCopied(false), 2000);
       } catch {
         // Clipboard blocked (insecure context / permissions) — no-op.
       }

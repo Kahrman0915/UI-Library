@@ -23,7 +23,9 @@ export type CardHeaderProps = Omit<
   'children' | 'title'
 > & {
   id: string;
+  /** Heading text. A `string`, not a node — put rich headings in `CardBody`. */
   title: string;
+  /** Supporting line under the title. Also a `string`. */
   description?: string;
   /**
    * Leading visual, rendered before the title — a featured icon, an avatar, a
@@ -31,6 +33,7 @@ export type CardHeaderProps = Omit<
    * in their families; Card was the only one of the four without it.
    */
   media?: React.ReactNode;
+  /** Trailing slot in the header — a menu, a badge, a small button. */
   action?: React.ReactNode;
   className?: string;
 };

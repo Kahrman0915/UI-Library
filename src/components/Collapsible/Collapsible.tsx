@@ -138,7 +138,8 @@ const CollapsibleTrigger = ({ children }: CollapsibleTriggerProps) => {
 //                   NOTHING else. Padding here leaks into the grid row's
 //                   min-content size, so a closed panel keeps a phantom gap.
 //   __content-body  where padding and typography go, inside the clip. The
-//                   consumer's className and ...rest land here for that reason.
+//                   consumer's ref, className AND ...rest all land here — one
+//                   coherent target (they used to split across two nodes).
 // ═════════════════════════════════════════════════════════════════════════════
 
 const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
@@ -146,7 +147,6 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
     const ctx = useCollapsible();
     return (
       <div
-        ref={ref}
         id={ctx.contentId}
         role="region"
         aria-labelledby={ctx.triggerId}
@@ -158,6 +158,7 @@ const CollapsibleContent = forwardRef<HTMLDivElement, CollapsibleContentProps>(
         <div className="ui-collapsible__content-inner">
           <div
             {...rest}
+            ref={ref}
             className={`ui-collapsible__content-body${className ? ' ' + className : ''}`}
           >
             {children}

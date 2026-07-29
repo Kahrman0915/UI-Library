@@ -3,11 +3,29 @@ import type { Meta, StoryObj } from '@storybook/react';
 import Combobox from './Combobox';
 import type { ComboboxOption } from './Combobox.types';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Combobox> = {
   title: 'Components/Combobox',
   component: Combobox,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A filterable listbox — the only one of the three select components with a ' +
+        'search field. Use it when the list is long enough that scanning it is work: ' +
+        'timezones, countries, a directory of users.',
+      tags: ['form control', 'portal', 'searchable'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: {
       control: 'inline-radio',

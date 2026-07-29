@@ -2,11 +2,29 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import RadioGroup, { RadioGroupItem } from './RadioGroup';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof RadioGroup> = {
   title: 'Components/RadioGroup',
   component: RadioGroup,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'One choice from a small set of mutually exclusive options, all visible at ' +
+        'once. Past roughly seven options the list stops being scannable — use a ' +
+        '`Select` instead.',
+      tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     orientation: {
       control: 'inline-radio',

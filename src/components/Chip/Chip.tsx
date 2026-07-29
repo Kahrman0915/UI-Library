@@ -1,6 +1,7 @@
 import { forwardRef } from 'react';
 import type { ChipProps } from './Chip.types';
 import './Chip.scss';
+import { normalizeSize } from '#/utils/size';
 
 const Chip = forwardRef<HTMLButtonElement, ChipProps>(
   (
@@ -31,7 +32,7 @@ const Chip = forwardRef<HTMLButtonElement, ChipProps>(
         ref={ref}
         id={id}
         type="button"
-        className={`ui-chip ui-chip--sz-${size}${active ? ' ui-chip--active' : ''}${iconOnly ? ' ui-chip--icon-only' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-chip ui-chip--sz-${normalizeSize(size)}${active ? ' ui-chip--active' : ''}${iconOnly ? ' ui-chip--icon-only' : ''}${className ? ' ' + className : ''}`}
         disabled={disabled}
         onClick={onClick}
         aria-pressed={active}

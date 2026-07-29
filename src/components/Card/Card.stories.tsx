@@ -5,11 +5,29 @@ import Button from '../Button/Button';
 import Badge from '../Badge/Badge';
 import Avatar from '../Avatar/Avatar';
 import StatusDot from '../StatusDot/StatusDot';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Card> = {
   title: 'Components/Card',
   component: Card,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A surface that gathers related content into one unit. The header is ' +
+        'prop-driven (`title`, `description`, `action`), and `interactive` opts into ' +
+        'the hover lift for cards that are themselves clickable.',
+      tags: ['compound', '4 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     children: { control: false, table: { disable: true } },
   },

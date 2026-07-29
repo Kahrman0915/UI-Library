@@ -30,6 +30,9 @@ const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
       <div
         {...rest}
         ref={ref}
+        // The required id was destructured and then never applied — the DOM
+        // node now carries it (it also seeds `${id}-title` on the heading).
+        id={id}
         className={`ui-card__header${className ? ' ' + className : ''}`}
       >
         {media && <div className="ui-card__header-media">{media}</div>}

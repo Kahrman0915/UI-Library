@@ -2,11 +2,29 @@ import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import Checkbox from './Checkbox';
 import Button from '../Button';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Checkbox> = {
   title: 'Components/Checkbox',
   component: Checkbox,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'A single on/off choice, or one of several independent ones. `indeterminate` ' +
+        'covers a parent controlling a partially-checked set. For a setting that ' +
+        'takes effect the moment it is flipped rather than on submit, use `Switch`.',
+      tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     checked: { control: 'boolean' },
     indeterminate: { control: 'boolean' },

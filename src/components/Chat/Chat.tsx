@@ -141,6 +141,15 @@ const ChatMessageList = forwardRef<HTMLDivElement, ChatMessageListProps>(
     return (
       <div className="ui-chat__list-wrap">
         <div
+          // Overridable defaults sit BEFORE the spread. role="log" makes the
+          // transcript a live region (implicit aria-live=polite), so incoming
+          // assistant messages are actually announced; tabIndex makes the
+          // scroll container keyboard-reachable (WCAG 2.1.1 — a scrollable
+          // region with no tab stop can't be scrolled without a mouse); the
+          // label names the region a keyboard user lands in.
+          role="log"
+          aria-label="Chat messages"
+          tabIndex={0}
           {...rest}
           ref={setScrollNode}
           className={`ui-chat__list${className ? ' ' + className : ''}`}
@@ -207,6 +216,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
     {
       from: fromProp,
       pending = false,
+      typingLabel = 'Assistant is typing',
       streaming = false,
       className,
       children,
@@ -222,10 +232,10 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
         ref={ref}
         data-from={from}
         aria-busy={pending || streaming || undefined}
-        className={`ui-chat-bubble ui-chat-bubble--${from}${pending ? ' ui-chat-bubble--pending' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-chat-bubble ui-chat-bubble--${from}${className ? ' ' + className : ''}`}
       >
         {pending ? (
-          <span className="ui-chat-bubble__typing" aria-label="Assistant is typing">
+          <span className="ui-chat-bubble__typing" aria-label={typingLabel}>
             <span className="ui-chat-bubble__dot" />
             <span className="ui-chat-bubble__dot" />
             <span className="ui-chat-bubble__dot" />
@@ -786,6 +796,7 @@ const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
       onCancel,
       saveLabel = 'Save',
       cancelLabel = 'Cancel',
+      editLabel = 'Edit message',
       placeholder,
       maxRows = 10,
       className,
@@ -841,7 +852,7 @@ const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             className="ui-input ui-chat-edit__input"
-            aria-label="Edit message"
+            aria-label={editLabel}
           />
         </div>
         <div className="ui-chat-edit__actions">
@@ -891,10 +902,11 @@ const ChatMessageVersions = forwardRef<
     ref,
   ) => (
     <div
+      // Default label sits BEFORE {...rest} so a consumer can localize it.
+      aria-label="Response versions"
       {...rest}
       ref={ref}
       role="group"
-      aria-label="Response versions"
       className={`ui-chat-versions${className ? ' ' + className : ''}`}
     >
       <button

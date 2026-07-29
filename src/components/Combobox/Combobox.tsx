@@ -11,6 +11,7 @@ import { createPortal } from 'react-dom';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
+import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
 import type { ComboboxOption, ComboboxProps } from './Combobox.types';
 import '../Input/Input.scss';
@@ -54,6 +55,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       disabled = false,
       required = false,
       clearable = false,
+      clearLabel = 'Clear selection',
       filter = defaultFilter,
       side = 'bottom',
       align = 'start',
@@ -134,15 +136,23 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     }, [open, value, options]);
 
     // Position the popup.
-    useLayoutEffect(() => {
-      if (!open || !triggerRef.current || !contentRef.current) return;
+    const reposition = useCallback(() => {
+      if (!triggerRef.current || !contentRef.current) return;
       const triggerRect = triggerRef.current.getBoundingClientRect();
       const contentRect = contentRef.current.getBoundingClientRect();
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
       if (matchTriggerWidth) setMinWidth(triggerRect.width);
-    }, [open, side, align, sideOffset, matchTriggerWidth, filtered.length]);
+    }, [side, align, sideOffset, matchTriggerWidth]);
+
+    useLayoutEffect(() => {
+      if (!open) return;
+      reposition();
+    }, [open, reposition, filtered.length]);
+
+    // Stay anchored while open (window/panel resize, ancestor scroll).
+    useFloatingReposition(open, reposition, triggerRef.current);
 
     // Outside click closes.
     useEffect(() => {
@@ -151,7 +161,10 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
         const target = e.target as Node;
         if (
           contentRef.current?.contains(target) ||
-          triggerRef.current?.contains(target)
+          // Whole field is "inside" — the chevron and clear button are
+          // siblings of the trigger, so a mousedown there would otherwise
+          // close and the following click would re-toggle.
+          triggerRef.current?.parentElement?.contains(target)
         )
           return;
         setOpen(false);
@@ -240,6 +253,9 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       <div
         {...rest}
         ref={ref}
+        // The required id previously never reached the DOM (it only seeded
+        // child ids) — <Combobox id="x"> now renders an element with id="x".
+        id={id}
         className={`ui-input-field ui-input-field--sz-${size}${className ? ' ' + className : ''}`}
       >
         {label && (
@@ -256,7 +272,14 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
               )}
             </span>
             {description && (
-              <span id={descriptionId} className="ui-label__description">
+              // aria-hidden keeps the helper out of the trigger's accessible
+              // NAME (it sits inside the <label>); the trigger re-exposes it
+              // as a description via aria-describedby.
+              <span
+                id={descriptionId}
+                className="ui-label__description"
+                aria-hidden="true"
+              >
                 {description}
               </span>
             )}
@@ -270,6 +293,16 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
 
         <div
           className={`ui-input-wrap ui-combobox__trigger-wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}${open ? ' ui-combobox__trigger-wrap--open' : ''}`}
+          // Whole field is the click target — the chevron is a sibling with
+          // pointer-events: none, so clicks on it (and on the wrap's padding)
+          // used to land here and do nothing. Clicks from a real button (the
+          // trigger, or the clear button) are ignored so nothing double-fires.
+          onClick={(e) => {
+            if (disabled) return;
+            if ((e.target as HTMLElement).closest('button')) return;
+            setOpen(!open);
+            triggerRef.current?.focus();
+          }}
         >
           <button
             ref={triggerRef}
@@ -278,9 +311,16 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
             role="combobox"
             aria-expanded={open}
             aria-haspopup="listbox"
-            aria-controls={listboxId}
+            // Only reference the listbox while it exists in the DOM.
+            aria-controls={open ? listboxId : undefined}
             aria-required={required || undefined}
             aria-disabled={disabled || undefined}
+            aria-invalid={error || undefined}
+            aria-describedby={
+              [description ? descriptionId : null, error && errorMessage ? errorId : null]
+                .filter(Boolean)
+                .join(' ') || undefined
+            }
             disabled={disabled}
             className="ui-combobox__trigger"
             onClick={() => {
@@ -307,7 +347,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           {showClear && (
             <button
               type="button"
-              aria-label="Clear selection"
+              aria-label={clearLabel}
               className="ui-combobox__clear"
               onClick={clear}
             >
@@ -328,8 +368,18 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           />
         )}
 
+        {/*
+          `role="alert"` so a validation error that appears after submit is
+          announced. It is also referenced by the control's aria-describedby,
+          which only covers the case where focus lands on the field afterwards —
+          without the live role, an error the user never focuses is silent.
+          Rendered conditionally on purpose: inserting the node IS the live-region
+          trigger, and an always-present empty <p> would carry this element's
+          layout. (Toast's region is persistent instead because it is a portal
+          container that has to exist to receive anything.)
+        */}
         {errorMessage && (
-          <p id={errorId} className="ui-input__error">
+          <p id={errorId} className="ui-input__error" role="alert">
             {errorMessage}
           </p>
         )}
@@ -357,10 +407,14 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                   ref={searchRef}
                   id={searchInputId}
                   type="text"
-                  role="combobox"
+                  // NOT role="combobox" — the trigger button already carries
+                  // it, and APG allows exactly one per pattern. This is the
+                  // popup's filter field: a named searchbox that still drives
+                  // the listbox via aria-activedescendant.
+                  role="searchbox"
+                  aria-label={searchPlaceholder}
                   autoComplete="off"
                   spellCheck={false}
-                  aria-expanded="true"
                   aria-controls={listboxId}
                   aria-activedescendant={activeDescendantId}
                   className="ui-combobox__search-input"

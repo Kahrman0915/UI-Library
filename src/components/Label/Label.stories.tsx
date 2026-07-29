@@ -1,10 +1,28 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Label from './Label';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Label> = {
   title: 'Components/Label',
   component: Label,
-  parameters: { layout: 'centered' },
+  parameters: {
+    layout: 'centered',
+    ui: {
+      description:
+        'The shared label primitive: the text, an optional description and the ' +
+        'required marker. Every form control renders one internally, so you rarely ' +
+        'reach for it directly.',
+      tags: ['form'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
   argTypes: {
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     required: { control: 'boolean' },

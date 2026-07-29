@@ -9,11 +9,29 @@ import Empty, {
 } from './Empty';
 import Button from '../Button/Button';
 import FeaturedIcon from '../FeaturedIcon/FeaturedIcon';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Empty> = {
   title: 'Components/Empty',
   component: Empty,
-  parameters: { layout: 'padded' },
+  parameters: {
+    layout: 'padded',
+    ui: {
+      description:
+        'The placeholder for a list, table or panel with nothing in it yet. Centres ' +
+        'an icon, a title, a sentence explaining why it is empty, and usually the ' +
+        'action that would fill it.',
+      tags: ['compound', '6 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
+    } satisfies UiDocsParameters,
+  },
 };
 
 export default meta;
