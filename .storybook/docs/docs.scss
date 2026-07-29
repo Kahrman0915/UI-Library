@@ -46,7 +46,9 @@
 }
 
 @media (min-width: 1100px) {
-  .ui-docs {
+  // Only reserve the rail column when a rail is actually rendered — a
+  // single-story Foundations page has no TOC and shouldn't lose the width.
+  .ui-docs:has(.ui-docs__rail) {
     grid-template-columns: minmax(0, 1fr) var(--w-48);
   }
 }

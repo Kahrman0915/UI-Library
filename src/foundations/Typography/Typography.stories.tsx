@@ -1,8 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta = {
   title: 'Foundations/Typography',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'The type ramp, weights and leading — one scale for the whole system. Every size, weight and line-height is a token; never write a raw `px` value.',
+    } satisfies UiDocsParameters,
+  },
 };
 export default meta;
 type Story = StoryObj;
@@ -44,8 +51,7 @@ const TRACKING: [string, string][] = [
 
 export const Typography: Story = {
   render: () => (
-    <div style={{ padding: 40, maxWidth: 1000, margin: '0 auto', background: 'var(--background)', color: 'var(--foreground)', fontFamily: font }}>
-      <h1 style={{ fontSize: 'var(--text-4xl)', fontWeight: 'var(--font-bold)', margin: '0 0 8px', letterSpacing: 'var(--tracking-tight)' }}>Typography</h1>
+    <>
       <P>
         Two families: <strong>Inter</strong> (<code style={{ fontFamily: mono }}>--font-family</code>) for
         everything, and <strong>JetBrains Mono</strong> (<code style={{ fontFamily: mono }}>--font-family-mono</code>)
@@ -108,6 +114,6 @@ export const Typography: Story = {
           ))}
         </div>
       </div>
-    </div>
+    </>
   ),
 };

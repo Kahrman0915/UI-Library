@@ -1,9 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta = {
   title: 'Foundations/Tokens',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'Two layers: primitives (the raw scales — spacing, radii, type) and semantic colours built on top of them. Everything a component renders resolves through these, which is why a theme or a mode can be swapped at runtime without touching a component.',
+    } satisfies UiDocsParameters,
+  },
 };
 export default meta;
 type Story = StoryObj;
@@ -150,27 +157,16 @@ function PairingsTable() {
 
 export const Tokens: Story = {
   render: () => (
-    <div
-      style={{
-        padding: 40,
-        maxWidth: 1100,
-        margin: '0 auto',
-        background: 'var(--background)',
-        color: 'var(--foreground)',
-        fontFamily: font,
-      }}
-    >
-      <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700 }}>Design tokens</h1>
-      <p style={{ maxWidth: 720, lineHeight: 1.6, color: 'var(--muted-foreground)', fontSize: 14 }}>
-        Layers: <strong>Primitives</strong> (raw scales — spacing, radii, type) and{' '}
-        <strong>Semantic</strong> colours. Semantic colours move on three independent runtime axes:{' '}
+    <>
+      <p style={{ maxWidth: 'var(--max-w-3xl)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)', fontSize: 'var(--text-sm)' }}>
+        Semantic colours move on <strong>three independent runtime axes</strong>:{' '}
         <strong>Mode</strong> (<code>data-mode</code> light/dark, flips every colour),{' '}
         <strong>Theme</strong> (<code>data-theme="{'{code}'}"</code>, remaps only <code>--primary</code> and
         its family), and <strong>Surface</strong> (<code>data-surface="aiden"</code>, the AI surface — see
         Foundations → Themes → <em>Aiden Surface</em>). Toggle the <em>Mode</em> and <em>Theme</em> toolbar
-        controls to see everything below re-resolve. Colours use shadcn's{' '}
-        <code>surface / surface-foreground</code> naming — a base token sets the surface, the{' '}
-        <code>-foreground</code> token sets text/icons on it.
+        controls to watch everything below re-resolve. Colours follow the{' '}
+        <code>surface / surface-foreground</code> convention — a base token sets the surface, the{' '}
+        <code>-foreground</code> token sets text and icons on it.
       </p>
 
       <Group
@@ -294,6 +290,6 @@ export const Tokens: Story = {
           <li><strong>When <code>--primary</code> is <em>text</em> on a light surface, use <code>--primary-text</code>, not <code>--primary</code>.</strong> Raw <code>--primary</code> is tuned as a fill (with <code>--primary-foreground</code> on top); mid-luminance themes fall just under AA as text on a pale tint. <code>--primary-text</code> fixes that. Outline/link/secondary button text, Badge outline, and brand Alert/Banner titles already use it.</li>
         </ul>
       </section>
-    </div>
+    </>
   ),
 };

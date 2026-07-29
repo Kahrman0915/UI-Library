@@ -95,10 +95,18 @@ function ShowcasePage({
   description?: string;
   stories: PreparedStory[];
 }) {
-  const toc: TocEntry[] = stories.map((story) => ({
-    id: storyAnchor(story.id),
-    label: story.name,
-  }));
+  // Most Foundations pages are a single story whose name repeats the page title
+  // — "Overview" under "Overview" — so rendering its heading printed the title
+  // twice, once either side of the header rule. A lone story is unwrapped, and
+  // the rail goes with it (one link, pointing at the page you're already on).
+  // Multi-story pages like Themes keep both.
+  const sectioned = stories.length > 1;
+  const toc: TocEntry[] = sectioned
+    ? stories.map((story) => ({
+        id: storyAnchor(story.id),
+        label: story.name,
+      }))
+    : [];
 
   return (
     <Unstyled>
@@ -118,7 +126,9 @@ function ShowcasePage({
               id={storyAnchor(story.id)}
               className="ui-docs-section"
             >
-              <h2 className="ui-docs-section__title">{story.name}</h2>
+              {sectioned ? (
+                <h2 className="ui-docs-section__title">{story.name}</h2>
+              ) : null}
               <div className="ui-docs-section__body">
                 <Story of={story.moduleExport} />
               </div>
@@ -126,9 +136,11 @@ function ShowcasePage({
           ))}
         </div>
 
-        <aside className="ui-docs__rail">
-          <Toc entries={toc} />
-        </aside>
+        {sectioned ? (
+          <aside className="ui-docs__rail">
+            <Toc entries={toc} />
+          </aside>
+        ) : null}
       </div>
     </Unstyled>
   );

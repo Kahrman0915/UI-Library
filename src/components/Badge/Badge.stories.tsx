@@ -93,7 +93,7 @@ export const AllVariants: Story = {
   ),
 };
 
-// The 17-hue category palette via the `category` prop (overrides `variant`).
+// The 15-hue category palette via the `category` prop (overrides `variant`).
 // `categoryStyle="soft"` = tint + AA `-text`; `"solid"` = vivid fill + AA
 // `-foreground`. Both cleared WCAG AA in both modes. For tags, labels, cells.
 export const Categories: Story = {

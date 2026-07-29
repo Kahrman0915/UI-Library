@@ -1,13 +1,19 @@
 import type { Meta, StoryObj } from '@storybook/react';
+import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta = {
   title: 'Foundations/Spacing & Sizing',
-  parameters: { layout: 'fullscreen' },
+  parameters: {
+    layout: 'fullscreen',
+    ui: {
+      description:
+        'One scale, mirrored across three token families — `--p-*` (padding, gap, margin), `--w-*` (width) and `--h-*` (height) — plus radii, border widths and max-widths. Never write a raw `px` value; reach for a token.',
+    } satisfies UiDocsParameters,
+  },
 };
 export default meta;
 type Story = StoryObj;
 
-const font = 'var(--font-family)';
 const mono = 'var(--font-family-mono)';
 
 const H2 = ({ children }: { children: React.ReactNode }) => (
@@ -41,14 +47,7 @@ const MAXW: [string, string][] = [
 export const SpacingAndSizing: Story = {
   name: 'Spacing & Sizing',
   render: () => (
-    <div style={{ padding: 40, maxWidth: 1000, margin: '0 auto', background: 'var(--background)', color: 'var(--foreground)', fontFamily: font }}>
-      <h1 style={{ fontSize: 'var(--text-4xl)', fontWeight: 'var(--font-bold)', margin: '0 0 8px', letterSpacing: 'var(--tracking-tight)' }}>Spacing &amp; Sizing</h1>
-      <P>
-        One Tailwind-like scale in px. It's mirrored across three token families — <code style={{ fontFamily: mono }}>--p-*</code> (padding/gap/margin),{' '}
-        <code style={{ fontFamily: mono }}>--w-*</code> (width), <code style={{ fontFamily: mono }}>--h-*</code> (height) — plus radii, border
-        widths, and max-widths. Never write a raw px value; reach for a token.
-      </P>
-
+    <>
       <H2>Spacing scale <M>--p-* / --w-* / --h-*</M></H2>
       <div style={{ display: 'grid', gap: 3 }}>
         {SPACE.map(([k, px]) => (
@@ -91,6 +90,6 @@ export const SpacingAndSizing: Story = {
           </div>
         ))}
       </div>
-    </div>
+    </>
   ),
 };

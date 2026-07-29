@@ -26,7 +26,7 @@ export type BadgeProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Default `default`. See {@link BadgeVariant}. Ignored when `category` is set. */
   variant?: BadgeVariant;
   /**
-   * Render as a category tag in one of the 17 palette hues. When set, takes
+   * Render as a category tag in one of the 15 palette hues. When set, takes
    * precedence over `variant`. Pair with `categoryStyle`.
    */
   category?: CategoryColor;
