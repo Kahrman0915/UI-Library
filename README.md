@@ -104,7 +104,11 @@ Non-trivial components take a required `id`, used to seed nested aria relationsh
 
 ### Hooks
 
-Exported alongside the components: `useMounted`, `useIsMobile`, `usePresence`, `useFloatingReposition`, `useAutosizeTextarea`, `useStickToBottom`, `useStreamingText`, `useRipple`.
+Exported alongside the components: `usePresence`, `useAutosizeTextarea`, `useStickToBottom`, `useStreamingText`, `useRipple`, plus `useSidebar` and `useDirection` (which read their
+providers' context).
+
+`useMounted`, `useIsMobile` and `useFloatingReposition` exist in `src/hooks/` but are **not** part of the
+public entry point — they're internal plumbing shared between components.
 
 ## Design tokens
 
