@@ -59,7 +59,7 @@ export default Widget;
 Types:
 
 ```ts
-export type WidgetVariant = 'default' | 'brand' | 'error';
+export type WidgetVariant = 'default' | 'error' | 'success';
 export type WidgetSize = 'sm' | 'default' | 'lg';
 
 export type WidgetProps = Omit<
@@ -82,7 +82,7 @@ Important:
 
 ## SCSS conventions
 
-- BEM (`.ui-widget`, `.ui-widget__label`, `.ui-widget--brand`)
+- BEM (`.ui-widget`, `.ui-widget__label`, `.ui-widget--error`)
 - Plain `.scss` — never `.module.scss`
 - Every value from a token — `padding: var(--p-2) var(--p-3)`, not `padding: 8px 12px`
 - One file per component; no cross-component imports except for the shared `.ui-input-wrap` (see below)
@@ -144,21 +144,26 @@ If any output violates the "allowed" set, undo whatever change introduced it.
 
 - **Vanilla React + SCSS. No exceptions unless the user approves.**
 - **BEM `ui-*` prefix.** The library was renamed once; don't reintroduce old prefixes.
-- **Product brand codes are 2 letters** (`db`, `dc`, `dr`, `ec`, `ir`, `nb`, `ph`, `rm`), not full product names.
+- **Theme codes are 2 letters** (`db`, `dc`, `dr`, `ec`, `ir`, `nb`, `ph`, `rm`), not full product names.
+- **There is no `--brand` token and no `variant="brand"`.** That model was removed: `--primary` *is* the current theme's colour, and the main brand is the absence of `data-theme`. Don't reintroduce it.
+- **Three theming axes, all attributes:** `data-mode` ⊥ `data-theme` ⊥ `data-surface`. Aiden is a *surface*, never a theme code.
 - **Compound containers use `Header/Body/Footer` naming** (Dialog, Card), matching each other, not matching shadcn's `Header/Content/Footer`.
 - **Positioning has no collision detection.** Adding it would require `@floating-ui/react` — declined.
-- **Exit animations only on Tooltip.** Elsewhere, portals unmount instantly. Adding animation would require the state-machine pattern in Tooltip.tsx.
+- **Every overlay animates in and out** via the shared `usePresence` state machine (`closed → open → closing`). It must promote to `open` *synchronously during render* — deferring it to an effect mounts the content a render late, after the positioning layout-effect has already run against a null ref.
+- **Reduced motion is global**, in `tokens.scss`. It collapses durations to `0.01ms`, **not** `none`: Drawer and Tooltip unmount on `animationend`, and `none` means that event never fires. Spinner is the deliberate exemption.
 
 ## Extending the library
 
 When the user asks to add a new component:
 
-1. Read shadcn's version at `ui.shadcn.com/docs/components/{name}` for the API + visual spec + state matrix. **Do not copy code** — extract only the shape.
+1. Read a reference implementation for the API + visual spec + state matrix. **Do not copy code** — extract only the shape.
 2. Follow the file structure above.
-3. Reuse `useMounted`, `computePosition`, `.ui-label`, `.ui-input-wrap` when applicable.
-4. Add tokens to `tokens.scss` (in both light and dark blocks) if the design language needs new semantic values.
-5. Ship stories.
+3. Reuse what exists: `useMounted`, `usePresence`, `useFloatingReposition`, `computePosition`, `getFocusable`, `.ui-label`, `.ui-input-wrap`, `.ui-icon-button`.
+4. Add tokens to `tokens.scss` (in **both** the light and dark blocks) if the design language needs new semantic values, then run `npm run test:contrast`.
+5. Ship stories — including a disabled state and a controlled-usage story.
 6. Wire into `src/index.ts`.
-7. Verify with the checklist above.
+7. JSDoc every prop in `{Name}.types.ts` — it's the only source for the docs-page API table.
+8. Add a changelog entry to `parameters.ui.changelog` in the story meta.
+9. Verify with the checklist above.
 
 If the new component would need a runtime dep the library doesn't have, **stop and ask the user** — the dep list is intentional.

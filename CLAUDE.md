@@ -2,11 +2,15 @@
 
 This file is auto-loaded into every Claude Code session opened inside this repo. Read it before writing any code that lives under `src/`. Deviations from these rules should be surfaced back to the user before they land — don't silently reshape the system.
 
+> **Merging an older copy of this library in?** Read
+> [`REBUILD-GUIDE.md`](./REBUILD-GUIDE.md) first — it is written for exactly that, and
+> it assumes you have read this file.
+
 ---
 
 ## What this repo is
 
-A React + SCSS component library. 54 shipped component families, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
+A React + SCSS component library. 59 shipped component families, one shared token file, zero third-party UI libraries. Every visual value comes from `src/styles/tokens.scss`. Every class name follows BEM under a `ui-` prefix.
 
 ## Hard rules (never break without asking)
 
@@ -264,6 +268,8 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Drawer` + `DrawerHeader` + `DrawerBody` + `DrawerFooter` | yes | Edge panel (`side` = top/right/bottom/left, default right); reuses Dialog's portal/focus-trap/scroll-lock/Escape + Tooltip's `closed→open→closing` exit state machine for the slide-out. `open`/`onClose` controlled, no drag |
 | `DirectionProvider` + `useDirection` | no (provider) | RTL/LTR provider. Sets `dir` on a `display:contents` (layout-neutral) wrapper and shares the direction via context; `useDirection()` reads it. Components using CSS logical properties + flex rows mirror automatically under `dir="rtl"` — no component changes needed. Mirrors `SidebarProvider`/`useSidebar` naming |
 | `Empty` + `EmptyHeader` + `EmptyMedia` + `EmptyTitle` + `EmptyDescription` + `EmptyContent` | yes | Centered empty-state; static (mirrors Item's compound pattern). `EmptyMedia variant` = `icon` (boxed muted tile) or `default` (unboxed) |
+| `Fab` | no | Viewport-pinned floating action button — the always-available launcher ("Ask Aiden"). `position` = bottom-right/bottom-left/top-right/top-left, `size` = default/lg, optional `pulse` halo rings and a `badge` slot. Carries the Aiden gradient by default; the pulse is suppressed when disabled |
+| `FeaturedIcon` | no | The boxed icon tile — a lucide glyph on a tinted, bordered surface. `size` = sm/default/lg, `shape` = square/circle, `variant` = default/brand/success/warning/error/info. Extracted from `Empty`, which now composes it rather than hand-rolling its own tile |
 | `DropdownMenu` + `Trigger` + `Content` + `Item` + `Label` + `Separator` + `Group` + `CheckboxItem` + `RadioGroup` + `RadioItem` + `Shortcut` | yes | 11 exports; keyboard nav wraps at ends |
 | `Menubar` (+ `MenubarMenu` `MenubarTrigger` `MenubarContent` `MenubarItem` `MenubarLabel` `MenubarSeparator` `MenubarGroup` `MenubarCheckboxItem` `MenubarRadioGroup` `MenubarRadioItem` `MenubarShortcut`) | yes | Desktop-style horizontal menu bar. **Reuses `DropdownMenu` wholesale** — each `MenubarMenu` is a *controlled* `DropdownMenu` (open state driven by the bar), and the menu-surface parts are DropdownMenu's re-exported under Menubar names (so positioning / item-nav / escape / outside-click all come free). Menubar adds: single-open coordination, hover-to-switch between menus once one is open, roving-tabindex + ArrowLeft/Right across triggers. `MenubarMenu value` = the menu's identity. No submenus / no in-menu Left/Right yet |
 | `Field` (+ `Set` `Legend` `Group` `Content` `Label` `Title` `Description` `Error` `Separator`) | yes | 10 exports. Form-row scaffolding; `orientation` prop; label typography reuses the shared `.ui-label__*` classes, `FieldSeparator` wraps `Separator` |
@@ -385,7 +391,7 @@ Small clarifying questions cost less than reworking a component after the fact.
 
 ## Roadmap — where we're headed next
 
-**The Claude Design push is done (2026-07-19).** All 42 components have preview cards. **Immediate next up: generate a UI via Claude Design that actually uses these components, and iterate wherever the AI picks the wrong one** — that's the real test of whether the preview cards communicate what each component is for.
+**The Claude Design push shipped 2026-07-19 against the then-42-component roster.** It has since fallen behind: **53 of 59 components have a preview card. Missing: `Chat`, `Direction`, `Fab`, `FeaturedIcon`, `InputOTP`, `Menubar`** — all shipped after the push. **Immediate next up: generate a UI via Claude Design that actually uses these components, and iterate wherever the AI picks the wrong one** — that's the real test of whether the preview cards communicate what each component is for. Backfilling the six is a prerequisite for that test being honest.
 
 ### Prep
 
@@ -400,9 +406,9 @@ Fonts now build via a separate `npm run build:fonts` (plain `sass` CLI, outside 
 - Storybook loads `src/styles/fonts.scss` explicitly in `.storybook/preview.tsx`.
 - If you ever re-add `@import './fonts'` to `tokens.scss`, the 685 kB regression comes straight back.
 
-### The push (via the `DesignSync` tool + `/design-sync` skill) — **COMPLETE as of 2026-07-19**
+### The push (via the `DesignSync` tool + `/design-sync` skill) — **shipped 2026-07-19, now 6 components behind**
 
-Project **`@ui/lib`** (`49609428-9a74-47c7-a777-b9f56bd43b81`), `type: PROJECT_TYPE_DESIGN_SYSTEM`, holds **45 preview files — all 42 components plus 3 Foundations pages** (motion, palettes, themes). Verified programmatically: every directory under `src/components/` has a matching preview.
+Project **`@ui/lib`** (`49609428-9a74-47c7-a777-b9f56bd43b81`), `type: PROJECT_TYPE_DESIGN_SYSTEM`. `preview/` holds **56 files — 53 component previews plus 3 Foundations pages** (motion, palettes, themes). It covered every component on the day it shipped; six components have landed since and still need one (listed above).
 
 The previews are **tracked in this repo** under `preview/{group}/{kebab-name}.html` and uploaded from there — local is the source of truth, the project is a published copy. They can drift (they did: `dist/styles.css` sat at the pre-fix 685 kB build for two days, and the Toast preview kept hand-rolled action buttons after Toast moved to composing `Button`). **When you change a component's rendered markup or class names, update its preview in the same commit.**
 
@@ -424,7 +430,7 @@ Steps, for reference / re-running:
    - **Layout** — Card, Accordion, Collapsible, ScrollArea, Attachment, Separator, AspectRatio, Blockquote, Code
    - **Identity** — Avatar, Chip, Label, Kbd, StatusDot
 
-   (Verified 2026-07-20: these groupings cover all 53 components with no omissions.)
+   (Verified 2026-07-20 against the then-53 roster with no omissions. The six components added since — `Chat`, `Direction`, `Fab`, `FeaturedIcon`, `InputOTP`, `Menubar` — fit the existing groups: AI/Aiden work has no group yet, so `Chat` and `Fab` want one; `InputOTP` → Forms, `Menubar` → Overlays, `FeaturedIcon` → Identity, `Direction` → Foundations.)
 4. Call `DesignSync` in sequence: `list_projects` → `finalize_plan` → `write_files` → verify
 
 ### After the push
@@ -434,7 +440,7 @@ Steps, for reference / re-running:
 
 ### Non-blocking follow-ups
 
-- ~~**Round out the roster**~~ **Done 2026-07-19 — Slider shipped, the roster is complete at 43.** Every component is exported from `src/index.ts` and has a Claude Design preview, both verified programmatically. Drawer fills the "sheet"/edge-panel role.
+- ~~**Round out the roster**~~ **Done 2026-07-19 — Slider shipped, closing the roster at 43 at the time; it now stands at 59.** Every component is exported from `src/index.ts`, verified programmatically. Drawer fills the "sheet"/edge-panel role. (Claude Design previews are no longer 1:1 — see the push section above.)
 - **Figma design-system push — COMPLETE (2026-07-27). Every component has a doc page (all 5 phases shipped), template v4 LOCKED.** One doc page per component in file `jzc2ME8xVmfX1V8OCt2HC2`; Button (`1 · Button`) is the reference implementation. Phases 1–4 (forms · selection/status · overlays) done; Phase 5 (ModeToggler, Direction, Sidebar, Chat) closed it out — Chat was the final component. **Before touching the Figma file: read `docs/figma-playbook.md` (the recipe) and `docs/figma-ledger.json` (per-component status + all node/variable IDs + ~90 lessons).** Do not redesign the template without the owner. Key locked patterns: horizontal frames (Overview · Spec · [Theming] · Examples·Docs·History), owner's side-by-side light/dark spec tables with labeled separators, composition-forward overview (no props table), theme-able fills bound to the Theme collection, the `flag/is-dark` aiden dark-gradient overlay (never aiden-light/dark variants), and the all-zeros design-check lint as ship gate. **Newer conventions worth knowing:** atom masters live NESTED inside the Overview frame (never loose on the canvas); a sub-part that has its own code component gets its own atom (don't hand-draw it); an assembled template whose list must be extendable (Sidebar menu, Chat transcript) is a plain FRAME built from atom instances (via `detachInstance()`), NOT a locked component — Figma has no arbitrary-children slot; provider/hook components with no visual atom (Direction) get a concept page with the middle frame as a behaviour demo and no component master.
 - **npm publish workflow** so any repo can `npm install @ui/lib`
 - **Accessibility audit — first pass done 2026-07-19.** Swept all 42 for focus rings, ARIA wiring, live regions, label association, accessible names, and reduced motion. Two real findings, both fixed: no global `prefers-reduced-motion` support, and Chip's missing focus ring. Verified correct and needing no change: Dialog (focus trap + Escape + **focus restored to trigger**, confirmed end-to-end in a browser), Drawer (same), Command (proper `aria-activedescendant` combobox), Alert/Toast (`role` alert-vs-status by variant), Progress/Spinner/Skeleton, `htmlFor` on all 8 form controls, and accessible names on all 200 buttons across the preview HTML. **Still outstanding:** real screen-reader passes (VoiceOver/NVDA — ARIA wiring being correct is not the same as it announcing well), colour contrast beyond the secondary-button data recorded above, Sidebar's sub-768px Drawer swap, and tab order across composite widgets in real page layouts.

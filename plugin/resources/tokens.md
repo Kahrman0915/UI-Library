@@ -22,15 +22,17 @@ Or override for a subtree:
 </div>
 ```
 
-## Theme swap
+## Mode swap (light / dark)
 
-Set `data-theme` on `<html>` (or any parent) to switch semantic colors between light and dark:
+Set **`data-mode`** on `<html>` — *not* `data-theme`, which is the sub-brand axis:
 
 ```html
-<html data-theme="dark">
+<html data-mode="dark">
 ```
 
-No provider, no runtime. Every semantic token is re-declared under `:root, [data-theme='light']` and again under `[data-theme='dark']` — everything just cascades.
+No provider, no runtime. Every semantic token is re-declared under `:root, [data-mode='light']` and again under `[data-mode='dark']` — everything just cascades. `<ModeToggler>` owns this attribute.
+
+See **The three axes** below for how mode, theme and surface compose.
 
 ---
 
@@ -196,7 +198,9 @@ Layer conventions in the library:
 
 ## Semantic colors (theme-aware)
 
-Every one of these is redefined in `[data-theme='dark']` — swap the theme attr and everything reflows.
+Every one of these is redefined in `[data-mode='dark']` — flip that attribute and everything reflows.
+
+**Note the attribute names.** `data-mode` is light/dark. `data-theme` is the sub-brand, and it remaps only `--primary` and its derived family. `data-surface="aiden"` is the AI identity. They are three independent axes; nothing here is a class name.
 
 ### Core
 
@@ -232,58 +236,58 @@ Each has a full family: `--{status}`, `--{status}-foreground`, `--{status}-light
 --info-*      — blue
 ```
 
-### Brand family
+### Derived `--primary` family
+
+**There is no `--brand` token.** That model was removed — `--primary` *is* the current theme's colour, and the main brand is the absence of `data-theme`.
 
 ```
---brand
---brand-foreground
---brand-secondary-foreground
---brand-light
---brand-border
---brand-hover
---brand-ring
---brand-focus
+--primary            — the theme's colour (neutral slate with no data-theme)
+--primary-foreground — text on a solid --primary fill
+--primary-text       — --primary as TEXT on a light surface (see below)
+--primary-light      — 6% tint, for surfaces (Alert backgrounds, ghost-hover)
+--primary-soft       — visible tint, ONLY for the filled `secondary` button
+--primary-border
+--primary-hover
+--primary-ring
+--primary-focus
 ```
 
-Swap via product-brand scope classes (see below).
+**`--primary-text` vs `--primary` is the one that catches people out.** Use `--primary-text` whenever the theme colour is *text* on a light or subtle surface — outline / link / secondary button labels, `Badge variant="outline"`, brand Alert and Banner titles. It nudges the colour toward the mode's text colour so mid-luminance themes clear WCAG AA. **Solid fills keep raw `--primary`**, because they pair with `--primary-foreground`, which already passes.
 
-### Aiden (AI gradient)
+`--primary-light` vs `--primary-soft`: `-light` is the subtle 6% tint for surfaces and was tuned for AA text-on-tint; `-soft` is the visible tint used *only* by the filled `secondary` button, so `secondary` reads distinctly from `outline`. Don't swap them.
+
+### Aiden — the AI surface (`data-surface='aiden'`)
+
+A **gradient** identity, which is why it can't be a theme: a gradient can't be the single scalar `--primary` that also has to work as a border and as text.
 
 ```
---aiden-primary
---aiden-primary-foreground
---aiden-secondary
---aiden-secondary-foreground
---aiden-border
---aiden-hover
+--aiden-primary          — the violet → blurple → blue GRADIENT fill
+--aiden-hover            — hover gradient
+--aiden-outline-border   — the solid "blurple" (#5a37e6 light / #9076f9 dark)
+--aiden-secondary        — low-alpha tint for the secondary button
+--aiden-secondary-border
 --aiden-ring
 --aiden-focus
---aiden-outline-*  (bg, hover, border, foreground, hover-foreground)
 ```
 
-### Category colors (chart / tag palettes)
+`data-surface='aiden'` remaps `--primary` to the solid blurple, so every *scalar* consumer (borders, focus rings, checked controls) follows for free. Anywhere `--primary` is a **background fill**, the component overrides it with the gradient — 10 components do this. Ghost stays neutral slate, the same carve-out the brand themes have.
 
-18 hues, each with `-bg` (10% opacity background) and `-hover`:
+### Category colours (chart / tag palettes)
+
+**15 hues** (yellow and lime were removed). Each has three members, plus one global foreground:
 
 ```
---category-red, --category-red-bg, --category-red-hover
---category-orange, --category-orange-bg, --category-orange-hover
---category-amber, --category-amber-bg, --category-amber-hover
---category-yellow, --category-yellow-bg, --category-yellow-hover
---category-lime, --category-lime-bg, --category-lime-hover
---category-green, --category-green-bg, --category-green-hover
---category-emerald, --category-emerald-bg, --category-emerald-hover
---category-teal, --category-teal-bg, --category-teal-hover
---category-cyan, --category-cyan-bg, --category-cyan-hover
---category-sky, --category-sky-bg, --category-sky-hover
---category-blue, --category-blue-bg, --category-blue-hover
---category-indigo, --category-indigo-bg, --category-indigo-hover
---category-violet, --category-violet-bg, --category-violet-hover
---category-purple, --category-purple-bg, --category-purple-hover
---category-fuchsia, --category-fuchsia-bg, --category-fuchsia-hover
---category-pink, --category-pink-bg, --category-pink-hover
---category-rose, --category-rose-bg, --category-rose-hover
+--category-{hue}        — the VIVID fill: charts, dots, a solid badge
+--category-{hue}-bg     — the soft tag tint (0.1 light / 0.15 dark)
+--category-{hue}-text   — AA-safe text ON that tint
+--category-foreground   — text on the vivid solid fill (white light / #0f172a dark)
 ```
+
+Hues: `red · orange · amber · green · emerald · teal · cyan · sky · blue · indigo · violet · purple · fuchsia · pink · rose`
+
+**Never use raw `--category-{hue}` as small text on its own tint** — that pairing fails AA for every hue in light mode. Use `-text`. The 15 `-text`-on-`-bg` pairings are gated by `npm run test:contrast`; the solid badge is deliberately best-effort and not gated.
+
+There is also a `-hover` member per hue, kept for palette completeness but **currently unused** by any component.
 
 ### Gradients
 
@@ -297,22 +301,41 @@ Swap via product-brand scope classes (see below).
 
 ---
 
-## Product brand scopes
+## The three axes
 
-Wrap any subtree in one of these classes to remap `--brand-*` onto that product's colors. Every component that uses `variant="brand"` (Button, Badge) picks up the scope automatically — no component-level changes needed.
+Nothing here is a class name, and none of it needs a provider.
 
-```
-.brand-db     — indigo
-.brand-dc     — teal
-.brand-dr     — rose
-.brand-ec     — cyan
-.brand-ir     — blue
-.brand-nb     — emerald
-.brand-ph     — orange
-.brand-rm     — violet
+```html
+<html data-mode="dark">            <!-- 1 · light / dark -->
+  <section data-theme="db">        <!-- 2 · sub-brand accent -->
+    <aside data-surface="aiden">   <!-- 3 · the AI identity -->
 ```
 
-Each is redefined for both light and dark themes so brand + theme swap independently.
+**Theme codes** — each remaps only `--primary` / `--primary-foreground`; the derived family follows via `color-mix`:
+
+```
+data-theme="db"   — indigo      data-theme="ir"   — blue
+data-theme="dc"   — teal        data-theme="nb"   — emerald
+data-theme="dr"   — rose        data-theme="ph"   — orange
+data-theme="ec"   — cyan        data-theme="rm"   — violet
+```
+
+The **main brand is the absence of `data-theme`** — `--primary` stays neutral slate. Every palette is defined for both modes, so mode and theme swap independently.
+
+**What does NOT move with a theme:** `--secondary` / `--muted` / `--border` chrome, the `Tooltip` tokens, the `--sidebar-*` surface, and the `ghost` button style. Those are deliberate carve-outs so quiet UI never competes with the accent.
+
+---
+
+## Code block palette
+
+`--code-block` plus an 11-token syntax palette, darkened in 2026-07 so every token clears AA on the block background in **both** modes:
+
+```
+--code-keyword  --code-string   --code-comment  --code-function  --code-number
+--code-variable --code-type     --code-built-in --code-attr      --code-selector --code-tag
+```
+
+`--code-attr` is amber rather than orange specifically so it stays distinct from `--code-number` in both modes.
 
 ---
 
@@ -329,7 +352,7 @@ Tokens are just CSS variables — override at any scope:
 Or in a stylesheet:
 
 ```scss
-.custom-brand {
+.custom-accent {
   --primary: #ff0066;
   --primary-foreground: #fff;
   --primary-hover: #cc0055;

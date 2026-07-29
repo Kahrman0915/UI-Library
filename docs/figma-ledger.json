@@ -1,7 +1,7 @@
 {
  "runId": "uilib-component-push-2026-07",
  "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
- "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster now 58 — FeaturedIcon added 2026-07-27.)",
+ "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster now 59 — FeaturedIcon and Fab both sit outside the original 57-component index board.)",
  "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
  "v4": {
   "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",

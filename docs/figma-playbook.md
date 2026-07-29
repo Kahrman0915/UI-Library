@@ -9,7 +9,8 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** COMPLETE (2026-07-27) — every component has a v4 doc page. Phases 1–5 all shipped; Chat was the final component. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
+- **Status:** COMPLETE — all **59** components have a v4 doc page. Phases 1–5 shipped by 2026-07-27 (Chat was the last of the original 57-component roster); `FeaturedIcon` and `Fab` were built after, outside the phase structure. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
+- **The index board still reads "57 components"** — that is the original roster, and `FeaturedIcon` / `Fab` deliberately have **no index row**. Anything built beyond the 57 goes straight under its phase divider and is recorded in the ledger only.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components

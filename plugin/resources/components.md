@@ -1,295 +1,197 @@
 # @ui/lib — component reference
 
-Every export from `@ui/lib`, its props, and a copy-pasteable example.
+59 components, 250 exported values, all from `@ui/lib`.
 
-Quick key:
-- 🔒 = interactive component; `id` is required
-- 🧩 = compound component; import + use the subcomponents together
+**Full prop tables live in Storybook** (`npm run storybook` → any component → Docs). Every prop there carries a description generated from the source, so it cannot drift from the code. This file is the roster and the judgement calls: what exists, what to reach for, and the traps.
+
+Quick key: 🔒 = requires an `id` · 🧩 = compound, use the parts together
 
 ---
 
-## Avatar 🔒 + AvatarGroup 🔒 🧩
+## The roster
 
-Fallback initials + optional image + optional status badge.
+### Actions
+| Component | What it's for |
+|---|---|
+| `Button` 🔒 | The commit. 6 variants × 5 styles × 4 sizes, plus `isLoading` and `iconOnly`. |
+| `ButtonGroup` 🧩 | Joins adjacent buttons into one unit. Presentational — for one-of-N use `ToggleGroup`. |
+| `CloseButton` 🔒 | The dismissal X. Only ever a dismissal. |
+| `Fab` 🔒 | Viewport-pinned launcher for the one always-available action. Carries the Aiden gradient. |
+
+### Forms
+| Component | What it's for |
+|---|---|
+| `Input` 🔒 | Single-line field, with label / description / error / icons built in. |
+| `Textarea` 🔒 | Multi-line. Reuses Input's field chrome. |
+| `NativeSelect` 🔒 🧩 | The OS `<select>`, restyled. **The default pick.** |
+| `Select` 🔒 🧩 | Floating listbox for rich items (icons, descriptions, groups). |
+| `Combobox` 🔒 | The only one with a **search field**. For long lists. |
+| `Checkbox` 🔒 | On/off, committed on submit. Supports `indeterminate`. |
+| `RadioGroup` 🔒 🧩 | One of a small visible set. |
+| `Switch` 🔒 | A setting that applies **immediately**. |
+| `Slider` 🔒 | A value along a range; `range` gives two thumbs. |
+| `InputOTP` 🔒 | One-time code. Slots are visual; one real input underneath. |
+| `Field` 🧩 | Scaffolding (label / description / error) around a control you supply. |
+| `InputGroup` 🧩 | A field flanked by addons sharing one border. |
+| `Label` | The shared label primitive. Rarely needed directly. |
+
+### Feedback
+| Component | What it's for |
+|---|---|
+| `Alert` 🔒 | Inline message beside the thing it describes. |
+| `Banner` 🔒 | Full-bleed page-level announcement bar. |
+| `Badge` 🔒 | Status / category pill. 12 variants + 15 category hues. |
+| `Progress` 🧩 | Determinate, or `indeterminate` for unknown length. |
+| `Spinner` 🔒 | Indeterminate loading. Keeps spinning under reduced motion, deliberately. |
+| `Skeleton` | Placeholder in the shape of what's loading. |
+| `Toast` 🧩 | Imperative: render `<Toaster>` once, call `toast()` anywhere. |
+| `Empty` 🧩 | The nothing-here state. |
+
+### Overlays
+| Component | What it's for |
+|---|---|
+| `Dialog` 🔒 🧩 | Modal for one focused task. |
+| `AlertDialog` 🔒 🧩 | A choice that must be answered. No outside-click, no X. |
+| `Drawer` 🔒 🧩 | Panel from any edge. |
+| `Popover` 🔒 🧩 | Click-opened floating panel. |
+| `Tooltip` 🔒 🧩 | Short label on hover/focus. Never themed. |
+| `HoverCard` 🔒 🧩 | Rich hover preview. |
+| `DropdownMenu` 🔒 🧩 | Menu of **actions** (11 parts). |
+| `ContextMenu` 🔒 🧩 | Right-click menu (14 parts). The only family with submenus. |
+| `Menubar` 🔒 🧩 | Desktop menu bar. Built on DropdownMenu. |
+| `Command` 🔒 🧩 | The ⌘K palette. |
+
+### Navigation
+`Tabs` 🔒 🧩 · `Breadcrumb` 🧩 · `Pagination` 🧩 · `Sidebar` 🧩 (23 parts, ⌘B, mobile → Drawer) · `Item` 🧩 (generic list row)
+
+### Layout
+`Card` 🔒 🧩 · `Accordion` 🔒 🧩 · `Collapsible` 🔒 🧩 · `ScrollArea` 🔒 · `Attachment` 🧩 (file rows) · `Separator` · `AspectRatio` · `Blockquote` · `Code` + `CodeBlock` 🔒
+
+### Identity
+`Avatar` 🔒 + `AvatarGroup` 🔒 · `Chip` 🔒 · `Toggle` 🔒 · `ToggleGroup` 🔒 🧩 · `Kbd` · `StatusDot` · `FeaturedIcon`
+
+### AI — Aiden
+`Chat` 🧩 — 27 exports (the root plus 26 parts): transcript (`ChatMessageList`, `ChatMessage`, `ChatBubble`), composer, `ChatToolCall`, `ChatReasoning`, `ChatCitation` / `ChatSources`, `ChatGreeting`, `ChatLayout`. Content is consumer-provided; **there is no markdown parser**.
+
+### Utility
+`ModeToggler` 🔒 (owns `data-mode`) · `DirectionProvider` + `useDirection` (RTL/LTR)
+
+### Hooks
+`useMounted` · `useIsMobile` · `usePresence` · `useFloatingReposition` · `useAutosizeTextarea` · `useStickToBottom` · `useStreamingText` · `useRipple`
+
+---
+
+## The ones you'll use most
+
+### Button
 
 ```tsx
-import { Avatar, AvatarGroup } from '@ui/lib';
-
-<Avatar id="kahrman" src="/kahrman.jpg" fallback="KM" size="default" shape="circle" />
-
-<AvatarGroup id="team" max={4} size="default">
-  <Avatar id="a1" fallback="AB" />
-  <Avatar id="a2" fallback="CD" />
-  <Avatar id="a3" fallback="EF" />
-  <Avatar id="a4" fallback="GH" />
-  <Avatar id="a5" fallback="IJ" />  {/* extras collapse into a "+2" pill */}
-</AvatarGroup>
+<Button id="save" label="Save changes" />                       {/* theme's primary */}
+<Button id="draft" label="Save as draft" style="secondary" />
+<Button id="cancel" label="Cancel" style="ghost" />             {/* neutral, always */}
+<Button id="delete" label="Delete" variant="error" />
+<Button id="star" iconOnly IconCenter={Star} aria-label="Star" />
+<Button id="saving" label="Saving…" isLoading />
 ```
 
-Props: `id`, `src?`, `alt?`, `fallback?`, `size: 'sm' | 'default' | 'lg'`, `shape: 'circle' | 'square'`, `badge?`.
+`variant` = **which colour family** (`default | error | info | success | warning | aiden`).
+`style` = **how much emphasis** (`default | secondary | outline | ghost | link`).
+Two independent axes, and the most confusable pair in the library. The native CSS `style` attribute is Omitted to make room — use `className` for one-offs.
 
----
+Sizes accept **either vocabulary**: `xsmall|small|default|large` or `xs|sm|default|lg`. They normalize to the same class; prefer the abbreviations, which match the other 23 components.
 
-## Badge
+`onClick` receives **no event**. Reach for a plain `<button>` if you need one.
 
-Small pill for status / metadata. 17 variants combining color families with treatments.
+### Form field
 
 ```tsx
-<Badge id="new" variant="success" label="New" />
-<Badge id="beta" variant="brand-outline" label="BETA" />
-<Badge id="failed" variant="error-outline" label="Failed" IconLeft={XIcon} />
+<Input
+  id="email" label="Email" type="email"
+  description="We'll never spam you."
+  required error={hasError} errorMessage="Enter a valid email."
+/>
 ```
 
-Variants: `default | secondary | outline | no-background | brand | brand-secondary | brand-outline | error | error-outline | success | success-outline | warning | warning-outline | info | info-outline | aiden | aiden-outline`.
+The same shape works on `Textarea`, `NativeSelect`, `Select`, `Combobox`, `InputOTP`. `description` is exposed via `aria-describedby`, **not** folded into the accessible name. `errorMessage` is announced when it appears.
 
----
-
-## Button 🔒
-
-7 variants × 5 styles × 3 sizes + loading, icon-only, and side-icon modes.
+### Card
 
 ```tsx
-<Button id="save" label="Save changes" />
-<Button id="cancel" label="Cancel" style="ghost" />
-<Button id="delete" label="Delete" variant="error" style="outline" />
-<Button id="star" iconOnly IconCenter={StarIcon} aria-label="Star" />
-<Button id="loading" label="Saving…" isLoading />
-```
-
-Props: `id`, `label?`, `variant: 'default' | 'brand' | 'error' | 'info' | 'success' | 'warning' | 'aiden'`, `style: 'default' | 'secondary' | 'outline' | 'ghost' | 'link'`, `size: 'small' | 'default' | 'large'`, `disabled?`, `isLoading?`, `iconOnly?`, `IconLeft?`, `IconRight?`, `IconCenter?`, `onClick?`.
-
-Aiden variant only supports `style: default | outline` — other styles fall back to `default`.
-
----
-
-## ButtonGroup 🔒 + Separator 🔒 + Text 🔒 🧩
-
-Row/column of buttons that share flattened corners.
-
-```tsx
-<ButtonGroup id="view" orientation="horizontal">
-  <Button id="v-day" label="Day" style="outline" />
-  <Button id="v-week" label="Week" style="outline" />
-  <ButtonGroupSeparator id="v-sep" />
-  <ButtonGroupText id="v-sort">Sort by</ButtonGroupText>
-  <Button id="v-name" label="Name" style="outline" />
-</ButtonGroup>
-```
-
----
-
-## Card 🔒 + CardHeader 🔒 + CardBody + CardFooter 🧩
-
-Compound container with distinct sections.
-
-```tsx
-<Card id="revenue">
-  <CardHeader
-    id="revenue"
-    title="Q4 revenue"
-    description="Last 90 days"
-    action={<Badge id="revenue-badge" variant="success" label="+12%" />}
-  />
-  <CardBody>
-    <p>Body content here.</p>
-  </CardBody>
-  <CardFooter>
-    <Button id="revenue-view" label="View report" />
-  </CardFooter>
+<Card id="plan" interactive>
+  <CardHeader id="plan" title="Pro" description="Everything in Free, plus…" />
+  <CardBody>…</CardBody>
+  <CardFooter><Button id="pick" label="Choose" /></CardFooter>
 </Card>
 ```
 
----
+`interactive` is **visual only** — it does not make the card operable. Put the real link or button inside.
 
-## Checkbox 🔒
-
-Native `<input type="checkbox">` under a custom visual. Supports indeterminate.
+### Dialog
 
 ```tsx
-const [checked, setChecked] = useState(false);
-<Checkbox
-  id="tos"
-  label="I accept the terms of service"
-  required
-  checked={checked}
-  onCheckedChange={setChecked}
-/>
-
-// Indeterminate (parent of a select-all group):
-<Checkbox id="all" indeterminate checked={someSelected} onCheckedChange={toggleAll} />
-```
-
-Props: `id`, `checked?`, `defaultChecked?`, `indeterminate?`, `onCheckedChange?`, `label?`, `description?`, `disabled?`, `required?`, `name?`, `value?`.
-
----
-
-## Chip 🔒
-
-Toggle pill with active state.
-
-```tsx
-<Chip id="active" label="Active" active={selected === 'active'} onClick={...} />
-```
-
-Sizes: `xsmall | small | default`.
-
----
-
-## CloseButton 🔒
-
-Standalone X button. Uses `X` from `lucide-react`.
-
-```tsx
-<CloseButton id="toast-close" variant="background" onClick={dismiss} />
-```
-
-Variants: `default | background` (background lights up on hover).
-
----
-
-## Dialog 🔒 + DialogHeader 🔒 + DialogBody + DialogFooter 🧩
-
-Modal dialog. Portalled to `<body>`, focus-trapped, scroll-locked while open.
-
-```tsx
-const [open, setOpen] = useState(false);
-<Dialog id="delete" open={open} onClose={() => setOpen(false)} closeOnOutsideClick>
-  <DialogHeader
-    id="delete"
-    title="Delete report"
-    description="This can't be undone."
-    onClose={() => setOpen(false)}
-  />
-  <DialogBody>
-    <p>All linked dashboards will show a broken reference.</p>
-  </DialogBody>
+<Dialog id="delete" open={open} onClose={close}>
+  <DialogHeader id="delete" title="Delete report" description="This can't be undone." />
+  <DialogBody>…</DialogBody>
   <DialogFooter>
-    <Button id="cancel" label="Cancel" style="ghost" onClick={() => setOpen(false)} />
-    <Button id="confirm" label="Delete" variant="error" onClick={handleDelete} />
+    <Button id="cancel" label="Cancel" style="ghost" onClick={close} />
+    <Button id="ok" label="Delete" variant="error" />
   </DialogFooter>
 </Dialog>
 ```
 
-For inline (non-portal) usage: `<Dialog inline open onClose={noop}>...`.
+`DialogHeader`'s `id` **must match** the Dialog's. For a confirmation use `AlertDialog`, and set `initialFocusRef` to the least destructive action.
 
----
-
-## DropdownMenu 🔒 + 10 subcomponents 🧩
-
-Portalled menu with keyboard nav, checkbox items, radio items, shortcuts.
+### Toast
 
 ```tsx
-<DropdownMenu id="account">
-  <DropdownMenuTrigger>
-    <Button id="account-btn" label="Account" />
-  </DropdownMenuTrigger>
-  <DropdownMenuContent>
-    <DropdownMenuLabel>My Account</DropdownMenuLabel>
-    <DropdownMenuSeparator />
-    <DropdownMenuItem onClick={openProfile}>
-      <UserIcon /> Profile
-      <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
-    </DropdownMenuItem>
-    <DropdownMenuCheckboxItem checked={showToolbar} onCheckedChange={setShowToolbar}>
-      Toolbar
-    </DropdownMenuCheckboxItem>
-    <DropdownMenuRadioGroup value={pos} onValueChange={setPos}>
-      <DropdownMenuRadioItem value="top">Top</DropdownMenuRadioItem>
-      <DropdownMenuRadioItem value="bottom">Bottom</DropdownMenuRadioItem>
-    </DropdownMenuRadioGroup>
-  </DropdownMenuContent>
-</DropdownMenu>
+<Toaster />                       // once, at app root
+toast.success('Saved');           // anywhere
+toast.error('Could not save', { action: { label: 'Retry', onClick: retry } });
 ```
 
----
-
-## Input 🔒
-
-Single-line text field. Composes `<Label>` internally.
+### Badge
 
 ```tsx
-<Input
-  id="email"
-  label="Email"
-  description="We'll never share it."
-  type="email"
-  placeholder="you@example.com"
-  IconLeft={MailIcon}
-  required
-  error={hasError}
-  errorMessage="Enter a valid email."
-/>
+<Badge id="new" variant="success" label="New" />
+<Badge id="beta" variant="outline" label="BETA" />
+<Badge id="topic" category="violet" label="Design" />           {/* soft tag */}
+<Badge id="live" category="red" categoryStyle="solid" label="Live" />
 ```
 
-`onValueChange(value: string)` is a convenience callback alongside standard `onChange(event)`.
+`category` overrides `variant`. 15 hues.
 
 ---
 
-## Label 🔒
+## Choosing between look-alikes
 
-Standalone form label. Renders `*` after text if `required`.
+These are visually identical and differ only in behaviour — a mockup can't tell you which is meant.
 
-```tsx
-<Label htmlFor="email" required description="We'll never share it.">
-  Email
-</Label>
-<input id="email" ... />
-```
-
-Also used as the shared text-styling primitive inside Checkbox / Input / Textarea's internal labels — don't reinvent label styles.
-
----
-
-## ScrollArea 🔒
-
-Custom-thumb scrollbar (native scroll under the hood).
-
-```tsx
-<ScrollArea id="tags" orientation="vertical" type="hover" style={{ height: 240, width: 320 }}>
-  <div>{lots of content}</div>
-</ScrollArea>
-```
-
-`orientation: 'vertical' | 'horizontal' | 'both'`, `type: 'auto' | 'hover'`.
+| If the user wants… | Reach for |
+|---|---|
+| A short, simple option list (esp. mobile) | `NativeSelect` |
+| Options with icons, descriptions or groups | `Select` |
+| A long list the user should filter by typing | `Combobox` |
+| Several filters, any number active | `Chip` |
+| One standalone on/off | `Toggle` |
+| Exactly one of N (view switcher, status filter) | `ToggleGroup` |
+| A message beside the thing it describes | `Alert` |
+| A page-wide announcement bar | `Banner` |
+| Something transient | `toast()` |
+| A short label for a control | `Tooltip` |
+| A rich preview on hover | `HoverCard` |
+| A panel the user clicks open | `Popover` |
+| A menu of actions | `DropdownMenu` |
+| Picking a value | `Select` |
+| A setting that applies now | `Switch` |
+| A choice committed on submit | `Checkbox` |
 
 ---
 
-## Spinner 🔒
+## Traps worth knowing
 
-Rotating SVG. Used automatically inside Button when `isLoading`.
-
-⚠️ Current implementation is a placeholder. The real design hasn't been delivered yet.
-
----
-
-## Textarea 🔒
-
-Multi-line text field. Same API surface as Input minus the icon slots.
-
-```tsx
-<Textarea
-  id="bio"
-  label="Bio"
-  description="Shown on your profile."
-  rows={4}
-/>
-```
-
-Resize handle sits flush in the bottom-right corner. `resize: vertical` by default.
-
----
-
-## Tooltip 🔒 + TooltipTrigger + TooltipContent 🧩
-
-Portalled tooltip with directional enter/exit animations.
-
-```tsx
-<Tooltip id="save-tip" side="top" delayDuration={400}>
-  <TooltipTrigger>
-    <Button id="save" label="Save" />
-  </TooltipTrigger>
-  <TooltipContent>Save your changes</TooltipContent>
-</Tooltip>
-```
-
-`side: 'top' | 'right' | 'bottom' | 'left'`, `align: 'start' | 'center' | 'end'`, `sideOffset: number`, `delayDuration: number` (open delay in ms).
+- **`id` is required** on non-trivial components and seeds child ids. Compound headers (`DialogHeader`, `DrawerHeader`, `CardHeader`) must repeat the parent's `id`.
+- **Never put a positioning `transform` on a `Button`.** Its `:active` press-scale replaces `transform` wholesale, so the button teleports out from under the cursor and the click never fires. Put positioning on a wrapper.
+- **`Alert` Omits the native `style` attribute** — `style` there is the visual style (`default | outline`). Use `className`.
+- **`Collapsible` / `Accordion` content must not carry its own padding** — it leaks into the grid row's min-size and the panel won't fully collapse. Pad an inner element.
+- **Floating surfaces have no collision detection.** They won't flip near a viewport edge; place them with `side` / `align`.
+- **`Toaster` takes no `id` and no `...rest`** — a deliberate exception to both rules, being a mount-once singleton.
