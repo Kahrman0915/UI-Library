@@ -14,6 +14,19 @@ import './docs.scss';
  * surfaced by the `reactDocgenTypescriptOptions` in `.storybook/main.ts`.
  */
 
+/**
+ * Standing copy for props that mean the same thing on every component.
+ *
+ * `className` appears on all 59 of them — hard rule 4 in CLAUDE.md — and would
+ * otherwise need the identical sentence written into 228 separate JSDoc
+ * comments. One line here beats 228 copies that can drift. Anything with a
+ * component-specific meaning must still be documented at the source.
+ */
+const UNIVERSAL: Record<string, string> = {
+  className:
+    'Merged onto the root element, after the component’s own classes. `style` works the same way unless a component Omits it.',
+};
+
 /** Squash a union summary onto one line so the type column stays scannable. */
 function tidyType(summary: string | undefined): string {
   if (!summary) return '—';
@@ -45,7 +58,7 @@ function toRows(argTypes: StrictArgTypes | undefined): Row[] {
       required: Boolean(arg.type?.required),
       type: tidyType(arg.table?.type?.summary ?? arg.type?.name),
       defaultValue: tidyDefault(arg.table?.defaultValue?.summary),
-      description: arg.description ?? '',
+      description: arg.description || UNIVERSAL[key] || '',
     }))
     .sort((a, b) => {
       // Required props first — they're what a consumer has to supply.
