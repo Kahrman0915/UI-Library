@@ -152,8 +152,8 @@ Also fixed along the way, though not called out in those commit messages:
 cross-cutting **#3** (Alert and Card now wire their minted ids), **#9** (both
 Accordion and ToggleGroup extract values out of the `useCallback` deps), and
 the Spinner half of **#6** (its `role`/`aria-label` now sit *before* `{...rest}`
-so consumers can localize or hide it). Pagination's ellipsis half of **#5** is
-fixed; Breadcrumb's is not.
+so consumers can localize or hide it). Pagination's ellipsis half of **#5** was
+fixed here; Breadcrumb's followed in wave 5b (below).
 
 ### Re-verified against source 2026-07-28 (later) — and then closed out
 
@@ -282,7 +282,14 @@ Separately, **`parameters.ui` prose now exists for all 59 components**
 (description + tags); Button and Select additionally carry usage / composition /
 a11y and are the template for the rest.
 
-## Priority actions
+## Priority actions — the original plan, all seven now complete
+
+These were the recommendations as written on the day of the audit. They are kept
+verbatim as a record of the order the work was taken in; **every one has shipped**
+(see Status above). Item 7 resolved as *accept both vocabularies*: `normalizeSize`
+in `src/utils/size.ts` maps `xs`/`sm`/`lg` onto Button and Chip's
+`xsmall`/`small`/`large`, so either spelling works and the emitted class name is
+unchanged.
 
 1. **Fix the Label description pattern** (sibling + `aria-describedby`) — repairs Input, NativeSelect, Checkbox, Switch, RadioGroup in one change.
 2. **Open the closed prop surfaces** (Dialog, AlertDialog, Tooltip, Spinner, InputOTP → extend `*HTMLAttributes` + spread `...rest`) and fix the Alert `style` Omit — pure additive, no breaking changes.
@@ -296,15 +303,17 @@ a11y and are the template for the rest.
 
 ## Post-audit findings — the interaction blind spot
 
-Two pre-existing bugs surfaced **after** the audit shipped, both reported by the
-owner from ordinary use, both missed by all four reviewers. Neither was findable
-by reading source, and that is the point: they only exist in *rendered geometry
-and live event flow*.
+Three bugs surfaced **after** the audit shipped, each reported by the owner from
+ordinary use, none findable by reading source — and that is the point: they only
+exist in *rendered geometry and live event flow*. The first two were pre-existing
+and missed by all four reviewers; the third was introduced afterwards by the same
+blind spot, which is why it belongs here.
 
 | # | Bug | Why static review missed it | Fixed |
 |---|---|---|---|
 | 1 | **Select/Combobox: chevron + right padding were an unclickable dead strip** (~37px). Clicking the chevron did nothing; clicking the text opened the menu. | The chevron *has* `pointer-events: none` — which reads as correct, and is correct in NativeSelect. But it's a flex **sibling**, not an overlay: the button ends at x=299, the chevron sits at 307→323. They never overlap, so the click fell through to a wrap with no handler. Only measuring the rendered boxes reveals this. | `8750383` |
 | 2 | **Every floating surface came unanchored when the layout moved.** Dragging the Storybook panel with a menu open left it stranded away from its trigger. | `computePosition` runs in a layout effect keyed on `open` — correct-looking code. The defect is the *absence* of a listener, and absence doesn't show up when you're reading what's there. Tooltip happened to have one; the other six didn't. | `e58bda2` |
+| 3 | **A positioning `transform` on a `Button` kills its click.** Centring the docs "View Code" pill with `transform: translate(-50%, -50%)` made it jump ~43px on mousedown and fire no `click` at all. | Two files, each correct alone. `transform` **replaces**, it doesn't compose, and `.ui-button:active` sets `transform: scale(…)` at higher specificity — so the press state discards the centring and the button teleports out from under the cursor before mouseup. Applies to every press-scaled component (Button, Chip, Toggle, ToggleGroupItem). Fix: put positioning on a wrapper. | `87c4d6d` |
 
 **Root cause of the miss:** the review prompts asked for API shape, state
 coverage, ARIA wiring, story completeness, and handoff. All static. A component
