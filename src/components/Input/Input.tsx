@@ -46,7 +46,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           </Label>
         )}
         <div
-          className={`ui-input-wrap${IconLeft ? ' ui-input-wrap--has-left' : ''}${IconRight ? ' ui-input-wrap--has-right' : ''}${error ? ' ui-input-wrap--error' : ''}${disabled ? ' ui-input-wrap--disabled' : ''}`}
+          className={`ui-input-wrap${error ? ' ui-input-wrap--error' : ''}${disabled ? ' ui-input-wrap--disabled' : ''}`}
         >
           {IconLeft && (
             <span className="ui-input__icon ui-input__icon--left" aria-hidden="true">

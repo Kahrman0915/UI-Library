@@ -42,7 +42,7 @@ const InputGroup = forwardRef<HTMLDivElement, InputGroupProps>(
         data-size={size}
         data-disabled={disabled ? '' : undefined}
         data-invalid={error ? '' : undefined}
-        className={`ui-input-field ui-input-field--sz-${size} ui-input-group${disabled ? ' ui-input-group--disabled' : ''}${error ? ' ui-input-group--error' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-input-field ui-input-field--sz-${size} ui-input-group${className ? ' ' + className : ''}`}
       >
         <div
           className={`ui-input-wrap ui-input-group__wrap${disabled ? ' ui-input-wrap--disabled' : ''}${error ? ' ui-input-wrap--error' : ''}`}

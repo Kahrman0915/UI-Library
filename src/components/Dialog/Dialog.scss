@@ -28,13 +28,6 @@
     padding: var(--p-4);
     flex-shrink: 0;
     border-bottom: var(--border-w-100) solid var(--border);
-
-    &--sticky {
-      position: sticky;
-      top: 0;
-      background: var(--card);
-      z-index: var(--z-10);
-    }
   }
 
   &__header-content {
@@ -115,11 +108,5 @@
     background: var(--bg-input-50);
     border-top: var(--border-w-100) solid var(--border);
     flex-shrink: 0;
-
-    &--sticky {
-      position: sticky;
-      bottom: 0;
-      z-index: var(--z-10);
-    }
   }
 }

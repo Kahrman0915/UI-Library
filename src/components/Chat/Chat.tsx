@@ -232,7 +232,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
         ref={ref}
         data-from={from}
         aria-busy={pending || streaming || undefined}
-        className={`ui-chat-bubble ui-chat-bubble--${from}${pending ? ' ui-chat-bubble--pending' : ''}${className ? ' ' + className : ''}`}
+        className={`ui-chat-bubble ui-chat-bubble--${from}${className ? ' ' + className : ''}`}
       >
         {pending ? (
           <span className="ui-chat-bubble__typing" aria-label={typingLabel}>

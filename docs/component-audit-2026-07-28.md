@@ -212,9 +212,33 @@ because it is a portal container that has to exist to receive anything.)
   identical class, height, font-size and padding (`Sizes — both vocabularies`
   story).
 
-**Cross-cutting still open: #8 only.** `ui-input-wrap--has-left/right` is
-emitted by Input.tsx:49 and appears **zero** times in Input.scss;
-`.ui-dialog__*--sticky` exists twice in Dialog.scss and is emitted **nowhere**.
+**Cross-cutting #8 — FIXED (wave 5c).** The audit named three; a scan of every
+`ui-*--modifier` emitted in TSX against every one styled in SCSS found **six**
+emitted-but-unstyled classes, all confirmed inert:
+
+| Class | Why it was dead |
+|---|---|
+| `ui-input-wrap--has-left` / `--has-right` | the icons are flex children carrying their own `__icon--left/--right`; the wrap modifier added nothing and styled nothing |
+| `ui-input-group--disabled` / `--error` | duplicated `data-disabled` / `data-invalid` on the *same element*; the visible error border comes from the inner `.ui-input-wrap--error` |
+| `ui-chat-bubble--pending` | the typing dots are a child element (`__typing`), which is what's styled |
+| `ui-fab--pulse` | the sonar rings are a child element (`__rings > __ring`), which is what's animated |
+
+The two `.ui-dialog__{header,footer}--sticky` rules were dead in *both*
+directions — never emitted, and structurally unnecessary: `.ui-dialog` is a flex
+column with `max-height: 85vh`, only `__body` scrolls, and header/footer are
+`flex-shrink: 0` **outside** that scroll container, so `position: sticky` on them
+could never apply. Verified by scrolling `LongContent` to the bottom — neither
+moved a pixel. Removed.
+
+`void ctx` in DropdownMenu was already gone (wave 3).
+
+Preview HTML referencing the removed classes (`forms/input.html`,
+`forms/input-group.html`) was updated in the same commit, per the CLAUDE.md rule.
+
+**The scan is now an invariant worth keeping at zero.** Note the reverse
+direction (styled-but-never-emitted) is *not* checkable this way — almost every
+modifier is built by interpolation (`ui-avatar--sz-${size}`), so a naive scan
+reports ~280 false positives.
 
 **Wave 5 (JSDoc) is bigger than the original "~20" estimate: 29 of 59 types
 files** still carry fewer than three doc lines. The heavy ones are Chat (31
