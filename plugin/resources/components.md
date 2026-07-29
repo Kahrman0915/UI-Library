@@ -77,7 +77,9 @@ Quick key: 🔒 = requires an `id` · 🧩 = compound, use the parts together
 `ModeToggler` 🔒 (owns `data-mode`) · `DirectionProvider` + `useDirection` (RTL/LTR)
 
 ### Hooks
-`useMounted` · `useIsMobile` · `usePresence` · `useFloatingReposition` · `useAutosizeTextarea` · `useStickToBottom` · `useStreamingText` · `useRipple`
+`usePresence` · `useAutosizeTextarea` · `useStickToBottom` · `useStreamingText` · `useRipple` · `useSidebar` · `useDirection`
+
+`useMounted`, `useIsMobile` and `useFloatingReposition` are internal to the library and are **not** importable from `@ui/lib`.
 
 ---
 
