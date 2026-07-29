@@ -17,6 +17,14 @@ const meta: Meta<typeof Banner> = {
         'continuing. Distinct from `Alert`, which sits inline beside the thing it ' +
         'describes.',
       tags: ['5 variants', 'dismissible'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

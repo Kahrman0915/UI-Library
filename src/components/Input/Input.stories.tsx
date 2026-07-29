@@ -19,6 +19,14 @@ const meta: Meta<typeof Input> = {
         'optional leading or trailing icons built in. For multi-line text use ' +
         '`Textarea`.',
       tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

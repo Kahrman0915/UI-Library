@@ -16,6 +16,14 @@ const meta: Meta<typeof Tooltip> = {
         'anything richer — or anything the user needs to click into — use `HoverCard` ' +
         'or `Popover`. Deliberately never picks up the brand theme.',
       tags: ['compound', '3 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

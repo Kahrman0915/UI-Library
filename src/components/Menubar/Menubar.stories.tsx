@@ -26,6 +26,14 @@ const meta: Meta<typeof Menubar> = {
         'others switches between them, and arrow keys move across the triggers. Built ' +
         'on `DropdownMenu`, so positioning and item behaviour come along for free.',
       tags: ['compound', '11 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

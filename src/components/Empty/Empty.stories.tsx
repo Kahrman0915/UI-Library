@@ -22,6 +22,14 @@ const meta: Meta<typeof Empty> = {
         'an icon, a title, a sentence explaining why it is empty, and usually the ' +
         'action that would fill it.',
       tags: ['compound', '6 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

@@ -29,6 +29,14 @@ const meta: Meta<typeof Breadcrumb> = {
         'except the current page, which is marked `aria-current` and deliberately is ' +
         'not clickable.',
       tags: ['compound', '7 parts', 'navigation'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

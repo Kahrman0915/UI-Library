@@ -32,6 +32,14 @@ const meta: Meta<typeof FeaturedIcon> = {
         'An icon inside a decorative container — the visual anchor at the top of an ' +
         'empty state, a dialog, or a feature row.',
       tags: ['decorative'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

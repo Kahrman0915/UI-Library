@@ -20,6 +20,14 @@ const meta: Meta<typeof AlertDialog> = {
         'pattern requires: `role="alertdialog"`, and no way to dismiss it by clicking ' +
         'away or pressing an X — the user has to answer.',
       tags: ['compound', 'modal', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

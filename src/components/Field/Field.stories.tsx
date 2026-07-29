@@ -36,6 +36,14 @@ const meta: Meta<typeof Field> = {
         'and the layout holding them together. `FieldSet` and `FieldGroup` handle ' +
         'related groups of them.',
       tags: ['compound', '10 parts', 'form'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

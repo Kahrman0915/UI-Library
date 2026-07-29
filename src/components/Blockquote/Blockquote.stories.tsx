@@ -12,6 +12,14 @@ const meta: Meta<typeof Blockquote> = {
         'A quoted passage, set off with an accent rule and italic body text. Pass ' +
         '`cite` to render an attribution footer under it.',
       tags: ['typography'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

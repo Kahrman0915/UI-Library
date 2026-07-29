@@ -13,6 +13,14 @@ const meta: Meta<typeof AspectRatio> = {
         'before it loads and never shifts the layout underneath it. Pass `ratio` as a ' +
         'division expression — `16 / 9`.',
       tags: ['layout'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

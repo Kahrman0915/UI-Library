@@ -21,6 +21,14 @@ const meta: Meta<typeof Pagination> = {
         'buttons, so every page is a real, shareable link rather than a piece of ' +
         'client state.',
       tags: ['compound', '7 parts', 'navigation'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

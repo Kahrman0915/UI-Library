@@ -13,6 +13,14 @@ const meta: Meta<typeof Avatar> = {
         'no image or it fails to load. `AvatarGroup` overlaps several into a stack ' +
         'with a `+N` overflow chip.',
       tags: ['3 sizes', 'fallback'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

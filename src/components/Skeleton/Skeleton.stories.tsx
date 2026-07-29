@@ -12,6 +12,14 @@ const meta: Meta<typeof Skeleton> = {
         'A placeholder in the shape of the content that is loading, so nothing jumps ' +
         'when the real thing arrives.',
       tags: ['3 shapes', 'loading'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

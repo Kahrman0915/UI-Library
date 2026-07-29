@@ -12,6 +12,14 @@ const meta: Meta<typeof ModeToggler> = {
         'Owns the light/dark `data-mode` attribute on `<html>`. Render exactly one ' +
         'per app.',
       tags: ['3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

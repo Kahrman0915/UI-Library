@@ -37,6 +37,14 @@ const meta: Meta<typeof Badge> = {
         'to the 15-hue tag palette for topics and labels that need to be told apart ' +
         'rather than ranked.',
       tags: ['12 variants', '15 category hues'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

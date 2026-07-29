@@ -14,6 +14,14 @@ const meta: Meta<typeof CloseButton> = {
         'anything else needing a small icon-only button should take the shared ' +
         '`.ui-icon-button` shell directly rather than wrapping this.',
       tags: ['icon button'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

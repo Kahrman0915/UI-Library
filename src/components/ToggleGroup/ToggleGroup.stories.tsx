@@ -20,6 +20,14 @@ const meta: Meta<typeof ToggleGroup> = {
         'A segmented control: exactly one of N selected, or explicitly multiple. The ' +
         'right pick for view switchers and status filters.',
       tags: ['compound', 'segmented'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

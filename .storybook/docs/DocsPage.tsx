@@ -196,6 +196,7 @@ export function DocsPage() {
     ui.composition?.length || subcomponentNames.length,
   );
   const hasA11y = Boolean(ui.a11y?.keyboard?.length || ui.a11y?.notes);
+  const hasChangelog = Boolean(ui.changelog?.length);
 
   // Built here rather than scraped from the DOM — this component already knows
   // exactly which sections it decided to render.
@@ -207,6 +208,7 @@ export function DocsPage() {
     rest.length > 0 && { id: 'examples', label: 'Examples' },
     { id: 'api', label: 'API reference' },
     hasA11y && { id: 'accessibility', label: 'Accessibility' },
+    hasChangelog && { id: 'changelog', label: 'Changelog' },
   ].filter(Boolean) as TocEntry[];
 
   return (
@@ -392,6 +394,29 @@ export function DocsPage() {
                   ))}
                 </div>
               ) : null}
+            </Section>
+          ) : null}
+          {hasChangelog ? (
+            <Section
+              id="changelog"
+              title="Changelog"
+              description="Newest first. Every change to this component is logged here."
+            >
+              <ol className="ui-docs-log">
+                {ui.changelog?.map((entry) => (
+                  <li key={entry.date + entry.summary} className="ui-docs-log__row">
+                    <time className="ui-docs-log__date" dateTime={entry.date}>
+                      {entry.date}
+                    </time>
+                    <div>
+                      <p className="ui-docs-log__summary">{prose(entry.summary)}</p>
+                      {entry.detail ? (
+                        <p className="ui-docs-log__detail">{prose(entry.detail)}</p>
+                      ) : null}
+                    </div>
+                  </li>
+                ))}
+              </ol>
             </Section>
           ) : null}
         </div>

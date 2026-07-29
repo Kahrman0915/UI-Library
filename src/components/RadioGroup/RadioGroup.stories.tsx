@@ -15,6 +15,14 @@ const meta: Meta<typeof RadioGroup> = {
         'once. Past roughly seven options the list stops being scannable — use a ' +
         '`Select` instead.',
       tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

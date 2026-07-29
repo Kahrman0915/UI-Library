@@ -15,6 +15,14 @@ const meta: Meta<typeof Checkbox> = {
         'covers a parent controlling a partially-checked set. For a setting that ' +
         'takes effect the moment it is flipped rather than on submit, use `Switch`.',
       tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

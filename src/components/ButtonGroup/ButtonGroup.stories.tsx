@@ -18,6 +18,14 @@ const meta: Meta<typeof ButtonGroup> = {
         'meet. Purely presentational — it has no selection state, so for one-of-N use ' +
         '`ToggleGroup`.',
       tags: ['compound', '3 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

@@ -27,6 +27,14 @@ const meta: Meta<typeof ContextMenu> = {
         'The right-click menu, anchored to the pointer position rather than to a ' +
         'trigger element. The only menu family in the library with submenus.',
       tags: ['compound', '14 parts', 'submenus'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {

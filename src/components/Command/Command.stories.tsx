@@ -32,6 +32,14 @@ const meta: Meta<typeof Command> = {
         'The ⌘K palette: a search field over a grouped, keyboard-driven list of ' +
         'actions. `CommandDialog` mounts it in a modal for the app-wide shortcut.',
       tags: ['compound', '9 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {

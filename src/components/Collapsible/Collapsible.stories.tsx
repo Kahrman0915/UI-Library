@@ -19,6 +19,14 @@ const meta: Meta<typeof Collapsible> = {
         '`Accordion`; reach for `Accordion` instead when you have a set of them that ' +
         'coordinate.',
       tags: ['compound', '3 parts', 'animated'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {

@@ -23,6 +23,14 @@ const meta: Meta<typeof Tabs> = {
         'whether the arrow keys select immediately or only move focus — use `manual` ' +
         'when switching is expensive or destructive.',
       tags: ['compound', '4 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

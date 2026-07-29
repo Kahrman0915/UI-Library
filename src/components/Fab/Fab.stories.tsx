@@ -27,6 +27,14 @@ const meta: Meta<typeof Fab> = {
         'that should always be within reach. Carries the Aiden gradient, which is ' +
         'rather the point of it.',
       tags: ['aiden', 'floating'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

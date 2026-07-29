@@ -13,6 +13,14 @@ const meta: Meta<typeof Spinner> = {
         '`prefers-reduced-motion` — it is a status indicator, and a frozen one reads ' +
         'as “nothing is happening”.',
       tags: ['loading', 'status'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

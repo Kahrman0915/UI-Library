@@ -16,6 +16,14 @@ const meta: Meta<typeof HoverCard> = {
         'preview behind a link. For a short label use `Tooltip`; for something the ' +
         'user deliberately clicks open, use `Popover`.',
       tags: ['compound', '3 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {

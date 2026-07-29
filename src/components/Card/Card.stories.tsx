@@ -18,6 +18,14 @@ const meta: Meta<typeof Card> = {
         'prop-driven (`title`, `description`, `action`), and `interactive` opts into ' +
         'the hover lift for cards that are themselves clickable.',
       tags: ['compound', '4 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

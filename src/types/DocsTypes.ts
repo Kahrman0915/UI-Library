@@ -65,6 +65,29 @@ export type UiDocsA11y = {
   notes?: string;
 };
 
+/**
+ * One entry in a component's change log.
+ *
+ * **Deliberately records no author.** A design system's history is about what
+ * moved and why, not who moved it — git already answers the latter, and putting
+ * names on a docs page invites reading changes as personal rather than
+ * systemic.
+ */
+export type UiDocsChange = {
+  /** ISO `YYYY-MM-DD`. Rendered as-is, so keep the format consistent. */
+  date: string;
+  /**
+   * What changed, for someone who *uses* the component — no file paths, no
+   * internals. "The error message is now announced by screen readers."
+   */
+  summary: string;
+  /**
+   * The same change for someone who *maintains* it: the prop, the token, the
+   * mechanism, the reason. Omit when the summary already says everything.
+   */
+  detail?: string;
+};
+
 export type UiDocsParameters = {
   /** One-paragraph lede under the title. The single highest-value field. */
   description?: string;
@@ -78,4 +101,10 @@ export type UiDocsParameters = {
   a11y?: UiDocsA11y;
   /** Replaces the auto-generated `import { X } from '@ui/lib';` line. */
   importCode?: string;
+  /**
+   * Change history, **newest first**. Every change to a component should add an
+   * entry here in the same commit — the docs page is where a consumer looks to
+   * find out whether something moved under them.
+   */
+  changelog?: UiDocsChange[];
 };

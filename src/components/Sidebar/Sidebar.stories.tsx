@@ -50,6 +50,14 @@ const meta: Meta<typeof Sidebar> = {
         'Has its own neutral `--sidebar-*` token surface, which a brand theme ' +
         'deliberately does not remap.',
       tags: ['compound', '23 parts', 'navigation'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
 };

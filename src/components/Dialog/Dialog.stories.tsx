@@ -15,6 +15,14 @@ const meta: Meta<typeof Dialog> = {
         'locks scroll, closes on Escape or an outside click, and returns focus to ' +
         'whatever opened it. For a plain confirm/cancel prompt use `AlertDialog`.',
       tags: ['compound', 'modal', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

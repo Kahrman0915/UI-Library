@@ -28,6 +28,14 @@ const meta: Meta<typeof InputGroup> = {
         'A field flanked by addons — a currency symbol, a unit, a prefix, an inline ' +
         'button — all sharing one border with the input.',
       tags: ['compound', '6 parts', 'form'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

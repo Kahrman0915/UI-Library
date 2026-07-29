@@ -26,6 +26,14 @@ const meta: Meta<typeof DropdownMenu> = {
         'A menu of actions opened from a button. A menu is for *doing* things — when ' +
         'the user is choosing a value, use `Select` instead.',
       tags: ['compound', '11 parts', 'portal'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {

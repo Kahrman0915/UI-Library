@@ -14,6 +14,14 @@ const meta: Meta<typeof Slider> = {
         'lower and upper bound, and each thumb’s announced range stops at its ' +
         'neighbour.',
       tags: ['form control', '3 sizes'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

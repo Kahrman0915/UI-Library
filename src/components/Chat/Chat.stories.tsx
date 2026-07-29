@@ -62,6 +62,14 @@ const meta: Meta<typeof Chat> = {
         'turns are contained bubbles on the trailing edge. Message content is yours ' +
         'to provide; there is no Markdown parser, which would mean a dependency.',
       tags: ['compound', 'aiden', '26 parts'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

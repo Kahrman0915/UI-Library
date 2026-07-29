@@ -13,6 +13,14 @@ const meta: Meta<typeof Label> = {
         'required marker. Every form control renders one internally, so you rarely ' +
         'reach for it directly.',
       tags: ['form'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

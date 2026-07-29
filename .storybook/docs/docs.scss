@@ -565,6 +565,57 @@
 }
 
 // ---------------------------------------------------------------------------
+// Changelog
+//
+// Same two-column shape as the keyboard table, so the page has one "reference
+// list" form rather than two. Records no author by design — see UiDocsChange.
+// ---------------------------------------------------------------------------
+.ui-docs-log {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+  background: var(--card);
+}
+
+.ui-docs-log__row {
+  display: grid;
+  grid-template-columns: var(--w-28) minmax(0, 1fr);
+  gap: var(--p-4);
+  padding: var(--p-4);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-log__row:last-child {
+  border-bottom: none;
+}
+
+.ui-docs-log__date {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.ui-docs-log__summary {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--foreground);
+}
+
+// The maintainer-facing half — same content, one level quieter.
+.ui-docs-log__detail {
+  margin: var(--p-1-5) 0 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+// ---------------------------------------------------------------------------
 // Examples
 // ---------------------------------------------------------------------------
 .ui-docs-example + .ui-docs-example {

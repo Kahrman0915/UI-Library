@@ -21,6 +21,14 @@ const meta: Meta<typeof Chip> = {
         'once. One standalone on/off control is a `Toggle`; one-of-N mutually ' +
         'exclusive options is a `ToggleGroup`.',
       tags: ['multi-select'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   argTypes: {

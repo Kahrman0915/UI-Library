@@ -19,6 +19,14 @@ const meta: Meta<typeof Accordion> = {
         'number sit open at once. Height animates with a CSS grid trick, so there is ' +
         'no measurement and no JavaScript in the open/close path.',
       tags: ['compound', 'animated'],
+      changelog: [
+        {
+          date: '2026-07-29',
+          summary: 'Initial build complete.',
+          detail:
+            'Component shipped: tokenised styles, full prop surface, stories, and documented API.',
+        },
+      ],
     } satisfies UiDocsParameters,
   },
   args: {
