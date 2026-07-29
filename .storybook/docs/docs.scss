@@ -58,12 +58,11 @@
   max-width: var(--max-w-4xl);
 }
 
-// Foundations / Prototypes pages lay out their own wide content — the reading
-// column that suits prose would crush them.
-.ui-docs--showcase {
-  max-width: none;
-}
-
+// Foundations / Prototypes lay out their own wide content, so the MAIN column
+// drops the prose reading width — but the page keeps `.ui-docs`'s own
+// `--max-w-6xl`, so it centres on exactly the same measure as a component page.
+// Setting `max-width: none` here left them flush against the viewport edge
+// while every component page sat centred.
 .ui-docs--showcase .ui-docs__main {
   max-width: none;
 }
@@ -156,6 +155,30 @@
 
 .ui-docs-section__body {
   margin-top: var(--p-6);
+}
+
+// Single-story Foundations pages render no section heading, so the body is the
+// section's first child — and its offset, meant to clear a heading that isn't
+// there, left a gap under the header rule half again too big.
+.ui-docs-section__body:first-child {
+  margin-top: 0;
+}
+
+// Those pages then open with their own `<h2>`, which carries its own top margin
+// for separating sections *within* the page — stacked under the section's
+// padding it doubled the gap again. Collapse whichever element the page renders
+// first; the `style +` arm covers Motion, which opens with a `<style>` block.
+// Storybook nests the story inside `.sb-story > div`, so the page's own first
+// element is two levels down — not one. The `style +` arm covers Motion, which
+// opens with a `<style>` block.
+//
+// `!important` because several Foundations pages set that margin **inline**
+// (`style={{ margin: '36px 0 8px' }}` on their local `H2` helper), and an inline
+// style outranks any stylesheet rule. This is the one case in the docs chrome
+// that needs it — everything else is ordinary cascade.
+.ui-docs-section__body:first-child .sb-story > * > *:first-child,
+.ui-docs-section__body:first-child .sb-story > * > style:first-child + * {
+  margin-top: 0 !important;
 }
 
 .ui-docs-p {
