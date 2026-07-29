@@ -155,7 +155,10 @@ the Spinner half of **#6** (its `role`/`aria-label` now sit *before* `{...rest}`
 so consumers can localize or hide it). Pagination's ellipsis half of **#5** is
 fixed; Breadcrumb's is not.
 
-### Re-verified against source 2026-07-28 (later) — what is actually still open
+### Re-verified against source 2026-07-28 (later) — and then closed out
+
+**All eight cross-cutting findings, all high-severity a11y items, and waves 5–7
+are now done.** What follows is the record of what each one turned out to be.
 
 **A11y items the wave-4 commit never touched — FIXED in wave 5a:**
 
@@ -240,10 +243,19 @@ direction (styled-but-never-emitted) is *not* checkable this way — almost ever
 modifier is built by interpolation (`ui-avatar--sz-${size}`), so a naive scan
 reports ~280 false positives.
 
-**Wave 5 (JSDoc) is bigger than the original "~20" estimate: 29 of 59 types
-files** still carry fewer than three doc lines. The heavy ones are Chat (31
-exported types), Sidebar (21), ContextMenu (17), Item and Attachment (13 each),
-Field (12). Button and Select are the model.
+**Wave 5 (JSDoc) — DONE.** It was bigger than the original "~20" estimate: 29 of
+59 types files were bare. All 849 props now show a description in the API
+reference — **548 hand-written**, up from 251, with the remaining 301 covered by
+a standing-copy map in `PropsTable` for the eleven props that mean the same
+thing on every component (`className`, `id`, `rel`, `disabled`, `children`, the
+three `on*Change` callbacks, and the native `placeholder` / `required` / `type`
+that stories surface via `args`). Source text always wins over the map.
+
+Two mechanics worth remembering: **`{@link X}` was printing literally** in the
+table (45 of them) until `prose()` learned to render it as inline code, and
+**editing a `{Name}.types.ts` does not invalidate docgen for `{Name}.tsx`** — the
+tables keep serving stale descriptions until Storybook restarts, which made nine
+components look undocumented mid-wave.
 
 **Wave 6 (stories) — DONE.** Eight stories added: Menubar `KeyboardNavigation`
 (roving tabindex, hover-to-switch, the two v1 gaps) + `DisabledItems`; Drawer
