@@ -9,12 +9,15 @@ export type ModeTogglerProps = Omit<
   'onChange' | 'type'
 > & {
   id: string;
+  /** Default `default`. `ghost` for a toolbar. */
   variant?: ModeTogglerVariant;
+  /** Control dimensions. */
   size?: ModeTogglerSize;
   /** Controlled mode. Omit for uncontrolled (component reads/writes `data-mode`). */
   mode?: Mode;
   /** Initial mode when uncontrolled. Omit to derive from `data-mode` → localStorage → system. */
   defaultMode?: Mode;
+  /** Fires with the new mode after every flip, controlled or not. */
   onModeChange?: (mode: Mode) => void;
   /**
    * localStorage key for persistence. Set to `null` to disable persistence.

@@ -1,4 +1,6 @@
+/** Which edge of the trigger the menu opens from. */
 export type DropdownMenuSide = 'top' | 'right' | 'bottom' | 'left';
+/** How the menu lines up along that edge. */
 export type DropdownMenuAlign = 'start' | 'center' | 'end';
 
 /**
@@ -53,6 +55,7 @@ export type DropdownMenuItemProps = Omit<
   'children' | 'onClick'
 > & {
   children: React.ReactNode;
+  /** Runs on click or Enter, then the menu closes. */
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   /** Skipped by arrow-key navigation and unclickable. */
   disabled?: boolean;
@@ -95,8 +98,10 @@ export type DropdownMenuCheckboxItemProps = Omit<
   'children' | 'onClick'
 > & {
   children: React.ReactNode;
+  /** Controlled checked state. Pair with `onCheckedChange`. */
   checked?: boolean;
   onCheckedChange?: (checked: boolean) => void;
+  /** Skipped by arrow-key navigation and unclickable. */
   disabled?: boolean;
   className?: string;
 };
@@ -107,6 +112,7 @@ export type DropdownMenuRadioGroupProps = Omit<
   'children'
 > & {
   children: React.ReactNode;
+  /** The selected item's `value`. Controlled — pair with `onValueChange`. */
   value?: string;
   onValueChange?: (value: string) => void;
   className?: string;
@@ -118,7 +124,9 @@ export type DropdownMenuRadioItemProps = Omit<
   'children' | 'onClick'
 > & {
   children: React.ReactNode;
+  /** Reported by the group's `onValueChange`. Must be unique in the group. */
   value: string;
+  /** Skipped by arrow-key navigation and unclickable. */
   disabled?: boolean;
   className?: string;
 };

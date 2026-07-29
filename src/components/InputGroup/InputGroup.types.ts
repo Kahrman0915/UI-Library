@@ -12,11 +12,14 @@ export type InputGroupAddonAlign =
   | 'block-start'
   | 'block-end';
 
+/** Field height. Matches Input's scale so the two line up in a form. */
 export type InputGroupSize = 'sm' | 'default' | 'lg';
 
 /** `icon-*` sizes are square, for a glyph with no label. */
+/** `icon-*` sizes are square, for a glyph with no label. */
 export type InputGroupButtonSize = 'xs' | 'sm' | 'icon-xs' | 'icon-sm';
 
+/** Emphasis of a button sitting inside the field's border. */
 export type InputGroupButtonVariant =
   | 'default'
   | 'outline'
@@ -31,6 +34,7 @@ export type InputGroupButtonVariant =
  * supply your own `<Label>` and wire `aria-describedby` yourself.
  */
 export type InputGroupProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Default `default`. See {@link InputGroupSize}. */
   size?: InputGroupSize;
   /** Disables every control inside the group (input, textarea, buttons) via
    *  context. A child's own `disabled` still wins. */
@@ -79,8 +83,11 @@ export type InputGroupTextProps = React.HTMLAttributes<HTMLSpanElement> & {
  * Compact button sized to sit inside the field. Defaults to `type="button"`
  * so it never accidentally submits a surrounding form.
  */
+/** A button sitting inside the group's shared border, as an addon. */
 export type InputGroupButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
+  /** Default `xs`. See {@link InputGroupButtonSize}. */
   size?: InputGroupButtonSize;
+  /** Default `ghost`. See {@link InputGroupButtonVariant}. */
   variant?: InputGroupButtonVariant;
   className?: string;
   children?: React.ReactNode;

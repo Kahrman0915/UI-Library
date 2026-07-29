@@ -1,13 +1,18 @@
 type AccordionCommonProps = {
+  /** Required. Seeds each item's `{id}-{value}-trigger` / `-content` pair. */
   id: string;
+  /** Disables every item in the accordion. */
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;
 };
 
 type AccordionSingleProps = AccordionCommonProps & {
+  /** One item open at a time — opening another closes the current one. */
   type: 'single';
+  /** Controlled — the open item's `value`. Pair with `onValueChange`. */
   value?: string;
+  /** Uncontrolled initial open item. Ignored when `value` is supplied. */
   defaultValue?: string;
   onValueChange?: (value: string) => void;
   /** In single mode, whether an open item can be re-clicked to close everything. */
@@ -15,12 +20,25 @@ type AccordionSingleProps = AccordionCommonProps & {
 };
 
 type AccordionMultipleProps = AccordionCommonProps & {
+  /** Any number of items open at once. */
   type: 'multiple';
+  /** Controlled — the open items' values. Pair with `onValueChange`. */
   value?: string[];
+  /** Uncontrolled initial open items. Ignored when `value` is supplied. */
   defaultValue?: string[];
   onValueChange?: (value: string[]) => void;
 };
 
+/**
+ * A vertical stack of disclosure sections, discriminated on `type`: `single`
+ * keeps one open (add `collapsible` to allow none), `multiple` allows any.
+ *
+ * Height animates with `grid-template-rows: 0fr → 1fr` — no measurement, no
+ * ResizeObserver, no JavaScript in the open/close path.
+ *
+ * `defaultValue` / `onChange` are Omitted from the DOM attributes because the
+ * value-based versions above replace them, and their shape changes with `type`.
+ */
 export type AccordionProps = (
   | AccordionSingleProps
   | AccordionMultipleProps
@@ -46,8 +64,12 @@ export type AccordionRootValueProps = {
   collapsible?: boolean;
 };
 
+/** One section: an `AccordionTrigger` and an `AccordionContent`. */
 export type AccordionItemProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** This item's identity, reported by the root's `onValueChange`. Must be
+   *  unique in the accordion. */
   value: string;
+  /** Disables just this item. The root's `disabled` overrides all of them. */
   disabled?: boolean;
   className?: string;
   children?: React.ReactNode;

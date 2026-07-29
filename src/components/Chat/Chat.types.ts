@@ -298,6 +298,7 @@ export type ChatMessageEditProps = {
   cancelLabel?: string;
   /** Accessible name for the editor textarea. Default `'Edit message'`. */
   editLabel?: string;
+  /** Placeholder for the empty editor. */
   placeholder?: string;
   /** Cap the autosize growth (rows) before the textarea scrolls. */
   maxRows?: number;
@@ -313,7 +314,9 @@ export type ChatMessageVersionsProps = React.HTMLAttributes<HTMLDivElement> & {
   index: number;
   /** Total versions. The arrows disable at each end. */
   count: number;
+  /** Show the previous version. The arrow disables at index 1. */
   onPrevious?: () => void;
+  /** Show the next version. The arrow disables at `count`. */
   onNext?: () => void;
   /** Accessible label for the back arrow. */
   previousLabel?: string;

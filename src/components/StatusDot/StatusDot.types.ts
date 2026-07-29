@@ -11,7 +11,9 @@ export type StatusDotProps = Omit<
   React.HTMLAttributes<HTMLSpanElement>,
   'children'
 > & {
+  /** Default `neutral`. Maps to the semantic colour tokens. */
   status?: StatusDotStatus;
+  /** Dot diameter. */
   size?: StatusDotSize;
   /** Emit a soft pulsing ring. Suppressed under `prefers-reduced-motion`. */
   pulse?: boolean;

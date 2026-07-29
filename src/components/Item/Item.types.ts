@@ -62,6 +62,7 @@ export type ItemSeparatorProps = React.HTMLAttributes<HTMLDivElement> & {
 
 /** Leading slot — an icon, avatar or thumbnail. See {@link ItemMediaVariant}. */
 export type ItemMediaProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Default `default`. See {@link ItemMediaVariant}. */
   variant?: ItemMediaVariant;
   className?: string;
   children?: React.ReactNode;

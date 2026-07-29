@@ -1,4 +1,6 @@
+/** `outline` adds a border, for a toggle that stands alone rather than in a group. */
 export type ToggleVariant = 'default' | 'outline';
+/** Control height. */
 export type ToggleSize = 'sm' | 'default' | 'lg';
 
 type ToggleBase = Omit<
@@ -10,10 +12,14 @@ type ToggleBase = Omit<
   pressed?: boolean;
   /** Initial pressed state when uncontrolled. Default `false`. */
   defaultPressed?: boolean;
+  /** Fires with the new state on every press. */
   onPressedChange?: (pressed: boolean) => void;
+  /** Default `default`. See {@link ToggleVariant}. */
   variant?: ToggleVariant;
+  /** Default `default`. See {@link ToggleSize}. */
   size?: ToggleSize;
   disabled?: boolean;
+  /** Icon before the label. Must be a zero-prop component (`() => JSX`). */
   IconLeft?: React.FC;
   /** Icon-only toggle — renders a single centred glyph. Requires an `aria-label`. */
   IconCenter?: React.FC;
@@ -28,6 +34,17 @@ type ToggleBase = Omit<
  */
 export type ToggleProps = ToggleBase &
   (
-    | { label: React.ReactNode; 'aria-label'?: string }
-    | { label?: undefined; 'aria-label': string }
+    | {
+        /** Visible text. Supplying it makes `aria-label` optional. */
+        label: React.ReactNode;
+        /** Optional here — the visible `label` already names the toggle. */
+        'aria-label'?: string;
+      }
+    | {
+        /** Omitted — this is the icon-only form. */
+        label?: undefined;
+        /** **Required** without a visible `label`: an icon-only toggle has no
+         *  text to name it. */
+        'aria-label': string;
+      }
   );

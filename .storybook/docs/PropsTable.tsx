@@ -25,6 +25,16 @@ import './docs.scss';
 const UNIVERSAL: Record<string, string> = {
   className:
     'Merged onto the root element, after the component’s own classes. `style` works the same way unless a component Omits it.',
+  id: 'Seeds this component’s child ids — `{id}-title`, `{id}-error` and so on — so the aria relationships wire up on their own. Components that seed specific children name them here instead.',
+  rel: 'Standard anchor `rel`. Only applies when the component is rendering an `<a>`.',
+  disabled:
+    'Blocks interaction and dims the control. Also removes it from the tab order where the underlying element supports that natively.',
+  onOpenChange:
+    'Fires whenever the open state changes — from the trigger, Escape, an outside click, or a controlled update. Pair with `open`.',
+  onValueChange:
+    'Fires with the new value on every change. Pair with `value` for controlled use, or use it alone alongside `defaultValue`.',
+  onCheckedChange:
+    'Fires with the new checked state on every change. Pair with `checked`.',
 };
 
 /** Squash a union summary onto one line so the type column stays scannable. */

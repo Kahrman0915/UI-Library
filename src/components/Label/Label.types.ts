@@ -5,8 +5,12 @@ export type LabelProps = Omit<
   'children'
 > & {
   children: React.ReactNode;
+  /** The id of the control this labels. Without it the label names nothing. */
   htmlFor?: string;
+  /** Type scale. Match the control's own `size` so the pair line up. */
   size?: LabelSize;
+  /** Renders the `*` indicator in `--error`. Visual only — also set
+   *  `required` / `aria-required` on the control itself. */
   required?: boolean;
   /** Visual-only: dims the label. Does not disable the control. */
   disabled?: boolean;

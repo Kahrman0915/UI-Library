@@ -31,6 +31,7 @@ export type SwitchProps = Omit<
    */
   description?: React.ReactNode;
   disabled?: boolean;
+  /** Adds `aria-required` and a `*` on the label. */
   required?: boolean;
   /** Form field name. */
   name?: string;

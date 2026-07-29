@@ -9,7 +9,9 @@ export type DialogProps = Omit<
   'role' | 'children'
 > & {
   id: string;
+  /** Controlled — Dialog has no trigger of its own. */
   open: boolean;
+  /** Fires on Escape, on the header X, and on outside click when that's enabled. */
   onClose: () => void;
   children: React.ReactNode;
   /** Close when the backdrop is clicked. Default `false`. */
@@ -46,23 +48,43 @@ export type DialogHeaderProps = Omit<
 > & {
   /** Must match the `Dialog`'s `id` — it seeds `{id}-title` for aria-labelledby. */
   id: string;
+  /** The dialog's heading. Rendered into `{id}-title`, which names the dialog. */
   title: string;
+  /** Supporting line under the title. Rendered into `{id}-description`, which
+   *  the panel references via `aria-describedby`. Omit it and the reference is
+   *  dropped rather than left dangling. */
   description?: string;
+  /** Default `left`. `center` for a short confirmation. */
   alignment?: DialogContentAlignment;
+  /** Show the X. Default `true`; `AlertDialog` locks it off, since an alert
+   *  dialog must be answered rather than dismissed. */
   showCloseButton?: boolean;
+  /** Fires when the X is pressed. Wire it to the same setter as the Dialog's
+   *  own `onClose`. */
   onClose?: () => void;
   className?: string;
 };
 
+/**
+ * The scrolling middle of the panel. **The only part that scrolls** — the panel
+ * is a flex column capped at 85vh, and the header and footer are pinned outside
+ * this element.
+ */
 export type DialogBodyProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children'
 > & {
   children: React.ReactNode;
+  /** Default `left`. Match the header's for a coherent panel. */
   alignment?: DialogContentAlignment;
   className?: string;
 };
 
+/**
+ * The action row, pinned to the bottom. Order matters for keyboard users —
+ * whichever button comes first is what `Dialog` focuses unless you set
+ * `initialFocusRef`.
+ */
 export type DialogFooterProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children'

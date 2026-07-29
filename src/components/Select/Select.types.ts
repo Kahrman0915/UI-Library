@@ -27,6 +27,7 @@ export type SelectProps = {
   onValueChange?: (value: string) => void;
   /** Controlled open state — independent of `value`. */
   open?: boolean;
+  /** Uncontrolled initial open state. Ignored when `open` is supplied. */
   defaultOpen?: boolean;
   onOpenChange?: (open: boolean) => void;
   /** Renders a hidden input under this name so the value posts with a form. */
@@ -34,7 +35,9 @@ export type SelectProps = {
   disabled?: boolean;
   /** Adds `aria-required` and a `*` on the label. */
   required?: boolean;
+  /** Default `default`. See {@link SelectSize}. */
   size?: SelectSize;
+  /** Rendered through the shared `<Label>`, wired to the trigger. */
   label?: React.ReactNode;
   /** Helper text. Exposed via the trigger's `aria-describedby`, not its name. */
   description?: React.ReactNode;

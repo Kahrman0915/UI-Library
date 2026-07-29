@@ -16,6 +16,7 @@ export type AvatarProps = Omit<
   'children'
 > & {
   id: string;
+  /** Image URL. On load failure the component falls back automatically. */
   src?: string;
   /**
    * Alt text for the image. Leave empty when the avatar is decorative and the
@@ -24,6 +25,7 @@ export type AvatarProps = Omit<
   alt?: string;
   /** Initials shown when there's no `src`, or it fails. Keep to 1–2 characters. */
   fallback?: string;
+  /** Default `default`. Inherited from `AvatarGroup` when nested in one. */
   size?: AvatarSize;
   /** Default `circle`. */
   shape?: AvatarShape;

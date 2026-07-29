@@ -10,6 +10,7 @@ export type DrawerProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Required. `DrawerHeader` must be given the SAME id — it seeds
    *  `{id}-title` / `{id}-description` for the panel's aria wiring. */
   id: string;
+  /** Controlled — Drawer has no trigger of its own. */
   open: boolean;
   /** Fires on Escape, the close button, and (by default) an overlay click. */
   onClose: () => void;
@@ -33,6 +34,8 @@ export type DrawerHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   description?: string;
   /** Default `true`. Requires `onClose` to actually render. */
   showCloseButton?: boolean;
+  /** Fires when the X is pressed. Wire it to the same setter as the Drawer's
+   *  own `onClose`. */
   onClose?: () => void;
   className?: string;
 };
