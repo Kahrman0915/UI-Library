@@ -216,6 +216,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
     {
       from: fromProp,
       pending = false,
+      typingLabel = 'Assistant is typing',
       streaming = false,
       className,
       children,
@@ -234,7 +235,7 @@ const ChatBubble = forwardRef<HTMLDivElement, ChatBubbleProps>(
         className={`ui-chat-bubble ui-chat-bubble--${from}${pending ? ' ui-chat-bubble--pending' : ''}${className ? ' ' + className : ''}`}
       >
         {pending ? (
-          <span className="ui-chat-bubble__typing" aria-label="Assistant is typing">
+          <span className="ui-chat-bubble__typing" aria-label={typingLabel}>
             <span className="ui-chat-bubble__dot" />
             <span className="ui-chat-bubble__dot" />
             <span className="ui-chat-bubble__dot" />
@@ -795,6 +796,7 @@ const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
       onCancel,
       saveLabel = 'Save',
       cancelLabel = 'Cancel',
+      editLabel = 'Edit message',
       placeholder,
       maxRows = 10,
       className,
@@ -850,7 +852,7 @@ const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
             className="ui-input ui-chat-edit__input"
-            aria-label="Edit message"
+            aria-label={editLabel}
           />
         </div>
         <div className="ui-chat-edit__actions">
@@ -900,10 +902,11 @@ const ChatMessageVersions = forwardRef<
     ref,
   ) => (
     <div
+      // Default label sits BEFORE {...rest} so a consumer can localize it.
+      aria-label="Response versions"
       {...rest}
       ref={ref}
       role="group"
-      aria-label="Response versions"
       className={`ui-chat-versions${className ? ' ' + className : ''}`}
     >
       <button

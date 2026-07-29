@@ -1,4 +1,8 @@
-export type ChipSize = 'xsmall' | 'small' | 'default';
+/**
+ * Chip has no `large` rung. Both spellings are accepted — see `Size` in
+ * `types/GlobalTypes.ts` for why the library carries two.
+ */
+export type ChipSize = 'xsmall' | 'small' | 'default' | 'xs' | 'sm';
 
 type ChipBase = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,

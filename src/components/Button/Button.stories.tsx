@@ -60,7 +60,9 @@ const meta: Meta<typeof Button> = {
     style: { control: 'select', options: styles },
     size: {
       control: 'select',
-      options: ['xsmall', 'small', 'default', 'large'],
+      // Both vocabularies. `xs`/`sm`/`lg` are aliases of the spelled-out forms
+      // and normalize to the same class — see utils/size.ts.
+      options: ['xsmall', 'small', 'default', 'large', 'xs', 'sm', 'lg'],
     },
     disabled: { control: 'boolean' },
     isLoading: { control: 'boolean' },
@@ -130,6 +132,49 @@ export const Sizes: Story = {
       <Button {...args} id="btn-sm" size="small" label="Small" />
       <Button {...args} id="btn-md" size="default" label="Default" />
       <Button {...args} id="btn-lg" size="large" label="Large" />
+    </div>
+  ),
+};
+
+export const SizeAliases: Story = {
+  name: 'Sizes — both vocabularies',
+  parameters: {
+    docs: {
+      description: {
+        story:
+          'Most of the library takes `sm` / `default` / `lg`; Button and Chip were ' +
+          'written with `xsmall` / `small` / `default` / `large`. Both spellings are ' +
+          'accepted and normalize to the same class, so you can use one vocabulary ' +
+          'across the whole system. Each pair below renders identically — prefer the ' +
+          'abbreviations in new code.',
+      },
+    },
+  },
+  render: (args) => (
+    <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+      {[
+        ['xsmall', 'xs'],
+        ['small', 'sm'],
+        ['large', 'lg'],
+      ].map(([spelled, abbrev]) => (
+        <div
+          key={abbrev}
+          style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}
+        >
+          <Button
+            {...args}
+            id={`alias-${spelled}`}
+            size={spelled as 'xsmall'}
+            label={spelled}
+          />
+          <Button
+            {...args}
+            id={`alias-${abbrev}`}
+            size={abbrev as 'xs'}
+            label={abbrev}
+          />
+        </div>
+      ))}
     </div>
   ),
 };

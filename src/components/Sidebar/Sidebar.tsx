@@ -277,10 +277,12 @@ const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
     const { toggleSidebar } = useSidebar();
     return (
       <button
+        // Default label sits BEFORE {...rest} so a consumer can localize or
+        // replace it. After the spread it was unoverridable.
+        aria-label="Toggle sidebar"
         {...rest}
         ref={ref}
         type="button"
-        aria-label="Toggle sidebar"
         className={`ui-sidebar__trigger${className ? ' ' + className : ''}`}
         onClick={(e) => {
           onClick?.(e);
@@ -300,12 +302,14 @@ const SidebarRail = forwardRef<HTMLButtonElement, SidebarRailProps>(
     const { toggleSidebar } = useSidebar();
     return (
       <button
+        // Default label sits BEFORE {...rest} so a consumer can localize or
+        // replace it. After the spread it was unoverridable.
+        aria-label="Toggle sidebar"
+        title="Toggle sidebar"
         {...rest}
         ref={ref}
         type="button"
-        aria-label="Toggle sidebar"
         tabIndex={-1}
-        title="Toggle sidebar"
         className={`ui-sidebar__rail${className ? ' ' + className : ''}`}
         onClick={toggleSidebar}
       />

@@ -7,10 +7,12 @@ import type { ToastRecord } from './Toast.types';
 type ToastCardProps = {
   toast: ToastRecord;
   onDismiss: () => void;
+  /** Accessible name for the dismiss button — localizable via `<Toaster dismissLabel>`. */
+  dismissLabel: string;
 };
 
 const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
-  ({ toast, onDismiss }, ref) => {
+  ({ toast, onDismiss, dismissLabel }, ref) => {
     const { title, variant, description, Icon, action, cancel, progress } =
       toast;
     const assertive = variant === 'error' || variant === 'warning';
@@ -75,7 +77,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
           size="sm"
           className="ui-toast__close"
           onClick={onDismiss}
-          ariaLabel="Dismiss"
+          ariaLabel={dismissLabel}
         />
       </div>
     );

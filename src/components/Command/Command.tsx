@@ -244,11 +244,14 @@ const Command = forwardRef<HTMLDivElement, CommandProps>(
     return (
       <CommandContext.Provider value={ctxValue}>
         <div
+          // Default label sits BEFORE {...rest} so a consumer can localize or
+          // replace it. After the spread it was unoverridable — the component
+          // hard-coded English into every app that used it.
+          aria-label="Command menu"
           {...rest}
           ref={ref}
           id={id}
           role="dialog"
-          aria-label="Command menu"
           className={`ui-command${className ? ' ' + className : ''}`}
           onKeyDown={handleKeyDown}
         >

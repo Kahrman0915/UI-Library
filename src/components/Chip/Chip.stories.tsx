@@ -5,7 +5,10 @@ import Chip from './Chip';
 import type { ChipSize } from './Chip.types';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
+// The three rungs Chip renders. `xs`/`sm` are accepted aliases that normalize
+// onto the first two — see utils/size.ts.
 const sizes: ChipSize[] = ['xsmall', 'small', 'default'];
+const sizeOptions: ChipSize[] = [...sizes, 'xs', 'sm'];
 
 const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
@@ -21,7 +24,7 @@ const meta: Meta<typeof Chip> = {
     } satisfies UiDocsParameters,
   },
   argTypes: {
-    size: { control: 'select', options: sizes },
+    size: { control: 'select', options: sizeOptions },
     active: { control: 'boolean' },
     disabled: { control: 'boolean' },
     IconLeft: { control: false, table: { disable: true } },

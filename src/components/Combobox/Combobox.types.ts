@@ -37,6 +37,11 @@ export type ComboboxProps = Omit<
   disabled?: boolean;
   required?: boolean;
   clearable?: boolean;
+  /**
+   * Accessible name for the clear button. Default `'Clear selection'`. A prop
+   * because the button is an internal element `...rest` can't reach.
+   */
+  clearLabel?: string;
   /** Optional custom filter. Default: case-insensitive substring on option label/searchText. */
   filter?: (option: ComboboxOption, search: string) => boolean;
   side?: ComboboxSide;

@@ -31,6 +31,12 @@ export type ChatBubbleProps = React.HTMLAttributes<HTMLDivElement> & {
   from?: ChatSender;
   /** Render an animated typing indicator instead of children (nothing yet). */
   pending?: boolean;
+  /**
+   * Accessible name for the `pending` typing indicator. Default
+   * `'Assistant is typing'`. A prop because the dots are an internal element
+   * `...rest` can't reach, so the English was otherwise unreachable.
+   */
+  typingLabel?: string;
   /** Append a blinking caret after the content (tokens are still arriving). */
   streaming?: boolean;
   className?: string;
@@ -186,6 +192,8 @@ export type ChatMessageEditProps = {
   onCancel: () => void;
   saveLabel?: string;
   cancelLabel?: string;
+  /** Accessible name for the editor textarea. Default `'Edit message'`. */
+  editLabel?: string;
   placeholder?: string;
   maxRows?: number;
   className?: string;

@@ -91,6 +91,10 @@ const PaginationPrevious = forwardRef<HTMLAnchorElement, PaginationPrevNextProps
     ref,
   ) => (
     <a
+      // Default label sits BEFORE {...rest} so a consumer can localize or
+      // replace it. After the spread it was unoverridable — the component
+      // hard-coded English into every app that used it.
+      aria-label="Go to previous page"
       {...rest}
       ref={ref}
       // `disabled` is destructured OUT of rest — spreading it onto an <a>
@@ -99,7 +103,6 @@ const PaginationPrevious = forwardRef<HTMLAnchorElement, PaginationPrevNextProps
       href={disabled ? undefined : href}
       tabIndex={disabled ? -1 : undefined}
       onClick={disabled ? (e) => e.preventDefault() : onClick}
-      aria-label="Go to previous page"
       aria-disabled={disabled || undefined}
       className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-pagination__link ui-pagination__prev${className ? ' ' + className : ''}`}
     >
@@ -117,12 +120,15 @@ const PaginationNext = forwardRef<HTMLAnchorElement, PaginationPrevNextProps>(
     ref,
   ) => (
     <a
+      // Default label sits BEFORE {...rest} so a consumer can localize or
+      // replace it. After the spread it was unoverridable — the component
+      // hard-coded English into every app that used it.
+      aria-label="Go to next page"
       {...rest}
       ref={ref}
       href={disabled ? undefined : href}
       tabIndex={disabled ? -1 : undefined}
       onClick={disabled ? (e) => e.preventDefault() : onClick}
-      aria-label="Go to next page"
       aria-disabled={disabled || undefined}
       className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-pagination__link ui-pagination__next${className ? ' ' + className : ''}`}
     >

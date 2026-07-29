@@ -55,6 +55,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       disabled = false,
       required = false,
       clearable = false,
+      clearLabel = 'Clear selection',
       filter = defaultFilter,
       side = 'bottom',
       align = 'start',
@@ -346,7 +347,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           {showClear && (
             <button
               type="button"
-              aria-label="Clear selection"
+              aria-label={clearLabel}
               className="ui-combobox__clear"
               onClick={clear}
             >

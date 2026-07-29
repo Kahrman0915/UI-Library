@@ -21,6 +21,8 @@ const Toaster = ({
   visibleToasts = 3,
   gap = 8,
   duration = 4000,
+  label = 'Notifications',
+  dismissLabel = 'Dismiss',
   className,
 }: ToasterProps) => {
   const [toasts, setToasts] = useState<ToastRecord[]>([]);
@@ -198,7 +200,7 @@ const Toaster = ({
     <div
       ref={containerRef}
       role="region"
-      aria-label="Notifications"
+      aria-label={label}
       data-position={position}
       className={`ui-toaster ui-toaster--${position}${className ? ' ' + className : ''}`}
       style={{ gap }}
@@ -227,6 +229,7 @@ const Toaster = ({
         <ToastCard
           key={t.id}
           toast={t}
+          dismissLabel={dismissLabel}
           onDismiss={() => emit({ type: 'DISMISS', id: t.id })}
         />
       ))}

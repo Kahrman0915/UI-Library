@@ -185,13 +185,35 @@ inserting the node *is* the live-region trigger, and an always-present empty
 `<p>` would carry the element's layout. (Toast's region is persistent instead,
 because it is a portal container that has to exist to receive anything.)
 
-**Cross-cutting still open:** **#5** — Breadcrumb's ellipsis still wraps
-its `sr-only` "More" in `aria-hidden` + `role="presentation"`, so the text is
-silenced; either drop the span or drop the `aria-hidden`. **#6** — Pagination
-prev/next, Command root and the Toaster region still hard-code `aria-label`
-*after* the spread (Spinner is the fixed reference). **#7** — the size-
-vocabulary split is still undecided. **#8** — `ui-input-wrap--has-left/right`
-is emitted by Input.tsx:49 and appears **zero** times in Input.scss;
+**Cross-cutting #5, #6, #7 — FIXED (wave 5b).**
+
+- **#5** — Breadcrumb's ellipsis had `aria-hidden` + `role="presentation"` on the
+  *wrapper*, which removed the whole subtree including its sr-only "More", so the
+  collapsed-items marker announced nothing. Now hides the icon only, matching
+  `PaginationEllipsis`.
+- **#6** — every hard-coded `aria-label` is now overridable. Defaults moved
+  *before* `{...rest}` on ModeToggler, Pagination prev/next, Command root, both
+  Sidebar toggles and Chat's version pager (`role`/`aria-checked` stay after the
+  spread — derived state, not preference). Four sit on internal elements
+  `...rest` can't reach and got props instead: `Toaster.label` /
+  `.dismissLabel`, `ChatBubble.typingLabel`, `ChatMessageEdit.editLabel`,
+  `Combobox.clearLabel`. A repo-wide scan now reports **zero** unoverridable
+  labels. **Note the audit's list of 5 was incomplete — the real count was 11.**
+- **#7** — the audit framed this as "2 vocabularies, 24 vs 2", but the actual
+  split is **23 components on abbreviations** (`sm`/`default`/`lg`, with `xs` on
+  Attachment / Item / InputGroupButton) against **Button and Chip alone** on the
+  spelled-out `xsmall`/`small`/`large`. Owner chose to alias rather than accept
+  or rename: Button and Chip now accept **both** spellings, and
+  `normalizeSize` (`src/utils/size.ts`) maps the aliases onto the canonical form
+  **before the class name is built** — so `ui-button--sz-small` is unchanged and
+  the preview HTML and Figma mapping that key off those exact strings keep
+  working. Widening a union is backward compatible, so nothing breaks; the
+  spelled-out forms can be dropped at a major. Verified each pair renders an
+  identical class, height, font-size and padding (`Sizes — both vocabularies`
+  story).
+
+**Cross-cutting still open: #8 only.** `ui-input-wrap--has-left/right` is
+emitted by Input.tsx:49 and appears **zero** times in Input.scss;
 `.ui-dialog__*--sticky` exists twice in Dialog.scss and is emitted **nowhere**.
 
 **Wave 5 (JSDoc) is bigger than the original "~20" estimate: 29 of 59 types
