@@ -9,8 +9,11 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** COMPLETE — all **59** components have a v4 doc page. Phases 1–5 shipped by 2026-07-27 (Chat was the last of the original 57-component roster); `FeaturedIcon` and `Fab` were built after, outside the phase structure. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
-- **The index board still reads "57 components"** — that is the original roster, and `FeaturedIcon` / `Fab` deliberately have **no index row**. Anything built beyond the 57 goes straight under its phase divider and is recorded in the ledger only.
+- **Status:** COMPLETE — all **59** components have a v4 doc page **and an index row**. Phases 1–5 shipped by 2026-07-27; `FeaturedIcon` (Phase 3) and `Fab` (Phase 2) were built after and have since been folded into the phase structure. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
+- **Reconciled 2026-07-29.** The index title, the Phase 2/3 count badges and the page ordering had all drifted. Anything built from here goes under its phase divider, gets an index row, and is recorded in the ledger.
+- **Changelogs are a single baseline row per page** — `1.0 · 2026-07-29 · — · "Initial build complete…"`, identical to the Storybook changelog. The per-page build history that used to live here was cleared deliberately: git and the Storybook changelog are the record, and two divergent histories is worse than one. Append from that baseline.
+- **Prose sweep 2026-07-29.** Each page carries a few hundred words of a11y contract, behaviour notes and props pills, written the day the page was built. Code kept moving; the prose did not. A sweep against source corrected: HoverCard (documented `role="tooltip"` + "non-interactive" in five places, when it is now `role="dialog"`, keyboard-enterable, Escape-dismissable), the five form controls (error messages are `role="alert"` live regions), Select/Combobox (single `role="combobox"` on the trigger, `searchbox` inside; whole-field click target), Accordion (it renders its own heading via `headingLevel` — the page still told you to add one), Label (`description` is `aria-hidden` + referenced by `aria-describedby`, no longer folded into the name), Dialog/AlertDialog (`initialFocusRef`), Toast (pause-on-hover, persistent labelled region, `label`/`dismissLabel`), Chat (`role="log"` + tab stop set by the component, not the consumer), Popover (`PopoverClose` restores focus too), Breadcrumb (`aria-hidden` on the glyph, never the wrapper), Button/Chip (both size vocabularies accepted), plus motion pills for the overlay enter/exit, press-scale, stagger and the sliding Tabs indicator.
+- **STANDING RULE — prose is part of the component, not decoration.** Changing a role, an aria relationship, a prop, or a keyboard behaviour means editing that component's page prose in the same pass. Nothing catches this automatically: Figma has no typechecker, and the design-check lint only sees bindings and names. A page that *looks* finished can still describe code from three days ago.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
 ### Adapting the recipe to non-interactive components
@@ -78,17 +81,25 @@ empty containers. Apply the same judgement to Chat, Sidebar, Item and Field.
 
 ```
 📖 Start Here                              165:506   ← newcomer cover; don't rebuild
-✅ Rebuild Order — 57 components …          125:180   ← THE INDEX; link each shipped page
+✅ Rebuild Order — 59 components …          125:180   ← THE INDEX; link each shipped page
 ───  Phase 1 · Hubs  ───                   165:632   ← divider pages (empty)
 1 · Button                                 0:1       ← the reference implementation
 ───  Phase 2 · Atoms  ───                  165:633
 ───  Phase 3 · Composites  ───             165:634
 ───  Phase 4 · Floating  ───               165:635
 ───  Phase 5 · Integrators  ───            165:636
-⏳ Banner + Alert sets (migrate in Ph. 3)   14:60     ← existing sets; fold into their pages
+🧭 Choosing components                     675:44    ← mirrors CLAUDE.md's pick-by-behaviour rules
+🧪 Example — Settings · Team list ·                   ← handoff test-drive pages
+   Dashboard · Billing · Chat
+🧩 Icons                                   275:32
 _Template                                  146:122   ← _Doc/* masters live here
-🗑 Archive / 🗑 Aiden handoff                144:180 / 116:180  ← owner deletes
 ```
+
+**74 pages.** The three cleanup pages the earlier list carried are **gone** (deleted
+2026-07-29): the `⏳ Banner + Alert sets` page had finished its migration and was
+empty, and the two `🗑` pages (Archive — 23 legacy Banner components; Aiden download-flow
+handoff) were throwaways. Verified before deleting: 8,533 instances across every other
+page, none pointing at anything on them. Figma version history holds them if needed.
 
 New component pages are named `{phase} · {Name}` and inserted directly under their
 phase divider (`figma.root.insertChild`). After shipping a page, find its name on the
