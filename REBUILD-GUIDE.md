@@ -76,7 +76,7 @@ Extracted here, and worth adopting before porting components that use them:
 | `src/hooks/usePresence.ts` | The `closed → open → closing` machine every portal uses. **Must promote to `open` synchronously during render** — deferring to an effect mounts content a render late, after the positioning layout-effect ran against a null ref, leaving the surface invisible. |
 | `src/hooks/useFloatingReposition.ts` | Keeps a floating surface anchored while open (rAF-throttled resize + capture-phase scroll + ResizeObserver). `computePosition` measures **once**; without this, any layout shift strands the menu away from its trigger. |
 | `src/utils/focus.ts` | `FOCUSABLE_SELECTOR` / `getFocusable`, shared by Dialog, Drawer, HoverCard. |
-| `src/utils/size.ts` | `normalizeSize` — lets Button and Chip accept both size vocabularies. |
+| `src/types/GlobalTypes.ts` | `SIZES` / `Size` — the one size scale, `xs`/`sm`/`default`/`lg`. If your copy has Button or Chip on `xsmall`/`small`/`large`, that vocabulary was retired: rename the prop **and** the emitted `--sz-*` class. |
 | `src/styles/icon-button.scss` | `.ui-icon-button` — the shared shell for every small icon-only button, including the WCAG 2.5.8 hit-target expansion. |
 | `src/styles/stagger.scss`, `reveal.scss`, `overlay-entrance.scss` | Motion utilities applied by class. |
 

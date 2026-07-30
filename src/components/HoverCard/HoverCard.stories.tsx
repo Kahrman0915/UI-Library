@@ -215,12 +215,12 @@ export const RichContent: Story = {
             <Button
               id="rich-follow"
               label="Follow"
-              size="small"
+              size="sm"
             />
             <Button
               id="rich-message"
               label="Message"
-              size="small"
+              size="sm"
               style="outline"
             />
           </div>

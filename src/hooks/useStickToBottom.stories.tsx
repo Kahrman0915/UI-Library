@@ -87,7 +87,7 @@ const Demo = () => {
             type="button"
             aria-label="Scroll to latest"
             onClick={() => scrollToBottom()}
-            className="ui-button ui-button--default ui-button--default-default ui-button--sz-small"
+            className="ui-button ui-button--default ui-button--default-default ui-button--sz-sm"
             style={{
               position: 'absolute',
               bottom: 12,

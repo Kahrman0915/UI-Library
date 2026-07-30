@@ -443,7 +443,7 @@ const ChatComposerSend = forwardRef<HTMLButtonElement, ChatComposerSendProps>(
       id: idProp,
       sendLabel = 'Send message',
       stopLabel = 'Stop generating',
-      size = 'small',
+      size = 'sm',
       className,
     },
     ref,
@@ -859,14 +859,14 @@ const ChatMessageEdit = forwardRef<HTMLTextAreaElement, ChatMessageEditProps>(
           <Button
             id={`${genId}-cancel`}
             style="ghost"
-            size="small"
+            size="sm"
             label={cancelLabel}
             onClick={onCancel}
           />
           <Button
             id={`${genId}-save`}
             variant="aiden"
-            size="small"
+            size="sm"
             label={saveLabel}
             disabled={!value.trim()}
             onClick={save}

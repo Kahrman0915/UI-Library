@@ -129,7 +129,7 @@ export const WithDropdownCollapse: Story = {
                 iconOnly
                 IconCenter={Ellipsis}
                 style="ghost"
-                size="small"
+                size="sm"
                 aria-label="Show hidden segments"
               />
             </DropdownMenuTrigger>

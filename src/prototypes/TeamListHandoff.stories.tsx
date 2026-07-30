@@ -154,7 +154,7 @@ function TeamList() {
                   <Button
                     id={`more-${m.initials}`}
                     style="ghost"
-                    size="small"
+                    size="sm"
                     IconLeft={MoreHorizontal}
                     aria-label={`Actions for ${m.name}`}
                   />

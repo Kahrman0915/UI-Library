@@ -5,24 +5,18 @@ export type ChildrenAsPropsType = {
 };
 
 /**
- * The spelling the SCSS is written against — what actually reaches the
- * `--sz-*` class name.
+ * The library's one size scale.
+ *
+ * Derived from `SIZES` rather than written out, so the type and the Storybook
+ * control list cannot drift — a control option missing from the union is the
+ * specific failure that makes Storybook silently fall back to the default arg.
+ *
+ * `default` rather than `md` is deliberate: it is the library-wide word for the
+ * unmarked rung, matching `variant="default"` and `style="default"`.
  */
-export type CanonicalSize = 'xsmall' | 'small' | 'default' | 'large';
+export const SIZES = ['xs', 'sm', 'default', 'lg'] as const;
 
-/**
- * Button's size scale, accepting **both** spellings in the library.
- *
- * 23 components use the abbreviated vocabulary (`sm` / `default` / `lg`, some
- * with `xs`); Button and Chip were written with the spelled-out one. Rather
- * than freeze that split or break consumers with a rename, both are accepted
- * and `normalizeSize` (src/utils/size.ts) maps the aliases onto the canonical
- * form before the class is built.
- *
- * **Prefer the abbreviations in new code** — they match the rest of the system.
- * The spelled-out forms stay for back-compat and can go at a major version.
- */
-export type Size = CanonicalSize | 'xs' | 'sm' | 'lg';
+export type Size = (typeof SIZES)[number];
 
 // The 15-hue category / data-viz palette (--category-*). Consumers pick a hue for
 // tags, labels, table cells, and chart legends. Components render the accessible

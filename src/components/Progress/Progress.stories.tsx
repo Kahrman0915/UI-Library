@@ -226,7 +226,7 @@ export const AidenSurface: Story = {
         <div style={{ width: '100%' }}>
           <Progress value={value} label={value >= 100 ? 'Complete' : 'Generating…'} showValue />
         </div>
-        <Button id="aiden-progress-run" label="Run again" style="outline" size="small" onClick={() => setRun((r) => r + 1)} />
+        <Button id="aiden-progress-run" label="Run again" style="outline" size="sm" onClick={() => setRun((r) => r + 1)} />
       </div>
     );
   },

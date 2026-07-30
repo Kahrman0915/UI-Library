@@ -1,8 +1,7 @@
-/**
- * Chip has no `large` rung. Both spellings are accepted — see `Size` in
- * `types/GlobalTypes.ts` for why the library carries two.
- */
-export type ChipSize = 'xsmall' | 'small' | 'default' | 'xs' | 'sm';
+import type { Size } from '#/types/GlobalTypes';
+
+/** Chip has no `lg` rung — it tops out at `default`. */
+export type ChipSize = Exclude<Size, 'lg'>;
 
 type ChipBase = Omit<
   React.ButtonHTMLAttributes<HTMLButtonElement>,

@@ -73,7 +73,7 @@ const CodeBlock = forwardRef<HTMLDivElement, CodeBlockProps>(
               <Button
                 id={`${id}-copy`}
                 iconOnly
-                size="xsmall"
+                size="xs"
                 style="ghost"
                 IconCenter={copied ? Check : Copy}
                 aria-label={copied ? 'Copied' : 'Copy code'}

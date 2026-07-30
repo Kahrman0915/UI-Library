@@ -27,12 +27,12 @@
   }
 
   // --- Sizes ---
-  &--sz-xsmall {
+  &--sz-xs {
     font-size: var(--text-xs);
     line-height: var(--leading-3);
   }
 
-  &--sz-small {
+  &--sz-sm {
     font-size: var(--text-sm);
     line-height: var(--leading-5);
 
@@ -60,12 +60,12 @@
     justify-content: center;
     padding: var(--p-1-5);
 
-    &.ui-chip--sz-xsmall {
+    &.ui-chip--sz-xs {
       width: var(--w-6);
       height: var(--h-6);
     }
 
-    &.ui-chip--sz-small {
+    &.ui-chip--sz-sm {
       width: var(--w-8);
       height: var(--h-8);
     }

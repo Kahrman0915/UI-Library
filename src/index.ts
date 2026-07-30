@@ -749,7 +749,6 @@ export type {
 
 export type {
   Size,
-  CanonicalSize,
   CategoryColor,
   ChildrenAsPropsType,
 } from './types/GlobalTypes';

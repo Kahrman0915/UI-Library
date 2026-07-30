@@ -80,7 +80,7 @@ export function CodePane({
           <div className="ui-docs-code__toggle">
             <Button
               id={`${id}-toggle`}
-              size="small"
+              size="sm"
               style="outline"
               label={open ? 'Collapse' : 'View Code'}
               onClick={() => setOpen((v) => !v)}

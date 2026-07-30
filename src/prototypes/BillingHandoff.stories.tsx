@@ -265,7 +265,7 @@ function Billing() {
                           <Button
                             id={`inv-more-${inv.id}`}
                             style="ghost"
-                            size="small"
+                            size="sm"
                             IconLeft={MoreHorizontal}
                             aria-label={`Actions for ${inv.id}`}
                           />

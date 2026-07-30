@@ -70,7 +70,7 @@ export const Playground: Story = {
               iconOnly
               IconCenter={ChevronsUpDown}
               style="ghost"
-              size="small"
+              size="sm"
               aria-label="Toggle"
             />
           </CollapsibleTrigger>
@@ -100,7 +100,7 @@ export const StartsOpen: Story = {
               iconOnly
               IconCenter={ChevronsUpDown}
               style="ghost"
-              size="small"
+              size="sm"
               aria-label="Toggle"
             />
           </CollapsibleTrigger>
@@ -126,7 +126,7 @@ export const Disabled: Story = {
               iconOnly
               IconCenter={ChevronsUpDown}
               style="ghost"
-              size="small"
+              size="sm"
               aria-label="Toggle"
             />
           </CollapsibleTrigger>
@@ -166,7 +166,7 @@ export const Controlled: Story = {
                 id="ctrl-trigger"
                 label="Toggle"
                 style="outline"
-                size="small"
+                size="sm"
               />
             </CollapsibleTrigger>
           </div>
@@ -213,7 +213,7 @@ export const AsAFAQ: Story = {
                   iconOnly
                   IconCenter={ChevronsUpDown}
                   style="ghost"
-                  size="small"
+                  size="sm"
                   aria-label={`Toggle ${item.q}`}
                 />
               </CollapsibleTrigger>

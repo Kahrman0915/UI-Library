@@ -188,7 +188,7 @@ export const WithAction: Story = {
             id="alert-upgrade"
             label="Upgrade"
             style="outline"
-            size="small"
+            size="sm"
           />
         }
       />

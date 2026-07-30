@@ -95,7 +95,7 @@ const ActionButton = ({
   <button
     type="button"
     aria-label={label}
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
   >
     <Icon />
   </button>
@@ -243,7 +243,7 @@ const AttachButton = () => (
   <button
     type="button"
     aria-label="Attach file"
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-button--icon-only"
+    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-sm ui-button--icon-only"
   >
     <Paperclip />
   </button>
@@ -622,7 +622,7 @@ export const Editing: StoryObj = {
                   type="button"
                   aria-label="Edit"
                   onClick={() => setEditing(true)}
-                  className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+                  className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
                 >
                   <Pencil />
                 </button>
@@ -657,7 +657,7 @@ export const Versions: StoryObj = {
             <button
               type="button"
               aria-label="Regenerate"
-              className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+              className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
             >
               <RefreshCw />
             </button>

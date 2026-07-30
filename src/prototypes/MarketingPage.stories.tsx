@@ -129,7 +129,7 @@ function MarketingPage() {
           variant="brand"
           Icon={Sparkles}
           title="Introducing Nebula 4.1 — AI summaries are now generally available."
-          action={<Button id="promo-cta" label="Read the announcement" size="xsmall" style="outline" IconRight={ArrowRight} />}
+          action={<Button id="promo-cta" label="Read the announcement" size="xs" style="outline" IconRight={ArrowRight} />}
           onClose={() => setShowBanner(false)}
           centered
         />
@@ -142,20 +142,20 @@ function MarketingPage() {
         </span>
         <div style={{ display: 'flex', gap: 'var(--p-1)' }}>
           {['Features', 'Pricing', 'Docs', 'Changelog'].map((l) => (
-            <Button key={l} id={`nav-${l}`} label={l} style="ghost" size="small" />
+            <Button key={l} id={`nav-${l}`} label={l} style="ghost" size="sm" />
           ))}
         </div>
         <span style={{ flex: 1 }} />
         <Tooltip id="nav-search" delayDuration={0}>
           <TooltipTrigger>
-            <Button id="nav-search-btn" label="Search" style="ghost" size="small" />
+            <Button id="nav-search-btn" label="Search" style="ghost" size="sm" />
           </TooltipTrigger>
           <TooltipContent>
             Press <Kbd size="sm">⌘K</Kbd> anywhere
           </TooltipContent>
         </Tooltip>
-        <Button id="nav-signin" label="Sign in" style="ghost" size="small" />
-        <Button id="nav-start" label="Get started" size="small" IconRight={ArrowRight} />
+        <Button id="nav-signin" label="Sign in" style="ghost" size="sm" />
+        <Button id="nav-start" label="Get started" size="sm" IconRight={ArrowRight} />
       </nav>
 
       {/* Hero */}
@@ -172,8 +172,8 @@ function MarketingPage() {
           The build, deploy, and observability platform that scales from your first commit to your billionth request — without changing tools.
         </p>
         <div style={{ display: 'flex', gap: 'var(--p-3)', justifyContent: 'center', marginTop: 'var(--p-8)', flexWrap: 'wrap' }}>
-          <Button id="hero-start" label="Start building free" size="large" IconRight={ArrowRight} />
-          <Button id="hero-demo" label="Watch demo" size="large" style="outline" IconLeft={Play} />
+          <Button id="hero-start" label="Start building free" size="lg" IconRight={ArrowRight} />
+          <Button id="hero-demo" label="Watch demo" size="lg" style="outline" IconLeft={Play} />
         </div>
         <div style={{ display: 'flex', gap: 'var(--p-3)', justifyContent: 'center', alignItems: 'center', marginTop: 'var(--p-8)' }}>
           <AvatarGroup id="hero-avatars" max={5} size="sm">
@@ -428,9 +428,9 @@ function MarketingPage() {
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginTop: 'var(--p-5)', flexWrap: 'wrap', gap: 'var(--p-3)' }}>
             <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>© 2026 Nebula, Inc. All rights reserved.</span>
             <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
-              <Chip id="c-twitter" label="Twitter" size="small" />
-              <Chip id="c-github" label="GitHub" size="small" />
-              <Chip id="c-discord" label="Discord" size="small" />
+              <Chip id="c-twitter" label="Twitter" size="sm" />
+              <Chip id="c-github" label="GitHub" size="sm" />
+              <Chip id="c-discord" label="Discord" size="sm" />
             </div>
           </div>
         </div>
