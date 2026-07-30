@@ -23,6 +23,13 @@ const meta: Meta<typeof Tabs> = {
         'whether the arrow keys select immediately or only move focus — use `manual` ' +
         'when switching is expensive or destructive.',
       tags: ['compound', '4 parts'],
+      motion: {
+        notes:
+          'The active pill is ONE shared element (`.ui-tabs__indicator`) positioned from the active trigger and ' +
+          'slid between them — not a background on each tab. Switching therefore reads as a single object ' +
+          'moving rather than two states swapping. It sits behind the triggers, whose own background is ' +
+          'transparent so it shows through.',
+      },
       changelog: [
         {
           date: '2026-07-29',

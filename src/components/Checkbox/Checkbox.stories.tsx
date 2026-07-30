@@ -15,6 +15,12 @@ const meta: Meta<typeof Checkbox> = {
         'covers a parent controlling a partially-checked set. For a setting that ' +
         'takes effect the moment it is flipped rather than on submit, use `Switch`.',
       tags: ['form control', '3 sizes'],
+      motion: {
+        notes:
+          'The check and indeterminate marks are both always mounted and overlaid, so switching between them ' +
+          'cross-fades instead of hard-swapping. The mark draws itself in via `stroke-dashoffset`, and the icon ' +
+          'pops from `scale(0.5)` on `--ease-spring-strong`.',
+      },
       changelog: [
         {
           date: '2026-07-29',

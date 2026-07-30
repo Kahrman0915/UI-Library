@@ -12,6 +12,12 @@ const meta: Meta<typeof Skeleton> = {
         'A placeholder in the shape of the content that is loading, so nothing jumps ' +
         'when the real thing arrives.',
       tags: ['3 shapes', 'loading'],
+      motion: {
+        notes:
+          'A background-position sweep rather than an opacity pulse, so the shimmer reads as light travelling ' +
+          'across the surface instead of the whole block blinking. `--duration-shimmer` is shared with Progress ' +
+          'and Attachment so every loading surface on a page keeps time together.',
+      },
       changelog: [
         {
           date: '2026-07-29',

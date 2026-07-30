@@ -701,3 +701,72 @@
   border-inline-start-color: var(--primary);
   font-weight: var(--font-medium);
 }
+
+// ---------------------------------------------------------------------------
+// Motion — the derived token inventory.
+//
+// A row per kind (Duration / Easing / Distance) so a reader can scan "how fast"
+// without reading every token. Each pill pairs the token with its resolved
+// value, because `--duration-fast` alone tells you nothing until you know it is
+// 100ms — and looking it up means leaving the page.
+// ---------------------------------------------------------------------------
+.ui-docs-motion__group {
+  display: grid;
+  grid-template-columns: var(--w-32) minmax(0, 1fr);
+  gap: var(--p-4);
+  align-items: baseline;
+  padding: var(--p-3) 0;
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ui-docs-motion__group:last-of-type {
+  border-bottom: none;
+}
+
+.ui-docs-motion__kind {
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+  letter-spacing: var(--tracking-wide);
+}
+
+.ui-docs-motion__tokens {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-2);
+  // A grid child defaults to `min-width: auto` and will not shrink below its
+  // content, so a long token name (`--motion-scale-press-subtle`) pushes the
+  // pill past the column instead of wrapping. Same release valve as the stage.
+  min-width: 0;
+}
+
+.ui-docs-motion__token {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--p-2);
+  padding: var(--p-1) var(--p-2-5);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  background: var(--card);
+}
+
+.ui-docs-motion__token code {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  color: var(--foreground);
+  overflow-wrap: anywhere;
+}
+
+// The resolved value — deliberately quieter than the token name, which is the
+// thing you actually reference in code.
+.ui-docs-motion__token em {
+  font-style: normal;
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
+
+.ui-docs-motion__note {
+  margin-top: var(--p-4);
+  font-size: var(--text-xs);
+  color: var(--muted-foreground);
+}
