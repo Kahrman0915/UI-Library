@@ -299,6 +299,13 @@ unchanged.
 6. **Stories wave:** Menubar (keyboard demo), Drawer, disabled-state stories (InputGroup, Fab, Pagination — each would have caught a shipped bug), controlled-usage stories (Select, Combobox, DropdownMenu, Toggle, ModeToggler).
 7. **Decide the size-vocabulary split** (document as accepted, or plan an alias migration).
 
+   *Update 2026-07-30 — closed properly.* The alias resolution recorded above held for
+   two days and then kept leaking: new code was still being written with `size="small"`
+   (Chat, Code, ToastCard, the docs CodePane), because both spellings compiled. The split
+   is now gone — Button and Chip moved to `xs`/`sm`/`default`/`lg`, the class moved with
+   the prop, and the old spellings were deleted rather than deprecated so `tsc` enforces
+   it. See the 2026-07-30 entry in CLAUDE.md.
+
 ---
 
 ## Post-audit findings — the interaction blind spot

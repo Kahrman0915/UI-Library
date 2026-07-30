@@ -100,7 +100,7 @@ Quick key: 🔒 = requires an `id` · 🧩 = compound, use the parts together
 `style` = **how much emphasis** (`default | secondary | outline | ghost | link`).
 Two independent axes, and the most confusable pair in the library. The native CSS `style` attribute is Omitted to make room — use `className` for one-offs.
 
-Sizes accept **either vocabulary**: `xsmall|small|default|large` or `xs|sm|default|lg`. They normalize to the same class; prefer the abbreviations, which match the other 23 components.
+Sizes are `xs | sm | default | lg` — one scale across the whole library. The old spelled-out spellings (`xsmall`/`small`/`large`) were retired on 2026-07-30 and no longer compile.
 
 `onClick` receives **no event**. Reach for a plain `<button>` if you need one.
 
