@@ -1,3 +1,8 @@
+// The face (::before), rings and badge are all absolutely positioned against the
+// button, so `.ui-fab` MUST remain a containing block. If you need the FAB in
+// flow for a specimen, override to `position: relative` (plus `inset: auto` to
+// cancel the --pos-* offsets) — never `static`, which is not a containing block
+// and lets those layers escape and stretch to the nearest positioned ancestor.
 .ui-fab {
   position: fixed;
   z-index: var(--z-80);

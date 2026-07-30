@@ -33,7 +33,7 @@ const meta: Meta<typeof Fab> = {
           summary:
             'Fixed the pulse washing a solid disc across the button on every cycle, and the previews that showed an empty card instead of the button.',
           detail:
-            'The button face moved to a `::before` layer so the rings paint beneath it — a child always paints over its parent background, so filled rings at `inset: 0` covered the face, most visibly under `data-surface="aiden"` where the face is a gradient and the ring is solid. Stories now frame the FAB with `contain: layout`; `position: relative` never established a containing block for a fixed child, so every preview escaped its card.',
+            'The button face moved to a `::before` layer so the rings paint beneath it — a child always paints over its parent background, so filled rings at `inset: 0` covered the face, most visibly under `data-surface="aiden"` where the face is a gradient and the ring is solid. Stories now frame the FAB with `contain: layout`; `position: relative` never established a containing block for a fixed child, so every preview escaped its card. Note the flip side: `.ui-fab` must itself stay a containing block, so a specimen that needs the FAB in flow overrides to `position: relative` (with `inset: auto`), never `static`.',
         },
         {
           date: '2026-07-29',
@@ -250,6 +250,11 @@ export const Disabled: Story = {
       },
     },
   },
+  // NB: the FABs below are laid out in flow so the two states sit side by side.
+  // Use `position: relative`, never `static` — the face, rings and badge are
+  // absolutely positioned against the button, and a static element is not a
+  // containing block, so they escape and stretch to fill this wrapper instead.
+  // `inset: auto` cancels the bottom/right offsets the --pos-* modifier sets.
   render: () => (
     <div
       style={{
@@ -266,7 +271,7 @@ export const Disabled: Story = {
           id="fab-live"
           aria-label="Ask Aiden"
           pulse
-          style={{ position: 'static' }}
+          style={{ position: 'relative', inset: 'auto' }}
         >
           <Sparkles />
         </Fab>
@@ -280,7 +285,7 @@ export const Disabled: Story = {
           aria-label="Ask Aiden (unavailable)"
           pulse
           disabled
-          style={{ position: 'static' }}
+          style={{ position: 'relative', inset: 'auto' }}
         >
           <Sparkles />
         </Fab>
