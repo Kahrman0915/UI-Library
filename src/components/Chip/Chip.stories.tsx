@@ -65,8 +65,8 @@ export const Playground: Story = {};
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Chip {...args} id="chip-xs" size="xs" label="xsmall" />
-      <Chip {...args} id="chip-sm" size="sm" label="small" />
+      <Chip {...args} id="chip-xs" size="xs" label="xs" />
+      <Chip {...args} id="chip-sm" size="sm" label="sm" />
       <Chip {...args} id="chip-md" size="default" label="default" />
     </div>
   ),

@@ -142,10 +142,10 @@ export const AllVariants: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-      <Button {...args} id="btn-xs" size="xs" label="XSmall" />
-      <Button {...args} id="btn-sm" size="sm" label="Small" />
-      <Button {...args} id="btn-md" size="default" label="Default" />
-      <Button {...args} id="btn-lg" size="lg" label="Large" />
+      <Button {...args} id="btn-xs" size="xs" label="xs" />
+      <Button {...args} id="btn-sm" size="sm" label="sm" />
+      <Button {...args} id="btn-md" size="default" label="default" />
+      <Button {...args} id="btn-lg" size="lg" label="lg" />
     </div>
   ),
 };
