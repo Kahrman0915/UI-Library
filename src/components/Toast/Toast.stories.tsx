@@ -15,15 +15,6 @@ const meta: Meta<typeof Toaster> = {
         'call `toast()` from anywhere. For a message that belongs beside the thing it ' +
         'describes, use `Alert`.',
       tags: ['imperative', 'portal'],
-      motion: {
-        notes:
-          'Enters from the stack edge and, on dismiss, recedes rather than vanishing — the Toaster keeps the ' +
-          'card mounted for `--duration-normal` so the exit can play before removal.',
-        moments: [
-          { trigger: 'Enter', description: 'Slides `--motion-slide-md` with a `--ease-spring` settle.' },
-          { trigger: 'Dismiss', description: 'Fades and shrinks; `forwards` parks it invisible so there is no flash before unmount.' },
-        ],
-      },
       changelog: [
         {
           date: '2026-07-29',

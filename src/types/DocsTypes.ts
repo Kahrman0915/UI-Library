@@ -88,28 +88,6 @@ export type UiDocsChange = {
   detail?: string;
 };
 
-/**
- * Prose for the Motion section.
- *
- * **The token list is NOT here** — it is derived from the component's SCSS at
- * render time (`.storybook/docs/motion.ts`), because a hand-copied list of
- * tokens starts accurate and quietly stops being so. This type carries only the
- * part a machine cannot infer: what the movement is *for*.
- */
-export type UiDocsMotion = {
-  /** What moves and why. One short paragraph — the reader can see the tokens. */
-  notes?: string;
-  /** Individual moments worth calling out: "Hover", "Open", "Exit". */
-  moments?: UiDocsMoment[];
-};
-
-export type UiDocsMoment = {
-  /** The trigger: `'Hover'`, `'Open'`, `'Checked'`, `'Dismiss'`. */
-  trigger: string;
-  /** What happens, in plain language. Backticks render as inline code. */
-  description: string;
-};
-
 export type UiDocsParameters = {
   /** One-paragraph lede under the title. The single highest-value field. */
   description?: string;
@@ -121,12 +99,6 @@ export type UiDocsParameters = {
   /** One entry per compound part, in the order a consumer nests them. */
   composition?: UiDocsPart[];
   a11y?: UiDocsA11y;
-  /**
-   * Motion prose. The section renders for any component that animates, whether
-   * or not this is set — without it the reader still gets the derived token
-   * inventory, just no explanation of intent.
-   */
-  motion?: UiDocsMotion;
   /** Replaces the auto-generated `import { X } from '@ui/lib';` line. */
   importCode?: string;
   /**

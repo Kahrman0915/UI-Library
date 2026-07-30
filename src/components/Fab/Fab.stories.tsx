@@ -27,16 +27,6 @@ const meta: Meta<typeof Fab> = {
         'that should always be within reach. Carries the Aiden gradient, which is ' +
         'rather the point of it.',
       tags: ['aiden', 'floating'],
-      motion: {
-        notes:
-          'The pulse is three filled discs on staggered negative delays, so all three are mid-flight at once. ' +
-          'They paint BENEATH the button face, which is a `::before` layer — a child otherwise paints over its ' +
-          'parent background and the halo washes across the button on every cycle.',
-        moments: [
-          { trigger: 'Pulse', description: 'Rings expand and fade over `--duration-pulse`. Suppressed entirely when disabled — advertising an action you cannot take is worse than no halo.' },
-          { trigger: 'Hover', description: 'Lifts to `scale(1.05)` and deepens to `--shadow-xl`.' },
-        ],
-      },
       changelog: [
         {
           date: '2026-07-30',

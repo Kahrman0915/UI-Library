@@ -19,12 +19,6 @@ const meta: Meta<typeof Accordion> = {
         'number sit open at once. Height animates with a CSS grid trick, so there is ' +
         'no measurement and no JavaScript in the open/close path.',
       tags: ['compound', 'animated'],
-      motion: {
-        notes:
-          'Height animates with `grid-template-rows: 0fr → 1fr` — no JS measurement, no ResizeObserver. The ' +
-          'catch is that padding on the inner element leaks into the row\'s minimum size and leaves a phantom ' +
-          'gap when closed, which is why the content is a three-layer clip with the padding on the innermost.',
-      },
       changelog: [
         {
           date: '2026-07-29',

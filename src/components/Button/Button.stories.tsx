@@ -54,16 +54,6 @@ const meta: Meta<typeof Button> = {
           { keys: ['Space'], description: 'Activate.' },
         ],
       },
-      motion: {
-        notes:
-          'Motion here is confirmation, not decoration — the control has to feel like it received the press. ' +
-          'Everything runs on `--ease-premium`, the house easing for anything the user touches.',
-        moments: [
-          { trigger: 'Hover', description: 'Background and border cross-fade over `--duration-fast`.' },
-          { trigger: 'Press', description: 'Scales to `--motion-scale-press` (0.97). Never put a positioning `transform` on a Button — `transform` replaces rather than composes, so the press state would discard it and the button jumps out from under the cursor.' },
-          { trigger: 'Loading', description: 'The label stays put and a `Spinner` takes the icon slot, so the box never resizes mid-action.' },
-        ],
-      },
       changelog: [
         {
           date: '2026-07-30',
