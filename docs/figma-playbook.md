@@ -92,10 +92,14 @@ empty containers. Apply the same judgement to Chat, Sidebar, Item and Field.
 🧪 Example — Settings · Team list ·                   ← handoff test-drive pages
    Dashboard · Billing · Chat
 🧩 Icons                                   275:32
-⏳ Banner + Alert sets (migrate in Ph. 3)   14:60     ← existing sets; fold into their pages
 _Template                                  146:122   ← _Doc/* masters live here
-🗑 Archive / 🗑 Aiden handoff                144:180 / 116:180  ← owner deletes
 ```
+
+**74 pages.** The three cleanup pages the earlier list carried are **gone** (deleted
+2026-07-29): the `⏳ Banner + Alert sets` page had finished its migration and was
+empty, and the two `🗑` pages (Archive — 23 legacy Banner components; Aiden download-flow
+handoff) were throwaways. Verified before deleting: 8,533 instances across every other
+page, none pointing at anything on them. Figma version history holds them if needed.
 
 New component pages are named `{phase} · {Name}` and inserted directly under their
 phase divider (`figma.root.insertChild`). After shipping a page, find its name on the
