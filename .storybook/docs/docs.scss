@@ -228,6 +228,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
+  // Storybook's `.sb-story` wrapper is the flex item, and a flex item defaults to
+  // `min-width: auto` — it refuses to shrink below its content's min-content
+  // width. A story wider than the stage therefore overflowed its card rather
+  // than shrinking, and any `max-width: 100%` inside it resolved against the
+  // overflowing width, so it could never claw itself back. `min-width: 0` is the
+  // standard release valve.
+  > .sb-story {
+    min-width: 0;
+    max-width: 100%;
+  }
 }
 
 // ---------------------------------------------------------------------------
