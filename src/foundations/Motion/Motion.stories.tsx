@@ -13,7 +13,7 @@ function RevealDemo() {
       <Button
         id="reveal-toggle"
         label={loaded ? 'Reset to skeleton' : 'Load content'}
-        size="small"
+        size="sm"
         style="outline"
         onClick={() => setLoaded((l) => !l)}
       />

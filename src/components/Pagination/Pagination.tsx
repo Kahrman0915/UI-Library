@@ -76,7 +76,7 @@ const PaginationLink = forwardRef<HTMLAnchorElement, PaginationLinkProps>(
       onClick={disabled ? (e) => e.preventDefault() : onClick}
       aria-current={isActive ? 'page' : undefined}
       aria-disabled={disabled || undefined}
-      className={`ui-button ui-button--default ui-button--default-${isActive ? 'outline' : 'ghost'} ui-button--sz-small ui-pagination__link${isActive ? ' ui-pagination__link--active' : ''}${className ? ' ' + className : ''}`}
+      className={`ui-button ui-button--default ui-button--default-${isActive ? 'outline' : 'ghost'} ui-button--sz-sm ui-pagination__link${isActive ? ' ui-pagination__link--active' : ''}${className ? ' ' + className : ''}`}
     >
       {children}
     </a>
@@ -104,7 +104,7 @@ const PaginationPrevious = forwardRef<HTMLAnchorElement, PaginationPrevNextProps
       tabIndex={disabled ? -1 : undefined}
       onClick={disabled ? (e) => e.preventDefault() : onClick}
       aria-disabled={disabled || undefined}
-      className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-pagination__link ui-pagination__prev${className ? ' ' + className : ''}`}
+      className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-sm ui-pagination__link ui-pagination__prev${className ? ' ' + className : ''}`}
     >
       <ChevronLeft />
       {showLabel && <span>{children ?? 'Previous'}</span>}
@@ -130,7 +130,7 @@ const PaginationNext = forwardRef<HTMLAnchorElement, PaginationPrevNextProps>(
       tabIndex={disabled ? -1 : undefined}
       onClick={disabled ? (e) => e.preventDefault() : onClick}
       aria-disabled={disabled || undefined}
-      className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-small ui-pagination__link ui-pagination__next${className ? ' ' + className : ''}`}
+      className={`ui-button ui-button--default ui-button--default-ghost ui-button--sz-sm ui-pagination__link ui-pagination__next${className ? ' ' + className : ''}`}
     >
       {showLabel && <span>{children ?? 'Next'}</span>}
       <ChevronRight />

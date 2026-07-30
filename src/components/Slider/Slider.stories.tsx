@@ -150,7 +150,7 @@ export const Controlled: Story = {
           <button
             type="button"
             onClick={() => setSingle(50)}
-            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
           >
             Reset to 50
           </button>
@@ -167,7 +167,7 @@ export const Controlled: Story = {
           <button
             type="button"
             onClick={() => setRange([20, 60])}
-            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
           >
             Reset to 20 – 60
           </button>

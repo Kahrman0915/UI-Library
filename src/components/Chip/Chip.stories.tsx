@@ -3,12 +3,12 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Check, Plus, X } from 'lucide-react';
 import Chip from './Chip';
 import type { ChipSize } from './Chip.types';
+import { SIZES } from '../../types/GlobalTypes';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
-// The three rungs Chip renders. `xs`/`sm` are accepted aliases that normalize
-// onto the first two — see utils/size.ts.
-const sizes: ChipSize[] = ['xsmall', 'small', 'default'];
-const sizeOptions: ChipSize[] = [...sizes, 'xs', 'sm'];
+// The three rungs Chip renders — it has no `lg`. Derived from SIZES so the
+// control list and the `ChipSize` union cannot drift apart.
+const sizes = SIZES.filter((s): s is ChipSize => s !== 'lg');
 
 const meta: Meta<typeof Chip> = {
   title: 'Components/Chip',
@@ -23,6 +23,13 @@ const meta: Meta<typeof Chip> = {
       tags: ['multi-select'],
       changelog: [
         {
+          date: '2026-07-30',
+          summary:
+            'Size renamed to the abbreviated scale — `xs` / `sm` / `default` / `lg`. The old `xsmall / small` spellings no longer work.',
+          detail:
+            'BREAKING. The library carried two size vocabularies; 26 of 28 components already used the abbreviated one, so Chip moved to match. Both the prop value AND the emitted class changed — it is now `ui-chip--sz-sm`, matching the prop — and `normalizeSize` is gone. Update any `size` prop and any hand-written CSS targeting the old class names.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -32,7 +39,7 @@ const meta: Meta<typeof Chip> = {
     } satisfies UiDocsParameters,
   },
   argTypes: {
-    size: { control: 'select', options: sizeOptions },
+    size: { control: 'select', options: [...sizes] },
     active: { control: 'boolean' },
     disabled: { control: 'boolean' },
     IconLeft: { control: false, table: { disable: true } },
@@ -58,8 +65,8 @@ export const Playground: Story = {};
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-      <Chip {...args} id="chip-xs" size="xsmall" label="xsmall" />
-      <Chip {...args} id="chip-sm" size="small" label="small" />
+      <Chip {...args} id="chip-xs" size="xs" label="xsmall" />
+      <Chip {...args} id="chip-sm" size="sm" label="small" />
       <Chip {...args} id="chip-md" size="default" label="default" />
     </div>
   ),

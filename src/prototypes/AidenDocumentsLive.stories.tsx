@@ -246,7 +246,7 @@ const AidenDocumentsLive = () => {
         <button
           type="button"
           onClick={() => setRunId((r) => r + 1)}
-          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
         >
           <RotateCw /> Replay
         </button>
@@ -299,7 +299,7 @@ const AidenDocumentsLive = () => {
                             setFailAll(false);
                             setRunId((r) => r + 1);
                           }}
-                          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+                          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
                         >
                           <RotateCw /> Try again
                         </button>

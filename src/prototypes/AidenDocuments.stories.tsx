@@ -182,7 +182,7 @@ const SegBtn = ({
     type="button"
     onClick={onClick}
     aria-pressed={active}
-    className={`ui-button ui-button--default ${active ? 'ui-button--default-outline' : 'ui-button--default-ghost'} ui-button--sz-small`}
+    className={`ui-button ui-button--default ${active ? 'ui-button--default-outline' : 'ui-button--default-ghost'} ui-button--sz-sm`}
   >
     {children}
   </button>
@@ -284,7 +284,7 @@ const AidenDocuments = () => {
                         <button
                           type="button"
                           onClick={() => setScenario('documents')}
-                          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+                          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
                         >
                           <RotateCw /> Try again
                         </button>

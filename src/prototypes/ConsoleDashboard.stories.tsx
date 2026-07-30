@@ -128,7 +128,7 @@ function Dashboard() {
         <Badge id="plan" variant="success-outline" label="Pro plan" />
         <DropdownMenu id="acct">
           <DropdownMenuTrigger>
-            <Button id="acct-btn" label="Kahrman" IconRight={ChevronDown} style="outline" size="small" />
+            <Button id="acct-btn" label="Kahrman" IconRight={ChevronDown} style="outline" size="sm" />
           </DropdownMenuTrigger>
           <DropdownMenuContent>
             <DropdownMenuLabel>My account</DropdownMenuLabel>
@@ -153,7 +153,7 @@ function Dashboard() {
         id="promo"
         variant="brand"
         title="You're on the Pro plan — team seats are 20% off this month."
-        action={<Button id="promo-cta" label="Upgrade" size="xsmall" style="outline" />}
+        action={<Button id="promo-cta" label="Upgrade" size="xs" style="outline" />}
       />
 
       <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-6)', maxWidth: 1100, margin: '0 auto' }}>

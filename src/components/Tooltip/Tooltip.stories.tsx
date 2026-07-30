@@ -137,7 +137,7 @@ export const OnIcon: Story = {
           iconOnly
           IconCenter={Info}
           style="outline"
-          size="small"
+          size="sm"
           aria-label="More info"
         />
       </TooltipTrigger>

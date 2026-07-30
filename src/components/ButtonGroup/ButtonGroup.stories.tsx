@@ -152,9 +152,9 @@ export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-4)' }}>
       <ButtonGroup id="sz-sm">
-        <Button id="sm-1" size="small" label="Left" style="outline" />
-        <Button id="sm-2" size="small" label="Middle" style="outline" />
-        <Button id="sm-3" size="small" label="Right" style="outline" />
+        <Button id="sm-1" size="sm" label="Left" style="outline" />
+        <Button id="sm-2" size="sm" label="Middle" style="outline" />
+        <Button id="sm-3" size="sm" label="Right" style="outline" />
       </ButtonGroup>
       <ButtonGroup id="sz-md">
         <Button id="md-1" size="default" label="Left" style="outline" />
@@ -162,9 +162,9 @@ export const Sizes: Story = {
         <Button id="md-3" size="default" label="Right" style="outline" />
       </ButtonGroup>
       <ButtonGroup id="sz-lg">
-        <Button id="lg-1" size="large" label="Left" style="outline" />
-        <Button id="lg-2" size="large" label="Middle" style="outline" />
-        <Button id="lg-3" size="large" label="Right" style="outline" />
+        <Button id="lg-1" size="lg" label="Left" style="outline" />
+        <Button id="lg-2" size="lg" label="Middle" style="outline" />
+        <Button id="lg-3" size="lg" label="Right" style="outline" />
       </ButtonGroup>
     </div>
   ),

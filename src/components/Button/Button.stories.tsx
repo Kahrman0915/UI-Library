@@ -2,6 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { ArrowLeft, ArrowRight, Plus } from 'lucide-react';
 import Button from './Button';
 import type { ButtonVariant, ButtonStyle } from './Button.types';
+import { SIZES } from '../../types/GlobalTypes';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const variants: ButtonVariant[] = [
@@ -55,6 +56,13 @@ const meta: Meta<typeof Button> = {
       },
       changelog: [
         {
+          date: '2026-07-30',
+          summary:
+            'Size renamed to the abbreviated scale — `xs` / `sm` / `default` / `lg`. The old `xsmall / small / large` spellings no longer work.',
+          detail:
+            'BREAKING. The library carried two size vocabularies; 26 of 28 components already used the abbreviated one, so Button moved to match. Both the prop value AND the emitted class changed — it is now `ui-button--sz-sm`, matching the prop — and `normalizeSize` is gone. Update any `size` prop and any hand-written CSS targeting the old class names.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -66,12 +74,10 @@ const meta: Meta<typeof Button> = {
   argTypes: {
     variant: { control: 'select', options: variants },
     style: { control: 'select', options: styles },
-    size: {
-      control: 'select',
-      // Both vocabularies. `xs`/`sm`/`lg` are aliases of the spelled-out forms
-      // and normalize to the same class — see utils/size.ts.
-      options: ['xsmall', 'small', 'default', 'large', 'xs', 'sm', 'lg'],
-    },
+    // Derived from SIZES so the control list and the `Size` union cannot drift.
+    // An option missing from here is silently rejected and falls back to the
+    // default arg, which looks like the component ignoring you.
+    size: { control: 'select', options: [...SIZES] },
     disabled: { control: 'boolean' },
     isLoading: { control: 'boolean' },
     iconOnly: { control: 'boolean' },
@@ -136,53 +142,10 @@ export const AllVariants: Story = {
 export const Sizes: Story = {
   render: (args) => (
     <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-      <Button {...args} id="btn-xs" size="xsmall" label="XSmall" />
-      <Button {...args} id="btn-sm" size="small" label="Small" />
+      <Button {...args} id="btn-xs" size="xs" label="XSmall" />
+      <Button {...args} id="btn-sm" size="sm" label="Small" />
       <Button {...args} id="btn-md" size="default" label="Default" />
-      <Button {...args} id="btn-lg" size="large" label="Large" />
-    </div>
-  ),
-};
-
-export const SizeAliases: Story = {
-  name: 'Sizes — both vocabularies',
-  parameters: {
-    docs: {
-      description: {
-        story:
-          'Most of the library takes `sm` / `default` / `lg`; Button and Chip were ' +
-          'written with `xsmall` / `small` / `default` / `large`. Both spellings are ' +
-          'accepted and normalize to the same class, so you can use one vocabulary ' +
-          'across the whole system. Each pair below renders identically — prefer the ' +
-          'abbreviations in new code.',
-      },
-    },
-  },
-  render: (args) => (
-    <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-      {[
-        ['xsmall', 'xs'],
-        ['small', 'sm'],
-        ['large', 'lg'],
-      ].map(([spelled, abbrev]) => (
-        <div
-          key={abbrev}
-          style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}
-        >
-          <Button
-            {...args}
-            id={`alias-${spelled}`}
-            size={spelled as 'xsmall'}
-            label={spelled}
-          />
-          <Button
-            {...args}
-            id={`alias-${abbrev}`}
-            size={abbrev as 'xs'}
-            label={abbrev}
-          />
-        </div>
-      ))}
+      <Button {...args} id="btn-lg" size="lg" label="Large" />
     </div>
   ),
 };

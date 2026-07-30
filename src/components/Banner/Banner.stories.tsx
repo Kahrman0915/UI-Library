@@ -48,7 +48,7 @@ type Story = StoryObj<typeof Banner>;
 
 export const Playground: Story = {
   render: (args) => (
-    <Banner {...args} Icon={Info} action={<Button id="pg-a" size="xsmall" style="outline" label="Reload" />} />
+    <Banner {...args} Icon={Info} action={<Button id="pg-a" size="xs" style="outline" label="Reload" />} />
   ),
 };
 
@@ -74,8 +74,8 @@ export const WithAction: Story = {
       title="Aiden can now summarize long threads for you."
       action={
         <>
-          <Button id="ba-dismiss" size="xsmall" style="ghost" label="Not now" />
-          <Button id="ba-try" size="xsmall" style="outline" label="Try it" />
+          <Button id="ba-dismiss" size="xs" style="ghost" label="Not now" />
+          <Button id="ba-try" size="xs" style="outline" label="Try it" />
         </>
       }
     />
@@ -92,7 +92,7 @@ export const Dismissible: Story = {
           <button
             type="button"
             onClick={() => setOpen(true)}
-            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+            className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
           >
             Bring it back
           </button>

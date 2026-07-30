@@ -56,7 +56,7 @@ const Runner = ({ onReplay }: { onReplay: () => void }) => {
       <button
         type="button"
         onClick={onReplay}
-        className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+        className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
       >
         Replay
       </button>

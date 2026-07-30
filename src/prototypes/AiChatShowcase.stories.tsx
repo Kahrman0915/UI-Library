@@ -70,7 +70,7 @@ const IconBtn = ({ label, children }: { label: string; children: React.ReactNode
   <button
     type="button"
     aria-label={label}
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xsmall ui-button--icon-only"
+    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
   >
     {children}
   </button>

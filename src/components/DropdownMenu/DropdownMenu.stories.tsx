@@ -219,14 +219,14 @@ export const Controlled: Story = {
             id="ext-open"
             label="Open from outside"
             style="outline"
-            size="small"
+            size="sm"
             onClick={() => setOpen(true)}
           />
           <Button
             id="ext-close"
             label="Close from outside"
             style="outline"
-            size="small"
+            size="sm"
             onClick={() => setOpen(false)}
           />
         </div>

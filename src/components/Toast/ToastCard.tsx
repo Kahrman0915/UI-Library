@@ -49,7 +49,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
               <Button
                 id={`${toast.id}-cancel`}
                 className="ui-toast__cancel"
-                size="xsmall"
+                size="xs"
                 style="outline"
                 label={cancel.label}
                 onClick={() => {
@@ -62,7 +62,7 @@ const ToastCard = forwardRef<HTMLDivElement, ToastCardProps>(
               <Button
                 id={`${toast.id}-action`}
                 className="ui-toast__action"
-                size="xsmall"
+                size="xs"
                 label={action.label}
                 onClick={() => {
                   action.onClick();

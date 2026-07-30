@@ -139,7 +139,7 @@ export const Interactive: Story = {
         <button
           type="button"
           onClick={() => setDir((d) => (d === 'ltr' ? 'rtl' : 'ltr'))}
-          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-small"
+          className="ui-button ui-button--default ui-button--default-outline ui-button--sz-sm"
         >
           Toggle direction (now {dir})
         </button>
