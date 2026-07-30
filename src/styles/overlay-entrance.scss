@@ -12,10 +12,13 @@
 // variant — scale + fade with a hint of arrival — plus the `--backdrop` fade on
 // the dim/blur layer.
 //
-// Entrance only. Exit stays instant (React unmounts the portal) except where a
-// component runs the closing-state machine (Tooltip / Drawer) — adding exit
-// everywhere is the documented larger follow-up. Reduced motion collapses the
-// duration globally (tokens.scss), so these play near-instantly there.
+// Entrance AND exit. Every surface here runs a closing-state machine and swaps
+// .ui-overlay-enter → .ui-overlay-exit for the closing phase, so nothing snaps
+// out of existence — Popover, DropdownMenu, ContextMenu, Select, Combobox,
+// HoverCard and Dialog all do, alongside Tooltip and Drawer which had it first.
+// Reduced motion collapses the duration globally (tokens.scss), so these play
+// near-instantly there — a near-zero duration, never `none`, because the exit
+// unmount hangs off animationend.
 
 @keyframes ui-overlay-in-bottom {
   from {

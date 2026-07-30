@@ -186,7 +186,8 @@
     "Figma has NO arbitrary-children slot: you cannot add/remove layers inside a locked COMPONENT instance (instance-swap only swaps one nested instance for one component). So an assembled 'template' whose list must be extendable (a sidebar menu, a nav, a form) should be a plain FRAME, not a component. Build it by detachInstance()-ing an instance of an assembled component — the outer becomes an editable frame while nested atom INSTANCES stay linked, giving an open auto-layout you copy and extend. detachInstance() preserves variable bindings (lint stays clean). Keep the ATOMS as the linked components; the assembly is a copyable template.",
     "When restructuring a frame from HORIZONTAL to VERTICAL (or vice-versa), CLEAR stale layoutGrow / layoutSizing on its children — a child that was FILL on the old main axis keeps layoutGrow=1, which now grows/collapses it on the NEW main axis (a label collapsed to 1px tall). Also: a container built FIXED-height + clipsContent will clip newly-added children; set primaryAxisSizingMode='AUTO' to hug. Caught only by eyeballing the render, not by lint.",
     "Figma plugin: findOne(cb) walks ALL descendants incl. freshly-created icon-instance internals, and a broken nested proxy node's .name getter can CRASH the callback ('Node with id ... not found'). When editing inside variant components, navigate by DIRECT children (comp.children.find(...)) instead of findOne to avoid descending into instances.",
-    "Figma: a nested component instance can be EXPOSED (instance.isExposedInstance===true) so its properties show on the parent in the UI, but those props are NOT merged into the parent's setProperties map — they stay keyed to the nested instance. To set them via API, find the nested instance and setProperties on IT (or drill in via the UI)."
+    "Figma: a nested component instance can be EXPOSED (instance.isExposedInstance===true) so its properties show on the parent in the UI, but those props are NOT merged into the parent's setProperties map — they stay keyed to the nested instance. To set them via API, find the nested instance and setProperties on IT (or drill in via the UI).",
+    "Page PROSE drifts silently and nothing catches it. The design-check lint validates bindings, names and styles — not whether a sentence is still true. HoverCard sat for two days documenting role=\"tooltip\" and \"non-interactive\" after the code moved to role=\"dialog\" and made the card keyboard-enterable, which would have led anyone building from the page to reproduce an invalid pattern. Diff prose against source whenever a role, aria relationship, prop or keyboard behaviour changes."
   ],
   "components": {
     "Button": {
@@ -1470,7 +1471,7 @@
     "phase3Status": "COMPLETE — all 13 composites shipped (Card, Item, Attachment, Collapsible, Accordion, Alert, Banner, Empty, Progress, Tabs, Breadcrumb, Field, Pagination). Phase 4 (Overlays) is next.",
     "phase4Status": "COMPLETE — all 13 Overlays shipped (Tooltip, Dialog, AlertDialog, Drawer, Popover, HoverCard, DropdownMenu, ContextMenu, Menubar, Select, Combobox, Command, Toast).",
     "phase5Status": "COMPLETE — ModeToggler, Direction, Sidebar, Chat all shipped.",
-    "status": "COMPLETE — all 59 components have a v4 doc page and an index row. Page order, phase dividers and changelog baseline reconciled 2026-07-29."
+    "status": "COMPLETE — all 59 components have a v4 doc page and an index row. Page order, phase dividers and changelog baseline reconciled 2026-07-29; page prose swept against source the same day (see figma-playbook.md)."
   },
   "iconLibrary": {
     "page": "275:32",
