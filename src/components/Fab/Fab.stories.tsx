@@ -29,6 +29,13 @@ const meta: Meta<typeof Fab> = {
       tags: ['aiden', 'floating'],
       changelog: [
         {
+          date: '2026-07-30',
+          summary:
+            'Fixed the pulse washing a solid disc across the button on every cycle, and the previews that showed an empty card instead of the button.',
+          detail:
+            'The button face moved to a `::before` layer so the rings paint beneath it — a child always paints over its parent background, so filled rings at `inset: 0` covered the face, most visibly under `data-surface="aiden"` where the face is a gradient and the ring is solid. Stories now frame the FAB with `contain: layout`; `position: relative` never established a containing block for a fixed child, so every preview escaped its card.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -46,9 +53,27 @@ const meta: Meta<typeof Fab> = {
 export default meta;
 type Story = StoryObj<typeof Fab>;
 
+// A FAB is `position: fixed`, so it anchors to the VIEWPORT unless an ancestor
+// establishes a containing block. `position: relative` does NOT do that — only
+// transform / filter / perspective / contain do. Without this every story's FAB
+// escaped its example card and piled up in the corner of the Storybook iframe,
+// leaving the cards looking empty. `contain: layout` is the cheapest opt-in.
+// The width matters as much as the containment: the docs stage centres each story
+// in a flex row, so a wrapper whose only content is an absolutely-positioned FAB
+// shrinks to 0 and the "corner" it anchors to is a degenerate box. An explicit
+// width with `maxWidth: 100%` gives it a real frame at any stage size.
+const FRAME: React.CSSProperties = {
+  position: 'relative',
+  contain: 'layout',
+  overflow: 'hidden',
+  width: 560,
+  maxWidth: '100%',
+  borderRadius: 'var(--rounded-lg)',
+};
+
 // A light mock "host app" behind the FAB, so the launcher reads in context.
 const HostApp = ({ children }: { children: React.ReactNode }) => (
-  <div style={{ minHeight: '100vh', background: 'var(--muted)' }}>
+  <div style={{ ...FRAME, minHeight: 460, background: 'var(--muted)' }}>
     <div style={{ maxWidth: 720, margin: '0 auto', padding: 'var(--p-8)', display: 'grid', gap: 'var(--p-4)' }}>
       <h1 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' }}>
         Dartboards
@@ -181,7 +206,7 @@ export const Playground: Story = {
 export const NeutralVsAiden: Story = {
   name: 'Neutral vs Aiden',
   render: () => (
-    <div style={{ minHeight: '100vh', background: 'var(--background)', position: 'relative' }}>
+    <div style={{ ...FRAME, minHeight: 460, background: 'var(--background)' }}>
       {/* Neutral (host brand primary) — bottom-left */}
       <Fab id="fab-neutral" position="bottom-left" aria-label="New message">
         <MessageSquarePlus />
@@ -203,7 +228,7 @@ export const NeutralVsAiden: Story = {
 export const Plain: Story = {
   name: 'Plain (no pulse / badge)',
   render: () => (
-    <div style={{ minHeight: '100vh', background: 'var(--background)' }}>
+    <div style={{ ...FRAME, minHeight: 460, background: 'var(--background)' }}>
       <Fab id="fab-plain" position="bottom-right" size="default" aria-label="Add">
         <Plus />
       </Fab>

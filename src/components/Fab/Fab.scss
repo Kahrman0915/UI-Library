@@ -7,14 +7,32 @@
   padding: 0;
   border: none;
   border-radius: var(--rounded-full);
-  background: var(--primary);
+  background: transparent;
   color: var(--primary-foreground);
   box-shadow: var(--shadow-lg);
   cursor: pointer;
   transition:
     transform var(--duration-instant) var(--ease-premium),
-    box-shadow var(--duration-instant) var(--ease-premium),
-    background var(--duration-instant) var(--ease-premium);
+    box-shadow var(--duration-instant) var(--ease-premium);
+
+  // The button FACE is a layer, not the element's own background. The pulse
+  // rings are children, and a child always paints over its parent's background
+  // — so filled rings drawn at `inset: 0` washed a solid disc across the face
+  // on every cycle. Most obvious under `data-surface='aiden'`, where the face is
+  // a gradient and the ring is solid: it read as the background shimmering.
+  // Painting the face above the rings means a ring is only ever visible where it
+  // has already grown past the button's edge, which is what a halo should be.
+  // (`z-index: -1` on the rings cannot fix this — negative-z children still
+  // paint above their stacking-context parent's own background.)
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: var(--z-10);
+    border-radius: inherit;
+    background: var(--primary);
+    transition: background var(--duration-instant) var(--ease-premium);
+  }
 
   &:hover {
     transform: scale(1.05);
@@ -72,7 +90,7 @@
 
   &__icon {
     position: relative;
-    z-index: var(--z-10);
+    z-index: var(--z-20); // above the ::before face layer
     display: inline-flex;
     line-height: 0;
   }
@@ -83,6 +101,7 @@
   &__rings {
     position: absolute;
     inset: 0;
+    z-index: var(--z-0); // below the ::before face — halo only shows past the edge
     border-radius: inherit;
     pointer-events: none;
   }
@@ -113,7 +132,7 @@
     position: absolute;
     top: 0;
     right: 0;
-    z-index: var(--z-20);
+    z-index: var(--z-30);
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -138,9 +157,11 @@
 // stay solid violet (`--primary` under the surface). Same "fills get the
 // gradient, text/border stay solid" rule the other Aiden components follow.
 [data-surface='aiden'] .ui-fab {
-  background: var(--aiden-primary);
+  &::before {
+    background: var(--aiden-primary);
+  }
 
-  &:hover {
+  &:hover::before {
     background: var(--aiden-hover);
   }
 }
