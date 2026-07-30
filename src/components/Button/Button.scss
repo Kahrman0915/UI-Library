@@ -512,6 +512,7 @@
 
   // Compact rung below `small`, sized to sit inside dense surfaces (Toast
   // action rows) without inflating them. Same type ramp as `small`, tighter box.
+  &--sz-xs,
   &--sz-xsmall {
     padding: var(--p-1) var(--p-2-5);
     font-size: var(--text-xs);
@@ -524,6 +525,7 @@
     }
   }
 
+  &--sz-sm,
   &--sz-small {
     padding: var(--p-2) var(--p-3);
     font-size: var(--text-xs);
@@ -547,6 +549,7 @@
     }
   }
 
+  &--sz-lg,
   &--sz-large {
     padding: var(--p-2) var(--p-6);
     font-size: var(--text-base);
@@ -564,10 +567,12 @@
   &--icon-only {
     justify-content: center;
 
+    &.ui-button--sz-xs,
     &.ui-button--sz-xsmall {
       padding: var(--p-1);
     }
 
+    &.ui-button--sz-sm,
     &.ui-button--sz-small {
       padding: var(--p-2);
     }
@@ -581,6 +586,7 @@
       }
     }
 
+    &.ui-button--sz-lg,
     &.ui-button--sz-large {
       padding: var(--p-2);
 
