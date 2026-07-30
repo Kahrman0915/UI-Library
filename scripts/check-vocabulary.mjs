@@ -1,4 +1,7 @@
-// Preview-markup gate.
+// Preview-markup + vocabulary gate. Two checks nothing else performs.
+//
+// 1. PREVIEW CLASSES ARE REAL (below)
+// 2. THE RETIRED SIZE VOCABULARY IS GONE (further down)
 //
 // Every `ui-*` class used in preview/**/*.html must be real — either STYLED (a
 // selector exists in the built dist/styles.css) or EMITTED (a component renders
@@ -80,13 +83,54 @@ for (const file of previewFiles) {
     });
 }
 
+// ── deprecated size vocabulary ────────────────────────────────────────────────
+//
+// The spelled-out scale (`xsmall` / `small` / `large`) was retired in favour of
+// `xs` / `sm` / `default` / `lg`. TypeScript catches the typed call sites; it
+// cannot see a raw class string or a hand-written HTML attribute, which is where
+// the last stragglers hid — three in Pagination.tsx and 43 in preview/.
+//
+// Scoped to two structured patterns on purpose: a bare /small|large/ hits 80+
+// files of legitimate prose and token names. docs/ and CLAUDE.md are NOT scanned
+// — dated decision records are supposed to quote the old spellings.
+const DEPRECATED = 'xsmall|small|large';
+const PATTERNS = [
+  { re: new RegExp(`--sz-(${DEPRECATED})\\b`), what: 'deprecated size class' },
+  { re: new RegExp(`\\bsize\\s*[=:]\\s*(["'])(${DEPRECATED})\\1`), what: 'deprecated size value' },
+];
+
+const scanned = [
+  ...walk(join(ROOT, 'src'), (n) => /\.(ts|tsx|scss)$/.test(n)),
+  ...previewFiles,
+  ...walk(join(ROOT, '.storybook'), (n) => /\.(ts|tsx|scss)$/.test(n)),
+];
+
+const stale = [];
+for (const file of scanned) {
+  if (rel(file) === 'scripts/check-vocabulary.mjs') continue;
+  readFileSync(file, 'utf8')
+    .split('\n')
+    .forEach((line, i) => {
+      for (const { re, what } of PATTERNS) {
+        const m = line.match(re);
+        if (m) stale.push({ file: rel(file), line: i + 1, what, text: m[0] });
+      }
+    });
+}
+
 // ── report ────────────────────────────────────────────────────────────────────
 const pad = (s, n) => String(s).padEnd(n);
-console.log('\nPreview-markup check\n');
+console.log('\nPreview-markup + vocabulary check\n');
 console.log(
   `  ${previewFiles.length} preview files · ${tokens} ui-* class tokens · ` +
-    `${styled.size} styled selectors · ${emittedLiterals.size} emitted literals`,
+    `${styled.size} styled selectors · ${emittedLiterals.size} emitted literals\n` +
+    `  ${scanned.length} files scanned for the retired size vocabulary`,
 );
+
+if (stale.length) {
+  console.error(`\n✗ ${stale.length} deprecated size literal(s):`);
+  for (const h of stale) console.error(`   ${pad(`${h.file}:${h.line}`, 54)} ${h.what} — ${h.text}`);
+}
 
 if (missing.length) {
   console.error(`\n✗ ${missing.length} class(es) that are neither styled nor emitted:`);
@@ -94,8 +138,12 @@ if (missing.length) {
   console.error(
     '\n   A preview class that exists nowhere else is drift — either the class was\n' +
       '   renamed in src/ and the preview was not updated, or the preview invented a\n' +
-      '   ui-* class of its own (use a non-ui- prefix for page-local helpers).\n',
+      '   ui-* class of its own (use a non-ui- prefix for page-local helpers).',
   );
+}
+
+if (stale.length || missing.length) {
+  console.error('');
   process.exit(1);
 }
-console.log('\n✓ PASS — every preview class is styled or emitted.\n');
+console.log('\n✓ PASS — every preview class resolves, no retired size literals.\n');
