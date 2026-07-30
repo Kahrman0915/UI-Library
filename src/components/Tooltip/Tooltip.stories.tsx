@@ -16,6 +16,15 @@ const meta: Meta<typeof Tooltip> = {
         'anything richer — or anything the user needs to click into — use `HoverCard` ' +
         'or `Popover`. Deliberately never picks up the brand theme.',
       tags: ['compound', '3 parts', 'portal'],
+      motion: {
+        notes:
+          'The one component with a hand-rolled `closed → open → closing` state machine predating the shared ' +
+          'overlay utility. It keeps the portal mounted through the exit so the tip does not vanish mid-fade.',
+        moments: [
+          { trigger: 'Open', description: 'Fades and slides `--motion-slide-sm` from the trigger, direction chosen by `side`.' },
+          { trigger: 'Close', description: 'Plays the exit, then unmounts on `animationend` — backed by a duration timer, because that event never fires under reduced motion or on a backgrounded tab.' },
+        ],
+      },
       changelog: [
         {
           date: '2026-07-29',

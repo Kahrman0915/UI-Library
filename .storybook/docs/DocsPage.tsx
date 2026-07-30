@@ -19,6 +19,7 @@ import { CodePane } from './CodePane';
 import { PropsTable, SubcomponentPropsTable } from './PropsTable';
 import { Toc, type TocEntry } from './Toc';
 import { Block, P, Section, Stage, prose } from './kit';
+import { groupTokens, motionFor } from './motion';
 import { useDocsMode } from './useDocsMode';
 import './docs.scss';
 
@@ -196,6 +197,9 @@ export function DocsPage() {
     ui.composition?.length || subcomponentNames.length,
   );
   const hasA11y = Boolean(ui.a11y?.keyboard?.length || ui.a11y?.notes);
+  // Derived from the component's SCSS, not from `parameters.ui` — the section
+  // appears for anything that actually animates, documented or not.
+  const motion = motionFor(segments[segments.length - 1], name);
   const hasChangelog = Boolean(ui.changelog?.length);
 
   // Built here rather than scraped from the DOM — this component already knows
@@ -208,6 +212,7 @@ export function DocsPage() {
     rest.length > 0 && { id: 'examples', label: 'Examples' },
     { id: 'api', label: 'API reference' },
     hasA11y && { id: 'accessibility', label: 'Accessibility' },
+    motion.any && { id: 'motion', label: 'Motion' },
     hasChangelog && { id: 'changelog', label: 'Changelog' },
   ].filter(Boolean) as TocEntry[];
 
@@ -394,6 +399,78 @@ export function DocsPage() {
                   ))}
                 </div>
               ) : null}
+            </Section>
+          ) : null}
+          {motion.any ? (
+            <Section
+              id="motion"
+              title="Motion"
+              description="Read from this component's SCSS, so it cannot drift from what actually animates."
+            >
+              {ui.motion?.notes ? <P>{prose(ui.motion.notes)}</P> : null}
+
+              {ui.motion?.moments?.length ? (
+                <div className="ui-docs-keys">
+                  {ui.motion.moments.map((m) => (
+                    <div key={m.trigger} className="ui-docs-keys__row">
+                      <div className="ui-docs-keys__combo">
+                        <Badge id={`motion-${m.trigger}`} variant="outline" label={m.trigger} />
+                      </div>
+                      <div className="ui-docs-keys__desc">{prose(m.description)}</div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
+              {groupTokens(motion.own).map((g) => (
+                <div key={g.kind} className="ui-docs-motion__group">
+                  <span className="ui-docs-motion__kind">{g.kind}</span>
+                  <div className="ui-docs-motion__tokens">
+                    {g.tokens.map((t) => (
+                      <span key={t.name} className="ui-docs-motion__token">
+                        <code>{t.name}</code>
+                        {t.value ? <em>{t.value}</em> : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {motion.utilities.map((u) => (
+                <div key={u.label} className="ui-docs-motion__group">
+                  <span className="ui-docs-motion__kind">{u.label}</span>
+                  <div className="ui-docs-motion__tokens">
+                    {u.tokens.map((t) => (
+                      <span key={t.name} className="ui-docs-motion__token">
+                        <code>{t.name}</code>
+                        {t.value ? <em>{t.value}</em> : null}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ))}
+
+              {motion.keyframes.length > 0 ? (
+                <div className="ui-docs-motion__group">
+                  <span className="ui-docs-motion__kind">Keyframes</span>
+                  <div className="ui-docs-motion__tokens">
+                    {motion.keyframes.map((k) => (
+                      <span key={k} className="ui-docs-motion__token">
+                        <code>@{k}</code>
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              ) : null}
+
+              <p className="ui-docs-p ui-docs-motion__note">
+                {prose(
+                  'Every duration here collapses under `prefers-reduced-motion` — one global rule in ' +
+                    '`tokens.scss` handles it. It sets `0.01ms` rather than `none` deliberately: Drawer and ' +
+                    'Tooltip unmount on `animationend`, and `none` means that event never fires. `Spinner` ' +
+                    'is the one exemption, since a frozen loading indicator reads as nothing happening.',
+                )}
+              </p>
             </Section>
           ) : null}
           {hasChangelog ? (

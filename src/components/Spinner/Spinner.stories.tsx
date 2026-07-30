@@ -13,6 +13,12 @@ const meta: Meta<typeof Spinner> = {
         '`prefers-reduced-motion` — it is a status indicator, and a frozen one reads ' +
         'as “nothing is happening”.',
       tags: ['loading', 'status'],
+      motion: {
+        notes:
+          'The single deliberate exemption from the global reduced-motion rule. Every other duration collapses ' +
+          'to `0.01ms`; the Spinner keeps turning at `--duration-spin`, because a frozen loading indicator ' +
+          'tells the user nothing is happening.',
+      },
       changelog: [
         {
           date: '2026-07-29',
