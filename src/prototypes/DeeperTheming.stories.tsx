@@ -4,6 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import {
   ArrowRight,
   Calendar,
+  ChartColumn,
   Check,
   FileText,
   Plus,
@@ -64,9 +65,12 @@ import {
  * moves to the surfaces that can actually afford it — the rail, section bands,
  * and the secondary/accent panels.
  *
- * Scope is deliberately narrowed to **dc and ec**: the closest pair in the
- * palette (37 degrees apart) and therefore the hardest case. If the model
- * separates these two it separates any pair.
+ * Scope is deliberately narrowed to **db, dc and ec**. dc and ec are the
+ * CLOSEST pair in the palette (37 degrees apart) and therefore the hardest
+ * case; db sits well away from both, so it shows what the model looks like when
+ * the hues are not fighting. Three brands is also the smallest set that shows a
+ * FAMILY rather than a comparison — two things look like a before and after,
+ * three start to look like a system.
  *
  * CONTAINMENT — unchanged and still the point. Every selector contains
  * `[data-theme-poc]`, an attribute that appears nowhere else in the repo, and
@@ -120,9 +124,9 @@ const POC_CSS = `
 
   /* The tint lives on the SECONDARY surfaces — the ones that are already not
      white today, so tinting them changes their hue rather than their role. */
-  --secondary: color-mix(in srgb, var(--poc-tint) calc(38% * var(--poc-str)), #e2e8f0);
-  --accent:    color-mix(in srgb, var(--poc-tint) calc(45% * var(--poc-str)), #f1f5f9);
-  --input:     color-mix(in srgb, var(--poc-tint) calc(38% * var(--poc-str)), #e2e8f0);
+  --secondary: color-mix(in srgb, var(--poc-tint) calc(28% * var(--poc-str)), #e2e8f0);
+  --accent:    color-mix(in srgb, var(--poc-tint) calc(34% * var(--poc-str)), #f1f5f9);
+  --input:     color-mix(in srgb, var(--poc-tint) calc(28% * var(--poc-str)), #e2e8f0);
   /* Most conservative number here — --muted carries the tightest text pairing in
      the whole system, and CLAUDE.md calls it out by name.
 
@@ -158,15 +162,19 @@ const POC_CSS = `
      one, and it only holds if the rail uses its own --sidebar-* foregrounds
      throughout — anything reaching for --muted-foreground inside a tinted rail
      measures 2.92. */
-  --sidebar:        color-mix(in srgb, var(--primary) calc(55% * var(--poc-chrome, 0)), #f8fafc);
-  --sidebar-border: color-mix(in srgb, var(--primary) calc(62% * var(--poc-chrome, 0)), #e2e8f0);
-  --sidebar-accent: color-mix(in srgb, var(--primary) calc(58% * var(--poc-chrome, 0)), #f1f5f9);
+  --sidebar:        color-mix(in srgb, var(--primary) calc(44% * var(--poc-chrome, 0)), #f8fafc);
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(52% * var(--poc-chrome, 0)), #e2e8f0);
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(50% * var(--poc-chrome, 0)), #f1f5f9);
 
   /* BAND — the alternating marketing section. A full-bleed tinted strip is the
      one place a white-page product can spend real colour on a large area,
      because the band is a deliberate break in the page rather than the page. */
-  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(34% * var(--poc-str)), #ffffff);
-  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(62% * var(--poc-str)), #ffffff);
+  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(26% * var(--poc-str)), #ffffff);
+  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(48% * var(--poc-str)), #ffffff);
+  /* The DARKEST point of the band gradient, broken out as its own token so the
+     audit can measure the worst case rather than the average. A gradient's
+     contrast is only as good as its deepest stop under text. */
+  --poc-band-deep:   color-mix(in srgb, var(--poc-band) 88%, var(--primary));
 }
 
 /* ── DARK ───────────────────────────────────────────────────────────────────
@@ -194,12 +202,13 @@ const POC_CSS = `
      than the rail they mix into, so tinting here RAISES luminance and eats
      contrast — the opposite direction to light. Measured: accent at 45% -> 4.17
      FAIL, at 38% -> 4.78 thin, at 32% -> 5.31 used. */
-  --sidebar:        color-mix(in srgb, var(--primary) calc(40% * var(--poc-chrome, 0)), #1e293b);
-  --sidebar-border: color-mix(in srgb, var(--primary) calc(45% * var(--poc-chrome, 0)), #334155);
-  --sidebar-accent: color-mix(in srgb, var(--primary) calc(32% * var(--poc-chrome, 0)), #334155);
+  --sidebar:        color-mix(in srgb, var(--primary) calc(32% * var(--poc-chrome, 0)), #1e293b);
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(38% * var(--poc-chrome, 0)), #334155);
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(26% * var(--poc-chrome, 0)), #334155);
 
-  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(45% * var(--poc-str)), #1e293b);
-  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(70% * var(--poc-str)), #1e293b);
+  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(36% * var(--poc-str)), #1e293b);
+  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(56% * var(--poc-str)), #1e293b);
+  --poc-band-deep:   color-mix(in srgb, var(--poc-band) 88%, var(--primary));
 }
 
 /* ── The APP MARK ───────────────────────────────────────────────────────────
@@ -232,21 +241,113 @@ const POC_CSS = `
   --poc-hero: linear-gradient(135deg, var(--primary) 0%, var(--poc-hero-far) 100%);
 }
 
+/* ── DEPTH ──────────────────────────────────────────────────────────────────
+   A flat tint reads as "somebody changed a hex value". Depth is what makes it
+   read as a designed surface. All of this is existing tokens plus color-mix —
+   no images, no filters, no dependencies, nothing new to install.
+
+   ONE RULE MAKES EVERY GRADIENT HERE MODE-SAFE: fade toward --background.
+   That lightens in light mode and darkens in dark mode, so the gradient always
+   moves AWAY from the mode's own foreground and contrast along it can only
+   improve. Fading toward #ffffff instead is correct in light and inverts in
+   dark — which is the usual way a gradient silently breaks a dark theme.
+
+   The elevation ladder, deliberately ordered rather than decorative:
+     band     RECESSED   inset hairlines, reads as cut INTO the page
+     page     0          the datum
+     card     RAISED     tinted shadow plus a lit top edge
+     mark     FLOATING   coloured glow, reads as a physical object
+
+   Shadows carry the BRAND HUE rather than neutral black. A grey shadow under a
+   saturated object looks like dirt; a shadow holding a little of the object's
+   own colour reads as light falling on it. This is most of why the Office icons
+   feel physical and a flat rounded square does not. */
+[data-theme-poc] {
+  --poc-shadow-key: color-mix(in srgb, var(--primary) 20%, transparent);
+  --poc-shadow-far: color-mix(in srgb, var(--primary) 13%, transparent);
+}
+
 [data-theme-poc] .poc-mark {
-  background-image: var(--poc-mark);
-  color: #ffffff;
   display: grid;
   place-items: center;
-  border-radius: var(--rounded-xl);
-  box-shadow: var(--shadow-sm);
   flex: none;
+  border-radius: var(--rounded-xl);
+  color: #ffffff;
+  /* Sheen over hue: the top-down white wash is what turns a flat gradient chip
+     into something that looks lit from above. */
+  background-image:
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
+    var(--poc-mark);
+  box-shadow:
+    0 1px 1px var(--poc-shadow-key),
+    0 var(--p-1-5) var(--p-4) var(--poc-shadow-far),
+    inset 0 1px 0 color-mix(in srgb, #ffffff 40%, transparent);
 }
-[data-theme-poc] .poc-band { background: var(--poc-band); }
-[data-theme-poc] .poc-band-strong { background: var(--poc-band-strong); }
-/* background-image, not background: the component's own background-color
-   survives underneath as a fallback, so no modifier class has to be known. */
-[data-theme-poc] .poc-hero { background-image: var(--poc-hero); }
+
+/* HERO. Both overlays move toward --foreground, never toward white, so the
+   AA proof still holds: every point on this surface is somewhere on the segment
+   --primary -> --foreground, and contrast against --primary-foreground can only
+   INCREASE. Depth here is free of contrast risk by construction, which is
+   exactly why the darkening direction was chosen over the prettier one. */
+[data-theme-poc] .poc-hero {
+  background-image:
+    radial-gradient(70% 90% at 82% 115%, color-mix(in srgb, var(--foreground) 42%, transparent) 0%, transparent 62%),
+    radial-gradient(55% 70% at 8% -15%, color-mix(in srgb, var(--foreground) 20%, transparent) 0%, transparent 60%),
+    var(--poc-hero);
+}
 [data-theme-poc] .poc-hero-cta > .ui-button { background-image: var(--poc-hero); }
+
+/* BAND. Recessed: hairline insets top and bottom, a soft brand bloom at the
+   top edge, and a fade toward the page at the bottom so it dissolves back into
+   white instead of ending on a hard slab edge. The bloom is the darkest point
+   under text, which is what --poc-band-deep tokenises for the audit. */
+[data-theme-poc] .poc-band,
+[data-theme-poc] .poc-band-strong {
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--primary) 22%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--primary) 22%, transparent);
+}
+[data-theme-poc] .poc-band {
+  background-image:
+    radial-gradient(90% 120% at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, var(--poc-band) 0%, color-mix(in srgb, var(--poc-band) 40%, var(--background)) 100%);
+}
+[data-theme-poc] .poc-band-strong {
+  background-image:
+    radial-gradient(90% 120% at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 70%),
+    linear-gradient(180deg, var(--poc-band-strong) 0%, color-mix(in srgb, var(--poc-band-strong) 55%, var(--background)) 100%);
+}
+
+/* RAIL. Fades toward the page down its length and carries an inner edge on the
+   content side, so it reads as a solid slab with a lit top rather than a
+   coloured rectangle. */
+[data-theme-poc] .poc-rail {
+  background-image: linear-gradient(180deg,
+    var(--sidebar) 0%,
+    color-mix(in srgb, var(--sidebar) 82%, var(--background)) 100%);
+  box-shadow: inset -1px 0 0 color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+/* CARDS. The library ships --shadow-xs on Card, which is correct for a flat
+   page and invisible once anything around it has depth. Inside this scope they
+   get a brand-tinted two-layer shadow and a barely-there top wash. */
+[data-theme-poc] .ui-card {
+  background-image: linear-gradient(180deg,
+    color-mix(in srgb, var(--primary) 3%, transparent) 0%, transparent 42%);
+  box-shadow:
+    0 1px 2px var(--poc-shadow-far),
+    0 var(--p-2) var(--p-6) var(--poc-shadow-far);
+}
+
+/* Display numerals in the brand gradient. Uses the HERO ramp (--primary ->
+   --foreground), not the mark ramp: the mark opens at L 0.78, which as text on
+   white would not clear even the 3:1 large-text floor. */
+[data-theme-poc] .poc-stat {
+  background-image: linear-gradient(135deg, var(--primary) 0%, var(--poc-hero-far) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
 `.trim();
 
 /** Injected once. Every rule is scoped to `[data-theme-poc]`. */
@@ -363,18 +464,20 @@ function deltaE(
  *
  * dc and ec are the CLOSEST pair in the palette — 37 degrees apart as primaries,
  * and the pair that round 1 measured at ΔE 0.006 as tinted pages, i.e. the same
- * colour. They are the hardest case, so they are the honest test: a model that
- * separates these separates anything.
+ * colour. They are the hardest case, so they are the honest test. db is the
+ * control: far enough from both that it shows the model working when the hues
+ * are not fighting each other.
  *
  * Labelled by CODE, never by product name — CLAUDE.md records that expanding
  * these codes was undone once already. The icons are illustrative.
  */
 const APPS = [
+  { brand: 'db', Icon: ChartColumn },
   { brand: 'dc', Icon: FileText },
   { brand: 'ec', Icon: Calendar },
 ] as const;
 type Brand = (typeof APPS)[number]['brand'];
-const BRANDS: Brand[] = ['dc', 'ec'];
+const BRANDS: Brand[] = ['db', 'dc', 'ec'];
 
 const H2: CSSProperties = {
   margin: '0 0 var(--p-2)',
@@ -483,8 +586,13 @@ function DashboardPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
       {/* The rail is the brand surface. It uses its OWN foreground tokens
           throughout — --muted-foreground on a tinted rail measures 2.92. */}
       <aside
+        className="poc-rail"
         style={{
-          background: 'var(--sidebar)',
+          // backgroundColor, NOT the `background` shorthand. Inline styles beat
+          // the stylesheet, and the shorthand resets background-image to none —
+          // which silently deleted .poc-rail's gradient while the inset edge
+          // from the same rule kept working, so the rule looked healthy.
+          backgroundColor: 'var(--sidebar)',
           borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
           padding: 'var(--p-4)',
           display: 'grid',
@@ -552,7 +660,10 @@ function DashboardPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
             <Card id={`${brand}-c1`}>
               <CardHeader id={`${brand}-c1`} title="Active accounts" description="Last 7 days" />
               <CardBody>
-                <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+                <div
+                  className="poc-stat"
+                  style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}
+                >
                   12,480
                 </div>
                 <Progress id={`${brand}-pr`} value={68} />
@@ -758,7 +869,10 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
             ['120+', 'Connectors'],
           ].map(([n, l]) => (
             <div key={l} style={{ display: 'grid', gap: 'var(--p-1)' }}>
-              <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+              <span
+                className="poc-stat"
+                style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}
+              >
                 {n}
               </span>
               <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
@@ -805,7 +919,10 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
                     <strong style={{ flex: 1 }}>{p.name}</strong>
                     {p.hi && <Badge id={`${brand}-p-b-${p.name}`} variant="default" label="Popular" />}
                   </div>
-                  <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+                  <span
+                    className="poc-stat"
+                    style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}
+                  >
                     {p.price}
                   </span>
                   <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
@@ -1078,7 +1195,19 @@ export const Marketing: Story = {
 export const Marks: Story = {
   render: function MarksStory() {
     const hostRef = useRef<HTMLDivElement>(null);
-    const [d, setD] = useState<{ page: number; mark: number; rail: number } | null>(null);
+    const [d, setD] = useState<Record<string, number[]>>({});
+
+    /** Every unordered pair of the three brands. */
+    const PAIRS: [Brand, Brand][] = [
+      ['db', 'dc'],
+      ['db', 'ec'],
+      ['dc', 'ec'],
+    ];
+    const SURFACES: [string, string, string][] = [
+      ['Marketing band', 'var(--poc-band)', 'large area, capped by the body text on it'],
+      ['Sidebar rail', 'var(--sidebar)', 'own foreground tokens, so more headroom'],
+      ['App mark', 'oklch(from var(--primary) 0.62 0.21 h)', 'no text on it — no constraint at all'],
+    ];
 
     useEffect(() => {
       const host = hostRef.current;
@@ -1091,37 +1220,16 @@ export const Marks: Story = {
         probe.style.backgroundColor = css;
         return toRGBA(getComputedStyle(probe).backgroundColor);
       };
-      const gap = (css: string) => {
-        const a = read('dc', css);
-        const b = read('ec', css);
-        return a && b ? deltaE(a, b) : NaN;
-      };
-      setD({
-        page: gap('var(--poc-band)'),
-        rail: gap('var(--sidebar)'),
-        mark: gap('oklch(from var(--primary) 0.62 0.21 h)'),
-      });
+      const next: Record<string, number[]> = {};
+      for (const [label, css] of SURFACES) {
+        next[label] = PAIRS.map(([x, y]) => {
+          const a = read(x, css);
+          const b = read(y, css);
+          return a && b ? deltaE(a, b) : NaN;
+        });
+      }
+      setD(next);
     }, []);
-
-    const row = (label: string, v: number, note: string) => (
-      <tr style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-        <td style={{ padding: 'var(--p-2)' }}>{label}</td>
-        <td
-          style={{
-            ...MONO,
-            padding: 'var(--p-2)',
-            textAlign: 'right',
-            fontWeight: 'var(--font-semibold)',
-            color: v >= 0.1 ? 'var(--success)' : 'var(--muted-foreground)',
-          }}
-        >
-          {Number.isFinite(v) ? v.toFixed(3) : '—'}
-        </td>
-        <td style={{ padding: 'var(--p-2)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
-          {note}
-        </td>
-      </tr>
-    );
 
     return (
       <>
@@ -1173,24 +1281,53 @@ export const Marks: Story = {
           </div>
 
           <div>
-            <h2 style={H2}>dc vs ec, per surface</h2>
+            <h2 style={H2}>Every pair, per surface</h2>
             <p style={P}>
-              OKLab ΔE between the two brands, measured live. Below <strong>0.05</strong> is
+              OKLab ΔE between each pair of brands, measured live. Below <strong>0.05</strong> is
               &ldquo;effectively the same colour&rdquo;; <strong>0.10</strong> is where two things
-              read as different colours.
+              read as different colours. Green marks a cell that clears 0.10.
             </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 640 }}>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 720 }}>
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Surface</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE</th>
+                  {PAIRS.map(([x, y]) => (
+                    <th key={`${x}${y}`} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>
+                      {x}/{y}
+                    </th>
+                  ))}
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }} />
                 </tr>
               </thead>
               <tbody>
-                {d && row('Marketing band', d.page, 'large area, capped by body text on it')}
-                {d && row('Sidebar rail', d.rail, 'own foreground tokens, so more headroom')}
-                {d && row('App mark', d.mark, 'no text on it — no constraint at all')}
+                {SURFACES.map(([label, , note]) => (
+                  <tr key={label} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                    <td style={{ padding: 'var(--p-2)' }}>{label}</td>
+                    {(d[label] ?? PAIRS.map(() => NaN)).map((v, i) => (
+                      <td
+                        key={i}
+                        style={{
+                          ...MONO,
+                          padding: 'var(--p-2)',
+                          textAlign: 'right',
+                          fontWeight: 'var(--font-semibold)',
+                          color: v >= 0.1 ? 'var(--success)' : 'var(--muted-foreground)',
+                        }}
+                      >
+                        {Number.isFinite(v) ? v.toFixed(3) : '—'}
+                      </td>
+                    ))}
+                    <td
+                      style={{
+                        padding: 'var(--p-2)',
+                        fontSize: 'var(--text-xs)',
+                        color: 'var(--muted-foreground)',
+                      }}
+                    >
+                      {note}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -1231,7 +1368,9 @@ const PAIRINGS: Pairing[] = [
   { label: 'muted-foreground / sidebar', fg: '--muted-foreground', bg: '--sidebar', note: 'FAILS by design — use --sidebar-*' },
   { label: 'foreground / band', fg: '--foreground', bg: '--poc-band' },
   { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'caps the band tint' },
+  { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc-band-deep', note: 'the gradient bloom — worst point' },
   { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc-band-strong' },
+  { label: 'stat gradient (lightest stop) / band', fg: '--primary', bg: '--poc-band', note: 'large text — 3:1 floor' },
   { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
   { label: 'error / error-light ON BAND', fg: '--error', bg: '--error-light', onBand: true, note: 'the remaining hazard' },
   { label: 'info / info-light', fg: '--info', bg: '--info-light' },
@@ -1272,7 +1411,11 @@ export const Audit: Story = {
       setRows(next);
     }, [mode]);
 
-    const floor = (label: string) => (label.startsWith('border') ? 3 : 4.5);
+    // WCAG 1.4.11 wants 3:1 for UI boundaries, and 1.4.3 allows 3:1 for large
+    // text — the display numerals are --text-3xl, comfortably over the 24px
+    // threshold, so they are held to 3 rather than 4.5.
+    const floor = (label: string) =>
+      label.startsWith('border') || label.startsWith('stat gradient') ? 3 : 4.5;
 
     return (
       <>
@@ -1319,8 +1462,11 @@ export const Audit: Story = {
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pairing</th>
-                  <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>dc</th>
-                  <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>ec</th>
+                  {BRANDS.map((b) => (
+                    <th key={b} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>
+                      {b}
+                    </th>
+                  ))}
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Note</th>
                 </tr>
               </thead>
@@ -1467,8 +1613,14 @@ export const Recipe: Story = {
             <code style={MONO}>var()</code> resolver and a <code style={MONO}>color-mix</code>{' '}
             evaluator. Until then it prints a green pass over all of this.
             <br />
-            <strong>Only two brands are exercised.</strong> dc and ec are the hardest pair, which
-            makes them a good test and a poor sample. The other six are not re-verified here.
+            <strong>Only three brands are exercised.</strong> dc and ec are the hardest pair and db
+            is the control, which makes them a good test and a poor sample. The other five are not
+            re-verified here.
+            <br />
+            <strong>The depth layer is not free at scale.</strong> Every card carries two shadow
+            layers and a gradient wash, every band two background layers plus insets. That is fine
+            on these pages and unmeasured on a real one — gradients and large blurred shadows are
+            paint-bound, and a long list of them is the usual cause of scroll jank.
             <br />
             <strong>Untested:</strong> forced-colors, <code style={MONO}>prefers-contrast</code>,
             print, nested POC scopes, and APCA — which weights light-text-on-light-tint very
