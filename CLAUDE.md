@@ -408,7 +408,11 @@ Fonts now build via a separate `npm run build:fonts` (plain `sass` CLI, outside 
 
 ### The push (via the `DesignSync` tool + `/design-sync` skill) — **shipped 2026-07-19, now 6 components behind**
 
-Project **`@ui/lib`** (`49609428-9a74-47c7-a777-b9f56bd43b81`), `type: PROJECT_TYPE_DESIGN_SYSTEM`. `preview/` holds **62 files — 59 component previews plus 3 Foundations pages** (motion, palettes, themes). **Local is the source of truth and the files here are ahead of the published project** — the six backfilled 2026-07-31 have not been uploaded via `DesignSync` yet.
+Project **`@ui/lib`** (`49609428-9a74-47c7-a777-b9f56bd43b81`), `type: PROJECT_TYPE_DESIGN_SYSTEM`. `preview/` holds **62 files — 59 component previews plus 3 Foundations pages** (motion, palettes, themes). **Synced 2026-07-31** — all 62 plus `dist/styles.css` uploaded and verified present.
+
+**A full sync was required, not the six new cards alone, and the reason generalises.** The project had last been written on 2026-07-22, so its `dist/styles.css` predated every one of the six components — their classes did not exist in it. But shipping the current stylesheet on its own would have broken the 31 already-published cards still referencing the retired `--sz-small` vocabulary. The preview HTML and the stylesheet are one artifact: **whenever a token or class name changes, they go up together or the project is left worse than before.**
+
+**`_ds_manifest.json` is compiled app-side from each file's first-line `<!-- @dsCard group="…" -->` marker — it does NOT update when you write files.** Immediately after this sync it still listed 40 cards, missing the six new ones *and* 13 that had been published for over a week. That is expected lag, not a failed upload: verify a card landed by reading the file back and checking the marker survived on line 1, not by reading the manifest.
 
 The previews are **tracked in this repo** under `preview/{group}/{kebab-name}.html` and uploaded from there — local is the source of truth, the project is a published copy. They can drift (they did: `dist/styles.css` sat at the pre-fix 685 kB build for two days, and the Toast preview kept hand-rolled action buttons after Toast moved to composing `Button`). **When you change a component's rendered markup or class names, update its preview in the same commit.**
 
