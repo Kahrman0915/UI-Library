@@ -147,24 +147,40 @@ const POC_CSS = `
   --border-hover: color-mix(in srgb, var(--primary) calc(26% * var(--poc-str)), #64748b);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
-  /* CHROME — the rail. The page is chroma-starved because it carries small body
-     text; the rail is not, because --sidebar is its own palette with its OWN
-     foreground (#0f172a). Measured ceilings, worst of the set:
-       --sidebar        55%  -> sidebar-fg 6.87   room to spare
-       --sidebar-accent 66%  -> accent-fg  4.60   too tight, 0.10 over the floor
-       --sidebar-accent 58%  -> accent-fg  5.25   used
-     The ACCENT is the constraint, not the rail: it starts a step further from
-     white, so it runs out of headroom first.
+  /* CHROME — the rail. THE RAIL STEPS BACK in this round. Earlier rounds pushed
+     it to 44% raw primary because it was the only surface with the headroom to
+     carry identity. It is not any more: the mark now clears 0.10 separation at
+     every gradient stop, so the rail no longer has to shout — and a rail that
+     shouts is the single loudest tell of a cheap theme.
 
-     NOTE this reverses a recorded decision. CLAUDE.md lists --sidebar beside
-     Tooltip as deliberately un-themed neutral chrome. Making the rail the
-     loudest brand surface in the app is a change of policy, not an extension of
-     one, and it only holds if the rail uses its own --sidebar-* foregrounds
-     throughout — anything reaching for --muted-foreground inside a tinted rail
-     measures 2.92. */
-  --sidebar:        color-mix(in srgb, var(--primary) calc(44% * var(--poc-chrome, 0)), #f8fafc);
-  --sidebar-border: color-mix(in srgb, var(--primary) calc(52% * var(--poc-chrome, 0)), #e2e8f0);
-  --sidebar-accent: color-mix(in srgb, var(--primary) calc(50% * var(--poc-chrome, 0)), #f1f5f9);
+     GREYED, not merely lightened, and the distinction is the whole point.
+     Dropping the percentage alone gives a PALE version of the same saturated
+     hue, which reads as washed out. Pre-mixing the brand into slate-500 first
+     drops the CHROMA while keeping the hue identifiable, so the rail reads as
+     grey that happens to lean the brand's way.
+
+     TWO THINGS FELL OUT OF THIS, both measured after the change rather than
+     predicted before it:
+
+     (a) The guard rail is gone. muted-foreground on the rail was 3.98 and
+         failing at 55%; at a greyed 20% it measures 5.64 and PASSES. The whole
+         "every component inside the rail must use --sidebar-* foregrounds"
+         constraint simply evaporates. A quieter rail is not just calmer, it is
+         structurally less demanding of everything placed on it.
+     (b) The rail stops differentiating brands — separation across the three
+         collapses to 0.003-0.014, i.e. nothing. That is the deliberate trade,
+         and it is only affordable because the mark now carries identity on its
+         own. Turn the marks off and this rail says nothing about which app you
+         are in.
+
+     It also lands much closer to the recorded decision it was straining:
+     CLAUDE.md lists --sidebar beside Tooltip as deliberately un-themed neutral
+     chrome. At 20% of a greyed stock (chroma ~0.015 against the 55% version's
+     0.103) it is nearly that, rather than a reversal of it. */
+  --poc-rail-stock: color-mix(in srgb, var(--primary) 28%, #64748b);
+  --sidebar:        color-mix(in srgb, var(--poc-rail-stock) calc(20% * var(--poc-chrome, 0)), #f8fafc);
+  --sidebar-border: color-mix(in srgb, var(--poc-rail-stock) calc(30% * var(--poc-chrome, 0)), #e2e8f0);
+  --sidebar-accent: color-mix(in srgb, var(--poc-rail-stock) calc(34% * var(--poc-chrome, 0)), #f1f5f9);
 
   /* BAND — the alternating marketing section. A full-bleed tinted strip is the
      one place a white-page product can spend real colour on a large area,
@@ -286,8 +302,21 @@ const POC_CSS = `
    own colour reads as light falling on it. This is most of why the Office icons
    feel physical and a flat rounded square does not. */
 [data-theme-poc] {
-  --poc-shadow-key: color-mix(in srgb, var(--primary) 20%, transparent);
-  --poc-shadow-far: color-mix(in srgb, var(--primary) 13%, transparent);
+  /* Softer and further than round 5. A tight, dark shadow reads as cheap; a wide
+     one at low alpha reads as expensive, because it is what a large diffuse
+     light source actually does. Three layers, each roughly tripling the blur of
+     the last — contact, mid, ambient. That ladder is most of the difference
+     between a card that looks stuck on and one that looks placed. */
+  --poc-shadow-key: color-mix(in srgb, var(--primary) 14%, transparent);
+  --poc-shadow-far: color-mix(in srgb, var(--primary) 9%, transparent);
+  --poc-shadow-amb: color-mix(in srgb, var(--foreground) 6%, transparent);
+
+  /* GRAIN. A perfectly smooth gradient is the giveaway of a cheap one — real
+     printed and photographed colour has tooth. This is an inline SVG turbulence
+     filter as a data URI: self-contained, no network, no dependency, and it
+     costs nothing to keep at an opacity low enough to be felt and not seen.
+     Kept to the two loudest surfaces only; grain over body copy is noise. */
+  --poc-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
 }
 
 [data-theme-poc] .poc-mark {
@@ -312,6 +341,14 @@ const POC_CSS = `
    --primary -> --foreground, and contrast against --primary-foreground can only
    INCREASE. Depth here is free of contrast risk by construction, which is
    exactly why the darkening direction was chosen over the prettier one. */
+/* NO GRAIN ON THE HERO, and the reason is worth keeping. The hero label is
+   --primary-foreground on --primary, and --primary is tuned to clear AA by a
+   hair: measured 4.57-4.61 across the three brands. Any LIGHTENING overlay eats
+   that margin, and the grain at 0.055 took it to 4.17-4.20 — under the floor.
+   It looked fine and would have shipped a failure.
+   The hero gets its richness from the two darkening radials instead, which move
+   along --primary -> --foreground and therefore can only raise contrast. A
+   surface with no headroom gets no overlay; that is the rule, not a one-off. */
 [data-theme-poc] .poc-hero {
   background-image:
     radial-gradient(70% 90% at 82% 115%, color-mix(in srgb, var(--foreground) 42%, transparent) 0%, transparent 62%),
@@ -337,6 +374,7 @@ const POC_CSS = `
 }
 [data-theme-poc] .poc-band-strong {
   background-image:
+    var(--poc-grain),
     radial-gradient(90% 120% at 50% 0%, color-mix(in srgb, var(--primary) 12%, transparent) 0%, transparent 70%),
     linear-gradient(180deg, var(--poc-band-strong) 0%, color-mix(in srgb, var(--poc-band-strong) 55%, var(--background)) 100%);
 }
@@ -357,9 +395,41 @@ const POC_CSS = `
 [data-theme-poc] .ui-card {
   background-image: linear-gradient(180deg,
     color-mix(in srgb, var(--primary) 3%, transparent) 0%, transparent 42%);
+  /* contact -> mid -> ambient, each roughly tripling the blur before it */
   box-shadow:
-    0 1px 2px var(--poc-shadow-far),
-    0 var(--p-2) var(--p-6) var(--poc-shadow-far);
+    0 1px 1px var(--poc-shadow-amb),
+    0 var(--p-1) var(--p-3) var(--poc-shadow-far),
+    0 var(--p-5) var(--p-12) var(--poc-shadow-far);
+  transition:
+    box-shadow var(--duration-normal) var(--ease-out),
+    transform var(--duration-normal) var(--ease-out);
+}
+/* Only the cards that ALREADY opt into interactivity get the lift — adding
+   hover motion to a static card is the other classic cheap tell. */
+[data-theme-poc] .ui-card--interactive:hover {
+  transform: translateY(calc(-1 * var(--motion-slide-sm)));
+  box-shadow:
+    0 1px 1px var(--poc-shadow-amb),
+    0 var(--p-2) var(--p-5) var(--poc-shadow-far),
+    0 var(--p-8) var(--p-16) var(--poc-shadow-key);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* The global block in tokens.scss collapses DURATIONS only, so a transform
+     would still teleport. Suppress the movement itself and keep the shadow. */
+  [data-theme-poc] .ui-card--interactive:hover { transform: none; }
+}
+
+/* TYPE. The most under-used lever in the whole exercise, and the cheapest.
+   Display sizes at default tracking look like a document; pulled tight they
+   look like a product. Numerals get tabular figures so columns of stats stop
+   jittering between values — the sort of detail nobody consciously notices and
+   everybody feels. */
+[data-theme-poc] .poc-display {
+  letter-spacing: var(--tracking-tight);
+}
+[data-theme-poc] .poc-stat {
+  letter-spacing: var(--tracking-tight);
+  font-variant-numeric: tabular-nums;
 }
 
 /* Display numerals in the brand gradient. Uses the HERO ramp (--primary ->
@@ -805,6 +875,7 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
       >
         <Mark Icon={Icon} size={56} />
         <h1
+          className="poc-display"
           style={{
             margin: 0,
             fontSize: 'var(--text-4xl)',
@@ -835,7 +906,7 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
       {/* WHITE section — the page's default state. */}
       <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
         <div style={{ textAlign: 'center', display: 'grid', gap: 'var(--p-2)' }}>
-          <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+          <h2 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
             Built for the whole pipeline
           </h2>
           <p style={{ ...P, margin: '0 auto' }}>From ingest to the number on the slide.</p>
@@ -871,7 +942,7 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
         style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}
       >
         <div style={{ textAlign: 'center', display: 'grid', gap: 'var(--p-2)' }}>
-          <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+          <h2 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
             Trusted where the numbers matter
           </h2>
           <p style={{ ...P, margin: '0 auto' }}>
@@ -914,6 +985,7 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
       {/* Pricing on white again, so the band reads as a break rather than a mode. */}
       <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
         <h2
+          className="poc-display"
           style={{
             margin: 0,
             textAlign: 'center',
@@ -983,7 +1055,7 @@ function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
         className="poc-band-strong"
         style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}
       >
-        <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+        <h2 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
           Ready when you are
         </h2>
         <p style={{ ...P, margin: 0 }}>No card required for the first 30 days.</p>
@@ -1121,11 +1193,23 @@ export const Dashboard: Story = {
           <div>
             <h2 style={H2}>What to look at</h2>
             <p style={P}>
-              The rail is doing nearly all of the work, and that is the finding: it is the only
-              large surface in a white-page product with the contrast headroom to carry real
-              colour, because it has its own foreground tokens instead of body text on{' '}
-              <code style={MONO}>--muted-foreground</code>. Measured, it holds{' '}
-              <strong>six times the chroma</strong> the page could (0.103 vs 0.017).
+              <strong>The rail deliberately stopped doing the work.</strong> Earlier rounds pushed
+              it to 55% raw primary because it was the only surface with headroom to carry identity.
+              The mark carries it now — 0.10+ separation at every gradient stop — so the rail was
+              greyed back to a chroma of ~0.015 against the loud version&rsquo;s 0.103. It reads as
+              grey that leans the brand&rsquo;s way, which is what expensive software does; a rail
+              that shouts is the loudest tell of a cheap theme.
+            </p>
+            <p style={P}>
+              Two things fell out of that, both measured after the change rather than predicted
+              before it. <strong>The guard rail disappeared:</strong>{' '}
+              <code style={MONO}>--muted-foreground</code> on the rail was 3.98 and failing, and now
+              measures <strong>5.64</strong> — so the &ldquo;everything inside the rail must use{' '}
+              <code style={MONO}>--sidebar-*</code> foregrounds&rdquo; constraint is simply gone. And{' '}
+              <strong>the rail no longer differentiates the brands at all</strong> — separation
+              across the three collapses to 0.003–0.014. That is the trade, and it is only
+              affordable because the mark is holding identity by itself. Turn the marks off and this
+              rail says nothing about which app you are in.
             </p>
             <p style={P}>
               Note the knockouts stay correct — the Switch thumb, the Avatar ring and the status dot
@@ -1415,7 +1499,7 @@ const PAIRINGS: Pairing[] = [
   { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary' },
   { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar', note: 'the tinted rail' },
   { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent', note: 'the rail ceiling' },
-  { label: 'muted-foreground / sidebar', fg: '--muted-foreground', bg: '--sidebar', note: 'FAILS by design — use --sidebar-*' },
+  { label: 'muted-foreground / sidebar', fg: '--muted-foreground', bg: '--sidebar', note: 'now PASSES — was 3.98 at the loud rail' },
   { label: 'foreground / band', fg: '--foreground', bg: '--poc-band' },
   { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'caps the band tint' },
   { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc-band-deep', note: 'the gradient bloom — worst point' },
@@ -1566,10 +1650,12 @@ export const Audit: Story = {
               <strong>
                 <code style={MONO}>muted-foreground / sidebar</code>
               </strong>{' '}
-              fails, and it is supposed to. It is here as a guard rail: a tinted rail only works if
-              every component inside it uses the <code style={MONO}>--sidebar-*</code> foregrounds.
-              The moment something reaches for the generic muted token, it breaks — so the row is
-              kept visible rather than quietly excluded.
+              now passes at <strong>5.64</strong>, and the row is kept because of what it used to
+              say. At the loud 55% rail it measured 3.98 and failed, which forced a rule: every
+              component inside the rail had to use the <code style={MONO}>--sidebar-*</code>{' '}
+              foregrounds. Greying the rail dissolved that rule rather than satisfying it. Quieting
+              a surface does not just make it calmer — it makes it less demanding of everything
+              placed on it, which is a cost that never appears in a colour picker.
             </p>
             <p style={P}>
               <strong>
