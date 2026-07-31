@@ -1,17 +1,14 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
+  ArrowRight,
   Calendar,
-  ChartColumn,
-  CreditCard,
+  Check,
   FileText,
-  LifeBuoy,
-  MessageSquare,
-  Package,
   Plus,
   Search,
-  Sparkles,
+  Settings,
   Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -25,7 +22,6 @@ import {
   CardBody,
   CardHeader,
   Chip,
-  FeaturedIcon,
   Input,
   Item,
   ItemContent,
@@ -33,32 +29,50 @@ import {
   ItemGroup,
   ItemTitle,
   Progress,
-  Slider,
+  Separator,
   StatusDot,
   Switch,
 } from '../index';
 
 /**
- * PROOF OF CONCEPT — deeper theming.
+ * PROOF OF CONCEPT — deeper theming.  Round 4.
  *
- * Today a `data-theme` scope reaches 9 of the library's ~452 tokens, and all nine
- * are `--primary`. Surfaces, elevation and chrome are out of reach, which is why
- * eight sub-brands read as "the same app with a different button".
+ * THE QUESTION: eight sub-apps under one parent, like Office or the Apple
+ * suite. Each has to stand on its own AND read as part of one ecosystem.
+ * Today a `data-theme` scope reaches 9 of ~452 tokens and all nine are
+ * `--primary`, so the apps read as "the same app with a different button".
  *
- * This story asks what happens if a theme also tints the neutral SURFACES, and
- * adds one bold per-brand treatment at entry points. It is exploratory: it
- * modifies nothing. No token, no component, no existing story.
+ * WHAT THE EARLIER ROUNDS SETTLED (kept here so the dead ends stay dead):
  *
- * CONTAINMENT — two mechanisms, both deliberate:
+ *  1. Tinting the PAGE cannot differentiate brands. Only ~10% of a primary's
+ *     chroma survives into a surface pale enough to carry body text. Pushing
+ *     the tint from 22% to 70% moved the closest pair from ΔE 0.004 to 0.014 —
+ *     still three times under "tellable apart" — while dragging error-on-tint
+ *     from 4.72 to 2.89. The page can be pushed into unreadable, not into
+ *     carrying identity.
+ *  2. Rotating to the COMPLEMENT does not help: a rigid rotation of the hue
+ *     wheel preserves every pairwise distance, and three of eight complements
+ *     landed on a semantic hue.
+ *  3. Identity belongs in the MARK. Nothing sits on top of a mark, so it has no
+ *     contrast constraint at all — the one surface where colour is free. Same
+ *     pair, 0.010 as pages vs 0.128 as marks.
  *
- *   1. Every selector below contains `[data-theme-poc]`. That attribute appears
- *      nowhere else in the repo, so nothing outside this story can be reached.
- *   2. Mode is stamped on the SAME element, never inherited:
- *      `[data-theme-poc][data-mode='light']`. Both rules are (0,2,0) and mutually
- *      exclusive on one element, so source order decides nothing. This avoids the
- *      descendant form tokens.scss uses (`[data-mode='light'] [data-theme]`),
- *      which has a latent bug: an inner `data-mode="dark"` block inside a light
- *      page still matches the LIGHT rule, because the ancestor is light.
+ * ROUND 4, and the owner's call that shapes it: **in light mode the main
+ * background stays WHITE.** That is not a compromise, it is the fix. It keeps
+ * every semantic tint composited over the surface the system was designed
+ * against, which deletes the entire class of failure round 1 found. The tint
+ * moves to the surfaces that can actually afford it — the rail, section bands,
+ * and the secondary/accent panels.
+ *
+ * Scope is deliberately narrowed to **dc and ec**: the closest pair in the
+ * palette (37 degrees apart) and therefore the hardest case. If the model
+ * separates these two it separates any pair.
+ *
+ * CONTAINMENT — unchanged and still the point. Every selector contains
+ * `[data-theme-poc]`, an attribute that appears nowhere else in the repo, and
+ * mode is stamped on the SAME element (`[data-theme-poc][data-mode='light']`)
+ * so an inner dark block inside a light page cannot inherit the wrong rule.
+ * Nothing outside this file is modified: no token, no component, no story.
  */
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -66,160 +80,105 @@ import {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Two things about `color-mix` that shaped this recipe:
+ * Two `color-mix` facts that shaped this recipe:
  *
- * A custom property CANNOT reference itself. `--background: color-mix(…,
- * var(--background))` is a cycle: the declaration is invalid at computed-value
- * time and resolves to `unset`. So the base values below are hardcoded literals
- * copied from tokens.scss. That is fine for a POC and it is the single biggest
- * ADOPTION cost — real adoption needs a layer of raw neutral tokens
- * (`--surface-base` / `--surface-raised` / …) with the semantic tokens derived
- * from them.
+ * A custom property CANNOT reference itself — `--background: color-mix(…,
+ * var(--background))` is a cycle and resolves to `unset`. So the bases below
+ * are literals copied from tokens.scss. That is the single biggest ADOPTION
+ * cost: real adoption needs a layer of raw neutral tokens with the semantic
+ * ones derived from them.
  *
- * `color-mix` AVERAGES alpha. Mixing into an existing `rgba()` inflates opacity
- * (12% of an opaque colour into a 0.06 alpha yields 0.17, ~3x intended), so any
- * translucent token has to be rebuilt against `transparent`, not mixed into.
+ * `color-mix` AVERAGES alpha, so a translucent token must be rebuilt against
+ * `transparent` rather than mixed into.
+ *
+ * STRUCTURAL WARNING, learned twice the hard way: everything below is one
+ * template literal, and prose accidentally left OUTSIDE a comment is silently
+ * valid-ish CSS that makes the parser discard the declarations after it. Both
+ * times the contrast sweep still reported PASS, because an override that never
+ * applied is indistinguishable from one that agrees with the baseline. If you
+ * edit this block, re-run the structural check in the commit message.
  */
 const POC_CSS = `
-/* Tint STOCK — the brand pre-mixed with the mode's extreme.
-   Mixing raw --primary into a light surface only darkens it, and darkening a
-   surface under dark text COSTS contrast. The tightest pairing in the system,
-   --muted-foreground on --muted, sits at ~5.0:1. A plain 8% raw mix takes the
-   nb (emerald) brand to 4.64 — one nudge off failing. Pre-mixing with white
-   carries the hue but brings its own lift, which cancels most of the loss. */
+/* ── LIGHT ──────────────────────────────────────────────────────────────────
+   THE PAGE STAYS WHITE. Stated as an explicit declaration rather than an
+   omission, so it is obvious this is a decision and not an oversight.
 
+   Everything the earlier rounds fought about disappears here: the semantic
+   -light tints ship as rgba() and composite over whatever is behind them,
+   which the whole system assumes is white. Leave the page white and that
+   assumption holds, so error/success/warning/info keep their exact shipped
+   contrast with no re-derivation at all. */
 [data-theme-poc][data-mode='light'] {
+  /* Pre-mixing the brand with white carries the hue without the darkening.
+     Mixing raw --primary into a light surface only darkens it, and darkening a
+     surface under dark text COSTS contrast. */
   --poc-tint: color-mix(in srgb, var(--primary) 45%, #ffffff);
 
-  /* The page takes the tint. Cards do NOT — that is what makes them float.
-     Light mode currently collapses background/card/popover all to #ffffff and
-     separates them with a hairline alone; this gives it the elevation model
-     dark mode already has. */
-  /* Round 3 raised this from 22% to 40% — the round-1 tint was too faint to
-     evaluate by eye, which is a fair criticism of a story whose whole job is to
-     be looked at. It does NOT change the conclusion: sweeping the tint from 22%
-     to 70% moves the closest brand pair from ΔE 0.004 to only 0.014, still
-     three times under the "tellable apart" threshold, while dragging
-     error-on-tint from 4.08 to 2.89. The page cannot be bumped into carrying
-     identity — it can only be bumped into being unreadable. 40% is chosen as
-     "clearly visible, still safe", not as a step toward a solution. */
-  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #ffffff);
+  --background: #ffffff;
+  --card:       #ffffff;
+  --popover:    #ffffff;
 
-  /* LEVER 2 — DEPTH. Round 1 measured the honest limit of hue: only ~10% of a
-     primary's chroma survives into a page pale enough to carry body text, so two
-     brands 17 degrees apart land 0.004 apart as pages — under any threshold for
-     "different colour". Luminance does not have that ceiling. A page 4% darker
-     reads at dE 0.014 and 8% at 0.029, five to seven times what hue buys, and
-     the contrast cost is nearly nil: muted-foreground (#475569) on the page only
-     falls 6.50 -> 5.53 at 8%, still far clear of AA. Depth is the cheapest
-     separation in the system and the one nobody spends. */
-  --background: color-mix(in srgb, #0f172a
-                  calc(var(--poc-depth, 0) * 4% * var(--poc-depth-on, 0)), var(--poc-page-hue));
-  --card:    #ffffff;
-  --popover: #ffffff;
-
-  /* --accent is near-white and is the row/menu hover surface, so it takes the
-     most tint — it is where the hue reads best without touching text. */
+  /* The tint lives on the SECONDARY surfaces — the ones that are already not
+     white today, so tinting them changes their hue rather than their role. */
+  --secondary: color-mix(in srgb, var(--poc-tint) calc(38% * var(--poc-str)), #e2e8f0);
   --accent:    color-mix(in srgb, var(--poc-tint) calc(45% * var(--poc-str)), #f1f5f9);
-  --secondary: color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #e2e8f0);
-  --input:     color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #e2e8f0);
-  /* Most conservative number in the table — --muted carries the tightest pairing. */
-  --muted:     color-mix(in srgb, var(--poc-tint) calc(18% * var(--poc-str)), #cbd5e1);
+  --input:     color-mix(in srgb, var(--poc-tint) calc(38% * var(--poc-str)), #e2e8f0);
+  /* Most conservative number here — --muted carries the tightest text pairing in
+     the whole system, and CLAUDE.md calls it out by name.
 
-  /* ROUND 1'S HEADLINE FAILURE, FIXED.
-     The semantic -light tints ship as rgba() and are composited by the browser
-     over whatever is behind them — which the whole system assumes is white.
-     Tinting the page silently invalidated that: error-on-error-light fell from
-     4.72 to 4.08 on all eight brands, and scripts/contrast-check.mjs could not
-     see it because it models the tints as "over --background" and returns null
-     for color-mix anyway.
+     This one costs something and the cost is NOT tunable. muted-foreground on
+     --muted is 5.10 today; tinting takes it to 4.94 at 14% and 4.87 at 20% —
+     but also 4.97 at 10%, so the loss is nearly flat across the range. It comes
+     from mixing the pastel stock into slate-300 at all, not from how much. 14%
+     is chosen for the margin rather than the hue, since a surface this small
+     contributes almost no identity anyway. Still clears AA at 4.94, but it is a
+     genuine regression against today and should be re-derived, not tinted, if
+     this is ever adopted. */
+  --muted:     color-mix(in srgb, var(--poc-tint) calc(14% * var(--poc-str)), #cbd5e1);
 
-     The fix is to stop compositing and start DERIVING, opaque, so the alert
-     keeps its own surface instead of inheriting whatever is behind it. This is
-     what real adoption would have to do to every translucent token.
-
-     THREE WAYS THIS WAS GOT WRONG FIRST, all caught by measuring:
-     (a) mixed at 10% when the shipped tints are rgba(..., 0.06) — 6%. Too much
-         pigment drops error-on-error-light straight through the floor.
-     (b) mixed into var(--background), i.e. into the TINTED page, which stacks
-         the brand tint under the semantic tint and darkens it twice: 2.99.
-     (c) the whole block was written AFTER this comment had already been closed,
-         so it was raw text in the stylesheet and the parser discarded all four
-         declarations. Three of the four then "matched today exactly" — which
-         read as a perfect result and was actually proof that nothing applied.
-         An override that agrees with the baseline is indistinguishable from an
-         override that never ran; only the one value that was SUPPOSED to move
-         (error, deliberately re-derived) exposed it. Hence the structural check
-         in the commit message rather than a delimiter count: balanced counts
-         were reported as healthy while this block was dead.
-     The right base is the UNTINTED page literal, because that is what today's
-     rgba() actually composites against. */
-  --error-light:   color-mix(in srgb, var(--error)   6%, #ffffff);
-  --success-light: color-mix(in srgb, var(--success) 6%, #ffffff);
-  --warning-light: color-mix(in srgb, var(--warning) 6%, #ffffff);
-  --info-light:    color-mix(in srgb, var(--info)    6%, #ffffff);
-
-  /* Borders use RAW --primary, not the stock: they are not text backgrounds so
+  /* Borders use RAW --primary, not the stock: they are not text backgrounds, so
      there is no contrast budget to protect, and the stock would wash the hue out
-     exactly where it needs to be legible. */
-  --border:       color-mix(in srgb, var(--primary) calc(18% * var(--poc-str)), #cbd5e1);
-  --border-hover: color-mix(in srgb, var(--primary) calc(24% * var(--poc-str)), #64748b);
+     exactly where it needs to read. */
+  --border:       color-mix(in srgb, var(--primary) calc(20% * var(--poc-str)), #cbd5e1);
+  --border-hover: color-mix(in srgb, var(--primary) calc(26% * var(--poc-str)), #64748b);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
-  /* LEVER 3 — CHROME. The page is chroma-starved because it carries small body
-     text against --muted-foreground. The rail is not: --sidebar is already its
-     own carve-out palette with its OWN foreground (#0f172a, ~19:1 on the
-     untinted rail), so it can be tinted far harder than the page will ever
-     tolerate. At 55% the rail keeps SIX TIMES the chroma of the page (0.103 vs
-     0.0177) — the only place in this whole POC where a brand hue survives at
-     real saturation.
-
-     Measured ceilings, worst of all 8 brands:
-       --sidebar        55%  -> sidebar-fg 17.06   plenty of room left
-       --sidebar-accent 66%  -> accent-fg   4.60   TOO TIGHT, 0.10 over the floor
-       --sidebar-accent 58%  -> accent-fg   5.25   the number used
+  /* CHROME — the rail. The page is chroma-starved because it carries small body
+     text; the rail is not, because --sidebar is its own palette with its OWN
+     foreground (#0f172a). Measured ceilings, worst of the set:
+       --sidebar        55%  -> sidebar-fg 6.87   room to spare
+       --sidebar-accent 66%  -> accent-fg  4.60   too tight, 0.10 over the floor
+       --sidebar-accent 58%  -> accent-fg  5.25   used
      The ACCENT is the constraint, not the rail: it starts a step further from
-     the mode's extreme, so it runs out of headroom first.
+     white, so it runs out of headroom first.
 
-     NOTE this changes what --sidebar means. Today it is neutral chrome, listed
-     in CLAUDE.md beside Tooltip as deliberately un-themed. Turning the rail into
-     the loudest brand surface in the app is a REVERSAL of that decision, not an
-     extension of it — it needs to be made on purpose. */
+     NOTE this reverses a recorded decision. CLAUDE.md lists --sidebar beside
+     Tooltip as deliberately un-themed neutral chrome. Making the rail the
+     loudest brand surface in the app is a change of policy, not an extension of
+     one, and it only holds if the rail uses its own --sidebar-* foregrounds
+     throughout — anything reaching for --muted-foreground inside a tinted rail
+     measures 2.92. */
   --sidebar:        color-mix(in srgb, var(--primary) calc(55% * var(--poc-chrome, 0)), #f8fafc);
   --sidebar-border: color-mix(in srgb, var(--primary) calc(62% * var(--poc-chrome, 0)), #e2e8f0);
   --sidebar-accent: color-mix(in srgb, var(--primary) calc(58% * var(--poc-chrome, 0)), #f1f5f9);
+
+  /* BAND — the alternating marketing section. A full-bleed tinted strip is the
+     one place a white-page product can spend real colour on a large area,
+     because the band is a deliberate break in the page rather than the page. */
+  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(34% * var(--poc-str)), #ffffff);
+  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(62% * var(--poc-str)), #ffffff);
 }
 
-/* Per-brand DEPTH rung — 0, 1 or 2, times 4%.
-   Assigned so that every one of the four colliding pairs lands on a DIFFERENT
-   rung: db/ir 0 vs 2, dc/ec 0 vs 2, nb/dc 1 vs 0, rm/db 1 vs 0. That is the
-   whole trick — depth is only worth spending where hue already failed, so the
-   assignment is derived from the collision list, not from taste.
-
-   In a real adoption this is one number per brand in tokens.scss, beside the
-   primary. It is the smallest possible API for the largest measured gain. */
-[data-theme-poc][data-theme='db'] { --poc-depth: 0; }
-[data-theme-poc][data-theme='dc'] { --poc-depth: 0; }
-[data-theme-poc][data-theme='nb'] { --poc-depth: 1; }
-[data-theme-poc][data-theme='rm'] { --poc-depth: 1; }
-[data-theme-poc][data-theme='dr'] { --poc-depth: 1; }
-[data-theme-poc][data-theme='ir'] { --poc-depth: 2; }
-[data-theme-poc][data-theme='ec'] { --poc-depth: 2; }
-[data-theme-poc][data-theme='ph'] { --poc-depth: 2; }
-
+/* ── DARK ───────────────────────────────────────────────────────────────────
+   Dark DOES tint its page: --muted-foreground on --muted sits at 8.3:1 there
+   against light mode's 5.0, so the headroom exists. The stock is anchored to
+   the dark page so the mix moves CHROMA without moving luminance — otherwise
+   tinting would lift every surface and flatten the background -> card ->
+   popover ramp that dark mode already has and light mode lacks. */
 [data-theme-poc][data-mode='dark'] {
-  /* Stock anchored to the dark page, so the mix moves CHROMA without moving
-     luminance — otherwise tinting would lift every surface and flatten the
-     existing background -> card -> popover ramp. Dark tolerates far more tint
-     (30-40% vs 12-30%) because --muted-foreground on --muted is 8.3:1 there. */
   --poc-tint: color-mix(in srgb, var(--primary) 30%, #0f172a);
 
-  /* Depth INVERTS in dark: the lever is "how far from the mode's extreme", and
-     darkening an already-dark page would eat the background -> card -> popover
-     ramp instead of adding separation. So dark lifts toward slate-700. */
-  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #0f172a);
-  --background: color-mix(in srgb, #334155
-                  calc(var(--poc-depth, 0) * 4% * var(--poc-depth-on, 0)), var(--poc-page-hue));
+  --background: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #0f172a);
   --card:       color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #1e293b);
   --popover:    color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #475569);
   --secondary:  color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #1e293b);
@@ -227,115 +186,52 @@ const POC_CSS = `
   --muted:      color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #334155);
   --input:      color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #475569);
 
-  /* Same derivation as light — 6% over the UNTINTED page literal, see the note
-     there for the two ways this was got wrong first. */
-  --error-light:   color-mix(in srgb, var(--error)   6%, #0f172a);
-  --success-light: color-mix(in srgb, var(--success) 6%, #0f172a);
-  --warning-light: color-mix(in srgb, var(--warning) 6%, #0f172a);
-  --info-light:    color-mix(in srgb, var(--info)    6%, #0f172a);
-
   --border:       color-mix(in srgb, var(--primary) calc(22% * var(--poc-str)), #64748b);
   --border-hover: color-mix(in srgb, var(--primary) calc(28% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
-  /* Dark's rail carries LIGHT foregrounds (#f8fafc) and dark-mode primaries are
-     LIGHTER than the rail they mix into, so tinting here RAISES luminance and
-     eats contrast — the opposite direction to light mode. Hence separate
-     numbers, and much smaller ones.
-
-     This is where guessing got caught: the first pass reused light's shape and
-     put the accent at 45%, which measured 4.17 and FAILED. Measured, dark:
-       --sidebar-accent 45% -> 4.17 FAIL
-       --sidebar-accent 38% -> 4.78 ok, thin
-       --sidebar-accent 32% -> 5.31 ok    <- used
-       --sidebar         45% -> 5.04 ok; 40% -> 5.6 ok  <- used */
+  /* Dark's rail carries LIGHT foregrounds, and dark-mode primaries are LIGHTER
+     than the rail they mix into, so tinting here RAISES luminance and eats
+     contrast — the opposite direction to light. Measured: accent at 45% -> 4.17
+     FAIL, at 38% -> 4.78 thin, at 32% -> 5.31 used. */
   --sidebar:        color-mix(in srgb, var(--primary) calc(40% * var(--poc-chrome, 0)), #1e293b);
   --sidebar-border: color-mix(in srgb, var(--primary) calc(45% * var(--poc-chrome, 0)), #334155);
   --sidebar-accent: color-mix(in srgb, var(--primary) calc(32% * var(--poc-chrome, 0)), #334155);
-}
 
-/* ── Hero surface ───────────────────────────────────────────────────────────
-   Derived from --primary, so it costs zero per-brand tokens.
-
-   PROVABLY AA-SAFE. The obvious Aiden-style "bright open, deep close" shape
-   BREAKS: lightening db (#6063f1) by 15% white gives white-text contrast 3.56:1,
-   a hard fail — db was darkened specifically to clear 4.5 and has no headroom.
-   Aiden survives only because its three stops were hand-tuned over several
-   rounds; doing that eight times is the namespace explosion we are avoiding.
-
-   Instead every stop lies on the segment --primary -> --foreground.
-   --primary-foreground is by construction the OPPOSITE pole to --foreground, so
-   moving along that segment changes every channel monotonically and contrast
-   against the label only ever INCREASES. If the label clears AA on --primary
-   (already audited — all eight do), it clears at every stop, both modes, every
-   brand. No measurement required. It is also a direct extension of the system's
-   own idiom: --primary-hover is color-mix(… 85%, var(--foreground)). */
-[data-theme-poc] {
-  --poc-hero-far:   color-mix(in srgb, var(--primary) 76%, var(--foreground));
-  --poc-hero:       linear-gradient(135deg, var(--primary) 0%, var(--poc-hero-far) 100%);
-  --poc-hero-hover: linear-gradient(135deg, var(--primary-hover) 0%,
-                      color-mix(in srgb, var(--primary) 62%, var(--foreground)) 100%);
-
-  /* Variant B — real hue movement, the thing that makes Aiden feel like an
-     identity rather than a tint. Needs CSS Color 5 relative colour syntax, which
-     is a NEWER browser floor than color-mix (a deliberate decision, not a
-     freebie). It is NOT provable: OKLCH lightness is not WCAG luminance, so a
-     rotation at fixed l still moves contrast and every stop must be measured.
-     On the main brand (neutral slate, chroma ~0) hue is undefined and it
-     degrades to grey — arguably correct, worth seeing. */
-  --poc-hero-b: linear-gradient(135deg,
-    oklch(from var(--primary) l c calc(h - 18)) 0%,
-    var(--primary) 50%,
-    oklch(from var(--primary) calc(l - 0.07) c calc(h + 18)) 100%);
+  --poc-band:        color-mix(in srgb, var(--poc-tint) calc(45% * var(--poc-str)), #1e293b);
+  --poc-band-strong: color-mix(in srgb, var(--poc-tint) calc(70% * var(--poc-str)), #1e293b);
 }
 
 /* ── The APP MARK ───────────────────────────────────────────────────────────
-   Rounds 1 and 2 spent the entire budget on the page, which is the WORST place
-   to spend it: the biggest area, the tightest contrast budget, and the lowest
-   salience per pixel. The mark is the opposite of all three — it is tiny, it
-   has no text on it, so it has NO contrast constraint at all, and it is the
-   thing a user actually recognises an app by. It is the one surface in the
-   whole UI where colour is free.
+   The one surface in the UI where colour is free: nothing sits on top of it, so
+   it carries no contrast constraint whatsoever. Lightness and chroma are pinned
+   to literals and only the hue is inherited, so the marks share one envelope by
+   construction rather than by style guide.
 
-   WHY THE EIGHT READ AS SIBLINGS. Lightness and chroma are PINNED to literals
-   and only the hue is inherited from the brand:
+   That guarantee is only mechanical INSIDE sRGB. oklch(0.62 0.21 h) is
+   unreachable at many hues, so the browser gamut-maps it, and gamut mapping
+   moves the two things meant to be pinned. Measured chroma spread across the
+   full palette: 0.0907 at C=0.21, 0.0195 at 0.13, 0.0016 at 0.11. This keeps
+   the vivid 0.21 deliberately — muted marks defeat the purpose — so the honest
+   framing is "one recipe, gamut permitting". display-p3 would buy both.
 
-       oklch(from var(--primary) 0.78 0.16 h)
-                                  ^    ^   ^
-                                  |    |   inherited — the only thing that varies
-                                  |    pinned chroma
-                                  pinned lightness
-
-   The INTENT is that every mark occupies an identical lightness and chroma
-   envelope and differs only in hue — family resemblance as a mechanical
-   property rather than a stylistic one.
-
-   IT IS ONLY MECHANICAL INSIDE THE sRGB GAMUT, and that caveat is not small.
-   oklch(0.62 0.21 h) is unreachable in sRGB at many hues, so the browser gamut-
-   maps it, and gamut mapping moves L and C. Measured across the eight brands:
-
-       C = 0.21   L* spread 0.0436   chroma spread 0.0907   heavily clipped
-       C = 0.18   L* spread 0.0302   chroma spread 0.0631   clipped
-       C = 0.13   L* spread 0.0087   chroma spread 0.0195   just clipping
-       C = 0.11   L* spread 0.0021   chroma spread 0.0016   IN GAMUT
-
-   So the guarantee is real at C <= 0.11 and decays above it. This POC keeps the
-   vivid 0.21 on purpose — muted marks defeat the point, and the eight still read
-   as a set — but the honest framing is "one recipe, gamut permitting", not "one
-   envelope, guaranteed". Dropping to 0.11 buys a provable envelope at the cost
-   of the vividness; display-p3 would buy both. That is an owner's call, and the
-   AppMark story prints the numbers for whichever value is set here. */
-
-/* Relative colour syntax is a newer browser floor than color-mix — Chrome 119+,
-   Safari 16.4+, Firefox 128+. Flagged, not free. On the MAIN brand (neutral
-   slate, chroma ~0) the hue is undefined and the mark renders neutral grey,
-   which is arguably exactly right for the parent brand. */
+   Relative colour syntax is a newer floor than color-mix: Chrome 119+, Safari
+   16.4+, Firefox 128+. Flagged, not free. */
 [data-theme-poc] {
   --poc-mark: linear-gradient(140deg,
     oklch(from var(--primary) 0.78 0.16 h) 0%,
     oklch(from var(--primary) 0.62 0.21 h) 55%,
     oklch(from var(--primary) 0.46 0.18 h) 100%);
+
+  /* Hero gradient. PROVABLY AA-safe: every stop lies on the segment --primary
+     -> --foreground, and --primary-foreground is by construction the opposite
+     pole to --foreground, so contrast against the label only ever INCREASES.
+     The obvious "bright open, deep close" shape breaks — lightening a primary
+     15% toward white can fail outright — which is why this moves the other way. */
+  --poc-hero-far: color-mix(in srgb, var(--primary) 76%, var(--foreground));
+  --poc-hero: linear-gradient(135deg, var(--primary) 0%, var(--poc-hero-far) 100%);
 }
+
 [data-theme-poc] .poc-mark {
   background-image: var(--poc-mark);
   color: #ffffff;
@@ -343,17 +239,14 @@ const POC_CSS = `
   place-items: center;
   border-radius: var(--rounded-xl);
   box-shadow: var(--shadow-sm);
+  flex: none;
 }
-
+[data-theme-poc] .poc-band { background: var(--poc-band); }
+[data-theme-poc] .poc-band-strong { background: var(--poc-band-strong); }
 /* background-image, not background: the component's own background-color
-   survives underneath as a fallback, so no modifier class needs to be known and
-   the hover rule cannot fight the component's own hover (different properties,
-   they layer). */
-[data-theme-poc] .poc-hero-band { background-image: var(--poc-hero); }
-[data-theme-poc] .poc-hero-band-b { background-image: var(--poc-hero-b); }
+   survives underneath as a fallback, so no modifier class has to be known. */
+[data-theme-poc] .poc-hero { background-image: var(--poc-hero); }
 [data-theme-poc] .poc-hero-cta > .ui-button { background-image: var(--poc-hero); }
-[data-theme-poc] .poc-hero-cta > .ui-button:hover { background-image: var(--poc-hero-hover); }
-[data-theme-poc] .poc-hero-icon .ui-featured-icon { background-image: var(--poc-hero); border-color: transparent; }
 `.trim();
 
 /** Injected once. Every rule is scoped to `[data-theme-poc]`. */
@@ -367,20 +260,18 @@ function PocStyle() {
 
 /**
  * `scripts/contrast-check.mjs` cannot see any of this — it brace-matches only
- * the two `[data-mode]` blocks (excluding theme scopes deliberately), returns
- * null for `color-mix`, and treats unresolved as NOT a failure while still
- * exiting 0. So the POC measures itself.
+ * the two `[data-mode]` blocks, returns null for `color-mix`, and treats
+ * unresolved as NOT a failure while still exiting 0. So the POC measures itself.
  */
 
 let ctx: CanvasRenderingContext2D | null = null;
 /**
  * Normalise ANY CSS colour string to bytes.
  *
- * Chrome serialises a color-mix result as `color(srgb 0.37 0.38 0.94 / 0.08)`
- * and a relative-colour result as `oklch(…)`. Rather than write a parser per
- * serialisation, hand the string to a 1x1 canvas and read the pixel back —
- * bulletproof against every present and future form. `globalCompositeOperation
- * = 'copy'` keeps source alpha instead of compositing onto what was there.
+ * Chrome serialises a color-mix result as `color(srgb …)` and a relative-colour
+ * result as `oklch(…)`. Rather than write a parser per serialisation, hand the
+ * string to a 1x1 canvas and read the pixel back. `globalCompositeOperation =
+ * 'copy'` keeps source alpha instead of compositing onto what was there.
  */
 function toRGBA(css: string): [number, number, number, number] | null {
   if (!ctx) {
@@ -391,7 +282,7 @@ function toRGBA(css: string): [number, number, number, number] | null {
   if (!ctx || !css) return null;
   ctx.globalCompositeOperation = 'copy';
   // An invalid fillStyle is silently IGNORED and the previous value persists,
-  // so reset to a known colour first and treat "unchanged" as a parse failure.
+  // so reset to a known colour first.
   ctx.fillStyle = '#000000';
   ctx.fillStyle = css;
   ctx.fillRect(0, 0, 1, 1);
@@ -432,20 +323,10 @@ function contrast(
   return (hi + 0.05) / (lo + 0.05);
 }
 
-/** CIE L* — used for the "do cards float" delta, which is not a WCAG rule. */
-function lstar(rgba: [number, number, number, number]) {
-  const y = luminance(rgba);
-  return y <= 216 / 24389 ? y * (24389 / 27) : Math.cbrt(y) * 116 - 16;
-}
-
 /**
  * OKLab — used for "are these two brands the same colour", which WCAG has no
- * opinion about. Contrast answers "can I read it"; it cannot answer "can I tell
- * these apart", because two hues can differ wildly and share a luminance.
- *
- * OKLab is perceptually uniform, so a plain Euclidean distance is meaningful.
- * Rough reading of the scale used throughout this file:
- *   < 0.02  invisible except as a gradient between them
+ * opinion about. Contrast answers "can I read it", not "can I tell these apart".
+ *   < 0.02  invisible except as a gradient
  *   < 0.05  effectively the same colour
  *   < 0.10  distinguishable side by side, not from memory
  *   >= 0.10 reads as a different colour
@@ -473,283 +354,27 @@ function deltaE(
   return Math.hypot(l1 - l2, a1 - a2, b1 - b2);
 }
 
-/** Chroma — how much colour is actually left after a treatment. */
-function chroma(rgba: [number, number, number, number]) {
-  const [, a, b] = oklab(rgba);
-  return Math.hypot(a, b);
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Shared data
+// Shared data + UI
 // ─────────────────────────────────────────────────────────────────────────────
 
-const BRANDS = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
-type Brand = (typeof BRANDS)[number];
-
 /**
- * The four pairs whose primaries are close enough that round 1 could not tell
- * their pages apart. Everything in round 2 is aimed at exactly these — a lever
- * that only separates brands which were already distinct is worth nothing.
- */
-const COLLISIONS: [Brand, Brand][] = [
-  ['dc', 'ec'],
-  ['db', 'ir'],
-  ['nb', 'dc'],
-  ['rm', 'db'],
-];
-
-/**
- * The eight sub-apps.
+ * Narrowed to two brands on purpose.
  *
- * Labelled by their two-letter CODE, never by a product name — CLAUDE.md
- * records that expanding these codes was undone once already. The icons are
- * illustrative only: they exist to show that eight marks built from one recipe
- * read as a set, not to assign a real glyph to a real product.
+ * dc and ec are the CLOSEST pair in the palette — 37 degrees apart as primaries,
+ * and the pair that round 1 measured at ΔE 0.006 as tinted pages, i.e. the same
+ * colour. They are the hardest case, so they are the honest test: a model that
+ * separates these separates anything.
+ *
+ * Labelled by CODE, never by product name — CLAUDE.md records that expanding
+ * these codes was undone once already. The icons are illustrative.
  */
-const APPS: { brand: Brand; Icon: LucideIcon }[] = [
-  { brand: 'db', Icon: ChartColumn },
+const APPS = [
   { brand: 'dc', Icon: FileText },
-  { brand: 'dr', Icon: MessageSquare },
   { brand: 'ec', Icon: Calendar },
-  { brand: 'ir', Icon: CreditCard },
-  { brand: 'nb', Icon: Package },
-  { brand: 'ph', Icon: Users },
-  { brand: 'rm', Icon: LifeBuoy },
-];
-
-/** The three gradient stops of the mark, so they can be measured individually. */
-const MARK_STOPS = [
-  'oklch(from var(--primary) 0.78 0.16 h)',
-  'oklch(from var(--primary) 0.62 0.21 h)',
-  'oklch(from var(--primary) 0.46 0.18 h)',
-];
-
-/** The levers, cumulative — each row adds one to the row above it. */
-type Lever = {
-  key: string;
-  label: string;
-  poc: boolean;
-  str: number;
-  depth: number;
-  chromeOn: number;
-  note: string;
-};
-const LEVERS: Lever[] = [
-  { key: 'today', label: 'Today', poc: false, str: 0, depth: 0, chromeOn: 0, note: 'every page is #ffffff' },
-  { key: 'hue', label: '+ brand-hue tint', poc: true, str: 1, depth: 0, chromeOn: 0, note: 'round 1' },
-  { key: 'depth', label: '+ per-brand depth', poc: true, str: 1, depth: 1, chromeOn: 0, note: 'lever 2 — luminance' },
-  { key: 'chrome', label: '+ chrome tint', poc: true, str: 1, depth: 1, chromeOn: 1, note: 'lever 3 — the rail' },
-];
-
-/** Ranked by how much this POC moves them. */
-const PAIRINGS: { label: string; fg: string; bg: string; note?: string }[] = [
-  { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
-  { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
-  { label: 'foreground / background', fg: '--foreground', bg: '--background' },
-  { label: 'muted-foreground / background', fg: '--muted-foreground', bg: '--background' },
-  { label: 'foreground / card', fg: '--foreground', bg: '--card', note: 'must be UNCHANGED' },
-  { label: 'muted-foreground / card', fg: '--muted-foreground', bg: '--card', note: 'must be UNCHANGED' },
-  { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
-  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary' },
-  { label: 'primary-text / primary-soft', fg: '--primary-text', bg: '--primary-soft', note: 'over the tinted page' },
-  // The semantic tints are rgba composited over --background. Tinting the page
-  // silently changes every one of them, and the real gate models them as
-  // "over --background" — an assumption this POC breaks.
-  { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'now over a tinted page' },
-  { label: 'success / success-light', fg: '--success', bg: '--success-light', note: 'now over a tinted page' },
-  { label: 'warning / warning-light', fg: '--warning', bg: '--warning-light', note: 'now over a tinted page' },
-  { label: 'info / info-light', fg: '--info', bg: '--info-light', note: 'now over a tinted page' },
-  { label: 'muted-foreground / sidebar', fg: '--muted-foreground', bg: '--sidebar', note: 'carve-out, unchanged' },
-];
-
-/** WCAG 1.4.11 wants 3:1 for UI boundaries — borders are not text. */
-const BORDER_PAIRS: { label: string; fg: string; bg: string; note?: string }[] = [
-  { label: 'border / background', fg: '--border', bg: '--background' },
-  { label: 'border / card', fg: '--border', bg: '--card' },
-];
-
-type Cell = { ratio: number; base: number };
-
-/**
- * Reads real computed colours out of off-screen probe scopes.
- *
- * `getComputedStyle(el).getPropertyValue('--x')` is NOT enough — unregistered
- * custom properties compute to a substituted token stream, so it returns the
- * literal text `color-mix(in srgb, …)`. Set a REAL property and read that back,
- * so the engine has actually evaluated the mix.
- */
-function useAudit(strength: number) {
-  const hostRef = useRef<HTMLDivElement>(null);
-  const [rows, setRows] = useState<Record<string, Record<Brand, Cell>>>({});
-  const [float, setFloat] = useState<Record<Brand, { base: number; poc: number }>>(
-    {} as Record<Brand, { base: number; poc: number }>,
-  );
-  const [mode, setMode] = useState<'light' | 'dark'>('light');
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-
-    const read = (scope: HTMLElement, token: string) => {
-      const probe = scope.firstElementChild as HTMLElement;
-      probe.style.backgroundColor = '';
-      probe.style.backgroundColor = `var(${token})`;
-      const v = getComputedStyle(probe).backgroundColor;
-      return toRGBA(v);
-    };
-
-    const next: Record<string, Record<Brand, Cell>> = {};
-    const nextFloat = {} as Record<Brand, { base: number; poc: number }>;
-
-    for (const brand of BRANDS) {
-      const basescope = host.querySelector<HTMLElement>(`[data-scope="${brand}-base"]`);
-      const pocScope = host.querySelector<HTMLElement>(`[data-scope="${brand}-poc"]`);
-      if (!basescope || !pocScope) continue;
-
-      for (const p of [...PAIRINGS, ...BORDER_PAIRS]) {
-        const measure = (scope: HTMLElement) => {
-          const fg = read(scope, p.fg);
-          const bg = read(scope, p.bg);
-          if (!fg || !bg) return null;
-          // A translucent surface (the semantic -light tints) sits over the page.
-          const page = bg[3] < 1 ? read(scope, '--background') : null;
-          const solidBg = page ? over(bg, page) : bg;
-          return contrast(fg, solidBg);
-        };
-        const b = measure(basescope);
-        const q = measure(pocScope);
-        if (b == null || q == null) continue;
-        next[p.label] ??= {} as Record<Brand, Cell>;
-        next[p.label][brand] = { ratio: q, base: b };
-      }
-
-      const cardB = read(basescope, '--card');
-      const bgB = read(basescope, '--background');
-      const cardP = read(pocScope, '--card');
-      const bgP = read(pocScope, '--background');
-      if (cardB && bgB && cardP && bgP) {
-        nextFloat[brand] = {
-          base: Math.abs(lstar(cardB) - lstar(bgB)),
-          poc: Math.abs(lstar(cardP) - lstar(bgP)),
-        };
-      }
-    }
-    setRows(next);
-    setFloat(nextFloat);
-  }, [strength, mode]);
-
-  const probes = (
-    <div
-      ref={hostRef}
-      aria-hidden="true"
-      style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
-    >
-      {BRANDS.map((b) => (
-        <span key={b}>
-          <span data-scope={`${b}-base`} data-theme={b} data-mode={mode}>
-            <span />
-          </span>
-          <span
-            data-scope={`${b}-poc`}
-            data-theme={b}
-            data-mode={mode}
-            data-theme-poc=""
-            style={{ '--poc-str': strength } as CSSProperties}
-          >
-            <span />
-          </span>
-        </span>
-      ))}
-    </div>
-  );
-
-  return { probes, rows, float, mode, setMode };
-}
-
-/**
- * Measures SEPARATION rather than contrast — how far apart two brands land on
- * the surfaces a user actually sees, under each cumulative lever.
- *
- * Reported per surface, not averaged, because the levers do not act on the same
- * one: depth moves --background, chrome moves --sidebar, and a single blended
- * number would hide which lever paid for what.
- */
-function useSeparation(mode: 'light' | 'dark') {
-  const hostRef = useRef<HTMLDivElement>(null);
-  type Row = { page: number[]; rail: number[]; pageChroma: number; railChroma: number };
-  const [rows, setRows] = useState<Record<string, Row>>({});
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-
-    const read = (lever: string, brand: Brand, token: string) => {
-      const scope = host.querySelector<HTMLElement>(`[data-cell="${lever}-${brand}"]`);
-      if (!scope) return null;
-      const probe = scope.firstElementChild as HTMLElement;
-      probe.style.backgroundColor = '';
-      probe.style.backgroundColor = `var(${token})`;
-      return toRGBA(getComputedStyle(probe).backgroundColor);
-    };
-
-    const next: Record<string, Row> = {};
-    for (const lever of LEVERS) {
-      const gap = (token: string) =>
-        COLLISIONS.map(([a, b]) => {
-          const x = read(lever.key, a, token);
-          const y = read(lever.key, b, token);
-          return x && y ? deltaE(x, y) : NaN;
-        });
-      const meanChroma = (token: string) => {
-        const vals = BRANDS.map((b) => read(lever.key, b, token)).filter(Boolean);
-        if (!vals.length) return NaN;
-        return vals.reduce((s, v) => s + chroma(v!), 0) / vals.length;
-      };
-      next[lever.key] = {
-        page: gap('--background'),
-        rail: gap('--sidebar'),
-        pageChroma: meanChroma('--background'),
-        railChroma: meanChroma('--sidebar'),
-      };
-    }
-    setRows(next);
-  }, [mode]);
-
-  const probes = (
-    <div
-      ref={hostRef}
-      aria-hidden="true"
-      style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
-    >
-      {LEVERS.map((l) =>
-        BRANDS.map((b) => (
-          <span
-            key={`${l.key}-${b}`}
-            data-cell={`${l.key}-${b}`}
-            data-theme={b}
-            data-mode={mode}
-            {...(l.poc ? { 'data-theme-poc': '' } : {})}
-            style={
-              {
-                '--poc-str': l.str,
-                '--poc-depth-on': l.depth,
-                '--poc-chrome': l.chromeOn,
-              } as CSSProperties
-            }
-          >
-            <span />
-          </span>
-        )),
-      )}
-    </div>
-  );
-
-  return { probes, rows };
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Shared UI bits
-// ─────────────────────────────────────────────────────────────────────────────
+] as const;
+type Brand = (typeof APPS)[number]['brand'];
+const BRANDS: Brand[] = ['dc', 'ec'];
 
 const H2: CSSProperties = {
   margin: '0 0 var(--p-2)',
@@ -771,134 +396,23 @@ const PAGE: CSSProperties = {
   maxWidth: 'var(--max-w-6xl)',
   margin: '0 auto',
 };
-const MONO: CSSProperties = { fontFamily: 'var(--font-family-mono)', fontSize: 'var(--text-xs)' };
-
-/** The composition every comparison renders. Exercises every touched token. */
-function Composition({ p, hero }: { p: string; hero?: boolean }) {
-  const [on, setOn] = useState(true);
-  return (
-    <div style={{ background: 'var(--background)', minHeight: 520 }}>
-      <div
-        className={hero ? 'poc-hero-band' : undefined}
-        style={{
-          padding: 'var(--p-5) var(--p-6)',
-          background: hero ? undefined : 'var(--card)',
-          borderBottom: 'var(--border-w-100) solid var(--border)',
-          display: 'flex',
-          alignItems: 'center',
-          gap: 'var(--p-3)',
-          color: hero ? 'var(--primary-foreground)' : 'var(--foreground)',
-        }}
-      >
-        <strong style={{ flex: 1, fontSize: 'var(--text-base)' }}>Reporting</strong>
-        <StatusDot status="online" label="Live" />
-        <span className={hero ? 'poc-hero-cta' : undefined}>
-          <Button id={`${p}-cta`} label="New report" IconLeft={Plus} size="sm" />
-        </span>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: '180px minmax(0,1fr)', minHeight: 460 }}>
-        {/* --sidebar is a deliberate un-themed carve-out. Included on purpose:
-            on a tinted page it either reads as chrome or as forgotten. */}
-        <aside
-          style={{
-            background: 'var(--sidebar)',
-            borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
-            padding: 'var(--p-4)',
-            display: 'grid',
-            gap: 'var(--p-2)',
-            alignContent: 'start',
-            fontSize: 'var(--text-sm)',
-            color: 'var(--sidebar-foreground)',
-          }}
-        >
-          <span style={{ fontWeight: 'var(--font-medium)' }}>Overview</span>
-          <span style={{ color: 'var(--muted-foreground)' }}>Cohorts</span>
-          <span style={{ color: 'var(--muted-foreground)' }}>Exports</span>
-        </aside>
-
-        <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-5)', alignContent: 'start' }}>
-          <Alert
-            id={`${p}-alert`}
-            variant="info"
-            title="Two sources are still syncing"
-            description="Numbers may move until the last import finishes."
-          />
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 'var(--p-4)' }}>
-            <Card id={`${p}-c1`}>
-              <CardHeader id={`${p}-c1`} title="Active accounts" description="Last 7 days" />
-              <CardBody>
-                <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</div>
-                <Progress id={`${p}-pr`} value={68} />
-              </CardBody>
-            </Card>
-            <Card id={`${p}-c2`}>
-              <CardHeader id={`${p}-c2`} title="Team" description="Owners of this space" />
-              <CardBody>
-                <AvatarGroup id={`${p}-ag`} max={3}>
-                  <Avatar id={`${p}-a1`} fallback="KM" />
-                  <Avatar id={`${p}-a2`} fallback="JD" />
-                  <Avatar id={`${p}-a3`} fallback="AR" />
-                  <Avatar id={`${p}-a4`} fallback="TS" />
-                </AvatarGroup>
-                <div style={{ display: 'flex', gap: 'var(--p-2)', marginTop: 'var(--p-3)', flexWrap: 'wrap' }}>
-                  <Badge id={`${p}-b1`} variant="default" label="Pro" />
-                  <Badge id={`${p}-b2`} variant="outline" label="Beta" />
-                  <Chip id={`${p}-ch`} label="Weekly" active />
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-
-          <Input id={`${p}-search`} label="Find a cohort" IconLeft={Search} placeholder="Search…" />
-
-          <ItemGroup id={`${p}-list`}>
-            <Item id={`${p}-i1`} variant="outline">
-              <ItemContent>
-                <ItemTitle>Trial → paid</ItemTitle>
-                <ItemDescription>Conversion fell 5pts after the pricing change</ItemDescription>
-              </ItemContent>
-            </Item>
-            <Item id={`${p}-i2`} variant="outline">
-              <ItemContent>
-                <ItemTitle>Legacy plan</ItemTitle>
-                <ItemDescription>~400 seats lapsed in the same week</ItemDescription>
-              </ItemContent>
-            </Item>
-          </ItemGroup>
-
-          {/* The knockout set — all four use --background as a knockout, NOT as a
-              page colour, so a tinted page changes what they look like. */}
-          <div style={{ display: 'flex', gap: 'var(--p-6)', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Switch id={`${p}-sw`} label="Auto-refresh" checked={on} onCheckedChange={setOn} />
-            <div style={{ minWidth: 180 }}>
-              <Slider id={`${p}-sl`} defaultValue={40} />
-            </div>
-            <Avatar id={`${p}-av`} fallback="KM" badge={<StatusDot status="online" label="Online" />} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+const MONO: CSSProperties = {
+  fontFamily: 'var(--font-family-mono)',
+  fontSize: 'var(--text-xs)',
+};
 
 /** A themed scope, optionally with the POC layered on. */
 function Scope({
   brand,
   poc,
   strength = 1,
-  depth = 0,
-  chromeOn = 0,
+  chromeOn = 1,
   mode,
   children,
 }: {
   brand: Brand | '';
   poc?: boolean;
   strength?: number;
-  /** Lever 2 — 0 or 1. The per-brand RUNG comes from CSS, this is just the gate. */
-  depth?: number;
-  /** Lever 3 — 0..1, so the rail tint can be dialled rather than only toggled. */
   chromeOn?: number;
   mode?: 'light' | 'dark';
   children: ReactNode;
@@ -910,15 +424,499 @@ function Scope({
       {...(poc ? { 'data-theme-poc': '' } : {})}
       style={
         poc
-          ? ({
-              '--poc-str': strength,
-              '--poc-depth-on': depth,
-              '--poc-chrome': chromeOn,
-            } as CSSProperties)
+          ? ({ '--poc-str': strength, '--poc-chrome': chromeOn } as CSSProperties)
           : undefined
       }
     >
       {children}
+    </div>
+  );
+}
+
+function Mark({ Icon, size = 40 }: { Icon: LucideIcon; size?: number }) {
+  return (
+    <span className="poc-mark" style={{ width: size, height: size }}>
+      <Icon size={Math.round(size * 0.5)} strokeWidth={2} aria-hidden="true" />
+    </span>
+  );
+}
+
+/** Wraps each specimen so it reads as a device rather than a loose fragment. */
+function Frame({ label, children }: { label: string; children: ReactNode }) {
+  return (
+    <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+      <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+      <div
+        style={{
+          border: 'var(--border-w-100) solid var(--border)',
+          borderRadius: 'var(--rounded-lg)',
+          overflow: 'hidden',
+        }}
+      >
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Specimen 1 — a dashboard with a sidebar
+// ─────────────────────────────────────────────────────────────────────────────
+
+function DashboardPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
+  const [on, setOn] = useState(true);
+  const nav = [
+    { label: 'Overview', active: true },
+    { label: 'Cohorts', active: false },
+    { label: 'Exports', active: false },
+    { label: 'Settings', active: false },
+  ];
+  return (
+    <div
+      style={{
+        display: 'grid',
+        gridTemplateColumns: '200px minmax(0,1fr)',
+        minHeight: 560,
+        background: 'var(--background)',
+      }}
+    >
+      {/* The rail is the brand surface. It uses its OWN foreground tokens
+          throughout — --muted-foreground on a tinted rail measures 2.92. */}
+      <aside
+        style={{
+          background: 'var(--sidebar)',
+          borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
+          padding: 'var(--p-4)',
+          display: 'grid',
+          alignContent: 'start',
+          gap: 'var(--p-4)',
+          color: 'var(--sidebar-foreground)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2-5)' }}>
+          <Mark Icon={Icon} size={32} />
+          <strong style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{brand}</strong>
+        </div>
+        <nav style={{ display: 'grid', gap: 'var(--p-0-5)' }}>
+          {nav.map((n) => (
+            <span
+              key={n.label}
+              style={{
+                padding: 'var(--p-2) var(--p-2-5)',
+                borderRadius: 'var(--rounded-md)',
+                fontSize: 'var(--text-sm)',
+                fontWeight: n.active ? 'var(--font-medium)' : 'var(--font-normal)',
+                background: n.active ? 'var(--sidebar-accent)' : undefined,
+                color: n.active
+                  ? 'var(--sidebar-accent-foreground)'
+                  : 'var(--sidebar-foreground)',
+              }}
+            >
+              {n.label}
+            </span>
+          ))}
+        </nav>
+      </aside>
+
+      <div style={{ display: 'grid', alignContent: 'start' }}>
+        <header
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--p-3)',
+            padding: 'var(--p-4) var(--p-6)',
+            borderBottom: 'var(--border-w-100) solid var(--border)',
+            background: 'var(--card)',
+          }}
+        >
+          <strong style={{ flex: 1, fontSize: 'var(--text-base)' }}>Overview</strong>
+          <StatusDot status="online" label="Live" />
+          <Button id={`${brand}-dash-cta`} label="New report" IconLeft={Plus} size="sm" />
+        </header>
+
+        <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-5)' }}>
+          <Alert
+            id={`${brand}-dash-alert`}
+            variant="info"
+            title="Two sources are still syncing"
+            description="Numbers may move until the last import finishes."
+          />
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))',
+              gap: 'var(--p-4)',
+            }}
+          >
+            <Card id={`${brand}-c1`}>
+              <CardHeader id={`${brand}-c1`} title="Active accounts" description="Last 7 days" />
+              <CardBody>
+                <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+                  12,480
+                </div>
+                <Progress id={`${brand}-pr`} value={68} />
+              </CardBody>
+            </Card>
+            <Card id={`${brand}-c2`}>
+              <CardHeader id={`${brand}-c2`} title="Team" description="Owners of this space" />
+              <CardBody>
+                <AvatarGroup id={`${brand}-ag`} max={3}>
+                  <Avatar id={`${brand}-a1`} fallback="KM" />
+                  <Avatar id={`${brand}-a2`} fallback="JD" />
+                  <Avatar id={`${brand}-a3`} fallback="AR" />
+                  <Avatar id={`${brand}-a4`} fallback="TS" />
+                </AvatarGroup>
+                <div
+                  style={{
+                    display: 'flex',
+                    gap: 'var(--p-2)',
+                    marginTop: 'var(--p-3)',
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  <Badge id={`${brand}-b1`} variant="default" label="Pro" />
+                  <Badge id={`${brand}-b2`} variant="outline" label="Beta" />
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+
+          <Input
+            id={`${brand}-search`}
+            label="Find a cohort"
+            IconLeft={Search}
+            placeholder="Search…"
+          />
+
+          <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+            <Chip id={`${brand}-ch1`} label="Weekly" active />
+            <Chip id={`${brand}-ch2`} label="Monthly" />
+            <Chip id={`${brand}-ch3`} label="Quarterly" />
+          </div>
+
+          <ItemGroup id={`${brand}-list`}>
+            <Item id={`${brand}-i1`} variant="outline">
+              <ItemContent>
+                <ItemTitle>Trial → paid</ItemTitle>
+                <ItemDescription>Conversion fell 5pts after the pricing change</ItemDescription>
+              </ItemContent>
+            </Item>
+            <Item id={`${brand}-i2`} variant="outline">
+              <ItemContent>
+                <ItemTitle>Legacy plan</ItemTitle>
+                <ItemDescription>~400 seats lapsed in the same week</ItemDescription>
+              </ItemContent>
+            </Item>
+          </ItemGroup>
+
+          {/* The knockout set — Switch thumb, Avatar ring and the Slider thumb
+              all use --background as a KNOCKOUT rather than as a page colour.
+              Keeping the page white means they stay correct for free; a tinted
+              page is exactly what breaks them, and is why adoption would need a
+              separate --surface-knockout token. */}
+          <div style={{ display: 'flex', gap: 'var(--p-6)', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Switch id={`${brand}-sw`} label="Auto-refresh" checked={on} onCheckedChange={setOn} />
+            <Avatar
+              id={`${brand}-av`}
+              fallback="KM"
+              badge={<StatusDot status="online" label="Online" />}
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Specimen 2 — a marketing page
+// ─────────────────────────────────────────────────────────────────────────────
+
+function MarketingPage({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) {
+  const features = [
+    { Icon: Users, title: 'Shared cohorts', body: 'One definition, every team, no re-cutting.' },
+    { Icon: Settings, title: 'Pipelines', body: 'Scheduled imports with replay and backfill.' },
+    { Icon: FileText, title: 'Reporting', body: 'Exports that match what the dashboard shows.' },
+  ];
+  return (
+    <div style={{ background: 'var(--background)' }}>
+      <header
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 'var(--p-3)',
+          padding: 'var(--p-4) var(--p-6)',
+          borderBottom: 'var(--border-w-100) solid var(--border)',
+        }}
+      >
+        <Mark Icon={Icon} size={30} />
+        <strong style={{ ...MONO, flex: 1, fontSize: 'var(--text-sm)' }}>{brand}</strong>
+        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>Pricing</span>
+        <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>Docs</span>
+        <Button id={`${brand}-mk-signin`} label="Sign in" style="ghost" size="sm" />
+      </header>
+
+      {/* HERO — the gradient, at the one moment the brand should be loudest. */}
+      <section
+        className="poc-hero"
+        style={{
+          padding: 'var(--p-12) var(--p-6)',
+          display: 'grid',
+          gap: 'var(--p-4)',
+          justifyItems: 'center',
+          textAlign: 'center',
+          color: 'var(--primary-foreground)',
+        }}
+      >
+        <Mark Icon={Icon} size={56} />
+        <h1
+          style={{
+            margin: 0,
+            fontSize: 'var(--text-4xl)',
+            lineHeight: 'var(--leading-10)',
+            fontWeight: 'var(--font-semibold)',
+            maxWidth: 'var(--max-w-2xl)',
+          }}
+        >
+          Every number in one place
+        </h1>
+        <p
+          style={{
+            margin: 0,
+            fontSize: 'var(--text-base)',
+            lineHeight: 'var(--leading-7)',
+            maxWidth: 'var(--max-w-xl)',
+            opacity: 0.92,
+          }}
+        >
+          Bring imports, cohorts and reporting under a single definition your whole team shares.
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--p-3)', marginTop: 'var(--p-2)' }}>
+          <Button id={`${brand}-mk-cta`} label="Start free" IconRight={ArrowRight} />
+          <Button id={`${brand}-mk-cta2`} label="Book a demo" style="outline" />
+        </div>
+      </section>
+
+      {/* WHITE section — the page's default state. */}
+      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
+        <div style={{ textAlign: 'center', display: 'grid', gap: 'var(--p-2)' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+            Built for the whole pipeline
+          </h2>
+          <p style={{ ...P, margin: '0 auto' }}>From ingest to the number on the slide.</p>
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 'var(--p-4)',
+          }}
+        >
+          {features.map((f) => (
+            <Card id={`${brand}-f-${f.title}`} key={f.title}>
+              <CardBody>
+                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+                  <Mark Icon={f.Icon} size={36} />
+                  <strong style={{ fontSize: 'var(--text-base)' }}>{f.title}</strong>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+                    {f.body}
+                  </span>
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* BAND — the tinted strip. On a white page this is where a large area of
+          brand colour can live, because it reads as a deliberate break in the
+          page rather than as the page itself. */}
+      <section
+        className="poc-band"
+        style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}
+      >
+        <div style={{ textAlign: 'center', display: 'grid', gap: 'var(--p-2)' }}>
+          <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+            Trusted where the numbers matter
+          </h2>
+          <p style={{ ...P, margin: '0 auto' }}>
+            The tinted band is the same component set on a brand surface.
+          </p>
+        </div>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
+            gap: 'var(--p-4)',
+            textAlign: 'center',
+          }}
+        >
+          {[
+            ['99.98%', 'Ingest uptime'],
+            ['4.2 min', 'Median sync'],
+            ['120+', 'Connectors'],
+          ].map(([n, l]) => (
+            <div key={l} style={{ display: 'grid', gap: 'var(--p-1)' }}>
+              <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+                {n}
+              </span>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+                {l}
+              </span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--p-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {['SOC 2', 'SSO', 'Audit log', 'Residency'].map((t) => (
+            <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />
+          ))}
+        </div>
+      </section>
+
+      {/* Pricing on white again, so the band reads as a break rather than a mode. */}
+      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
+        <h2
+          style={{
+            margin: 0,
+            textAlign: 'center',
+            fontSize: 'var(--text-2xl)',
+            fontWeight: 'var(--font-semibold)',
+          }}
+        >
+          Simple pricing
+        </h2>
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
+            gap: 'var(--p-4)',
+          }}
+        >
+          {[
+            { name: 'Team', price: '$29', feats: ['5 seats', 'Daily sync', 'Email support'], hi: false },
+            { name: 'Business', price: '$99', feats: ['25 seats', 'Hourly sync', 'SSO'], hi: true },
+            { name: 'Enterprise', price: 'Custom', feats: ['Unlimited', 'Realtime', 'Residency'], hi: false },
+          ].map((p) => (
+            <Card id={`${brand}-p-${p.name}`} key={p.name} interactive>
+              <CardBody>
+                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
+                    <strong style={{ flex: 1 }}>{p.name}</strong>
+                    {p.hi && <Badge id={`${brand}-p-b-${p.name}`} variant="default" label="Popular" />}
+                  </div>
+                  <span style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>
+                    {p.price}
+                  </span>
+                  <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+                    {p.feats.map((f) => (
+                      <span
+                        key={f}
+                        style={{
+                          display: 'flex',
+                          gap: 'var(--p-2)',
+                          alignItems: 'center',
+                          fontSize: 'var(--text-sm)',
+                          color: 'var(--muted-foreground)',
+                        }}
+                      >
+                        <Check size={16} aria-hidden="true" style={{ color: 'var(--primary-text)' }} />
+                        {f}
+                      </span>
+                    ))}
+                  </div>
+                  <Button
+                    id={`${brand}-p-cta-${p.name}`}
+                    label="Choose"
+                    style={p.hi ? 'default' : 'outline'}
+                    size="sm"
+                  />
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      {/* Closing CTA on the STRONG band — the loudest flat surface on the page. */}
+      <section
+        className="poc-band-strong"
+        style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}
+      >
+        <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+          Ready when you are
+        </h2>
+        <p style={{ ...P, margin: 0 }}>No card required for the first 30 days.</p>
+        <span className="poc-hero-cta">
+          <Button id={`${brand}-mk-final`} label="Start free" IconRight={ArrowRight} />
+        </span>
+      </section>
+
+      <footer style={{ padding: 'var(--p-6)' }}>
+        <Separator id={`${brand}-sep`} />
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 'var(--p-3)',
+            marginTop: 'var(--p-4)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--muted-foreground)',
+          }}
+        >
+          <Mark Icon={Icon} size={22} />
+          <span style={MONO}>{brand}</span>
+          <span style={{ flex: 1 }} />
+          <span>Part of one suite</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Controls shared by the two page stories
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Controls({
+  strength,
+  setStrength,
+  chromeOn,
+  setChromeOn,
+  mode,
+  setMode,
+  showChrome = true,
+}: {
+  strength: number;
+  setStrength: (n: number) => void;
+  chromeOn: number;
+  setChromeOn: (n: number) => void;
+  mode: 'light' | 'dark';
+  setMode: (m: 'light' | 'dark') => void;
+  showChrome?: boolean;
+}) {
+  return (
+    <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
+      <Switch
+        id="poc-on"
+        label="Theming on"
+        checked={strength === 1}
+        onCheckedChange={(v) => setStrength(v ? 1 : 0)}
+      />
+      {showChrome && (
+        <Switch
+          id="poc-chrome"
+          label="Tint the rail"
+          checked={chromeOn === 1}
+          onCheckedChange={(v) => setChromeOn(v ? 1 : 0)}
+        />
+      )}
+      <Switch
+        id="poc-mode"
+        label="Dark mode"
+        checked={mode === 'dark'}
+        onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
+      />
     </div>
   );
 }
@@ -929,9 +927,11 @@ const meta: Meta = {
     layout: 'fullscreen',
     ui: {
       description:
-        'A proof of concept for themes that reach past `--primary` — tinted surfaces plus a ' +
-        'per-brand hero treatment. It modifies nothing: every rule is scoped to a ' +
-        '`data-theme-poc` attribute that exists nowhere else in the repo.',
+        'A proof of concept for themes that reach past `--primary`. Scoped to two brands, `dc` ' +
+        'and `ec` — the closest pair in the palette, and therefore the hardest case. In light ' +
+        'mode the page stays white; the tint lives on the rail, on marketing bands, and on the ' +
+        'secondary surfaces. It modifies nothing: every rule is scoped to a `data-theme-poc` ' +
+        'attribute that exists nowhere else in the repo.',
       tags: ['poc', 'theming'],
     },
   },
@@ -940,249 +940,60 @@ export default meta;
 type Story = StoryObj;
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 1 — Proposal
+// 1 — Dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const Proposal: Story = {
-  render: () => (
-    <>
-      <PocStyle />
-      <div style={PAGE}>
-        <div>
-          <h2 style={H2}>What this is</h2>
-          <p style={P}>
-            Today a <code>data-theme</code> scope reaches <strong>9 of ~452 tokens</strong>, and
-            all nine are <code>--primary</code>. Surfaces, elevation and chrome are out of reach
-            by construction — which is why eight sub-brands read as “the same app with a
-            different button”.
-          </p>
-          <p style={P}>
-            This POC asks what happens if a theme also tints the neutral <em>surfaces</em>, and
-            adds one bold treatment at entry points. In light mode it tints the <strong>page</strong>{' '}
-            and leaves cards white, so cards float — light mode currently collapses{' '}
-            <code>--background</code>, <code>--card</code> and <code>--popover</code> all to{' '}
-            <code>#ffffff</code> and separates them with a hairline alone.
-          </p>
-        </div>
-
-        <div>
-          <h2 style={H2}>Containment</h2>
-          <p style={P}>
-            Nothing existing is modified. Every selector below contains{' '}
-            <code>[data-theme-poc]</code>, an attribute that appears nowhere else in the repo, so
-            no other story can be reached. Mode is stamped on the <em>same</em> element rather
-            than inherited, so source order never decides anything.
-          </p>
-          <p style={P}>
-            At <code>--poc-str: 0</code> every mix is 0% and resolves to the literal base value —
-            so the recipe degrades to exactly today’s colours. That is checked in{' '}
-            <strong>Contrast audit</strong>.
-          </p>
-        </div>
-
-        <div>
-          <h2 style={H2}>The whole mechanism</h2>
-          <pre
-            style={{
-              ...MONO,
-              margin: 0,
-              padding: 'var(--p-4)',
-              background: 'var(--muted)',
-              borderRadius: 'var(--rounded-md)',
-              overflowX: 'auto',
-              lineHeight: 'var(--leading-5)',
-              color: 'var(--foreground)',
-            }}
-          >
-            {POC_CSS}
-          </pre>
-        </div>
-      </div>
-    </>
-  ),
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 2 — Before / after
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const BeforeAfter: Story = {
-  render: () => {
-    const [brand, setBrand] = useState<Brand>('db');
+export const Dashboard: Story = {
+  render: function DashboardStory() {
     const [strength, setStrength] = useState(1);
-    const [swapped, setSwapped] = useState(false);
-    const [hero, setHero] = useState(true);
-
-    const before = (
-      <div key="before">
-        <Caption>Today — <code>data-theme=&quot;{brand}&quot;</code></Caption>
-        <Scope brand={brand}>
-          <Composition p={`b-${brand}`} />
-        </Scope>
-      </div>
-    );
-    const after = (
-      <div key="after">
-        <Caption>
-          POC — tinted surfaces{hero ? ' + hero' : ''} · strength {strength.toFixed(2)}
-        </Caption>
-        <Scope brand={brand} poc strength={strength}>
-          <Composition p={`a-${brand}`} hero={hero} />
-        </Scope>
-      </div>
-    );
-
+    const [chromeOn, setChromeOn] = useState(1);
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
     return (
       <>
         <PocStyle />
-        <div style={{ ...PAGE, gap: 'var(--p-6)' }}>
+        <div style={PAGE}>
           <div>
-            <h2 style={H2}>Before / after</h2>
+            <h2 style={H2}>The same dashboard, two sub-brands</h2>
             <p style={P}>
-              The same composition twice. Drag strength to <strong>0</strong> and the right side
-              becomes byte-identical to the left — the recipe is a continuum, not a switch.
+              In light mode the content area is <strong>white in both</strong>. The brand lives in
+              the rail, the mark, and the accent — the three places that can carry it without
+              costing legibility. Turn <em>Tint the rail</em> off to see how much of the identity
+              the rail alone is holding.
             </p>
-          </div>
-
-          <div
-            style={{
-              display: 'flex',
-              gap: 'var(--p-4)',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              padding: 'var(--p-4)',
-              background: 'var(--card)',
-              border: 'var(--border-w-100) solid var(--border)',
-              borderRadius: 'var(--rounded-lg)',
-            }}
-          >
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {BRANDS.map((b) => (
-                <Chip
-                  key={b}
-                  id={`pick-${b}`}
-                  label={b}
-                  active={brand === b}
-                  onClick={() => setBrand(b)}
-                />
-              ))}
-            </div>
-            <div style={{ minWidth: 220 }}>
-              <Slider
-                id="poc-strength"
-                label="Tint strength"
-                min={0}
-                max={1.6}
-                step={0.05}
-                value={strength}
-                onValueChange={setStrength}
-                showValue
-              />
-            </div>
-            <Switch id="poc-hero" label="Hero surface" checked={hero} onCheckedChange={setHero} />
-            <Button
-              id="poc-swap"
-              label="Swap sides"
-              style="outline"
-              size="sm"
-              onClick={() => setSwapped((s) => !s)}
+            <Controls
+              strength={strength}
+              setStrength={setStrength}
+              chromeOn={chromeOn}
+              setChromeOn={setChromeOn}
+              mode={mode}
+              setMode={setMode}
             />
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 'var(--p-4)' }}>
-            {swapped ? [after, before] : [before, after]}
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-function Caption({ children }: { children: ReactNode }) {
-  return (
-    <div
-      style={{
-        ...MONO,
-        marginBottom: 'var(--p-2)',
-        color: 'var(--muted-foreground)',
-      }}
-    >
-      {children}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 3 — All eight brands
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const AllEightBrands: Story = {
-  render: () => {
-    const [strength, setStrength] = useState(1);
-    return (
-      <>
-        <PocStyle />
-        <div style={{ ...PAGE, gap: 'var(--p-6)' }}>
-          <div>
-            <h2 style={H2}>Does the family hold?</h2>
-            <p style={P}>
-              Eight tinted pages side by side. The question is not whether any one looks good —
-              it is whether they read as <em>eight</em> things or as four blues and a couple of
-              others.
-            </p>
-            <div style={{ maxWidth: 260 }}>
-              <Slider
-                id="all-strength"
-                label="Tint strength"
-                min={0}
-                max={1.6}
-                step={0.05}
-                value={strength}
-                onValueChange={setStrength}
-                showValue
-              />
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 'var(--p-3)' }}>
-            {BRANDS.map((b) => (
-              <Scope key={b} brand={b} poc strength={strength}>
-                <div
-                  style={{
-                    background: 'var(--background)',
-                    border: 'var(--border-w-100) solid var(--border)',
-                    borderRadius: 'var(--rounded-lg)',
-                    overflow: 'hidden',
-                  }}
-                >
-                  <div
-                    className="poc-hero-band"
-                    style={{
-                      padding: 'var(--p-3) var(--p-4)',
-                      color: 'var(--primary-foreground)',
-                      fontSize: 'var(--text-sm)',
-                      fontWeight: 'var(--font-medium)',
-                    }}
-                  >
-                    {b}
-                  </div>
-                  <div style={{ padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)' }}>
-                    <div
-                      style={{
-                        background: 'var(--card)',
-                        border: 'var(--border-w-100) solid var(--border)',
-                        borderRadius: 'var(--rounded-md)',
-                        padding: 'var(--p-3)',
-                        fontSize: 'var(--text-xs)',
-                        color: 'var(--muted-foreground)',
-                      }}
-                    >
-                      A card, floating
-                    </div>
-                    <Button id={`all-${b}`} label="Primary" size="sm" />
-                  </div>
-                </div>
+          {APPS.map(({ brand, Icon }) => (
+            <Frame key={brand} label={`data-theme="${brand}"`}>
+              <Scope brand={brand} poc strength={strength} chromeOn={chromeOn} mode={mode}>
+                <DashboardPage brand={brand} Icon={Icon} />
               </Scope>
-            ))}
+            </Frame>
+          ))}
+
+          <div>
+            <h2 style={H2}>What to look at</h2>
+            <p style={P}>
+              The rail is doing nearly all of the work, and that is the finding: it is the only
+              large surface in a white-page product with the contrast headroom to carry real
+              colour, because it has its own foreground tokens instead of body text on{' '}
+              <code style={MONO}>--muted-foreground</code>. Measured, it holds{' '}
+              <strong>six times the chroma</strong> the page could (0.103 vs 0.017).
+            </p>
+            <p style={P}>
+              Note the knockouts stay correct — the Switch thumb, the Avatar ring and the status dot
+              punch through with <code style={MONO}>--background</code>. That is a direct dividend
+              of keeping the page white; a tinted page is exactly what breaks them, and fixing it
+              would need a separate <code style={MONO}>--surface-knockout</code> token that this POC
+              cannot add.
+            </p>
           </div>
         </div>
       </>
@@ -1191,290 +1002,68 @@ export const AllEightBrands: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4 — Hero surface
+// 2 — Marketing
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const HeroSurface: Story = {
-  render: () => (
-    <>
-      <PocStyle />
-      <div style={PAGE}>
-        <div>
-          <h2 style={H2}>Hero surface</h2>
-          <p style={P}>
-            Three derivations per brand. <strong>A (tonal)</strong> keeps every stop on the
-            segment <code>--primary → --foreground</code>, so contrast against the label only
-            ever increases — provably AA-safe with zero measurement.{' '}
-            <strong>B (hue-rotating)</strong> moves the hue for a richer read, but needs relative
-            colour syntax and every stop must be measured. <strong>Flat</strong> is the control.
-          </p>
-        </div>
-        {BRANDS.map((b) => (
-          <Scope key={b} brand={b} poc>
-            <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
-              <Caption>{b}</Caption>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0,1fr))', gap: 'var(--p-3)' }}>
-                {(['poc-hero-band', 'poc-hero-band-b', ''] as const).map((cls, i) => (
-                  <div
-                    key={i}
-                    className={cls || undefined}
-                    style={{
-                      background: cls ? undefined : 'var(--primary)',
-                      color: 'var(--primary-foreground)',
-                      padding: 'var(--p-5)',
-                      borderRadius: 'var(--rounded-lg)',
-                      display: 'grid',
-                      gap: 'var(--p-2)',
-                    }}
-                  >
-                    <strong style={{ fontSize: 'var(--text-base)' }}>
-                      {['A — tonal', 'B — hue-rotating', 'Flat (control)'][i]}
-                    </strong>
-                    <span style={{ fontSize: 'var(--text-sm)', opacity: 0.9 }}>
-                      Ask about this workspace
-                    </span>
-                  </div>
-                ))}
-              </div>
-              <div className="poc-hero-icon" style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}>
-                <FeaturedIcon Icon={Sparkles} size="lg" shape="circle" />
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-                  Entry points only — header band, its CTA, an empty-state icon. Body buttons stay
-                  flat <code>--primary</code>.
-                </span>
-              </div>
-            </div>
-          </Scope>
-        ))}
-      </div>
-    </>
-  ),
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 5 — Contrast audit
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const ContrastAudit: Story = {
-  render: () => {
+export const Marketing: Story = {
+  render: function MarketingStory() {
     const [strength, setStrength] = useState(1);
-    const { probes, rows, float, mode, setMode } = useAudit(strength);
-
-    const all = useMemo(() => {
-      const out: { label: string; brand: Brand; ratio: number; base: number; isText: boolean }[] = [];
-      for (const [label, byBrand] of Object.entries(rows)) {
-        const isText = !BORDER_PAIRS.some((b) => b.label === label);
-        for (const [brand, cell] of Object.entries(byBrand)) {
-          out.push({ label, brand: brand as Brand, ...cell, isText });
-        }
-      }
-      return out;
-    }, [rows]);
-
-    const floor = (isText: boolean) => (isText ? 4.5 : 3);
-    const fails = all.filter((r) => r.ratio < floor(r.isText));
-    const worst = all.length ? all.reduce((a, b) => (a.ratio < b.ratio ? a : b)) : null;
-    // `base` is the same pairing measured in a plain data-theme scope, so
-    // "cleared before, fails now" isolates what this POC actually broke.
-    const caused = fails.filter((r) => r.base >= floor(r.isText));
-    const preExisting = fails.filter((r) => r.base < floor(r.isText));
-
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
     return (
       <>
         <PocStyle />
-        {probes}
-        <div style={{ ...PAGE, gap: 'var(--p-6)' }}>
+        <div style={PAGE}>
           <div>
-            <h2 style={H2}>Contrast audit — measured live</h2>
+            <h2 style={H2}>The same marketing page, two sub-brands</h2>
             <p style={P}>
-              <code>scripts/contrast-check.mjs</code> cannot see any of this: it brace-matches
-              only the two <code>[data-mode]</code> blocks, returns null for{' '}
-              <code>color-mix</code>, and treats unresolved as <em>not</em> a failure while still
-              exiting 0. So this measures itself — real computed colours, read back through a 1×1
-              canvas so every serialisation form normalises.
+              A marketing page is where the earlier rounds were wrong in an interesting way. A
+              product UI has to stay quiet, so its brand budget is tiny — but a marketing page{' '}
+              <em>alternates</em>. White sections, then a full-bleed tinted band, then white again.
+              The band can be far louder than any app surface because it is a deliberate break in
+              the page rather than the page itself, and nothing has to stay readable across it for
+              hours.
             </p>
-            <div style={{ display: 'flex', gap: 'var(--p-4)', alignItems: 'center', flexWrap: 'wrap' }}>
-              <div style={{ minWidth: 240 }}>
-                <Slider
-                  id="audit-strength"
-                  label="Tint strength"
-                  min={0}
-                  max={1.6}
-                  step={0.05}
-                  value={strength}
-                  onValueChange={setStrength}
-                  showValue
-                />
-              </div>
-              <Switch
-                id="audit-mode"
-                label="Dark mode"
-                checked={mode === 'dark'}
-                onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
-              />
-            </div>
+            <Controls
+              strength={strength}
+              setStrength={setStrength}
+              chromeOn={1}
+              setChromeOn={() => {}}
+              mode={mode}
+              setMode={setMode}
+              showChrome={false}
+            />
           </div>
 
-          <div
-            style={{
-              padding: 'var(--p-4)',
-              borderRadius: 'var(--rounded-lg)',
-              border: 'var(--border-w-100) solid var(--border)',
-              background: fails.length ? 'var(--error-light)' : 'var(--success-light)',
-              color: 'var(--foreground)',
-              fontSize: 'var(--text-sm)',
-            }}
-          >
-            <strong>
-              {fails.length} of {all.length} pairings below their floor
-            </strong>
-            {worst ? (
-              <>
-                {' '}
-                · worst {worst.ratio.toFixed(2)} ({worst.brand} — {worst.label})
-              </>
-            ) : null}
-            {strength === 0 ? (
-              <div style={{ marginTop: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
-                At strength 0 every delta below should read ±0.00 — that is the proof the recipe
-                degrades to today exactly.
-              </div>
-            ) : null}
-          </div>
-
-          {/* Split the failures honestly. A raw count conflates two very different
-              things: pairings this POC pushed under the floor, and pairings that
-              already fail today and are only visible because this audit measures
-              more than scripts/contrast-check.mjs does. */}
-          <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-            <div>
-              <h2 style={{ ...H2, fontSize: 'var(--text-base)' }}>
-                Caused by the tint — {caused.length}
-              </h2>
-              <p style={P}>
-                These cleared their floor before and do not now. This is the POC's real cost.
-              </p>
-              <ul style={{ ...MONO, margin: 0, paddingLeft: 'var(--p-5)', color: 'var(--foreground)' }}>
-                {Object.entries(
-                  caused.reduce<Record<string, number>>((acc, r) => {
-                    acc[r.label] = (acc[r.label] ?? 0) + 1;
-                    return acc;
-                  }, {}),
-                ).map(([label, n]) => (
-                  <li key={label}>
-                    {label} — {n} of {BRANDS.length} brands
-                  </li>
-                ))}
-                {caused.length === 0 ? <li>none</li> : null}
-              </ul>
-            </div>
-
-            <div>
-              <h2 style={{ ...H2, fontSize: 'var(--text-base)' }}>
-                Already failing today — {preExisting.length}
-              </h2>
-              <p style={P}>
-                Not a regression. <code>--border</code> against <code>--background</code> is
-                ~1.5:1 in the current system, well under the 3:1 WCAG 1.4.11 asks of a meaningful
-                UI boundary. The tint actually <em>improves</em> it. Listed because this audit
-                measures pairings the real gate never has.
-              </p>
-              <ul style={{ ...MONO, margin: 0, paddingLeft: 'var(--p-5)', color: 'var(--muted-foreground)' }}>
-                {[...new Set(preExisting.map((r) => r.label))].map((l) => (
-                  <li key={l}>{l}</li>
-                ))}
-                {preExisting.length === 0 ? <li>none</li> : null}
-              </ul>
-            </div>
-          </div>
-
-          <div style={{ overflowX: 'auto' }}>
-            <table style={{ borderCollapse: 'collapse', width: '100%', ...MONO }}>
-              <thead>
-                <tr>
-                  <th style={{ textAlign: 'left', padding: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
-                    pairing
-                  </th>
-                  {BRANDS.map((b) => (
-                    <th key={b} style={{ padding: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
-                      {b}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[...PAIRINGS, ...BORDER_PAIRS].map((p) => {
-                  const byBrand = rows[p.label];
-                  if (!byBrand) return null;
-                  const isText = !BORDER_PAIRS.some((b) => b.label === p.label);
-                  return (
-                    <tr key={p.label} style={{ borderTop: 'var(--border-w-100) solid var(--border)' }}>
-                      <td style={{ padding: 'var(--p-2)', whiteSpace: 'nowrap' }}>
-                        {p.label}
-                        {p.note ? (
-                          <span style={{ color: 'var(--muted-foreground)' }}> · {p.note}</span>
-                        ) : null}
-                      </td>
-                      {BRANDS.map((b) => {
-                        const c = byBrand[b];
-                        if (!c) return <td key={b} style={{ padding: 'var(--p-2)' }}>—</td>;
-                        const d = c.ratio - c.base;
-                        const bad = c.ratio < floor(isText);
-                        return (
-                          <td
-                            key={b}
-                            style={{
-                              padding: 'var(--p-2)',
-                              textAlign: 'right',
-                              color: bad ? 'var(--error)' : 'var(--foreground)',
-                              fontWeight: bad ? 'var(--font-semibold)' : 'var(--font-normal)',
-                            }}
-                          >
-                            {c.ratio.toFixed(2)}
-                            <span style={{ color: 'var(--muted-foreground)' }}>
-                              {' '}
-                              {d >= 0 ? '+' : ''}
-                              {d.toFixed(2)}
-                            </span>
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          {APPS.map(({ brand, Icon }) => (
+            <Frame key={brand} label={`data-theme="${brand}"`}>
+              <Scope brand={brand} poc strength={strength} mode={mode}>
+                <MarketingPage brand={brand} Icon={Icon} />
+              </Scope>
+            </Frame>
+          ))}
 
           <div>
-            <h2 style={H2}>Do cards float?</h2>
+            <h2 style={H2}>Three intensities, on purpose</h2>
             <p style={P}>
-              ΔL* between <code>--card</code> and <code>--background</code>. Not a WCAG rule — the
-              number that says whether a card reads as raised. Dark mode’s existing ramp is{' '}
-              <strong>≈4.5</strong>; light mode today is <strong>0</strong>, because both are{' '}
-              <code>#ffffff</code>.
+              <strong>Hero — the gradient.</strong> Provably AA-safe: every stop lies on the segment{' '}
+              <code style={MONO}>--primary</code> → <code style={MONO}>--foreground</code>, and{' '}
+              <code style={MONO}>--primary-foreground</code> is by construction the opposite pole to{' '}
+              <code style={MONO}>--foreground</code>, so contrast against the label only ever
+              increases. No per-brand tuning, no measurement needed.
+              <br />
+              <strong>Band — the tinted strip.</strong> Body copy still sits on it, so it is capped
+              by <code style={MONO}>--muted-foreground</code>; see the Audit story for the measured
+              ceiling.
+              <br />
+              <strong>White — the default.</strong> Most of the page, and the reason the band reads
+              as an event.
             </p>
-            <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', ...MONO }}>
-              {BRANDS.map((b) => {
-                const f = float[b];
-                if (!f) return null;
-                return (
-                  <div
-                    key={b}
-                    style={{
-                      padding: 'var(--p-3)',
-                      border: 'var(--border-w-100) solid var(--border)',
-                      borderRadius: 'var(--rounded-md)',
-                      minWidth: 96,
-                    }}
-                  >
-                    <div style={{ color: 'var(--muted-foreground)' }}>{b}</div>
-                    <div style={{ fontSize: 'var(--text-base)' }}>{f.poc.toFixed(1)}</div>
-                    <div style={{ color: 'var(--muted-foreground)' }}>was {f.base.toFixed(1)}</div>
-                  </div>
-                );
-              })}
-            </div>
+            <p style={P}>
+              One honest caveat: an <code style={MONO}>Alert</code> dropped onto a band would hit
+              round 1&rsquo;s bug again, because the semantic <code style={MONO}>-light</code> tints
+              are <code style={MONO}>rgba()</code> composited over whatever is behind them. Keep
+              alerts on white, or re-derive the tints. The Audit story measures both cases.
+            </p>
           </div>
         </div>
       </>
@@ -1483,53 +1072,56 @@ export const ContrastAudit: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 6 — Palette collision
+// 3 — Marks
 // ─────────────────────────────────────────────────────────────────────────────
 
-const deltaOK = (
-  a: readonly [number, number, number],
-  b: readonly [number, number, number],
-) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
-
-export const PaletteCollision: Story = {
-  render: () => {
+export const Marks: Story = {
+  render: function MarksStory() {
     const hostRef = useRef<HTMLDivElement>(null);
-    const [reveal, setReveal] = useState(false);
-    const [squint, setSquint] = useState(false);
-    const [d, setD] = useState<{ primary: Record<string, number>; page: Record<string, number> }>({
-      primary: {},
-      page: {},
-    });
+    const [d, setD] = useState<{ page: number; mark: number; rail: number } | null>(null);
 
     useEffect(() => {
       const host = hostRef.current;
       if (!host) return;
-      const read = (brand: Brand, token: string, poc: boolean) => {
-        const scope = host.querySelector<HTMLElement>(`[data-c="${brand}-${poc ? 'p' : 'b'}"]`);
+      const read = (brand: Brand, css: string) => {
+        const scope = host.querySelector<HTMLElement>(`[data-m="${brand}"]`);
         const probe = scope?.firstElementChild as HTMLElement | undefined;
         if (!probe) return null;
-        probe.style.backgroundColor = `var(${token})`;
+        probe.style.backgroundColor = '';
+        probe.style.backgroundColor = css;
         return toRGBA(getComputedStyle(probe).backgroundColor);
       };
-      const primary: Record<string, number> = {};
-      const page: Record<string, number> = {};
-      for (const pair of [
-        ['dc', 'ec'],
-        ['db', 'ir'],
-        ['nb', 'dc'],
-        ['rm', 'db'],
-      ] as [Brand, Brand][]) {
-        const [a, b] = pair;
-        const pa = read(a, '--primary', false);
-        const pb = read(b, '--primary', false);
-        const ga = read(a, '--background', true);
-        const gb = read(b, '--background', true);
-        const key = `${a} / ${b}`;
-        if (pa && pb) primary[key] = deltaOK(oklab(pa), oklab(pb));
-        if (ga && gb) page[key] = deltaOK(oklab(ga), oklab(gb));
-      }
-      setD({ primary, page });
+      const gap = (css: string) => {
+        const a = read('dc', css);
+        const b = read('ec', css);
+        return a && b ? deltaE(a, b) : NaN;
+      };
+      setD({
+        page: gap('var(--poc-band)'),
+        rail: gap('var(--sidebar)'),
+        mark: gap('oklch(from var(--primary) 0.62 0.21 h)'),
+      });
     }, []);
+
+    const row = (label: string, v: number, note: string) => (
+      <tr style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+        <td style={{ padding: 'var(--p-2)' }}>{label}</td>
+        <td
+          style={{
+            ...MONO,
+            padding: 'var(--p-2)',
+            textAlign: 'right',
+            fontWeight: 'var(--font-semibold)',
+            color: v >= 0.1 ? 'var(--success)' : 'var(--muted-foreground)',
+          }}
+        >
+          {Number.isFinite(v) ? v.toFixed(3) : '—'}
+        </td>
+        <td style={{ padding: 'var(--p-2)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          {note}
+        </td>
+      </tr>
+    );
 
     return (
       <>
@@ -1540,492 +1132,40 @@ export const PaletteCollision: Story = {
           style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
         >
           {BRANDS.map((b) => (
-            <span key={b}>
-              <span data-c={`${b}-b`} data-theme={b} data-mode="light">
-                <span />
-              </span>
-              <span
-                data-c={`${b}-p`}
-                data-theme={b}
-                data-mode="light"
-                data-theme-poc=""
-                style={{ '--poc-str': 1 } as CSSProperties}
-              >
-                <span />
-              </span>
+            <span
+              key={b}
+              data-m={b}
+              data-theme={b}
+              data-theme-poc=""
+              data-mode="light"
+              style={{ '--poc-str': 1, '--poc-chrome': 1 } as CSSProperties}
+            >
+              <span />
             </span>
           ))}
         </div>
 
-        <div style={{ ...PAGE, gap: 'var(--p-6)' }}>
-          <div>
-            <h2 style={H2}>Where this argues against itself</h2>
-            <p style={P}>
-              The palette is cool-heavy: six of eight sit between 160° and 265°.{' '}
-              <code>dc</code>/<code>ec</code> are 17° apart, <code>db</code>/<code>ir</code> 22°.
-              A tinted page is only ~10% primary in white, so its chroma is about a{' '}
-              <em>tenth</em> of the primary’s — and the perceptual distance between two tinted
-              pages shrinks by roughly the same factor.
-            </p>
-            <p style={P}>
-              If that holds, the tint is atmosphere and the <strong>hero is doing all the
-              differentiating</strong> — which would invert the priority of the two halves of
-              this proposal. The numbers below are measured, not asserted.
-            </p>
-          </div>
-
-          <div style={{ ...MONO, display: 'grid', gap: 'var(--p-2)', maxWidth: 560 }}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 100px 100px', color: 'var(--muted-foreground)' }}>
-              <span>pair</span>
-              <span style={{ textAlign: 'right' }}>ΔE primary</span>
-              <span style={{ textAlign: 'right' }}>ΔE page</span>
-            </div>
-            {Object.keys(d.primary).map((k) => (
-              <div
-                key={k}
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: '1fr 100px 100px',
-                  borderTop: 'var(--border-w-100) solid var(--border)',
-                  paddingTop: 'var(--p-2)',
-                }}
-              >
-                <span>{k}</span>
-                <span style={{ textAlign: 'right' }}>{d.primary[k]?.toFixed(3)}</span>
-                <span
-                  style={{
-                    textAlign: 'right',
-                    color: (d.page[k] ?? 1) < 0.05 ? 'var(--error)' : 'var(--foreground)',
-                  }}
-                >
-                  {d.page[k]?.toFixed(3)}
-                </span>
-              </div>
-            ))}
-            <p style={{ ...P, marginTop: 'var(--p-2)' }}>
-              ≥0.10 distinct at a glance · 0.05–0.10 distinguishable side by side · &lt;0.05
-              effectively the same.
-            </p>
-          </div>
-
-          <div>
-            <h2 style={H2}>Blind test — which is which?</h2>
-            <p style={P}>
-              Two tinted pages, labels hidden. A number can be argued with; failing to pick which
-              is which cannot.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--p-3)', marginBottom: 'var(--p-3)' }}>
-              <Button id="reveal" label={reveal ? 'Hide labels' : 'Reveal'} style="outline" size="sm" onClick={() => setReveal((r) => !r)} />
-              <Switch id="squint" label="Squint" checked={squint} onCheckedChange={setSquint} />
-            </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(2, minmax(0,1fr))',
-                gap: 'var(--p-4)',
-                filter: squint ? 'blur(6px)' : undefined,
-              }}
-            >
-              {(['dc', 'ec'] as Brand[]).map((b) => (
-                <Scope key={b} brand={b} poc>
-                  <div
-                    style={{
-                      background: 'var(--background)',
-                      border: 'var(--border-w-100) solid var(--border)',
-                      borderRadius: 'var(--rounded-lg)',
-                      padding: 'var(--p-5)',
-                      display: 'grid',
-                      gap: 'var(--p-3)',
-                      minHeight: 200,
-                    }}
-                  >
-                    <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                      {reveal ? b : '???'}
-                    </div>
-                    <div
-                      style={{
-                        background: 'var(--card)',
-                        border: 'var(--border-w-100) solid var(--border)',
-                        borderRadius: 'var(--rounded-md)',
-                        padding: 'var(--p-4)',
-                        fontSize: 'var(--text-sm)',
-                        color: 'var(--muted-foreground)',
-                      }}
-                    >
-                      A card on a tinted page
-                    </div>
-                  </div>
-                </Scope>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 style={H2}>The same pair as hero</h2>
-            <p style={P}>
-              Saturated and full-bleed — the only element with enough chroma to carry 17°.
-            </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 'var(--p-4)' }}>
-              {(['dc', 'ec'] as Brand[]).map((b) => (
-                <Scope key={b} brand={b} poc>
-                  <div
-                    className="poc-hero-band"
-                    style={{
-                      padding: 'var(--p-6)',
-                      borderRadius: 'var(--rounded-lg)',
-                      color: 'var(--primary-foreground)',
-                      fontSize: 'var(--text-base)',
-                      fontWeight: 'var(--font-medium)',
-                    }}
-                  >
-                    {reveal ? b : '???'}
-                  </div>
-                </Scope>
-              ))}
-            </div>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 7 — Levers (round 2)
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * ROUND 2. Round 1's finding was that a brand-hue page tint does not
- * differentiate the brands — only ~10% of the primary's chroma survives into a
- * surface pale enough to carry body text.
- *
- * The instinct to reach for a different HUE (the complement, or a brand
- * secondary) does not fix that, and the reason is worth stating plainly:
- * rotating every brand by the same angle is a RIGID ROTATION of the hue wheel,
- * so it preserves every pairwise distance. Measured, dc/ec goes 0.006 -> 0.005;
- * rm/db actually gets WORSE, 0.013 -> 0.006. And three of the eight complements
- * land on a semantic hue (ec's is 3 degrees off warning amber), which would put
- * an amber page under an amber warning banner.
- *
- * Spreading brand SECONDARIES evenly around the wheel does better — 0.004 ->
- * 0.010 — but it is still a fifth of the "effectively the same colour"
- * threshold, because it is still spending the same starved chroma budget. Hue
- * is not the lever at page saturation. These two are.
- */
-export const Levers: Story = {
-  render: function LeversStory() {
-    const [pairIdx, setPairIdx] = useState(0);
-    const [depth, setDepth] = useState(1);
-    const [chromeOn, setChromeOn] = useState(1);
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
-    const [a, b] = COLLISIONS[pairIdx];
-
-    return (
-      <>
-        <PocStyle />
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>Two levers that are not hue</h2>
+            <h2 style={H2}>Where the identity actually lives</h2>
             <p style={P}>
-              Both brands below were indistinguishable as pages in round 1. Turn the levers off and
-              on: <strong>depth</strong> gives each brand a rung on a luminance ladder, and{' '}
-              <strong>chrome</strong> tints the rail — which can take six times the colour the page
-              can, because it has its own foreground token rather than body text on{' '}
-              <code style={MONO}>--muted-foreground</code>.
-            </p>
-
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
-              {COLLISIONS.map(([x, y], i) => (
-                <Chip
-                  key={`${x}${y}`}
-                  id={`lev-pair-${x}${y}`}
-                  label={`${x} / ${y}`}
-                  active={i === pairIdx}
-                  onClick={() => setPairIdx(i)}
-                />
-              ))}
-              <span style={{ width: 'var(--p-4)' }} />
-              <Switch id="lev-depth" label="Depth" checked={!!depth} onCheckedChange={(v) => setDepth(v ? 1 : 0)} />
-              <Switch id="lev-chrome" label="Chrome" checked={!!chromeOn} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
-              <Switch
-                id="lev-mode"
-                label="Dark"
-                checked={mode === 'dark'}
-                onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
-              />
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 'var(--p-5)' }}>
-            {[a, b].map((brand) => (
-              <div key={brand}>
-                <div style={{ ...MONO, marginBottom: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
-                  data-theme=&quot;{brand}&quot;
-                </div>
-                <div style={{ border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
-                  <Scope brand={brand} poc strength={1} depth={depth} chromeOn={chromeOn} mode={mode}>
-                    <Composition p={`lev-${brand}`} />
-                  </Scope>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <h2 style={H2}>What each lever costs</h2>
-            <p style={P}>
-              Measured, not asserted. <strong>Depth is nearly free:</strong>{' '}
-              <code style={MONO}>--muted-foreground</code> on the page only falls from 6.50 to 5.53
-              across the full 8% ladder — still well clear of AA, because{' '}
-              <code style={MONO}>#475569</code> is a much darker slate than the surfaces it sits on.{' '}
-              <strong>Chrome has a hard ceiling:</strong> the rail clears AA on both its foregrounds
-              at 55% tint (6.87 and 5.63) and fails at 70% (the accent foreground drops to 4.39), so
-              55% is the number — not a taste call.
-            </p>
-            <p style={P}>
-              The honest catch on chrome:{' '}
-              <code style={MONO}>--sidebar</code> is listed in <code style={MONO}>CLAUDE.md</code>{' '}
-              beside Tooltip as <em>deliberately un-themed neutral chrome</em>. Making the rail the
-              loudest brand surface in the app reverses that decision rather than extending it. It
-              also only works if the rail uses its own <code style={MONO}>--sidebar-*</code>{' '}
-              foregrounds throughout — any component reaching for{' '}
-              <code style={MONO}>--muted-foreground</code> inside a tinted rail drops to 3.75 and
-              fails.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 8 — Separation scoreboard
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const SeparationScoreboard: Story = {
-  render: function ScoreboardStory() {
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
-    const { probes, rows } = useSeparation(mode);
-
-    const cell = (v: number, i: number) => {
-      const bad = !(v >= 0.05);
-      return (
-        <td
-          key={i}
-          style={{
-            ...MONO,
-            padding: 'var(--p-2)',
-            textAlign: 'right',
-            color: bad ? 'var(--muted-foreground)' : 'var(--success)',
-            fontWeight: bad ? 'var(--font-normal)' : 'var(--font-semibold)',
-          }}
-        >
-          {Number.isFinite(v) ? v.toFixed(3) : '—'}
-        </td>
-      );
-    };
-
-    return (
-      <>
-        <PocStyle />
-        {probes}
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>How far apart do the colliding pairs actually land?</h2>
-            <p style={P}>
-              OKLab ΔE between the two brands of each pair, per surface, measured live in this
-              browser. Contrast answers <em>can I read it</em>; it cannot answer{' '}
-              <em>can I tell these apart</em>. Below <strong>0.05</strong> is
-              &ldquo;effectively the same colour&rdquo;; 0.10 is where two things read as different
-              colours. Green marks a cell that clears 0.05.
-            </p>
-            <Switch
-              id="sb-mode"
-              label="Dark mode"
-              checked={mode === 'dark'}
-              onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
-            />
-          </div>
-
-          {(
-            [
-              ['page', 'Page — --background', 'pageChroma'],
-              ['rail', 'Rail — --sidebar', 'railChroma'],
-            ] as const
-          ).map(([field, heading, chromaField]) => (
-            <div key={field}>
-              <h2 style={H2}>{heading}</h2>
-              <div style={{ overflowX: 'auto' }}>
-                <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
-                  <thead>
-                    <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-                      <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Treatment</th>
-                      {COLLISIONS.map(([x, y]) => (
-                        <th key={`${x}${y}`} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>
-                          {x}/{y}
-                        </th>
-                      ))}
-                      <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>chroma</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {LEVERS.map((l) => {
-                      const r = rows[l.key];
-                      return (
-                        <tr key={l.key} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-                          <td style={{ padding: 'var(--p-2)' }}>
-                            <div style={{ fontWeight: 'var(--font-medium)' }}>{l.label}</div>
-                            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{l.note}</div>
-                          </td>
-                          {(r?.[field] ?? COLLISIONS.map(() => NaN)).map((v, i) => cell(v, i))}
-                          <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
-                            {Number.isFinite(r?.[chromaField]) ? r![chromaField].toFixed(3) : '—'}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          ))}
-
-          <div>
-            <h2 style={H2}>Reading it</h2>
-            <p style={P}>
-              <strong>No single lever crosses 0.05.</strong> That is the real answer, and it is not
-              a failure — it is the shape of the problem. Eight brands cannot be made distinct by
-              one strong signal on a surface that has to stay pale enough to read. They are made
-              distinct the way real brand systems do it: several weak signals in{' '}
-              <em>different perceptual channels</em> — hue, luminance, and one saturated surface —
-              which the eye integrates even though no one of them would carry alone.
-            </p>
-            <p style={P}>
-              The chroma column is the argument in one number. The page keeps roughly a tenth of the
-              primary&rsquo;s colour; the rail at its AA ceiling keeps about six times that. If
-              exactly one surface in the app is going to say which sub-brand you are in, the
-              measurement says it should be the rail, not the page.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 9 — App mark  (round 3)
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** Mark measurement: are the eight siblings, and do they actually separate? */
-function useMarkAudit() {
-  const hostRef = useRef<HTMLDivElement>(null);
-  const [d, setD] = useState<{
-    stops: { l: number[]; c: number[]; h: number[] }[];
-    pairs: { pair: string; mark: number; page: number }[];
-  }>({ stops: [], pairs: [] });
-
-  useEffect(() => {
-    const host = hostRef.current;
-    if (!host) return;
-    const read = (brand: Brand, css: string) => {
-      const scope = host.querySelector<HTMLElement>(`[data-m="${brand}"]`);
-      const probe = scope?.firstElementChild as HTMLElement | undefined;
-      if (!probe) return null;
-      probe.style.backgroundColor = '';
-      probe.style.backgroundColor = css;
-      return toRGBA(getComputedStyle(probe).backgroundColor);
-    };
-
-    const stops = MARK_STOPS.map((css) => {
-      const l: number[] = [];
-      const c: number[] = [];
-      const h: number[] = [];
-      for (const { brand } of APPS) {
-        const v = read(brand, css);
-        if (!v) continue;
-        const [L, A, B] = oklab(v);
-        l.push(L);
-        c.push(Math.hypot(A, B));
-        h.push((((Math.atan2(B, A) * 180) / Math.PI) + 360) % 360);
-      }
-      return { l, c, h };
-    });
-
-    const pairs = COLLISIONS.map(([a, b]) => {
-      const ma = read(a, MARK_STOPS[1]);
-      const mb = read(b, MARK_STOPS[1]);
-      const pa = read(a, 'var(--background)');
-      const pb = read(b, 'var(--background)');
-      return {
-        pair: `${a} / ${b}`,
-        mark: ma && mb ? deltaE(ma, mb) : NaN,
-        page: pa && pb ? deltaE(pa, pb) : NaN,
-      };
-    });
-
-    setD({ stops, pairs });
-  }, []);
-
-  const probes = (
-    <div
-      ref={hostRef}
-      aria-hidden="true"
-      style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
-    >
-      {APPS.map(({ brand }) => (
-        <span
-          key={brand}
-          data-m={brand}
-          data-theme={brand}
-          data-theme-poc=""
-          data-mode="light"
-          style={{ '--poc-str': 1 } as CSSProperties}
-        >
-          <span />
-        </span>
-      ))}
-    </div>
-  );
-
-  return { probes, ...d };
-}
-
-const spread = (xs: number[]) => (xs.length ? Math.max(...xs) - Math.min(...xs) : NaN);
-
-function Mark({ Icon, size = 56 }: { Icon: LucideIcon; size?: number }) {
-  return (
-    <span className="poc-mark" style={{ width: size, height: size }}>
-      <Icon size={Math.round(size * 0.5)} strokeWidth={2} />
-    </span>
-  );
-}
-
-export const AppMark: Story = {
-  render: function AppMarkStory() {
-    const { probes, stops, pairs } = useMarkAudit();
-    return (
-      <>
-        <PocStyle />
-        {probes}
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>Put the colour where colour is free</h2>
-            <p style={P}>
-              Rounds 1 and 2 spent the whole budget on the page — the largest surface, the tightest
-              contrast budget, the lowest salience per pixel. The mark is the inverse of all three.
-              Nothing sits on top of it, so it has <strong>no contrast constraint at all</strong>,
-              and it is what people actually recognise an app by. This is the Office-icon move: one
-              silhouette language, one gradient treatment, eight hues.
+              Nothing sits on top of a mark, so it carries no contrast constraint at all — the one
+              surface in the UI where colour is free. Lightness and chroma are pinned to literals and
+              only the hue is inherited, so the marks share one envelope by construction rather than
+              by style guide. That is the Office-icon model: one silhouette language, one gradient
+              treatment, different hues.
             </p>
           </div>
 
-          <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: 'var(--p-8)', flexWrap: 'wrap' }}>
             {APPS.map(({ brand, Icon }) => (
-              <div key={brand} style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+              <div key={brand} style={{ display: 'grid', gap: 'var(--p-3)', justifyItems: 'center' }}>
                 <Scope brand={brand} poc strength={1}>
-                  <Mark Icon={Icon} size={72} />
+                  <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'flex-end' }}>
+                    <Mark Icon={Icon} size={88} />
+                    <Mark Icon={Icon} size={48} />
+                    <Mark Icon={Icon} size={28} />
+                  </div>
                 </Scope>
                 <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
               </div>
@@ -2033,96 +1173,37 @@ export const AppMark: Story = {
           </div>
 
           <div>
-            <h2 style={H2}>Why they read as a family — and it is not taste</h2>
+            <h2 style={H2}>dc vs ec, per surface</h2>
             <p style={P}>
-              Lightness and chroma are pinned to literals; only the hue is inherited. The intent is
-              that the eight marks share one lightness and chroma envelope and differ only in hue.
-              Below is the spread across all eight, per gradient stop — the design stated as a
-              measurement rather than an intention.
+              OKLab ΔE between the two brands, measured live. Below <strong>0.05</strong> is
+              &ldquo;effectively the same colour&rdquo;; <strong>0.10</strong> is where two things
+              read as different colours.
             </p>
-            <p style={P}>
-              <strong>And the measurement partly refutes it.</strong> At the vivid chroma this POC
-              uses, <code style={MONO}>oklch(0.62 0.21 h)</code> is outside sRGB at many hues, so
-              the browser gamut-maps it — and gamut mapping moves exactly the two things that were
-              supposed to be pinned. Measured: chroma spread is 0.0907 at C=0.21, 0.0195 at 0.13,
-              and <strong>0.0016 at 0.11</strong>, where every hue is finally in gamut. The
-              guarantee is real only below ~0.11. Vivid marks and a provable envelope are a genuine
-              trade here; display-p3 would buy both.
-            </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 640 }}>
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Gradient stop</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>L* spread</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>chroma spread</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>hue spread</th>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Surface</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE</th>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }} />
                 </tr>
               </thead>
               <tbody>
-                {stops.map((s, i) => (
-                  <tr key={i} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>stop {i + 1}</td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{spread(s.l).toFixed(4)}</td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{spread(s.c).toFixed(4)}</td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--success)' }}>
-                      {spread(s.h).toFixed(0)}°
-                    </td>
-                  </tr>
-                ))}
+                {d && row('Marketing band', d.page, 'large area, capped by body text on it')}
+                {d && row('Sidebar rail', d.rail, 'own foreground tokens, so more headroom')}
+                {d && row('App mark', d.mark, 'no text on it — no constraint at all')}
               </tbody>
             </table>
           </div>
 
           <div>
-            <h2 style={H2}>And it separates the pairs the page could not</h2>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
-              <thead>
-                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pair</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE as pages</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE as marks</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>×</th>
-                </tr>
-              </thead>
-              <tbody>
-                {pairs.map((p) => (
-                  <tr key={p.pair} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{p.pair}</td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
-                      {p.page.toFixed(3)}
-                    </td>
-                    <td
-                      style={{
-                        ...MONO,
-                        padding: 'var(--p-2)',
-                        textAlign: 'right',
-                        color: p.mark >= 0.1 ? 'var(--success)' : 'var(--foreground)',
-                        fontWeight: 'var(--font-semibold)',
-                      }}
-                    >
-                      {p.mark.toFixed(3)}
-                    </td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
-                      {(p.mark / p.page).toFixed(0)}×
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p style={{ ...P, marginTop: 'var(--p-4)' }}>
-              Three to thirteen times the separation, at a fraction of the pixels — because the mark
-              is the one surface that never has to be legible underneath anything. But read the
-              column honestly: <strong>only dc/ec clears 0.10.</strong> The mark{' '}
-              <em>amplifies</em> a hue difference; it cannot <em>create</em> one. db/ir are 14°
-              apart and rm/db 16°, and no amount of saturation fixes that.
-            </p>
+            <h2 style={H2}>The limit worth knowing</h2>
             <p style={P}>
-              Which is exactly what the Office comparison predicts, and it is the useful half of it:{' '}
-              <strong>Word and Outlook are both blue.</strong> Nobody confuses them, because the
-              glyph carries the identity and the colour only supports it. Hue is a bounded resource
-              — eight brands on one wheel, minus the semantic hues — but silhouette is unbounded and
-              free. For the close-hue pairs, the answer is a more distinct mark, not a more
-              saturated one.
+              The mark <em>amplifies</em> a hue difference; it cannot <em>create</em> one. dc and ec
+              are 37 degrees apart, which is enough. Two brands 14 degrees apart stay similar at any
+              saturation — and that is the useful half of the Office comparison, because{' '}
+              <strong>Word and Outlook are both blue</strong> and nobody confuses them. The glyph
+              carries the identity and the colour only supports it. Hue is a bounded resource; a
+              silhouette is not.
             </p>
           </div>
         </div>
@@ -2132,132 +1213,176 @@ export const AppMark: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 10 — Ecosystem  (round 3)
+// 4 — Audit
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const Ecosystem: Story = {
-  render: function EcosystemStory() {
-    const [tinted, setTinted] = useState(false);
-    const [mode, setMode] = useState<'light' | 'dark'>('light');
+type Pairing = { label: string; fg: string; bg: string; onBand?: boolean; note?: string };
 
-    const Shell = ({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) => (
-      <Scope brand={brand} poc strength={tinted ? 1 : 0} mode={mode}>
-        <div
-          style={{
-            background: 'var(--background)',
-            border: 'var(--border-w-100) solid var(--border)',
-            borderRadius: 'var(--rounded-lg)',
-            overflow: 'hidden',
-          }}
-        >
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 'var(--p-3)',
-              padding: 'var(--p-4)',
-              background: 'var(--card)',
-              borderBottom: 'var(--border-w-100) solid var(--border)',
-            }}
-          >
-            <Mark Icon={Icon} size={36} />
-            <strong style={{ flex: 1, fontSize: 'var(--text-sm)', ...MONO }}>{brand}</strong>
-            <Avatar id={`eco-${brand}-av`} fallback="KM" size="sm" />
-          </div>
-          <div style={{ padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)' }}>
-            <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>1,204</div>
-            <Progress id={`eco-${brand}-pr`} value={62} />
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              <Badge id={`eco-${brand}-b`} variant="default" label="Active" />
-              <Badge id={`eco-${brand}-b2`} variant="outline" label="Synced" />
-            </div>
-            <Button id={`eco-${brand}-cta`} label="Open" size="sm" />
-          </div>
-        </div>
-      </Scope>
-    );
+const PAIRINGS: Pairing[] = [
+  { label: 'foreground / background', fg: '--foreground', bg: '--background', note: 'white in light — unchanged' },
+  { label: 'muted-foreground / background', fg: '--muted-foreground', bg: '--background' },
+  { label: 'foreground / card', fg: '--foreground', bg: '--card' },
+  { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
+  { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
+  { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
+  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary' },
+  { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar', note: 'the tinted rail' },
+  { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent', note: 'the rail ceiling' },
+  { label: 'muted-foreground / sidebar', fg: '--muted-foreground', bg: '--sidebar', note: 'FAILS by design — use --sidebar-*' },
+  { label: 'foreground / band', fg: '--foreground', bg: '--poc-band' },
+  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'caps the band tint' },
+  { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc-band-strong' },
+  { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
+  { label: 'error / error-light ON BAND', fg: '--error', bg: '--error-light', onBand: true, note: 'the remaining hazard' },
+  { label: 'info / info-light', fg: '--info', bg: '--info-light' },
+  { label: 'border / background', fg: '--border', bg: '--background', note: '1.4.11 wants 3:1 — pre-existing' },
+];
+
+export const Audit: Story = {
+  render: function AuditStory() {
+    const hostRef = useRef<HTMLDivElement>(null);
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
+    const [rows, setRows] = useState<Record<string, Record<Brand, number>>>({});
+
+    useEffect(() => {
+      const host = hostRef.current;
+      if (!host) return;
+      const next: Record<string, Record<Brand, number>> = {};
+      for (const brand of BRANDS) {
+        const scope = host.querySelector<HTMLElement>(`[data-a="${brand}"]`);
+        if (!scope) continue;
+        const probe = scope.firstElementChild as HTMLElement;
+        const read = (token: string) => {
+          probe.style.backgroundColor = '';
+          probe.style.backgroundColor = `var(${token})`;
+          return toRGBA(getComputedStyle(probe).backgroundColor);
+        };
+        for (const p of PAIRINGS) {
+          const fg = read(p.fg);
+          const bg = read(p.bg);
+          if (!fg || !bg) continue;
+          // A translucent surface sits over whatever is behind it — which is the
+          // whole point of the "ON BAND" row: same token, different backdrop.
+          const behind = read(p.onBand ? '--poc-band' : '--background');
+          const solid = bg[3] < 1 && behind ? over(bg, behind) : bg;
+          next[p.label] ??= {} as Record<Brand, number>;
+          next[p.label][brand] = contrast(fg, solid);
+        }
+      }
+      setRows(next);
+    }, [mode]);
+
+    const floor = (label: string) => (label.startsWith('border') ? 3 : 4.5);
 
     return (
       <>
         <PocStyle />
+        <div
+          ref={hostRef}
+          aria-hidden="true"
+          style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
+        >
+          {BRANDS.map((b) => (
+            <span
+              key={b}
+              data-a={b}
+              data-theme={b}
+              data-theme-poc=""
+              data-mode={mode}
+              style={{ '--poc-str': 1, '--poc-chrome': 1 } as CSSProperties}
+            >
+              <span />
+            </span>
+          ))}
+        </div>
+
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>One suite, eight apps</h2>
+            <h2 style={H2}>Measured, not asserted</h2>
             <p style={P}>
-              The switcher below is the ecosystem in one view — eight marks built from one recipe,
-              sharing a lightness and chroma envelope, differing only in hue. This is the surface
-              that says <em>which app</em>. Everything else is the surface that says{' '}
-              <em>same company</em>.
+              <code style={MONO}>scripts/contrast-check.mjs</code> cannot see any of this: it
+              brace-matches only the two <code style={MONO}>[data-mode]</code> blocks, returns null
+              for <code style={MONO}>color-mix</code>, and treats unresolved as <em>not</em> a
+              failure while still exiting 0. So the POC measures itself, in this browser, at full
+              strength.
             </p>
-            <Scope brand="" poc strength={0} mode={mode}>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: 'var(--p-4)',
-                  flexWrap: 'wrap',
-                  padding: 'var(--p-5)',
-                  background: 'var(--card)',
-                  border: 'var(--border-w-100) solid var(--border)',
-                  borderRadius: 'var(--rounded-lg)',
-                }}
-              >
-                {APPS.map(({ brand, Icon }) => (
-                  <div key={brand} style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
-                    <Scope brand={brand} poc strength={0}>
-                      <Mark Icon={Icon} size={48} />
-                    </Scope>
-                    <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
-                  </div>
-                ))}
-              </div>
-            </Scope>
+            <Switch
+              id="audit-mode"
+              label="Dark mode"
+              checked={mode === 'dark'}
+              onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
+            />
+          </div>
+
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
+              <thead>
+                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pairing</th>
+                  <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>dc</th>
+                  <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>ec</th>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Note</th>
+                </tr>
+              </thead>
+              <tbody>
+                {PAIRINGS.map((p) => {
+                  const r = rows[p.label];
+                  return (
+                    <tr key={p.label} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                      <td style={{ padding: 'var(--p-2)' }}>{p.label}</td>
+                      {BRANDS.map((b) => {
+                        const v = r?.[b];
+                        const bad = v != null && v < floor(p.label);
+                        return (
+                          <td
+                            key={b}
+                            style={{
+                              ...MONO,
+                              padding: 'var(--p-2)',
+                              textAlign: 'right',
+                              color: bad ? 'var(--error)' : 'var(--foreground)',
+                              fontWeight: bad ? 'var(--font-semibold)' : 'var(--font-normal)',
+                            }}
+                          >
+                            {v == null ? '—' : v.toFixed(2)}
+                          </td>
+                        );
+                      })}
+                      <td
+                        style={{
+                          padding: 'var(--p-2)',
+                          fontSize: 'var(--text-xs)',
+                          color: 'var(--muted-foreground)',
+                        }}
+                      >
+                        {p.note ?? ''}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
 
           <div>
-            <h2 style={H2}>The same shell, four times</h2>
+            <h2 style={H2}>The two rows that matter</h2>
             <p style={P}>
-              Identical layout, identical type, identical neutrals. Only the mark and the accent
-              change. Toggle the page tint on and ask which version feels more like{' '}
-              <strong>one company</strong> — the shared shell is doing the ecosystem work, and
-              tinting each page differently actively fights it.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', marginBottom: 'var(--p-5)' }}>
-              <Switch id="eco-tint" label="Tint each page by brand" checked={tinted} onCheckedChange={setTinted} />
-              <Switch
-                id="eco-mode"
-                label="Dark mode"
-                checked={mode === 'dark'}
-                onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
-              />
-            </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 'var(--p-4)' }}>
-              {APPS.slice(0, 4).map((a) => (
-                <Shell key={a.brand} {...a} />
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 style={H2}>The tier model this argues for</h2>
-            <p style={P}>
-              <strong>Tier 1 — the mark.</strong> Maximum chroma, ~0.1% of pixels, no contrast
-              constraint. Carries recognition. This is where a sub-app earns the right to stand on
-              its own.
-              <br />
-              <strong>Tier 2 — the accent.</strong> <code style={MONO}>--primary</code> on CTAs,
-              selection, active nav. Medium chroma, ~2% of pixels. Already exists and already works.
-              <br />
-              <strong>Tier 3 — the surface.</strong> ~90% of pixels. Should stay near-neutral and{' '}
-              <em>identical across apps</em>.
+              <strong>
+                <code style={MONO}>muted-foreground / sidebar</code>
+              </strong>{' '}
+              fails, and it is supposed to. It is here as a guard rail: a tinted rail only works if
+              every component inside it uses the <code style={MONO}>--sidebar-*</code> foregrounds.
+              The moment something reaches for the generic muted token, it breaks — so the row is
+              kept visible rather than quietly excluded.
             </p>
             <p style={P}>
-              The reason this answers the original question is that the two goals live in different
-              tiers. <strong>&ldquo;Stands on its own&rdquo; is tier 1. &ldquo;Part of one
-              ecosystem&rdquo; is tier 3</strong> — and tier 3 does that job by being{' '}
-              <em>the same</em>, not by being themed. Rounds 1 and 2 tried to get both out of tier
-              3, which is why the harder it was pushed the worse it got: every increment spent on
-              making the pages differ was an increment spent making the suite look less like a
-              suite.
+              <strong>
+                <code style={MONO}>error / error-light ON BAND</code>
+              </strong>{' '}
+              is round 1&rsquo;s bug, reproduced deliberately. The same token passes on white and
+              fails on the band, because the tint is <code style={MONO}>rgba()</code> and composites
+              over whatever is behind it. Keeping the page white is what makes every other semantic
+              row safe; the band is the one place the hazard survives.
             </p>
           </div>
         </div>
@@ -2267,58 +1392,93 @@ export const Ecosystem: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 11 — Limits
+// 5 — Recipe + what this does not prove
 // ─────────────────────────────────────────────────────────────────────────────
 
-export const Limits: Story = {
+export const Recipe: Story = {
   render: () => (
-    <div style={PAGE}>
-      <div>
-        <h2 style={H2}>What this does not prove</h2>
-        <p style={P}>
-          A POC earns its keep by being explicit about its own edges. None of the below is
-          demonstrated here, and each is real work if this is adopted.
-        </p>
-      </div>
-      {[
-        [
-          'Portalled overlays escape the scope entirely',
-          'Dialog, Drawer, Popover, Tooltip, DropdownMenu, ContextMenu, Select, Combobox, HoverCard and Toaster all render into document.body — outside this subtree — so none of them inherit these tokens. That is already true of today’s data-theme subtree scoping; the POC only exposes it. The --popover surface here is a plain div for exactly that reason.',
-        ],
-        [
-          '--background is doing two jobs',
-          'It is the page surface AND the knockout white: the Switch thumb, the Slider thumb, Avatar’s status-dot and group rings, and the Tabs active indicator all use it as a cut-out, not as a page colour. Tinting it turns a white puck into a coloured one. Adoption needs a separate --surface-knockout token — a tokens.scss change this POC deliberately cannot make.',
-        ],
-        [
-          'The clean derivation needs new raw tokens',
-          'A custom property cannot reference itself, so every base value here is a hardcoded literal copied from tokens.scss. Real adoption needs a layer of raw neutrals with the semantic tokens derived from them — a refactor the POC sidesteps and cannot justify on its own.',
-        ],
-        [
-          'The contrast gate cannot cover this',
-          'scripts/contrast-check.mjs is a static regex parser. Theme scopes, var() indirection, color-mix evaluation and tints composited over a variable base all need either a browser or a real colour library. Until it is rewritten it prints a green pass on every one of these values — 49 pairings would become roughly 441.',
-        ],
-        [
-          'Light mode gains an elevation model it never had',
-          'Every component authored on the assumption that --card equals --background may show a seam. This story exercises about fifteen of fifty-nine.',
-        ],
-        [
-          'Charts stay unthemed',
-          '--chart-* is a neutral slate ramp and will read as un-branded sitting on a hued page.',
-        ],
-        [
-          'Untested conditions',
-          'forced-colors mode, prefers-contrast: more, print, nested POC scopes, and APCA — which weights light-text-on-light-tint very differently, and that is half of what this changes.',
-        ],
-        [
-          'Nobody has validated that this is wanted',
-          'The POC shows what is possible, not what is right. The strength slider is the closest it comes to asking.',
-        ],
-      ].map(([title, body]) => (
-        <div key={title}>
-          <h2 style={{ ...H2, fontSize: 'var(--text-base)' }}>{title}</h2>
-          <p style={P}>{body}</p>
+    <>
+      <PocStyle />
+      <div style={PAGE}>
+        <div>
+          <h2 style={H2}>The model, in three tiers</h2>
+          <p style={P}>
+            The original question had two halves that pull in opposite directions — each app should
+            stand on its own, and the whole thing should feel like one ecosystem. They are not in
+            conflict once you notice they live in <em>different tiers</em>.
+          </p>
+          <p style={P}>
+            <strong>Tier 1 — the mark.</strong> Maximum chroma, a fraction of a percent of the
+            pixels, no contrast constraint at all. This is where an app earns the right to stand on
+            its own.
+            <br />
+            <strong>Tier 2 — the accent and the chrome.</strong>{' '}
+            <code style={MONO}>--primary</code> on CTAs, selection and active nav; the rail; the
+            marketing band. Medium chroma, medium area, real constraints.
+            <br />
+            <strong>Tier 3 — the page.</strong> Most of the pixels. Stays white, and stays{' '}
+            <em>identical across every app</em>.
+          </p>
+          <p style={P}>
+            Tier 3 does the ecosystem work <strong>by being the same</strong>, not by being themed.
+            That is why the earlier rounds got worse the harder they pushed: every increment spent
+            making the pages differ was an increment spent making the suite look less like a suite.
+          </p>
         </div>
-      ))}
-    </div>
+
+        <div>
+          <h2 style={H2}>The whole stylesheet</h2>
+          <p style={P}>
+            Every selector contains <code style={MONO}>[data-theme-poc]</code>, an attribute that
+            appears nowhere else in the repo. At <code style={MONO}>--poc-str: 0</code> every mix
+            resolves to its literal base, so the recipe degrades to today exactly.
+          </p>
+          <pre
+            style={{
+              margin: 0,
+              padding: 'var(--p-4)',
+              background: 'var(--muted)',
+              borderRadius: 'var(--rounded-md)',
+              fontFamily: 'var(--font-family-mono)',
+              fontSize: 'var(--text-code)',
+              lineHeight: 'var(--leading-5)',
+              color: 'var(--foreground)',
+              overflowX: 'auto',
+              maxHeight: 520,
+            }}
+          >
+            {POC_CSS}
+          </pre>
+        </div>
+
+        <div>
+          <h2 style={H2}>What this does not prove</h2>
+          <p style={P}>
+            <strong>Portalled overlays escape the scope.</strong> Ten components — Dialog, Drawer,
+            Popover, Tooltip, DropdownMenu, ContextMenu, Select, Combobox, HoverCard, Toaster —
+            render into <code style={MONO}>document.body</code>, outside any themed subtree. That is
+            pre-existing with today&rsquo;s scoping; the POC only exposes it.
+            <br />
+            <strong>Adoption needs raw neutral tokens.</strong> A custom property cannot reference
+            itself, so the bases here are hardcoded literals. Real adoption needs a
+            <code style={MONO}> --surface-* </code>layer with the semantic tokens derived from it.
+            <br />
+            <strong>The contrast gate would need rewriting</strong> — theme-aware, with a{' '}
+            <code style={MONO}>var()</code> resolver and a <code style={MONO}>color-mix</code>{' '}
+            evaluator. Until then it prints a green pass over all of this.
+            <br />
+            <strong>Only two brands are exercised.</strong> dc and ec are the hardest pair, which
+            makes them a good test and a poor sample. The other six are not re-verified here.
+            <br />
+            <strong>Untested:</strong> forced-colors, <code style={MONO}>prefers-contrast</code>,
+            print, nested POC scopes, and APCA — which weights light-text-on-light-tint very
+            differently, and that is half of what this changes.
+            <br />
+            <strong>No designer or user validation.</strong> This shows what is possible, not what
+            is wanted.
+          </p>
+        </div>
+      </div>
+    </>
   ),
 };
