@@ -1125,7 +1125,308 @@ export const Marks: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4 — Audit
+// 4 — Hue budget
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Every brand, plus the Aiden surface, which is not a brand but competes for room. */
+const WHEEL = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
+
+/**
+ * The mark's mid stop is `oklch(0.63 0.21 h)` — fixed lightness and chroma, hue
+ * inherited. So at the mark level EVERY brand is reduced to a single number,
+ * its hue, and the only thing that can separate two marks is the angle between
+ * them. This story works out how much angle there is to go around.
+ */
+export const HueBudget: Story = {
+  render: function HueBudgetStory() {
+    const hostRef = useRef<HTMLDivElement>(null);
+    const [data, setData] = useState<{
+      brands: { code: string; hue: number; chroma: number; hex: string }[];
+      aiden: { hue: number; hex: string }[];
+      pairs: { a: string; b: string; gap: number; dE: number }[];
+      viable: string[];
+    } | null>(null);
+
+    useEffect(() => {
+      const host = hostRef.current;
+      if (!host) return;
+      const read = (code: string, css: string) => {
+        const scope = host.querySelector<HTMLElement>(`[data-w="${code}"]`);
+        const probe = scope?.firstElementChild as HTMLElement | undefined;
+        if (!probe) return null;
+        probe.style.backgroundColor = '';
+        probe.style.backgroundColor = css;
+        return toRGBA(getComputedStyle(probe).backgroundColor);
+      };
+      const hueOf = (c: [number, number, number, number]) => {
+        const [, a, b] = oklab(c);
+        return ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360;
+      };
+      const chromaOf = (c: [number, number, number, number]) => {
+        const [, a, b] = oklab(c);
+        return Math.hypot(a, b);
+      };
+      const hex = (c: [number, number, number, number]) =>
+        '#' + c.slice(0, 3).map((x) => Math.round(x).toString(16).padStart(2, '0')).join('');
+
+      const brands = WHEEL.map((code) => {
+        const p = read(code, 'var(--primary)');
+        return p
+          ? { code, hue: hueOf(p), chroma: chromaOf(p), hex: hex(p) }
+          : { code, hue: 0, chroma: 0, hex: '#000' };
+      });
+
+      // Aiden's three gradient stops, read from the real token.
+      const aidenProbe = host.querySelector<HTMLElement>('[data-w="db"]');
+      const ap = aidenProbe?.firstElementChild as HTMLElement | undefined;
+      const aiden: { hue: number; hex: string }[] = [];
+      if (ap) {
+        for (const stop of ['#8455f0', '#5a37e6', '#2c6dea']) {
+          const v = toRGBA(stop);
+          if (v) aiden.push({ hue: hueOf(v), hex: stop });
+        }
+      }
+
+      // Pairwise at the MARK MID stop — the level where chroma is equalised.
+      const mid = (h: number) => toRGBA(`oklch(0.63 0.21 ${h})`);
+      const pairs: { a: string; b: string; gap: number; dE: number }[] = [];
+      for (let i = 0; i < brands.length; i++) {
+        for (let j = i + 1; j < brands.length; j++) {
+          const A = mid(brands[i].hue);
+          const B = mid(brands[j].hue);
+          let gap = Math.abs(brands[i].hue - brands[j].hue);
+          if (gap > 180) gap = 360 - gap;
+          if (A && B) pairs.push({ a: brands[i].code, b: brands[j].code, gap, dE: deltaE(A, B) });
+        }
+      }
+      pairs.sort((x, y) => x.dE - y.dE);
+
+      // Sweep: which hues would clear 0.10 from EVERY brand and every Aiden stop?
+      const viableRuns: string[] = [];
+      const okHues: number[] = [];
+      for (let h = 0; h < 360; h += 1) {
+        const m = mid(h);
+        if (!m) continue;
+        // No self-exclusion escape here. An earlier version let a candidate skip
+        // the check against a brand sitting at its own hue, which made each
+        // existing brand's own hue report as "viable" — ec turned up as a
+        // one-degree run at 221. A hue occupied by a brand is the definition of
+        // not viable.
+        const clearsBrands = brands.every((b) => {
+          const o = mid(b.hue);
+          return !o || deltaE(m, o) >= 0.1;
+        });
+        const clearsAiden = aiden.every((a) => {
+          const o = toRGBA(a.hex);
+          return !o || deltaE(m, o) >= 0.1;
+        });
+        if (clearsBrands && clearsAiden) okHues.push(h);
+      }
+      let s: number | null = null;
+      let p: number | null = null;
+      okHues.forEach((h) => {
+        if (s === null) s = h;
+        else if (p !== null && h !== p + 1) {
+          viableRuns.push(`${s}°–${p}°`);
+          s = h;
+        }
+        p = h;
+      });
+      if (s !== null && p !== null) viableRuns.push(`${s}°–${p}°`);
+
+      setData({ brands, aiden, pairs, viable: viableRuns });
+    }, []);
+
+    const R = 150;
+    const CX = 190;
+    const CY = 190;
+    const pos = (hue: number, r: number) => ({
+      x: CX + r * Math.cos((hue * Math.PI) / 180),
+      y: CY - r * Math.sin((hue * Math.PI) / 180),
+    });
+
+    return (
+      <>
+        <PocStyle />
+        <div
+          ref={hostRef}
+          aria-hidden="true"
+          style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
+        >
+          {WHEEL.map((b) => (
+            <span key={b} data-w={b} data-theme={b} data-mode="light" data-theme-poc="">
+              <span />
+            </span>
+          ))}
+        </div>
+
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>The wheel is oversubscribed</h2>
+            <p style={P}>
+              The mark&rsquo;s mid stop is <code style={MONO}>oklch(0.63 0.21 h)</code> — fixed
+              lightness, fixed chroma, hue inherited. That is deliberate: it is what makes the eight
+              marks a family. But it also means that <strong>at the mark level every brand collapses
+              to a single number</strong>, its hue, and the only thing that can separate two marks
+              is the angle between them.
+            </p>
+            <p style={P}>
+              At that chroma, clearing ΔE 0.10 — the point where two things read as different
+              colours — needs about <strong>27.5° of separation</strong>. Eight brands need roughly
+              220° of the 360 available, which fits in principle. The problem is where they actually
+              sit.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: 'var(--p-8)', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+            <svg width={380} height={380} role="img" aria-label="Brand hues on the colour wheel">
+              <circle cx={CX} cy={CY} r={R} fill="none" stroke="var(--border)" strokeWidth={1} />
+              {/* the ±27.5° exclusion wedge around each brand */}
+              {data?.brands.map((b) => {
+                const a1 = pos(b.hue - 27.5, R);
+                const a2 = pos(b.hue + 27.5, R);
+                return (
+                  <path
+                    key={`w-${b.code}`}
+                    d={`M ${CX} ${CY} L ${a1.x} ${a1.y} A ${R} ${R} 0 0 0 ${a2.x} ${a2.y} Z`}
+                    fill={b.hex}
+                    opacity={0.13}
+                  />
+                );
+              })}
+              {/* Aiden's gradient span */}
+              {data?.aiden.map((a) => {
+                const q = pos(a.hue, R + 16);
+                return <circle key={a.hex} cx={q.x} cy={q.y} r={5} fill={a.hex} stroke="var(--card)" strokeWidth={1.5} />;
+              })}
+              {data?.brands.map((b) => {
+                const q = pos(b.hue, R * (0.35 + b.chroma * 2.4));
+                const lbl = pos(b.hue, R + 34);
+                return (
+                  <g key={b.code}>
+                    <line x1={CX} y1={CY} x2={q.x} y2={q.y} stroke={b.hex} strokeWidth={2} opacity={0.5} />
+                    <circle cx={q.x} cy={q.y} r={9} fill={b.hex} stroke="var(--card)" strokeWidth={2} />
+                    <text
+                      x={lbl.x}
+                      y={lbl.y}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      style={{ fontFamily: 'var(--font-family-mono)', fontSize: 12, fill: 'var(--foreground)' }}
+                    >
+                      {b.code}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+
+            <div style={{ minWidth: 280, flex: 1 }}>
+              <p style={{ ...P, marginTop: 0 }}>
+                Distance from the centre is the brand&rsquo;s <strong>chroma</strong>; the pale wedge
+                is its ±27.5° exclusion zone. Small dots outside the ring are the Aiden
+                surface&rsquo;s three gradient stops — not a brand, but competing for the same room.
+              </p>
+              <p style={P}>
+                Wherever two wedges overlap, those two marks cannot be told apart by colour. Note how
+                much of the blue-violet quadrant is double-covered, and how much of the wheel — the
+                warm half — is empty.
+              </p>
+              {data && (
+                <p style={{ ...P, marginBottom: 0 }}>
+                  Hues that would clear 0.10 from <em>every</em> existing brand and every Aiden stop:{' '}
+                  <strong style={{ color: 'var(--primary-text)' }}>
+                    {data.viable.length ? data.viable.join(', ') : 'none'}
+                  </strong>
+                  .
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <h2 style={H2}>The five tightest pairs, at the mark</h2>
+            <p style={P}>
+              Measured at <code style={MONO}>oklch(0.63 0.21 h)</code> per brand, so chroma is
+              equalised and only hue is doing the work.
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 560 }}>
+              <thead>
+                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pair</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>hue gap</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE</th>
+                </tr>
+              </thead>
+              <tbody>
+                {data?.pairs.slice(0, 6).map((p) => (
+                  <tr key={`${p.a}${p.b}`} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>
+                      {p.a} / {p.b}
+                    </td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>
+                      {p.gap.toFixed(0)}°
+                    </td>
+                    <td
+                      style={{
+                        ...MONO,
+                        padding: 'var(--p-2)',
+                        textAlign: 'right',
+                        fontWeight: 'var(--font-semibold)',
+                        color: p.dE < 0.1 ? 'var(--error)' : 'var(--success)',
+                      }}
+                    >
+                      {p.dE.toFixed(3)}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <h2 style={H2}>Why the reverse arc was tested and rejected</h2>
+            <p style={P}>
+              The obvious fix for db running into the Aiden surface was to flip its hue arc — send
+              the mark toward blue instead of violet. Measured, it does nothing:{' '}
+              <strong>0.061 against Aiden either way</strong>. The collision is at the{' '}
+              <em>mid</em> stop, and the arc does not move the mid stop — the mid is pinned to the
+              brand hue by design. Flipping the sign rotates the two ends and leaves the problem
+              exactly where it was.
+            </p>
+            <p style={P}>
+              It also swung db&rsquo;s dark end onto ec&rsquo;s dark end at{' '}
+              <strong style={{ color: 'var(--error)' }}>0.017</strong> — the two would have been
+              indistinguishable. Raising the whole lightness ramp instead peaked at 0.089, still
+              short, and cost dc/ec. Neither lever reaches the mid stop, which is the only thing
+              that matters.
+            </p>
+          </div>
+
+          <div>
+            <h2 style={H2}>What this leaves</h2>
+            <p style={P}>
+              <strong>1. Let the glyph carry the close pairs.</strong> Word and Outlook are both
+              blue and nobody confuses them, because silhouette does the work and colour only
+              supports it. Cheapest, and it is what the reference set actually does. The sweep above
+              turns this from a preference into the default: there is no hue assignment that
+              separates eight marks by colour alone without moving most of the palette.
+              <br />
+              <strong>2. Re-space the palette.</strong> 8 × 27.5° fits inside 360°, so it is
+              genuinely achievable — but it means moving most brand hues into the empty warm half,
+              not adjusting one. Large, and outward-facing into Figma.
+              <br />
+              <strong>3. Per-brand mark chroma.</strong> Tested: it fixes db and pushes dc/ec back
+              to 0.066, because the primaries were darkened for AA and have little chroma to scale.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 5 — Audit
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Pairing = { label: string; fg: string; bg: string; onBand?: boolean; note?: string };
