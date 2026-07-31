@@ -17,6 +17,17 @@ const meta: Meta<typeof Drawer> = {
         'lock and Escape handling, and unlike the other portals it animates out ' +
         'before unmounting.',
       tags: ['compound', 'modal', '4 sides'],
+      motion: {
+        notes:
+          'Ten keyframes — an in/out pair per side, plus the overlay. They use LITERAL transforms rather than ' +
+          '`var()`: a `var()` inside `@keyframes` parks the end value but never fires `animationend`, and the ' +
+          'panel would stay mounted forever. The unmount handler filters on `animationName` because animation ' +
+          'events bubble.',
+        moments: [
+          { trigger: 'Open', description: 'Slides in from `side` over `--duration-slow`; the scrim fades with it.' },
+          { trigger: 'Close', description: 'Plays the matching out-keyframe, then unmounts — with a ~400ms timer as the safety net that guarantees it can always close.' },
+        ],
+      },
       changelog: [
         {
           date: '2026-07-29',
