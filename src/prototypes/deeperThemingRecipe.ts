@@ -173,11 +173,28 @@ export const POC_CSS = `
      back, the dark end lands a good way forward — and that arc is most of what
      makes them look rich instead of flat.
 
-     The family guarantee survives intact, and is worth restating precisely:
-     every mark uses identical lightness values, identical chroma values, and an
-     identical hue ARC (-12, 0, +26 relative to the brand). Only the ANCHOR
-     moves. So the marks are the same object rendered at different points on the
-     wheel — which is exactly the relationship the reference set has.
+     CHROMA STAYS PINNED, and an attempt to make it RELATIVE was reverted —
+     recorded here because the failure is instructive.
+
+     Pinning chroma means a deliberately muted brand still gets a vivid mark,
+     which looked wrong once db moved to the Teams-like desaturated purple: the
+     primary separated cleanly from the Aiden surface (0.055 -> 0.114) while its
+     MARK stayed 0.061 away, because the mark ignores the brand's chroma. So the
+     stops were changed to multipliers of the brand's own chroma (x0.85 / x1.05
+     / x0.95), which fixed exactly that — db's mark stops went to 0.259 / 0.122
+     / 0.162 against Aiden, all clear.
+
+     IT BROKE THE THING THE POC EXISTS FOR. The eight primaries were darkened to
+     clear AA, so their chroma is only ~0.10-0.13; multiplying that produced
+     marks at C 0.08-0.11 instead of the pinned 0.17-0.21. Every mark lost its
+     vividness, and dc/ec — the closest pair, the whole reason for this work —
+     fell from 0.129 to 0.066, back under the "reads as a different colour"
+     threshold. A fix aimed at one pair regressed the pair that matters most.
+
+     The lesson generalises: the mark is the surface where colour is FREE, and
+     tying it to the primary re-imports the primary's AA constraint through the
+     back door. Marks should be authored against their own budget.
+     db's mark still sits 0.061 from an Aiden stop — an open item, not solved.
 
      The mid stop stays exactly on the brand hue, so the dominant colour of the
      mark is still the brand's own. The arc is decoration around it, not a
@@ -242,6 +259,39 @@ export const POC_CSS = `
      Kept to the two loudest surfaces only; grain over body copy is noise. */
   --poc-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
 }
+
+/* ── db, proposed: a Teams-like muted purple ────────────────────────────────
+   PROPOSAL ONLY. tokens.scss is NOT modified — --db-primary there is still
+   #6063f1. This overrides --primary inside the POC scope so the change can be
+   looked at before it is committed to anywhere real. Specificity is (0,3,0),
+   which beats the (0,1,0) [data-theme='db'] scope; the derived --primary-hover
+   / -soft / -text family follows automatically, because those are declared with
+   color-mix over var(--primary) and resolve against the final cascaded value.
+
+   WHY THIS COLOUR. db today (#6063f1) is an indigo that straddles blue and
+   violet, and it sits in the most crowded part of the wheel — 5 degrees from
+   the Aiden surface, 14 from ir, 16 from rm. Every attempt to separate it by
+   HUE runs into one of the three.
+
+   The Teams colour solves it by giving up chroma instead of hue. At C 0.104
+   against everything else's 0.21-0.25 it is the MUTED one, and that reads as
+   distinct even at a near-identical hue. Measured against today:
+
+                       today    proposed
+     db vs aiden        0.088  ->  0.143
+     db vs ir           0.061  ->  0.121
+     db vs rm           0.083  ->  0.147
+     white text on it    4.61  ->   5.38   (today's barely clears AA)
+
+   It fixes all three collisions at once, and improves the contrast headroom,
+   which is the opposite of the usual trade. It also earns its "sophisticated"
+   read honestly — muted is why the Teams tile looks expensive next to the
+   saturated ones around it.
+
+   Dark partner is derived at the same lightness as today's db dark (#818cf8)
+   with the Teams hue and chroma, so the light/dark relationship is unchanged. */
+[data-theme-poc][data-theme='db'][data-mode='light'] { --primary: #6264a7; }
+[data-theme-poc][data-theme='db'][data-mode='dark']  { --primary: #8d90d7; }
 
 [data-theme-poc] .poc-mark {
   display: grid;
