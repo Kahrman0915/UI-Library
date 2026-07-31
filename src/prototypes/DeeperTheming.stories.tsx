@@ -1,7 +1,20 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { Plus, Search, Sparkles } from 'lucide-react';
+import {
+  Calendar,
+  ChartColumn,
+  CreditCard,
+  FileText,
+  LifeBuoy,
+  MessageSquare,
+  Package,
+  Plus,
+  Search,
+  Sparkles,
+  Users,
+} from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import {
   Alert,
   Avatar,
@@ -82,7 +95,15 @@ const POC_CSS = `
      Light mode currently collapses background/card/popover all to #ffffff and
      separates them with a hairline alone; this gives it the elevation model
      dark mode already has. */
-  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(22% * var(--poc-str)), #ffffff);
+  /* Round 3 raised this from 22% to 40% — the round-1 tint was too faint to
+     evaluate by eye, which is a fair criticism of a story whose whole job is to
+     be looked at. It does NOT change the conclusion: sweeping the tint from 22%
+     to 70% moves the closest brand pair from ΔE 0.004 to only 0.014, still
+     three times under the "tellable apart" threshold, while dragging
+     error-on-tint from 4.08 to 2.89. The page cannot be bumped into carrying
+     identity — it can only be bumped into being unreadable. 40% is chosen as
+     "clearly visible, still safe", not as a step toward a solution. */
+  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #ffffff);
 
   /* LEVER 2 — DEPTH. Round 1 measured the honest limit of hue: only ~10% of a
      primary's chroma survives into a page pale enough to carry body text, so two
@@ -99,11 +120,44 @@ const POC_CSS = `
 
   /* --accent is near-white and is the row/menu hover surface, so it takes the
      most tint — it is where the hue reads best without touching text. */
-  --accent:    color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #f1f5f9);
-  --secondary: color-mix(in srgb, var(--poc-tint) calc(22% * var(--poc-str)), #e2e8f0);
-  --input:     color-mix(in srgb, var(--poc-tint) calc(22% * var(--poc-str)), #e2e8f0);
+  --accent:    color-mix(in srgb, var(--poc-tint) calc(45% * var(--poc-str)), #f1f5f9);
+  --secondary: color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #e2e8f0);
+  --input:     color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #e2e8f0);
   /* Most conservative number in the table — --muted carries the tightest pairing. */
-  --muted:     color-mix(in srgb, var(--poc-tint) calc(12% * var(--poc-str)), #cbd5e1);
+  --muted:     color-mix(in srgb, var(--poc-tint) calc(18% * var(--poc-str)), #cbd5e1);
+
+  /* ROUND 1'S HEADLINE FAILURE, FIXED.
+     The semantic -light tints ship as rgba() and are composited by the browser
+     over whatever is behind them — which the whole system assumes is white.
+     Tinting the page silently invalidated that: error-on-error-light fell from
+     4.72 to 4.08 on all eight brands, and scripts/contrast-check.mjs could not
+     see it because it models the tints as "over --background" and returns null
+     for color-mix anyway.
+
+     The fix is to stop compositing and start DERIVING, opaque, so the alert
+     keeps its own surface instead of inheriting whatever is behind it. This is
+     what real adoption would have to do to every translucent token.
+
+     THREE WAYS THIS WAS GOT WRONG FIRST, all caught by measuring:
+     (a) mixed at 10% when the shipped tints are rgba(..., 0.06) — 6%. Too much
+         pigment drops error-on-error-light straight through the floor.
+     (b) mixed into var(--background), i.e. into the TINTED page, which stacks
+         the brand tint under the semantic tint and darkens it twice: 2.99.
+     (c) the whole block was written AFTER this comment had already been closed,
+         so it was raw text in the stylesheet and the parser discarded all four
+         declarations. Three of the four then "matched today exactly" — which
+         read as a perfect result and was actually proof that nothing applied.
+         An override that agrees with the baseline is indistinguishable from an
+         override that never ran; only the one value that was SUPPOSED to move
+         (error, deliberately re-derived) exposed it. Hence the structural check
+         in the commit message rather than a delimiter count: balanced counts
+         were reported as healthy while this block was dead.
+     The right base is the UNTINTED page literal, because that is what today's
+     rgba() actually composites against. */
+  --error-light:   color-mix(in srgb, var(--error)   6%, #ffffff);
+  --success-light: color-mix(in srgb, var(--success) 6%, #ffffff);
+  --warning-light: color-mix(in srgb, var(--warning) 6%, #ffffff);
+  --info-light:    color-mix(in srgb, var(--info)    6%, #ffffff);
 
   /* Borders use RAW --primary, not the stock: they are not text backgrounds so
      there is no contrast budget to protect, and the stock would wash the hue out
@@ -173,6 +227,13 @@ const POC_CSS = `
   --muted:      color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #334155);
   --input:      color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #475569);
 
+  /* Same derivation as light — 6% over the UNTINTED page literal, see the note
+     there for the two ways this was got wrong first. */
+  --error-light:   color-mix(in srgb, var(--error)   6%, #0f172a);
+  --success-light: color-mix(in srgb, var(--success) 6%, #0f172a);
+  --warning-light: color-mix(in srgb, var(--warning) 6%, #0f172a);
+  --info-light:    color-mix(in srgb, var(--info)    6%, #0f172a);
+
   --border:       color-mix(in srgb, var(--primary) calc(22% * var(--poc-str)), #64748b);
   --border-hover: color-mix(in srgb, var(--primary) calc(28% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
@@ -226,6 +287,62 @@ const POC_CSS = `
     oklch(from var(--primary) l c calc(h - 18)) 0%,
     var(--primary) 50%,
     oklch(from var(--primary) calc(l - 0.07) c calc(h + 18)) 100%);
+}
+
+/* ── The APP MARK ───────────────────────────────────────────────────────────
+   Rounds 1 and 2 spent the entire budget on the page, which is the WORST place
+   to spend it: the biggest area, the tightest contrast budget, and the lowest
+   salience per pixel. The mark is the opposite of all three — it is tiny, it
+   has no text on it, so it has NO contrast constraint at all, and it is the
+   thing a user actually recognises an app by. It is the one surface in the
+   whole UI where colour is free.
+
+   WHY THE EIGHT READ AS SIBLINGS. Lightness and chroma are PINNED to literals
+   and only the hue is inherited from the brand:
+
+       oklch(from var(--primary) 0.78 0.16 h)
+                                  ^    ^   ^
+                                  |    |   inherited — the only thing that varies
+                                  |    pinned chroma
+                                  pinned lightness
+
+   The INTENT is that every mark occupies an identical lightness and chroma
+   envelope and differs only in hue — family resemblance as a mechanical
+   property rather than a stylistic one.
+
+   IT IS ONLY MECHANICAL INSIDE THE sRGB GAMUT, and that caveat is not small.
+   oklch(0.62 0.21 h) is unreachable in sRGB at many hues, so the browser gamut-
+   maps it, and gamut mapping moves L and C. Measured across the eight brands:
+
+       C = 0.21   L* spread 0.0436   chroma spread 0.0907   heavily clipped
+       C = 0.18   L* spread 0.0302   chroma spread 0.0631   clipped
+       C = 0.13   L* spread 0.0087   chroma spread 0.0195   just clipping
+       C = 0.11   L* spread 0.0021   chroma spread 0.0016   IN GAMUT
+
+   So the guarantee is real at C <= 0.11 and decays above it. This POC keeps the
+   vivid 0.21 on purpose — muted marks defeat the point, and the eight still read
+   as a set — but the honest framing is "one recipe, gamut permitting", not "one
+   envelope, guaranteed". Dropping to 0.11 buys a provable envelope at the cost
+   of the vividness; display-p3 would buy both. That is an owner's call, and the
+   AppMark story prints the numbers for whichever value is set here. */
+
+/* Relative colour syntax is a newer browser floor than color-mix — Chrome 119+,
+   Safari 16.4+, Firefox 128+. Flagged, not free. On the MAIN brand (neutral
+   slate, chroma ~0) the hue is undefined and the mark renders neutral grey,
+   which is arguably exactly right for the parent brand. */
+[data-theme-poc] {
+  --poc-mark: linear-gradient(140deg,
+    oklch(from var(--primary) 0.78 0.16 h) 0%,
+    oklch(from var(--primary) 0.62 0.21 h) 55%,
+    oklch(from var(--primary) 0.46 0.18 h) 100%);
+}
+[data-theme-poc] .poc-mark {
+  background-image: var(--poc-mark);
+  color: #ffffff;
+  display: grid;
+  place-items: center;
+  border-radius: var(--rounded-xl);
+  box-shadow: var(--shadow-sm);
 }
 
 /* background-image, not background: the component's own background-color
@@ -379,6 +496,32 @@ const COLLISIONS: [Brand, Brand][] = [
   ['db', 'ir'],
   ['nb', 'dc'],
   ['rm', 'db'],
+];
+
+/**
+ * The eight sub-apps.
+ *
+ * Labelled by their two-letter CODE, never by a product name — CLAUDE.md
+ * records that expanding these codes was undone once already. The icons are
+ * illustrative only: they exist to show that eight marks built from one recipe
+ * read as a set, not to assign a real glyph to a real product.
+ */
+const APPS: { brand: Brand; Icon: LucideIcon }[] = [
+  { brand: 'db', Icon: ChartColumn },
+  { brand: 'dc', Icon: FileText },
+  { brand: 'dr', Icon: MessageSquare },
+  { brand: 'ec', Icon: Calendar },
+  { brand: 'ir', Icon: CreditCard },
+  { brand: 'nb', Icon: Package },
+  { brand: 'ph', Icon: Users },
+  { brand: 'rm', Icon: LifeBuoy },
+];
+
+/** The three gradient stops of the mark, so they can be measured individually. */
+const MARK_STOPS = [
+  'oklch(from var(--primary) 0.78 0.16 h)',
+  'oklch(from var(--primary) 0.62 0.21 h)',
+  'oklch(from var(--primary) 0.46 0.18 h)',
 ];
 
 /** The levers, cumulative — each row adds one to the row above it. */
@@ -1772,7 +1915,359 @@ export const SeparationScoreboard: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 9 — Limits
+// 9 — App mark  (round 3)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** Mark measurement: are the eight siblings, and do they actually separate? */
+function useMarkAudit() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [d, setD] = useState<{
+    stops: { l: number[]; c: number[]; h: number[] }[];
+    pairs: { pair: string; mark: number; page: number }[];
+  }>({ stops: [], pairs: [] });
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const read = (brand: Brand, css: string) => {
+      const scope = host.querySelector<HTMLElement>(`[data-m="${brand}"]`);
+      const probe = scope?.firstElementChild as HTMLElement | undefined;
+      if (!probe) return null;
+      probe.style.backgroundColor = '';
+      probe.style.backgroundColor = css;
+      return toRGBA(getComputedStyle(probe).backgroundColor);
+    };
+
+    const stops = MARK_STOPS.map((css) => {
+      const l: number[] = [];
+      const c: number[] = [];
+      const h: number[] = [];
+      for (const { brand } of APPS) {
+        const v = read(brand, css);
+        if (!v) continue;
+        const [L, A, B] = oklab(v);
+        l.push(L);
+        c.push(Math.hypot(A, B));
+        h.push((((Math.atan2(B, A) * 180) / Math.PI) + 360) % 360);
+      }
+      return { l, c, h };
+    });
+
+    const pairs = COLLISIONS.map(([a, b]) => {
+      const ma = read(a, MARK_STOPS[1]);
+      const mb = read(b, MARK_STOPS[1]);
+      const pa = read(a, 'var(--background)');
+      const pb = read(b, 'var(--background)');
+      return {
+        pair: `${a} / ${b}`,
+        mark: ma && mb ? deltaE(ma, mb) : NaN,
+        page: pa && pb ? deltaE(pa, pb) : NaN,
+      };
+    });
+
+    setD({ stops, pairs });
+  }, []);
+
+  const probes = (
+    <div
+      ref={hostRef}
+      aria-hidden="true"
+      style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
+    >
+      {APPS.map(({ brand }) => (
+        <span
+          key={brand}
+          data-m={brand}
+          data-theme={brand}
+          data-theme-poc=""
+          data-mode="light"
+          style={{ '--poc-str': 1 } as CSSProperties}
+        >
+          <span />
+        </span>
+      ))}
+    </div>
+  );
+
+  return { probes, ...d };
+}
+
+const spread = (xs: number[]) => (xs.length ? Math.max(...xs) - Math.min(...xs) : NaN);
+
+function Mark({ Icon, size = 56 }: { Icon: LucideIcon; size?: number }) {
+  return (
+    <span className="poc-mark" style={{ width: size, height: size }}>
+      <Icon size={Math.round(size * 0.5)} strokeWidth={2} />
+    </span>
+  );
+}
+
+export const AppMark: Story = {
+  render: function AppMarkStory() {
+    const { probes, stops, pairs } = useMarkAudit();
+    return (
+      <>
+        <PocStyle />
+        {probes}
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>Put the colour where colour is free</h2>
+            <p style={P}>
+              Rounds 1 and 2 spent the whole budget on the page — the largest surface, the tightest
+              contrast budget, the lowest salience per pixel. The mark is the inverse of all three.
+              Nothing sits on top of it, so it has <strong>no contrast constraint at all</strong>,
+              and it is what people actually recognise an app by. This is the Office-icon move: one
+              silhouette language, one gradient treatment, eight hues.
+            </p>
+          </div>
+
+          <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
+            {APPS.map(({ brand, Icon }) => (
+              <div key={brand} style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+                <Scope brand={brand} poc strength={1}>
+                  <Mark Icon={Icon} size={72} />
+                </Scope>
+                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <h2 style={H2}>Why they read as a family — and it is not taste</h2>
+            <p style={P}>
+              Lightness and chroma are pinned to literals; only the hue is inherited. The intent is
+              that the eight marks share one lightness and chroma envelope and differ only in hue.
+              Below is the spread across all eight, per gradient stop — the design stated as a
+              measurement rather than an intention.
+            </p>
+            <p style={P}>
+              <strong>And the measurement partly refutes it.</strong> At the vivid chroma this POC
+              uses, <code style={MONO}>oklch(0.62 0.21 h)</code> is outside sRGB at many hues, so
+              the browser gamut-maps it — and gamut mapping moves exactly the two things that were
+              supposed to be pinned. Measured: chroma spread is 0.0907 at C=0.21, 0.0195 at 0.13,
+              and <strong>0.0016 at 0.11</strong>, where every hue is finally in gamut. The
+              guarantee is real only below ~0.11. Vivid marks and a provable envelope are a genuine
+              trade here; display-p3 would buy both.
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
+              <thead>
+                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Gradient stop</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>L* spread</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>chroma spread</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>hue spread</th>
+                </tr>
+              </thead>
+              <tbody>
+                {stops.map((s, i) => (
+                  <tr key={i} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>stop {i + 1}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{spread(s.l).toFixed(4)}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{spread(s.c).toFixed(4)}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--success)' }}>
+                      {spread(s.h).toFixed(0)}°
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <h2 style={H2}>And it separates the pairs the page could not</h2>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)' }}>
+              <thead>
+                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pair</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE as pages</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ΔE as marks</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>×</th>
+                </tr>
+              </thead>
+              <tbody>
+                {pairs.map((p) => (
+                  <tr key={p.pair} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{p.pair}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
+                      {p.page.toFixed(3)}
+                    </td>
+                    <td
+                      style={{
+                        ...MONO,
+                        padding: 'var(--p-2)',
+                        textAlign: 'right',
+                        color: p.mark >= 0.1 ? 'var(--success)' : 'var(--foreground)',
+                        fontWeight: 'var(--font-semibold)',
+                      }}
+                    >
+                      {p.mark.toFixed(3)}
+                    </td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
+                      {(p.mark / p.page).toFixed(0)}×
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+            <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+              Three to thirteen times the separation, at a fraction of the pixels — because the mark
+              is the one surface that never has to be legible underneath anything. But read the
+              column honestly: <strong>only dc/ec clears 0.10.</strong> The mark{' '}
+              <em>amplifies</em> a hue difference; it cannot <em>create</em> one. db/ir are 14°
+              apart and rm/db 16°, and no amount of saturation fixes that.
+            </p>
+            <p style={P}>
+              Which is exactly what the Office comparison predicts, and it is the useful half of it:{' '}
+              <strong>Word and Outlook are both blue.</strong> Nobody confuses them, because the
+              glyph carries the identity and the colour only supports it. Hue is a bounded resource
+              — eight brands on one wheel, minus the semantic hues — but silhouette is unbounded and
+              free. For the close-hue pairs, the answer is a more distinct mark, not a more
+              saturated one.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 10 — Ecosystem  (round 3)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const Ecosystem: Story = {
+  render: function EcosystemStory() {
+    const [tinted, setTinted] = useState(false);
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
+
+    const Shell = ({ brand, Icon }: { brand: Brand; Icon: LucideIcon }) => (
+      <Scope brand={brand} poc strength={tinted ? 1 : 0} mode={mode}>
+        <div
+          style={{
+            background: 'var(--background)',
+            border: 'var(--border-w-100) solid var(--border)',
+            borderRadius: 'var(--rounded-lg)',
+            overflow: 'hidden',
+          }}
+        >
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 'var(--p-3)',
+              padding: 'var(--p-4)',
+              background: 'var(--card)',
+              borderBottom: 'var(--border-w-100) solid var(--border)',
+            }}
+          >
+            <Mark Icon={Icon} size={36} />
+            <strong style={{ flex: 1, fontSize: 'var(--text-sm)', ...MONO }}>{brand}</strong>
+            <Avatar id={`eco-${brand}-av`} fallback="KM" size="sm" />
+          </div>
+          <div style={{ padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)' }}>
+            <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>1,204</div>
+            <Progress id={`eco-${brand}-pr`} value={62} />
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              <Badge id={`eco-${brand}-b`} variant="default" label="Active" />
+              <Badge id={`eco-${brand}-b2`} variant="outline" label="Synced" />
+            </div>
+            <Button id={`eco-${brand}-cta`} label="Open" size="sm" />
+          </div>
+        </div>
+      </Scope>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>One suite, eight apps</h2>
+            <p style={P}>
+              The switcher below is the ecosystem in one view — eight marks built from one recipe,
+              sharing a lightness and chroma envelope, differing only in hue. This is the surface
+              that says <em>which app</em>. Everything else is the surface that says{' '}
+              <em>same company</em>.
+            </p>
+            <Scope brand="" poc strength={0} mode={mode}>
+              <div
+                style={{
+                  display: 'flex',
+                  gap: 'var(--p-4)',
+                  flexWrap: 'wrap',
+                  padding: 'var(--p-5)',
+                  background: 'var(--card)',
+                  border: 'var(--border-w-100) solid var(--border)',
+                  borderRadius: 'var(--rounded-lg)',
+                }}
+              >
+                {APPS.map(({ brand, Icon }) => (
+                  <div key={brand} style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+                    <Scope brand={brand} poc strength={0}>
+                      <Mark Icon={Icon} size={48} />
+                    </Scope>
+                    <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
+                  </div>
+                ))}
+              </div>
+            </Scope>
+          </div>
+
+          <div>
+            <h2 style={H2}>The same shell, four times</h2>
+            <p style={P}>
+              Identical layout, identical type, identical neutrals. Only the mark and the accent
+              change. Toggle the page tint on and ask which version feels more like{' '}
+              <strong>one company</strong> — the shared shell is doing the ecosystem work, and
+              tinting each page differently actively fights it.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', marginBottom: 'var(--p-5)' }}>
+              <Switch id="eco-tint" label="Tint each page by brand" checked={tinted} onCheckedChange={setTinted} />
+              <Switch
+                id="eco-mode"
+                label="Dark mode"
+                checked={mode === 'dark'}
+                onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
+              />
+            </div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0,1fr))', gap: 'var(--p-4)' }}>
+              {APPS.slice(0, 4).map((a) => (
+                <Shell key={a.brand} {...a} />
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 style={H2}>The tier model this argues for</h2>
+            <p style={P}>
+              <strong>Tier 1 — the mark.</strong> Maximum chroma, ~0.1% of pixels, no contrast
+              constraint. Carries recognition. This is where a sub-app earns the right to stand on
+              its own.
+              <br />
+              <strong>Tier 2 — the accent.</strong> <code style={MONO}>--primary</code> on CTAs,
+              selection, active nav. Medium chroma, ~2% of pixels. Already exists and already works.
+              <br />
+              <strong>Tier 3 — the surface.</strong> ~90% of pixels. Should stay near-neutral and{' '}
+              <em>identical across apps</em>.
+            </p>
+            <p style={P}>
+              The reason this answers the original question is that the two goals live in different
+              tiers. <strong>&ldquo;Stands on its own&rdquo; is tier 1. &ldquo;Part of one
+              ecosystem&rdquo; is tier 3</strong> — and tier 3 does that job by being{' '}
+              <em>the same</em>, not by being themed. Rounds 1 and 2 tried to get both out of tier
+              3, which is why the harder it was pushed the worse it got: every increment spent on
+              making the pages differ was an increment spent making the suite look less like a
+              suite.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 11 — Limits
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const Limits: Story = {
