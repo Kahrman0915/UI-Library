@@ -1426,7 +1426,241 @@ export const HueBudget: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 5 — Audit
+// 5 — A clean-slate palette for four sub-apps
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Designed from scratch for FOUR sub-apps rather than eight, with Aiden kept.
+ *
+ * Four brands need ~110 degrees of the 360 available, so the crowding that
+ * makes the current eight collide simply is not present. What binds instead is
+ * GAMUT: at a lightness dark enough to carry white text, different hues can
+ * hold wildly different amounts of chroma, and that decides which hues are
+ * usable as a brand at all.
+ *
+ * All four are tuned to white-text contrast ~5.0 rather than to a fixed
+ * lightness. Equal contrast is what makes them read as peers — a set tuned to
+ * fixed lightness has the yellow shouting and the blue whispering.
+ */
+const PALETTE4 = [
+  { name: 'Blue', hue: 248, light: '#2f73ae', dark: '#368cd6', use: 'the default, most-used app' },
+  { name: 'Green', hue: 150, light: '#12803c', dark: '#229b4d', use: 'anything about health or completion' },
+  { name: 'Amber', hue: 75, light: '#96660f', dark: '#b47d1f', use: 'the warm one; clears warning at 38°' },
+  { name: 'Rose', hue: 352, light: '#b4497e', dark: '#dc579a', use: 'the loudest slot — give it the app that needs presence' },
+];
+
+/** Today's Aiden, verbatim from tokens.scss, and the rotated proposal. */
+const AIDEN_TODAY = ['#8455f0', '#5a37e6', '#2c6dea'];
+const AIDEN_PROPOSED = ['#c51cdd', '#8919ec', '#502df7'];
+
+/** Chroma ceiling per hue at white-text-safe lightness — measured, not guessed. */
+const GAMUT_CEILING: [number, string, number][] = [
+  [75, 'amber', 0.124],
+  [150, 'green', 0.139],
+  [196, 'teal', 0.087],
+  [248, 'blue', 0.14],
+  [290, 'violet', 0.245],
+  [342, 'magenta', 0.237],
+];
+
+export const FourBrands: Story = {
+  render: function FourBrandsStory() {
+    const [aiden, setAiden] = useState<'today' | 'proposed'>('proposed');
+    const stops = aiden === 'today' ? AIDEN_TODAY : AIDEN_PROPOSED;
+    const grad = `linear-gradient(135deg, ${stops[0]} 0%, ${stops[1]} 50%, ${stops[2]} 100%)`;
+
+    const Swatch = ({ c, label, sub }: { c: string; label: string; sub?: string }) => (
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <div
+          style={{
+            background: c,
+            height: 96,
+            borderRadius: 'var(--rounded-lg)',
+            display: 'grid',
+            placeItems: 'center',
+            color: '#ffffff',
+            fontWeight: 'var(--font-semibold)',
+            fontSize: 'var(--text-sm)',
+            boxShadow: 'var(--shadow-sm)',
+          }}
+        >
+          {label}
+        </div>
+        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{sub ?? c}</span>
+      </div>
+    );
+
+    return (
+      <div style={PAGE}>
+        <div>
+          <h2 style={H2}>Four sub-apps, designed from scratch</h2>
+          <p style={P}>
+            Aiden keeps violet. The parent brand stays neutral slate — the{' '}
+            <em>absence</em> of a theme is what makes these read as sub-apps of one thing rather
+            than four unrelated products.
+          </p>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px,1fr))', gap: 'var(--p-4)' }}>
+            {PALETTE4.map((b) => (
+              <Swatch key={b.name} c={b.light} label={b.name} sub={`${b.light} · ${b.hue}°`} />
+            ))}
+          </div>
+          <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+            Worst pair is <strong>Green/Amber at ΔE 0.155</strong> — every pair comfortably past the
+            0.10 line, against 0.043 for the tightest pair in the current eight. All four sit at
+            white-text contrast ≈ 5.0, so none is louder than another and all clear AA by the same
+            margin.
+          </p>
+        </div>
+
+        <div>
+          <h2 style={H2}>Aiden: rotated, not narrowed</h2>
+          <p style={P}>
+            My first instinct was to narrow Aiden to pure violet so the blue sub-brand had room.
+            That was wrong — <strong>shrinking the hue travel is exactly what would kill the
+            magic</strong>, because the travel is the effect. Rotating the arc keeps it and still
+            frees blue.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--p-3)', marginBottom: 'var(--p-5)', flexWrap: 'wrap' }}>
+            <Chip id="a4-today" label="Aiden today" active={aiden === 'today'} onClick={() => setAiden('today')} />
+            <Chip id="a4-prop" label="Aiden rotated" active={aiden === 'proposed'} onClick={() => setAiden('proposed')} />
+          </div>
+          <div
+            style={{
+              background: grad,
+              height: 150,
+              borderRadius: 'var(--rounded-xl)',
+              display: 'grid',
+              placeItems: 'center',
+              color: '#ffffff',
+              boxShadow: 'var(--shadow-md)',
+            }}
+          >
+            <div style={{ textAlign: 'center', display: 'grid', gap: 'var(--p-1)' }}>
+              <strong style={{ fontSize: 'var(--text-xl)' }}>Ask Aiden</strong>
+              <span style={{ ...MONO, opacity: 0.9 }}>{stops.join('  →  ')}</span>
+            </div>
+          </div>
+          <div style={{ display: 'flex', gap: 'var(--p-6)', marginTop: 'var(--p-4)', flexWrap: 'wrap' }}>
+            <div>
+              <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>hue travel</div>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '30°' : '44°'}</strong>
+            </div>
+            <div>
+              <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>worst stop, white text</div>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '4.63' : '4.58'}</strong>
+            </div>
+            <div>
+              <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>Blue sub-brand clearance</div>
+              <strong
+                style={{
+                  fontSize: 'var(--text-2xl)',
+                  color: aiden === 'today' ? 'var(--error)' : 'var(--success)',
+                }}
+              >
+                {aiden === 'today' ? '0.086' : '0.186'}
+              </strong>
+            </div>
+          </div>
+          <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+            The rotated version runs <strong>magenta → violet → blurple</strong> instead of violet →
+            blue. It has <em>more</em> travel than today, not less, and it moves into the two
+            richest hues in sRGB, so it is more saturated and more iridescent rather than less. It
+            gives up only the blue end — which is the one stop that was costing a sub-brand.
+          </p>
+        </div>
+
+        <div>
+          <h2 style={H2}>Every brand against both Aidens</h2>
+          <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 560 }}>
+            <thead>
+              <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Brand</th>
+                <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>vs Aiden today</th>
+                <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>vs Aiden rotated</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Blue', 0.086, 0.186],
+                ['Green', 0.286, 0.374],
+                ['Amber', 0.312, 0.336],
+                ['Rose', 0.196, 0.141],
+              ].map(([n, a, b]) => (
+                <tr key={String(n)} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                  <td style={{ padding: 'var(--p-2)' }}>{n}</td>
+                  {[a, b].map((v, i) => (
+                    <td
+                      key={i}
+                      style={{
+                        ...MONO,
+                        padding: 'var(--p-2)',
+                        textAlign: 'right',
+                        fontWeight: 'var(--font-semibold)',
+                        color: (v as number) >= 0.1 ? 'var(--success)' : 'var(--error)',
+                      }}
+                    >
+                      {(v as number).toFixed(3)}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+            Blue more than doubles, from failing to clear. Rose drops but stays clear — it is the
+            price of Aiden moving toward magenta, and it is why the fourth brand sits at 352° rather
+            than the 342° I first picked.
+          </p>
+        </div>
+
+        <div>
+          <h2 style={H2}>Why not teal, and why not yellow</h2>
+          <p style={P}>
+            The binding constraint on a four-brand palette is not crowding, it is{' '}
+            <strong>gamut</strong>. Measured — the most chroma each hue can hold while still dark
+            enough for white text at ≈5.0:
+          </p>
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 460 }}>
+            {GAMUT_CEILING.map(([h, name, c]) => (
+              <div key={h} style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+                <span style={{ ...MONO, width: 84, color: 'var(--muted-foreground)' }}>
+                  {name} {h}°
+                </span>
+                <div style={{ flex: 1, height: 10, background: 'var(--muted)', borderRadius: 'var(--rounded-full)' }}>
+                  <div
+                    style={{
+                      width: `${(c / 0.245) * 100}%`,
+                      height: '100%',
+                      borderRadius: 'var(--rounded-full)',
+                      background: 'var(--primary)',
+                    }}
+                  />
+                </div>
+                <span style={{ ...MONO, width: 48, textAlign: 'right' }}>{c.toFixed(3)}</span>
+              </div>
+            ))}
+          </div>
+          <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+            <strong>Teal is the trap.</strong> It looks like an obvious brand colour and can only
+            carry <strong>0.087</strong> — a third of what violet can. Every teal brand fill at
+            AA-safe lightness looks washed out, and two muted cool brands cannot separate from each
+            other: an earlier attempt at blue + teal measured 0.081 apart. Yellow and olive have the
+            same ceiling and go muddy rather than pale, which is why the amber here is pushed to 75°
+            where more chroma is available while still clearing the warning hue at 38°.
+          </p>
+          <p style={P}>
+            Violet and magenta are the two richest hues sRGB offers. Aiden already owns violet,
+            which is a good use of the best slot — and an argument for giving Rose to whichever
+            sub-app most needs to be noticed.
+          </p>
+        </div>
+      </div>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 6 — Audit
 // ─────────────────────────────────────────────────────────────────────────────
 
 type Pairing = { label: string; fg: string; bg: string; onBand?: boolean; note?: string };
