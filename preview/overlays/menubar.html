@@ -1,0 +1,158 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Menubar</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .cap { font-size: var(--text-xs); color: var(--muted-foreground); }
+      /*
+        The real menu portals to <body> and is placed by computePosition. Re-anchor
+        it inside a relative stage so the card shows the bar and its open menu
+        together, and pin the entrance animation — a static page renders after the
+        keyframes would have finished.
+      */
+      .stage { position: relative; min-height: 320px; padding: var(--p-4); border: var(--border-w-100) solid var(--border); border-radius: var(--rounded-md); background: var(--card); }
+      .stage .ui-dropdown-menu__content { position: absolute; animation: none; transform: none; }
+      svg { width: var(--w-4); height: var(--h-4); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Menubar</h1>
+        <p>
+          The desktop application menu bar — a horizontal row of triggers, each owning a menu.
+          It <strong>reuses <code>DropdownMenu</code> wholesale</strong>: every menu is a
+          controlled DropdownMenu and the surface parts are DropdownMenu's re-exported under
+          Menubar names, so positioning, arrow-key item nav, Escape and outside-click all come
+          free. Menubar itself only adds the coordination — single-open state, hover-to-switch
+          once a menu is open, and roving tabindex with ArrowLeft / ArrowRight across triggers.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import {
+  Menubar, MenubarMenu, MenubarTrigger, MenubarContent,
+  MenubarItem, MenubarSeparator, MenubarShortcut,
+} from '@ui/lib';
+
+&lt;Menubar id="app"&gt;
+  &lt;MenubarMenu value="file"&gt;
+    &lt;MenubarTrigger&gt;File&lt;/MenubarTrigger&gt;
+    &lt;MenubarContent&gt;
+      &lt;MenubarItem&gt;New tab &lt;MenubarShortcut&gt;⌘T&lt;/MenubarShortcut&gt;&lt;/MenubarItem&gt;
+    &lt;/MenubarContent&gt;
+  &lt;/MenubarMenu&gt;
+&lt;/Menubar&gt;</pre>
+      </div>
+
+      <div>
+        <h2>The bar</h2>
+        <div class="ui-menubar">
+          <button type="button" class="ui-menubar__trigger">File</button>
+          <button type="button" class="ui-menubar__trigger">Edit</button>
+          <button type="button" class="ui-menubar__trigger">View</button>
+          <button type="button" class="ui-menubar__trigger">Help</button>
+        </div>
+      </div>
+
+      <div>
+        <h2>A menu open</h2>
+        <p>
+          The open trigger keeps a held-down look while its menu is showing. Once any menu is
+          open, hovering a sibling trigger switches to it — no second click.
+        </p>
+        <div class="stage">
+          <div class="ui-menubar">
+            <button type="button" class="ui-menubar__trigger ui-menubar__trigger--open">File</button>
+            <button type="button" class="ui-menubar__trigger">Edit</button>
+            <button type="button" class="ui-menubar__trigger">View</button>
+            <button type="button" class="ui-menubar__trigger">Help</button>
+          </div>
+
+          <div class="ui-dropdown-menu__content" style="top: 56px; left: 16px; min-width: 220px;">
+            <div class="ui-dropdown-menu__label">File</div>
+            <div class="ui-dropdown-menu__item">
+              New tab
+              <span class="ui-dropdown-menu__shortcut">⌘T</span>
+            </div>
+            <div class="ui-dropdown-menu__item">
+              New window
+              <span class="ui-dropdown-menu__shortcut">⌘N</span>
+            </div>
+            <div class="ui-dropdown-menu__separator"></div>
+            <div class="ui-dropdown-menu__item">
+              Share
+              <span class="ui-dropdown-menu__shortcut">⌘S</span>
+            </div>
+            <div class="ui-dropdown-menu__item">
+              Print…
+              <span class="ui-dropdown-menu__shortcut">⌘P</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Checkbox and radio rows</h2>
+        <p>
+          The item vocabulary is DropdownMenu's, so a Menubar menu can hold checkable rows and a
+          radio group without any new parts.
+        </p>
+        <div class="stage" style="min-height: 260px;">
+          <div class="ui-menubar">
+            <button type="button" class="ui-menubar__trigger">File</button>
+            <button type="button" class="ui-menubar__trigger">Edit</button>
+            <button type="button" class="ui-menubar__trigger ui-menubar__trigger--open">View</button>
+            <button type="button" class="ui-menubar__trigger">Help</button>
+          </div>
+
+          <div class="ui-dropdown-menu__content" style="top: 56px; left: 132px; min-width: 240px;">
+            <div class="ui-dropdown-menu__item">
+              <span class="ui-dropdown-menu__item-indicator">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+              </span>
+              Show sidebar
+            </div>
+            <div class="ui-dropdown-menu__item">
+              <span class="ui-dropdown-menu__item-indicator"></span>
+              Show status bar
+            </div>
+            <div class="ui-dropdown-menu__separator"></div>
+            <div class="ui-dropdown-menu__label">Density</div>
+            <div class="ui-dropdown-menu__item">
+              <span class="ui-dropdown-menu__item-indicator">
+                <span class="ui-dropdown-menu__radio-dot"></span>
+              </span>
+              Comfortable
+            </div>
+            <div class="ui-dropdown-menu__item">
+              <span class="ui-dropdown-menu__item-indicator"></span>
+              Compact
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Known v1 gaps</h2>
+        <p>
+          No submenus — <code>ContextMenu</code> is the only family with those. And ArrowLeft /
+          ArrowRight move between triggers but not from <em>inside</em> an open menu; use hover,
+          or Escape then arrow.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

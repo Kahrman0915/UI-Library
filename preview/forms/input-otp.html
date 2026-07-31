@@ -1,0 +1,157 @@
+<!-- @dsCard group="Forms" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>InputOTP</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .stack { display: grid; gap: var(--p-6); }
+      .cap { font-size: var(--text-xs); color: var(--muted-foreground); }
+      /*
+        Mockup only: the real control overlays one transparent <input> across the
+        slots, which is what makes native paste and one-time-code autofill work.
+        A static page has no input to overlay, so the slots are drawn directly and
+        the caret is pinned rather than blinking.
+      */
+      .ui-otp__caret { animation: none; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>InputOTP</h1>
+        <p>
+          A segmented one-time-code field. The slots are presentation — underneath sits a
+          <strong>single real <code>&lt;input&gt;</code></strong> holding the whole value, which is
+          what makes native paste, mobile <code>one-time-code</code> autofill and text selection
+          work without per-field focus juggling.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { InputOTP } from '@ui/lib';
+
+&lt;InputOTP
+  id="verify"
+  label="Verification code"
+  length={6}
+  groupSize={3}
+  onComplete={(code) =&gt; submit(code)}
+/&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <div class="stack">
+          <div>
+            <div class="ui-otp ui-otp--sz-sm">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot">4</div>
+                <div class="ui-otp__slot">2</div>
+                <div class="ui-otp__slot">9</div>
+                <div class="ui-otp__slot">1</div>
+              </div>
+            </div>
+            <span class="cap">sm</span>
+          </div>
+          <div>
+            <div class="ui-otp ui-otp--sz-default">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot">4</div>
+                <div class="ui-otp__slot">2</div>
+                <div class="ui-otp__slot">9</div>
+                <div class="ui-otp__slot">1</div>
+              </div>
+            </div>
+            <span class="cap">default</span>
+          </div>
+          <div>
+            <div class="ui-otp ui-otp--sz-lg">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot">4</div>
+                <div class="ui-otp__slot">2</div>
+                <div class="ui-otp__slot">9</div>
+                <div class="ui-otp__slot">1</div>
+              </div>
+            </div>
+            <span class="cap">lg</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Grouping</h2>
+        <p>
+          <code>groupSize</code> inserts a separator every <em>n</em> slots — a 6-digit code at
+          <code>groupSize={3}</code> reads as two triplets, which is how people say them aloud.
+        </p>
+        <div class="ui-otp ui-otp--sz-default">
+          <div class="ui-otp__slots" aria-hidden="true">
+            <div class="ui-otp__slot">1</div>
+            <div class="ui-otp__slot">4</div>
+            <div class="ui-otp__slot">7</div>
+            <span class="ui-otp__separator"></span>
+            <div class="ui-otp__slot">2</div>
+            <div class="ui-otp__slot">0</div>
+            <div class="ui-otp__slot">5</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>States</h2>
+        <div class="stack">
+          <div>
+            <div class="ui-otp ui-otp--sz-default">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot ui-otp__slot--filled">3</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">8</div>
+                <div class="ui-otp__slot ui-otp__slot--active"><span class="ui-otp__caret"></span></div>
+                <div class="ui-otp__slot"></div>
+                <div class="ui-otp__slot"></div>
+                <div class="ui-otp__slot"></div>
+              </div>
+            </div>
+            <span class="cap">partly filled — the caret marks the active slot</span>
+          </div>
+
+          <div>
+            <div class="ui-otp ui-otp--sz-default ui-otp--error">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+                <div class="ui-otp__slot ui-otp__slot--filled">1</div>
+              </div>
+            </div>
+            <span class="ui-otp__error">That code has expired — request a new one.</span>
+          </div>
+
+          <div>
+            <div class="ui-otp ui-otp--sz-default ui-otp--disabled">
+              <div class="ui-otp__slots" aria-hidden="true">
+                <div class="ui-otp__slot"></div>
+                <div class="ui-otp__slot"></div>
+                <div class="ui-otp__slot"></div>
+                <div class="ui-otp__slot"></div>
+              </div>
+            </div>
+            <span class="cap">disabled</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
