@@ -227,10 +227,33 @@ const POC_CSS = `
    Relative colour syntax is a newer floor than color-mix: Chrome 119+, Safari
    16.4+, Firefox 128+. Flagged, not free. */
 [data-theme-poc] {
-  --poc-mark: linear-gradient(140deg,
-    oklch(from var(--primary) 0.78 0.16 h) 0%,
-    oklch(from var(--primary) 0.62 0.21 h) 55%,
-    oklch(from var(--primary) 0.46 0.18 h) 100%);
+  /* HUE TRAVELS. The first version held one hue and moved only lightness, which
+     is why it read as a tinted chip rather than an object. Real icon sets of
+     this kind move through a RANGE of hue — the light end sits one neighbour
+     back, the dark end lands a good way forward — and that arc is most of what
+     makes them look rich instead of flat.
+
+     The family guarantee survives intact, and is worth restating precisely:
+     every mark uses identical lightness values, identical chroma values, and an
+     identical hue ARC (-12, 0, +26 relative to the brand). Only the ANCHOR
+     moves. So the marks are the same object rendered at different points on the
+     wheel — which is exactly the relationship the reference set has.
+
+     The mid stop stays exactly on the brand hue, so the dominant colour of the
+     mark is still the brand's own. The arc is decoration around it, not a
+     redefinition of it. */
+  --poc-mark:
+    /* Second plane: a brighter, counter-rotated bloom in the top corner. The
+       reference icons get their depth from overlapping FORMS catching light at
+       different angles, not from a single ramp — this is the cheapest honest
+       approximation of that with no artwork. */
+    radial-gradient(125% 125% at 16% 10%,
+      oklch(from var(--primary) 0.84 0.18 calc(h - 30)) 0%,
+      transparent 58%),
+    linear-gradient(140deg,
+      oklch(from var(--primary) 0.80 0.17 calc(h - 12)) 0%,
+      oklch(from var(--primary) 0.63 0.21 h) 52%,
+      oklch(from var(--primary) 0.47 0.19 calc(h + 26)) 100%);
 
   /* Hero gradient. PROVABLY AA-safe: every stop lies on the segment --primary
      -> --foreground, and --primary-foreground is by construction the opposite
@@ -1206,7 +1229,12 @@ export const Marks: Story = {
     const SURFACES: [string, string, string][] = [
       ['Marketing band', 'var(--poc-band)', 'large area, capped by the body text on it'],
       ['Sidebar rail', 'var(--sidebar)', 'own foreground tokens, so more headroom'],
-      ['App mark', 'oklch(from var(--primary) 0.62 0.21 h)', 'no text on it — no constraint at all'],
+      // All three stops, because a uniform hue arc should preserve the pairwise
+      // gap at EVERY point of the gradient, not just at the anchor. If the arc
+      // were per-brand these rows would diverge — that is the check.
+      ['Mark — light stop', 'oklch(from var(--primary) 0.80 0.17 calc(h - 12))', 'the arc opens one neighbour back'],
+      ['Mark — mid stop', 'oklch(from var(--primary) 0.63 0.21 h)', 'sits exactly on the brand hue'],
+      ['Mark — dark stop', 'oklch(from var(--primary) 0.47 0.19 calc(h + 26))', 'and lands forward of it'],
     ];
 
     useEffect(() => {
@@ -1258,10 +1286,24 @@ export const Marks: Story = {
             <h2 style={H2}>Where the identity actually lives</h2>
             <p style={P}>
               Nothing sits on top of a mark, so it carries no contrast constraint at all — the one
-              surface in the UI where colour is free. Lightness and chroma are pinned to literals and
-              only the hue is inherited, so the marks share one envelope by construction rather than
-              by style guide. That is the Office-icon model: one silhouette language, one gradient
-              treatment, different hues.
+              surface in the UI where colour is free.
+            </p>
+            <p style={P}>
+              <strong>The hue travels; it does not sit still.</strong> The first version held one hue
+              and moved only lightness, which is why it read as a tinted chip. Each mark now moves
+              through an <em>arc</em> — the light end one neighbour back, the dark end a good way
+              forward — plus a brighter counter-rotated bloom in the top corner standing in for a
+              second overlapping plane. So <code style={MONO}>dc</code> runs green-teal → teal →
+              blue, <code style={MONO}>ec</code> runs sky → blue → indigo, and{' '}
+              <code style={MONO}>db</code> runs blue → indigo → violet.
+            </p>
+            <p style={P}>
+              The family guarantee survives, and is worth stating exactly: every mark uses{' '}
+              <strong>identical lightness values, identical chroma values, and an identical hue arc</strong>{' '}
+              (−12, 0, +26 relative to the brand). Only the anchor moves. The marks are the same
+              object rendered at different points on the wheel — which is the relationship the
+              reference set has. The mid stop stays exactly on the brand hue, so the dominant colour
+              is still the brand&rsquo;s own; the arc is decoration around it, not a redefinition.
             </p>
           </div>
 
@@ -1334,6 +1376,14 @@ export const Marks: Story = {
 
           <div>
             <h2 style={H2}>The limit worth knowing</h2>
+            <p style={P}>
+              A uniform arc preserves the gap at every stop — the three mark rows above stay
+              separated all the way along the gradient, which is precisely what a{' '}
+              <em>per-brand</em> arc would not do. The one honest wrinkle: at the extremes the ramps
+              do pass through each other&rsquo;s hue territory (dc&rsquo;s dark stop lands at 210°,
+              ec&rsquo;s light stop at 209°). They never collide visually because they sit at
+              opposite ends of the lightness range, and the reference set has the same overlap.
+            </p>
             <p style={P}>
               The mark <em>amplifies</em> a hue difference; it cannot <em>create</em> one. dc and ec
               are 37 degrees apart, which is enough. Two brands 14 degrees apart stay similar at any
