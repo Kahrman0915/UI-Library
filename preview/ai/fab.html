@@ -1,0 +1,190 @@
+<!-- @dsCard group="AI" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Fab</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .cap { font-size: var(--text-xs); color: var(--muted-foreground); }
+      .row { display: flex; gap: var(--p-8); align-items: flex-end; flex-wrap: wrap; }
+      .cell { display: grid; gap: var(--p-3); justify-items: center; }
+
+      /*
+        Re-anchoring, the same convention dialog.html and drawer.html use.
+
+        The FAB is `position: fixed`, so left alone it escapes to the page
+        viewport and every card renders empty with the buttons piled in one
+        corner. Note `position: relative` on the stage does NOT contain a fixed
+        child — only transform / filter / perspective / contain do. Rather than
+        rely on that, the stage overrides the FAB itself to `absolute`, which a
+        relative parent does contain.
+
+        The pulse rings are also pinned: a static page renders after the keyframes
+        would have played, so an un-pinned ring parks at its final invisible frame.
+      */
+      .stage {
+        position: relative;
+        min-height: 220px;
+        border-radius: var(--rounded-md);
+        border: var(--border-w-100) solid var(--border);
+        background: var(--card);
+        overflow: hidden;
+      }
+      .stage .ui-fab { position: absolute; }
+      .stage__hint { position: absolute; inset: 0; display: grid; place-items: center; font-size: var(--text-xs); color: var(--muted-foreground); }
+      /* Inline specimens sit in flow rather than in a corner. */
+      .flow .ui-fab { position: relative; inset: auto; }
+      .flow .ui-fab__ring { animation: none; opacity: var(--o-40); }
+      svg { width: var(--w-6); height: var(--h-6); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Fab</h1>
+        <p>
+          The floating action button — a viewport-pinned launcher for the one action that should
+          always be within reach. It fills with <code>--primary</code>, so it picks up whatever
+          brand it sits in; wrap it in <code>data-surface="aiden"</code> and it becomes the Aiden
+          gradient, which is the launcher this system was built for. Use it for a single
+          always-available entry point, never for a row of options.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import { Fab } from '@ui/lib';
+import { Sparkles } from 'lucide-react';
+
+&lt;Fab id="ask-aiden" position="bottom-right" pulse badge="2" aria-label="Ask Aiden"&gt;
+  &lt;Sparkles /&gt;
+&lt;/Fab&gt;</pre>
+      </div>
+
+      <div>
+        <h2>Sizes</h2>
+        <div class="row flow">
+          <div class="cell">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-default" aria-label="Ask Aiden">
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+              </span>
+            </button>
+            <span class="cap">default — 48px</span>
+          </div>
+          <div class="cell">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Ask Aiden">
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+              </span>
+            </button>
+            <span class="cap">lg — 56px (default)</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Pulse and badge</h2>
+        <p>
+          <code>pulse</code> adds expanding halo rings that draw the eye without moving the
+          button; <code>badge</code> takes a count. The halo is suppressed entirely when the FAB
+          is disabled — rings advertising an action you cannot take are worse than no rings.
+        </p>
+        <div class="row flow">
+          <div class="cell">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Ask Aiden — 2 new">
+              <span class="ui-fab__rings" aria-hidden="true">
+                <span class="ui-fab__ring"></span>
+              </span>
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+              </span>
+              <span class="ui-fab__badge" aria-hidden="true">2</span>
+            </button>
+            <span class="cap">pulse + badge</span>
+          </div>
+          <div class="cell">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Ask Aiden (unavailable)" disabled>
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+              </span>
+            </button>
+            <span class="cap">disabled — no rings</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Neutral, or the Aiden surface</h2>
+        <p>
+          On its own the FAB is <code>--primary</code> — neutral slate on the main brand, the
+          host brand's colour inside a <code>data-theme</code>. The gradient is not a default:
+          it comes from <code>data-surface="aiden"</code>, which layers <em>inside</em> any brand
+          rather than replacing it.
+        </p>
+        <div class="row flow">
+          <div class="cell">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Add">
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              </span>
+            </button>
+            <span class="cap">default — <code>--primary</code></span>
+          </div>
+          <div class="cell" data-theme="db">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Add">
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14"/><path d="M5 12h14"/></svg>
+              </span>
+            </button>
+            <span class="cap">inside <code>data-theme="db"</code></span>
+          </div>
+          <div class="cell" data-surface="aiden">
+            <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Ask Aiden">
+              <span class="ui-fab__rings" aria-hidden="true"><span class="ui-fab__ring"></span></span>
+              <span class="ui-fab__icon">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+              </span>
+            </button>
+            <span class="cap"><code>data-surface="aiden"</code> — the gradient</span>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Placement</h2>
+        <p>
+          <code>position</code> pins it to one of four viewport corners, inset
+          <code>--p-6</code> from both edges. <code>bottom-right</code> is the default and the
+          one to reach for — it sits under the thumb on touch and out of the reading path on
+          desktop.
+        </p>
+        <div class="stage" data-surface="aiden">
+          <div class="stage__hint">a page, with the launcher riding along</div>
+          <button type="button" class="ui-fab ui-fab--pos-top-left ui-fab--sz-default" aria-label="Ask Aiden">
+            <span class="ui-fab__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg></span>
+          </button>
+          <button type="button" class="ui-fab ui-fab--pos-top-right ui-fab--sz-default" aria-label="Ask Aiden">
+            <span class="ui-fab__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg></span>
+          </button>
+          <button type="button" class="ui-fab ui-fab--pos-bottom-left ui-fab--sz-default" aria-label="Ask Aiden">
+            <span class="ui-fab__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg></span>
+          </button>
+          <button type="button" class="ui-fab ui-fab--pos-bottom-right ui-fab--sz-lg" aria-label="Ask Aiden — 2 new">
+            <span class="ui-fab__icon"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg></span>
+            <span class="ui-fab__badge" aria-hidden="true">2</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

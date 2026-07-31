@@ -1,0 +1,234 @@
+<!-- @dsCard group="AI" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>Chat</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body { margin: 0; padding: var(--p-8); font-family: var(--font-family); color: var(--foreground); background: var(--background); }
+      .page { display: grid; gap: var(--p-8); max-width: var(--max-w-4xl); }
+      .page > * { min-width: 0; }
+      h1 { margin: 0; font-size: var(--text-2xl); font-weight: var(--font-semibold); }
+      h2 { margin: 0 0 var(--p-2) 0; font-size: var(--text-lg); font-weight: var(--font-semibold); }
+      p { margin: 0 0 var(--p-4) 0; font-size: var(--text-sm); line-height: var(--leading-5); color: var(--muted-foreground); max-width: var(--max-w-3xl); }
+      code { font-family: var(--font-family-mono); font-size: var(--text-code); background: var(--muted); padding: 2px var(--p-1-5); border-radius: var(--rounded-sm); }
+      pre { margin: 0; padding: var(--p-3) var(--p-4); background: var(--muted); border-radius: var(--rounded-md); font-family: var(--font-family-mono); font-size: var(--text-code); color: var(--foreground); overflow-x: auto; max-width: 640px; }
+      .frame { border: var(--border-w-100) solid var(--border); border-radius: var(--rounded-lg); background: var(--card); padding: var(--p-5); }
+      .cap { font-size: var(--text-xs); color: var(--muted-foreground); }
+      /* Static page: the typing dots and streaming caret would otherwise park mid-cycle. */
+      .ui-chat-bubble__dot, .ui-chat-bubble__caret { animation: none; }
+      svg { width: var(--w-4); height: var(--h-4); fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>Chat</h1>
+        <p>
+          The Aiden conversation family — 27 exports covering the transcript, the composer,
+          tool-call cards, reasoning blocks, citations and sources. Content is
+          <strong>consumer-provided JSX</strong>: there is no Markdown parser, because that would
+          mean a runtime dependency the library does not take.
+        </p>
+      </div>
+
+      <div>
+        <h2>Setup</h2>
+        <pre>import {
+  Chat, ChatMessageList, ChatMessage, ChatBubble,
+  ChatComposer, ChatComposerInput, ChatComposerActions, ChatComposerSend,
+} from '@ui/lib';
+
+&lt;Chat id="aiden" density="balanced"&gt;
+  &lt;ChatMessageList&gt;
+    &lt;ChatMessage from="user"&gt;&lt;ChatBubble&gt;…&lt;/ChatBubble&gt;&lt;/ChatMessage&gt;
+    &lt;ChatMessage from="assistant"&gt;&lt;ChatBubble&gt;…&lt;/ChatBubble&gt;&lt;/ChatMessage&gt;
+  &lt;/ChatMessageList&gt;
+&lt;/Chat&gt;</pre>
+      </div>
+
+      <div>
+        <h2>The transcript</h2>
+        <p>
+          Claude-style, not iMessage-style: the assistant answers as
+          <strong>full-width, bubble-less prose</strong> and only the user's turns sit in a
+          contained bubble on the trailing edge. Uniform corners, no tails, no per-message
+          avatars — a centred <code>max-w-3xl</code> column that reads as a document.
+        </p>
+        <div class="frame">
+          <div class="ui-chat">
+            <div class="ui-chat__list-content ui-chat__list-content--density-balanced">
+              <div class="ui-chat-marker ui-chat-marker--divider">
+                <span class="ui-chat-marker__label">Today</span>
+              </div>
+
+              <div class="ui-chat-message ui-chat-message--user">
+                <div class="ui-chat-message__body">
+                  <div class="ui-chat-bubble ui-chat-bubble--user">
+                    What's driving the drop in weekly active accounts?
+                  </div>
+                </div>
+              </div>
+
+              <div class="ui-chat-message ui-chat-message--assistant">
+                <div class="ui-chat-message__body">
+                  <div class="ui-chat-bubble ui-chat-bubble--assistant">
+                    Two things account for almost all of it. Trial-to-paid conversion fell from
+                    24% to 19% after the pricing change on the 12th, and a cohort of ~400 seats
+                    on the legacy plan lapsed in the same week. Neither is a retention problem in
+                    the usual sense — engagement among active accounts is flat.
+                  </div>
+                </div>
+              </div>
+
+              <div class="ui-chat-message ui-chat-message--user">
+                <div class="ui-chat-message__body">
+                  <div class="ui-chat-bubble ui-chat-bubble--user">Show me the cohort.</div>
+                </div>
+              </div>
+
+              <div class="ui-chat-message ui-chat-message--assistant">
+                <div class="ui-chat-message__body">
+                  <div class="ui-chat-bubble ui-chat-bubble--assistant">
+                    Pulling it now<span class="ui-chat-bubble__caret"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Pending and streaming</h2>
+        <p>
+          <code>pending</code> shows typing dots before any content arrives;
+          <code>streaming</code> appends a blinking caret to content already being written. They
+          are different states and should not be used together.
+        </p>
+        <div class="frame">
+          <div class="ui-chat-message ui-chat-message--assistant">
+            <div class="ui-chat-message__body">
+              <div class="ui-chat-bubble ui-chat-bubble--assistant">
+                <span class="ui-chat-bubble__typing" aria-label="Assistant is typing">
+                  <span class="ui-chat-bubble__dot"></span>
+                  <span class="ui-chat-bubble__dot"></span>
+                  <span class="ui-chat-bubble__dot"></span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Tool calls and reasoning</h2>
+        <p>
+          Agent actions surface as collapsible cards so an answer stays inspectable — status is
+          running / success / error. The reasoning block is the same shape for "thinking" text.
+        </p>
+        <div class="frame">
+          <div class="ui-chat-tools">
+            <div class="ui-chat-tool ui-chat-tool--success">
+              <div class="ui-chat-tool__trigger">
+                <span class="ui-chat-tool__status">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                </span>
+                <span class="ui-chat-tool__name">query_warehouse</span>
+                <span class="ui-chat-tool__chevron">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+            </div>
+            <div class="ui-chat-tool ui-chat-tool--running">
+              <div class="ui-chat-tool__trigger">
+                <span class="ui-chat-tool__status">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12a9 9 0 1 1-6.2-8.6"/></svg>
+                </span>
+                <span class="ui-chat-tool__name">build_cohort_chart</span>
+                <span class="ui-chat-tool__chevron">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Sources</h2>
+        <p>Link-preview cards for whatever the answer drew on — index, title, domain.</p>
+        <div class="frame">
+          <div class="ui-chat-sources">
+            <span class="ui-chat-sources__label">Sources</span>
+            <div class="ui-chat-sources__list">
+              <a class="ui-chat-source" href="#">
+                <span class="ui-chat-source__index">1</span>
+                <span class="ui-chat-source__body">
+                  <span class="ui-chat-source__title">Q3 pricing change — rollout notes</span>
+                  <span class="ui-chat-source__domain">notion.internal</span>
+                </span>
+              </a>
+              <a class="ui-chat-source" href="#">
+                <span class="ui-chat-source__index">2</span>
+                <span class="ui-chat-source__body">
+                  <span class="ui-chat-source__title">Legacy plan sunset schedule</span>
+                  <span class="ui-chat-source__domain">docs.internal</span>
+                </span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>The composer</h2>
+        <p>
+          Reuses the shared <code>.ui-input-wrap</code> field chrome and autosizes to its content
+          up to a cap. Enter sends, Shift+Enter inserts a newline. Send composes
+          <code>Button variant="aiden"</code>, so it carries the gradient under any brand — and
+          swaps to a stop control while a response is streaming.
+        </p>
+        <div class="frame">
+          <div class="ui-chat-composer">
+            <div class="ui-chat-composer__box ui-input-wrap ui-input-wrap--multi">
+              <textarea class="ui-chat-composer__input" rows="1" placeholder="Message Aiden…"></textarea>
+              <div class="ui-chat-composer__actions">
+                <button type="button" class="ui-chat-composer__tool ui-icon-button" aria-label="Dictate">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v5"/></svg>
+                </button>
+                <button type="button" class="ui-chat-composer__send ui-button ui-button--aiden ui-button--aiden-default ui-button--sz-sm ui-button--icon-only" aria-label="Send message">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>Start screen</h2>
+        <p>A dedicated greeting rather than a reused empty state, with one-shot prompt pills.</p>
+        <div class="frame">
+          <div class="ui-chat-greeting">
+            <span class="ui-chat-greeting__icon">
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 3 1.9 4.8L19 10l-4.4 2.6L13 18l-2.6-4.4L6 12l4.6-1.9z"/></svg>
+            </span>
+            <div class="ui-chat-greeting__content">
+              <div class="ui-chat-greeting__title">How can I help?</div>
+              <p class="ui-chat-greeting__description">
+                Ask about this workspace — I can search it, run tools and hand back files.
+              </p>
+            </div>
+            <div class="ui-chat-suggestions">
+              <button type="button" class="ui-chat-suggestion">Summarise last week</button>
+              <button type="button" class="ui-chat-suggestion">Find the churn cohort</button>
+              <button type="button" class="ui-chat-suggestion">Draft the update</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
