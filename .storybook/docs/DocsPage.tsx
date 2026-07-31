@@ -148,7 +148,21 @@ function ShowcasePage({
 }
 
 export function DocsPage() {
-  const { csfFile, preparedMeta } = useOf('meta');
+  // `useOf` returns a union across every resolvable kind (component / meta /
+  // story) and does not narrow on the literal argument, so destructuring
+  // straight off it is a type error. Narrow explicitly rather than casting —
+  // this page is registered as `docs.page`, which Storybook only renders with a
+  // meta in scope, so the other arms genuinely cannot occur and saying so is
+  // more honest than an `as`.
+  const resolved = useOf('meta');
+  if (resolved.type !== 'meta') {
+    throw new Error(
+      `DocsPage expected a meta in scope, got "${resolved.type}". It is registered ` +
+        'globally as `parameters.docs.page`, so this should be unreachable.',
+    );
+  }
+  const { csfFile, preparedMeta } = resolved;
+
   const docsContext = useContext(DocsContext);
   const stories = docsContext.componentStories();
   const isDark = useDocsMode() === 'dark';
