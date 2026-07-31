@@ -82,7 +82,18 @@ const POC_CSS = `
      Light mode currently collapses background/card/popover all to #ffffff and
      separates them with a hairline alone; this gives it the elevation model
      dark mode already has. */
-  --background: color-mix(in srgb, var(--poc-tint) calc(22% * var(--poc-str)), #ffffff);
+  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(22% * var(--poc-str)), #ffffff);
+
+  /* LEVER 2 — DEPTH. Round 1 measured the honest limit of hue: only ~10% of a
+     primary's chroma survives into a page pale enough to carry body text, so two
+     brands 17 degrees apart land 0.004 apart as pages — under any threshold for
+     "different colour". Luminance does not have that ceiling. A page 4% darker
+     reads at dE 0.014 and 8% at 0.029, five to seven times what hue buys, and
+     the contrast cost is nearly nil: muted-foreground (#475569) on the page only
+     falls 6.50 -> 5.53 at 8%, still far clear of AA. Depth is the cheapest
+     separation in the system and the one nobody spends. */
+  --background: color-mix(in srgb, #0f172a
+                  calc(var(--poc-depth, 0) * 4% * var(--poc-depth-on, 0)), var(--poc-page-hue));
   --card:    #ffffff;
   --popover: #ffffff;
 
@@ -100,7 +111,47 @@ const POC_CSS = `
   --border:       color-mix(in srgb, var(--primary) calc(18% * var(--poc-str)), #cbd5e1);
   --border-hover: color-mix(in srgb, var(--primary) calc(24% * var(--poc-str)), #64748b);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
+
+  /* LEVER 3 — CHROME. The page is chroma-starved because it carries small body
+     text against --muted-foreground. The rail is not: --sidebar is already its
+     own carve-out palette with its OWN foreground (#0f172a, ~19:1 on the
+     untinted rail), so it can be tinted far harder than the page will ever
+     tolerate. At 55% the rail keeps SIX TIMES the chroma of the page (0.103 vs
+     0.0177) — the only place in this whole POC where a brand hue survives at
+     real saturation.
+
+     Measured ceilings, worst of all 8 brands:
+       --sidebar        55%  -> sidebar-fg 17.06   plenty of room left
+       --sidebar-accent 66%  -> accent-fg   4.60   TOO TIGHT, 0.10 over the floor
+       --sidebar-accent 58%  -> accent-fg   5.25   the number used
+     The ACCENT is the constraint, not the rail: it starts a step further from
+     the mode's extreme, so it runs out of headroom first.
+
+     NOTE this changes what --sidebar means. Today it is neutral chrome, listed
+     in CLAUDE.md beside Tooltip as deliberately un-themed. Turning the rail into
+     the loudest brand surface in the app is a REVERSAL of that decision, not an
+     extension of it — it needs to be made on purpose. */
+  --sidebar:        color-mix(in srgb, var(--primary) calc(55% * var(--poc-chrome, 0)), #f8fafc);
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(62% * var(--poc-chrome, 0)), #e2e8f0);
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(58% * var(--poc-chrome, 0)), #f1f5f9);
 }
+
+/* Per-brand DEPTH rung — 0, 1 or 2, times 4%.
+   Assigned so that every one of the four colliding pairs lands on a DIFFERENT
+   rung: db/ir 0 vs 2, dc/ec 0 vs 2, nb/dc 1 vs 0, rm/db 1 vs 0. That is the
+   whole trick — depth is only worth spending where hue already failed, so the
+   assignment is derived from the collision list, not from taste.
+
+   In a real adoption this is one number per brand in tokens.scss, beside the
+   primary. It is the smallest possible API for the largest measured gain. */
+[data-theme-poc][data-theme='db'] { --poc-depth: 0; }
+[data-theme-poc][data-theme='dc'] { --poc-depth: 0; }
+[data-theme-poc][data-theme='nb'] { --poc-depth: 1; }
+[data-theme-poc][data-theme='rm'] { --poc-depth: 1; }
+[data-theme-poc][data-theme='dr'] { --poc-depth: 1; }
+[data-theme-poc][data-theme='ir'] { --poc-depth: 2; }
+[data-theme-poc][data-theme='ec'] { --poc-depth: 2; }
+[data-theme-poc][data-theme='ph'] { --poc-depth: 2; }
 
 [data-theme-poc][data-mode='dark'] {
   /* Stock anchored to the dark page, so the mix moves CHROMA without moving
@@ -109,7 +160,12 @@ const POC_CSS = `
      (30-40% vs 12-30%) because --muted-foreground on --muted is 8.3:1 there. */
   --poc-tint: color-mix(in srgb, var(--primary) 30%, #0f172a);
 
-  --background: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #0f172a);
+  /* Depth INVERTS in dark: the lever is "how far from the mode's extreme", and
+     darkening an already-dark page would eat the background -> card -> popover
+     ramp instead of adding separation. So dark lifts toward slate-700. */
+  --poc-page-hue: color-mix(in srgb, var(--poc-tint) calc(40% * var(--poc-str)), #0f172a);
+  --background: color-mix(in srgb, #334155
+                  calc(var(--poc-depth, 0) * 4% * var(--poc-depth-on, 0)), var(--poc-page-hue));
   --card:       color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #1e293b);
   --popover:    color-mix(in srgb, var(--poc-tint) calc(30% * var(--poc-str)), #475569);
   --secondary:  color-mix(in srgb, var(--poc-tint) calc(35% * var(--poc-str)), #1e293b);
@@ -120,6 +176,21 @@ const POC_CSS = `
   --border:       color-mix(in srgb, var(--primary) calc(22% * var(--poc-str)), #64748b);
   --border-hover: color-mix(in srgb, var(--primary) calc(28% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
+
+  /* Dark's rail carries LIGHT foregrounds (#f8fafc) and dark-mode primaries are
+     LIGHTER than the rail they mix into, so tinting here RAISES luminance and
+     eats contrast — the opposite direction to light mode. Hence separate
+     numbers, and much smaller ones.
+
+     This is where guessing got caught: the first pass reused light's shape and
+     put the accent at 45%, which measured 4.17 and FAILED. Measured, dark:
+       --sidebar-accent 45% -> 4.17 FAIL
+       --sidebar-accent 38% -> 4.78 ok, thin
+       --sidebar-accent 32% -> 5.31 ok    <- used
+       --sidebar         45% -> 5.04 ok; 40% -> 5.6 ok  <- used */
+  --sidebar:        color-mix(in srgb, var(--primary) calc(40% * var(--poc-chrome, 0)), #1e293b);
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(45% * var(--poc-chrome, 0)), #334155);
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(32% * var(--poc-chrome, 0)), #334155);
 }
 
 /* ── Hero surface ───────────────────────────────────────────────────────────
@@ -250,12 +321,82 @@ function lstar(rgba: [number, number, number, number]) {
   return y <= 216 / 24389 ? y * (24389 / 27) : Math.cbrt(y) * 116 - 16;
 }
 
+/**
+ * OKLab — used for "are these two brands the same colour", which WCAG has no
+ * opinion about. Contrast answers "can I read it"; it cannot answer "can I tell
+ * these apart", because two hues can differ wildly and share a luminance.
+ *
+ * OKLab is perceptually uniform, so a plain Euclidean distance is meaningful.
+ * Rough reading of the scale used throughout this file:
+ *   < 0.02  invisible except as a gradient between them
+ *   < 0.05  effectively the same colour
+ *   < 0.10  distinguishable side by side, not from memory
+ *   >= 0.10 reads as a different colour
+ */
+function oklab([r, g, b]: [number, number, number, number]) {
+  const R = srgbToLin(r);
+  const G = srgbToLin(g);
+  const B = srgbToLin(b);
+  const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B);
+  const m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B);
+  const s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
+  return [
+    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
+    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
+    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
+  ] as const;
+}
+
+function deltaE(
+  a: [number, number, number, number],
+  b: [number, number, number, number],
+) {
+  const [l1, a1, b1] = oklab(a);
+  const [l2, a2, b2] = oklab(b);
+  return Math.hypot(l1 - l2, a1 - a2, b1 - b2);
+}
+
+/** Chroma — how much colour is actually left after a treatment. */
+function chroma(rgba: [number, number, number, number]) {
+  const [, a, b] = oklab(rgba);
+  return Math.hypot(a, b);
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared data
 // ─────────────────────────────────────────────────────────────────────────────
 
 const BRANDS = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
 type Brand = (typeof BRANDS)[number];
+
+/**
+ * The four pairs whose primaries are close enough that round 1 could not tell
+ * their pages apart. Everything in round 2 is aimed at exactly these — a lever
+ * that only separates brands which were already distinct is worth nothing.
+ */
+const COLLISIONS: [Brand, Brand][] = [
+  ['dc', 'ec'],
+  ['db', 'ir'],
+  ['nb', 'dc'],
+  ['rm', 'db'],
+];
+
+/** The levers, cumulative — each row adds one to the row above it. */
+type Lever = {
+  key: string;
+  label: string;
+  poc: boolean;
+  str: number;
+  depth: number;
+  chromeOn: number;
+  note: string;
+};
+const LEVERS: Lever[] = [
+  { key: 'today', label: 'Today', poc: false, str: 0, depth: 0, chromeOn: 0, note: 'every page is #ffffff' },
+  { key: 'hue', label: '+ brand-hue tint', poc: true, str: 1, depth: 0, chromeOn: 0, note: 'round 1' },
+  { key: 'depth', label: '+ per-brand depth', poc: true, str: 1, depth: 1, chromeOn: 0, note: 'lever 2 — luminance' },
+  { key: 'chrome', label: '+ chrome tint', poc: true, str: 1, depth: 1, chromeOn: 1, note: 'lever 3 — the rail' },
+];
 
 /** Ranked by how much this POC moves them. */
 const PAIRINGS: { label: string; fg: string; bg: string; note?: string }[] = [
@@ -380,6 +521,87 @@ function useAudit(strength: number) {
   );
 
   return { probes, rows, float, mode, setMode };
+}
+
+/**
+ * Measures SEPARATION rather than contrast — how far apart two brands land on
+ * the surfaces a user actually sees, under each cumulative lever.
+ *
+ * Reported per surface, not averaged, because the levers do not act on the same
+ * one: depth moves --background, chrome moves --sidebar, and a single blended
+ * number would hide which lever paid for what.
+ */
+function useSeparation(mode: 'light' | 'dark') {
+  const hostRef = useRef<HTMLDivElement>(null);
+  type Row = { page: number[]; rail: number[]; pageChroma: number; railChroma: number };
+  const [rows, setRows] = useState<Record<string, Row>>({});
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+
+    const read = (lever: string, brand: Brand, token: string) => {
+      const scope = host.querySelector<HTMLElement>(`[data-cell="${lever}-${brand}"]`);
+      if (!scope) return null;
+      const probe = scope.firstElementChild as HTMLElement;
+      probe.style.backgroundColor = '';
+      probe.style.backgroundColor = `var(${token})`;
+      return toRGBA(getComputedStyle(probe).backgroundColor);
+    };
+
+    const next: Record<string, Row> = {};
+    for (const lever of LEVERS) {
+      const gap = (token: string) =>
+        COLLISIONS.map(([a, b]) => {
+          const x = read(lever.key, a, token);
+          const y = read(lever.key, b, token);
+          return x && y ? deltaE(x, y) : NaN;
+        });
+      const meanChroma = (token: string) => {
+        const vals = BRANDS.map((b) => read(lever.key, b, token)).filter(Boolean);
+        if (!vals.length) return NaN;
+        return vals.reduce((s, v) => s + chroma(v!), 0) / vals.length;
+      };
+      next[lever.key] = {
+        page: gap('--background'),
+        rail: gap('--sidebar'),
+        pageChroma: meanChroma('--background'),
+        railChroma: meanChroma('--sidebar'),
+      };
+    }
+    setRows(next);
+  }, [mode]);
+
+  const probes = (
+    <div
+      ref={hostRef}
+      aria-hidden="true"
+      style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
+    >
+      {LEVERS.map((l) =>
+        BRANDS.map((b) => (
+          <span
+            key={`${l.key}-${b}`}
+            data-cell={`${l.key}-${b}`}
+            data-theme={b}
+            data-mode={mode}
+            {...(l.poc ? { 'data-theme-poc': '' } : {})}
+            style={
+              {
+                '--poc-str': l.str,
+                '--poc-depth-on': l.depth,
+                '--poc-chrome': l.chromeOn,
+              } as CSSProperties
+            }
+          >
+            <span />
+          </span>
+        )),
+      )}
+    </div>
+  );
+
+  return { probes, rows };
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -523,12 +745,18 @@ function Scope({
   brand,
   poc,
   strength = 1,
+  depth = 0,
+  chromeOn = 0,
   mode,
   children,
 }: {
   brand: Brand | '';
   poc?: boolean;
   strength?: number;
+  /** Lever 2 — 0 or 1. The per-brand RUNG comes from CSS, this is just the gate. */
+  depth?: number;
+  /** Lever 3 — 0..1, so the rail tint can be dialled rather than only toggled. */
+  chromeOn?: number;
   mode?: 'light' | 'dark';
   children: ReactNode;
 }) {
@@ -537,7 +765,15 @@ function Scope({
       data-theme={brand || undefined}
       data-mode={mode}
       {...(poc ? { 'data-theme-poc': '' } : {})}
-      style={poc ? ({ '--poc-str': strength } as CSSProperties) : undefined}
+      style={
+        poc
+          ? ({
+              '--poc-str': strength,
+              '--poc-depth-on': depth,
+              '--poc-chrome': chromeOn,
+            } as CSSProperties)
+          : undefined
+      }
     >
       {children}
     </div>
@@ -1107,21 +1343,10 @@ export const ContrastAudit: Story = {
 // 6 — Palette collision
 // ─────────────────────────────────────────────────────────────────────────────
 
-/** sRGB → OKLab, ~20 lines, no dependency. ΔE-OK is Euclidean in this space. */
-function oklab([r, g, b]: [number, number, number, number]) {
-  const f = (v: number) => srgbToLin(v);
-  const [R, G, B] = [f(r), f(g), f(b)];
-  const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B);
-  const m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B);
-  const s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
-  return [
-    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
-    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
-    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
-  ] as [number, number, number];
-}
-const deltaOK = (a: [number, number, number], b: [number, number, number]) =>
-  Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
+const deltaOK = (
+  a: readonly [number, number, number],
+  b: readonly [number, number, number],
+) => Math.hypot(a[0] - b[0], a[1] - b[1], a[2] - b[2]);
 
 export const PaletteCollision: Story = {
   render: () => {
@@ -1323,7 +1548,231 @@ export const PaletteCollision: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 7 — Limits
+// 7 — Levers (round 2)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * ROUND 2. Round 1's finding was that a brand-hue page tint does not
+ * differentiate the brands — only ~10% of the primary's chroma survives into a
+ * surface pale enough to carry body text.
+ *
+ * The instinct to reach for a different HUE (the complement, or a brand
+ * secondary) does not fix that, and the reason is worth stating plainly:
+ * rotating every brand by the same angle is a RIGID ROTATION of the hue wheel,
+ * so it preserves every pairwise distance. Measured, dc/ec goes 0.006 -> 0.005;
+ * rm/db actually gets WORSE, 0.013 -> 0.006. And three of the eight complements
+ * land on a semantic hue (ec's is 3 degrees off warning amber), which would put
+ * an amber page under an amber warning banner.
+ *
+ * Spreading brand SECONDARIES evenly around the wheel does better — 0.004 ->
+ * 0.010 — but it is still a fifth of the "effectively the same colour"
+ * threshold, because it is still spending the same starved chroma budget. Hue
+ * is not the lever at page saturation. These two are.
+ */
+export const Levers: Story = {
+  render: function LeversStory() {
+    const [pairIdx, setPairIdx] = useState(0);
+    const [depth, setDepth] = useState(1);
+    const [chromeOn, setChromeOn] = useState(1);
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
+    const [a, b] = COLLISIONS[pairIdx];
+
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>Two levers that are not hue</h2>
+            <p style={P}>
+              Both brands below were indistinguishable as pages in round 1. Turn the levers off and
+              on: <strong>depth</strong> gives each brand a rung on a luminance ladder, and{' '}
+              <strong>chrome</strong> tints the rail — which can take six times the colour the page
+              can, because it has its own foreground token rather than body text on{' '}
+              <code style={MONO}>--muted-foreground</code>.
+            </p>
+
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
+              {COLLISIONS.map(([x, y], i) => (
+                <Chip
+                  key={`${x}${y}`}
+                  id={`lev-pair-${x}${y}`}
+                  label={`${x} / ${y}`}
+                  active={i === pairIdx}
+                  onClick={() => setPairIdx(i)}
+                />
+              ))}
+              <span style={{ width: 'var(--p-4)' }} />
+              <Switch id="lev-depth" label="Depth" checked={!!depth} onCheckedChange={(v) => setDepth(v ? 1 : 0)} />
+              <Switch id="lev-chrome" label="Chrome" checked={!!chromeOn} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
+              <Switch
+                id="lev-mode"
+                label="Dark"
+                checked={mode === 'dark'}
+                onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0,1fr))', gap: 'var(--p-5)' }}>
+            {[a, b].map((brand) => (
+              <div key={brand}>
+                <div style={{ ...MONO, marginBottom: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
+                  data-theme=&quot;{brand}&quot;
+                </div>
+                <div style={{ border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
+                  <Scope brand={brand} poc strength={1} depth={depth} chromeOn={chromeOn} mode={mode}>
+                    <Composition p={`lev-${brand}`} />
+                  </Scope>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div>
+            <h2 style={H2}>What each lever costs</h2>
+            <p style={P}>
+              Measured, not asserted. <strong>Depth is nearly free:</strong>{' '}
+              <code style={MONO}>--muted-foreground</code> on the page only falls from 6.50 to 5.53
+              across the full 8% ladder — still well clear of AA, because{' '}
+              <code style={MONO}>#475569</code> is a much darker slate than the surfaces it sits on.{' '}
+              <strong>Chrome has a hard ceiling:</strong> the rail clears AA on both its foregrounds
+              at 55% tint (6.87 and 5.63) and fails at 70% (the accent foreground drops to 4.39), so
+              55% is the number — not a taste call.
+            </p>
+            <p style={P}>
+              The honest catch on chrome:{' '}
+              <code style={MONO}>--sidebar</code> is listed in <code style={MONO}>CLAUDE.md</code>{' '}
+              beside Tooltip as <em>deliberately un-themed neutral chrome</em>. Making the rail the
+              loudest brand surface in the app reverses that decision rather than extending it. It
+              also only works if the rail uses its own <code style={MONO}>--sidebar-*</code>{' '}
+              foregrounds throughout — any component reaching for{' '}
+              <code style={MONO}>--muted-foreground</code> inside a tinted rail drops to 3.75 and
+              fails.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 8 — Separation scoreboard
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const SeparationScoreboard: Story = {
+  render: function ScoreboardStory() {
+    const [mode, setMode] = useState<'light' | 'dark'>('light');
+    const { probes, rows } = useSeparation(mode);
+
+    const cell = (v: number, i: number) => {
+      const bad = !(v >= 0.05);
+      return (
+        <td
+          key={i}
+          style={{
+            ...MONO,
+            padding: 'var(--p-2)',
+            textAlign: 'right',
+            color: bad ? 'var(--muted-foreground)' : 'var(--success)',
+            fontWeight: bad ? 'var(--font-normal)' : 'var(--font-semibold)',
+          }}
+        >
+          {Number.isFinite(v) ? v.toFixed(3) : '—'}
+        </td>
+      );
+    };
+
+    return (
+      <>
+        <PocStyle />
+        {probes}
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>How far apart do the colliding pairs actually land?</h2>
+            <p style={P}>
+              OKLab ΔE between the two brands of each pair, per surface, measured live in this
+              browser. Contrast answers <em>can I read it</em>; it cannot answer{' '}
+              <em>can I tell these apart</em>. Below <strong>0.05</strong> is
+              &ldquo;effectively the same colour&rdquo;; 0.10 is where two things read as different
+              colours. Green marks a cell that clears 0.05.
+            </p>
+            <Switch
+              id="sb-mode"
+              label="Dark mode"
+              checked={mode === 'dark'}
+              onCheckedChange={(v) => setMode(v ? 'dark' : 'light')}
+            />
+          </div>
+
+          {(
+            [
+              ['page', 'Page — --background', 'pageChroma'],
+              ['rail', 'Rail — --sidebar', 'railChroma'],
+            ] as const
+          ).map(([field, heading, chromaField]) => (
+            <div key={field}>
+              <h2 style={H2}>{heading}</h2>
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
+                  <thead>
+                    <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                      <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Treatment</th>
+                      {COLLISIONS.map(([x, y]) => (
+                        <th key={`${x}${y}`} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>
+                          {x}/{y}
+                        </th>
+                      ))}
+                      <th style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>chroma</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {LEVERS.map((l) => {
+                      const r = rows[l.key];
+                      return (
+                        <tr key={l.key} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                          <td style={{ padding: 'var(--p-2)' }}>
+                            <div style={{ fontWeight: 'var(--font-medium)' }}>{l.label}</div>
+                            <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{l.note}</div>
+                          </td>
+                          {(r?.[field] ?? COLLISIONS.map(() => NaN)).map((v, i) => cell(v, i))}
+                          <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>
+                            {Number.isFinite(r?.[chromaField]) ? r![chromaField].toFixed(3) : '—'}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <h2 style={H2}>Reading it</h2>
+            <p style={P}>
+              <strong>No single lever crosses 0.05.</strong> That is the real answer, and it is not
+              a failure — it is the shape of the problem. Eight brands cannot be made distinct by
+              one strong signal on a surface that has to stay pale enough to read. They are made
+              distinct the way real brand systems do it: several weak signals in{' '}
+              <em>different perceptual channels</em> — hue, luminance, and one saturated surface —
+              which the eye integrates even though no one of them would carry alone.
+            </p>
+            <p style={P}>
+              The chroma column is the argument in one number. The page keeps roughly a tenth of the
+              primary&rsquo;s colour; the rail at its AA ceiling keeps about six times that. If
+              exactly one surface in the app is going to say which sub-brand you are in, the
+              measurement says it should be the rail, not the page.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 9 — Limits
 // ─────────────────────────────────────────────────────────────────────────────
 
 export const Limits: Story = {
