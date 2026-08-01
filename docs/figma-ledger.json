@@ -194,7 +194,9 @@
     "Figma: a nested component instance can be EXPOSED (instance.isExposedInstance===true) so its properties show on the parent in the UI, but those props are NOT merged into the parent's setProperties map — they stay keyed to the nested instance. To set them via API, find the nested instance and setProperties on IT (or drill in via the UI).",
     "Page PROSE drifts silently and nothing catches it. The design-check lint validates bindings, names and styles — not whether a sentence is still true. HoverCard sat for two days documenting role=\"tooltip\" and \"non-interactive\" after the code moved to role=\"dialog\" and made the card keyboard-enterable, which would have led anyone building from the page to reproduce an invalid pattern. Diff prose against source whenever a role, aria relationship, prop or keyboard behaviour changes.",
     "Before deleting a page, resolve every instance in the file to its main component — do NOT infer safety from a scan of the page you are deleting. A first pass here \"proved\" the legacy masters were unused by scanning a page that had no components on it, which proves nothing. The real check walked 8,533 instances on the other 73 pages and confirmed none resolved to the 23 doomed components.",
-    "Size vocabulary standardised in CODE on 2026-07-30 to xs/sm/default/lg — both the prop and the emitted class (ui-button--sz-sm). FIGMA IS DELIBERATELY BEHIND: the Button (120 variants), Button/Icon-only (120) and Chip (6) sets still carry title-case spelled-out Size options (XSmall|Small|Default|Large). Renaming them is a named follow-up — use the variant-property rename API, never delete-and-recreate, and rehearse on Chip first: done wrong it detaches every instance variant selection file-wide. Nothing programmatic breaks meanwhile; Code Connect is blocked on a paid seat so the coupling is prose only."
+    "Size vocabulary standardised in CODE on 2026-07-30 to xs/sm/default/lg — both the prop and the emitted class (ui-button--sz-sm). FIGMA IS DELIBERATELY BEHIND: the Button (120 variants), Button/Icon-only (120) and Chip (6) sets still carry title-case spelled-out Size options (XSmall|Small|Default|Large). Renaming them is a named follow-up — use the variant-property rename API, never delete-and-recreate, and rehearse on Chip first: done wrong it detaches every instance variant selection file-wide. Nothing programmatic breaks meanwhile; Code Connect is blocked on a paid seat so the coupling is prose only.",
+    "Figma: resize() on an instance does NOT scale cornerRadius or children — a 28.8px radius on a 24px square renders a circle with the glyph clipped. Use node.rescale(factor) for proportional scaling, and set child constraints to SCALE so manual handle-drags behave the same.",
+    "Figma: setting textAutoResize=\"HEIGHT\" BEFORE resize(w, h) pins the height at h — every wrapping paragraph silently collapsed to 10px and overflowed its box. Order is: set width, THEN set textAutoResize=\"HEIGHT\" so it recomputes. Re-applying NONE→HEIGHT repairs an already-collapsed node."
   ],
   "components": {
     "Button": {
@@ -1554,6 +1556,24 @@
         "darkBlurple": "#9076f9 (0.565,0.463,0.976)"
       },
       "caution": "In the light PRIMARY 3-stop gradient the #8455f0 START stays; only the #5f61ef MID moves. In the light TINT gradients (secondary/border/ring, no mid stop) the #8455f0 start DOES move to blurple. Match on presence of the #5f61ef mid to tell them apart."
+    }
+  },
+  "poc": {
+    "appMarks": {
+      "page": "🧪 POC — App marks (deeper theming)",
+      "pageId": "811:44",
+      "componentSetId": "811:78",
+      "variants": [
+        "db",
+        "Green",
+        "Amber",
+        "Rose",
+        "Aiden"
+      ],
+      "built": "2026-08-01",
+      "status": "EXPLORATION — not shipped, no index row, not a component page",
+      "source": "src/prototypes/DeeperTheming.stories.tsx + deeperThemingRecipe.ts (branch poc/deeper-theming)",
+      "note": "Marks for the deeper-theming exploration. tokens.scss is UNTOUCHED — --db-primary is still #6063f1 and Aiden still ships the violet→blue gradient. Brand marks travel a hue arc (-12/0/+26); db deliberately HOLDS one hue so it reads as the calm sibling to Aiden, which sweeps blue→indigo→violet across 44°. db/Aiden measure 0.026 apart as marks, which is the intent — they are the two flagships."
     }
   }
 }
