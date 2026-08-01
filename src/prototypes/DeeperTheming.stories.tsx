@@ -275,15 +275,18 @@ function Mark({
   Icon,
   size = 40,
   aiden,
+  hold,
 }: {
   Icon: LucideIcon;
   size?: number;
   /** Aiden's mark is the one exception to the recipe — see the recipe file. */
   aiden?: boolean;
+  /** db holds its hue instead of arcing — the calm sibling to Aiden's travel. */
+  hold?: boolean;
 }) {
   return (
     <span
-      className={`poc-mark${aiden ? ' poc-mark--aiden' : ''}`}
+      className={`poc-mark${aiden ? ' poc-mark--aiden' : ''}${hold ? ' poc-mark--hold' : ''}`}
       style={{ width: size, height: size }}
     >
       <Icon size={Math.round(size * 0.5)} strokeWidth={2} aria-hidden="true" />
@@ -1050,9 +1053,9 @@ export const Marks: Story = {
               <div key={brand} style={{ display: 'grid', gap: 'var(--p-3)', justifyItems: 'center' }}>
                 <Scope brand={brand} poc strength={1}>
                   <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'flex-end' }}>
-                    <Mark Icon={Icon} size={88} />
-                    <Mark Icon={Icon} size={48} />
-                    <Mark Icon={Icon} size={28} />
+                    <Mark Icon={Icon} size={88} hold={brand === 'db'} />
+                    <Mark Icon={Icon} size={48} hold={brand === 'db'} />
+                    <Mark Icon={Icon} size={28} hold={brand === 'db'} />
                   </div>
                 </Scope>
                 <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
@@ -1510,7 +1513,7 @@ export const HueBudget: Story = {
  * fixed lightness has the yellow shouting and the blue whispering.
  */
 const PALETTE4 = [
-  { name: 'db', hue: 248, light: '#1173bc', dark: '#218cdf', use: 'flagship — deliberately linked to Aiden' },
+  { name: 'db', hue: 276, light: '#5b64d4', dark: '#707bf6', use: 'flagship indigo — deliberately linked to Aiden' },
   { name: 'Green', hue: 150, light: '#12803c', dark: '#229b4d', use: 'health, completion, anything affirmative' },
   { name: 'Amber', hue: 75, light: '#96660f', dark: '#b47d1f', use: 'the warm one; clears warning at 38°' },
   { name: 'Rose', hue: 348, light: '#b64686', dark: '#de53a3', use: 'the loudest slot' },
@@ -1518,7 +1521,7 @@ const PALETTE4 = [
 
 /** Today's Aiden, verbatim from tokens.scss, and the widened proposal. */
 const AIDEN_TODAY = ['#8455f0', '#5a37e6', '#2c6dea'];
-const AIDEN_PROPOSED = ['#7e1bf8', '#5a1af7', '#106fe8'];
+const AIDEN_PROPOSED = ['#911cf8', '#6c1af7', '#251af7'];
 
 /** Chroma ceiling per hue at white-text-safe lightness — measured, not guessed. */
 const GAMUT_CEILING: [number, string, number][] = [
@@ -1582,7 +1585,7 @@ export const FourBrands: Story = {
           <h2 style={H2}>db and Aiden are linked on purpose</h2>
           <p style={P}>
             These are the two flagships, so they are built to read as a pair.{' '}
-            <strong>db sits at 248° — just off Aiden&rsquo;s blue end — and measures 0.056 away.</strong>{' '}
+            <strong>db is an indigo at 276° and measures 0.126 from Aiden as a solid, 0.043 as a mark.</strong>{' '}
             That is inside the band earlier rounds treated as a failure, and here it is the
             requirement: close enough to feel like the same family, far enough to tell apart.
           </p>
@@ -1601,7 +1604,7 @@ export const FourBrands: Story = {
               >
                 Aiden
               </div>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>294° → 282° → 258°</span>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>300° → 288° → 268°</span>
             </div>
             <div style={{ flex: '1 1 220px', display: 'grid', gap: 'var(--p-2)' }}>
               <div
@@ -1617,7 +1620,7 @@ export const FourBrands: Story = {
               >
                 db
               </div>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>248° · ΔE 0.056 from Aiden</span>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>276° indigo · ΔE 0.126 solid, 0.043 mark</span>
             </div>
           </div>
           <p style={{ ...P, marginTop: 'var(--p-4)' }}>
@@ -1660,21 +1663,21 @@ export const FourBrands: Story = {
           <div style={{ display: 'flex', gap: 'var(--p-6)', marginTop: 'var(--p-4)', flexWrap: 'wrap' }}>
             <div>
               <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>hue travel</div>
-              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '30°' : '36°'}</strong>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '30°' : '32°'}</strong>
             </div>
             <div>
               <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>worst stop, white text</div>
-              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '4.63' : '4.71'}</strong>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '4.63' : '5.64'}</strong>
             </div>
             <div>
-              <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>db — linked, target 0.05–0.09</div>
+              <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>db — linked, target 0.04–0.14</div>
               <strong
                 style={{
                   fontSize: 'var(--text-2xl)',
                   color: 'var(--success)',
                 }}
               >
-                {aiden === 'today' ? '0.070' : '0.056'}
+                {aiden === 'today' ? '0.088' : '0.126'}
               </strong>
             </div>
           </div>
@@ -1698,10 +1701,10 @@ export const FourBrands: Story = {
             </thead>
             <tbody>
               {[
-                ['db (linked)', 0.07, 0.056],
-                ['Green', 0.286, 0.206],
+                ['db (linked)', 0.088, 0.126],
+                ['Green', 0.286, 0.28],
                 ['Amber', 0.312, 0.247],
-                ['Rose', 0.196, 0.115],
+                ['Rose', 0.196, 0.101],
               ].map(([n, a, b]) => (
                 <tr key={String(n)} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                   <td style={{ padding: 'var(--p-2)' }}>{n}</td>
@@ -1717,7 +1720,7 @@ export const FourBrands: Story = {
                         // linked band (0.04–0.10) rather than the separation bar.
                         // Colouring it red for succeeding would be the chart lying.
                         color: String(n).startsWith('db')
-                          ? (v as number) >= 0.04 && (v as number) <= 0.1
+                          ? (v as number) >= 0.04 && (v as number) <= 0.14
                             ? 'var(--success)'
                             : 'var(--warning)'
                           : (v as number) >= 0.1

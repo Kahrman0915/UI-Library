@@ -260,38 +260,36 @@ export const POC_CSS = `
   --poc-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
 }
 
-/* ── db, proposed: a Teams-like muted purple ────────────────────────────────
+/* ── db, proposed: the INDIGO ───────────────────────────────────────────────
    PROPOSAL ONLY. tokens.scss is NOT modified — --db-primary there is still
    #6063f1. This overrides --primary inside the POC scope so the change can be
-   looked at before it is committed to anywhere real. Specificity is (0,3,0),
+   looked at before it is committed anywhere real. Specificity is (0,3,0),
    which beats the (0,1,0) [data-theme='db'] scope; the derived --primary-hover
    / -soft / -text family follows automatically, because those are declared with
    color-mix over var(--primary) and resolve against the final cascaded value.
 
-   WHY THIS COLOUR. db today (#6063f1) is an indigo that straddles blue and
-   violet, and it sits in the most crowded part of the wheel — 5 degrees from
-   the Aiden surface, 14 from ir, 16 from rm. Every attempt to separate it by
-   HUE runs into one of the three.
+   THE BRIEF CHANGED, AND SO DID THIS COLOUR — twice, worth recording.
 
-   The Teams colour solves it by giving up chroma instead of hue. At C 0.104
-   against everything else's 0.21-0.25 it is the MUTED one, and that reads as
-   distinct even at a near-identical hue. Measured against today:
+   It was first moved to a Teams-like muted purple (#6264a7) to push db AWAY
+   from the Aiden surface, which measured well: aiden 0.055 -> 0.114, ir 0.061
+   -> 0.121, rm 0.083 -> 0.147. Then the actual requirement arrived: db and
+   Aiden are the two flagships and are MEANT to read as a pair. Every one of
+   those numbers was an improvement against a target nobody had set.
 
-                       today    proposed
-     db vs aiden        0.088  ->  0.143
-     db vs ir           0.061  ->  0.121
-     db vs rm           0.083  ->  0.147
-     white text on it    4.61  ->   5.38   (today's barely clears AA)
+   So db goes to indigo at 276 degrees — which is, almost exactly, where it
+   already was. Today's #6063f1 sits at 277, and so does Tailwind's indigo-500.
+   The colour barely moves; what changed is that its closeness to Aiden is now
+   the design rather than the defect.
 
-   It fixes all three collisions at once, and improves the contrast headroom,
-   which is the opposite of the usual trade. It also earns its "sophisticated"
-   read honestly — muted is why the Teams tile looks expensive next to the
-   saturated ones around it.
+     db     #5b64d4 light / #707bf6 dark    276°   white-text 4.98
+     aiden  #911cf8 -> #6c1af7 -> #251af7   300 -> 288 -> 268
 
-   Dark partner is derived at the same lightness as today's db dark (#818cf8)
-   with the Teams hue and chroma, so the light/dark relationship is unchanged. */
-[data-theme-poc][data-theme='db'][data-mode='light'] { --primary: #6264a7; }
-[data-theme-poc][data-theme='db'][data-mode='dark']  { --primary: #8d90d7; }
+   Linked, measured: solid 0.126 apart, marks 0.043. Close enough to read as
+   one family, far enough to tell apart — and the two are separated by
+   BEHAVIOUR rather than distance, since Aiden's hue travels and db's holds.
+   See the .poc-mark--hold block for why that distinction is the robust one. */
+[data-theme-poc][data-theme='db'][data-mode='light'] { --primary: #5b64d4; }
+[data-theme-poc][data-theme='db'][data-mode='dark']  { --primary: #707bf6; }
 
 /* ── AIDEN'S MARK ───────────────────────────────────────────────────────────
    Aiden is a SURFACE, not a brand, so its mark is the one deliberate exception
@@ -329,12 +327,44 @@ export const POC_CSS = `
    ABOVE .poc-mark and lost silently, rendering Aiden with the brand recipe and
    the neutral slate hue. Ordering is not a guarantee, specificity is. */
 [data-theme-poc] .poc-mark.poc-mark--aiden {
-  --poc-shadow-key: color-mix(in srgb, #5a1af7 24%, transparent);
-  --poc-shadow-far: color-mix(in srgb, #7b73f9 16%, transparent);
+  --poc-shadow-key: color-mix(in srgb, #6c1af7 24%, transparent);
+  --poc-shadow-far: color-mix(in srgb, #876cf9 16%, transparent);
   background-image:
     linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
-    radial-gradient(125% 125% at 16% 10%, #ddd4ff 0%, transparent 58%),
-    linear-gradient(140deg, #c1b1fc 0%, #7b73f9 52%, #0856b6 100%);
+    radial-gradient(125% 125% at 16% 10%, #e3d6ff 0%, transparent 58%),
+    linear-gradient(140deg, #c9adfc 0%, #876cf9 52%, #2626f7 100%);
+}
+
+/* ── db's MARK — the hue HOLDS ─────────────────────────────────────────────
+   db is the other flagship and is meant to read as Aiden's sibling, so the two
+   are separated by BEHAVIOUR rather than by distance on the wheel:
+
+     Aiden   the hue TRAVELS   300 -> 288 -> 268     movement, magic
+     db      the hue HOLDS     276 -> 276 -> 276     one colour, only light
+
+   All three stops sit on the brand hue and only lightness moves. That is a
+   direct inversion of what round 3 of this file concluded — a single-hue ramp
+   was called out there as exactly why the first marks "read as a tinted chip
+   rather than an object". It did, for a brand that needed to stand alone. For
+   the calm sibling of a gradient it is the point: db looks solid and settled
+   precisely because it does not shimmer, and Aiden looks alive because it is
+   the only thing that does.
+
+   It is NOT a fade to white. The ramp runs light-indigo -> indigo -> deep
+   indigo (#acb9fc -> #6d78f9 -> #4445c2), holding real chroma at every stop.
+   Taking it to actual white lands around #dee4f5 at the top and goes pale and
+   washed out at mark size — measured, not assumed.
+
+   Linked, as intended: solid 0.126 from Aiden, mark 0.043. */
+[data-theme-poc] .poc-mark.poc-mark--hold {
+  background-image:
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
+    radial-gradient(125% 125% at 16% 10%,
+      oklch(from var(--primary) 0.88 calc(c * 0.70) h) 0%, transparent 58%),
+    linear-gradient(140deg,
+      oklch(from var(--primary) 0.80 0.15 h) 0%,
+      oklch(from var(--primary) 0.63 0.21 h) 52%,
+      oklch(from var(--primary) 0.47 0.19 h) 100%);
 }
 
 [data-theme-poc] .poc-mark {
