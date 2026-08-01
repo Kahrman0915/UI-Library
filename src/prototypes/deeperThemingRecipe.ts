@@ -282,12 +282,18 @@ export const POC_CSS = `
    the design rather than the defect.
 
      db     #5b64d4 light / #707bf6 dark    276°   white-text 4.98
-     aiden  #911cf8 -> #6c1af7 -> #251af7   300 -> 288 -> 268
+     aiden  #1277c2 -> #251af7 -> #791bf8   248 -> 268 -> 292
 
-   Linked, measured: solid 0.126 apart, marks 0.043. Close enough to read as
-   one family, far enough to tell apart — and the two are separated by
-   BEHAVIOUR rather than distance, since Aiden's hue travels and db's holds.
-   See the .poc-mark--hold block for why that distinction is the robust one. */
+   db SITS INSIDE AIDEN'S SWEEP. Aiden's middle stop is 268 and db is 276 —
+   eight degrees apart. Aiden travels through indigo; db IS the indigo, the
+   still point of the same colour. That is a stronger statement of "these two
+   belong together" than any amount of near-miss hue tuning, and it only works
+   because Aiden was turned to START at blue rather than end there.
+
+   Measured: solid 0.080 apart, marks 0.026. The mark figure is very close —
+   close enough that colour alone will not separate them, which is deliberate
+   here and is why the two are distinguished by BEHAVIOUR instead: Aiden's hue
+   travels, db's holds. See the .poc-mark--hold block. */
 [data-theme-poc][data-theme='db'][data-mode='light'] { --primary: #5b64d4; }
 [data-theme-poc][data-theme='db'][data-mode='dark']  { --primary: #707bf6; }
 
@@ -302,12 +308,16 @@ export const POC_CSS = `
    makes it sit in the family, and its own hue direction (322 -> 300 -> 278),
    which is what keeps it Aiden. Same object, its own signature.
 
-   PURPLE-BLUE, NOT PURPLE-PINK. An earlier pass rotated Aiden toward magenta
-   to free the blue slot for a sub-brand. It measured well and it was wrong:
-   AI products read as purple-BLUE, and pushing Aiden into pink traded away the
-   convention that makes it legible as "the AI" at a glance. Rotating back —
-   violet 294 -> blurple 282 -> blue 258, 36 degrees of travel against today's
-   30 — keeps the convention AND still has more travel than what ships.
+   IT TRAVELS BLUE -> INDIGO -> VIOLET (248 -> 268 -> 292), 44 degrees, which
+   is the classic AI sweep and the widest arc any version of this has had.
+
+   Two earlier passes were wrong in different ways. One rotated Aiden toward
+   MAGENTA to free the blue slot for a sub-brand: it measured well and gave up
+   the convention that makes Aiden legible as "the AI" at a glance. The next
+   started at violet and only reached blue-violet, so it read purple-dominant
+   rather than blue-purple. Starting at BLUE and sweeping up into violet is
+   what actually looks like AI, and it is also the direction that lets db sit
+   inside the sweep rather than beside it.
 
    Hues are taken at MARK lightness rather than surface lightness: a mark
    carries no text, so each stop runs near the sRGB gamut ceiling instead of
@@ -327,12 +337,12 @@ export const POC_CSS = `
    ABOVE .poc-mark and lost silently, rendering Aiden with the brand recipe and
    the neutral slate hue. Ordering is not a guarantee, specificity is. */
 [data-theme-poc] .poc-mark.poc-mark--aiden {
-  --poc-shadow-key: color-mix(in srgb, #6c1af7 24%, transparent);
-  --poc-shadow-far: color-mix(in srgb, #876cf9 16%, transparent);
+  --poc-shadow-key: color-mix(in srgb, #251af7 24%, transparent);
+  --poc-shadow-far: color-mix(in srgb, #597ef9 16%, transparent);
   background-image:
     linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
-    radial-gradient(125% 125% at 16% 10%, #e3d6ff 0%, transparent 58%),
-    linear-gradient(140deg, #c9adfc 0%, #876cf9 52%, #2626f7 100%);
+    radial-gradient(125% 125% at 16% 10%, #bfe0ff 0%, transparent 58%),
+    linear-gradient(140deg, #89c4fc 0%, #597ef9 52%, #6815d7 100%);
 }
 
 /* ── db's MARK — the hue HOLDS ─────────────────────────────────────────────

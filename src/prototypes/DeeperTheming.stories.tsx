@@ -1084,31 +1084,32 @@ export const Marks: Story = {
             <h2 style={H2}>Aiden&rsquo;s mark breaks the recipe, deliberately</h2>
             <p style={P}>
               Every brand mark runs the same hue arc — <code style={MONO}>−12 / 0 / +26</code>, hue
-              increasing as it darkens. Aiden&rsquo;s gradient runs the other way, violet down to
-              blue, and that direction <em>is</em> its identity. Pushing it through the brand arc
-              would have inverted the one thing that makes it Aiden.
+              increasing as it darkens over a fixed 38°. Aiden&rsquo;s runs 44° and lands
+              somewhere no brand arc reaches — blue all the way up into violet — and that sweep{' '}
+              <em>is</em> its identity. Pushing it through the brand arc would have clipped the one
+              thing that makes it Aiden.
             </p>
             <p style={P}>
               So it keeps the brand <strong>lightness ladder</strong> (0.80 / 0.63 / 0.47) — which
-              is what makes it sit in the family — and its own <strong>hue direction</strong> (294°
-              → 282° → 258°). Same object, its own signature. It also runs near the sRGB gamut
+              is what makes it sit in the family — and its own <strong>sweep</strong> (248° → 268°
+              → 292°). Same object, its own signature. It also runs near the sRGB gamut
               ceiling rather than being held to white-text contrast like the surface gradient, which
               is why it reads more vivid than the panel it comes from: nothing sits on a mark.
             </p>
             <p style={P}>
-              <strong>Purple-blue, not purple-pink.</strong> An earlier pass rotated Aiden toward
-              magenta to free the blue slot for a sub-brand. It measured well and it was wrong: AI
-              products read as purple-blue, and pushing Aiden into pink traded away the convention
-              that makes it legible as &ldquo;the AI&rdquo; at a glance. Rotating back keeps the
-              convention and still widens the arc — 36° of travel against the 30° that ships today.
+              <strong>Blue into violet, not violet into blue.</strong> Three passes got this wrong
+              in different ways: rotating toward magenta gave up the convention entirely, and
+              starting at violet only reached blue-violet, so it read purple-dominant rather than
+              blue-purple. Starting at <em>blue</em> and sweeping up into violet is what actually
+              looks like AI — 44° of travel against the 30° that ships today.
             </p>
             <p style={P}>
-              Against the proposed four-brand palette it clears Green at 0.206, Amber at 0.247 and
-              Rose at 0.115. <strong>db is the deliberate exception at 0.056</strong> — the two
-              flagships are built to read as a pair, so that number is the requirement rather than
-              a failure. Several earlier rounds of this file spent real effort trying to push db and
-              Aiden apart; that was optimising against the wrong target, and the corrected brief is
-              why db now sits at 248°, just off Aiden&rsquo;s blue end.
+              Against the proposed four-brand palette it clears Green at 0.215, Amber at 0.254 and
+              Rose at 0.193. <strong>db is the deliberate exception</strong> — 0.080 as a solid and
+              0.026 as a mark, because Aiden&rsquo;s middle stop is 268° and db is 276°.{' '}
+              <strong>db sits inside the sweep.</strong> Aiden travels through indigo; db is the
+              indigo, the still point of the same colour. Several earlier rounds spent real effort
+              pushing these two apart, which was optimising against a target nobody had set.
             </p>
             <p style={P}>
               What separates the pair is <strong>form, not hue</strong>: Aiden is always the
@@ -1521,7 +1522,7 @@ const PALETTE4 = [
 
 /** Today's Aiden, verbatim from tokens.scss, and the widened proposal. */
 const AIDEN_TODAY = ['#8455f0', '#5a37e6', '#2c6dea'];
-const AIDEN_PROPOSED = ['#911cf8', '#6c1af7', '#251af7'];
+const AIDEN_PROPOSED = ['#1277c2', '#251af7', '#791bf8'];
 
 /** Chroma ceiling per hue at white-text-safe lightness — measured, not guessed. */
 const GAMUT_CEILING: [number, string, number][] = [
@@ -1585,7 +1586,9 @@ export const FourBrands: Story = {
           <h2 style={H2}>db and Aiden are linked on purpose</h2>
           <p style={P}>
             These are the two flagships, so they are built to read as a pair.{' '}
-            <strong>db is an indigo at 276° and measures 0.126 from Aiden as a solid, 0.043 as a mark.</strong>{' '}
+            <strong>Aiden&rsquo;s middle stop is 268° and db is 276° — db sits INSIDE the sweep.</strong>{' '}
+            Aiden travels through indigo; db <em>is</em> the indigo, the still point of the same
+            colour. Measured 0.080 apart as solids and 0.026 as marks.{' '}
             That is inside the band earlier rounds treated as a failure, and here it is the
             requirement: close enough to feel like the same family, far enough to tell apart.
           </p>
@@ -1604,7 +1607,7 @@ export const FourBrands: Story = {
               >
                 Aiden
               </div>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>300° → 288° → 268°</span>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>248° → 268° → 292°</span>
             </div>
             <div style={{ flex: '1 1 220px', display: 'grid', gap: 'var(--p-2)' }}>
               <div
@@ -1620,7 +1623,7 @@ export const FourBrands: Story = {
               >
                 db
               </div>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>276° indigo · ΔE 0.126 solid, 0.043 mark</span>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>276° indigo · inside Aiden&rsquo;s sweep</span>
             </div>
           </div>
           <p style={{ ...P, marginTop: 'var(--p-4)' }}>
@@ -1633,12 +1636,13 @@ export const FourBrands: Story = {
         <div>
           <h2 style={H2}>Aiden: widened, and back to purple-blue</h2>
           <p style={P}>
-            Two earlier attempts were wrong in opposite directions. Narrowing Aiden to pure violet
+            Three earlier attempts were wrong in different ways. Narrowing Aiden to pure violet
             would have killed the magic, because <strong>the travel is the effect</strong>. Rotating
-            it toward magenta kept the travel but gave up the convention —{' '}
-            <strong>AI products read as purple-blue</strong>, and pink stops it being legible as
-            &ldquo;the AI&rdquo; at a glance. This keeps the purple-blue and widens the arc: 36° of
-            travel against today&rsquo;s 30°.
+            toward magenta kept the travel but gave up the convention. And starting at violet only
+            reached blue-violet, so it read purple-dominant rather than blue-purple.{' '}
+            <strong>Starting at blue and sweeping up into violet</strong> is what actually looks
+            like AI — 44° of travel against today&rsquo;s 30°, the widest any version has had, and
+            the direction that lets db sit inside the sweep instead of beside it.
           </p>
           <div style={{ display: 'flex', gap: 'var(--p-3)', marginBottom: 'var(--p-5)', flexWrap: 'wrap' }}>
             <Chip id="a4-today" label="Aiden today" active={aiden === 'today'} onClick={() => setAiden('today')} />
@@ -1663,11 +1667,11 @@ export const FourBrands: Story = {
           <div style={{ display: 'flex', gap: 'var(--p-6)', marginTop: 'var(--p-4)', flexWrap: 'wrap' }}>
             <div>
               <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>hue travel</div>
-              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '30°' : '32°'}</strong>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '30°' : '44°'}</strong>
             </div>
             <div>
               <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>worst stop, white text</div>
-              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '4.63' : '5.64'}</strong>
+              <strong style={{ fontSize: 'var(--text-2xl)' }}>{aiden === 'today' ? '4.63' : '4.73'}</strong>
             </div>
             <div>
               <div style={{ ...MONO, color: 'var(--muted-foreground)' }}>db — linked, target 0.04–0.14</div>
@@ -1677,7 +1681,7 @@ export const FourBrands: Story = {
                   color: 'var(--success)',
                 }}
               >
-                {aiden === 'today' ? '0.088' : '0.126'}
+                {aiden === 'today' ? '0.088' : '0.080'}
               </strong>
             </div>
           </div>
@@ -1701,10 +1705,10 @@ export const FourBrands: Story = {
             </thead>
             <tbody>
               {[
-                ['db (linked)', 0.088, 0.126],
-                ['Green', 0.286, 0.28],
-                ['Amber', 0.312, 0.247],
-                ['Rose', 0.196, 0.101],
+                ['db (linked)', 0.088, 0.08],
+                ['Green', 0.286, 0.215],
+                ['Amber', 0.312, 0.254],
+                ['Rose', 0.196, 0.193],
               ].map(([n, a, b]) => (
                 <tr key={String(n)} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                   <td style={{ padding: 'var(--p-2)' }}>{n}</td>
