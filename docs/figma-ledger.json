@@ -198,7 +198,10 @@
     "Figma: resize() on an instance does NOT scale cornerRadius or children — a 28.8px radius on a 24px square renders a circle with the glyph clipped. Use node.rescale(factor) for proportional scaling, and set child constraints to SCALE so manual handle-drags behave the same.",
     "Figma: setting textAutoResize=\"HEIGHT\" BEFORE resize(w, h) pins the height at h — every wrapping paragraph silently collapsed to 10px and overflowed its box. Order is: set width, THEN set textAutoResize=\"HEIGHT\" so it recomputes. Re-applying NONE→HEIGHT repairs an already-collapsed node.",
     "Figma: node.screenshot() defaults to contentsOnly:true, so shooting a backing frame that merely SITS BEHIND a sibling returns an empty rectangle. Either pass contentsOnly:false or put the background on the node itself.",
-    "Figma: copying one variant layer stack across a set to unify effects also carries its GLYPH. Five marks silently ended up with the same icon, and the variant names truncated at the same time. After any cross-variant paste, re-check both the icon content and the variant property values."
+    "Figma: copying one variant layer stack across a set to unify effects also carries its GLYPH. Five marks silently ended up with the same icon, and the variant names truncated at the same time. After any cross-variant paste, re-check both the icon content and the variant property values.",
+    "Figma: addComponentProperty(name, \"INSTANCE_SWAP\", value) rejects a component KEY and accepts the component NODE ID, despite the docs implying key. Probe with a throwaway component before committing to either.",
+    "Figma: a set-level INSTANCE_SWAP property has a single default across all variants, so binding a per-variant nested instance to it overwrites every variant with that one default. If each variant needs its own nested component, leave it an unbound nested instance — still swappable by selecting it — and skip the property.",
+    "Figma: page children paint back-to-front, so inserting a backing panel at a later index than existing nodes hides them. Same trap as the bloom-over-glyph z-order; appendChild the content after the panel."
   ],
   "components": {
     "Button": {
@@ -1597,6 +1600,21 @@
         "Rose": "309 -> 340 -> 357",
         "Aiden": "249 -> 268 -> 292",
         "principle": "every mark rotates its LIGHT stop backwards out of the base hue family to give an upper-left highlight; rotations run -56/-25/+34/-31/-19 degrees off the mid stop."
+      },
+      "rebuilt": {
+        "date": "2026-08-01",
+        "page": "811:44",
+        "markSet": {
+          "id": "825:21807",
+          "props": [
+            "Brand (db/Green/Amber/Rose/Aiden)",
+            "Mode (Light/Dark)"
+          ],
+          "variants": 10
+        },
+        "iconComponents": 12,
+        "note": "Page rebuilt clean. Marks unchanged in value — light stops are the owner picks, dark holds identical hues. Glyph is now a NESTED COMPONENT INSTANCE per variant (Icon / * family), swappable by selecting it inside an instance.",
+        "whyNoInstanceSwapProp": "A set-level INSTANCE_SWAP property carries ONE default, so binding all ten glyphs to it stamped the same icon on every variant and destroyed the per-brand glyph. Per-brand defaults and a set-level swap property are mutually exclusive in Figma; per-brand defaults won."
       }
     }
   }
