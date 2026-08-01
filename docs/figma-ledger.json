@@ -196,7 +196,9 @@
     "Before deleting a page, resolve every instance in the file to its main component — do NOT infer safety from a scan of the page you are deleting. A first pass here \"proved\" the legacy masters were unused by scanning a page that had no components on it, which proves nothing. The real check walked 8,533 instances on the other 73 pages and confirmed none resolved to the 23 doomed components.",
     "Size vocabulary standardised in CODE on 2026-07-30 to xs/sm/default/lg — both the prop and the emitted class (ui-button--sz-sm). FIGMA IS DELIBERATELY BEHIND: the Button (120 variants), Button/Icon-only (120) and Chip (6) sets still carry title-case spelled-out Size options (XSmall|Small|Default|Large). Renaming them is a named follow-up — use the variant-property rename API, never delete-and-recreate, and rehearse on Chip first: done wrong it detaches every instance variant selection file-wide. Nothing programmatic breaks meanwhile; Code Connect is blocked on a paid seat so the coupling is prose only.",
     "Figma: resize() on an instance does NOT scale cornerRadius or children — a 28.8px radius on a 24px square renders a circle with the glyph clipped. Use node.rescale(factor) for proportional scaling, and set child constraints to SCALE so manual handle-drags behave the same.",
-    "Figma: setting textAutoResize=\"HEIGHT\" BEFORE resize(w, h) pins the height at h — every wrapping paragraph silently collapsed to 10px and overflowed its box. Order is: set width, THEN set textAutoResize=\"HEIGHT\" so it recomputes. Re-applying NONE→HEIGHT repairs an already-collapsed node."
+    "Figma: setting textAutoResize=\"HEIGHT\" BEFORE resize(w, h) pins the height at h — every wrapping paragraph silently collapsed to 10px and overflowed its box. Order is: set width, THEN set textAutoResize=\"HEIGHT\" so it recomputes. Re-applying NONE→HEIGHT repairs an already-collapsed node.",
+    "Figma: node.screenshot() defaults to contentsOnly:true, so shooting a backing frame that merely SITS BEHIND a sibling returns an empty rectangle. Either pass contentsOnly:false or put the background on the node itself.",
+    "Figma: copying one variant layer stack across a set to unify effects also carries its GLYPH. Five marks silently ended up with the same icon, and the variant names truncated at the same time. After any cross-variant paste, re-check both the icon content and the variant property values."
   ],
   "components": {
     "Button": {
@@ -1573,7 +1575,29 @@
       "built": "2026-08-01",
       "status": "EXPLORATION — not shipped, no index row, not a component page",
       "source": "src/prototypes/DeeperTheming.stories.tsx + deeperThemingRecipe.ts (branch poc/deeper-theming)",
-      "note": "Marks for the deeper-theming exploration. tokens.scss is UNTOUCHED — --db-primary is still #6063f1 and Aiden still ships the violet→blue gradient. Brand marks travel a hue arc (-12/0/+26); db deliberately HOLDS one hue so it reads as the calm sibling to Aiden, which sweeps blue→indigo→violet across 44°. db/Aiden measure 0.026 apart as marks, which is the intent — they are the two flagships."
+      "note": "Marks for the deeper-theming exploration. tokens.scss is UNTOUCHED — --db-primary is still #6063f1 and Aiden still ships the violet→blue gradient. Brand marks travel a hue arc (-12/0/+26); db deliberately HOLDS one hue so it reads as the calm sibling to Aiden, which sweeps blue→indigo→violet across 44°. db/Aiden measure 0.026 apart as marks, which is the intent — they are the two flagships.",
+      "sets": {
+        "v1": {
+          "id": "811:78",
+          "note": "original build, per-brand glyphs intact"
+        },
+        "v2": {
+          "id": "821:292",
+          "note": "owner-edited — revised hues + unified glass effects. NOTE: variant names truncated (d/Gree/Ros) and all five glyphs overwritten with Aidens sparkle when the layer stack was copied across."
+        },
+        "dark": {
+          "id": "823:292",
+          "note": "dark-mode companion. Hues identical to v2 (delta-h 0 on every stop, highlight rotations preserved). Only lightness lifted, deep stops now clear the #0f172a page by delta-L 0.26-0.31 vs 0.16-0.26. Lightness range held within 0.03-0.06 of light. Effect stack byte-identical. Glyphs restored from v1 and moved above the bloom."
+        }
+      },
+      "ownerHues": {
+        "db": "208 -> 264 -> 276 (teal highlight into deep indigo)",
+        "Green": "124 -> 149 -> 168",
+        "Amber": "92 -> 58 -> 44",
+        "Rose": "309 -> 340 -> 357",
+        "Aiden": "249 -> 268 -> 292",
+        "principle": "every mark rotates its LIGHT stop backwards out of the base hue family to give an upper-left highlight; rotations run -56/-25/+34/-31/-19 degrees off the mid stop."
+      }
     }
   }
 }
