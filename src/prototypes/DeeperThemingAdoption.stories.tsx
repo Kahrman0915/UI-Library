@@ -85,8 +85,10 @@ const findBlock = (blocks: Block[], test: (s: string) => boolean) =>
 
 const LIGHT = findBlock(TOKEN_BLOCKS, (s) => s.trim() === "[data-mode='light']");
 const DARK = findBlock(TOKEN_BLOCKS, (s) => s.trim() === "[data-mode='dark']");
-const POC_LIGHT = findBlock(POC_BLOCKS, (s) => s.includes('light'));
-const POC_DARK = findBlock(POC_BLOCKS, (s) => s.includes('dark'));
+// exact match — the recipe now also emits [data-brand='x'][data-mode='light'] anchor
+// blocks, and a substring match picked the first of those instead of the surfaces
+const POC_LIGHT = findBlock(POC_BLOCKS, (s) => s.trim() === "[data-theme-poc][data-mode='light']");
+const POC_DARK = findBlock(POC_BLOCKS, (s) => s.trim() === "[data-theme-poc][data-mode='dark']");
 
 type Row = {
   token: string;
@@ -451,12 +453,12 @@ function DiffTable({ rows, mode }: { rows: Row[]; mode: 'light' | 'dark' }) {
         aria-hidden="true"
         style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}
       >
-        <span data-now="" data-theme="dc" data-mode={mode}>
+        <span data-now="" data-brand="dc" data-mode={mode}>
           <span />
         </span>
         <span
           data-next=""
-          data-theme="dc"
+          data-brand="dc"
           data-mode={mode}
           data-theme-poc=""
           style={{ '--poc-str': 1, '--poc-chrome': 1 } as CSSProperties}
