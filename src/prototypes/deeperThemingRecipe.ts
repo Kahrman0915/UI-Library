@@ -304,14 +304,24 @@ export const POC_CSS = `
    makes it sit in the family, and its own hue direction (322 -> 300 -> 278),
    which is what keeps it Aiden. Same object, its own signature.
 
-   Hues are the rotated ones from the FourBrands proposal, taken at MARK
-   lightness rather than surface lightness — a mark carries no text, so each
-   stop can run near the sRGB gamut ceiling instead of being held down to
-   white-text contrast. That is why it reads more vivid than the surface
-   gradient it comes from.
+   PURPLE-BLUE, NOT PURPLE-PINK. An earlier pass rotated Aiden toward magenta
+   to free the blue slot for a sub-brand. It measured well and it was wrong:
+   AI products read as purple-BLUE, and pushing Aiden into pink traded away the
+   convention that makes it legible as "the AI" at a glance. Rotating back —
+   violet 294 -> blurple 282 -> blue 258, 36 degrees of travel against today's
+   30 — keeps the convention AND still has more travel than what ships.
 
-   Measured against the proposed four: Green 0.331, Amber 0.259, and Blue and
-   Rose only clear once THEIR arcs reverse (0.171 and 0.107) — see the story.
+   Hues are taken at MARK lightness rather than surface lightness: a mark
+   carries no text, so each stop runs near the sRGB gamut ceiling instead of
+   being held to white-text contrast. That is why it reads more vivid than the
+   surface gradient it comes from.
+
+   THE BLUE END IS NOT A COLLISION, IT IS THE POINT. db is the other flagship
+   and is meant to feel closely linked, so it sits at 248 — just off Aiden's
+   blue end — and measures 0.056 away. Several earlier rounds spent effort
+   trying to push those two APART; that was optimising against the wrong
+   target. The other three brands clear Aiden comfortably (Green 0.206,
+   Amber 0.247, Rose 0.115).
 
    The selector DOUBLES the class — .poc-mark.poc-mark--aiden, (0,3,0) — rather
    than relying on source order. Both rules set background-image at the same
@@ -319,12 +329,12 @@ export const POC_CSS = `
    ABOVE .poc-mark and lost silently, rendering Aiden with the brand recipe and
    the neutral slate hue. Ordering is not a guarantee, specificity is. */
 [data-theme-poc] .poc-mark.poc-mark--aiden {
-  --poc-shadow-key: color-mix(in srgb, #8919ec 24%, transparent);
-  --poc-shadow-far: color-mix(in srgb, #c51cdd 16%, transparent);
+  --poc-shadow-key: color-mix(in srgb, #5a1af7 24%, transparent);
+  --poc-shadow-far: color-mix(in srgb, #7b73f9 16%, transparent);
   background-image:
     linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
-    radial-gradient(125% 125% at 16% 10%, #fdc3e9 0%, transparent 58%),
-    linear-gradient(140deg, #ee97fc 0%, #a15cf9 52%, #4a18ee 100%);
+    radial-gradient(125% 125% at 16% 10%, #ddd4ff 0%, transparent 58%),
+    linear-gradient(140deg, #c1b1fc 0%, #7b73f9 52%, #0856b6 100%);
 }
 
 [data-theme-poc] .poc-mark {
