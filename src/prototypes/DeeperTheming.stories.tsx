@@ -11,6 +11,7 @@ import {
   Plus,
   Search,
   Settings,
+  Sparkles,
   Users,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -270,9 +271,21 @@ function Scope({
   );
 }
 
-function Mark({ Icon, size = 40 }: { Icon: LucideIcon; size?: number }) {
+function Mark({
+  Icon,
+  size = 40,
+  aiden,
+}: {
+  Icon: LucideIcon;
+  size?: number;
+  /** Aiden's mark is the one exception to the recipe — see the recipe file. */
+  aiden?: boolean;
+}) {
   return (
-    <span className="poc-mark" style={{ width: size, height: size }}>
+    <span
+      className={`poc-mark${aiden ? ' poc-mark--aiden' : ''}`}
+      style={{ width: size, height: size }}
+    >
       <Icon size={Math.round(size * 0.5)} strokeWidth={2} aria-hidden="true" />
     </span>
   );
@@ -1045,6 +1058,58 @@ export const Marks: Story = {
                 <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{brand}</span>
               </div>
             ))}
+
+            {/* Aiden sits in the row on purpose. It is NOT a brand — it is the
+                surface that lives inside all of them — so seeing it beside the
+                app marks is the only way to judge whether it reads as related
+                but separate, which is the whole requirement. */}
+            <div style={{ display: 'grid', gap: 'var(--p-3)', justifyItems: 'center' }}>
+              <Scope brand="" poc strength={1}>
+                <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'flex-end' }}>
+                  <Mark Icon={Sparkles} size={88} aiden />
+                  <Mark Icon={Sparkles} size={48} aiden />
+                  <Mark Icon={Sparkles} size={28} aiden />
+                </div>
+              </Scope>
+              <span style={{ ...MONO, color: 'var(--primary-text)', fontWeight: 'var(--font-semibold)' }}>
+                aiden · surface
+              </span>
+            </div>
+          </div>
+
+          <div>
+            <h2 style={H2}>Aiden&rsquo;s mark breaks the recipe, deliberately</h2>
+            <p style={P}>
+              Every brand mark runs the same hue arc — <code style={MONO}>−12 / 0 / +26</code>, hue
+              increasing as it darkens. Aiden&rsquo;s gradient runs the other way, magenta down to
+              blurple, and that direction <em>is</em> its identity. Pushing it through the brand arc
+              would have inverted the one thing that makes it Aiden.
+            </p>
+            <p style={P}>
+              So it keeps the brand <strong>lightness ladder</strong> (0.80 / 0.63 / 0.47) — which
+              is what makes it sit in the family — and its own <strong>hue direction</strong> (322°
+              → 300° → 278°). Same object, its own signature. It also runs near the sRGB gamut
+              ceiling rather than being held to white-text contrast like the surface gradient, which
+              is why it reads more vivid than the panel it comes from: nothing sits on a mark.
+            </p>
+            <p style={P}>
+              Against the proposed four-brand palette it clears Green at 0.331 and Amber at 0.259
+              comfortably. <strong>Blue and Rose only clear once their own arcs reverse</strong> —
+              0.087 → 0.171 and 0.048 → 0.107. That is the rule that falls out: the two brands
+              flanking Aiden arc <em>away</em> from it, and the two far from it keep the standard
+              arc. A per-brand sign, chosen by geometry rather than taste — which is the reverse-arc
+              idea working, once it is applied to the brands that <em>flank</em> Aiden rather than
+              the one sitting on top of it.
+            </p>
+            <p style={P}>
+              Against the three brands actually rendered above it measures{' '}
+              <code style={MONO}>dc 0.226</code>, <code style={MONO}>ec 0.131</code> and{' '}
+              <code style={MONO}>db 0.073</code>. db is under the bar, and that is the same finding
+              as everywhere else in this file rather than a new one: the Teams purple put db at 281°
+              and Aiden&rsquo;s core is 300°, so db sits inside Aiden&rsquo;s arc. It is the
+              clearest argument for the four-brand palette — <strong>Blue at 248° is where db wants
+              to be</strong>, and it only fits once Aiden rotates off the blue end.
+            </p>
           </div>
 
           <div>

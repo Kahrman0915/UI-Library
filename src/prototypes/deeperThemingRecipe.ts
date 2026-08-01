@@ -293,6 +293,40 @@ export const POC_CSS = `
 [data-theme-poc][data-theme='db'][data-mode='light'] { --primary: #6264a7; }
 [data-theme-poc][data-theme='db'][data-mode='dark']  { --primary: #8d90d7; }
 
+/* ── AIDEN'S MARK ───────────────────────────────────────────────────────────
+   Aiden is a SURFACE, not a brand, so its mark is the one deliberate exception
+   to the recipe. The brand arc runs -12 / 0 / +26 — hue INCREASING as the mark
+   darkens — and Aiden's gradient runs the other way, magenta down to blurple.
+   Forcing Aiden through the brand arc would invert the one thing that is
+   actually its identity.
+
+   So it keeps the brand LIGHTNESS ladder (0.80 / 0.63 / 0.47), which is what
+   makes it sit in the family, and its own hue direction (322 -> 300 -> 278),
+   which is what keeps it Aiden. Same object, its own signature.
+
+   Hues are the rotated ones from the FourBrands proposal, taken at MARK
+   lightness rather than surface lightness — a mark carries no text, so each
+   stop can run near the sRGB gamut ceiling instead of being held down to
+   white-text contrast. That is why it reads more vivid than the surface
+   gradient it comes from.
+
+   Measured against the proposed four: Green 0.331, Amber 0.259, and Blue and
+   Rose only clear once THEIR arcs reverse (0.171 and 0.107) — see the story.
+
+   The selector DOUBLES the class — .poc-mark.poc-mark--aiden, (0,3,0) — rather
+   than relying on source order. Both rules set background-image at the same
+   (0,2,0) specificity, so whichever comes last wins; the first attempt sat
+   ABOVE .poc-mark and lost silently, rendering Aiden with the brand recipe and
+   the neutral slate hue. Ordering is not a guarantee, specificity is. */
+[data-theme-poc] .poc-mark.poc-mark--aiden {
+  --poc-shadow-key: color-mix(in srgb, #8919ec 24%, transparent);
+  --poc-shadow-far: color-mix(in srgb, #c51cdd 16%, transparent);
+  background-image:
+    linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
+    radial-gradient(125% 125% at 16% 10%, #fdc3e9 0%, transparent 58%),
+    linear-gradient(140deg, #ee97fc 0%, #a15cf9 52%, #4a18ee 100%);
+}
+
 [data-theme-poc] .poc-mark {
   display: grid;
   place-items: center;
