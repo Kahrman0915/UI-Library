@@ -695,6 +695,195 @@ export const Marks: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 4b — The minimal option
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * "What if we just used the derived --primary and left the system alone?"
+ *
+ * It works, and it is much cheaper than the three-anchor model. Worth building
+ * honestly rather than arguing about, because the mechanism is nicer than it
+ * sounds: the whole --primary-* family in tokens.scss is already
+ * color-mix(... var(--primary) ...), so overriding --primary alone recomputes
+ * -hover, -light, -soft, -border, -ring, -focus and -text for free. This story
+ * proves it by setting a REAL data-theme scope and overriding only --primary
+ * inline — no POC CSS involved on the left-hand side at all.
+ */
+const MINIMAL_BRANDS: { key: BrandKey; theme: string }[] = [
+  { key: 'db', theme: 'db' }, { key: 'nb', theme: 'nb' }, { key: 'dc', theme: 'dc' },
+  { key: 'ec', theme: 'ec' }, { key: 'ph', theme: 'ph' }, { key: 'rm', theme: 'rm' },
+];
+
+export const MinimalOption: Story = {
+  render: function MinimalStory() {
+    const hostRef = useRef<HTMLDivElement>(null);
+    const [rows, setRows] = useState<Record<string, { chromaA: number; chromaB: number; textOnLight: number }>>({});
+
+    useEffect(() => {
+      const host = hostRef.current;
+      if (!host) return;
+      const chroma = (c: [number, number, number, number]) => {
+        const [, a, b] = oklab(c);
+        return Math.hypot(a, b);
+      };
+      const next: Record<string, { chromaA: number; chromaB: number; textOnLight: number }> = {};
+      for (const { key } of MINIMAL_BRANDS) {
+        const a = host.querySelector<HTMLElement>(`[data-min="${key}"]`);
+        const b = host.querySelector<HTMLElement>(`[data-anc="${key}"]`);
+        if (!a || !b) continue;
+        const read = (el: HTMLElement, tok: string) => {
+          const p = el.firstElementChild as HTMLElement;
+          p.style.backgroundColor = '';
+          p.style.backgroundColor = `var(${tok})`;
+          return toRGBA(getComputedStyle(p).backgroundColor);
+        };
+        const lightRaw = read(a, '--primary-light');
+        const white = toRGBA('#ffffff')!;
+        const light = lightRaw ? (lightRaw[3] < 1 ? over(lightRaw, white) : lightRaw) : null;
+        const text = read(a, '--primary-text');
+        const band = read(b, '--poc-band');
+        if (light && text && band) {
+          next[key] = { chromaA: chroma(light), chromaB: chroma(band), textOnLight: contrast(text, light) };
+        }
+      }
+      setRows(next);
+    }, []);
+
+    const Fragment = ({ label }: { label: string }) => (
+      <div style={{ display: 'grid', gap: 'var(--p-3)', padding: 'var(--p-4)', background: 'var(--primary-light)', borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--primary-border)' }}>
+        <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--primary-text)' }}>{label}</strong>
+        <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
+          <Button id={`${label}-b`} label="Primary" size="sm" />
+          <Button id={`${label}-o`} label="Outline" style="outline" size="sm" />
+          <Badge id={`${label}-bg`} variant="default" label="Live" />
+        </div>
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
+          {MINIMAL_BRANDS.map(({ key, theme }) => (
+            <span key={key}>
+              <span data-min={key} data-theme={theme} data-mode="light" style={{ '--primary': PRIMARY_LIGHT[key] } as CSSProperties}><span /></span>
+              <span data-anc={key} data-theme-poc="" data-brand={key} data-mode="light" style={{ '--poc-str': 1 } as CSSProperties}><span /></span>
+            </span>
+          ))}
+        </div>
+
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>The minimal option — just swap <code style={MONO}>--primary</code></h2>
+            <p style={P}>
+              No new tokens, no new architecture. Set <code style={MONO}>--primary</code> to the derived
+              value per brand and let the system do what it already does. The whole{' '}
+              <code style={MONO}>--primary-*</code> family in <code style={MONO}>tokens.scss</code> is
+              already <code style={MONO}>color-mix(… var(--primary) …)</code>, so{' '}
+              <code style={MONO}>-hover</code>, <code style={MONO}>-light</code>,{' '}
+              <code style={MONO}>-soft</code>, <code style={MONO}>-border</code>,{' '}
+              <code style={MONO}>-ring</code>, <code style={MONO}>-focus</code> and{' '}
+              <code style={MONO}>-text</code> all recompute for free.
+            </p>
+            <p style={P}>
+              The left column below is <strong>not using the POC stylesheet at all</strong>. It is a real{' '}
+              <code style={MONO}>data-theme</code> scope with one inline override —{' '}
+              <code style={MONO}>{'style={{ \'--primary\': \'#0b8339\' }}'}</code> — which is exactly
+              what shipping this would look like.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px,1fr))', gap: 'var(--p-5)' }}>
+            <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>A · --primary swapped, stock system</span>
+              {MINIMAL_BRANDS.map(({ key, theme }) => (
+                <div key={key} data-theme={theme} data-mode="light" style={{ '--primary': PRIMARY_LIGHT[key] } as CSSProperties}>
+                  <Fragment label={key} />
+                </div>
+              ))}
+            </div>
+            <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>B · three anchors</span>
+              {MINIMAL_BRANDS.map(({ key }) => (
+                <Scope key={key} brand={key}>
+                  <div style={{ display: 'grid', gap: 'var(--p-3)', padding: 'var(--p-4)', background: 'var(--poc-band)', borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--primary-border)' }}>
+                    <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--primary-text)' }}>{key}</strong>
+                    <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
+                      <Button id={`${key}-ab`} label="Primary" size="sm" />
+                      <Button id={`${key}-ao`} label="Outline" style="outline" size="sm" />
+                      <Badge id={`${key}-abg`} variant="default" label="Live" />
+                    </div>
+                  </div>
+                </Scope>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 style={H2}>What it costs, measured</h2>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 640 }}>
+              <thead>
+                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Brand</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>A · tint chroma</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>B · tint chroma</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>A · text on tint</th>
+                </tr>
+              </thead>
+              <tbody>
+                {MINIMAL_BRANDS.map(({ key }) => {
+                  const r = rows[key];
+                  return (
+                    <tr key={key} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                      <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{key}</td>
+                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>{r ? r.chromaA.toFixed(3) : '—'}</td>
+                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--success)', fontWeight: 'var(--font-semibold)' }}>{r ? r.chromaB.toFixed(3) : '—'}</td>
+                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{r ? r.textOnLight.toFixed(2) : '—'}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          <div>
+            <h2 style={H2}>The honest recommendation</h2>
+            <p style={P}>
+              <strong>Option A is the right first move.</strong> It gets six themed brands, every{' '}
+              <code style={MONO}>--primary</code> consumer in the library themed for free, and{' '}
+              <code style={MONO}>--primary-text</code> on <code style={MONO}>--primary-light</code>{' '}
+              measures 5.47&ndash;5.56 across all six — comfortably AA with no new work. The cost is a
+              handful of hex values in the existing theme scopes and nothing else.
+            </p>
+            <p style={P}>
+              What it does not buy is <em>presence</em>. <code style={MONO}>--primary-light</code> is 6%
+              of a colour that had to be dark enough to carry a label, so it lands at chroma{' '}
+              <strong>~0.010</strong> — very nearly white. The highlight-derived band reaches{' '}
+              <strong>~0.041</strong>, roughly <strong>4×</strong> the colour, because it starts from
+              the airy end of the brand instead of the dark end.
+            </p>
+            <p style={P}>
+              <strong>Neither option lets the tint tell the brands apart</strong> — worst pair 0.005 for
+              A and 0.009 for B, both far under the 0.05 threshold. That was settled in round one and
+              has not moved. So the choice is not &ldquo;which one differentiates&rdquo;; it is how much
+              colour you want on a tinted surface, and whether brand-tinted shadows, gradients and bands
+              are worth three tokens instead of one.
+            </p>
+            <p style={P}>
+              A reasonable path: <strong>ship A now</strong> — it is additive, reversible and needs no
+              new architecture — and keep the highlight and deep anchors in Figma as the mark
+              definition. If the tinted surfaces later feel too pale, adding{' '}
+              <code style={MONO}>--primary-highlight</code> is a second, independent step that does not
+              invalidate anything shipped in A.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 5 — Audit
 // ─────────────────────────────────────────────────────────────────────────────
 
