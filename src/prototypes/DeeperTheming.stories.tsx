@@ -12,7 +12,7 @@ import {
   Separator, StatusDot, Switch,
 } from '../index';
 import {
-  POC_CSS, BRAND_ANCHORS, PRIMARY_LIGHT, PRIMARY_DARK, SUB_BRANDS,
+  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, SUB_BRANDS,
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
 
@@ -875,6 +875,206 @@ export const MinimalOption: Story = {
               definition. If the tinted surfaces later feel too pale, adding{' '}
               <code style={MONO}>--primary-highlight</code> is a second, independent step that does not
               invalidate anything shipped in A.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4c — Full token matrix
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * Every token the recipe touches, resolved for every brand.
+ *
+ * Grouped by where the value comes from, because that is the part worth seeing:
+ * only the first group is authored. Everything below it is a color-mix over an
+ * anchor, so the whole sheet falls out of four literals per brand per mode.
+ */
+const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boolean }[] = [
+  {
+    group: 'Authored — the anchors',
+    note: 'Three read off the Figma mark, plus --primary solved against the label. The only literals in the system.',
+    tokens: ['--brand-highlight', '--brand-main', '--brand-deep', '--primary'],
+  },
+  {
+    group: 'Free — the existing --primary-* family',
+    note: 'Already color-mix over var(--primary) in tokens.scss, so these recompute with no new code at all. This is the whole of the minimal option.',
+    tokens: ['--primary-hover', '--primary-light', '--primary-soft', '--primary-border', '--primary-ring', '--primary-focus', '--primary-text'],
+  },
+  {
+    group: 'Surfaces',
+    note: 'Page and card stay white in light mode. The tinted ones derive from the HIGHLIGHT anchor — the airy end — which is why they hold real chroma.',
+    tokens: ['--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
+  },
+  {
+    group: 'Lines',
+    note: 'From MAIN, not the highlight: not text backgrounds, so no contrast budget to protect.',
+    tokens: ['--border', '--border-hover', '--ring'],
+  },
+  {
+    group: 'Chrome — the rail',
+    note: 'Greyed: the brand is pre-mixed into slate-500 first, which drops chroma while keeping the hue readable.',
+    tokens: ['--poc-rail-stock', '--sidebar', '--sidebar-border', '--sidebar-accent'],
+  },
+  {
+    group: 'Marketing bands',
+    note: 'The loudest flat surfaces in the system, and the clearest argument for the highlight anchor.',
+    tokens: ['--poc-band', '--poc-band-strong', '--poc-band-deep'],
+  },
+  {
+    group: 'Shadow tints',
+    note: 'From DEEP. A shadow carrying the object\u2019s own dark end reads as light falling on it; a grey one reads as dirt.',
+    tokens: ['--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
+  },
+  {
+    group: 'Gradients',
+    note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
+    tokens: ['--poc-mark', '--poc-hero'],
+    gradient: true,
+  },
+];
+
+export const TokenMatrix: Story = {
+  render: function TokenMatrixStory() {
+    const hostRef = useRef<HTMLDivElement>(null);
+    const [mode, setMode] = useState<Mode>('light');
+    const [vals, setVals] = useState<Record<string, Record<string, string>>>({});
+    const cols: BrandKey[] = BRAND_KEYS;
+
+    useEffect(() => {
+      const host = hostRef.current;
+      if (!host) return;
+      const next: Record<string, Record<string, string>> = {};
+      for (const b of cols) {
+        const scope = host.querySelector<HTMLElement>(`[data-m="${b}"]`);
+        if (!scope) continue;
+        const probe = scope.firstElementChild as HTMLElement;
+        for (const g of MATRIX) {
+          for (const t of g.tokens) {
+            let v: string;
+            if (g.gradient) {
+              // a gradient is not a colour — read the resolved image, not a pixel
+              probe.style.backgroundImage = '';
+              probe.style.backgroundImage = `var(${t})`;
+              v = getComputedStyle(probe).backgroundImage;
+              probe.style.backgroundImage = '';
+            } else {
+              probe.style.backgroundColor = '';
+              probe.style.backgroundColor = `var(${t})`;
+              const raw = toRGBA(getComputedStyle(probe).backgroundColor);
+              // translucent tokens are meaningless as bytes — composite them over
+              // the page they will actually sit on, which differs per mode
+              const page: [number, number, number, number] =
+                mode === 'dark' ? [15, 23, 42, 1] : [255, 255, 255, 1];
+              const solid = raw && raw[3] < 1 ? over(raw, page) : raw;
+              v = solid
+                ? '#' + solid.slice(0, 3).map((x) => Math.round(x).toString(16).padStart(2, '0')).join('')
+                : '—';
+            }
+            next[t] ??= {};
+            next[t][b] = v;
+          }
+        }
+      }
+      setVals(next);
+    }, [mode]);
+
+    const cell = (t: string, b: string, isGradient?: boolean) => {
+      const v = vals[t]?.[b];
+      if (!v) return <td key={b} style={{ padding: 'var(--p-1-5)' }} />;
+      return (
+        <td key={b} style={{ padding: 'var(--p-1-5)', verticalAlign: 'top' }}>
+          <div
+            style={{
+              height: 30, borderRadius: 'var(--rounded-sm)',
+              border: 'var(--border-w-100) solid var(--border)',
+              ...(isGradient ? { backgroundImage: v } : { background: v }),
+            }}
+          />
+          <span style={{ ...MONO, fontSize: 10, color: 'var(--muted-foreground)', display: 'block', marginTop: 2 }}>
+            {isGradient ? 'gradient' : v}
+          </span>
+        </td>
+      );
+    };
+
+    return (
+      <>
+        <PocStyle />
+        <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
+          {cols.map((b) => (
+            <span key={b} data-m={b} data-theme-poc="" data-brand={b} data-mode={mode} style={{ '--poc-str': 1, '--poc-chrome': 1 } as CSSProperties}>
+              <span />
+            </span>
+          ))}
+        </div>
+
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>Every token, every brand</h2>
+            <p style={P}>
+              Resolved live in this browser. Grouped by <em>where the value comes from</em>, which is the
+              part worth seeing: <strong>only the first group is authored</strong>. Four literals per
+              brand per mode — three anchors off the Figma mark and one solved{' '}
+              <code style={MONO}>--primary</code> — and everything under it is a{' '}
+              <code style={MONO}>color-mix</code> that falls out for free.
+            </p>
+            <p style={P}>
+              Translucent tokens are shown <em>composited over the page</em>, because their raw bytes are
+              meaningless on their own — <code style={MONO}>--primary-light</code> is a 6% alpha, not a
+              colour.
+            </p>
+            <ModeToggle mode={mode} setMode={setMode} />
+          </div>
+
+          {MATRIX.map((g) => (
+            <div key={g.group}>
+              <h2 style={H2}>{g.group}</h2>
+              {g.note && <p style={P}>{g.note}</p>}
+              <div style={{ overflowX: 'auto' }}>
+                <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
+                  <thead>
+                    <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                      <th style={{ textAlign: 'left', padding: 'var(--p-2)', minWidth: 150 }}>Token</th>
+                      {cols.map((b) => (
+                        <th key={b} style={{ ...MONO, textAlign: 'left', padding: 'var(--p-2)', minWidth: 92 }}>
+                          {b}
+                        </th>
+                      ))}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {g.tokens.map((t) => (
+                      <tr key={t} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                        <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-xs)', whiteSpace: 'nowrap' }}>{t}</td>
+                        {cols.map((b) => cell(t, b, g.gradient))}
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          ))}
+
+          <div>
+            <h2 style={H2}>Reading the sheet</h2>
+            <p style={P}>
+              <strong>Count the authored rows: four.</strong> Everything else — 26 more tokens per brand
+              per mode, times seven brands times two modes — is derivation. That ratio is the argument
+              for the model. It is also the argument for the minimal option: if you only author{' '}
+              <code style={MONO}>--primary</code>, the second group still fills itself in and you get a
+              complete, AA-clean theme from <em>one</em> value.
+            </p>
+            <p style={P}>
+              The visible difference between the two options is the surfaces group. With only{' '}
+              <code style={MONO}>--primary</code>, the tinted rows sit within a hair of white because a
+              primary is dark by construction. With the highlight anchor they carry roughly four times
+              the chroma while measuring <em>better</em> for text on them, because a brighter surface
+              gives dark type more room, not less.
             </p>
           </div>
         </div>
