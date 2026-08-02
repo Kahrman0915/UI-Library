@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
-  Alert, Avatar, AvatarGroup, Badge, Button, Card, CardBody, CardHeader, Chip,
+  Alert, Avatar, AvatarGroup, Badge, Banner, Button, Card, CardBody, CardHeader, Chip,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
   Separator, StatusDot, Switch,
 } from '../index';
@@ -889,12 +889,28 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
       </aside>
 
       <div style={{ display: 'grid', alignContent: 'start' }}>
+        {/* THE THEMED-SURFACE SET. These three are the only places a --primary
+            derived TINT carries text, and they were the pairing that blocked
+            adoption: colour on a tint has to hold for every brand at once, and
+            with the POC anchors it did not. Text here is neutral; the brand is
+            in the tint, the icon and the border. Read them against the semantic
+            info Alert below, which keeps coloured text because its hue is one
+            audited value rather than eight. */}
+        <Banner
+          id={`${brand}-bn`}
+          variant="brand"
+          Icon={Sparkles}
+          title="Q3 planning workspaces are open."
+          action={<Button id={`${brand}-bn-a`} label="Take a look" style="link" size="sm" />}
+        />
         <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4) var(--p-6)', borderBottom: 'var(--border-w-100) solid var(--border)', background: 'var(--card)' }}>
           <strong style={{ flex: 1, fontSize: 'var(--text-base)' }}>Overview</strong>
           <StatusDot status="online" label="Live" />
+          <Button id={`${brand}-cta2`} label="Export" style="secondary" size="sm" />
           <Button id={`${brand}-cta`} label="New report" IconLeft={Plus} size="sm" />
         </header>
         <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-5)' }}>
+          <Alert id={`${brand}-al-b`} variant="brand" Icon={Zap} title="You are on the new cohort engine" description="Definitions now resolve at query time, so saved reports pick up edits immediately." />
           <Alert id={`${brand}-al`} variant="info" title="Two sources are still syncing" description="Numbers may move until the last import finishes." />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px,1fr))', gap: 'var(--p-4)' }}>
             <Card id={`${brand}-c1`}>
