@@ -292,9 +292,24 @@ ${anchorBlocks()}
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
      cheap theme, and the mark carries identity now so the rail does not have to. */
-  --sidebar:         color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc-chrome, 0)), #f8fafc);
-  --sidebar-border:  color-mix(in srgb, var(--surface-tint) calc(11% * var(--poc-chrome, 0)), #e2e8f0);
-  --sidebar-accent:  color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-chrome, 0)), #f1f5f9);
+  /* TWO mixes, and the order is the point. The inner one is --surface-tint (the
+     greyed deep) and supplies the rail's VALUE — it is what holds the rail apart
+     from the content area. The outer one is a little raw --primary and supplies
+     HUE, so the rail reads as the brand rather than as generic grey. Swapping
+     primary IN FOR the tint instead of layering on top of it lightens the rail
+     and hands the separation straight back.
+     Both percentages are gated on --poc-chrome, so "Tint the rail" off still
+     resolves to the exact slate literal.
+     Note: in dark this LOWERS measured chroma for nb and ph — their green and
+     orange drag the slate-blue base through a less saturated point on the way to
+     their own hue. The hue still moves toward the brand, which is the goal here;
+     chroma is not the target. */
+  --sidebar:         color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc-chrome, 0)), #f8fafc));
+  --sidebar-border:  color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(11% * var(--poc-chrome, 0)), #e2e8f0));
+  --sidebar-accent:  color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-chrome, 0)), #f1f5f9));
 
   /* BAND — the alternating marketing strip. Same stock, same restraint: a band
      is still a surface people read on. It is allowed to be the loudest of them
@@ -330,9 +345,12 @@ ${anchorBlocks()}
   --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
-  --sidebar:        color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #1e293b);
-  --sidebar-border: color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-chrome, 0)), #334155);
-  --sidebar-accent: color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #334155);
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #1e293b));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-chrome, 0)), #334155));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--poc-chrome, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #334155));
 
   --poc-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--poc-str)), #1e293b);
   --poc-band-strong: color-mix(in srgb, var(--surface-tint) calc(26% * var(--poc-str)), #1e293b);
