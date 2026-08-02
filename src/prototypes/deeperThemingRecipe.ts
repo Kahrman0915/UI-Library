@@ -604,23 +604,38 @@ ${anchorBlocks()}
   70%  { transform: scaleY(0.92); opacity: 0.58; }
   100% { transform: scaleY(1);    opacity: 0.72; }
 }
-/* THE SPARKLE IS A SPECULAR HIGHLIGHT, so it behaves like one.
-   Ambient: it swells and dims on the SAME 7.3s cycle as the sheen, deliberately
-   in phase — they are the same light hitting the same glass, and running them
-   on different clocks makes the tile look like it has two light sources.
-   Amplitude is low on purpose (0.78 to 1 to 0.68): the two passes that made
-   this louder both ended up competing with the glyph.
-   Hover: a highlight on a real surface MOVES when the surface turns. The tile
-   tilts, so the sparkle slides across it, grows and brightens — which is the
-   physically-right answer and also the reason it does not read as a second
-   animation fighting the first. */
-@keyframes poc-sparkle-drift {
-  0%, 100% { opacity: 0.78; transform: scale(1); }
-  45%      { opacity: 1;    transform: scale(1.12); }
-  72%      { opacity: 0.68; transform: scale(0.96); }
-}
-@keyframes poc-sparkle-flare {
-  to { opacity: 1; transform: translate3d(34%, 20%, 0) scale(1.45); }
+/* THE SPARKLE MIGRATES. Rather than sitting in one corner pulsing, it fades
+   out and reappears somewhere else on the tile — three stations, top-left,
+   top-right, bottom-left, each held for a few seconds. The jump always happens
+   at opacity 0, so you never see it travel; it is simply not where it was.
+
+   All three stations are clear of the glyph, which owns 27-73% on both axes.
+
+   SEPARATE TRANSFORM PROPERTIES ARE WHY THIS WORKS. The loop owns translate
+   and opacity; hover owns scale. Those are individual properties in modern
+   CSS, not one composited transform, so a transition and an animation can hold
+   one each without fighting. The previous version put both on transform, which
+   forced an animation-name swap on hover — and an animation ending has no exit
+   easing at all, which is exactly the snap-back that felt harsh. */
+@keyframes poc-spark-migrate {
+  /* EVERY step carries a translate, deliberately. With translate declared only
+     at the jump frames, CSS interpolates between them across the whole gap —
+     so the sparkle did not jump, it CRUISED from the top-right corner down to
+     the bottom-left, straight through the glyph. Measured 12% overlap with the
+     icon before this was fixed. Repeat the value to hold a station. */
+  0%   { opacity: 0;    translate: 0 0; }
+  6%   { opacity: 0.95; translate: 0 0; }
+  27%  { opacity: 0.95; translate: 0 0; }
+  33%  { opacity: 0;    translate: 0 0; }
+  34%  { opacity: 0;    translate: 500% 20%; }
+  40%  { opacity: 0.8;  translate: 500% 20%; }
+  61%  { opacity: 0.8;  translate: 500% 20%; }
+  67%  { opacity: 0;    translate: 500% 20%; }
+  68%  { opacity: 0;    translate: 30% 520%; }
+  74%  { opacity: 0.72; translate: 30% 520%; }
+  93%  { opacity: 0.72; translate: 30% 520%; }
+  99%  { opacity: 0;    translate: 30% 520%; }
+  100% { opacity: 0;    translate: 30% 520%; }
 }
 @keyframes poc-mark-sweep {
   0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
@@ -629,10 +644,15 @@ ${anchorBlocks()}
   100% { transform: translate3d(140%, 0, 0) rotate(8deg);  opacity: 0; }
 }
 
+/* THE EXIT IS SLOWER AND SOFTER THAN THE ENTRY. The base rule is what plays
+   when the pointer LEAVES, so it gets the long ease-out; the :hover rule below
+   gets the shorter spring. Using one transition for both directions means
+   either the entry is dull or the exit snaps — and a spring easing on the way
+   out overshoots back toward rest, which reads as a flinch. */
 [data-theme-poc] .poc-mark--live {
   transition:
-    transform var(--duration-slow) var(--ease-spring),
-    box-shadow var(--duration-slow) var(--ease-out);
+    transform 460ms var(--ease-out),
+    box-shadow 460ms var(--ease-out);
 }
 /* The live mark drops only the STATIC bloom, which becomes a real element so it
    can be transformed. The sparkle stays on ::after exactly as the static mark
@@ -653,15 +673,30 @@ ${anchorBlocks()}
   animation: poc-sheen-tilt 7300ms var(--ease-in-out) infinite;
   transform-origin: 50% 0%;
 }
-[data-theme-poc] .poc-mark--live::after {
-  animation: poc-sparkle-drift 7300ms var(--ease-in-out) infinite;
-}
-/* Swapping the animation NAME on hover, rather than transitioning a property
-   the loop already owns. An animation always beats a transition on the same
-   property, so a hover transform here would simply be ignored; forwards holds
-   the flared state for as long as the pointer stays. */
-[data-theme-poc] .poc-mark--live:hover::after {
-  animation: poc-sparkle-flare var(--duration-slow) var(--ease-spring) forwards;
+/* the live mark's sparkle is a real element so it can migrate; ::after stays
+   as the static mark's single fixed highlight */
+[data-theme-poc] .poc-mark--live::after { content: none; }
+[data-theme-poc] .poc-mark__spark {
+  position: absolute;
+  left: 14.4%;
+  top: 14.4%;
+  width: 12%;
+  height: 12%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.5) 42%,
+    rgba(255, 255, 255, 0.12) 72%,
+    transparent 100%);
+  filter: blur(calc(var(--poc-mark-px) * 0.016));
+  animation: poc-spark-migrate 9200ms var(--ease-in-out) infinite;
+  /* grows from its lower-left, so gaining size also shifts it up and right —
+     which is the direction the tile turns */
+  transform-origin: 20% 80%;
+  scale: 1;
+  transition: scale 460ms var(--ease-out);
 }
 
 [data-theme-poc] .poc-mark__bloom {
@@ -703,12 +738,15 @@ ${anchorBlocks()}
 /* the glyph rides above everything and moves against the tilt */
 [data-theme-poc] .poc-mark--live > svg {
   transition:
-    transform var(--duration-slow) var(--ease-spring),
-    filter var(--duration-slow) var(--ease-out);
+    transform 460ms var(--ease-out),
+    filter 460ms var(--ease-out);
 }
 
 /* ── HOVER ── lift, tilt, and the shadow that has to follow it ── */
 [data-theme-poc] .poc-mark--live:hover {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-normal) var(--ease-out);
   transform:
     perspective(520px)
     rotateX(7deg)
@@ -726,22 +764,32 @@ ${anchorBlocks()}
 /* parallax: the glyph goes the OTHER way and casts its own shadow, which is
    what actually sells the depth — the glass turns, the icon floats over it */
 [data-theme-poc] .poc-mark--live:hover > svg {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    filter var(--duration-normal) var(--ease-out);
   transform: translate3d(4%, -4%, 0) scale(1.06);
   filter: drop-shadow(0 calc(var(--poc-mark-px) * 0.02) calc(var(--poc-mark-px) * 0.035) rgba(35, 14, 75, 0.45));
 }
 [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: poc-mark-sweep 1100ms var(--ease-out); }
 [data-theme-poc] .poc-mark--live:hover .poc-mark__bloom { opacity: 1.3; }
+/* only SCALE on hover — translate belongs to the migration loop, and the two
+   are separate properties precisely so neither has to yield */
+[data-theme-poc] .poc-mark--live:hover .poc-mark__spark {
+  transition: scale var(--duration-normal) var(--ease-spring);
+  scale: 1.55;
+}
 
 @media (prefers-reduced-motion: reduce) {
   /* the global block in tokens.scss zeroes DURATIONS; an infinite animation at
      0.01ms still churns frames, so these stop outright. */
   [data-theme-poc] .poc-mark__bloom,
   [data-theme-poc] .poc-mark--live::before,
-  [data-theme-poc] .poc-mark--live::after,
-  [data-theme-poc] .poc-mark--live:hover::after,
+  [data-theme-poc] .poc-mark__spark,
   [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: none; }
+  [data-theme-poc] .poc-mark__spark { opacity: 0.85; translate: 0 0; }
   [data-theme-poc] .poc-mark--live:hover,
   [data-theme-poc] .poc-mark--live:hover > svg { transform: none; }
+  [data-theme-poc] .poc-mark--live:hover .poc-mark__spark { scale: 1; }
 }
 
 [data-theme-poc] .poc-hero { background-image: var(--poc-hero); }

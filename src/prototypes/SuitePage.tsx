@@ -126,6 +126,7 @@ function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
       style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
     >
       <span className="poc-mark__bloom" aria-hidden="true" />
+      <span className="poc-mark__spark" aria-hidden="true" />
       <span className="poc-mark__sweep" aria-hidden="true" />
       <Icon size={Math.round(size * 0.46)} strokeWidth={2} aria-hidden="true" />
     </span>

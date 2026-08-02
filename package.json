@@ -32,7 +32,8 @@
     "build-storybook": "storybook build",
     "typecheck": "tsc --noEmit",
     "test:contrast": "node scripts/contrast-check.mjs",
-    "test:preview": "node scripts/check-vocabulary.mjs"
+    "test:preview": "node scripts/check-vocabulary.mjs",
+    "test:poc-css": "node scripts/check-poc-css.mjs"
   },
   "peerDependencies": {
     "react": ">=18",
