@@ -308,19 +308,22 @@ export const Brands: Story = {
           <div>
             <h2 style={H2}>What each anchor is for</h2>
             <p style={P}>
-              <strong>Highlight → tinted surfaces.</strong> Bands, the rail, secondary panels. This is
-              the payoff: earlier rounds mixed <code style={MONO}>--primary</code> into white and got a
-              starved tint, because a primary is dark <em>by construction</em> — it has to carry white
-              text. The highlight is already the airy end of the brand, so a surface built from it is
-              bright and saturated at once. Measured, muted text on these bands reads{' '}
-              <strong>6.7&ndash;6.9</strong> across all seven, against ~6.2 for the primary-derived tint.
+              <strong>Highlight → artwork only.</strong> The mark, the hero gradient, the top of every
+              ramp. It is the brightest, most saturated colour the brand owns, and it is never put
+              behind text. An earlier pass built the light surfaces from it; the numbers were good and
+              the result was wrong — a panel made from a highlight announces itself, and sub-apps of one
+              suite should not announce themselves at every surface.
               <br />
-              <strong>Main → the accent.</strong> CTAs, selection, active nav, borders, rings — via the
-              derived <code style={MONO}>--primary</code>.
+              <strong>Main → the accent and the lines.</strong> CTAs, selection, active nav, borders,
+              rings — via the derived <code style={MONO}>--primary</code>.
               <br />
-              <strong>Deep → depth.</strong> Shadows, the dark end of every gradient, the dark-mode band.
-              A shadow holding the object&rsquo;s own dark end reads as light falling on it; a grey one
-              reads as dirt.
+              <strong>Deep → every tinted surface, plus depth.</strong> Panels, the rail, bands, shadows,
+              the dark end of every gradient. Greyed toward slate first, then applied at single digits,
+              so a surface shifts <strong>4&ndash;8&nbsp;ΔE00</strong> off its neutral: enough to read as
+              this brand when set beside another, never enough to read as a coloured page. Deep is the
+              right tool because it is high-chroma — a few percent buys real hue at almost no luminance
+              cost. Shadows take it too: a shadow holding the object&rsquo;s own dark end reads as light
+              falling on it, a grey one reads as dirt.
             </p>
           </div>
         </div>
@@ -584,10 +587,11 @@ export const Marketing: Story = {
             <h2 style={H2}>A marketing page has a bigger brand budget</h2>
             <p style={P}>
               A product UI has to stay quiet, so its budget is tiny. A marketing page{' '}
-              <em>alternates</em> — white sections, a full-bleed band, white again. The band is built
-              from the <strong>highlight</strong> anchor, which is why it can be bright and saturated at
-              the same time; the hero uses main → deep, and the display numerals take the same ramp as
-              gradient text.
+              <em>alternates</em> — white sections, a full-bleed band, white again. The band takes the
+              same greyed <strong>deep</strong> stock as every other surface, just further along it, so
+              it never becomes a different kind of colour from the app; the colour arrives instead where
+              nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
+              numerals, which are that ramp clipped to text.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
               <BrandPicker brand={brand} setBrand={setBrand} />
@@ -856,11 +860,13 @@ export const MinimalOption: Story = {
               handful of hex values in the existing theme scopes and nothing else.
             </p>
             <p style={P}>
-              What it does not buy is <em>presence</em>. <code style={MONO}>--primary-light</code> is 6%
-              of a colour that had to be dark enough to carry a label, so it lands at chroma{' '}
-              <strong>~0.010</strong> — very nearly white. The highlight-derived band reaches{' '}
-              <strong>~0.041</strong>, roughly <strong>4×</strong> the colour, because it starts from
-              the airy end of the brand instead of the dark end.
+              What it does not buy is <em>reach</em>. <code style={MONO}>--primary-light</code> exists,
+              but nothing outside the primary family moves: the page, the panels, the rail, the shadows
+              and the bands all stay exactly as neutral as they are today, because no token in{' '}
+              <code style={MONO}>tokens.scss</code> derives from <code style={MONO}>--primary</code>{' '}
+              except the primary family itself. Option B moves them — deliberately only a little, 4&ndash;8{' '}
+              ΔE00 — but it moves them everywhere at once, which is what makes a sub-app feel like its
+              own place rather than the same page with a different button.
             </p>
             <p style={P}>
               <strong>Neither option lets the tint tell the brands apart</strong> — worst pair 0.005 for
@@ -907,22 +913,22 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Surfaces',
-    note: 'Page and card stay white in light mode. The tinted ones derive from the HIGHLIGHT anchor — the airy end — which is why they hold real chroma.',
-    tokens: ['--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
+    note: 'Page and card stay white in light mode. Every tinted one derives from --poc-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
+    tokens: ['--poc-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
   },
   {
     group: 'Lines',
-    note: 'From MAIN, not the highlight: not text backgrounds, so no contrast budget to protect.',
+    note: 'From MAIN: not text backgrounds, so no contrast budget to protect, and a line reading as the accent is the point.',
     tokens: ['--border', '--border-hover', '--ring'],
   },
   {
     group: 'Chrome — the rail',
-    note: 'Greyed: the brand is pre-mixed into slate-500 first, which drops chroma while keeping the hue readable.',
-    tokens: ['--poc-rail-stock', '--sidebar', '--sidebar-border', '--sidebar-accent'],
+    note: 'A surface like any other, so it takes the same greyed stock at the same order of magnitude — no second recipe.',
+    tokens: ['--sidebar', '--sidebar-border', '--sidebar-accent'],
   },
   {
     group: 'Marketing bands',
-    note: 'The loudest flat surfaces in the system, and the clearest argument for the highlight anchor.',
+    note: 'The loudest flat surfaces in the system, and still only ~9 ΔE00 off white at their strongest — a band is a surface people read on.',
     tokens: ['--poc-band', '--poc-band-strong', '--poc-band-deep'],
   },
   {
@@ -1071,10 +1077,11 @@ export const TokenMatrix: Story = {
             </p>
             <p style={P}>
               The visible difference between the two options is the surfaces group. With only{' '}
-              <code style={MONO}>--primary</code>, the tinted rows sit within a hair of white because a
-              primary is dark by construction. With the highlight anchor they carry roughly four times
-              the chroma while measuring <em>better</em> for text on them, because a brighter surface
-              gives dark type more room, not less.
+              <code style={MONO}>--primary</code>, those rows do not exist — nothing in{' '}
+              <code style={MONO}>tokens.scss</code> derives a surface from the primary, so they stay the
+              same neutral for all seven brands. With the deep anchor they move, but only 4&ndash;8{' '}
+              ΔE00: the design target is a surface that complements the accent, not one that competes
+              with it.
             </p>
           </div>
         </div>
@@ -1097,7 +1104,7 @@ const PAIRINGS: Pairing[] = [
   { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'the derivation' },
   { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
   { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
-  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'built from the highlight' },
+  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'the greyed deep stock' },
   { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc-band-deep' },
   { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc-band-strong' },
   { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
