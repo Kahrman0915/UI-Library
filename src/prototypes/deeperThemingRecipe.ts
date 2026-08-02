@@ -658,11 +658,15 @@ ${anchorBlocks()}
   z-index: 0;
   opacity: 0;
   pointer-events: none;
+  /* Halved, and widened. At 0.30/0.50/0.30 over a 10% band this was a hard
+     bright bar crossing the tile; at 0.13/0.22/0.13 over 24% it is a shift in
+     the light. The falloff matters as much as the peak — a narrow band reads as
+     an edge however faint you make it. */
   background-image: linear-gradient(100deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.30) 45%,
-    rgba(255, 255, 255, 0.5) 50%,
-    rgba(255, 255, 255, 0.30) 55%,
+    rgba(255, 255, 255, 0.13) 38%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.13) 62%,
     transparent 100%);
   transform: translate3d(-140%, 0, 0) rotate(8deg);
 }
