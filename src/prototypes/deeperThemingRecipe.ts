@@ -517,9 +517,12 @@ ${anchorBlocks()}
 [data-theme-poc] .poc-mark::before {
   content: '';
   position: absolute;
-  inset: 0 0 auto 0;
+  /* overhangs the sides so no vertical edge is ever inside the clip; the tile's
+     own overflow:hidden trims it. No border-radius — a percentage radius here
+     resolves against the BAND's box, not the tile's, giving it elliptical
+     corners of its own that read as curved highlights. */
+  inset: 0 -6% auto -6%;
   height: 52.3%;
-  border-radius: inherit;
   background-image: linear-gradient(180deg,
     rgba(255, 255, 255, 0.245) 0%,
     rgba(229, 242, 255, 0.074) 35%,
@@ -586,11 +589,19 @@ ${anchorBlocks()}
   62%  { transform: translate3d(-3%, 7%, 0) scale(0.96); opacity: 0.7; }
   100% { transform: translate3d(0, 0, 0) scale(1);       opacity: 0.85; }
 }
+/* SCALE AND FADE ONLY — no translate, no rotate.
+   The earlier version moved the sheen down 2% and rotated it 1.5deg. The sheen
+   is a band pinned to the top of the tile whose BRIGHTEST point is its top edge
+   (alpha 0.243), so any move that lifts that edge off y=0 exposes it: a bright
+   line running the full width, sliding up and down every 7 seconds. The rotate
+   did the same thing to one top corner at a time.
+   transform-origin is 50% 0%, so scaleY only ever grows DOWNWARD, into the
+   gradient's own falloff, and the top edge cannot move. */
 @keyframes poc-sheen-tilt {
-  0%   { transform: translate3d(0, -4%, 0) scaleY(1) rotate(0deg);      opacity: 0.75; }
-  40%  { transform: translate3d(0, 2%, 0) scaleY(1.12) rotate(-1.5deg); opacity: 1; }
-  70%  { transform: translate3d(0, -1%, 0) scaleY(0.94) rotate(0.8deg); opacity: 0.6; }
-  100% { transform: translate3d(0, -4%, 0) scaleY(1) rotate(0deg);      opacity: 0.75; }
+  0%   { transform: scaleY(1);    opacity: 0.72; }
+  40%  { transform: scaleY(1.16); opacity: 1; }
+  70%  { transform: scaleY(0.92); opacity: 0.58; }
+  100% { transform: scaleY(1);    opacity: 0.72; }
 }
 @keyframes poc-mark-sweep {
   0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
