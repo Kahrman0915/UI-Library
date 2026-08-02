@@ -175,12 +175,12 @@
  * deep, which moves db too — hence not done unilaterally.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#1ee8fe', '#6063f1', '#01529e'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#1ee8fe', '#6063f1', '#01529e'], dark: ['#2de0f6', '#6492fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   nb:    { light: ['#83d22e', '#00893a', '#0d6b5e'], dark: ['#acda27', '#1eb152', '#1b7b5e'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
   dc:    { light: ['#69dd94', '#00857a', '#00627a'], dark: ['#6cf198', '#00ae9f', '#007d96'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
-  ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
-  ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
-  rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#00a2f2', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#e07c1a', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f951d4', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
   aiden: { light: ['#0060ba', '#6745ff', '#9544ff'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a56d3', dark: '#8b82f6' }, icon: 'sparkles' },
 } as const;
 

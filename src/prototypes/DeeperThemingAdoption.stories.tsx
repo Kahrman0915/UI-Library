@@ -355,10 +355,20 @@ type Check = { brand: string; mode: 'light' | 'dark'; pairing: string; today: nu
 function useDerivedAudit() {
   const hostRef = useRef<HTMLDivElement>(null);
   const [rows, setRows] = useState<Check[]>([]);
+  const [fault, setFault] = useState<string | null>(null);
 
   useEffect(() => {
     const host = hostRef.current;
     if (!host) return;
+
+    // THIS PAGE IMPORTS POC_CSS TO PARSE IT — that does not put it in the
+    // document. The probes below carry [data-theme-poc][data-brand], which
+    // matched nothing here, so every "after" number was silently read off the
+    // shipped cascade instead of the POC one. Same failure mode as the
+    // hardcoded card it replaced: wrong, plausible, and completely quiet.
+    const styleEl = document.createElement('style');
+    styleEl.textContent = POC_CSS;
+    host.appendChild(styleEl);
     const cv = document.createElement('canvas');
     cv.width = cv.height = 1;
     const cx = cv.getContext('2d', { willReadFrequently: true });
@@ -385,11 +395,26 @@ function useDerivedAudit() {
     const out: Check[] = [];
     for (const brand of SUB_BRANDS) {
       for (const mode of ['light', 'dark'] as const) {
-        const card = mode === 'dark' ? [30, 41, 59] : [255, 255, 255];
-        const read = (primary: string) => {
+        // EACH SIDE MUST STAND ON ITS OWN SURFACE. This read the shipped slate
+        // card (#1e293b) for both columns and only swapped --primary, which
+        // measures a build that does not exist: under adoption the card is the
+        // POC's brand-tinted card, and a tint sitting on it is a different
+        // colour. That single hardcoded value reported ec dark as 4.47 when it
+        // is really 4.01, and hid two of the four failures completely — the
+        // POC column now carries [data-theme-poc][data-brand], so --card,
+        // --primary-soft and --primary-light all resolve through the real
+        // cascade. --poc-str has no default in the recipe (the story root sets
+        // it), and without it every dark surface silently goes unset, so it is
+        // declared on the scope here.
+        const read = (primary: string, poc: boolean) => {
           const scope = document.createElement('div');
           scope.setAttribute('data-mode', mode);
-          scope.style.cssText = `position:absolute;left:-9999px;--primary:${primary}`;
+          if (poc) {
+            scope.setAttribute('data-theme-poc', '');
+            scope.setAttribute('data-brand', brand);
+          }
+          scope.style.cssText =
+            `position:absolute;left:-9999px;--poc-str:1;--primary:${primary}`;
           const probe = document.createElement('div');
           scope.appendChild(probe);
           host.appendChild(scope);
@@ -398,7 +423,14 @@ function useDerivedAudit() {
             probe.style.backgroundColor = `var(${tok})`;
             return px(getComputedStyle(probe).backgroundColor);
           };
+          const deepRaw = t('--primary-deep');
+          const cardRaw = t('--card');
+          const card = cardRaw[3] < 1
+            ? (mode === 'dark' ? [30, 41, 59] : [255, 255, 255])
+            : cardRaw.slice(0, 3);
           const res = {
+            scoped: !poc || deepRaw[3] > 0,
+            card,
             text: over(t('--primary-text'), card),
             fg: over(t('--foreground'), card),
             muted: over(t('--muted-foreground'), card),
@@ -409,8 +441,15 @@ function useDerivedAudit() {
           scope.remove();
           return res;
         };
-        const a = read(SHIPPED[brand][mode]);
-        const b = read(mode === 'light' ? PRIMARY_LIGHT[brand] : PRIMARY_DARK[brand]);
+        const a = read(SHIPPED[brand][mode], false);
+        const b = read(mode === 'light' ? PRIMARY_LIGHT[brand] : PRIMARY_DARK[brand], true);
+        // Guard, not decoration. --primary-deep only resolves when the POC scope
+        // is really in force; if it is unset the surfaces are the shipped ones
+        // and every "after" figure is meaningless. Fail loudly instead.
+        if (!b.scoped) {
+          setFault(`POC scope did not apply for ${brand}/${mode} — --primary-deep is unset, so the surfaces measured are the shipped ones, not the POC's. Numbers withheld.`);
+          return;
+        }
         // These are the pairings COMPONENTS ACTUALLY RENDER, not every pairing the
         // tokens permit, so this list has to track the components rather than the
         // token file. It was briefly narrower: on 2026-08-02 the brand Alert, Banner
@@ -420,19 +459,20 @@ function useDerivedAudit() {
         // load-bearing again.
         out.push({ brand, mode, pairing: 'button secondary label (text on soft)', today: ratio(a.text, a.soft), after: ratio(b.text, b.soft), floor: 4.5 });
         out.push({ brand, mode, pairing: 'alert/banner text (text on light)', today: ratio(a.text, a.light), after: ratio(b.text, b.light), floor: 4.5 });
-        out.push({ brand, mode, pairing: 'primary-text on card (outline/link)', today: ratio(a.text, card), after: ratio(b.text, card), floor: 4.5 });
-        out.push({ brand, mode, pairing: 'primary-border on card', today: ratio(a.border, card), after: ratio(b.border, card), floor: 3 });
+        out.push({ brand, mode, pairing: 'primary-text on card (outline/link)', today: ratio(a.text, a.card), after: ratio(b.text, b.card), floor: 4.5 });
+        out.push({ brand, mode, pairing: 'primary-border on card', today: ratio(a.border, a.card), after: ratio(b.border, b.card), floor: 3 });
       }
     }
     setRows(out);
+    styleEl.remove();
   }, []);
 
-  return { hostRef, rows };
+  return { hostRef, rows, fault };
 }
 
 export const Regressions: Story = {
   render: function RegressionsStory() {
-    const { hostRef, rows } = useDerivedAudit();
+    const { hostRef, rows, fault } = useDerivedAudit();
     const broke = rows.filter((r) => r.today >= r.floor && r.after < r.floor);
     const already = rows.filter((r) => r.today < r.floor);
     const lost = rows.filter((r) => r.after < r.today).length;
@@ -465,6 +505,11 @@ export const Regressions: Story = {
     return (
       <div style={PAGE}>
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }} />
+        {fault && (
+          <div style={{ padding: 'var(--p-4)', border: 'var(--border-w-100) solid var(--error)', borderRadius: 'var(--rounded-md)', background: 'var(--error-light)', color: 'var(--error-text, var(--error))' }}>
+            <strong>Measurement aborted.</strong> {fault}
+          </div>
+        )}
         <div>
           <h2 style={H2}>What stops passing</h2>
           <p style={P}>
