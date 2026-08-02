@@ -89,23 +89,18 @@
   }
 
   // Brand — themed accent (reads --primary, follows data-theme).
-  /* Text is NEUTRAL here, unlike the four semantic variants below, and that
-     asymmetry is deliberate. A semantic tint is one audited hue; this one is
-     whatever --primary the surrounding data-theme happens to be, so colored
-     text on it has to hold for every theme at once — and it does not. The
-     brand signal moves to the icon and the border, which carry no contrast
-     requirement. Matches the neutral --default variant exactly. */
   &--brand.ui-alert--default {
     background: var(--primary-light);
-    color: var(--foreground);
+    color: var(--primary-text);
     border-color: var(--primary-border);
 
-    .ui-alert__icon {
+    .ui-alert__icon,
+    .ui-alert__title {
       color: var(--primary-text);
     }
 
-    .ui-alert__title {
-      color: var(--foreground);
+    .ui-alert__description {
+      color: var(--primary-text);
     }
   }
 

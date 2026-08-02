@@ -412,14 +412,14 @@ function useDerivedAudit() {
         const a = read(SHIPPED[brand][mode]);
         const b = read(mode === 'light' ? PRIMARY_LIGHT[brand] : PRIMARY_DARK[brand]);
         // These are the pairings COMPONENTS ACTUALLY RENDER, not every pairing the
-        // tokens permit. The distinction started mattering on 2026-08-02: the brand
-        // Alert, Banner and secondary Button moved their text to --foreground, so
-        // "--primary-text on a tint" stopped having a consumer. Auditing it anyway
-        // would have kept reporting an adoption cost that no longer exists.
-        out.push({ brand, mode, pairing: 'button secondary label (fg on soft)', today: ratio(a.fg, a.soft), after: ratio(b.fg, b.soft), floor: 4.5 });
-        out.push({ brand, mode, pairing: 'alert/banner title (fg on light)', today: ratio(a.fg, a.light), after: ratio(b.fg, b.light), floor: 4.5 });
-        out.push({ brand, mode, pairing: 'alert description (muted on light)', today: ratio(a.muted, a.light), after: ratio(b.muted, b.light), floor: 4.5 });
-        out.push({ brand, mode, pairing: 'brand icon on light — non-text', today: ratio(a.text, a.light), after: ratio(b.text, b.light), floor: 3 });
+        // tokens permit, so this list has to track the components rather than the
+        // token file. It was briefly narrower: on 2026-08-02 the brand Alert, Banner
+        // and secondary Button moved their text to --foreground, removing the last
+        // consumer of "--primary-text on a tint". That was reverted the same day in
+        // favour of tuning the two brands that actually missed, so those rows are
+        // load-bearing again.
+        out.push({ brand, mode, pairing: 'button secondary label (text on soft)', today: ratio(a.text, a.soft), after: ratio(b.text, b.soft), floor: 4.5 });
+        out.push({ brand, mode, pairing: 'alert/banner text (text on light)', today: ratio(a.text, a.light), after: ratio(b.text, b.light), floor: 4.5 });
         out.push({ brand, mode, pairing: 'primary-text on card (outline/link)', today: ratio(a.text, card), after: ratio(b.text, card), floor: 4.5 });
         out.push({ brand, mode, pairing: 'primary-border on card', today: ratio(a.border, card), after: ratio(b.border, card), floor: 3 });
       }
@@ -487,13 +487,11 @@ export const Regressions: Story = {
           <div>
             <h2 style={H2}>Adoption breaks these</h2>
             <p style={P}>
-              These pass today and fail after — the blocking list. This section is empty as of
-              2026-08-02, when the brand <code style={CODE}>Alert</code>,{' '}
-              <code style={CODE}>Banner</code> and secondary <code style={CODE}>Button</code> moved
-              their text to <code style={CODE}>--foreground</code> and kept the brand in the tint,
-              icon and border. A themed surface no longer carries themed text anywhere, so these
-              pairings became brand-independent and stopped tracking the primary at all. If it
-              refills, the same move is the first thing to try.
+              These pass today and fail after — the blocking list, and the thing to clear before
+              adoption. Each one is a single brand missing by a small margin, so the fix is to move
+              that brand&rsquo;s <code style={CODE}>--primary</code> rather than to change what any
+              component paints: a component-level change would trade a measurable problem in two
+              brands for a visible one in all eight.
             </p>
             {table(broke, 'was passing, now failing')}
           </div>
@@ -511,7 +509,7 @@ export const Regressions: Story = {
 
         <div>
           <h2 style={H2}>Everything measured</h2>
-          {table(rows, `${rows.length} pairings — ${SUB_BRANDS.length} brands x 2 modes x 6 pairings`)}
+          {table(rows, `${rows.length} pairings — ${SUB_BRANDS.length} brands x 2 modes x 3 pairings`)}
         </div>
       </div>
     );

@@ -19,13 +19,6 @@ const meta: Meta<typeof Banner> = {
       tags: ['5 variants', 'dismissible'],
       changelog: [
         {
-          date: '2026-08-02',
-          summary:
-            'The brand variant\u2019s text is now neutral. The tint, the icon and the bottom hairline still carry the theme colour.',
-          detail:
-            'Mirrors the same change in `Alert` \u2014 title reads `--foreground` rather than `--primary-text`, `.ui-banner__icon` stays themed. Semantic variants unchanged.',
-        },
-        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

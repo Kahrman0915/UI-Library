@@ -24,13 +24,6 @@ const meta: Meta<typeof Alert> = {
       tags: ['5 variants', 'dismissible'],
       changelog: [
         {
-          date: '2026-08-02',
-          summary:
-            'The brand variant\u2019s text is now neutral. The tint, the icon and the border still carry the theme colour.',
-          detail:
-            'Title and description read `--foreground` / `--muted-foreground` instead of `--primary-text`, matching the neutral `default` variant exactly; only `.ui-alert__icon` stays themed. The four semantic variants are unchanged \u2014 their tints are one audited hue each, whereas the brand tint is whatever `--primary` the surrounding `data-theme` supplies, so coloured text on it had to hold for eight themes at once. It now measures 16.5+ for the title and 6.9+ for the description in every theme and mode, and those numbers no longer move when a brand colour does.',
-        },
-        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

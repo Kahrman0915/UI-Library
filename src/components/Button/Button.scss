@@ -40,13 +40,9 @@
     color: var(--primary-foreground);
   }
 
-  /* Neutral label on a brand tint. The fill and the outline carry the brand;
-     the text does not, because --primary-soft is a themed surface and colored
-     text on it cannot clear AA across all eight themes. The emphasis ladder is
-     unaffected — secondary still outranks outline by having a fill at all. */
   &--default-secondary {
     background: var(--primary-soft);
-    color: var(--foreground);
+    color: var(--primary-text);
     outline: var(--border-w-100) solid var(--primary-border);
     outline-offset: -1px;
     box-shadow: none;

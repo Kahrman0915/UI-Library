@@ -79,16 +79,13 @@
   }
 
   // Brand — the themed accent (reads --primary, so it follows data-theme).
-  /* Neutral text, brand icon + hairline — see the matching note in Alert.scss. */
   &--brand {
     background: var(--primary-light);
-    color: var(--foreground);
+    color: var(--primary-text);
     border-bottom-color: var(--primary-border);
-    .ui-banner__icon {
-      color: var(--primary-text);
-    }
+    .ui-banner__icon,
     .ui-banner__title {
-      color: var(--foreground);
+      color: var(--primary-text);
     }
   }
 
