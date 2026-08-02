@@ -199,7 +199,15 @@ function Mark({ brand, size = 48, live = false }: { brand: BrandKey; size?: numb
       className={`poc-mark${live ? ' poc-mark--live' : ''}`}
       style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
     >
-      {live && <span className="poc-mark__sweep" aria-hidden="true" />}
+      {live && (
+        <>
+          <span className="poc-mark__bloom" aria-hidden="true" />
+          <span className="poc-mark__glint" data-i="1" aria-hidden="true" />
+          <span className="poc-mark__glint" data-i="2" aria-hidden="true" />
+          <span className="poc-mark__glint" data-i="3" aria-hidden="true" />
+          <span className="poc-mark__sweep" aria-hidden="true" />
+        </>
+      )}
       <Icon size={Math.round(size * 0.46)} strokeWidth={2} aria-hidden="true" />
     </span>
   );

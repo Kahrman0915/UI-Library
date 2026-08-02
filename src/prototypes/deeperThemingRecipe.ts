@@ -547,60 +547,158 @@ ${anchorBlocks()}
 }
 
 /* ── MOTION ─────────────────────────────────────────────────────────────────
-   Opt-in, via .poc-mark--live. A mark that animates unprompted in a grid of six
-   is noise; a mark that answers a hover is an affordance.
+   Opt-in, via .poc-mark--live. A mark that animates unprompted in a grid of
+   seven is noise; the question is what it does once you let it.
 
-   Two moments only. The SPARKLE breathes — scale and opacity on the ::after,
-   the one layer whose whole job is to catch the light. The SHEEN sweeps once
-   on hover, a highlight travelling across the glass.
+   THE THREE LAYERS EACH GET THEIR OWN BEHAVIOUR, AND THEY NEVER LINE UP.
+   A single shimmer across the whole tile is one event on a loop, and the eye
+   finds the loop in about two passes. Instead:
 
-   The sweep is a separate ::before-driven transform rather than an animated
-   background-position: moving a gradient's position repaints the whole layer
-   every frame, while a transform on a composited pseudo-element does not.
+     BLOOM   drifts — a slow orbit and swell, the atmosphere behind the glass
+     SHEEN   tilts  — the band swells and slides, as if the light source moved
+     GLINTS  twinkle — three four-point stars, fast in, slow out, long dark gaps
 
-   Durations come from the tokens, so the global prefers-reduced-motion block in
-   tokens.scss collapses them to 0.01ms without this file knowing. Nothing here
-   unmounts on animationend, so a near-zero duration is harmless. */
-@keyframes poc-mark-breathe {
-  0%, 100% { opacity: 0.55; transform: scale(0.9); }
-  50%      { opacity: 1;    transform: scale(1.25); }
+   The durations are 11s / 7.3s / 4.1s / 5.3s / 6.7s. They share no common
+   factor worth speaking of, so the composite cycle is minutes long and the
+   sequence never visibly repeats. That is the whole trick: the magic is not any
+   one animation, it is that you cannot predict the next one.
+
+   Each glint is a real four-point star (clip-path) rather than a blurred dot.
+   A dot reads as bokeh; the star reads as a catch of light, and it survives the
+   blur that makes it glow.
+
+   Hover does NOT speed the ambient loops up — changing animation-duration
+   mid-cycle snaps. It adds one sweep, lifts the tile and brightens the bloom,
+   all on transitions, so the ambient motion continues underneath undisturbed.
+
+   Durations are literals here rather than tokens because they are longer than
+   anything in the scale and are tuned against each other; the reduced-motion
+   block below stops them outright rather than shortening them. */
+@keyframes poc-bloom-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1);      opacity: 0.85; }
+  30%  { transform: translate3d(6%, 4%, 0) scale(1.14); opacity: 1; }
+  62%  { transform: translate3d(-3%, 7%, 0) scale(0.96); opacity: 0.7; }
+  100% { transform: translate3d(0, 0, 0) scale(1);      opacity: 0.85; }
+}
+@keyframes poc-sheen-tilt {
+  0%   { transform: translate3d(0, -4%, 0) scaleY(1) rotate(0deg);      opacity: 0.75; }
+  40%  { transform: translate3d(0, 2%, 0) scaleY(1.12) rotate(-1.5deg); opacity: 1; }
+  70%  { transform: translate3d(0, -1%, 0) scaleY(0.94) rotate(0.8deg); opacity: 0.6; }
+  100% { transform: translate3d(0, -4%, 0) scaleY(1) rotate(0deg);      opacity: 0.75; }
+}
+/* fast in, slow out, then most of the cycle dark — a glint, not a pulse */
+@keyframes poc-glint {
+  0%   { opacity: 0;    transform: scale(0.2) rotate(0deg); }
+  6%   { opacity: 1;    transform: scale(1.15) rotate(25deg); }
+  16%  { opacity: 0.45; transform: scale(0.85) rotate(45deg); }
+  30%  { opacity: 0;    transform: scale(0.4) rotate(70deg); }
+  100% { opacity: 0;    transform: scale(0.2) rotate(90deg); }
 }
 @keyframes poc-mark-sweep {
-  0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); }
-  100% { transform: translate3d(140%, 0, 0) rotate(8deg); }
+  0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translate3d(140%, 0, 0) rotate(8deg);  opacity: 0; }
 }
+
 [data-theme-poc] .poc-mark--live {
   transition:
     transform var(--duration-normal) var(--ease-spring),
     box-shadow var(--duration-normal) var(--ease-out);
 }
-[data-theme-poc] .poc-mark--live::after {
-  animation: poc-mark-breathe 3600ms var(--ease-in-out) infinite;
+/* the live mark drops the STATIC bloom and sparkle: both become real elements
+   so they can be transformed independently. Re-declared in full rather than
+   unset piecemeal — a background-image is one property, not a list you can
+   reach into. */
+[data-theme-poc] .poc-mark--live {
+  background-image:
+    radial-gradient(35% 35% at 45% 40%,
+      color-mix(in srgb, #ffffff 28%, transparent) 0%,
+      color-mix(in srgb, #b2d9ff 12%, transparent) 40%,
+      transparent 100%),
+    linear-gradient(135deg,
+      var(--primary-highlight) 9.7%,
+      var(--mark-mid) 51.6%,
+      var(--primary-deep) 90.3%);
 }
-[data-theme-poc] .poc-mark--live:hover {
-  transform: translateY(-2%) scale(1.04);
+[data-theme-poc] .poc-mark--live::after { content: none; }
+
+[data-theme-poc] .poc-mark--live::before {
+  animation: poc-sheen-tilt 7300ms var(--ease-in-out) infinite;
+  transform-origin: 50% 0%;
 }
-/* the sweep rides its own layer so the sheen underneath is left alone */
-[data-theme-poc] .poc-mark--live .poc-mark__sweep {
+
+[data-theme-poc] .poc-mark__bloom {
+  position: absolute;
+  left: -30%;
+  top: -29%;
+  width: 101%;
+  height: 101%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background-image: radial-gradient(circle at 50% 50%,
+    color-mix(in srgb, #bfe0ff 23%, transparent) 0%,
+    color-mix(in srgb, #bfe0ff 9%, transparent) 50%,
+    transparent 100%);
+  animation: poc-bloom-drift 11000ms var(--ease-in-out) infinite;
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+[data-theme-poc] .poc-mark__glint {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+  background: #ffffff;
+  opacity: 0;
+  /* a four-point star: the shape is what makes it read as a catch of light
+     rather than a bokeh dot, and it survives the blur that makes it glow */
+  clip-path: polygon(50% 0%, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0% 50%, 42% 42%);
+  filter: blur(calc(var(--poc-mark-px) * 0.008));
+}
+/* Selected by data-i, NOT :nth-child. nth-child counts ALL siblings, so the
+   bloom sitting first shifted every glint by one and the third matched nothing
+   at all — width 0, no animation, silently absent. An index that travels with
+   the element cannot drift when the markup changes. */
+[data-theme-poc] .poc-mark__glint[data-i='1'] {
+  left: 13%; top: 13%; width: 15%; height: 15%;
+  animation: poc-glint 4100ms var(--ease-out) infinite;
+}
+[data-theme-poc] .poc-mark__glint[data-i='2'] {
+  left: 66%; top: 20%; width: 10%; height: 10%;
+  animation: poc-glint 5300ms var(--ease-out) 1700ms infinite;
+}
+[data-theme-poc] .poc-mark__glint[data-i='3'] {
+  left: 28%; top: 62%; width: 8%; height: 8%;
+  animation: poc-glint 6700ms var(--ease-out) 3400ms infinite;
+}
+
+[data-theme-poc] .poc-mark__sweep {
   position: absolute;
   inset: -20% -60%;
   z-index: 0;
+  opacity: 0;
   pointer-events: none;
   background-image: linear-gradient(100deg,
     transparent 0%,
-    rgba(255, 255, 255, 0.38) 45%,
-    rgba(255, 255, 255, 0.55) 50%,
-    rgba(255, 255, 255, 0.38) 55%,
+    rgba(255, 255, 255, 0.30) 45%,
+    rgba(255, 255, 255, 0.5) 50%,
+    rgba(255, 255, 255, 0.30) 55%,
     transparent 100%);
   transform: translate3d(-140%, 0, 0) rotate(8deg);
 }
-[data-theme-poc] .poc-mark--live:hover .poc-mark__sweep {
-  animation: poc-mark-sweep 900ms var(--ease-out);
-}
+[data-theme-poc] .poc-mark--live:hover { transform: translateY(-2%) scale(1.04); }
+[data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: poc-mark-sweep 1100ms var(--ease-out); }
+[data-theme-poc] .poc-mark--live:hover .poc-mark__bloom { opacity: 1.35; }
+
 @media (prefers-reduced-motion: reduce) {
-  /* the global block zeroes DURATIONS; an infinite breathe at 0.01ms still
-     churns frames, so stop it outright */
-  [data-theme-poc] .poc-mark--live::after { animation: none; opacity: 0.8; }
+  /* the global block in tokens.scss zeroes DURATIONS; an infinite animation at
+     0.01ms still churns frames, so these stop outright. The glints are parked
+     visible rather than hidden so the mark keeps its detail. */
+  [data-theme-poc] .poc-mark__bloom,
+  [data-theme-poc] .poc-mark--live::before,
+  [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: none; }
+  [data-theme-poc] .poc-mark__glint { animation: none; opacity: 0.7; transform: none; }
   [data-theme-poc] .poc-mark--live:hover { transform: none; }
 }
 
