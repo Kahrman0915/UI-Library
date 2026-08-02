@@ -239,7 +239,8 @@
     "Design: a four-point star (clip-path polygon) reads as a catch of light; a blurred circle reads as bokeh. The star also survives the blur that makes it glow, so it is the better primitive for a sparkle.",
     "Design: sparkles must never land on the glyph. A mark's icon sits centred at 46%, so it owns 27-73% on BOTH axes — any twinkle inside that box competes with the thing the mark exists to show. Pin them to the rim.",
     "Design: a lift with an unchanged drop shadow reads as a sticker, not a lift. Grow the blur AND swing the offset toward where the light now falls, and give the icon its own drop-shadow moving the OTHER way from the tile's tilt — the parallax is what sells the depth, not the scale.",
-    "Figma->CSS: a radial gradientTransform with a rotation component is an ELLIPSE, not a glow. The owner's motion frame added a white radial at 20% rotated 62 degrees, centred at -6.5%/22.8% of the tile; solving it revealed a raking light STREAK, which became the primary ambient motion. Always solve the transform before deciding what a fill is."
+    "Figma->CSS: a radial gradientTransform with a rotation component is an ELLIPSE, not a glow. The owner's motion frame added a white radial at 20% rotated 62 degrees, centred at -6.5%/22.8% of the tile; solving it revealed a raking light STREAK, which became the primary ambient motion. Always solve the transform before deciding what a fill is.",
+    "Design: the mark's sparkle stays STATIC. Two passes animated it — a pulse, then three four-point stars — and both times it stopped being a highlight and became the thing you looked at. A mark exists to show its glyph; a detail on the glass should not out-compete it. Same verdict on a raking light streak: faithful to the source, genuinely pretty, and one more moving thing on a 26px tile. Ambient motion is now bloom (11s) and sheen (7.3s) only, both slow, plus hover."
   ],
   "components": {
     "Button": {

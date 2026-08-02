@@ -202,10 +202,6 @@ function Mark({ brand, size = 48, live = false }: { brand: BrandKey; size?: numb
       {live && (
         <>
           <span className="poc-mark__bloom" aria-hidden="true" />
-          <span className="poc-mark__streak" aria-hidden="true" />
-          <span className="poc-mark__glint" data-i="1" aria-hidden="true" />
-          <span className="poc-mark__glint" data-i="2" aria-hidden="true" />
-          <span className="poc-mark__glint" data-i="3" aria-hidden="true" />
           <span className="poc-mark__sweep" aria-hidden="true" />
         </>
       )}
@@ -533,10 +529,20 @@ export const MarkAnatomy: Story = {
           <div>
             <h2 style={H2}>The set</h2>
             <p style={P}>
-              Hover any of them. Motion is <strong>opt-in</strong> — a mark that animates unprompted in a
-              grid of seven is noise, one that answers a hover is an affordance. The sparkle breathes
-              continuously at low amplitude; the sheen sweeps once per hover, on its own composited
-              layer rather than by animating a background position.
+              Hover any of them. Motion is <strong>opt-in</strong> — a mark that animates unprompted in
+              a grid of seven is noise, one that answers a hover is an affordance.
+              <br />
+              Two ambient layers only: the <strong>bloom</strong> drifts on an 11s orbit, the{' '}
+              <strong>sheen</strong> tilts on 7.3s. No shared factor, so the pair never lines up and
+              there is no visible loop. The <strong>sparkle stays exactly as Figma draws it — static</strong>.
+              Two earlier passes animated it, first as a pulse and then as three four-point stars, and
+              both times it stopped being a highlight and became the thing you looked at. A mark exists
+              to show its glyph.
+              <br />
+              Hover adds the rest: the tile takes a perspective tilt, the drop shadow grows and swings
+              toward where the light now falls, and the icon translates the <em>other</em> way with its
+              own shadow. That parallax is what sells the depth — a lift with an unchanged shadow reads
+              as a sticker.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
               {BRAND_KEYS.map((b) => (
