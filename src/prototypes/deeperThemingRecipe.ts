@@ -292,9 +292,9 @@ ${anchorBlocks()}
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
      cheap theme, and the mark carries identity now so the rail does not have to. */
-  --sidebar:         color-mix(in srgb, var(--surface-tint) calc(6%  * var(--poc-chrome, 0)), #f8fafc);
-  --sidebar-border:  color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #e2e8f0);
-  --sidebar-accent:  color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc-chrome, 0)), #f1f5f9);
+  --sidebar:         color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc-chrome, 0)), #f8fafc);
+  --sidebar-border:  color-mix(in srgb, var(--surface-tint) calc(11% * var(--poc-chrome, 0)), #e2e8f0);
+  --sidebar-accent:  color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-chrome, 0)), #f1f5f9);
 
   /* BAND — the alternating marketing strip. Same stock, same restraint: a band
      is still a surface people read on. It is allowed to be the loudest of them
