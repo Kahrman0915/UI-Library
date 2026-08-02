@@ -41,6 +41,7 @@ css.split('\n').forEach((line, i) => {
       /^--?[\w-]+:\s*.+;$/.test(l) ||           // custom property
       /^[a-z-]+:\s*.*;$/.test(l) ||             // declaration
       /^[a-z-]+:$/.test(l) ||                   // property, value follows
+      /^[a-z-]+:\s*[\w-]*\($/.test(l) ||        // declaration opening a fn across lines
       /^[^{};]+,$/.test(l) ||                   // selector list
       /^[^{};]*[),]\s*;?$/.test(l) ||           // multi-line value
       /^\d+%(,\s*\d+%)*\s*\{.*$/.test(l) ||     // keyframe selector

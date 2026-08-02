@@ -16,6 +16,7 @@ import {
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
 import SuitePage from './SuitePage';
+import { usePointerTilt } from './usePointerTilt';
 
 /**
  * PROOF OF CONCEPT — deeper theming, rebuilt on the app marks.
@@ -191,18 +192,29 @@ function Scope({
  * `--poc-mark-px` is set inline because two of the mark's layers cannot be
  * expressed as a percentage — a blur radius and the shadow offsets. Everything
  * else in the CSS scales on its own.
+ *
+ * `tilt` opts into the pointer parallax. The hook is called unconditionally and
+ * takes `enabled` as an argument rather than being called behind a branch —
+ * hooks cannot be conditional, and a Mark that toggles would otherwise change
+ * its hook count between renders.
  */
-function Mark({ brand, size = 48, live = false }: { brand: BrandKey; size?: number; live?: boolean }) {
+function Mark({
+  brand, size = 48, live = false, tilt = false,
+}: { brand: BrandKey; size?: number; live?: boolean; tilt?: boolean }) {
   const Icon = ICONS[brand];
+  const ref = usePointerTilt<HTMLSpanElement>(tilt);
   return (
     <span
-      className={`poc-mark${live ? ' poc-mark--live' : ''}`}
+      ref={ref}
+      className={`poc-mark${live ? ' poc-mark--live' : ''}${tilt ? ' poc-mark--tilt' : ''}`}
       style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
     >
       {live && (
         <>
           <span className="poc-mark__bloom" aria-hidden="true" />
-          <span className="poc-mark__spark" aria-hidden="true" />
+          <span className="poc-mark__flare" aria-hidden="true">
+            <span className="poc-mark__spark" />
+          </span>
           <span className="poc-mark__sweep" aria-hidden="true" />
         </>
       )}
@@ -458,6 +470,7 @@ export const MarkAnatomy: Story = {
     const mode = useGlobalMode();
     const [brand, setBrand] = useState<BrandKey>('aiden');
     const [live, setLive] = useState(true);
+    const [tilt, setTilt] = useState(true);
     const swatch = (label: string, value: string) => (
       <div key={label} style={{ display: 'grid', gap: 'var(--p-1)' }}>
         <div style={{ background: value, width: 64, height: 40, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
@@ -485,16 +498,17 @@ export const MarkAnatomy: Story = {
                 ))}
               </div>
               <Switch id="ma-live" label="Motion" checked={live} onCheckedChange={setLive} />
+              <Switch id="ma-tilt" label="Pointer tilt" checked={tilt} onCheckedChange={setTilt} />
             </div>
           </div>
 
           {/* the hero: one mark, large */}
           <Scope brand={brand} mode={mode}>
             <div style={{ display: 'flex', gap: 'var(--p-10)', alignItems: 'center', flexWrap: 'wrap', padding: 'var(--p-10)', background: 'var(--secondary)', borderRadius: 'var(--rounded-2xl)' }}>
-              <Mark brand={brand} size={168} live={live} />
+              <Mark brand={brand} size={168} live={live} tilt={tilt} />
               <div style={{ display: 'grid', gap: 'var(--p-4)' }}>
                 <div style={{ display: 'flex', gap: 'var(--p-4)', alignItems: 'flex-end' }}>
-                  {[96, 64, 48, 32, 24].map((s) => <Mark key={s} brand={brand} size={s} live={live} />)}
+                  {[96, 64, 48, 32, 24].map((s) => <Mark key={s} brand={brand} size={s} live={live} tilt={tilt} />)}
                 </div>
                 <p style={{ ...P, margin: 0 }}>
                   Every layer is in <strong>percent</strong>, so one rule serves 24px and 168px. The two
@@ -545,17 +559,26 @@ export const MarkAnatomy: Story = {
               hopped between three of them read as three different sparkles rather than one piece of
               glass. The drift is biased up and left so it can never reach the glyph.
               <br />
-              Hover adds the rest: the tile takes a perspective tilt, the drop shadow grows and swings
-              toward where the light now falls, the icon translates the <em>other</em> way with its own
-              shadow, and the sparkle <strong>slides across the glass</strong> — a highlight on a real
-              surface moves when the surface turns. That parallax is what sells the depth; a lift with
-              an unchanged shadow reads as a sticker.
+              <strong>Pointer tilt is the tvOS parallax.</strong> The tile turns to follow the pointer
+              and its layers separate in depth: the bloom drifts <em>with</em> the turn and least,
+              because it is furthest back; the flare sweeps <em>against</em> it hardest, because a
+              specular does not sit still on a turning surface; the icon moves against it too, so it
+              floats above the face; and the shadow swings opposite and deepens, because the light did
+              not move — only the object did.
+              <br />
+              The whole thing is three numbers. A pointer handler writes{' '}
+              <code style={MONO}>--mx</code>, <code style={MONO}>--my</code> and{' '}
+              <code style={MONO}>--on</code>; every rule is a <code style={MONO}>calc</code> off those,
+              so React never re-renders and nothing is written per frame but the variables. Tracking
+              transitions at 110ms so the tile feels attached to the pointer; the return is the long
+              460ms ease-out. One duration for both would either lag under the finger or snap on
+              release.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
               {BRAND_KEYS.map((b) => (
                 <Scope key={b} brand={b} mode={mode}>
                   <div style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
-                    <Mark brand={b} size={88} live={live} />
+                    <Mark brand={b} size={88} live={live} tilt={tilt} />
                     <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{b}</span>
                   </div>
                 </Scope>

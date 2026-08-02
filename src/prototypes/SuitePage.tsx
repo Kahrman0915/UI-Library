@@ -6,6 +6,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { Avatar, Badge, Button, Chip, Separator } from '../index';
 import { BRAND_ANCHORS, SUB_BRANDS } from './deeperThemingRecipe';
+import { usePointerTilt } from './usePointerTilt';
 import type { BrandKey } from './deeperThemingRecipe';
 
 type Mode = 'light' | 'dark';
@@ -120,13 +121,17 @@ function BrandScope({ brand, mode, children, style }: { brand: BrandKey; mode: M
  *  two layers that cannot be a percentage (the sparkle blur, the shadows). */
 function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
   const Icon = ICONS[brand];
+  const ref = usePointerTilt<HTMLSpanElement>();
   return (
     <span
-      className="poc-mark poc-mark--live"
+      ref={ref}
+      className="poc-mark poc-mark--live poc-mark--tilt"
       style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
     >
       <span className="poc-mark__bloom" aria-hidden="true" />
-      <span className="poc-mark__spark" aria-hidden="true" />
+      <span className="poc-mark__flare" aria-hidden="true">
+        <span className="poc-mark__spark" />
+      </span>
       <span className="poc-mark__sweep" aria-hidden="true" />
       <Icon size={Math.round(size * 0.46)} strokeWidth={2} aria-hidden="true" />
     </span>

@@ -668,6 +668,16 @@ ${anchorBlocks()}
 /* the live mark's sparkle is a real element so it can migrate; ::after stays
    as the static mark's single fixed highlight */
 [data-theme-poc] .poc-mark--live::after { content: none; }
+/* The flare is TWO elements. The loop owns the inner one's translate; the
+   pointer owns the wrapper's. Same reason as before — one property, one owner —
+   but this time the two owners are an animation and a live input rather than an
+   animation and a transition. */
+[data-theme-poc] .poc-mark__flare {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
 [data-theme-poc] .poc-mark__spark {
   position: absolute;
   left: 14.4%;
@@ -782,6 +792,90 @@ ${anchorBlocks()}
   [data-theme-poc] .poc-mark--live:hover,
   [data-theme-poc] .poc-mark--live:hover > svg { transform: none; }
   [data-theme-poc] .poc-mark--live:hover .poc-mark__spark { scale: 1; }
+}
+
+/* ── POINTER TILT ───────────────────────────────────────────────────────────
+   The tvOS parallax: the tile turns to follow the pointer and its layers
+   separate in depth, so it reads as a physical object under glass rather than a
+   picture that scales.
+
+   Opt-in via .poc-mark--tilt, and DRIVEN ENTIRELY BY TWO NUMBERS. A tiny
+   pointer handler writes --mx and --my (both -1 to 1, origin at the tile's
+   centre) and --on (0 at rest, 1 while tracking); every rule below is a calc
+   off those three. No per-frame style writing beyond the variables, no layout
+   reads in the loop, and the whole thing falls back to nothing if the handler
+   never runs.
+
+   WHAT MOVES, AND HOW FAR, IS THE WHOLE DESIGN:
+
+     tile    rotates up to 11 degrees, lifts and scales — the object turning
+     bloom   drifts WITH the tilt, and least: it is furthest back
+     sheen   shifts with it, a little more
+     flare   sweeps AGAINST it, hardest of all — a specular does not sit still
+             on a turning surface, and this is the detail that sells the glass
+     icon    moves against the tilt too — parallax, so it floats above the face
+     shadow  swings opposite the tilt and deepens, because the light did not move
+
+   The tracking transition is deliberately SHORT (110ms) so the tile feels
+   attached to the pointer, and the RETURN is the long 460ms ease-out from the
+   base rule. One duration for both would either lag under the finger or snap on
+   release. */
+[data-theme-poc] .poc-mark--tilt {
+  --mx: 0;
+  --my: 0;
+  --on: 0;
+  transform:
+    perspective(560px)
+    rotateX(calc(var(--my) * -11deg))
+    rotateY(calc(var(--mx) * 11deg))
+    translateY(calc(var(--on) * -4%))
+    scale(calc(1 + var(--on) * 0.06));
+  box-shadow:
+    calc(var(--mx) * var(--poc-mark-px) * -0.07)
+      calc(var(--poc-mark-px) * (0.023 + var(--on) * 0.07))
+      calc(var(--poc-mark-px) * (0.047 + var(--on) * 0.1))
+      calc(var(--poc-mark-px) * var(--on) * -0.02)
+      rgba(35, 14, 75, 0.42),
+    inset 0 calc(var(--poc-mark-px) * -0.031) calc(var(--poc-mark-px) * 0.063) rgba(35, 14, 75, 0.3),
+    inset 0 calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * 0.047) calc(var(--poc-mark-px) * -0.016) rgba(255, 255, 255, 0.35),
+    inset calc(var(--poc-mark-px) * -0.016) calc(var(--poc-mark-px) * 0.016) calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * -0.008) rgba(204, 229, 255, 0.25);
+}
+[data-theme-poc] .poc-mark--tilt:hover {
+  transition-duration: 110ms;
+  transition-timing-function: var(--ease-out);
+}
+[data-theme-poc] .poc-mark--tilt .poc-mark__bloom,
+[data-theme-poc] .poc-mark--tilt .poc-mark__flare,
+[data-theme-poc] .poc-mark--tilt > svg {
+  transition: translate 460ms var(--ease-out);
+}
+[data-theme-poc] .poc-mark--tilt:hover .poc-mark__bloom,
+[data-theme-poc] .poc-mark--tilt:hover .poc-mark__flare,
+[data-theme-poc] .poc-mark--tilt:hover > svg {
+  transition-duration: 110ms;
+}
+[data-theme-poc] .poc-mark--tilt .poc-mark__bloom { translate: calc(var(--mx) * 4%) calc(var(--my) * 4%); }
+[data-theme-poc] .poc-mark--tilt::before        { translate: calc(var(--mx) * 6%) calc(var(--my) * 5%); }
+[data-theme-poc] .poc-mark--tilt .poc-mark__flare { translate: calc(var(--mx) * -22%) calc(var(--my) * -18%); }
+[data-theme-poc] .poc-mark--tilt > svg {
+  translate: calc(var(--mx) * -7%) calc(var(--my) * -7%);
+  filter: drop-shadow(
+    calc(var(--mx) * var(--poc-mark-px) * -0.012)
+    calc(var(--poc-mark-px) * var(--on) * 0.022)
+    calc(var(--poc-mark-px) * var(--on) * 0.035)
+    rgba(35, 14, 75, 0.4));
+}
+/* the tilt supersedes the plain hover lift — both write transform, and the
+   later rule would otherwise win by source order rather than by intent */
+[data-theme-poc] .poc-mark--tilt:hover { transform: none; }
+[data-theme-poc] .poc-mark--tilt:hover > svg { transform: none; }
+@media (prefers-reduced-motion: reduce) {
+  [data-theme-poc] .poc-mark--tilt,
+  [data-theme-poc] .poc-mark--tilt > svg { transform: none; }
+  [data-theme-poc] .poc-mark--tilt .poc-mark__bloom,
+  [data-theme-poc] .poc-mark--tilt .poc-mark__flare,
+  [data-theme-poc] .poc-mark--tilt::before,
+  [data-theme-poc] .poc-mark--tilt > svg { translate: none; }
 }
 
 [data-theme-poc] .poc-hero { background-image: var(--poc-hero); }
