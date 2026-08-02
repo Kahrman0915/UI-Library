@@ -389,26 +389,28 @@ ${anchorBlocks()}
    The stops are AUTHORED, not derived from the anchors, because both ends have
    to clear the label and the mark's do not. Solved and measured:
 
-     light   #007cba -> #7137e6   white,  worst across the ramp 4.57
-             hover deepens        #006ca3 -> #5e26d5, worst 5.72
-     dark    #3dadfa -> #a770ff   ink,    worst 5.45
-             hover LIGHTENS       #6dbcff -> #b785ff, worst 6.65
+     light   #0060ba -> #8244ff   white,  worst across the ramp 4.99
+             hover deepens 5 L*   #0054a4 -> #7236f0, worst 6.01
+     dark    #2897ff -> #a770ff   ink,    worst 5.31
+             hover LIGHTENS 5 L*  #5da4ff -> #b482ff, worst 6.42
 
    The hovers move in opposite directions on purpose: light carries a white
    label so darker is more contrast, dark carries ink so lighter is. That is the
    same rule the rest of the system already follows.
 
-   Hue is held across modes — azure 262/263, violet 309/309 — so the two are one
-   gradient rendered for two pages rather than two gradients. The shipped
+   Hue is close across modes — blue 282/276, violet 308/309 — so the two read as
+   one gradient rendered for two pages. The 6 degrees on the blue end is the
+   most drift worth allowing; past about 10 they stop being the same colour. The
+   shipped
    tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
    of its light), which is worth fixing at adoption. */
 [data-theme-poc][data-surface='aiden'][data-mode='light'] {
-  --aiden-fill:       linear-gradient(135deg, #007cba 0%, #7137e6 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #006ca3 0%, #5e26d5 100%);
+  --aiden-fill:       linear-gradient(135deg, #0060ba 0%, #8244ff 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #0054a4 0%, #7236f0 100%);
 }
 [data-theme-poc][data-surface='aiden'][data-mode='dark'] {
-  --aiden-fill:       linear-gradient(135deg, #3dadfa 0%, #a770ff 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #6dbcff 0%, #b785ff 100%);
+  --aiden-fill:       linear-gradient(135deg, #2897ff 0%, #a770ff 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #5da4ff 0%, #b482ff 100%);
 }
 /* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
    Where it is text or a border it keeps the flat accent, because a gradient

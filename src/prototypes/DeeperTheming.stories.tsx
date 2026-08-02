@@ -682,11 +682,11 @@ export const AidenSurface: Story = {
               as a band the eye has to cross.
               <br />
               Both ends have to clear the label, which the mark&rsquo;s stops do not, so the fill is
-              authored rather than derived: <code style={MONO}>#007cba → #7137e6</code> in light on
-              white (worst point across the ramp <strong>4.57</strong>) and{' '}
-              <code style={MONO}>#3dadfa → #a770ff</code> in dark on ink (<strong>5.45</strong>). Hue is
-              held across the two — azure 262/263, violet 309/309 — so it is one gradient rendered for
-              two pages. The hovers move in <em>opposite</em> directions: light deepens because it
+              authored rather than derived: <code style={MONO}>#0060ba → #8244ff</code> in light on
+              white (worst point across the ramp <strong>4.99</strong>) and{' '}
+              <code style={MONO}>#2897ff → #a770ff</code> in dark on ink (<strong>5.31</strong>). Hue
+              stays close across the two — blue 282/276, violet 308/309 — so it reads as one gradient
+              rendered for two pages. The hovers move in <em>opposite</em> directions: light deepens because it
               carries white, dark lightens because it carries ink.
             </p>
           </div>
