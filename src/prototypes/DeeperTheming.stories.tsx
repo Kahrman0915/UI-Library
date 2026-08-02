@@ -684,9 +684,10 @@ export const AidenSurface: Story = {
               Both ends have to clear the label, which the mark&rsquo;s stops do not, so the fill is
               authored rather than derived: <code style={MONO}>#0060ba → #8244ff</code> in light on
               white (worst point across the ramp <strong>4.99</strong>) and{' '}
-              <code style={MONO}>#2897ff → #a770ff</code> in dark on ink (<strong>5.31</strong>). Hue
-              stays close across the two — blue 282/276, violet 308/309 — so it reads as one gradient
-              rendered for two pages. The hovers move in <em>opposite</em> directions: light deepens because it
+              <code style={MONO}>#47a6ff → #aa75ff</code> in dark on ink (<strong>5.69</strong>). The
+              violet end holds across modes (308/308); the blue end does not — 282 in light against 271
+              in dark. That is a real 11° split, taken deliberately: dark needs the extra lightness to
+              carry ink, and the hue moved with it. The hovers move in <em>opposite</em> directions: light deepens because it
               carries white, dark lightens because it carries ink.
             </p>
           </div>

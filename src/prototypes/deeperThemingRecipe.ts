@@ -391,17 +391,20 @@ ${anchorBlocks()}
 
      light   #0060ba -> #8244ff   white,  worst across the ramp 4.99
              hover deepens 5 L*   #0054a4 -> #7236f0, worst 6.01
-     dark    #2897ff -> #a770ff   ink,    worst 5.31
-             hover LIGHTENS 5 L*  #5da4ff -> #b482ff, worst 6.42
+     dark    #47a6ff -> #aa75ff   ink,    worst 5.69
+             hover LIGHTENS 5 L*  #70b3ff -> #b786ff, worst 6.69
 
    The hovers move in opposite directions on purpose: light carries a white
    label so darker is more contrast, dark carries ink so lighter is. That is the
    same rule the rest of the system already follows.
 
-   Hue is close across modes — blue 282/276, violet 308/309 — so the two read as
-   one gradient rendered for two pages. The 6 degrees on the blue end is the
-   most drift worth allowing; past about 10 they stop being the same colour. The
-   shipped
+   Violet holds across modes (308/308). The BLUE END DOES NOT: 282 in light
+   against 271 in dark, 11 degrees apart, which is past the point where two
+   colours read as one. Dark's blue is a true sky where light's is an indigo-
+   leaning azure. Owner's call, taken with eyes open — dark needs the extra
+   lightness to carry ink and the hue moved with it. If the two ever need to be
+   the same colour, the fix is light's blue rotating toward 276, not dark's
+   toward 282, because dark has no lightness to spare. The shipped
    tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
    of its light), which is worth fixing at adoption. */
 [data-theme-poc][data-surface='aiden'][data-mode='light'] {
@@ -409,8 +412,8 @@ ${anchorBlocks()}
   --aiden-fill-hover: linear-gradient(135deg, #0054a4 0%, #7236f0 100%);
 }
 [data-theme-poc][data-surface='aiden'][data-mode='dark'] {
-  --aiden-fill:       linear-gradient(135deg, #2897ff 0%, #a770ff 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #5da4ff 0%, #b482ff 100%);
+  --aiden-fill:       linear-gradient(135deg, #47a6ff 0%, #aa75ff 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #70b3ff 0%, #b786ff 100%);
 }
 /* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
    Where it is text or a border it keeps the flat accent, because a gradient
