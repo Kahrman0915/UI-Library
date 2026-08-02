@@ -12,7 +12,7 @@ import {
   Separator, StatusDot, Switch,
 } from '../index';
 import {
-  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, SUB_BRANDS,
+  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, SUB_BRANDS,
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
 
@@ -131,12 +131,49 @@ const PAGE: CSSProperties = {
 };
 const MONO: CSSProperties = { fontFamily: 'var(--font-family-mono)', fontSize: 'var(--text-xs)' };
 
-/** A branded scope. `data-brand` drives the anchors; `data-mode` picks the pair. */
+/**
+ * Follow Storybook's own light/dark toolbar.
+ *
+ * These stories used to own a local "Dark mode" Switch, and every POC element
+ * stamped that local state as `data-mode` on itself. Storybook's global mode
+ * writes `data-mode` on <html> — so the local attribute, being closer, WON, and
+ * flipping the toolbar darkened the page chrome while every frame, card and
+ * swatch stayed light. Two controls for one axis, one of them silently
+ * overriding the other.
+ *
+ * There is one control now, and it is the toolbar. The scopes still have to
+ * carry the attribute themselves — the recipe selects on
+ * `[data-theme-poc][data-mode='x']`, a COMPOUND selector, so an inherited mode
+ * does not match — but the value is mirrored from <html> rather than invented.
+ */
+function useGlobalMode(): Mode {
+  const read = () => (document.documentElement.getAttribute('data-mode') === 'dark' ? 'dark' : 'light');
+  const [mode, setMode] = useState<Mode>(read);
+  useEffect(() => {
+    setMode(read());
+    const obs = new MutationObserver(() => setMode(read()));
+    obs.observe(document.documentElement, { attributes: true, attributeFilter: ['data-mode'] });
+    return () => obs.disconnect();
+  }, []);
+  return mode;
+}
+
+/**
+ * A branded scope. `data-brand` drives the anchors; `data-mode` picks the pair.
+ *
+ * `mode` DEFAULTS TO THE TOOLBAR, not to 'light'. It used to default to light,
+ * and every caller that forgot to pass it pinned its subtree light forever —
+ * which is how a whole column of the MinimalOption story stayed white under a
+ * dark toolbar while the page around it went dark. A default of "whatever the
+ * rest of the page is doing" cannot fail that way.
+ */
 function Scope({
-  brand, mode = 'light', strength = 1, chromeOn = 1, children,
+  brand, mode, strength = 1, chromeOn = 1, children,
 }: {
   brand: BrandKey | ''; mode?: Mode; strength?: number; chromeOn?: number; children: ReactNode;
 }) {
+  const global = useGlobalMode();
+  mode ??= global;
   return (
     <div
       data-theme-poc=""
@@ -169,12 +206,6 @@ function Frame({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function ModeToggle({ mode, setMode }: { mode: Mode; setMode: (m: Mode) => void }) {
-  return (
-    <Switch id="poc-mode" label="Dark mode" checked={mode === 'dark'} onCheckedChange={(v) => setMode(v ? 'dark' : 'light')} />
-  );
-}
-
 function BrandPicker({ brand, setBrand }: { brand: BrandKey; setBrand: (b: BrandKey) => void }) {
   return (
     <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
@@ -185,15 +216,20 @@ function BrandPicker({ brand, setBrand }: { brand: BrandKey; setBrand: (b: Brand
   );
 }
 
+/** --primary per mode, so a story can index it by the toolbar's current mode. */
+const PRIMARY: Record<Mode, Record<string, string>> = { light: PRIMARY_LIGHT, dark: PRIMARY_DARK };
+
 const meta: Meta = {
   title: 'Prototypes/Deeper Theming',
   parameters: {
     layout: 'fullscreen',
     ui: {
       description:
-        'Theming built on the Figma app marks. Each brand is THREE anchors — highlight, main, deep — ' +
-        'and every surface derives from them. Nothing in `tokens.scss` is modified; every rule is scoped ' +
-        'to a `data-theme-poc` attribute that exists nowhere else in the repo.',
+        'Theming built on the Figma app marks. Each brand is THREE anchors — highlight, primary, deep — ' +
+        'and every surface derives from them. `--primary` IS the middle anchor, so the whole existing ' +
+        '`--primary-*` family re-derives for free. Nothing in `tokens.scss` is modified; every rule is ' +
+        'scoped to a `data-theme-poc` attribute that exists nowhere else in the repo. ' +
+        'Light/dark follows the Storybook toolbar — these stories have no mode switch of their own.',
       tags: ['poc', 'theming'],
     },
   },
@@ -207,7 +243,7 @@ type Story = StoryObj;
 
 export const Brands: Story = {
   render: function BrandsStory() {
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     const hostRef = useRef<HTMLDivElement>(null);
     const [drop, setDrop] = useState<Record<string, { onLight: number; onDark: number }>>({});
 
@@ -247,7 +283,7 @@ export const Brands: Story = {
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
           <span />
         </div>
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>A brand is three colours, not one</h2>
             <p style={P}>
@@ -257,7 +293,6 @@ export const Brands: Story = {
               on one wheel beside error, warning and success. Three anchors is not three times the
               colour, it is three times the <em>structure</em>.
             </p>
-            <ModeToggle mode={mode} setMode={setMode} />
           </div>
 
           {SUB_BRANDS.map((b) => {
@@ -470,14 +505,14 @@ function DashboardPage({ brand }: { brand: BrandKey }) {
 
 export const Dashboard: Story = {
   render: function DashboardStory() {
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     const [strength, setStrength] = useState(1);
     const [chromeOn, setChromeOn] = useState(1);
     const show: BrandKey[] = ['db', 'ph', 'rm'];
     return (
       <>
         <PocStyle />
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>The same dashboard, three sub-brands</h2>
             <p style={P}>
@@ -489,8 +524,7 @@ export const Dashboard: Story = {
             <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
               <Switch id="d-on" label="Theming on" checked={strength === 1} onCheckedChange={(v) => setStrength(v ? 1 : 0)} />
               <Switch id="d-chrome" label="Tint the rail" checked={chromeOn === 1} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
-              <ModeToggle mode={mode} setMode={setMode} />
-            </div>
+              </div>
           </div>
           {show.map((b) => (
             <Frame key={b} label={`data-brand="${b}"`}>
@@ -631,11 +665,11 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
 export const Marketing: Story = {
   render: function MarketingStory() {
     const [brand, setBrand] = useState<BrandKey>('ec');
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     return (
       <>
         <PocStyle />
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>A marketing page has a bigger brand budget</h2>
             <p style={P}>
@@ -648,8 +682,7 @@ export const Marketing: Story = {
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
               <BrandPicker brand={brand} setBrand={setBrand} />
-              <ModeToggle mode={mode} setMode={setMode} />
-            </div>
+              </div>
           </div>
           <Frame label={`data-brand="${brand}"`}>
             <Scope brand={brand} mode={mode}>
@@ -668,7 +701,7 @@ export const Marketing: Story = {
 
 export const Marks: Story = {
   render: function MarksStory() {
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     const hostRef = useRef<HTMLDivElement>(null);
     const [pairs, setPairs] = useState<{ a: string; b: string; v: number }[]>([]);
 
@@ -698,7 +731,7 @@ export const Marks: Story = {
       <>
         <PocStyle />
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}><span /></div>
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>The marks are the brand definition</h2>
             <p style={P}>
@@ -706,7 +739,6 @@ export const Marks: Story = {
               surface where colour is free. That is why the anchors live here and the UI tokens derive
               from them rather than the other way round.
             </p>
-            <ModeToggle mode={mode} setMode={setMode} />
           </div>
 
           <div style={{ padding: 'var(--p-8)', borderRadius: 'var(--rounded-xl)', background: mode === 'dark' ? '#0f172a' : '#ffffff', border: 'var(--border-w-100) solid var(--border)', display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
@@ -774,6 +806,7 @@ const MINIMAL_BRANDS: { key: BrandKey; theme: string }[] = [
 export const MinimalOption: Story = {
   render: function MinimalStory() {
     const hostRef = useRef<HTMLDivElement>(null);
+    const mode = useGlobalMode();
     const [rows, setRows] = useState<Record<string, { chromaA: number; chromaB: number; textOnLight: number }>>({});
 
     useEffect(() => {
@@ -795,8 +828,10 @@ export const MinimalOption: Story = {
           return toRGBA(getComputedStyle(p).backgroundColor);
         };
         const lightRaw = read(a, '--primary-light');
-        const white = toRGBA('#ffffff')!;
-        const light = lightRaw ? (lightRaw[3] < 1 ? over(lightRaw, white) : lightRaw) : null;
+        // --primary-light is translucent, so it is only a colour once composited
+        // over the page it sits on — and that page is not the same in both modes
+        const page = toRGBA(mode === 'dark' ? '#0f172a' : '#ffffff')!;
+        const light = lightRaw ? (lightRaw[3] < 1 ? over(lightRaw, page) : lightRaw) : null;
         const text = read(a, '--primary-text');
         const band = read(b, '--poc-band');
         if (light && text && band) {
@@ -804,7 +839,7 @@ export const MinimalOption: Story = {
         }
       }
       setRows(next);
-    }, []);
+    }, [mode]);
 
     const Fragment = ({ label }: { label: string }) => (
       <div style={{ display: 'grid', gap: 'var(--p-3)', padding: 'var(--p-4)', background: 'var(--primary-light)', borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--primary-border)' }}>
@@ -823,13 +858,13 @@ export const MinimalOption: Story = {
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
           {MINIMAL_BRANDS.map(({ key, theme }) => (
             <span key={key}>
-              <span data-min={key} data-theme={theme} data-mode="light" style={{ '--primary': PRIMARY_LIGHT[key] } as CSSProperties}><span /></span>
-              <span data-anc={key} data-theme-poc="" data-brand={key} data-mode="light" style={{ '--poc-str': 1 } as CSSProperties}><span /></span>
+              <span data-min={key} data-theme={theme} data-mode={mode} style={{ '--primary': PRIMARY[mode][key] } as CSSProperties}><span /></span>
+              <span data-anc={key} data-theme-poc="" data-brand={key} data-mode={mode} style={{ '--poc-str': 1 } as CSSProperties}><span /></span>
             </span>
           ))}
         </div>
 
-        <div data-mode="light" style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>The minimal option — just swap <code style={MONO}>--primary</code></h2>
             <p style={P}>
@@ -854,7 +889,7 @@ export const MinimalOption: Story = {
             <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
               <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>A · --primary swapped, stock system</span>
               {MINIMAL_BRANDS.map(({ key, theme }) => (
-                <div key={key} data-theme={theme} data-mode="light" style={{ '--primary': PRIMARY_LIGHT[key] } as CSSProperties}>
+                <div key={key} data-theme={theme} data-mode={mode} style={{ '--primary': PRIMARY[mode][key] } as CSSProperties}>
                   <Fragment label={key} />
                 </div>
               ))}
@@ -1000,7 +1035,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
 export const TokenMatrix: Story = {
   render: function TokenMatrixStory() {
     const hostRef = useRef<HTMLDivElement>(null);
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     const [vals, setVals] = useState<Record<string, Record<string, string>>>({});
     const cols: BrandKey[] = BRAND_KEYS;
 
@@ -1072,7 +1107,7 @@ export const TokenMatrix: Story = {
           ))}
         </div>
 
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>Every token, every brand</h2>
             <p style={P}>
@@ -1087,7 +1122,6 @@ export const TokenMatrix: Story = {
               meaningless on their own — <code style={MONO}>--primary-light</code> is a 6% alpha, not a
               colour.
             </p>
-            <ModeToggle mode={mode} setMode={setMode} />
           </div>
 
           {MATRIX.map((g) => (
@@ -1168,7 +1202,7 @@ const PAIRINGS: Pairing[] = [
 export const Audit: Story = {
   render: function AuditStory() {
     const hostRef = useRef<HTMLDivElement>(null);
-    const [mode, setMode] = useState<Mode>('light');
+    const mode = useGlobalMode();
     const [rows, setRows] = useState<Record<string, Record<string, number>>>({});
 
     useEffect(() => {
@@ -1206,7 +1240,7 @@ export const Audit: Story = {
             </span>
           ))}
         </div>
-        <div data-mode={mode} style={PAGE}>
+        <div style={PAGE}>
           <div>
             <h2 style={H2}>Measured, not asserted</h2>
             <p style={P}>
@@ -1216,7 +1250,6 @@ export const Audit: Story = {
               exiting 0. So the POC measures itself, in this browser, at full strength across all six
               sub-brands.
             </p>
-            <ModeToggle mode={mode} setMode={setMode} />
           </div>
           <div style={{ overflowX: 'auto' }}>
             <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
@@ -1285,7 +1318,7 @@ export const Recipe: Story = {
   render: () => (
     <>
       <PocStyle />
-      <div data-mode="light" style={PAGE}>
+      <div style={PAGE}>
         <div>
           <h2 style={H2}>What adoption would mean</h2>
           <p style={P}>
