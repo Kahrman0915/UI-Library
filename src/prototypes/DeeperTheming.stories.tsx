@@ -618,7 +618,7 @@ export const MarkAnatomy: Story = {
 function AidenInHost({ mode }: { mode: Mode }) {
   return (
     <Scope brand="db" mode={mode}>
-      <div style={{ background: 'var(--background)', minHeight: 340, position: 'relative', display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)' }}>
+      <div style={{ background: 'var(--background)', minHeight: 340, position: 'relative', contain: 'layout', display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
           <Mark brand="db" size={30} />
           <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>db</strong>
@@ -631,18 +631,7 @@ function AidenInHost({ mode }: { mode: Mode }) {
         </div>
 
         {/* the FAB is the whole argument: an aiden SURFACE inside a db theme */}
-        <Scope brand="aiden" mode={mode}>
-          <span
-            className="poc-aiden-fill"
-            style={{
-              position: 'absolute', right: 24, bottom: 24, width: 56, height: 56,
-              borderRadius: 'var(--rounded-full)', display: 'grid', placeItems: 'center',
-              color: '#ffffff', boxShadow: 'var(--shadow-lg)',
-            }}
-          >
-            <Sparkles size={24} aria-hidden="true" />
-          </span>
-        </Scope>
+        <AidenFab mode={mode} id="ah-fab" />
       </div>
     </Scope>
   );
@@ -744,10 +733,10 @@ export const AidenSurface: Story = {
               <code style={MONO}>#b31fd4</code> (h322) reaches 11.0.
             </p>
             <p style={P}>
-              <strong>db and aiden no longer share a surface.</strong> Their deeps were identical by
-              decision; they are now 6.2&nbsp;ΔE apart. It costs nothing today only because Aiden takes
-              the main neutrals and never derives a surface from its deep — but the decision is gone,
-              not honoured.
+              <strong>The old &ldquo;db and aiden share a deep&rdquo; rule is moot, not broken.</strong>{' '}
+              It existed so their surfaces would match; Aiden takes the main neutrals now, so it never
+              derives a surface from its deep at all and they match by construction whatever the deeps
+              do. Aiden&rsquo;s deep is mark artwork only.
             </p>
           </div>
 
@@ -818,11 +807,51 @@ export const Suite: Story = {
 // 2 — Dashboard
 // ─────────────────────────────────────────────────────────────────────────────
 
-function DashboardPage({ brand }: { brand: BrandKey }) {
+/**
+ * The Aiden launcher, pinned to a host page.
+ *
+ * Its own `data-surface` scope INSIDE whatever theme it lands in — that
+ * composition is the whole argument for Aiden being a surface rather than a
+ * seventh brand, and it only shows up when the two are on screen together.
+ *
+ * THE SCOPE WRAPPER IS `display: contents`. Without it the wrapper is a real
+ * box, and dropping one into a grid shell hands it a grid cell — the dashboard
+ * layout collapsed the first time for exactly that reason. `display: contents`
+ * removes the box while leaving the custom properties inheriting normally,
+ * which is the same trick `DirectionProvider` uses for its `dir` wrapper.
+ *
+ * The host gets `contain: layout` as well as `position: relative`. Relative
+ * alone does NOT create a containing block for a FIXED child — only transform /
+ * filter / perspective / contain do — and containment is what keeps every FAB
+ * inside its own dashboard instead of stacking them in the viewport corner.
+ */
+function AidenFab({ mode, id }: { mode: Mode; id: string }) {
+  return (
+    <div data-theme-poc="" data-surface="aiden" data-mode={mode} style={{ display: 'contents' }}>
+      <button
+        id={id}
+        type="button"
+        aria-label="Ask Aiden"
+        className="poc-aiden-fill"
+        style={{
+          position: 'absolute', right: 20, bottom: 20,
+          width: 52, height: 52, borderRadius: 'var(--rounded-full)',
+          border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center',
+          color: '#ffffff', boxShadow: 'var(--shadow-lg)',
+        }}
+      >
+        <Sparkles size={22} aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
   const [on, setOn] = useState(true);
   const nav = ['Overview', 'Cohorts', 'Exports', 'Settings'];
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '208px minmax(0,1fr)', minHeight: 560, background: 'var(--background)' }}>
+    <div style={{ display: 'grid', gridTemplateColumns: '208px minmax(0,1fr)', minHeight: 560, background: 'var(--background)', position: 'relative', contain: 'layout' }}>
+      <AidenFab mode={mode} id={`${brand}-fab`} />
       <aside
         className="poc-rail"
         style={{
@@ -940,7 +969,7 @@ export const Dashboard: Story = {
           {show.map((b) => (
             <Frame key={b} label={`data-brand="${b}"`}>
               <Scope brand={b} mode={mode} strength={strength} chromeOn={chromeOn}>
-                <DashboardPage brand={b} />
+                <DashboardPage brand={b} mode={mode} />
               </Scope>
             </Frame>
           ))}

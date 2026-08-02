@@ -153,13 +153,10 @@
  * ADJACENCY IS A DECISION HERE, NOT A DEFECT. Three of the seven deeps sit in
  * the same blue family, and that is deliberate:
  *
- *   db and aiden USED TO share the deep exactly, so their surfaces were
- *   byte-identical — the reasoning being that those two sit inside each other
- *   constantly and a surface that shifts across that boundary is noise. That no
- *   longer holds: db's deep is #01529e and aiden's is #9544ff, 6.2 dE00 apart.
- *   It does not matter yet only because aiden takes the MAIN neutrals and never
- *   derives a surface from its deep at all — but the moment anything reads
- *   aiden's deep for a surface, the decision is silently gone.
+ *   db and aiden once shared a deep so their surfaces would be byte-identical.
+ *   That rule is now MOOT rather than broken: aiden takes the main neutrals, so
+ *   it never derives a surface from its deep at all, and the two match by
+ *   construction whatever the deeps do. Aiden's deep is mark artwork only.
  *
  *   ec was then pulled away from both (#014c93 -> #01416b, -6 L*, -13 hue) to
  *   keep the blues from collapsing into one. That took ec closer to dc
