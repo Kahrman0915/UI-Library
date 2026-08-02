@@ -338,6 +338,25 @@ ${anchorBlocks()}
   --poc-band-strong: color-mix(in srgb, var(--surface-tint) calc(26% * var(--poc-str)), #1e293b);
   --poc-band-deep:   color-mix(in srgb, var(--poc-band) 88%, var(--primary));
 }
+/* db is the one brand whose dark surfaces read as coloured rather than as slate.
+   Not visible in the dE00 figures — dE00 weights lightness, and on that db sits
+   mid-pack at 4.91 (nb 6.44, rm 5.86). The metric that matches what the eye is
+   objecting to is CHROMA, and there db is the clear outlier: 21.0 against
+   ec 18.4, rm 16.8, dc 14.5, nb 11.9, ph 10.1.
+
+   Cause: the shared recipe greys every deep anchor by the same 60/40 against
+   slate-500, and db's deep (#4335d9) is by some way the most saturated of the
+   six, so the same grey leaves more colour behind. Greying db's tint harder
+   brings its chroma to 17.4 — inside the pack, still visibly indigo — while
+   leaving the rule and every other brand untouched.
+
+   Dark only: in light --background is #ffffff for every brand, so there is
+   nothing to correct there, and db's light --accent/--secondary already sit
+   with their peers. */
+[data-theme-poc][data-brand='db'][data-mode='dark'] {
+  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
+}
+
 
 /* ── THE AIDEN SURFACE — THE FINAL SHAPE OF THIS POC ────────────────────────
    Aiden is NOT a seventh brand. The six sub-apps are siblings and a theme says
