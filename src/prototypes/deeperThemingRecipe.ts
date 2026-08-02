@@ -126,35 +126,38 @@
  * design judgement. Two highlights also moved by hand: nb pulled greener to sit
  * with its new middle, db opened to a brighter cyan.
  *
- * db is the one that moved furthest, and its deep went VIOLET -> NAVY
- * (#2e0db0 -> #002e7c: -44 chroma, -14 hue). That is not a tweak, it is a
- * re-identification, and it cuts both ways:
+ * ADJACENCY IS A DECISION HERE, NOT A DEFECT. Three of the seven deeps sit in
+ * the same blue family, and that is deliberate:
  *
- *   FIXED  db and aiden were the long-standing collision pair, both violet.
- *          Their deeps were 7.8 dE00 apart — same colour, side by side. Now
- *          18.0, and their surfaces went 2.3 -> 6.0.
- *   BROKE  db and ec are now both blue at the bottom. Their deeps fell 18.7 ->
- *          10.3, and the SURFACES those produce fell 4.6 -> 0.9 dE00, which is
- *          indistinguishable. db and ec pages are the same page.
+ *   db and aiden share the deep EXACTLY (#1d43a9), so their surfaces are
+ *   byte-identical. The owner's reasoning: those two applications sit inside
+ *   each other constantly, and a surface that shifts as you cross that boundary
+ *   is noise, not information.
  *
- * The trade may well be right — db/aiden sit together far more often than
- * db/ec do — but it is a trade, not a free win, and nothing in the surface
- * recipe will warn you about it.
+ *   ec was then pulled away from both (#014c93 -> #01416b, -6 L*, -13 hue) to
+ *   keep the blues from collapsing into one. That took ec closer to dc
+ *   (surfaces 1.7 -> 1.2 dE00) — accepted, because dc and ec do not embed in
+ *   each other the way db and aiden do.
  *
- * One more character change worth knowing: db's ramp used to travel
- * 213 -> 293 -> 307 degrees, so the bottom half kept reaching. It now runs
- * 213 -> 293 -> 293, so below the middle it is a pure lightness ramp with no
- * hue movement at all. The highlight still reaches out of the family; the deep
- * no longer does.
+ * So do NOT "fix" a small surface distance by measurement alone. Which pairs
+ * are allowed to look alike is a product question about which apps sit side by
+ * side, and only the owner can answer it.
+ *
+ * KNOWN, OPEN: aiden's mark has almost no LIGHTNESS travel below the highlight
+ * — middle L* 33 to deep L* 32. It is not a flat gradient (chroma runs 112 to
+ * 64, so it reads as a saturation fade, and the glass overlay supplies its own
+ * lighting) but it is the only mark in the set with no light-falloff, against
+ * 9.5-23.6 L* everywhere else. Fixing it means lowering the SHARED db/aiden
+ * deep, which moves db too — hence not done unilaterally.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#1ee8fe', '#336bf8', '#002e7c'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#1ee8fe', '#336bf8', '#1d43a9'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   nb:    { light: ['#83d22e', '#00893a', '#0d6b5e'], dark: ['#acda27', '#1eb152', '#1b7b5e'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
   dc:    { light: ['#69dd94', '#00857a', '#00627a'], dark: ['#6cf198', '#00ae9f', '#007d96'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
-  ec:    { light: ['#02d1cf', '#007dbc', '#014c93'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#80bdfa', '#436fe7', '#6501cf'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
+  aiden: { light: ['#80bdfa', '#5414de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
