@@ -604,38 +604,30 @@ ${anchorBlocks()}
   70%  { transform: scaleY(0.92); opacity: 0.58; }
   100% { transform: scaleY(1);    opacity: 0.72; }
 }
-/* THE SPARKLE MIGRATES. Rather than sitting in one corner pulsing, it fades
-   out and reappears somewhere else on the tile — three stations, top-left,
-   top-right, bottom-left, each held for a few seconds. The jump always happens
-   at opacity 0, so you never see it travel; it is simply not where it was.
+/* THE SPARKLE IS A LENS FLARE, so it stays put. A highlight is caused by one
+   fixed light and one fixed surface; it does not tour the tile. An earlier pass
+   had it hopping between three corners, which read as three different sparkles
+   rather than one piece of glass catching the light.
 
-   All three stations are clear of the glyph, which owns 27-73% on both axes.
+   It holds Figma's corner and WANDERS — a slow lopsided drift of at most 4% of
+   the tile, with the intensity swelling and falling underneath it. The drift is
+   biased up and left (no keyframe moves it right of its resting x) so it can
+   never approach the glyph, which starts at 27.1%.
 
-   SEPARATE TRANSFORM PROPERTIES ARE WHY THIS WORKS. The loop owns translate
-   and opacity; hover owns scale. Those are individual properties in modern
-   CSS, not one composited transform, so a transition and an animation can hold
-   one each without fighting. The previous version put both on transform, which
-   forced an animation-name swap on hover — and an animation ending has no exit
-   easing at all, which is exactly the snap-back that felt harsh. */
-@keyframes poc-spark-migrate {
-  /* EVERY step carries a translate, deliberately. With translate declared only
-     at the jump frames, CSS interpolates between them across the whole gap —
-     so the sparkle did not jump, it CRUISED from the top-right corner down to
-     the bottom-left, straight through the glyph. Measured 12% overlap with the
-     icon before this was fixed. Repeat the value to hold a station. */
-  0%   { opacity: 0;    translate: 0 0; }
-  6%   { opacity: 0.95; translate: 0 0; }
-  27%  { opacity: 0.95; translate: 0 0; }
-  33%  { opacity: 0;    translate: 0 0; }
-  34%  { opacity: 0;    translate: 500% 20%; }
-  40%  { opacity: 0.8;  translate: 500% 20%; }
-  61%  { opacity: 0.8;  translate: 500% 20%; }
-  67%  { opacity: 0;    translate: 500% 20%; }
-  68%  { opacity: 0;    translate: 30% 520%; }
-  74%  { opacity: 0.72; translate: 30% 520%; }
-  93%  { opacity: 0.72; translate: 30% 520%; }
-  99%  { opacity: 0;    translate: 30% 520%; }
-  100% { opacity: 0;    translate: 30% 520%; }
+   Back on the sheen's 7.3s clock, in phase: one light, one surface.
+
+   SEPARATE TRANSFORM PROPERTIES ARE WHY THIS WORKS. The loop owns translate and
+   opacity; hover owns scale. Those are individual properties in modern CSS, not
+   one composited transform, so a transition and an animation can hold one each
+   without fighting. The version that put both on transform had to swap the
+   animation-name on hover — and an animation ending has no exit easing at all,
+   which is exactly the snap-back that felt harsh. */
+@keyframes poc-spark-flare {
+  0%   { opacity: 0.72; translate: 0 0; }
+  26%  { opacity: 0.96; translate: -30% 18%; }
+  52%  { opacity: 0.60; translate: -8% -26%; }
+  76%  { opacity: 0.88; translate: -22% 6%; }
+  100% { opacity: 0.72; translate: 0 0; }
 }
 @keyframes poc-mark-sweep {
   0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
@@ -691,7 +683,7 @@ ${anchorBlocks()}
     rgba(255, 255, 255, 0.12) 72%,
     transparent 100%);
   filter: blur(calc(var(--poc-mark-px) * 0.016));
-  animation: poc-spark-migrate 9200ms var(--ease-in-out) infinite;
+  animation: poc-spark-flare 7300ms var(--ease-in-out) infinite;
   /* grows from its lower-left, so gaining size also shifts it up and right —
      which is the direction the tile turns */
   transform-origin: 20% 80%;

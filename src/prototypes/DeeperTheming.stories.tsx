@@ -539,9 +539,11 @@ export const MarkAnatomy: Story = {
               them on different clocks makes the tile look like it has two light sources. The bloom
               shares no factor with either, so the set never quite repeats.
               <br />
-              The sparkle keeps Figma&rsquo;s position and size and gets a specular&rsquo;s behaviour at
-              low amplitude. Two earlier passes made it louder — a pulse, then three four-point stars —
-              and both times it stopped being a highlight and became the thing you looked at.
+              The sparkle is a <strong>lens flare</strong>: it holds Figma&rsquo;s corner and wanders
+              by at most 4% of the tile while its intensity swells and falls. It does not tour the
+              corners — a highlight comes from one fixed light on one fixed surface, and a version that
+              hopped between three of them read as three different sparkles rather than one piece of
+              glass. The drift is biased up and left so it can never reach the glyph.
               <br />
               Hover adds the rest: the tile takes a perspective tilt, the drop shadow grows and swings
               toward where the light now falls, the icon translates the <em>other</em> way with its own
