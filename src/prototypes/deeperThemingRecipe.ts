@@ -144,7 +144,7 @@
  * side, and only the owner can answer it.
  *
  * KNOWN, OPEN: aiden's mark has almost no LIGHTNESS travel below the highlight
- * — middle L* 33 to deep L* 32. It is not a flat gradient (chroma runs 112 to
+ * — middle L* 32.6 to deep L* 32.2, half a point. It is not a flat gradient (chroma runs 112 to
  * 64, so it reads as a saturation fade, and the glass overlay supplies its own
  * lighting) but it is the only mark in the set with no light-falloff, against
  * 9.5-23.6 L* everywhere else. Fixing it means lowering the SHARED db/aiden
@@ -157,7 +157,7 @@ export const BRAND_ANCHORS = {
   ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#80bdfa', '#5414de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
+  aiden: { light: ['#80bdfa', '#4d14de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
