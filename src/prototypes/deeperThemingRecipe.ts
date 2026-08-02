@@ -200,14 +200,18 @@ export const SUB_BRANDS = BRAND_KEYS.filter((k) => k !== 'aiden');
 function anchorBlocks(): string {
   return BRAND_KEYS.map((k) => {
     const a = BRAND_ANCHORS[k];
-    return `[data-theme-poc][data-brand='${k}'][data-mode='light'] {
+    // aiden is a SURFACE, not a brand — it answers "what is speaking", not
+    // "which app am I in", so it is selected by data-surface and never appears
+    // in the brand picker. Same anchor shape, different attribute.
+    const sel = k === 'aiden' ? "[data-theme-poc][data-surface='aiden']" : `[data-theme-poc][data-brand='${k}']`;
+    return `${sel}[data-mode='light'] {
   --primary-highlight:  ${a.light[0]};
   --mark-mid:           ${a.light[1]};
   --primary:            ${PRIMARY_LIGHT[k]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
 }
-[data-theme-poc][data-brand='${k}'][data-mode='dark'] {
+${sel}[data-mode='dark'] {
   --primary-highlight:  ${a.dark[0]};
   --mark-mid:           ${a.dark[1]};
   --primary:            ${PRIMARY_DARK[k]};
@@ -322,6 +326,79 @@ ${anchorBlocks()}
   --poc-band-deep:   color-mix(in srgb, var(--poc-band) 88%, var(--primary));
 }
 
+/* ── THE AIDEN SURFACE — THE FINAL SHAPE OF THIS POC ────────────────────────
+   Aiden is NOT a seventh brand. The six sub-apps are siblings and a theme says
+   which room you are in; Aiden is the assistant that walks into whichever room
+   you are already in. It is selected by data-surface, it never appears in the
+   brand picker, and it composes INSIDE any theme.
+
+   TWO CONSEQUENCES, both decided rather than derived:
+
+   1 · IT TAKES THE MAIN BRAND'S NEUTRALS. Every surface here is re-declared to
+       the stock literal, so an Aiden panel inside db keeps db's page and an
+       Aiden app of its own sits on plain white. That is not a gap, it is the
+       right answer twice over: a panel that repainted its host's surfaces would
+       tear a hole in the page, and Aiden's own product is a CHAT — a reading
+       surface, where a tint is a liability rather than an asset. Claude and
+       ChatGPT are both near-neutral for the same reason.
+
+   2 · THE GRADIENT CARRIES THE IDENTITY, and it is the mark's own ramp — same
+       three anchors, same 135deg axis, same 9.7/51.6/90.3 stops. A gradient FAB
+       floating in a db page does not read as another brand's button, it reads
+       as not being part of the page at all. That is a CATEGORICAL difference,
+       where a surface tint is only ever a matter of degree.
+
+   THE RULE THAT PROTECTS IT: gradient fill = Aiden, flat fill = a sub-app.
+   Every mark in this system is a three-stop gradient, so it is tempting to push
+   that into the six brands' buttons too. Don't. The second gradient in the
+   system is the one that kills the first. */
+[data-theme-poc][data-surface='aiden'][data-mode='light'] {
+  --background: #ffffff;
+  --card:       #ffffff;
+  --popover:    #ffffff;
+  --secondary:  #e2e8f0;
+  --accent:     #f1f5f9;
+  --muted:      #cbd5e1;
+  --input:      #e2e8f0;
+  --border:       #cbd5e1;
+  --border-hover: #64748b;
+  --sidebar:        #f8fafc;
+  --sidebar-border: #e2e8f0;
+  --sidebar-accent: #f1f5f9;
+}
+[data-theme-poc][data-surface='aiden'][data-mode='dark'] {
+  --background: #0f172a;
+  --card:       #1e293b;
+  --popover:    #475569;
+  --secondary:  #1e293b;
+  --accent:     #334155;
+  --muted:      #334155;
+  --input:      #475569;
+  --border:       #64748b;
+  --border-hover: #cbd5e1;
+  --sidebar:        #1e293b;
+  --sidebar-border: #334155;
+  --sidebar-accent: #334155;
+}
+/* The fill, identical in geometry to the mark so a button and the icon beside
+   it are visibly the same object. */
+[data-theme-poc][data-surface='aiden'] {
+  --aiden-fill: var(--poc-mark);
+}
+/* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
+   Where it is text or a border it keeps the flat accent, because a gradient
+   cannot be a 1px line or a legible label. */
+[data-theme-poc][data-surface='aiden'] .ui-button--default-default,
+[data-theme-poc][data-surface='aiden'] .ui-badge--default,
+[data-theme-poc][data-surface='aiden'] .poc-aiden-fill {
+  background-image: var(--aiden-fill);
+}
+[data-theme-poc][data-surface='aiden'] .ui-chip--active:not(:disabled),
+[data-theme-poc][data-surface='aiden'] .ui-chip--active:hover:not(:disabled) {
+  background-image: var(--aiden-fill);
+  border-color: transparent;
+}
+
 /* ── GRADIENTS + MARK ───────────────────────────────────────────────────────
    Just the three anchors, in order. The mark is the artwork; the hero is the
    same ramp stretched across a page band. Nothing is invented here — if the
@@ -342,10 +419,17 @@ ${anchorBlocks()}
      of half-correct that survives a screenshot. */
   color: var(--foreground);
 
-  --poc-mark: linear-gradient(140deg,
-    var(--primary-highlight) 0%,
-    var(--mark-mid) 52%,
-    var(--primary-deep) 100%);
+  /* THE MARK RAMP, and the single definition of it. It used to live here at
+     140deg/0/52/100 AND again inside .poc-mark at the solved 135deg/9.7/51.6/
+     90.3 — two gradients called the same thing, with the variable quietly
+     unused by anything. That is how --aiden-fill came to "not match the mark"
+     while looking identical: it matched the rendered mark and disagreed with a
+     stale token. One value now, consumed by the mark, the hero and the Aiden
+     fill, so they cannot drift apart. */
+  --poc-mark: linear-gradient(135deg,
+    var(--primary-highlight) 9.7%,
+    var(--mark-mid) 51.6%,
+    var(--primary-deep) 90.3%);
   --poc-hero: linear-gradient(135deg,
     var(--mark-mid) 0%,
     var(--primary-deep) 100%);
@@ -502,11 +586,8 @@ ${anchorBlocks()}
       color-mix(in srgb, #ffffff 28%, transparent) 0%,
       color-mix(in srgb, #b2d9ff 12%, transparent) 40%,
       transparent 100%),
-    /* 1 · the brand ramp */
-    linear-gradient(135deg,
-      var(--primary-highlight) 9.7%,
-      var(--mark-mid) 51.6%,
-      var(--primary-deep) 90.3%);
+    /* 1 · the brand ramp — from --poc-mark, the one definition */
+    var(--poc-mark);
   box-shadow:
     0 calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * 0.047) rgba(35, 14, 75, 0.4),
     inset 0 calc(var(--poc-mark-px) * -0.031) calc(var(--poc-mark-px) * 0.063) rgba(35, 14, 75, 0.3),

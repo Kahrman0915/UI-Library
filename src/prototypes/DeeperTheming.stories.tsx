@@ -176,10 +176,15 @@ function Scope({
 }) {
   const global = useGlobalMode();
   mode ??= global;
+  // aiden is reached by data-surface, never data-brand — it is not one of the
+  // six rooms, it is the thing that walks into them
+  const attrs = brand === 'aiden'
+    ? { 'data-surface': 'aiden' }
+    : { 'data-brand': brand || undefined };
   return (
     <div
       data-theme-poc=""
-      data-brand={brand || undefined}
+      {...attrs}
       data-mode={mode}
       style={{ '--poc-str': strength, '--poc-chrome': chromeOn } as CSSProperties}
     >
@@ -605,6 +610,133 @@ export const MarkAnatomy: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
+// 1c — Aiden: the surface, not a seventh brand
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** A db page with Aiden arriving in it — the scenario the whole decision rests on. */
+function AidenInHost({ mode }: { mode: Mode }) {
+  return (
+    <Scope brand="db" mode={mode}>
+      <div style={{ background: 'var(--background)', minHeight: 340, position: 'relative', display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+          <Mark brand="db" size={30} />
+          <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>db</strong>
+          <Button id="ah-new" label="New report" size="sm" IconLeft={Plus} />
+        </div>
+        <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-2)' }}>
+          <strong style={{ fontSize: 'var(--text-sm)' }}>Active accounts</strong>
+          <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</span>
+          <Progress id="ah-p" value={62} />
+        </div>
+
+        {/* the FAB is the whole argument: an aiden SURFACE inside a db theme */}
+        <Scope brand="aiden" mode={mode}>
+          <span
+            className="poc-aiden-fill"
+            style={{
+              position: 'absolute', right: 24, bottom: 24, width: 56, height: 56,
+              borderRadius: 'var(--rounded-full)', display: 'grid', placeItems: 'center',
+              color: '#ffffff', boxShadow: 'var(--shadow-lg)',
+            }}
+          >
+            <Sparkles size={24} aria-hidden="true" />
+          </span>
+        </Scope>
+      </div>
+    </Scope>
+  );
+}
+
+export const AidenSurface: Story = {
+  render: function AidenSurfaceStory() {
+    const mode = useGlobalMode();
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>Aiden is a surface, not a seventh brand</h2>
+            <p style={P}>
+              The six sub-apps are siblings, and a theme says <em>which room you are in</em>. Aiden is
+              the assistant that walks into whichever room you are already in — so it is selected by{' '}
+              <code style={MONO}>data-surface</code>, it never appears in the brand picker, and it
+              composes <em>inside</em> any theme rather than replacing it.
+            </p>
+            <p style={P}>
+              <strong>It takes the main brand&rsquo;s neutrals.</strong> An Aiden panel inside{' '}
+              <code style={MONO}>db</code> keeps db&rsquo;s page; Aiden&rsquo;s own app sits on plain
+              white. That is the right answer twice: a panel that repainted its host&rsquo;s surfaces
+              would tear a hole in the page, and Aiden&rsquo;s own product is a <strong>chat</strong> —
+              a reading surface, where a tint is a liability. Claude and ChatGPT are near-neutral for
+              the same reason.
+            </p>
+            <p style={P}>
+              <strong>The gradient carries the identity instead</strong>, and it is the mark&rsquo;s own
+              ramp — same three anchors, same 135° axis, same 9.7/51.6/90.3 stops, so a button and the
+              icon beside it are visibly the same object. A gradient FAB in a db page does not read as
+              another brand&rsquo;s button; it reads as <em>not part of the page</em>. That is a
+              categorical difference, where a surface tint is only ever a matter of degree.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px,1fr))', gap: 'var(--p-5)' }}>
+            <Frame label='data-theme="db" + data-surface="aiden"'>
+              <AidenInHost mode={mode} />
+            </Frame>
+            <Frame label='data-surface="aiden" — its own app'>
+              <Scope brand="aiden" mode={mode}>
+                <div style={{ background: 'var(--background)', minHeight: 340, display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)', alignContent: 'start' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+                    <Mark brand="aiden" size={30} />
+                    <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>aiden</strong>
+                    <Badge id="as-b" variant="default" label="Beta" />
+                  </div>
+                  <p style={{ margin: 0, fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)' }}>
+                    Neutral page, neutral cards. The chrome gets out of the way and the gradient does
+                    the identifying.
+                  </p>
+                  <div style={{ background: 'var(--secondary)', borderRadius: 'var(--rounded-lg)', padding: 'var(--p-3)', fontSize: 'var(--text-sm)' }}>
+                    How do I split this cohort by plan?
+                  </div>
+                  <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+                    <Chip id="as-c1" label="Summarise" active />
+                    <Chip id="as-c2" label="Explain" />
+                    <Chip id="as-c3" label="Chart it" />
+                  </div>
+                  <span style={{ marginTop: 'auto' }}>
+                    <Button id="as-send" label="Ask Aiden" IconRight={ArrowRight} />
+                  </span>
+                </div>
+              </Scope>
+            </Frame>
+          </div>
+
+          <div>
+            <h2 style={H2}>The rule that protects it</h2>
+            <p style={P}>
+              <strong>Gradient fill = Aiden. Flat fill = a sub-app.</strong> Every mark in this system
+              is a three-stop gradient, so it is tempting to push that into the six brands&rsquo;
+              buttons too. Don&rsquo;t — the second gradient in the system is the one that kills the
+              first. Below, the same button in all seven scopes: six flat, one gradient.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap' }}>
+              {[...SUB_BRANDS, 'aiden' as BrandKey].map((b) => (
+                <Scope key={b} brand={b} mode={mode}>
+                  <div style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+                    <Button id={`rule-${b}`} label="Continue" size="sm" />
+                    <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{b}</span>
+                  </div>
+                </Scope>
+              ))}
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
 // 1b — Suite: the parent page
 // ─────────────────────────────────────────────────────────────────────────────
 
@@ -741,7 +873,7 @@ export const Dashboard: Story = {
     // EVERY application, not a sample. Three brands was enough to show the
     // mechanism and not enough to answer the real question — whether six of them
     // still read as one suite when you scroll past them in a row.
-    const show: BrandKey[] = BRAND_KEYS;
+    const show: BrandKey[] = SUB_BRANDS;
     return (
       <>
         <PocStyle />
@@ -919,7 +1051,7 @@ export const Marketing: Story = {
               numerals, which are that ramp clipped to text.
             </p>
           </div>
-          {BRAND_KEYS.map((b) => (
+          {SUB_BRANDS.map((b) => (
             <Frame key={b} label={`data-brand="${b}"`}>
               <Scope brand={b} mode={mode}>
                 <MarketingPage brand={b} />

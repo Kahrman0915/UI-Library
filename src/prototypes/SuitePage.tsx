@@ -109,8 +109,11 @@ const WRAP: CSSProperties = { maxWidth: 'var(--max-w-6xl)', margin: '0 auto' };
  * Stamp all three or stamp none.
  */
 function BrandScope({ brand, mode, children, style }: { brand: BrandKey; mode: Mode; children: ReactNode; style?: CSSProperties }) {
+  // aiden is a SURFACE, not one of the six rooms — different attribute, and it
+  // deliberately keeps the host's neutrals rather than tinting them
+  const attrs = brand === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': brand };
   return (
-    <div data-theme-poc="" data-brand={brand} data-mode={mode} style={style}>
+    <div data-theme-poc="" {...attrs} data-mode={mode} style={style}>
       {children}
     </div>
   );
@@ -227,7 +230,7 @@ export default function SuitePage({ mode }: { mode: Mode }) {
                 >
                   <Mark brand="aiden" size={26} />
                   <span style={{ flex: 1 }}>Ask Aiden how to get started…</span>
-                  <Button id="suite-ask" label="Ask" size="sm" IconRight={ArrowRight} />
+                  <Button id="suite-ask" label="Ask Aiden" size="sm" IconRight={ArrowRight} />
                 </div>
                 <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', justifyContent: 'center' }}>
                   <Chip id="suite-c1" label="How to get started" />

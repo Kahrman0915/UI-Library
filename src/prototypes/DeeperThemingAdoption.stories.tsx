@@ -227,13 +227,98 @@ const meta: Meta = {
       description:
         'What adopting deeper theming would actually do to `tokens.scss`. Reads the real token ' +
         'file and the real POC recipe at render time and reports the diff — nothing is changed, ' +
-        'and nothing here is hand-copied.',
+        'and nothing here is hand-copied. Start at **Decision** for the shape that was settled on; ' +
+        'the rest is cost and risk.',
       tags: ['poc', 'theming', 'migration'],
     },
   },
 };
 export default meta;
 type Story = StoryObj;
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 0 — Decision
+// ─────────────────────────────────────────────────────────────────────────────
+
+const RULES: { t: string; b: string }[] = [
+  { t: 'A brand is three anchors, not one colour',
+    b: 'highlight / primary / deep, read off the Figma mark. One number could never carry a suite this wide — the wheel is 360 degrees and eight brands plus the semantics do not fit on it.' },
+  { t: '--primary IS the mark’s middle stop',
+    b: 'No derivation, no second value a few percent away. Where a brand genuinely wants its accent to differ from its artwork it authors one, and aiden is the only one that does — a 8.6 ΔE gap someone chose, not an artifact.' },
+  { t: 'Every brand carries the same white label',
+    b: 'The marks moved to earn it rather than the label changing colour per sub-app. Measured 4.50–5.67 across the six. Solve against #ffffff, not #f8fafc — every theme scope overrides the label to pure white.' },
+  { t: 'Surfaces come from DEEP, and move only slightly',
+    b: '4–8 ΔE off the neutral: enough to read as this brand beside another, never enough to read as a coloured page. Never the highlight — a surface should sit under the accent, not beside it.' },
+  { t: 'Lines and shadows stay near slate',
+    b: 'They carry no contrast budget, which is exactly why an early pass overspent there. A hairline that announces the brand is the loudest tell of a cheap theme.' },
+  { t: 'The highlight is artwork only',
+    b: 'Mark, hero gradient, marketing bubbles, small non-text accents. The test is whether anything is read on top of it; if something is, it is the wrong token.' },
+  { t: 'db and aiden share a surface exactly',
+    b: 'Byte-identical, by decision. Those two sit inside each other constantly, and a surface that shifts as you cross that boundary is noise rather than information.' },
+  { t: 'Aiden is a SURFACE, not a seventh brand',
+    b: 'A theme says which room you are in; Aiden is the assistant that walks into whichever room you are already in. It takes the main brand’s neutrals — a panel that repainted its host would tear a hole in the page, and its own product is a chat, where a tint is a liability.' },
+  { t: 'Gradient fill = Aiden. Flat fill = a sub-app',
+    b: 'The gradient is a categorical difference where a surface tint is only ever a matter of degree. Every mark here is a three-stop gradient, so the temptation to push that into the six brands’ buttons is real. The second gradient in the system is the one that kills the first.' },
+  { t: 'The suite ramp belongs to the parent only',
+    b: 'All seven at once — the headline, the stat numerals, the bubble field — and only on the suite page. Inside a sub-app it would contradict the point, which is that one brand is in charge.' },
+];
+
+export const Decision: Story = {
+  render: () => (
+    <div style={PAGE}>
+      <div>
+        <h2 style={H2}>What this POC settled</h2>
+        <p style={P}>
+          Ten rules, in the order they were arrived at. Everything else in these two story sets is
+          either the evidence for one of them or the cost of adopting it.
+        </p>
+      </div>
+      <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+        {RULES.map((r, i) => (
+          <div
+            key={r.t}
+            style={{
+              display: 'flex', gap: 'var(--p-4)', alignItems: 'flex-start',
+              padding: 'var(--p-4)', borderRadius: 'var(--rounded-lg)',
+              border: 'var(--border-w-100) solid var(--border)', background: 'var(--card)',
+            }}
+          >
+            <span
+              style={{
+                ...CODE, flex: 'none', width: 26, height: 26, borderRadius: 'var(--rounded-full)',
+                display: 'grid', placeItems: 'center', background: 'var(--secondary)',
+                color: 'var(--muted-foreground)',
+              }}
+            >
+              {i + 1}
+            </span>
+            <div style={{ display: 'grid', gap: 'var(--p-1)' }}>
+              <strong style={{ fontSize: 'var(--text-sm)' }}>{r.t}</strong>
+              <span style={{ fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)' }}>
+                {r.b}
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+      <div>
+        <h2 style={H2}>What is still open</h2>
+        <p style={P}>
+          <strong>Dark mode has had none of this.</strong> No white-label solve, no deep re-cuts, no
+          shared db/aiden deep. Five of seven deeps sit more than 8° of hue from their light
+          counterpart, and aiden&rsquo;s two modes are not the same colour at all — violet at hue 309
+          in light, blue at 289 in dark. Contrast tests run per-mode, so nothing in the tooling can
+          see it. The light set is the reference and it is a mechanical pass.
+          <br />
+          <strong>The Figma masters are behind the code</strong> on every light stop.
+          <br />
+          <strong>Semantic tints over a tinted band</strong> remain the one measured hazard — error on
+          its own tint reads 4.19–4.27 there against 4.72 on the white page.
+        </p>
+      </div>
+    </div>
+  ),
+};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1 — Verdict
