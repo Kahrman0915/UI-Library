@@ -259,7 +259,7 @@ ${anchorBlocks()}
      compresses both chroma and lightness toward a common point, so one
      percentage below produces a comparable shift for every brand.
      Deep, not highlight: the surface must sit UNDER the accent, not beside it. */
-  --surface-tint: color-mix(in srgb, var(--primary-deep) 60%, #475569);
+  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #475569);
 
   /* SLIGHT, ON PURPOSE. Each surface lands 4-8 dE00 off its neutral base — the
      range where a brand is legible against another brand but never legible as
@@ -292,9 +292,9 @@ ${anchorBlocks()}
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
      cheap theme, and the mark carries identity now so the rail does not have to. */
-  --sidebar:         color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #f8fafc);
-  --sidebar-border:  color-mix(in srgb, var(--surface-tint) calc(14% * var(--poc-chrome, 0)), #e2e8f0);
-  --sidebar-accent:  color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-chrome, 0)), #f1f5f9);
+  --sidebar:         color-mix(in srgb, var(--surface-tint) calc(6%  * var(--poc-chrome, 0)), #f8fafc);
+  --sidebar-border:  color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #e2e8f0);
+  --sidebar-accent:  color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc-chrome, 0)), #f1f5f9);
 
   /* BAND — the alternating marketing strip. Same stock, same restraint: a band
      is still a surface people read on. It is allowed to be the loudest of them
@@ -315,7 +315,7 @@ ${anchorBlocks()}
   /* Greyed toward slate-500 rather than slate-600: the dark deep anchors are
      lighter than their light counterparts, and a mid-slate keeps the stock from
      collapsing into the page it is about to tint. */
-  --surface-tint: color-mix(in srgb, var(--primary-deep) 60%, #64748b);
+  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 
   --background: color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-str)), #0f172a);
   --card:       color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-str)), #1e293b);
@@ -330,31 +330,13 @@ ${anchorBlocks()}
   --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
-  --sidebar:        color-mix(in srgb, var(--surface-tint) calc(14% * var(--poc-chrome, 0)), #1e293b);
-  --sidebar-border: color-mix(in srgb, var(--surface-tint) calc(18% * var(--poc-chrome, 0)), #334155);
-  --sidebar-accent: color-mix(in srgb, var(--surface-tint) calc(14% * var(--poc-chrome, 0)), #334155);
+  --sidebar:        color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #1e293b);
+  --sidebar-border: color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-chrome, 0)), #334155);
+  --sidebar-accent: color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc-chrome, 0)), #334155);
 
   --poc-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--poc-str)), #1e293b);
   --poc-band-strong: color-mix(in srgb, var(--surface-tint) calc(26% * var(--poc-str)), #1e293b);
   --poc-band-deep:   color-mix(in srgb, var(--poc-band) 88%, var(--primary));
-}
-/* db is the one brand whose dark surfaces read as coloured rather than as slate.
-   Not visible in the dE00 figures — dE00 weights lightness, and on that db sits
-   mid-pack at 4.91 (nb 6.44, rm 5.86). The metric that matches what the eye is
-   objecting to is CHROMA, and there db is the clear outlier: 21.0 against
-   ec 18.4, rm 16.8, dc 14.5, nb 11.9, ph 10.1.
-
-   Cause: the shared recipe greys every deep anchor by the same 60/40 against
-   slate-500, and db's deep (#4335d9) is by some way the most saturated of the
-   six, so the same grey leaves more colour behind. Greying db's tint harder
-   brings its chroma to 17.4 — inside the pack, still visibly indigo — while
-   leaving the rule and every other brand untouched.
-
-   Dark only: in light --background is #ffffff for every brand, so there is
-   nothing to correct there, and db's light --accent/--secondary already sit
-   with their peers. */
-[data-theme-poc][data-brand='db'][data-mode='dark'] {
-  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 }
 
 
