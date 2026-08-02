@@ -401,8 +401,9 @@ export const Brands: Story = {
               values that fail once written as 8-bit.
             </p>
             <p style={P}>
-              <code style={MONO}>db</code> needed no move at all; <code style={MONO}>nb</code> and{' '}
-              <code style={MONO}>dc</code> gave up about 10&nbsp;L*. The <strong>deep</strong> stops were
+              <code style={MONO}>nb</code> and <code style={MONO}>dc</code> gave up about 10&nbsp;L*
+              to earn the white label. <code style={MONO}>db</code> has since been set to the shipped
+              indigo <code style={MONO}>#6063f1</code>, which clears at 4.61 without a solve. The <strong>deep</strong> stops were
               then re-cut by hand so the marks kept their depth — those are a design judgement, not a
               derivation, and they are safe: deep only reaches the surfaces through a 60%-slate stock
               applied at single digits, so the re-cut moves every tinted surface by{' '}
@@ -722,6 +723,32 @@ export const AidenSurface: Story = {
                 </div>
               </Scope>
             </Frame>
+          </div>
+
+          <div>
+            <h2 style={H2}>Where this currently does not work</h2>
+            <p style={P}>
+              <strong>Aiden&rsquo;s flat accent is 5.9&nbsp;ΔE from db&rsquo;s.</strong>{' '}
+              <code style={MONO}>#5a56d3</code> against <code style={MONO}>#6063f1</code> — the
+              tightest pair in the set, between the two apps that overlap most. It was 20.7 before db
+              moved to the shipped indigo. That accent paints Aiden&rsquo;s text, borders, chips and
+              its own app&rsquo;s buttons, so it matters more than the gradient does, and nothing about
+              the gradient fixes it.
+            </p>
+            <p style={P}>
+              <strong>The gradient&rsquo;s closest approach to db is 6.6&nbsp;ΔE</strong>, and it is now
+              the <em>violet</em> end rather than the middle — db is violet too. Weighting the ramp no
+              longer helps, because you cannot move an endpoint by changing where it starts. The only
+              lever is rotating the violet away from db&rsquo;s hue 299:{' '}
+              <code style={MONO}>#9a2ff0</code> (h314) reaches 9.3,{' '}
+              <code style={MONO}>#b31fd4</code> (h322) reaches 11.0.
+            </p>
+            <p style={P}>
+              <strong>db and aiden no longer share a surface.</strong> Their deeps were identical by
+              decision; they are now 6.2&nbsp;ΔE apart. It costs nothing today only because Aiden takes
+              the main neutrals and never derives a surface from its deep — but the decision is gone,
+              not honoured.
+            </p>
           </div>
 
           <div>

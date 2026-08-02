@@ -253,8 +253,8 @@ const RULES: { t: string; b: string }[] = [
     b: 'They carry no contrast budget, which is exactly why an early pass overspent there. A hairline that announces the brand is the loudest tell of a cheap theme.' },
   { t: 'The highlight is artwork only',
     b: 'Mark, hero gradient, marketing bubbles, small non-text accents. The test is whether anything is read on top of it; if something is, it is the wrong token.' },
-  { t: 'db and aiden share a surface exactly',
-    b: 'Byte-identical, by decision. Those two sit inside each other constantly, and a surface that shifts as you cross that boundary is noise rather than information.' },
+  { t: 'db and aiden should share a surface',
+    b: 'They sit inside each other constantly, and a surface that shifts across that boundary is noise. It WAS byte-identical; the current values put their deeps 6.2 ΔE apart, which costs nothing yet only because Aiden takes the main neutrals and never derives a surface from its deep.' },
   { t: 'Aiden is a SURFACE, not a seventh brand',
     b: 'A theme says which room you are in; Aiden is the assistant that walks into whichever room you are already in. It takes the main brand’s neutrals — a panel that repainted its host would tear a hole in the page, and its own product is a chat, where a tint is a liability.' },
   { t: 'Gradient fill = Aiden. Flat fill = a sub-app',
@@ -314,6 +314,11 @@ export const Decision: Story = {
           <br />
           <strong>Semantic tints over a tinted band</strong> remain the one measured hazard — error on
           its own tint reads 4.19–4.27 there against 4.72 on the white page.
+          <br />
+          <strong>db and aiden are 5.9 ΔE apart on their flat accent</strong> (#6063f1 vs #5a56d3) —
+          the tightest pair in the set, between the two apps that overlap most, and it appeared when db
+          moved to the shipped indigo. Aiden&rsquo;s gradient does not fix it: the accent is what paints
+          its text, borders and chips.
         </p>
       </div>
     </div>

@@ -47,10 +47,15 @@
  *
  * This is NOT the two-value model removed below. That one had --primary sitting
  * a few percent off the middle for no reason a consumer could see — a
- * derivation artifact. aiden's is an 8.6 dE00 gap someone chose: the mark stays
- * violet (#7737e5, hue 309, chroma 100) because that is the AI identity, and
- * the accent is a calmer indigo (#5a56d3, hue 300, chroma 74) because a violet
- * that saturated is too much on every button, chip and progress bar.
+ * derivation artifact. aiden's is a gap someone chose: the mark carries the
+ * gradient because that is the AI identity, and the accent is a calmer flat
+ * indigo (#5a56d3) because a gradient cannot be a 1px line or a legible label.
+ *
+ * WARNING, CURRENT: that accent now sits 5.9 dE00 from db's #6063f1 — the
+ * tightest pair in the set, and the two apps that overlap most. It was 20.7
+ * before db moved to the shipped indigo. Aiden's flat accent is what paints its
+ * text, borders, chips and its own app's buttons, so this is a bigger problem
+ * than the gradient clash and it is not fixed by anything in the gradient.
  *
  * The test for adding another: can you SEE the difference, and can you say why
  * in one sentence? If not, it is drift, and the brand should just use its
@@ -148,10 +153,13 @@
  * ADJACENCY IS A DECISION HERE, NOT A DEFECT. Three of the seven deeps sit in
  * the same blue family, and that is deliberate:
  *
- *   db and aiden share the deep EXACTLY (#1d43a9), so their surfaces are
- *   byte-identical. The owner's reasoning: those two applications sit inside
- *   each other constantly, and a surface that shifts as you cross that boundary
- *   is noise, not information.
+ *   db and aiden USED TO share the deep exactly, so their surfaces were
+ *   byte-identical — the reasoning being that those two sit inside each other
+ *   constantly and a surface that shifts across that boundary is noise. That no
+ *   longer holds: db's deep is #01529e and aiden's is #9544ff, 6.2 dE00 apart.
+ *   It does not matter yet only because aiden takes the MAIN neutrals and never
+ *   derives a surface from its deep at all — but the moment anything reads
+ *   aiden's deep for a surface, the decision is silently gone.
  *
  *   ec was then pulled away from both (#014c93 -> #01416b, -6 L*, -13 hue) to
  *   keep the blues from collapsing into one. That took ec closer to dc
@@ -523,7 +531,7 @@ ${anchorBlocks()}
 [data-theme-poc][data-mode='light'] .poc-suite-ramp,
 [data-theme-poc][data-mode='light'] .poc-suite-text {
   --poc-ramp: linear-gradient(100deg,
-    #b66000 0%, #00893a 17%, #00857a 33%, #007dbc 50%, #336bf8 67%, #5a56d3 83%, #db01b0 100%);
+    #b66000 0%, #00893a 17%, #00857a 33%, #007dbc 50%, #6063f1 67%, #5a56d3 83%, #db01b0 100%);
 }
 [data-theme-poc][data-mode='dark'] .poc-suite-ramp,
 [data-theme-poc][data-mode='dark'] .poc-suite-text {
