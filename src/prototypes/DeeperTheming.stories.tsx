@@ -256,10 +256,11 @@ export const Brands: Story = {
         probe.style.backgroundColor = v;
         return toRGBA(getComputedStyle(probe).backgroundColor);
       };
-      // Both real labels, not pure white: #f8fafc and #0f172a are the two values
-      // --primary-foreground actually takes. Targeting #ffffff instead is what put
-      // every brand at 4.36-4.42 in an earlier pass, and the audit caught it.
-      const lightLabel = toRGBA('#f8fafc')!;
+      // PURE WHITE is the light label. Every theme scope in tokens.scss sets its
+      // --{code}-primary-foreground to #ffffff; #f8fafc is only the un-themed base,
+      // which no branded button ever renders. An earlier solve used the base and
+      // came out over-darkened by ~1 L*.
+      const lightLabel = toRGBA('#ffffff')!;
       const darkLabel = toRGBA('#0f172a')!;
       const next: Record<string, { onLight: number; onDark: number }> = {};
       for (const b of SUB_BRANDS) {
@@ -313,36 +314,35 @@ export const Brands: Story = {
           })}
 
           <div>
-            <h2 style={H2}>One colour, not two</h2>
+            <h2 style={H2}>One colour, one label</h2>
             <p style={P}>
               The middle anchor used to be called <em>main</em>, and{' '}
               <code style={MONO}>--primary</code> was a second value derived from it — a few percent
-              darker, because a mark&rsquo;s mid stop is a display colour and, measured with a{' '}
-              <strong>light</strong> label, six of the seven failed AA. Two colours a hair apart is a
-              smell, so it is gone. <strong><code style={MONO}>--primary</code> is the middle anchor.</strong>
+              darker, because a mark&rsquo;s mid stop is a display colour and did not clear AA under a
+              label. Two colours a hair apart is a smell, so it is gone:{' '}
+              <strong><code style={MONO}>--primary</code> is the middle anchor.</strong>
             </p>
             <p style={P}>
-              The contrast gets paid on the other side instead: each brand declares its own{' '}
-              <code style={MONO}>--primary-foreground</code>, and for six of seven that is the{' '}
-              <strong>dark</strong> label. <code style={MONO}>db</code> is the exception and keeps the
-              light one — blue is the darkest hue at full chroma, so it is the one that can carry white.
-              That is not an inconsistency to paper over; it is the job{' '}
-              <code style={MONO}>--primary-foreground</code> exists to do, and dark mode has always
-              worked this way.
+              An intermediate pass paid the contrast on the <em>label</em> side — six brands got a dark{' '}
+              <code style={MONO}>--primary-foreground</code>, <code style={MONO}>db</code> a light one.
+              It measured fine and it was a worse system: the CTA&rsquo;s label flipped colour depending
+              on which sub-app you were in, for a reason no consumer could see. So{' '}
+              <strong>the marks moved instead.</strong> Every light middle came down its own hue —
+              chroma and hue untouched — to the lightest value where pure white clears 4.5, and every
+              brand now carries <code style={MONO}>#ffffff</code>.
             </p>
             <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 640 }}>
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Brand</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>light label</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>dark label</th>
-                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>ships</th>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>--primary</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>white on it</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>ink on it</th>
                 </tr>
               </thead>
               <tbody>
                 {SUB_BRANDS.map((b) => {
                   const d = drop[b];
-                  const dark = BRAND_ANCHORS[b].on.light === '#0f172a';
                   const cell = (v: number | undefined, live: boolean) => (
                     <td style={{
                       ...MONO, padding: 'var(--p-2)', textAlign: 'right',
@@ -353,28 +353,37 @@ export const Brands: Story = {
                   return (
                     <tr key={b} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                       <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{b}</td>
-                      {cell(d?.onLight, !dark)}
-                      {cell(d?.onDark, dark)}
-                      <td style={{ ...MONO, padding: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
-                        {dark ? '#0f172a' : '#f8fafc'}
-                      </td>
+                      <td style={{ ...MONO, padding: 'var(--p-2)' }}>{BRAND_ANCHORS[b].light[1]}</td>
+                      {cell(d?.onLight, true)}
+                      {cell(d?.onDark, false)}
                     </tr>
                   );
                 })}
               </tbody>
             </table>
             <p style={{ ...P, marginTop: 'var(--p-4)' }}>
-              Getting there moved three middles, in <strong>lightness only</strong>, all under 1&nbsp;ΔE:{' '}
-              <code style={MONO}>db</code> −0.9&nbsp;L*, <code style={MONO}>ec</code> +0.3,{' '}
-              <code style={MONO}>rm</code> +0.5. Hue and chroma are untouched. The alternative — keep a
-              light label on every brand — needs <code style={MONO}>nb</code> and{' '}
-              <code style={MONO}>dc</code> to fall <strong>12&nbsp;L*</strong>, which visibly deepens
-              those marks through the middle. Both sets are in the recipe file so the choice can be
-              looked at rather than argued about.
+              <strong>Solve against <code style={MONO}>#ffffff</code>, not{' '}
+              <code style={MONO}>#f8fafc</code>.</strong> Every theme scope in{' '}
+              <code style={MONO}>tokens.scss</code> sets its{' '}
+              <code style={MONO}>--&#123;code&#125;-primary-foreground</code> to pure white;{' '}
+              <code style={MONO}>#f8fafc</code> is only the un-themed base, which no branded button ever
+              renders. An earlier solve used the base and came out over-darkened. And solve against the{' '}
+              <strong>rounded hex</strong> — stepping L* down until the float cleared 4.5 produced two
+              values that fail once written as 8-bit.
             </p>
             <p style={P}>
-              Dark mode needed nothing at all: <code style={MONO}>--primary-foreground</code> is already{' '}
-              <code style={MONO}>#0f172a</code> there, and every dark middle clears it at 5.1&ndash;6.4.
+              <code style={MONO}>db</code> needed no move at all; <code style={MONO}>nb</code> and{' '}
+              <code style={MONO}>dc</code> gave up about 10&nbsp;L*. The <strong>deep</strong> stops were
+              then re-cut by hand so the marks kept their depth — those are a design judgement, not a
+              derivation, and they are safe: deep only reaches the surfaces through a 60%-slate stock
+              applied at single digits, so the re-cut moves every tinted surface by{' '}
+              <strong>0.0–0.6&nbsp;ΔE00</strong> and muted-text contrast by at most 0.05.
+            </p>
+            <p style={P}>
+              Dark mode is untouched and still takes the <strong>ink</strong> label: its middles are
+              light by construction, white on them reads 2.66–3.34, and{' '}
+              <code style={MONO}>#0f172a</code> clears at 5.1–6.4. Light carries white, dark carries ink
+              — which is what every other token in the system already does.
             </p>
           </div>
 
@@ -1188,7 +1197,7 @@ const PAIRINGS: Pairing[] = [
   { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
   { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
   { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
-  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'per-brand label — six take #0f172a, db takes #f8fafc' },
+  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'pure white on every brand — the marks moved, not the label' },
   { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
   { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
   { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'the greyed deep stock' },
@@ -1283,11 +1292,10 @@ export const Audit: Story = {
             <h2 style={H2}>The rows that matter</h2>
             <p style={P}>
               <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-colour
-              model working. Every brand clears 4.5 on the mark&rsquo;s own middle stop, because the{' '}
-              <em>label</em> moved rather than the fill — six brands take{' '}
-              <code style={MONO}>#0f172a</code>, <code style={MONO}>db</code> takes{' '}
-              <code style={MONO}>#f8fafc</code>. Under a single light label the same fills read
-              3.01&ndash;4.36 and six of seven fail.
+              model working. Every brand clears 4.5 with the same{' '}
+              <code style={MONO}>#ffffff</code> label on the mark&rsquo;s own middle stop. The marks
+              moved to earn that: each light middle came down its own hue to the lightest value where
+              white passes, rather than the label changing colour per sub-app.
               <br />
               <strong>The bubble field is not in this table</strong> — it is a{' '}
               <code style={MONO}>background-image</code>, and the probe reads computed{' '}

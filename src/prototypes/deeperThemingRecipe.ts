@@ -37,32 +37,45 @@
  *                    plus shadow.
  *
  * ─────────────────────────────────────────────────────────────────────────────
- * ONE COLOUR, NOT TWO. This is the change that shaped the file.
+ * ONE COLOUR, ONE LABEL. This is the change that shaped the file.
  *
- * The middle anchor USED to be "main", and --primary was a second, slightly
- * darker value derived from it — because a mark's mid stop is a display colour
- * and, measured with a LIGHT label (#f8fafc), six of the seven failed AA:
+ * The middle anchor USED to be "main", with --primary a second, slightly darker
+ * value derived from it — because a mark's mid stop is a display colour and did
+ * not clear AA under a label. Two colours a few percent apart is a smell, so it
+ * is gone: --primary IS the middle anchor.
  *
- *     dc 3.01   nb 3.11   aiden 3.47   ph 3.50   ec 3.83   rm 3.85   db 4.36
+ * An intermediate pass paid for the contrast on the label side instead, giving
+ * six brands a DARK --primary-foreground and db a light one. It measured fine and
+ * it was a worse system: the CTA's label flipped colour depending on which
+ * sub-app you were in, for reasons no consumer could see.
  *
- * Two colours a few percent apart is a smell, so it is gone. --primary IS the
- * middle anchor. The contrast is paid for on the OTHER side instead: each brand
- * declares its own --primary-foreground, and for six of seven that is the DARK
- * label. Measured that way the same anchors clear comfortably:
+ * So the marks moved instead. Each light middle came down its own hue — chroma
+ * and hue untouched — to the lightest value where PURE WHITE clears 4.5, and
+ * every brand now carries #ffffff. Measured on the shipped anchors:
  *
- *     dc 5.67   nb 5.49   aiden 4.91   ph 4.88   ec 4.51   rm 4.51   db 4.51
+ *     db 4.57   nb 4.53   dc 4.53   rm 4.52   ec 4.51   ph 4.50   aiden 4.50
  *
- * db is the exception and keeps the light label: blue is the darkest hue at full
- * chroma, so it is the one that can carry white. That is not an inconsistency to
- * paper over — it is exactly the job --primary-foreground exists to do.
+ * SOLVE AGAINST #ffffff, NOT #f8fafc. Every theme scope in tokens.scss sets
+ * --{code}-primary-foreground to pure white; #f8fafc is only the un-themed base,
+ * which no branded button ever renders. An earlier solve used the base and came
+ * out over-darkened. Check the scope, not the default.
  *
- * Three middles moved to get there, in LIGHTNESS ONLY, all under 1 ΔE. The
- * alternative — keep a light label everywhere — needs nb and dc to fall 12 L*,
- * which visibly deepens those marks. Both sets are exported so the choice can be
- * looked at side by side; see WHITE_LABEL_PRIMARY.
+ * SOLVE AGAINST THE ROUNDED HEX. Stepping L* down until the float clears 4.5
+ * produced #00867a (4.48) and #dc01b0 (4.49) — both fail once written as 8-bit.
+ * Round inside the search loop.
  *
- * Dark mode needed nothing: --primary-foreground is #0f172a there already, and
- * every dark middle clears it at 5.1-6.4.
+ * db needed no move at all; nb and dc gave up ~10 L*. The owner then re-cut the
+ * DEEP stops by hand so the marks kept their depth, and those hand values are
+ * what ships below — they are not derived from anything and should not be
+ * "recomputed". Verified harmless to the rest of the system: because deep only
+ * reaches the surfaces through a 60%-slate stock applied at single digits, the
+ * re-cut moves every tinted surface by 0.0-0.6 dE00 and muted-text contrast by
+ * at most 0.05.
+ *
+ * Dark mode is untouched and still takes the DARK label: its middles are light
+ * by construction (#5688fa and friends), white on them reads 2.66-3.34, and
+ * #0f172a clears at 5.1-6.4. Light carries white, dark carries ink — which is
+ * what every other token in the system already does.
  *
  * ─────────────────────────────────────────────────────────────────────────────
  * SURFACES COME FROM DEEP, AND THEY MOVE ONLY SLIGHTLY. An earlier pass built the
@@ -103,47 +116,33 @@
 
 /**
  * The three anchors, straight off the Figma marks: [highlight, PRIMARY, deep].
- * `on` is that brand's --primary-foreground — see ONE COLOUR above for why it
- * varies per brand instead of being one value for the whole system.
+ * `on` is --primary-foreground: pure white in light for every brand, ink in dark.
  *
- * Three light middles were nudged in LIGHTNESS ONLY so the label clears 4.5.
- * Hue and chroma are untouched, and every move is under 1 ΔE — invisible beside
- * the original, which is the point. Figma needs the same three:
+ * Read from the POC page's "08 · Marks — white-safe primary" bottom row, which is
+ * where the middles were solved and the deeps re-cut by hand. The mark MASTERS on
+ * that page still hold the pre-solve values — this file is ahead of them.
  *
- *     db  #336bf8 -> #2e69f5   (-0.9 L*, ΔE 0.9)   carries the light label
- *     ec  #0186c8 -> #0587c9   (+0.3 L*, ΔE 0.3)   carries the dark label
- *     rm  #e51db9 -> #e720ba   (+0.5 L*, ΔE 0.5)   carries the dark label
+ * Do not regenerate these. The middles are a contrast solve and the deeps are a
+ * design judgement; only the highlights are unchanged from the original draw
+ * (except nb, whose highlight was pulled greener to sit with its new middle).
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#17d1e6', '#2e69f5', '#300db0'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#f8fafc', dark: '#0f172a' }, icon: 'chart-column' },
-  nb:    { light: ['#a6d22e', '#1ba44b', '#0d6b51'], dark: ['#acda27', '#1eb152', '#1b7b5e'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'file-text' },
-  dc:    { light: ['#69dd94', '#01a395', '#01748b'], dark: ['#6cf198', '#00ae9f', '#007d96'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'globe' },
-  ec:    { light: ['#02d1cf', '#0587c9', '#0158aa'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'leaf' },
-  ph:    { light: ['#facf33', '#c86f16', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'zap' },
-  rm:    { light: ['#c677ff', '#e720ba', '#9b1559'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#80bdfa', '#597ef9', '#6815d7'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#0f172a', dark: '#0f172a' }, icon: 'sparkles' },
+  db:    { light: ['#17d1e6', '#336bf8', '#2e0db0'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  nb:    { light: ['#83d22e', '#00893a', '#0d6b5e'], dark: ['#acda27', '#1eb152', '#1b7b5e'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
+  dc:    { light: ['#69dd94', '#00857a', '#00627a'], dark: ['#6cf198', '#00ae9f', '#007d96'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
+  ec:    { light: ['#02d1cf', '#007dbc', '#014c93'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  aiden: { light: ['#80bdfa', '#436fe7', '#6501cf'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
 } as const;
 
-/** --primary IS the middle anchor now. No derivation, no second colour. */
+/** --primary IS the middle anchor. No derivation, no second colour. */
 export const PRIMARY_LIGHT: Record<string, string> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, v.light[1]]),
 );
 export const PRIMARY_DARK: Record<string, string> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, v.dark[1]]),
 );
-
-/**
- * THE ALTERNATIVE, kept so the choice can be looked at rather than argued about.
- *
- * If every brand must keep a LIGHT label on its CTA — the look the library ships
- * today — then the middle anchor has to fall until white clears 4.5, and for the
- * bright hues that is a long way down: nb -11.5 L*, dc -12.6 L*. The marks would
- * visibly deepen through the middle. These are those values.
- */
-export const WHITE_LABEL_PRIMARY: Record<string, string> = {
-  db: '#2f66f3', nb: '#0b8339', dc: '#0b7f74', ec: '#0b78b2',
-  ph: '#ac5d09', rm: '#d011a8', aiden: '#4768e1',
-};
 
 export type BrandKey = keyof typeof BRAND_ANCHORS;
 export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
