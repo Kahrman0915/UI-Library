@@ -7,9 +7,11 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
-  Alert, Avatar, AvatarGroup, Badge, Banner, Button, Card, CardBody, CardHeader, Chip,
+  Alert, Avatar, AvatarGroup, Badge, Banner, Button, Card, CardBody, CardHeader, Chip, Fab,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
-  Separator, StatusDot, Switch,
+  Separator, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader,
+  SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
+  StatusDot, Switch,
 } from '../index';
 import {
   POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, PRIMARY_IS_AUTHORED, SUB_BRANDS,
@@ -310,21 +312,15 @@ function AidenInHost({ mode }: { mode: Mode }) {
  */
 function AidenFab({ mode, id }: { mode: Mode; id: string }) {
   return (
+    /* display: contents so the scope wrapper takes no layout box — a plain div
+       here becomes a grid/flex item and shifts everything around it. The Fab
+       carries the Aiden gradient itself; the surface attribute is what switches
+       it on, and it is declared here rather than on the page so the FAB reads as
+       Aiden inside whichever brand it is sitting in. */
     <div data-theme-poc="" data-surface="aiden" data-mode={mode} style={{ display: 'contents' }}>
-      <button
-        id={id}
-        type="button"
-        aria-label="Ask Aiden"
-        className="poc-aiden-fill"
-        style={{
-          position: 'absolute', right: 20, bottom: 20,
-          width: 52, height: 52, borderRadius: 'var(--rounded-full)',
-          border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center',
-          color: '#ffffff', boxShadow: 'var(--shadow-lg)',
-        }}
-      >
+      <Fab id={id} aria-label="Ask Aiden" size="default" pulse>
         <Sparkles size={22} aria-hidden="true" />
-      </button>
+      </Fab>
     </div>
   );
 }
@@ -333,34 +329,41 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
   const [on, setOn] = useState(true);
   const nav = ['Overview', 'Cohorts', 'Exports', 'Settings'];
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: '208px minmax(0,1fr)', minHeight: 560, background: 'var(--background)', position: 'relative', contain: 'layout' }}>
-      <AidenFab mode={mode} id={`${brand}-fab`} />
-      <aside
-        className="poc-rail"
-        style={{
-          backgroundColor: 'var(--sidebar)',
-          borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
-          padding: 'var(--p-4)', display: 'grid', alignContent: 'start', gap: 'var(--p-4)',
-          color: 'var(--sidebar-foreground)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2-5)' }}>
-          <Mark brand={brand} size={32} />
-          <strong style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{brand}</strong>
-        </div>
-        <nav style={{ display: 'grid', gap: 'var(--p-0-5)' }}>
-          {nav.map((n, i) => (
-            <span key={n} style={{
-              padding: 'var(--p-2) var(--p-2-5)', borderRadius: 'var(--rounded-md)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: i === 0 ? 'var(--font-medium)' : 'var(--font-normal)',
-              background: i === 0 ? 'var(--sidebar-accent)' : undefined,
-              color: i === 0 ? 'var(--sidebar-accent-foreground)' : 'var(--sidebar-foreground)',
-            }}>{n}</span>
-          ))}
-        </nav>
-      </aside>
+    /* `contain: layout` — NOT `position: relative` — is what keeps the Sidebar's
+       viewport-fixed panel and the Fab inside this frame instead of escaping to
+       the iframe corner and stacking six deep. Only transform / filter /
+       perspective / contain create a containing block for a fixed child. */
+    <div className="poc-dash" style={{ minHeight: 560, background: 'var(--background)', position: 'relative', contain: 'layout' }}>
+      <SidebarProvider>
+        {/* The real Sidebar, not a hand-drawn rail. It is the only thing that
+            exercises the --sidebar-* surface, which is the chrome a theme has to
+            reach for "deeper" to mean anything. */}
+        <Sidebar collapsible="none">
+          <SidebarHeader>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2-5)', padding: 'var(--p-1)' }}>
+              <Mark brand={brand} size={32} />
+              <strong style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{brand}</strong>
+            </div>
+          </SidebarHeader>
+          <SidebarContent>
+            <SidebarGroup>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {nav.map((n, i) => (
+                    <SidebarMenuItem key={n}>
+                      <SidebarMenuButton isActive={i === 0}>
+                        <span>{n}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          </SidebarContent>
+        </Sidebar>
 
+      <SidebarInset>
+        <AidenFab mode={mode} id={`${brand}-fab`} />
       <div style={{ display: 'grid', alignContent: 'start' }}>
         {/* THE THEMED-SURFACE SET. These three are the only places a --primary
             derived TINT carries text, and they were the pairing that blocked
@@ -429,6 +432,8 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
           </div>
         </div>
       </div>
+      </SidebarInset>
+      </SidebarProvider>
     </div>
   );
 }

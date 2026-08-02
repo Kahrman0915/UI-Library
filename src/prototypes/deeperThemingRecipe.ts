@@ -433,8 +433,15 @@ ${anchorBlocks()}
    cannot be a 1px line or a legible label. */
 [data-theme-poc][data-surface='aiden'] .ui-button--default-default,
 [data-theme-poc][data-surface='aiden'] .ui-badge--default,
-[data-theme-poc][data-surface='aiden'] .poc-aiden-fill {
-  background-image: var(--aiden-fill);
+[data-theme-poc][data-surface='aiden'] .poc-aiden-fill,
+/* The real <Fab> already paints the Aiden gradient under this surface — but it
+   reads the SHIPPED --aiden-primary, and the POC's two-stop gradient lives in
+   --aiden-fill. Without this the FAB renders the shipped three-stop violet while
+   everything around it is on the new ramp, which is the exact mismatch this POC
+   exists to remove. Fab.scss sets it with the background shorthand, so the
+   override must use that same property to win, not background-image. */
+[data-theme-poc][data-surface='aiden'] .ui-fab {
+  background: var(--aiden-fill);
 }
 [data-theme-poc][data-surface='aiden'] .ui-chip--active:not(:disabled),
 [data-theme-poc][data-surface='aiden'] .ui-chip--active:hover:not(:disabled) {
@@ -446,6 +453,9 @@ ${anchorBlocks()}
 [data-theme-poc][data-surface='aiden'] .ui-button--default-default:hover:not(:disabled),
 [data-theme-poc][data-surface='aiden'] .poc-aiden-fill:hover {
   background-image: var(--aiden-fill-hover);
+}
+[data-theme-poc][data-surface='aiden'] .ui-fab:hover:not(:disabled) {
+  background: var(--aiden-fill-hover);
 }
 
 /* ── GRADIENTS + MARK ───────────────────────────────────────────────────────
@@ -1044,11 +1054,38 @@ ${anchorBlocks()}
 [data-theme-poc] .poc-hero-cta > .ui-button { background-image: var(--poc-hero); }
 [data-theme-poc] .poc-band { background: var(--poc-band); }
 [data-theme-poc] .poc-band-strong { background: var(--poc-band-strong); }
-[data-theme-poc] .poc-rail {
+/* The rail gradient. This used to target a hand-drawn .poc-rail; the dashboards
+   now render the real <Sidebar>, so it targets .ui-sidebar — the element that
+   actually carries --sidebar. Worth the swap: the sidebar surface is a separate
+   six-token palette that a data-theme deliberately does NOT reach, so hand-
+   drawing the rail meant the one piece of chrome most people call "the theme"
+   was never being exercised at all. */
+[data-theme-poc] .ui-sidebar__inner {
   background-image: linear-gradient(180deg,
     var(--sidebar) 0%,
     color-mix(in srgb, var(--sidebar) 82%, var(--background)) 100%);
   box-shadow: inset -1px 0 0 color-mix(in srgb, var(--foreground) 8%, transparent);
+}
+
+/* The provider is built for a full page (min-height: 100svh); inside a 560px
+   demo frame that is wrong. Not a component bug — the frame adapts, scoped to
+   the POC dashboards so nothing else is caught by it.
+   collapsible="none" is deliberate here and does more than pick a variant: it
+   returns BEFORE both the position: fixed container and the sub-768px Drawer
+   swap, so six sidebars in a column cannot escape their frames or silently
+   vanish into drawers when the window is narrow. */
+[data-theme-poc] .poc-dash .ui-sidebar-provider {
+  min-height: 0;
+  height: 100%;
+}
+/* Width, flex-shrink and the border already come from .ui-sidebar__inner--static;
+   only the height needs help. .ui-sidebar__inner sets height: 100%, which resolves
+   against an auto-height flex parent and collapses to content — and an explicit
+   height also cancels the align-self: stretch that would have filled the row. The
+   rail rendered 229px tall in a 936px frame. Hand it back to stretch. */
+[data-theme-poc] .poc-dash .ui-sidebar__inner--static {
+  height: auto;
+  align-self: stretch;
 }
 /* The card carries NO brand fill. It used to take a 4% highlight sheen down its
    top edge; that is a surface people read on, so under the deep-only rule it
