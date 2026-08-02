@@ -123,11 +123,32 @@
  * that page still hold the pre-solve values — this file is ahead of them.
  *
  * Do not regenerate these. The middles are a contrast solve and the deeps are a
- * design judgement; only the highlights are unchanged from the original draw
- * (except nb, whose highlight was pulled greener to sit with its new middle).
+ * design judgement. Two highlights also moved by hand: nb pulled greener to sit
+ * with its new middle, db opened to a brighter cyan.
+ *
+ * db is the one that moved furthest, and its deep went VIOLET -> NAVY
+ * (#2e0db0 -> #002e7c: -44 chroma, -14 hue). That is not a tweak, it is a
+ * re-identification, and it cuts both ways:
+ *
+ *   FIXED  db and aiden were the long-standing collision pair, both violet.
+ *          Their deeps were 7.8 dE00 apart — same colour, side by side. Now
+ *          18.0, and their surfaces went 2.3 -> 6.0.
+ *   BROKE  db and ec are now both blue at the bottom. Their deeps fell 18.7 ->
+ *          10.3, and the SURFACES those produce fell 4.6 -> 0.9 dE00, which is
+ *          indistinguishable. db and ec pages are the same page.
+ *
+ * The trade may well be right — db/aiden sit together far more often than
+ * db/ec do — but it is a trade, not a free win, and nothing in the surface
+ * recipe will warn you about it.
+ *
+ * One more character change worth knowing: db's ramp used to travel
+ * 213 -> 293 -> 307 degrees, so the bottom half kept reaching. It now runs
+ * 213 -> 293 -> 293, so below the middle it is a pure lightness ramp with no
+ * hue movement at all. The highlight still reaches out of the family; the deep
+ * no longer does.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#17d1e6', '#336bf8', '#2e0db0'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#1ee8fe', '#336bf8', '#002e7c'], dark: ['#2de0f6', '#5688fa', '#4335d9'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   nb:    { light: ['#83d22e', '#00893a', '#0d6b5e'], dark: ['#acda27', '#1eb152', '#1b7b5e'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
   dc:    { light: ['#69dd94', '#00857a', '#00627a'], dark: ['#6cf198', '#00ae9f', '#007d96'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
   ec:    { light: ['#02d1cf', '#007dbc', '#014c93'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
