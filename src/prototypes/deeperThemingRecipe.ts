@@ -240,8 +240,8 @@ ${anchorBlocks()}
      WCAG 1.4.11 wants it to stand out from its surroundings, and it is the one
      line on the page whose whole job is to be noticed. Dulling it toward slate
      would make it agree with the border it sits next to. */
-  --border:       color-mix(in srgb, var(--primary) calc(10% * var(--poc-str)), #cbd5e1);
-  --border-hover: color-mix(in srgb, var(--primary) calc(14% * var(--poc-str)), #64748b);
+  --border:       color-mix(in srgb, var(--primary) calc(5% * var(--poc-str)), #cbd5e1);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc-str)), #64748b);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
@@ -280,9 +280,9 @@ ${anchorBlocks()}
   --muted:      color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-str)), #334155);
   --input:      color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-str)), #475569);
 
-  /* Same halving as light; --ring again left at full strength. */
-  --border:       color-mix(in srgb, var(--primary) calc(11% * var(--poc-str)), #64748b);
-  --border-hover: color-mix(in srgb, var(--primary) calc(15% * var(--poc-str)), #cbd5e1);
+  /* Same step as light; --ring again left at full strength. */
+  --border:       color-mix(in srgb, var(--primary) calc(6% * var(--poc-str)), #64748b);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
   --sidebar:        color-mix(in srgb, var(--surface-tint) calc(14% * var(--poc-chrome, 0)), #1e293b);
@@ -318,13 +318,14 @@ ${anchorBlocks()}
      object reads as dirt, so the brand's own dark end is still in there — but
      the raw deep put a visibly coloured wash under every card. Pre-mixing into
      slate-700 keeps the direction and drops the saturation: chroma across the
-     seven falls 25-107 to 11-55.
+     seven falls 25-107 to 5-38. Aiden is the one that stays high, because its
+     deep starts at chroma 107 — four times anything else in the set.
 
      The WEIGHT is unchanged, which is the point of mixing into a slate of
      almost the same lightness rather than just lowering the alpha. Measured
-     over a white card the key shadow reads 1.44-1.50 against the page, where
-     the raw deep read 1.40-1.55 — same depth, slightly more consistent. */
-  --poc-shadow-stock: color-mix(in srgb, var(--primary-deep) 35%, #334155);
+     over a white card the key shadow reads 1.46-1.49 against the page, where
+     the raw deep read 1.40-1.55 — same depth, and tighter across brands. */
+  --poc-shadow-stock: color-mix(in srgb, var(--primary-deep) 20%, #334155);
   --poc-shadow-key: color-mix(in srgb, var(--poc-shadow-stock) 22%, transparent);
   --poc-shadow-far: color-mix(in srgb, var(--poc-shadow-stock) 13%, transparent);
   --poc-shadow-amb: color-mix(in srgb, var(--foreground) 6%, transparent);

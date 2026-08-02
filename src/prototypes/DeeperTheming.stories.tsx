@@ -206,16 +206,6 @@ function Frame({ label, children }: { label: string; children: ReactNode }) {
   );
 }
 
-function BrandPicker({ brand, setBrand }: { brand: BrandKey; setBrand: (b: BrandKey) => void }) {
-  return (
-    <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-      {SUB_BRANDS.map((b) => (
-        <Chip key={b} id={`pick-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
-      ))}
-    </div>
-  );
-}
-
 /** --primary per mode, so a story can index it by the toolbar's current mode. */
 const PRIMARY: Record<Mode, Record<string, string>> = { light: PRIMARY_LIGHT, dark: PRIMARY_DARK };
 
@@ -517,18 +507,27 @@ export const Dashboard: Story = {
     const mode = useGlobalMode();
     const [strength, setStrength] = useState(1);
     const [chromeOn, setChromeOn] = useState(1);
-    const show: BrandKey[] = ['db', 'ph', 'rm'];
+    // EVERY application, not a sample. Three brands was enough to show the
+    // mechanism and not enough to answer the real question — whether six of them
+    // still read as one suite when you scroll past them in a row.
+    const show: BrandKey[] = BRAND_KEYS;
     return (
       <>
         <PocStyle />
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>The same dashboard, three sub-brands</h2>
+            <h2 style={H2}>The same dashboard, every application</h2>
             <p style={P}>
               In light mode the content area is <strong>white in all of them</strong>. The brand lives in
-              the mark, the rail and the accent. The rail is greyed rather than lightened — a rail that
-              shouts is the loudest tell of a cheap theme, and the mark carries identity now so the rail
-              does not have to.
+              the mark, the rail and the accent. Borders and shadows are held near the system&rsquo;s
+              slate on purpose — a hairline or a card shadow that carries the brand is the loudest tell
+              of a cheap theme, and the mark carries identity now so the chrome does not have to.
+            </p>
+            <p style={P}>
+              Scroll the whole set rather than comparing two. The question this story exists to answer is
+              not &ldquo;can you tell them apart&rdquo; — you can — but whether six of them in a row still
+              read as one product family. <code style={MONO}>aiden</code> is last because it is the
+              surface, not an application.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
               <Switch id="d-on" label="Theming on" checked={strength === 1} onCheckedChange={(v) => setStrength(v ? 1 : 0)} />
@@ -673,7 +672,6 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
 
 export const Marketing: Story = {
   render: function MarketingStory() {
-    const [brand, setBrand] = useState<BrandKey>('ec');
     const mode = useGlobalMode();
     return (
       <>
@@ -689,15 +687,14 @@ export const Marketing: Story = {
               nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
               numerals, which are that ramp clipped to text.
             </p>
-            <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
-              <BrandPicker brand={brand} setBrand={setBrand} />
-              </div>
           </div>
-          <Frame label={`data-brand="${brand}"`}>
-            <Scope brand={brand} mode={mode}>
-              <MarketingPage brand={brand} />
-            </Scope>
-          </Frame>
+          {BRAND_KEYS.map((b) => (
+            <Frame key={b} label={`data-brand="${b}"`}>
+              <Scope brand={b} mode={mode}>
+                <MarketingPage brand={b} />
+              </Scope>
+            </Frame>
+          ))}
         </div>
       </>
     );
