@@ -126,6 +126,7 @@ function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
       style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
     >
       <span className="poc-mark__bloom" aria-hidden="true" />
+      <span className="poc-mark__streak" aria-hidden="true" />
       <span className="poc-mark__glint" data-i="1" aria-hidden="true" />
       <span className="poc-mark__glint" data-i="2" aria-hidden="true" />
       <span className="poc-mark__glint" data-i="3" aria-hidden="true" />

@@ -547,33 +547,44 @@ ${anchorBlocks()}
 }
 
 /* ── MOTION ─────────────────────────────────────────────────────────────────
-   Opt-in, via .poc-mark--live. A mark that animates unprompted in a grid of
-   seven is noise; the question is what it does once you let it.
+   Opt-in, via .poc-mark--live.
 
-   THE THREE LAYERS EACH GET THEIR OWN BEHAVIOUR, AND THEY NEVER LINE UP.
-   A single shimmer across the whole tile is one event on a loop, and the eye
-   finds the loop in about two passes. Instead:
+   THE LIGHT SOURCE IS THE IDEA, not the sparkles. That came from the owner's
+   motion frame, which adds a second fill to the bloom: a white radial at 20%,
+   rotated 62 degrees, centred just off the LEFT edge at 23% height. Solving its
+   gradientTransform back gives an ellipse — so it is not a glow, it is a STREAK,
+   a light source raking across the glass. Everything else now serves that.
 
-     BLOOM   drifts — a slow orbit and swell, the atmosphere behind the glass
-     SHEEN   tilts  — the band swells and slides, as if the light source moved
-     GLINTS  twinkle — three four-point stars, fast in, slow out, long dark gaps
+     STREAK  travels — the raking light, slow, 13s. The primary motion.
+     BLOOM   drifts  — the atmosphere it sits in, 11s
+     SHEEN   tilts   — the surface catching it, 7.3s
+     GLINTS  twinkle — three, RIM ONLY, rare and small
 
-   The durations are 11s / 7.3s / 4.1s / 5.3s / 6.7s. They share no common
-   factor worth speaking of, so the composite cycle is minutes long and the
-   sequence never visibly repeats. That is the whole trick: the magic is not any
-   one animation, it is that you cannot predict the next one.
+   Still no shared factor between the durations, so the composite never visibly
+   repeats.
 
-   Each glint is a real four-point star (clip-path) rather than a blurred dot.
-   A dot reads as bokeh; the star reads as a catch of light, and it survives the
-   blur that makes it glow.
+   THE GLINTS MOVED OFF THE ICON. They were at 13/13, 66/20 and 28/62 — the last
+   two land inside the glyph, which sits centred at 46% and therefore occupies
+   27-73% on both axes. A sparkle competing with the icon is not a sparkle, it is
+   a distraction. They are now pinned outside that box entirely, smaller, and
+   dimmer, so they read as light catching the rim.
 
-   Hover does NOT speed the ambient loops up — changing animation-duration
-   mid-cycle snaps. It adds one sweep, lifts the tile and brightens the bloom,
-   all on transitions, so the ambient motion continues underneath undisturbed.
+   HOVER IS A LIFT, A TILT AND A PARALLAX.
+   The tile takes a perspective rotate3d, so it turns rather than just growing.
+   The drop shadow grows and offsets to match where the light now falls — a
+   lift with a static shadow reads as a sticker. The icon translates the OTHER
+   way and gains its own drop-shadow, which is what sells the depth: the glass
+   moves, the glyph appears to float above it.
 
-   Durations are literals here rather than tokens because they are longer than
-   anything in the scale and are tuned against each other; the reduced-motion
-   block below stops them outright rather than shortening them. */
+   Durations are literals — longer than anything in the token scale and tuned
+   against each other. The reduced-motion block stops them rather than
+   shortening them. */
+@keyframes poc-streak-travel {
+  0%   { transform: translate3d(0, 0, 0) rotate(62deg) scale(1);       opacity: 0.55; }
+  35%  { transform: translate3d(26%, -6%, 0) rotate(52deg) scale(1.2); opacity: 1; }
+  70%  { transform: translate3d(8%, 10%, 0) rotate(70deg) scale(0.92); opacity: 0.4; }
+  100% { transform: translate3d(0, 0, 0) rotate(62deg) scale(1);       opacity: 0.55; }
+}
 @keyframes poc-bloom-drift {
   0%   { transform: translate3d(0, 0, 0) scale(1);      opacity: 0.85; }
   30%  { transform: translate3d(6%, 4%, 0) scale(1.14); opacity: 1; }
@@ -589,9 +600,9 @@ ${anchorBlocks()}
 /* fast in, slow out, then most of the cycle dark — a glint, not a pulse */
 @keyframes poc-glint {
   0%   { opacity: 0;    transform: scale(0.2) rotate(0deg); }
-  6%   { opacity: 1;    transform: scale(1.15) rotate(25deg); }
-  16%  { opacity: 0.45; transform: scale(0.85) rotate(45deg); }
-  30%  { opacity: 0;    transform: scale(0.4) rotate(70deg); }
+  5%   { opacity: 0.85; transform: scale(1) rotate(25deg); }
+  14%  { opacity: 0.3;  transform: scale(0.75) rotate(45deg); }
+  26%  { opacity: 0;    transform: scale(0.35) rotate(70deg); }
   100% { opacity: 0;    transform: scale(0.2) rotate(90deg); }
 }
 @keyframes poc-mark-sweep {
@@ -603,8 +614,8 @@ ${anchorBlocks()}
 
 [data-theme-poc] .poc-mark--live {
   transition:
-    transform var(--duration-normal) var(--ease-spring),
-    box-shadow var(--duration-normal) var(--ease-out);
+    transform var(--duration-slow) var(--ease-spring),
+    box-shadow var(--duration-slow) var(--ease-out);
 }
 /* the live mark drops the STATIC bloom and sparkle: both become real elements
    so they can be transformed independently. Re-declared in full rather than
@@ -622,10 +633,30 @@ ${anchorBlocks()}
       var(--primary-deep) 90.3%);
 }
 [data-theme-poc] .poc-mark--live::after { content: none; }
-
 [data-theme-poc] .poc-mark--live::before {
   animation: poc-sheen-tilt 7300ms var(--ease-in-out) infinite;
   transform-origin: 50% 0%;
+}
+
+/* THE STREAK. Geometry solved from the owner's frame: an ellipse whose centre
+   sits at -6.5%/22.8% of the tile — off the left edge, a little above middle —
+   rotated 62 degrees. Alpha is the ellipse's fill 0.2 times its 0.8 stop. */
+[data-theme-poc] .poc-mark__streak {
+  position: absolute;
+  left: -57%;
+  top: -27.7%;
+  width: 101%;
+  height: 101%;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  background-image: radial-gradient(closest-side circle at 50% 50%,
+    rgba(255, 255, 255, 0.16) 0%,
+    rgba(255, 255, 255, 0.06) 55%,
+    transparent 100%);
+  transform: rotate(62deg);
+  animation: poc-streak-travel 13000ms var(--ease-in-out) infinite;
+  transition: opacity var(--duration-slow) var(--ease-out);
 }
 
 [data-theme-poc] .poc-mark__bloom {
@@ -645,32 +676,30 @@ ${anchorBlocks()}
   transition: opacity var(--duration-slow) var(--ease-out);
 }
 
+/* RIM ONLY. The glyph is centred at 46%, so it owns 27-73% on both axes;
+   every glint is pinned outside that box. */
 [data-theme-poc] .poc-mark__glint {
   position: absolute;
   z-index: 0;
   pointer-events: none;
   background: #ffffff;
   opacity: 0;
-  /* a four-point star: the shape is what makes it read as a catch of light
-     rather than a bokeh dot, and it survives the blur that makes it glow */
   clip-path: polygon(50% 0%, 58% 42%, 100% 50%, 58% 58%, 50% 100%, 42% 58%, 0% 50%, 42% 42%);
-  filter: blur(calc(var(--poc-mark-px) * 0.008));
+  filter: blur(calc(var(--poc-mark-px) * 0.006));
 }
-/* Selected by data-i, NOT :nth-child. nth-child counts ALL siblings, so the
-   bloom sitting first shifted every glint by one and the third matched nothing
-   at all — width 0, no animation, silently absent. An index that travels with
-   the element cannot drift when the markup changes. */
+/* selected by data-i, NOT :nth-child — nth-child counts ALL siblings, so
+   adding the bloom and the streak ahead of these shifted every one of them */
 [data-theme-poc] .poc-mark__glint[data-i='1'] {
-  left: 13%; top: 13%; width: 15%; height: 15%;
-  animation: poc-glint 4100ms var(--ease-out) infinite;
+  left: 9%; top: 11%; width: 11%; height: 11%;
+  animation: poc-glint 5900ms var(--ease-out) infinite;
 }
 [data-theme-poc] .poc-mark__glint[data-i='2'] {
-  left: 66%; top: 20%; width: 10%; height: 10%;
-  animation: poc-glint 5300ms var(--ease-out) 1700ms infinite;
+  left: 80%; top: 16%; width: 7%; height: 7%;
+  animation: poc-glint 7300ms var(--ease-out) 2300ms infinite;
 }
 [data-theme-poc] .poc-mark__glint[data-i='3'] {
-  left: 28%; top: 62%; width: 8%; height: 8%;
-  animation: poc-glint 6700ms var(--ease-out) 3400ms infinite;
+  left: 14%; top: 79%; width: 6%; height: 6%;
+  animation: poc-glint 9100ms var(--ease-out) 5100ms infinite;
 }
 
 [data-theme-poc] .poc-mark__sweep {
@@ -687,19 +716,51 @@ ${anchorBlocks()}
     transparent 100%);
   transform: translate3d(-140%, 0, 0) rotate(8deg);
 }
-[data-theme-poc] .poc-mark--live:hover { transform: translateY(-2%) scale(1.04); }
+
+/* the glyph rides above everything and moves against the tilt */
+[data-theme-poc] .poc-mark--live > svg {
+  transition:
+    transform var(--duration-slow) var(--ease-spring),
+    filter var(--duration-slow) var(--ease-out);
+}
+
+/* ── HOVER ── lift, tilt, and the shadow that has to follow it ── */
+[data-theme-poc] .poc-mark--live:hover {
+  transform:
+    perspective(520px)
+    rotateX(7deg)
+    rotateY(-9deg)
+    translateY(-5%)
+    scale(1.05);
+  box-shadow:
+    /* the drop grows and swings right/down, because that is where the light
+       now is — a lift with an unchanged shadow reads as a sticker */
+    calc(var(--poc-mark-px) * 0.05) calc(var(--poc-mark-px) * 0.11) calc(var(--poc-mark-px) * 0.19) calc(var(--poc-mark-px) * -0.03) rgba(35, 14, 75, 0.45),
+    inset 0 calc(var(--poc-mark-px) * -0.031) calc(var(--poc-mark-px) * 0.063) rgba(35, 14, 75, 0.3),
+    inset 0 calc(var(--poc-mark-px) * 0.031) calc(var(--poc-mark-px) * 0.055) calc(var(--poc-mark-px) * -0.016) rgba(255, 255, 255, 0.5),
+    inset calc(var(--poc-mark-px) * -0.016) calc(var(--poc-mark-px) * 0.016) calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * -0.008) rgba(204, 229, 255, 0.25);
+}
+/* parallax: the glyph goes the OTHER way and casts its own shadow, which is
+   what actually sells the depth — the glass turns, the icon floats over it */
+[data-theme-poc] .poc-mark--live:hover > svg {
+  transform: translate3d(4%, -4%, 0) scale(1.06);
+  filter: drop-shadow(0 calc(var(--poc-mark-px) * 0.02) calc(var(--poc-mark-px) * 0.035) rgba(35, 14, 75, 0.45));
+}
 [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: poc-mark-sweep 1100ms var(--ease-out); }
-[data-theme-poc] .poc-mark--live:hover .poc-mark__bloom { opacity: 1.35; }
+[data-theme-poc] .poc-mark--live:hover .poc-mark__bloom { opacity: 1.3; }
+[data-theme-poc] .poc-mark--live:hover .poc-mark__streak { opacity: 1.4; }
 
 @media (prefers-reduced-motion: reduce) {
   /* the global block in tokens.scss zeroes DURATIONS; an infinite animation at
-     0.01ms still churns frames, so these stop outright. The glints are parked
-     visible rather than hidden so the mark keeps its detail. */
+     0.01ms still churns frames, so these stop outright. The glints park visible
+     so the mark keeps its detail rather than losing three layers. */
   [data-theme-poc] .poc-mark__bloom,
+  [data-theme-poc] .poc-mark__streak,
   [data-theme-poc] .poc-mark--live::before,
   [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: none; }
-  [data-theme-poc] .poc-mark__glint { animation: none; opacity: 0.7; transform: none; }
-  [data-theme-poc] .poc-mark--live:hover { transform: none; }
+  [data-theme-poc] .poc-mark__glint { animation: none; opacity: 0.6; transform: none; }
+  [data-theme-poc] .poc-mark--live:hover,
+  [data-theme-poc] .poc-mark--live:hover > svg { transform: none; }
 }
 
 [data-theme-poc] .poc-hero { background-image: var(--poc-hero); }

@@ -236,7 +236,10 @@
     "CSS: :nth-child counts ALL siblings, not matching ones. Adding a bloom element ahead of three .poc-mark__glint spans shifted every glint by one and left the third matching nothing — width 0, no animation, silently absent, and it still passed every structural check. Select repeated siblings by a data index that travels with the element, not by position.",
     "Motion: stagger by PRIME-ish durations that share no common factor (11s / 7.3s / 4.1s / 5.3s / 6.7s). The composite cycle then runs minutes and never visibly repeats — the magic is not any one animation, it is that the next one is unpredictable. A single shimmer on a loop is found by the eye in about two passes.",
     "Motion: do NOT speed ambient loops up on hover — changing animation-duration mid-cycle snaps the element to a new position. Add a one-shot animation and transition-based changes instead, and leave the loops running underneath.",
-    "Design: a four-point star (clip-path polygon) reads as a catch of light; a blurred circle reads as bokeh. The star also survives the blur that makes it glow, so it is the better primitive for a sparkle."
+    "Design: a four-point star (clip-path polygon) reads as a catch of light; a blurred circle reads as bokeh. The star also survives the blur that makes it glow, so it is the better primitive for a sparkle.",
+    "Design: sparkles must never land on the glyph. A mark's icon sits centred at 46%, so it owns 27-73% on BOTH axes — any twinkle inside that box competes with the thing the mark exists to show. Pin them to the rim.",
+    "Design: a lift with an unchanged drop shadow reads as a sticker, not a lift. Grow the blur AND swing the offset toward where the light now falls, and give the icon its own drop-shadow moving the OTHER way from the tile's tilt — the parallax is what sells the depth, not the scale.",
+    "Figma->CSS: a radial gradientTransform with a rotation component is an ELLIPSE, not a glow. The owner's motion frame added a white radial at 20% rotated 62 degrees, centred at -6.5%/22.8% of the tile; solving it revealed a raking light STREAK, which became the primary ambient motion. Always solve the transform before deciding what a fill is."
   ],
   "components": {
     "Button": {

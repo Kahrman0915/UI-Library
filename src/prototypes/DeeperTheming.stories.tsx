@@ -202,6 +202,7 @@ function Mark({ brand, size = 48, live = false }: { brand: BrandKey; size?: numb
       {live && (
         <>
           <span className="poc-mark__bloom" aria-hidden="true" />
+          <span className="poc-mark__streak" aria-hidden="true" />
           <span className="poc-mark__glint" data-i="1" aria-hidden="true" />
           <span className="poc-mark__glint" data-i="2" aria-hidden="true" />
           <span className="poc-mark__glint" data-i="3" aria-hidden="true" />
