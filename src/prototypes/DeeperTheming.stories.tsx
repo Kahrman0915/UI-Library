@@ -187,10 +187,19 @@ function Scope({
   );
 }
 
-function Mark({ brand, size = 48 }: { brand: BrandKey; size?: number }) {
+/**
+ * `--poc-mark-px` is set inline because two of the mark's layers cannot be
+ * expressed as a percentage — a blur radius and the shadow offsets. Everything
+ * else in the CSS scales on its own.
+ */
+function Mark({ brand, size = 48, live = false }: { brand: BrandKey; size?: number; live?: boolean }) {
   const Icon = ICONS[brand];
   return (
-    <span className="poc-mark" style={{ width: size, height: size }}>
+    <span
+      className={`poc-mark${live ? ' poc-mark--live' : ''}`}
+      style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
+    >
+      {live && <span className="poc-mark__sweep" aria-hidden="true" />}
       <Icon size={Math.round(size * 0.46)} strokeWidth={2} aria-hidden="true" />
     </span>
   );
@@ -410,6 +419,138 @@ export const Brands: Story = {
               right tool because it is high-chroma — a few percent buys real hue at almost no luminance
               cost. Shadows take it too: a shadow holding the object&rsquo;s own dark end reads as light
               falling on it, a grey one reads as dirt.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1a — Mark anatomy
+// ─────────────────────────────────────────────────────────────────────────────
+
+/** The six layers, bottom to top, as the Figma component stacks them. */
+const LAYERS: { n: string; what: string; how: string }[] = [
+  { n: '1 · brand ramp', what: 'The three anchors on a 135° axis.',
+    how: 'Figma stores a gradientTransform, not an angle. Solved back: the axis runs (0.5,−0.31) to (1.31,0.5) in unit space, and the 0/0.52/1 stops land at 9.7/51.6/90.3% on the CSS gradient line. 0/52/100% — the obvious guess — compresses the ramp and loses the deep corner.' },
+  { n: '2 · radial highlight', what: 'A soft white lift, just above centre.',
+    how: '35% radius at 45%/40%. Figma layers it at 40% opacity over stops of 0.7/0.3/0; CSS has no layer opacity on a background, so the product is folded into each stop.' },
+  { n: '3 · bloom', what: 'A pale blue glow hanging off the top-left.',
+    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
+  { n: '4 · sheen', what: 'A white band down the top half.',
+    how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
+  { n: '5 · sparkle', what: 'One small blurred dot, upper left.',
+    how: '12px at (20,20) with a 4px layer blur — 9.4% wide at 15.6%/15.6% on ::after. The blur is the only value that has to know the pixel size.' },
+  { n: '6 · icon', what: 'Centred at 46% of the box.',
+    how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context.' },
+];
+
+export const MarkAnatomy: Story = {
+  render: function MarkAnatomyStory() {
+    const mode = useGlobalMode();
+    const [brand, setBrand] = useState<BrandKey>('aiden');
+    const [live, setLive] = useState(true);
+    const swatch = (label: string, value: string) => (
+      <div key={label} style={{ display: 'grid', gap: 'var(--p-1)' }}>
+        <div style={{ background: value, width: 64, height: 40, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
+        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+        <span style={{ ...MONO, color: 'var(--muted-foreground)', opacity: 0.7 }}>{value}</span>
+      </div>
+    );
+    const a = BRAND_ANCHORS[brand][mode];
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>One mark, layer by layer</h2>
+            <p style={P}>
+              The marks elsewhere in this POC were a brand ramp and a flat white wash — two of the six
+              layers the Figma component actually has, which is why they read as a coloured tile rather
+              than as glass. This is the full stack, rebuilt from the component&rsquo;s own geometry
+              rather than by eye.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', alignItems: 'center' }}>
+              <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+                {BRAND_KEYS.map((b) => (
+                  <Chip key={b} id={`ma-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
+                ))}
+              </div>
+              <Switch id="ma-live" label="Motion" checked={live} onCheckedChange={setLive} />
+            </div>
+          </div>
+
+          {/* the hero: one mark, large */}
+          <Scope brand={brand} mode={mode}>
+            <div style={{ display: 'flex', gap: 'var(--p-10)', alignItems: 'center', flexWrap: 'wrap', padding: 'var(--p-10)', background: 'var(--secondary)', borderRadius: 'var(--rounded-2xl)' }}>
+              <Mark brand={brand} size={168} live={live} />
+              <div style={{ display: 'grid', gap: 'var(--p-4)' }}>
+                <div style={{ display: 'flex', gap: 'var(--p-4)', alignItems: 'flex-end' }}>
+                  {[96, 64, 48, 32, 24].map((s) => <Mark key={s} brand={brand} size={s} live={live} />)}
+                </div>
+                <p style={{ ...P, margin: 0 }}>
+                  Every layer is in <strong>percent</strong>, so one rule serves 24px and 168px. The two
+                  that cannot be — the sparkle&rsquo;s blur and the shadow offsets — read{' '}
+                  <code style={MONO}>--poc-mark-px</code>, which the component sets inline.
+                </p>
+                <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap' }}>
+                  {swatch('highlight', a[0])}
+                  {swatch(PRIMARY_IS_AUTHORED[brand] ? 'mark middle' : 'middle', a[1])}
+                  {swatch('deep', a[2])}
+                </div>
+              </div>
+            </div>
+          </Scope>
+
+          {/* the exploded view */}
+          <div>
+            <h2 style={H2}>What each layer is doing</h2>
+            <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+              {LAYERS.map((l) => (
+                <div key={l.n} style={{ display: 'flex', gap: 'var(--p-5)', alignItems: 'flex-start', padding: 'var(--p-4)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', background: 'var(--card)' }}>
+                  <strong style={{ ...MONO, fontSize: 'var(--text-sm)', width: 150, flex: 'none', color: 'var(--foreground)' }}>{l.n}</strong>
+                  <div style={{ display: 'grid', gap: 'var(--p-1)' }}>
+                    <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-medium)' }}>{l.what}</span>
+                    <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)', lineHeight: 'var(--leading-6)' }}>{l.how}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* the whole set, live */}
+          <div>
+            <h2 style={H2}>The set</h2>
+            <p style={P}>
+              Hover any of them. Motion is <strong>opt-in</strong> — a mark that animates unprompted in a
+              grid of seven is noise, one that answers a hover is an affordance. The sparkle breathes
+              continuously at low amplitude; the sheen sweeps once per hover, on its own composited
+              layer rather than by animating a background position.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
+              {BRAND_KEYS.map((b) => (
+                <Scope key={b} brand={b} mode={mode}>
+                  <div style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
+                    <Mark brand={b} size={88} live={live} />
+                    <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{b}</span>
+                  </div>
+                </Scope>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <h2 style={H2}>What is not reproduced</h2>
+            <p style={P}>
+              The component carries <strong>three further drop shadows that are switched off</strong>{' '}
+              (32/−4 at y16, 20/−2 at y8, and 4/0 at y−2). They are in the file, they are not in the
+              render, and they are not here either. Worth knowing they exist before anyone
+              &ldquo;restores&rdquo; them.
+              <br />
+              A fourth fill is off too — a magenta radial at 30%. On the aiden mark in particular it
+              would change the identity, not just the finish.
             </p>
           </div>
         </div>

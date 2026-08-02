@@ -115,10 +115,17 @@ function BrandScope({ brand, mode, children, style }: { brand: BrandKey; mode: M
   );
 }
 
+/** Live on the suite page: these marks are the six front doors, so a hover
+ *  response is an affordance rather than decoration. `--poc-mark-px` feeds the
+ *  two layers that cannot be a percentage (the sparkle blur, the shadows). */
 function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
   const Icon = ICONS[brand];
   return (
-    <span className="poc-mark" style={{ width: size, height: size }}>
+    <span
+      className="poc-mark poc-mark--live"
+      style={{ width: size, height: size, '--poc-mark-px': `${size}px` } as CSSProperties}
+    >
+      <span className="poc-mark__sweep" aria-hidden="true" />
       <Icon size={Math.round(size * 0.46)} strokeWidth={2} aria-hidden="true" />
     </span>
   );

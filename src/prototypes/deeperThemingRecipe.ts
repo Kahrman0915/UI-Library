@@ -453,20 +453,155 @@ ${anchorBlocks()}
    The glyph sits over the middle of a 140deg ramp, so the middle stop is what it
    has to clear; over the deep corner it would not, which is why this is a
    centred mark and not a full-bleed one. */
+/* ── THE MARK, LAYER FOR LAYER ──────────────────────────────────────────────
+   Read straight off the Figma component (128x128, radius 28.8 = 22.5%). The
+   earlier version had the brand ramp and a flat white wash and stopped there,
+   which is why it read as a coloured tile rather than as glass: it was missing
+   four of the six layers. Bottom to top the real mark is
+
+     1  brand ramp        linear, 3 stops
+     2  radial highlight  a soft white lift above centre
+     3  bloom             a pale blue glow hanging off the top-left corner
+     4  sheen             a white band down the top half
+     5  sparkle           a small blurred dot, upper left
+     6  icon              centred at 46%
+
+   plus one drop shadow and three inner shadows. Three further drop shadows
+   exist in the component and are switched OFF — they are not reproduced here.
+
+   GEOMETRY IS DERIVED, NOT EYEBALLED. Figma stores a gradientTransform, not an
+   angle, so the ramp was solved back to CSS: its axis runs (0.5,-0.31) to
+   (1.31,0.5) in unit space, which is 135deg, and projecting Figma's 0/0.52/1
+   stops onto the CSS gradient line for a square box puts them at 9.7/51.6/90.3%.
+   Using 0/52/100% instead — the obvious guess — compresses the whole ramp and
+   loses the deep corner entirely.
+
+   Everything is expressed in PERCENT so one rule serves 22px and 128px. The two
+   exceptions take --poc-mark-px, set inline by the component, because a blur
+   radius and a shadow offset cannot be a percentage. */
 [data-theme-poc] .poc-mark {
+  --poc-mark-px: 48px;
+  position: relative;
   display: grid;
   place-items: center;
   flex: none;
+  isolation: isolate;
+  overflow: hidden;
   border-radius: 22.5%;
   color: var(--primary-foreground);
   background-image:
-    linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
-    var(--poc-mark);
+    /* 3 · bloom — Figma has this as a 129px ellipse hung at (-39,-37); as a
+       background layer that is a 25%-radius glow centred at 20%/22%. */
+    radial-gradient(25% 25% at 20% 22%,
+      color-mix(in srgb, #bfe0ff 23%, transparent) 0%,
+      color-mix(in srgb, #bfe0ff 9%, transparent) 50%,
+      transparent 100%),
+    /* 2 · radial highlight — alpha is the fill's 0.7/0.3/0 times the layer's
+       0.4, folded in, because CSS has no layer opacity on a background. */
+    radial-gradient(35% 35% at 45% 40%,
+      color-mix(in srgb, #ffffff 28%, transparent) 0%,
+      color-mix(in srgb, #b2d9ff 12%, transparent) 40%,
+      transparent 100%),
+    /* 1 · the brand ramp */
+    linear-gradient(135deg,
+      var(--primary-highlight) 9.7%,
+      var(--mark-mid) 51.6%,
+      var(--primary-deep) 90.3%);
   box-shadow:
-    0 1px 1px var(--poc-shadow-key),
-    0 6px 16px var(--poc-shadow-far),
-    inset 0 -4px 8px color-mix(in srgb, var(--primary-deep) 30%, transparent),
-    inset 0 3px 6px color-mix(in srgb, #ffffff 35%, transparent);
+    0 calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * 0.047) rgba(35, 14, 75, 0.4),
+    inset 0 calc(var(--poc-mark-px) * -0.031) calc(var(--poc-mark-px) * 0.063) rgba(35, 14, 75, 0.3),
+    inset 0 calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * 0.047) calc(var(--poc-mark-px) * -0.016) rgba(255, 255, 255, 0.35),
+    inset calc(var(--poc-mark-px) * -0.016) calc(var(--poc-mark-px) * 0.016) calc(var(--poc-mark-px) * 0.023) calc(var(--poc-mark-px) * -0.008) rgba(204, 229, 255, 0.25);
+}
+/* 4 · sheen — a 128x67 rectangle at the top, so 52.3% of the height. */
+[data-theme-poc] .poc-mark::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 52.3%;
+  border-radius: inherit;
+  background-image: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.245) 0%,
+    rgba(229, 242, 255, 0.074) 35%,
+    rgba(255, 255, 255, 0) 70%);
+  pointer-events: none;
+}
+/* 5 · sparkle — a 12px dot at (20,20) on a 128 box, blurred 4. */
+[data-theme-poc] .poc-mark::after {
+  content: '';
+  position: absolute;
+  left: 15.6%;
+  top: 15.6%;
+  width: 9.4%;
+  height: 9.4%;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.32);
+  filter: blur(calc(var(--poc-mark-px) * 0.031));
+  pointer-events: none;
+}
+/* The glyph has to sit ABOVE the sheen, and a grid child with no z-index would
+   not — ::before is painted after it in the same stacking context. */
+[data-theme-poc] .poc-mark > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ── MOTION ─────────────────────────────────────────────────────────────────
+   Opt-in, via .poc-mark--live. A mark that animates unprompted in a grid of six
+   is noise; a mark that answers a hover is an affordance.
+
+   Two moments only. The SPARKLE breathes — scale and opacity on the ::after,
+   the one layer whose whole job is to catch the light. The SHEEN sweeps once
+   on hover, a highlight travelling across the glass.
+
+   The sweep is a separate ::before-driven transform rather than an animated
+   background-position: moving a gradient's position repaints the whole layer
+   every frame, while a transform on a composited pseudo-element does not.
+
+   Durations come from the tokens, so the global prefers-reduced-motion block in
+   tokens.scss collapses them to 0.01ms without this file knowing. Nothing here
+   unmounts on animationend, so a near-zero duration is harmless. */
+@keyframes poc-mark-breathe {
+  0%, 100% { opacity: 0.55; transform: scale(0.9); }
+  50%      { opacity: 1;    transform: scale(1.25); }
+}
+@keyframes poc-mark-sweep {
+  0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); }
+  100% { transform: translate3d(140%, 0, 0) rotate(8deg); }
+}
+[data-theme-poc] .poc-mark--live {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-normal) var(--ease-out);
+}
+[data-theme-poc] .poc-mark--live::after {
+  animation: poc-mark-breathe 3600ms var(--ease-in-out) infinite;
+}
+[data-theme-poc] .poc-mark--live:hover {
+  transform: translateY(-2%) scale(1.04);
+}
+/* the sweep rides its own layer so the sheen underneath is left alone */
+[data-theme-poc] .poc-mark--live .poc-mark__sweep {
+  position: absolute;
+  inset: -20% -60%;
+  z-index: 0;
+  pointer-events: none;
+  background-image: linear-gradient(100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.38) 45%,
+    rgba(255, 255, 255, 0.55) 50%,
+    rgba(255, 255, 255, 0.38) 55%,
+    transparent 100%);
+  transform: translate3d(-140%, 0, 0) rotate(8deg);
+}
+[data-theme-poc] .poc-mark--live:hover .poc-mark__sweep {
+  animation: poc-mark-sweep 900ms var(--ease-out);
+}
+@media (prefers-reduced-motion: reduce) {
+  /* the global block zeroes DURATIONS; an infinite breathe at 0.01ms still
+     churns frames, so stop it outright */
+  [data-theme-poc] .poc-mark--live::after { animation: none; opacity: 0.8; }
+  [data-theme-poc] .poc-mark--live:hover { transform: none; }
 }
 
 [data-theme-poc] .poc-hero { background-image: var(--poc-hero); }
