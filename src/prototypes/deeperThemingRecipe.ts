@@ -47,10 +47,10 @@
  *
  * This is NOT the two-value model removed below. That one had --primary sitting
  * a few percent off the middle for no reason a consumer could see — a
- * derivation artifact. aiden's is a 9.2 dE00 gap someone chose: the mark stays
- * violet (#4d14de, hue 308) because that is the AI identity, and the accent is
- * an indigo (#2543d2, hue 299) because a violet that saturated is too much on
- * every button, chip and progress bar in the product.
+ * derivation artifact. aiden's is an 8.6 dE00 gap someone chose: the mark stays
+ * violet (#7737e5, hue 309, chroma 100) because that is the AI identity, and
+ * the accent is a calmer indigo (#5a56d3, hue 300, chroma 74) because a violet
+ * that saturated is too much on every button, chip and progress bar.
  *
  * The test for adding another: can you SEE the difference, and can you say why
  * in one sentence? If not, it is drift, and the brand should just use its
@@ -176,7 +176,7 @@ export const BRAND_ANCHORS = {
   ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#80bdfa', '#4d14de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#2543d2', dark: '#8b82f6' }, icon: 'sparkles' },
+  aiden: { light: ['#80bdfa', '#7737e5', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a56d3', dark: '#8b82f6' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
