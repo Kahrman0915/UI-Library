@@ -671,11 +671,23 @@ export const AidenSurface: Story = {
               the same reason.
             </p>
             <p style={P}>
-              <strong>The gradient carries the identity instead</strong>, and it is the mark&rsquo;s own
-              ramp — same three anchors, same 135° axis, same 9.7/51.6/90.3 stops, so a button and the
-              icon beside it are visibly the same object. A gradient FAB in a db page does not read as
-              another brand&rsquo;s button; it reads as <em>not part of the page</em>. That is a
-              categorical difference, where a surface tint is only ever a matter of degree.
+              <strong>The gradient carries the identity instead.</strong> A gradient FAB in a db page
+              does not read as another brand&rsquo;s button; it reads as <em>not part of the page</em>.
+              That is a categorical difference, where a surface tint is only ever a matter of degree.
+            </p>
+            <p style={P}>
+              <strong>The button fill is two stops; the mark stays three.</strong> They are not the same
+              object. A mark is 48px of artwork with nothing on it, so a third stop reads as depth; a
+              button is a wide flat shape with a label across it, and the third stop only ever shows up
+              as a band the eye has to cross.
+              <br />
+              Both ends have to clear the label, which the mark&rsquo;s stops do not, so the fill is
+              authored rather than derived: <code style={MONO}>#007cba → #7137e6</code> in light on
+              white (worst point across the ramp <strong>4.57</strong>) and{' '}
+              <code style={MONO}>#3dadfa → #a770ff</code> in dark on ink (<strong>5.45</strong>). Hue is
+              held across the two — azure 262/263, violet 309/309 — so it is one gradient rendered for
+              two pages. The hovers move in <em>opposite</em> directions: light deepens because it
+              carries white, dark lightens because it carries ink.
             </p>
           </div>
 

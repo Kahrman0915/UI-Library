@@ -380,10 +380,35 @@ ${anchorBlocks()}
   --sidebar-border: #334155;
   --sidebar-accent: #334155;
 }
-/* The fill, identical in geometry to the mark so a button and the icon beside
-   it are visibly the same object. */
-[data-theme-poc][data-surface='aiden'] {
-  --aiden-fill: var(--poc-mark);
+/* THE BUTTON FILL IS TWO STOPS. THE MARK STAYS THREE.
+   They are not the same object and should not be the same gradient. A mark is
+   48px of artwork with nothing on it, so a three-stop ramp reads as depth; a
+   button is a wide flat shape with a label across it, and the third stop only
+   ever shows up as a band the eye has to cross. Two stops, one sweep.
+
+   The stops are AUTHORED, not derived from the anchors, because both ends have
+   to clear the label and the mark's do not. Solved and measured:
+
+     light   #007cba -> #7137e6   white,  worst across the ramp 4.57
+             hover deepens        #006ca3 -> #5e26d5, worst 5.72
+     dark    #3dadfa -> #a770ff   ink,    worst 5.45
+             hover LIGHTENS       #6dbcff -> #b785ff, worst 6.65
+
+   The hovers move in opposite directions on purpose: light carries a white
+   label so darker is more contrast, dark carries ink so lighter is. That is the
+   same rule the rest of the system already follows.
+
+   Hue is held across modes — azure 262/263, violet 309/309 — so the two are one
+   gradient rendered for two pages rather than two gradients. The shipped
+   tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
+   of its light), which is worth fixing at adoption. */
+[data-theme-poc][data-surface='aiden'][data-mode='light'] {
+  --aiden-fill:       linear-gradient(135deg, #007cba 0%, #7137e6 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #006ca3 0%, #5e26d5 100%);
+}
+[data-theme-poc][data-surface='aiden'][data-mode='dark'] {
+  --aiden-fill:       linear-gradient(135deg, #3dadfa 0%, #a770ff 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #6dbcff 0%, #b785ff 100%);
 }
 /* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
    Where it is text or a border it keeps the flat accent, because a gradient
@@ -397,6 +422,12 @@ ${anchorBlocks()}
 [data-theme-poc][data-surface='aiden'] .ui-chip--active:hover:not(:disabled) {
   background-image: var(--aiden-fill);
   border-color: transparent;
+}
+/* the hover override has to match the base rule's specificity or Button's own
+   :hover wins by being more specific than a plain class selector */
+[data-theme-poc][data-surface='aiden'] .ui-button--default-default:hover:not(:disabled),
+[data-theme-poc][data-surface='aiden'] .poc-aiden-fill:hover {
+  background-image: var(--aiden-fill-hover);
 }
 
 /* ── GRADIENTS + MARK ───────────────────────────────────────────────────────
