@@ -386,15 +386,79 @@ ${anchorBlocks()}
    point, a 2px rule. The rule for reaching for --primary-highlight is simply
    whether anything is read on top of it; if something is, it is the wrong
    token and --primary (or --primary-text) is the right one. */
+/* ── THE SUITE RAMP ─────────────────────────────────────────────────────────
+   The parent brand is not a colour, it is the SET. These two are the only
+   things in the file that use every brand at once, and they belong on the
+   suite's own page — never inside a sub-app, where the point is that one brand
+   is in charge.
+
+   Ordered around the wheel (ph -> nb -> dc -> ec -> db -> aiden -> rm) rather
+   than alphabetically, so the ramp reads as a spectrum instead of a list. The
+   values are the light PRIMARIES: the deeps would go muddy where they meet and
+   the highlights cannot carry text.
+
+   Light and dark are separate blocks because dark needs the dark primaries —
+   using the light set on a dark page gives a ramp that reads almost black at
+   the ph end. */
+[data-theme-poc][data-mode='light'] .poc-suite-ramp,
+[data-theme-poc][data-mode='light'] .poc-suite-text {
+  --poc-ramp: linear-gradient(100deg,
+    #b66000 0%, #00893a 17%, #00857a 33%, #007dbc 50%, #336bf8 67%, #5a56d3 83%, #db01b0 100%);
+}
+[data-theme-poc][data-mode='dark'] .poc-suite-ramp,
+[data-theme-poc][data-mode='dark'] .poc-suite-text {
+  --poc-ramp: linear-gradient(100deg,
+    #d87819 0%, #1eb152 17%, #00ae9f 33%, #0091d9 50%, #5688fa 67%, #8b82f6 83%, #f721c8 100%);
+}
+[data-theme-poc] .poc-suite-ramp { background-image: var(--poc-ramp); }
+[data-theme-poc] .poc-suite-text {
+  background-image: var(--poc-ramp);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* the clip leaves no painted background for a focus ring or selection to sit
+     on, so keep this on display type only — never on a control */
+}
+
+/* The suite bubble field: one wash per brand instead of one brand's two. Same
+   alpha budget as the single-brand field, spread across six corners, so the
+   page reads as "all of them" without any one of them winning. */
+[data-theme-poc][data-mode='light'] .poc-suite-bubbles {
+  background-image:
+    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #007dbc 20%, transparent) 0%, transparent 70%),
+    radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #00857a 17%, transparent) 0%, transparent 70%),
+    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #5a56d3 18%, transparent) 0%, transparent 70%),
+    radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #db01b0 15%, transparent) 0%, transparent 70%),
+    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #b66000 12%, transparent) 0%, transparent 72%),
+    radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #00893a 12%, transparent) 0%, transparent 72%);
+}
+[data-theme-poc][data-mode='dark'] .poc-suite-bubbles {
+  background-image:
+    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #0091d9 26%, transparent) 0%, transparent 70%),
+    radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #00ae9f 22%, transparent) 0%, transparent 70%),
+    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #8b82f6 24%, transparent) 0%, transparent 70%),
+    radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #f721c8 18%, transparent) 0%, transparent 70%),
+    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #d87819 15%, transparent) 0%, transparent 72%),
+    radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #1eb152 15%, transparent) 0%, transparent 72%);
+}
+
 [data-theme-poc] .poc-dot { background: var(--primary-highlight); }
 [data-theme-poc] .poc-bubble-field { background-image: var(--poc-bubble); }
 
+/* THE GLYPH TRACKS THE LABEL. --primary-foreground is white in light and ink in
+   dark, so the mark's icon matches whatever a primary button is carrying in the
+   same mode. It works because dark's middles are LIGHT by construction (ink on
+   them reads 5.1-6.4) — the same fact that makes dark buttons take ink.
+
+   The glyph sits over the middle of a 140deg ramp, so the middle stop is what it
+   has to clear; over the deep corner it would not, which is why this is a
+   centred mark and not a full-bleed one. */
 [data-theme-poc] .poc-mark {
   display: grid;
   place-items: center;
   flex: none;
   border-radius: 22.5%;
-  color: #ffffff;
+  color: var(--primary-foreground);
   background-image:
     linear-gradient(180deg, color-mix(in srgb, #ffffff 26%, transparent) 0%, transparent 52%),
     var(--poc-mark);

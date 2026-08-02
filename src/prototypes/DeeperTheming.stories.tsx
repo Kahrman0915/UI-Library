@@ -15,6 +15,7 @@ import {
   POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, PRIMARY_IS_AUTHORED, SUB_BRANDS,
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
+import SuitePage from './SuitePage';
 
 /**
  * PROOF OF CONCEPT — deeper theming, rebuilt on the app marks.
@@ -411,6 +412,44 @@ export const Brands: Story = {
               falling on it, a grey one reads as dirt.
             </p>
           </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 1b — Suite: the parent page
+// ─────────────────────────────────────────────────────────────────────────────
+
+export const Suite: Story = {
+  render: function SuiteStory() {
+    const mode = useGlobalMode();
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>The suite page — all six at once</h2>
+            <p style={P}>
+              Every other view here shows one brand. This one shows the parent, and it is the harder
+              test: six sub-apps on a single page, in a single scroll, each carrying its own mark,
+              accent, border and tinted card. If they read as six unrelated products, the model has
+              failed however good any one of them looks alone.
+            </p>
+            <p style={P}>
+              It is also the only page allowed to use <strong>every brand at once</strong>. The
+              headline ramp and the six-corner bubble field are the parent&rsquo;s identity — the
+              parent is not a colour, it is the set — and both are scoped to{' '}
+              <code style={MONO}>.poc-suite-*</code> so they cannot appear inside a branded page,
+              where the whole point is that one brand is in charge.
+            </p>
+          </div>
+          <Frame label="the suite">
+            <Scope brand="" mode={mode}>
+              <SuitePage mode={mode} />
+            </Scope>
+          </Frame>
         </div>
       </>
     );
