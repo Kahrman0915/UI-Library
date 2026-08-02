@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { POC_CSS } from './deeperThemingRecipe';
+import { POC_CSS, PRIMARY_LIGHT, PRIMARY_DARK, BRAND_ANCHORS, SUB_BRANDS } from './deeperThemingRecipe';
 
 /**
  * ADOPTION PREVIEW — what deeper theming would do to tokens.scss.
@@ -323,6 +323,295 @@ export const Decision: Story = {
       </div>
     </div>
   ),
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 0b — Regressions: what stops passing
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * MEASURED IN THE BROWSER, BOTH SIDES, AT RENDER TIME.
+ *
+ * Two probes per brand: one carrying the SHIPPED primary and one carrying the
+ * POC's, each running the real `--primary-*` derivations from tokens.scss. The
+ * comparison is therefore between two live cascades rather than between a live
+ * value and a number someone typed into a story.
+ *
+ * That matters here more than usual, because the whole point of this page is
+ * that the derived family comes free — and "free" is exactly the kind of claim
+ * that stops being true without anyone noticing.
+ */
+const SHIPPED: Record<string, { light: string; dark: string }> = {
+  db: { light: '#6063f1', dark: '#818cf8' },
+  nb: { light: '#04865e', dark: '#34d399' },
+  dc: { light: '#0c8479', dark: '#2dd4bf' },
+  ec: { light: '#07809d', dark: '#22d3ee' },
+  ph: { light: '#ca4c0a', dark: '#fb923c' },
+  rm: { light: '#7c3aed', dark: '#a78bfa' },
+};
+
+type Check = { brand: string; mode: 'light' | 'dark'; pairing: string; today: number; after: number; floor: number };
+
+function useDerivedAudit() {
+  const hostRef = useRef<HTMLDivElement>(null);
+  const [rows, setRows] = useState<Check[]>([]);
+
+  useEffect(() => {
+    const host = hostRef.current;
+    if (!host) return;
+    const cv = document.createElement('canvas');
+    cv.width = cv.height = 1;
+    const cx = cv.getContext('2d', { willReadFrequently: true });
+    if (!cx) return;
+    cx.globalCompositeOperation = 'copy';
+    // canvas normalises every serialisation Chrome uses — color(srgb …) for a
+    // color-mix, rgba() for a literal — without parsing any of them by hand
+    const px = (v: string): [number, number, number, number] => {
+      cx.fillStyle = '#000000';
+      cx.fillStyle = v;
+      cx.fillRect(0, 0, 1, 1);
+      const d = cx.getImageData(0, 0, 1, 1).data;
+      return [d[0], d[1], d[2], d[3] / 255];
+    };
+    const over = (f: [number, number, number, number], b: number[]) =>
+      f.slice(0, 3).map((v, i) => v * f[3] + b[i] * (1 - f[3]));
+    const lin = (v: number) => { v /= 255; return v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4; };
+    const lum = (c: number[]) => 0.2126 * lin(c[0]) + 0.7152 * lin(c[1]) + 0.0722 * lin(c[2]);
+    const ratio = (a: number[], b: number[]) => {
+      const x = lum(a); const y = lum(b);
+      return +(((Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05))).toFixed(2);
+    };
+
+    const out: Check[] = [];
+    for (const brand of SUB_BRANDS) {
+      for (const mode of ['light', 'dark'] as const) {
+        const card = mode === 'dark' ? [30, 41, 59] : [255, 255, 255];
+        const read = (primary: string) => {
+          const scope = document.createElement('div');
+          scope.setAttribute('data-mode', mode);
+          scope.style.cssText = `position:absolute;left:-9999px;--primary:${primary}`;
+          const probe = document.createElement('div');
+          scope.appendChild(probe);
+          host.appendChild(scope);
+          const t = (tok: string) => {
+            probe.style.backgroundColor = '';
+            probe.style.backgroundColor = `var(${tok})`;
+            return px(getComputedStyle(probe).backgroundColor);
+          };
+          const res = {
+            text: over(t('--primary-text'), card),
+            light: over(t('--primary-light'), card),
+            soft: over(t('--primary-soft'), card),
+            border: over(t('--primary-border'), card),
+          };
+          scope.remove();
+          return res;
+        };
+        const a = read(SHIPPED[brand][mode]);
+        const b = read(mode === 'light' ? PRIMARY_LIGHT[brand] : PRIMARY_DARK[brand]);
+        out.push({ brand, mode, pairing: 'primary-text on primary-soft', today: ratio(a.text, a.soft), after: ratio(b.text, b.soft), floor: 4.5 });
+        out.push({ brand, mode, pairing: 'primary-text on primary-light', today: ratio(a.text, a.light), after: ratio(b.text, b.light), floor: 4.5 });
+        out.push({ brand, mode, pairing: 'primary-border on card', today: ratio(a.border, card), after: ratio(b.border, card), floor: 3 });
+      }
+    }
+    setRows(out);
+  }, []);
+
+  return { hostRef, rows };
+}
+
+export const Regressions: Story = {
+  render: function RegressionsStory() {
+    const { hostRef, rows } = useDerivedAudit();
+    const broke = rows.filter((r) => r.today >= r.floor && r.after < r.floor);
+    const already = rows.filter((r) => r.today < r.floor);
+    const lost = rows.filter((r) => r.after < r.today).length;
+
+    const table = (list: Check[], caption: string) => (
+      <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 720, marginBottom: 'var(--p-6)' }}>
+        <caption style={{ textAlign: 'left', ...MONO, color: 'var(--muted-foreground)', paddingBottom: 'var(--p-2)' }}>{caption}</caption>
+        <thead>
+          <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+            {['Brand', 'Mode', 'Pairing', 'Today', 'After', 'Floor'].map((h) => (
+              <th key={h} style={{ textAlign: h === 'Brand' || h === 'Mode' || h === 'Pairing' ? 'left' : 'right', padding: 'var(--p-2)' }}>{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {list.map((r) => (
+            <tr key={`${r.brand}-${r.mode}-${r.pairing}`} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+              <td style={{ ...MONO, padding: 'var(--p-2)' }}>{r.brand}</td>
+              <td style={{ ...MONO, padding: 'var(--p-2)', color: 'var(--muted-foreground)' }}>{r.mode}</td>
+              <td style={{ padding: 'var(--p-2)' }}>{r.pairing}</td>
+              <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: r.today < r.floor ? 'var(--error)' : 'var(--foreground)' }}>{r.today}</td>
+              <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', fontWeight: 'var(--font-semibold)', color: r.after < r.floor ? 'var(--error)' : 'var(--success)' }}>{r.after}</td>
+              <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>{r.floor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    );
+
+    return (
+      <div style={PAGE}>
+        <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }} />
+        <div>
+          <h2 style={H2}>What stops passing</h2>
+          <p style={P}>
+            The derived <code style={CODE}>--primary-*</code> family costs nothing to adopt — every
+            member is a <code style={CODE}>color-mix</code> over <code style={CODE}>var(--primary)</code>,
+            so setting the brand value re-derives all seven with no new declarations.{' '}
+            <strong>Free is not the same as safe.</strong> Both columns below are measured in this
+            browser from two live cascades — one carrying the shipped primary, one carrying the
+            POC&rsquo;s — rather than compared against numbers typed into a story.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--p-3)', flexWrap: 'wrap' }}>
+            <Stat n={broke.length} label="pairings adoption BREAKS" tone={broke.length ? 'var(--error)' : 'var(--success)'} />
+            <Stat n={lost} label="pairings that lose margin" />
+            <Stat n={already.length} label="already below floor today" />
+            <Stat n={rows.length} label="pairings measured" />
+          </div>
+        </div>
+
+        {broke.length > 0 && (
+          <div>
+            <h2 style={H2}>Adoption breaks these</h2>
+            <p style={P}>
+              These pass today and fail after. They are the blocking list — one of two one-number
+              fixes clears both: raise <code style={CODE}>--primary-text</code>&rsquo;s mix from 85%
+              toward 80% in dark, which pushes it further from the tint, or lift dark{' '}
+              <code style={CODE}>--primary-soft</code> from 10% to 12%. Neither touches a brand colour;
+              both need re-checking across all eight scopes.
+            </p>
+            {table(broke, 'was passing, now failing')}
+          </div>
+        )}
+
+        <div>
+          <h2 style={H2}>Already failing — not an adoption cost</h2>
+          <p style={P}>
+            <code style={CODE}>--primary-border</code> is defined at 40% alpha, which cannot reach the
+            3:1 WCAG 1.4.11 wants for a component boundary at any hue. Adoption makes it slightly
+            worse, but it was never passing — fixing it is a separate decision about that 40%.
+          </p>
+          {table(already, 'below floor before and after')}
+        </div>
+
+        <div>
+          <h2 style={H2}>Everything measured</h2>
+          {table(rows, `${rows.length} pairings — ${SUB_BRANDS.length} brands x 2 modes x 3 pairings`)}
+        </div>
+      </div>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 0c — New tokens
+// ─────────────────────────────────────────────────────────────────────────────
+
+const SURFACE_TOKENS = [
+  '--background', '--card', '--popover', '--secondary', '--accent', '--muted', '--input',
+  '--border', '--border-hover', '--ring', '--sidebar', '--sidebar-border', '--sidebar-accent',
+];
+
+export const NewTokens: Story = {
+  render: function NewTokensStory() {
+    const perBrand = 7;
+    const brands = SUB_BRANDS.length;
+    const themeScopes = THEME_BLOCKS.length;
+
+    const swatch = (v: string) => (
+      <span style={{ display: 'inline-block', width: 34, height: 18, borderRadius: 'var(--rounded-sm)', background: v, border: 'var(--border-w-100) solid var(--border)', verticalAlign: 'middle', marginRight: 'var(--p-2)' }} />
+    );
+
+    return (
+      <div style={PAGE}>
+        <div>
+          <h2 style={H2}>What gets added</h2>
+          <p style={P}>
+            Nothing is renamed and nothing is removed. Adoption is{' '}
+            <strong>{perBrand} new declarations per brand</strong> plus one architectural change to
+            what a theme scope covers.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--p-3)', flexWrap: 'wrap' }}>
+            <Stat n={perBrand * brands} label="new brand tokens" tone="var(--success)" />
+            <Stat n={SURFACE_TOKENS.length} label="tokens a theme must now remap" />
+            <Stat n={themeScopes} label="theme scopes in tokens.scss" />
+            <Stat n={2} label="codes with no POC values" tone="var(--error)" />
+          </div>
+        </div>
+
+        <div>
+          <h2 style={H2}>Per brand — {perBrand} new</h2>
+          <p style={P}>
+            <code style={CODE}>--&#123;code&#125;-primary</code> already exists and only changes value.
+            These are additions. <code style={CODE}>--&#123;code&#125;-mark-*</code> is{' '}
+            <strong>mode-constant</strong> — a mark is artwork and does not invert — so it is three
+            declarations rather than six.
+          </p>
+          <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 760 }}>
+            <thead>
+              <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                {['Brand', 'highlight L / D', 'deep L / D', 'mark a → b → c (both modes)'].map((h) => (
+                  <th key={h} style={{ textAlign: 'left', padding: 'var(--p-2)' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {SUB_BRANDS.map((b) => {
+                const a = BRAND_ANCHORS[b];
+                return (
+                  <tr key={b} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{b}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{swatch(a.light[0])}{swatch(a.dark[0])}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{swatch(a.light[2])}{swatch(a.dark[2])}</td>
+                    <td style={{ ...MONO, padding: 'var(--p-2)' }}>{a.light.map((c) => swatch(c))}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+
+        <div>
+          <h2 style={H2}>The architectural change</h2>
+          <p style={P}>
+            Today a <code style={CODE}>[data-theme]</code> scope remaps <strong>9</strong> tokens, all{' '}
+            <code style={CODE}>--primary-*</code>. Deeper theming means it also remaps the surfaces —
+            that is what &ldquo;deeper&rdquo; refers to, and it is the actual work. None of it is a
+            colour decision.
+          </p>
+          <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', marginBottom: 'var(--p-4)' }}>
+            {SURFACE_TOKENS.map((t) => (
+              <code key={t} style={{ ...CODE, padding: 'var(--p-1) var(--p-2)', background: 'var(--secondary)', borderRadius: 'var(--rounded-sm)' }}>{t}</code>
+            ))}
+          </div>
+          <p style={P}>
+            <strong>And it needs a raw neutral layer first.</strong> Every one of those is derived by
+            mixing the brand&rsquo;s deep into the neutral it already is — but a custom property{' '}
+            <em>cannot reference itself</em>, so{' '}
+            <code style={CODE}>--background: color-mix(…, var(--background))</code> is a cycle that
+            resolves to <code style={CODE}>unset</code>. The POC works around it by hardcoding the
+            neutral literals; a real adoption has to introduce the raw layer and derive the semantic
+            names from it. That is the single largest cost in this whole exercise and not one line of
+            it is about colour.
+          </p>
+        </div>
+
+        <div>
+          <h2 style={H2}>Two brands have no values</h2>
+          <p style={P}>
+            <code style={CODE}>tokens.scss</code> carries <strong>{themeScopes}</strong> theme codes;
+            this POC only ever covered six. <code style={CODE}>dr</code> and{' '}
+            <code style={CODE}>ir</code> have no mark, no anchors and no solve. Pushing as-is leaves
+            two brands on the old single-value model while six move to three anchors — a split system,
+            which is worse than either one.
+          </p>
+        </div>
+      </div>
+    );
+  },
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
