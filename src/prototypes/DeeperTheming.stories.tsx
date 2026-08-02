@@ -1015,7 +1015,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Lines',
-    note: 'From --primary itself: not text backgrounds, so no contrast budget to protect, and a line agreeing with the accent is the point.',
+    note: 'Mostly slate. Borders take half the --primary they used to \u2014 a hairline should read as the system, with the brand only just visible in it. --ring is left at full strength on purpose: it is the focus indicator, and WCAG 1.4.11 wants it to stand out rather than agree with the border beside it.',
     tokens: ['--border', '--border-hover', '--ring'],
   },
   {
@@ -1030,8 +1030,8 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Shadow tints',
-    note: 'From DEEP. A shadow carrying the object\u2019s own dark end reads as light falling on it; a grey one reads as dirt.',
-    tokens: ['--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
+    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
+    tokens: ['--poc-shadow-stock', '--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
   },
   {
     group: 'Gradients',

@@ -229,11 +229,19 @@ ${anchorBlocks()}
   --input:     color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-str)), #e2e8f0);
   --muted:     color-mix(in srgb, var(--surface-tint) calc(7%  * var(--poc-str)), #cbd5e1);
 
-  /* Lines take --primary itself, not the deep stock: they are not text
-     backgrounds, so there is no contrast budget to protect, and a line agreeing
-     with the accent is the point. */
-  --border:       color-mix(in srgb, var(--primary) calc(20% * var(--poc-str)), #cbd5e1);
-  --border-hover: color-mix(in srgb, var(--primary) calc(26% * var(--poc-str)), #64748b);
+  /* LINES ARE MOSTLY SLATE. They carry no contrast budget, so an earlier pass
+     spent freely here — 20-26% of --primary — and the result was a page whose
+     every hairline announced the brand. Halved: a border should read as the
+     system's slate with the brand only just visible in it. Measured chroma
+     across the seven brands drops 6-27 to 1-16, and dE00 off plain #cbd5e1
+     drops 8.8-19.7 to 4.7-13.4.
+
+     --ring is DELIBERATELY LEFT ALONE. It is the focus indicator, not chrome:
+     WCAG 1.4.11 wants it to stand out from its surroundings, and it is the one
+     line on the page whose whole job is to be noticed. Dulling it toward slate
+     would make it agree with the border it sits next to. */
+  --border:       color-mix(in srgb, var(--primary) calc(10% * var(--poc-str)), #cbd5e1);
+  --border-hover: color-mix(in srgb, var(--primary) calc(14% * var(--poc-str)), #64748b);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
@@ -272,8 +280,9 @@ ${anchorBlocks()}
   --muted:      color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc-str)), #334155);
   --input:      color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc-str)), #475569);
 
-  --border:       color-mix(in srgb, var(--primary) calc(22% * var(--poc-str)), #64748b);
-  --border-hover: color-mix(in srgb, var(--primary) calc(28% * var(--poc-str)), #cbd5e1);
+  /* Same halving as light; --ring again left at full strength. */
+  --border:       color-mix(in srgb, var(--primary) calc(11% * var(--poc-str)), #64748b);
+  --border-hover: color-mix(in srgb, var(--primary) calc(15% * var(--poc-str)), #cbd5e1);
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc-str)), #94a3b8);
 
   --sidebar:        color-mix(in srgb, var(--surface-tint) calc(14% * var(--poc-chrome, 0)), #1e293b);
@@ -305,10 +314,19 @@ ${anchorBlocks()}
   --poc-hero: linear-gradient(135deg,
     var(--primary) 0%,
     var(--primary-deep) 100%);
-  /* Shadows carry the DEEP anchor. A grey shadow under a saturated object reads
-     as dirt; one holding the object's own dark end reads as light falling. */
-  --poc-shadow-key: color-mix(in srgb, var(--primary-deep) 22%, transparent);
-  --poc-shadow-far: color-mix(in srgb, var(--primary-deep) 13%, transparent);
+  /* Shadows carry the DEEP anchor, GREYED. A grey shadow under a saturated
+     object reads as dirt, so the brand's own dark end is still in there — but
+     the raw deep put a visibly coloured wash under every card. Pre-mixing into
+     slate-700 keeps the direction and drops the saturation: chroma across the
+     seven falls 25-107 to 11-55.
+
+     The WEIGHT is unchanged, which is the point of mixing into a slate of
+     almost the same lightness rather than just lowering the alpha. Measured
+     over a white card the key shadow reads 1.44-1.50 against the page, where
+     the raw deep read 1.40-1.55 — same depth, slightly more consistent. */
+  --poc-shadow-stock: color-mix(in srgb, var(--primary-deep) 35%, #334155);
+  --poc-shadow-key: color-mix(in srgb, var(--poc-shadow-stock) 22%, transparent);
+  --poc-shadow-far: color-mix(in srgb, var(--poc-shadow-stock) 13%, transparent);
   --poc-shadow-amb: color-mix(in srgb, var(--foreground) 6%, transparent);
 
   /* THE BUBBLE FIELD — where the highlight earns its own token. Two soft radial
