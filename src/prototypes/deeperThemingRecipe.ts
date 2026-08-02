@@ -521,7 +521,7 @@ ${anchorBlocks()}
      own overflow:hidden trims it. No border-radius — a percentage radius here
      resolves against the BAND's box, not the tile's, giving it elliptical
      corners of its own that read as curved highlights. */
-  inset: 0 -6% auto -6%;
+  inset: 0 -10% auto -10%;
   height: 52.3%;
   background-image: linear-gradient(180deg,
     rgba(255, 255, 255, 0.245) 0%,
@@ -680,8 +680,12 @@ ${anchorBlocks()}
 }
 [data-theme-poc] .poc-mark__spark {
   position: absolute;
-  left: 14.4%;
-  top: 14.4%;
+  /* Figma rests this at 14.4%. Moved inward to 17% so the ambient drift and the
+     pointer offset together can never reach an edge — worst case now leaves
+     about 6% of the tile between the flare and the corner, against a version
+     that could push it past the boundary entirely and clip it in half. */
+  left: 17%;
+  top: 17%;
   width: 12%;
   height: 12%;
   z-index: 0;
@@ -855,8 +859,21 @@ ${anchorBlocks()}
   transition-duration: 110ms;
 }
 [data-theme-poc] .poc-mark--tilt .poc-mark__bloom { translate: calc(var(--mx) * 4%) calc(var(--my) * 4%); }
-[data-theme-poc] .poc-mark--tilt::before        { translate: calc(var(--mx) * 6%) calc(var(--my) * 5%); }
-[data-theme-poc] .poc-mark--tilt .poc-mark__flare { translate: calc(var(--mx) * -22%) calc(var(--my) * -18%); }
+/* THE SHEEN MAY ONLY EVER MOVE UP. Its brightest point is its top edge, pinned
+   at y=0; any downward move lifts that edge into view as a bright line the full
+   width of the tile. The (--my - 1) bias makes the vertical term 0 at the very
+   bottom of the tile and -5% at the top, so it is negative or zero and never
+   positive. Same bug the sheen KEYFRAMES had — it came back the moment a second
+   thing was allowed to move this layer.
+   Horizontally it travels at most 5% of its own width, which is 5.6% of the
+   tile, inside the 10% overhang each side, so no vertical edge can appear
+   either. */
+[data-theme-poc] .poc-mark--tilt::before        { translate: calc(var(--mx) * 5%) calc((var(--my) - 1) * 2.5%); }
+/* -22%/-18% put the flare past the tile edge at full deflection. The travel
+   budget has to be spent against the RESTING position and the ambient drift,
+   not in isolation: base 17, ambient reaches -3.6, pointer reaches -7, leaves
+   6.4% clear of the left edge at worst. */
+[data-theme-poc] .poc-mark--tilt .poc-mark__flare { translate: calc(var(--mx) * -7%) calc(var(--my) * -6%); }
 [data-theme-poc] .poc-mark--tilt > svg {
   translate: calc(var(--mx) * -7%) calc(var(--my) * -7%);
   filter: drop-shadow(
