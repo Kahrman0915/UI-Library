@@ -209,7 +209,12 @@ function anchorBlocks(): string {
     // "which app am I in", so it is selected by data-surface and never appears
     // in the brand picker. Same anchor shape, different attribute.
     const sel = k === 'aiden' ? "[data-theme-poc][data-surface='aiden']" : `[data-theme-poc][data-brand='${k}']`;
+    // --mark-* is the SAME in both modes: a mark is artwork, not a themed
+    // component. --primary-* stays mode-aware because it paints UI.
     return `${sel}[data-mode='light'] {
+  --mark-a:             ${a.light[0]};
+  --mark-b:             ${a.light[1]};
+  --mark-c:             ${a.light[2]};
   --primary-highlight:  ${a.light[0]};
   --mark-mid:           ${a.light[1]};
   --primary:            ${PRIMARY_LIGHT[k]};
@@ -217,6 +222,9 @@ function anchorBlocks(): string {
   --primary-foreground: ${a.on.light};
 }
 ${sel}[data-mode='dark'] {
+  --mark-a:             ${a.light[0]};
+  --mark-b:             ${a.light[1]};
+  --mark-c:             ${a.light[2]};
   --primary-highlight:  ${a.dark[0]};
   --mark-mid:           ${a.dark[1]};
   --primary:            ${PRIMARY_DARK[k]};
@@ -468,9 +476,9 @@ ${anchorBlocks()}
      stale token. One value now, consumed by the mark, the hero and the Aiden
      fill, so they cannot drift apart. */
   --poc-mark: linear-gradient(135deg,
-    var(--primary-highlight) 9.7%,
-    var(--mark-mid) 51.6%,
-    var(--primary-deep) 90.3%);
+    var(--mark-a) 9.7%,
+    var(--mark-b) 51.6%,
+    var(--mark-c) 90.3%);
   --poc-hero: linear-gradient(135deg,
     var(--mark-mid) 0%,
     var(--primary-deep) 100%);
@@ -570,14 +578,29 @@ ${anchorBlocks()}
 [data-theme-poc] .poc-dot { background: var(--primary-highlight); }
 [data-theme-poc] .poc-bubble-field { background-image: var(--poc-bubble); }
 
-/* THE GLYPH TRACKS THE LABEL. --primary-foreground is white in light and ink in
-   dark, so the mark's icon matches whatever a primary button is carrying in the
-   same mode. It works because dark's middles are LIGHT by construction (ink on
-   them reads 5.1-6.4) — the same fact that makes dark buttons take ink.
+/* THE MARK DOES NOT INVERT, AND ITS GLYPH IS ALWAYS WHITE.
+   It reads --mark-a/b/c, which carry the LIGHT anchors in both modes. An app
+   mark is brand artwork, not a themed component — an iOS icon is the same
+   object whatever the system theme is doing, and treating it like a surface is
+   what produced the problem this fixes.
 
-   The glyph sits over the middle of a 140deg ramp, so the middle stop is what it
-   has to clear; over the deep corner it would not, which is why this is a
-   centred mark and not a full-bleed one. */
+   WHAT THE MODE-AWARE VERSION LOOKED LIKE: dark's anchors are lighter by
+   construction (middles at L* 57-64 against light's 45-50), so in dark the
+   marks came out 8-14 points BRIGHTER than in light, on a page 87 points
+   darker. They stopped being objects and became lamps, and because the glyph
+   tracked --primary-foreground it went ink — a light-mode sticker pasted onto a
+   dark page. All the glass work assumes a mid-dark tile: the white sheen, the
+   inner highlights and the bloom all do nothing on a pale one.
+
+   Constant marks also retire a whole class of drift. The dark anchors have had
+   none of the light-side work, and this removes the most visible place that
+   showed.
+
+   COST, MEASURED: the tile now sits 3.17-3.25 against the dark page rather than
+   4.18-5.26. Still above the 3:1 that WCAG 1.4.11 wants for a UI boundary — but
+   AIDEN IS 2.70 and does not clear it. Its ramp is the darkest in the set. On a
+   dark page an Aiden FAB needs a ring or a shadow to hold its edge; the fill
+   alone is not enough. Nothing else in the set has this problem. */
 /* ── THE MARK, LAYER FOR LAYER ──────────────────────────────────────────────
    Read straight off the Figma component (128x128, radius 28.8 = 22.5%). The
    earlier version had the brand ramp and a flat white wash and stopped there,
@@ -613,7 +636,7 @@ ${anchorBlocks()}
   isolation: isolate;
   overflow: hidden;
   border-radius: 22.5%;
-  color: var(--primary-foreground);
+  color: #ffffff;
   background-image:
     /* 3 · bloom — Figma has this as a 129px ellipse hung at (-39,-37); as a
        background layer that is a 25%-radius glow centred at 20%/22%. */

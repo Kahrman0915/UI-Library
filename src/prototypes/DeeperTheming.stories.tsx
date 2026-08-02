@@ -467,8 +467,8 @@ const LAYERS: { n: string; what: string; how: string }[] = [
     how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
   { n: '5 · sparkle', what: 'One small point of light, upper left.',
     how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
-  { n: '6 · icon', what: 'Centred at 46% of the box.',
-    how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context.' },
+  { n: '6 · icon', what: 'Centred at 46% of the box, always white.',
+    how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context. The glyph briefly tracked --primary-foreground so it would match a button in the same mode; that is wrong for a mark, because the mark does not change between modes either.' },
 ];
 
 export const MarkAnatomy: Story = {
@@ -496,6 +496,16 @@ export const MarkAnatomy: Story = {
               layers the Figma component actually has, which is why they read as a coloured tile rather
               than as glass. This is the full stack, rebuilt from the component&rsquo;s own geometry
               rather than by eye.
+            </p>
+            <p style={P}>
+              <strong>A mark does not change between modes.</strong> It reads{' '}
+              <code style={MONO}>--mark-a/b/c</code>, which carry the light anchors in both — an app
+              icon is artwork, and an iOS icon is the same object whatever the system theme is doing.
+              Treating it as a themed component is what broke it: dark&rsquo;s anchors are lighter by
+              construction, so the marks came out <strong>8–14&nbsp;L* brighter in dark than in light</strong>,
+              on a page 87 points darker. They stopped being objects and became lamps. Every layer of
+              the glass — the sheen, the inner highlights, the bloom — assumes a mid-dark tile and does
+              nothing on a pale one.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
