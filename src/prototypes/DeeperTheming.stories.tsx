@@ -12,7 +12,7 @@ import {
   Separator, StatusDot, Switch,
 } from '../index';
 import {
-  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, SUB_BRANDS,
+  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, SUB_BRANDS,
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
 
@@ -113,7 +113,22 @@ type Mode = 'light' | 'dark';
 
 const H2: CSSProperties = { margin: '0 0 var(--p-2)', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' };
 const P: CSSProperties = { margin: '0 0 var(--p-4)', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)', maxWidth: 'var(--max-w-3xl)' };
-const PAGE: CSSProperties = { padding: 'var(--p-8)', display: 'grid', gap: 'var(--p-10)', maxWidth: 'var(--max-w-6xl)', margin: '0 auto' };
+/**
+ * The story page. FULL-BLEED on purpose: it paints --background, and a box that
+ * is `maxWidth + margin: auto` leaves unpainted gutters either side, so dark
+ * mode showed white rails down the edges. The measure is held by the inline
+ * padding instead, which centres the content identically without narrowing the
+ * painted box. Pair it with data-mode on the same element — see the Mode note.
+ */
+const PAGE: CSSProperties = {
+  display: 'grid',
+  gap: 'var(--p-10)',
+  paddingBlock: 'var(--p-8)',
+  paddingInline: 'max(var(--p-8), calc((100% - var(--max-w-6xl)) / 2))',
+  background: 'var(--background)',
+  color: 'var(--foreground)',
+  minHeight: '100vh',
+};
 const MONO: CSSProperties = { fontFamily: 'var(--font-family-mono)', fontSize: 'var(--text-xs)' };
 
 /** A branded scope. `data-brand` drives the anchors; `data-mode` picks the pair. */
@@ -194,7 +209,7 @@ export const Brands: Story = {
   render: function BrandsStory() {
     const [mode, setMode] = useState<Mode>('light');
     const hostRef = useRef<HTMLDivElement>(null);
-    const [drop, setDrop] = useState<Record<string, { raw: number; derived: number }>>({});
+    const [drop, setDrop] = useState<Record<string, { onLight: number; onDark: number }>>({});
 
     useEffect(() => {
       const host = hostRef.current;
@@ -205,13 +220,15 @@ export const Brands: Story = {
         probe.style.backgroundColor = v;
         return toRGBA(getComputedStyle(probe).backgroundColor);
       };
-      // --primary-foreground, not pure white — the derivation targets the real label
-      const label = toRGBA('#f8fafc')!;
-      const next: Record<string, { raw: number; derived: number }> = {};
+      // Both real labels, not pure white: #f8fafc and #0f172a are the two values
+      // --primary-foreground actually takes. Targeting #ffffff instead is what put
+      // every brand at 4.36-4.42 in an earlier pass, and the audit caught it.
+      const lightLabel = toRGBA('#f8fafc')!;
+      const darkLabel = toRGBA('#0f172a')!;
+      const next: Record<string, { onLight: number; onDark: number }> = {};
       for (const b of SUB_BRANDS) {
-        const main = read(BRAND_ANCHORS[b].light[1]);
-        const prim = read(PRIMARY_LIGHT[b]);
-        if (main && prim) next[b] = { raw: contrast(label, main), derived: contrast(label, prim) };
+        const fill = read(BRAND_ANCHORS[b].light[1]);
+        if (fill) next[b] = { onLight: contrast(lightLabel, fill), onDark: contrast(darkLabel, fill) };
       }
       setDrop(next);
     }, []);
@@ -230,7 +247,7 @@ export const Brands: Story = {
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
           <span />
         </div>
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>A brand is three colours, not one</h2>
             <p style={P}>
@@ -253,45 +270,58 @@ export const Brands: Story = {
                     <strong style={{ ...MONO, fontSize: 'var(--text-sm)', width: 40 }}>{b}</strong>
                   </div>
                 </Scope>
-                {swatch(a[0], 'highlight', a[0])}
-                {swatch(a[1], 'main', a[1])}
-                {swatch(a[2], 'deep', a[2])}
-                <div style={{ width: 1, height: 56, background: 'var(--border)' }} />
-                {swatch(mode === 'light' ? PRIMARY_LIGHT[b] : PRIMARY_DARK[b], '--primary', 'derived')}
+                {swatch(a[0], '--primary-highlight', a[0])}
+                {swatch(a[1], '--primary', a[1])}
+                {swatch(a[2], '--primary-deep', a[2])}
               </div>
             );
           })}
 
           <div>
-            <h2 style={H2}>The one derivation that matters</h2>
+            <h2 style={H2}>One colour, not two</h2>
             <p style={P}>
-              <strong>The mark&rsquo;s main stop is a display colour, not a UI colour.</strong> Measured
-              with the real label on it, <strong>six of the seven fail AA outright</strong>. So{' '}
-              <code style={MONO}>--primary</code> is not the main stop — it is the main stop walked down
-              its own hue until the label clears 4.5, keeping every degree of hue and as much chroma as
-              the gamut allows. The label is <code style={MONO}>--primary-foreground</code>, which is{' '}
-              <code style={MONO}>#f8fafc</code> — solving against pure white instead put every brand at
-              4.36–4.42 and the audit caught it.
+              The middle anchor used to be called <em>main</em>, and{' '}
+              <code style={MONO}>--primary</code> was a second value derived from it — a few percent
+              darker, because a mark&rsquo;s mid stop is a display colour and, measured with a{' '}
+              <strong>light</strong> label, six of the seven failed AA. Two colours a hair apart is a
+              smell, so it is gone. <strong><code style={MONO}>--primary</code> is the middle anchor.</strong>
             </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 560 }}>
+            <p style={P}>
+              The contrast gets paid on the other side instead: each brand declares its own{' '}
+              <code style={MONO}>--primary-foreground</code>, and for six of seven that is the{' '}
+              <strong>dark</strong> label. <code style={MONO}>db</code> is the exception and keeps the
+              light one — blue is the darkest hue at full chroma, so it is the one that can carry white.
+              That is not an inconsistency to paper over; it is the job{' '}
+              <code style={MONO}>--primary-foreground</code> exists to do, and dark mode has always
+              worked this way.
+            </p>
+            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 640 }}>
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Brand</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>main stop</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>--primary</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>light label</th>
+                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>dark label</th>
+                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>ships</th>
                 </tr>
               </thead>
               <tbody>
                 {SUB_BRANDS.map((b) => {
                   const d = drop[b];
+                  const dark = BRAND_ANCHORS[b].on.light === '#0f172a';
+                  const cell = (v: number | undefined, live: boolean) => (
+                    <td style={{
+                      ...MONO, padding: 'var(--p-2)', textAlign: 'right',
+                      color: !live ? 'var(--muted-foreground)' : v && v >= 4.5 ? 'var(--success)' : 'var(--error)',
+                      fontWeight: live ? 'var(--font-semibold)' : 'var(--font-normal)',
+                    }}>{v ? v.toFixed(2) : '—'}</td>
+                  );
                   return (
                     <tr key={b} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                       <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{b}</td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: d && d.raw < 4.5 ? 'var(--error)' : 'var(--foreground)' }}>
-                        {d ? d.raw.toFixed(2) : '—'}
-                      </td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--success)', fontWeight: 'var(--font-semibold)' }}>
-                        {d ? d.derived.toFixed(2) : '—'}
+                      {cell(d?.onLight, !dark)}
+                      {cell(d?.onDark, dark)}
+                      <td style={{ ...MONO, padding: 'var(--p-2)', color: 'var(--muted-foreground)' }}>
+                        {dark ? '#0f172a' : '#f8fafc'}
                       </td>
                     </tr>
                   );
@@ -299,23 +329,38 @@ export const Brands: Story = {
               </tbody>
             </table>
             <p style={{ ...P, marginTop: 'var(--p-4)' }}>
-              Dark mode needs no such derivation — <code style={MONO}>--primary</code> carries dark text
-              there, and every mark&rsquo;s dark main stop already clears it (5.1&ndash;6.4). That
-              asymmetry is why the two modes are separate blocks rather than one recipe with a sign flip.
+              Getting there moved three middles, in <strong>lightness only</strong>, all under 1&nbsp;ΔE:{' '}
+              <code style={MONO}>db</code> −0.9&nbsp;L*, <code style={MONO}>ec</code> +0.3,{' '}
+              <code style={MONO}>rm</code> +0.5. Hue and chroma are untouched. The alternative — keep a
+              light label on every brand — needs <code style={MONO}>nb</code> and{' '}
+              <code style={MONO}>dc</code> to fall <strong>12&nbsp;L*</strong>, which visibly deepens
+              those marks through the middle. Both sets are in the recipe file so the choice can be
+              looked at rather than argued about.
+            </p>
+            <p style={P}>
+              Dark mode needed nothing at all: <code style={MONO}>--primary-foreground</code> is already{' '}
+              <code style={MONO}>#0f172a</code> there, and every dark middle clears it at 5.1&ndash;6.4.
             </p>
           </div>
 
           <div>
             <h2 style={H2}>What each anchor is for</h2>
             <p style={P}>
-              <strong>Highlight → artwork only.</strong> The mark, the hero gradient, the top of every
-              ramp. It is the brightest, most saturated colour the brand owns, and it is never put
-              behind text. An earlier pass built the light surfaces from it; the numbers were good and
+              <strong>Highlight → its own token, and nothing with text on it.</strong>{' '}
+              <code style={MONO}>--primary-highlight</code> drives the mark, the hero gradient, the
+              marketing bubble field, and small non-text accents like a status dot. It is the brightest,
+              most saturated colour the brand owns, so the test for reaching for it is simply whether
+              anything is read on top; if something is, it is the wrong token. An earlier pass built the light surfaces from it; the numbers were good and
               the result was wrong — a panel made from a highlight announces itself, and sub-apps of one
               suite should not announce themselves at every surface.
               <br />
-              <strong>Main → the accent and the lines.</strong> CTAs, selection, active nav, borders,
-              rings — via the derived <code style={MONO}>--primary</code>.
+              <strong>Primary → the accent and the lines.</strong> CTAs, selection, active nav,
+              borders, rings. It is <code style={MONO}>--primary</code> itself, so the whole existing
+              family in <code style={MONO}>tokens.scss</code> — <code style={MONO}>-hover</code>,{' '}
+              <code style={MONO}>-light</code>, <code style={MONO}>-soft</code>,{' '}
+              <code style={MONO}>-border</code>, <code style={MONO}>-ring</code>,{' '}
+              <code style={MONO}>-focus</code>, <code style={MONO}>-text</code> — re-derives from it for
+              free. Setting one value themes all eight.
               <br />
               <strong>Deep → every tinted surface, plus depth.</strong> Panels, the rail, bands, shadows,
               the dark end of every gradient. Greyed toward slate first, then applied at single digits,
@@ -432,7 +477,7 @@ export const Dashboard: Story = {
     return (
       <>
         <PocStyle />
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>The same dashboard, three sub-brands</h2>
             <p style={P}>
@@ -478,12 +523,20 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
         <Button id={`${brand}-mk-in`} label="Sign in" style="ghost" size="sm" />
       </header>
 
-      <section className="poc-hero" style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center', color: 'var(--primary-foreground)' }}>
+      {/* THE BUBBLE FIELD — the highlight's home. Two soft radial washes over the
+          page surface, not a fill: text sits on --background plus a tint, so it
+          keeps the page's own contrast while the corner glows carry the brand as
+          brightly as the mark does. This is the one place the highlight is free,
+          because nothing is read ON a bubble. */}
+      <section
+        className="poc-bubble-field"
+        style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}
+      >
         <Mark brand={brand} size={56} />
         <h1 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-4xl)', lineHeight: 'var(--leading-10)', fontWeight: 'var(--font-semibold)', maxWidth: 'var(--max-w-2xl)' }}>
           Every number in one place
         </h1>
-        <p style={{ margin: 0, fontSize: 'var(--text-base)', lineHeight: 'var(--leading-7)', maxWidth: 'var(--max-w-xl)', opacity: 0.92 }}>
+        <p style={{ margin: 0, fontSize: 'var(--text-base)', lineHeight: 'var(--leading-7)', maxWidth: 'var(--max-w-xl)', color: 'var(--muted-foreground)' }}>
           Bring imports, cohorts and reporting under one definition your whole team shares.
         </p>
         <div style={{ display: 'flex', gap: 'var(--p-3)', marginTop: 'var(--p-2)' }}>
@@ -582,7 +635,7 @@ export const Marketing: Story = {
     return (
       <>
         <PocStyle />
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>A marketing page has a bigger brand budget</h2>
             <p style={P}>
@@ -645,7 +698,7 @@ export const Marks: Story = {
       <>
         <PocStyle />
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}><span /></div>
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>The marks are the brand definition</h2>
             <p style={P}>
@@ -776,7 +829,7 @@ export const MinimalOption: Story = {
           ))}
         </div>
 
-        <div style={PAGE}>
+        <div data-mode="light" style={PAGE}>
           <div>
             <h2 style={H2}>The minimal option — just swap <code style={MONO}>--primary</code></h2>
             <p style={P}>
@@ -904,21 +957,21 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   {
     group: 'Authored — the anchors',
     note: 'Three read off the Figma mark, plus --primary solved against the label. The only literals in the system.',
-    tokens: ['--brand-highlight', '--brand-main', '--brand-deep', '--primary'],
+    tokens: ['--primary-highlight', '--primary', '--primary-deep', '--primary-foreground'],
   },
   {
     group: 'Free — the existing --primary-* family',
-    note: 'Already color-mix over var(--primary) in tokens.scss, so these recompute with no new code at all. This is the whole of the minimal option.',
+    note: 'Already color-mix over var(--primary) in tokens.scss, so setting the middle anchor re-derives all seven with no new code. This is the whole of the minimal option, and it now comes free with the anchor model too.',
     tokens: ['--primary-hover', '--primary-light', '--primary-soft', '--primary-border', '--primary-ring', '--primary-focus', '--primary-text'],
   },
   {
     group: 'Surfaces',
-    note: 'Page and card stay white in light mode. Every tinted one derives from --poc-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
-    tokens: ['--poc-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
+    note: 'Page and card stay white in light mode. Every tinted one derives from --surface-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
+    tokens: ['--surface-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
   },
   {
     group: 'Lines',
-    note: 'From MAIN: not text backgrounds, so no contrast budget to protect, and a line reading as the accent is the point.',
+    note: 'From --primary itself: not text backgrounds, so no contrast budget to protect, and a line agreeing with the accent is the point.',
     tokens: ['--border', '--border-hover', '--ring'],
   },
   {
@@ -939,7 +992,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   {
     group: 'Gradients',
     note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
-    tokens: ['--poc-mark', '--poc-hero'],
+    tokens: ['--poc-mark', '--poc-hero', '--poc-bubble'],
     gradient: true,
   },
 ];
@@ -1019,7 +1072,7 @@ export const TokenMatrix: Story = {
           ))}
         </div>
 
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>Every token, every brand</h2>
             <p style={P}>
@@ -1101,7 +1154,7 @@ const PAIRINGS: Pairing[] = [
   { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
   { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
   { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
-  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'the derivation' },
+  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'per-brand label — six take #0f172a, db takes #f8fafc' },
   { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
   { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
   { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'the greyed deep stock' },
@@ -1153,7 +1206,7 @@ export const Audit: Story = {
             </span>
           ))}
         </div>
-        <div style={PAGE}>
+        <div data-mode={mode} style={PAGE}>
           <div>
             <h2 style={H2}>Measured, not asserted</h2>
             <p style={P}>
@@ -1196,10 +1249,21 @@ export const Audit: Story = {
           <div>
             <h2 style={H2}>The rows that matter</h2>
             <p style={P}>
-              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the derivation
-              working — every brand clears 4.5 because <code style={MONO}>--primary</code> was solved
-              for that, not picked. Compare it to the raw main stops in the Brands story, where five of
-              seven fail.
+              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-colour
+              model working. Every brand clears 4.5 on the mark&rsquo;s own middle stop, because the{' '}
+              <em>label</em> moved rather than the fill — six brands take{' '}
+              <code style={MONO}>#0f172a</code>, <code style={MONO}>db</code> takes{' '}
+              <code style={MONO}>#f8fafc</code>. Under a single light label the same fills read
+              3.01&ndash;4.36 and six of seven fail.
+              <br />
+              <strong>The bubble field is not in this table</strong> — it is a{' '}
+              <code style={MONO}>background-image</code>, and the probe reads computed{' '}
+              <code style={MONO}>background-color</code>, so it would silently report the surface
+              underneath. Composited by hand at its worst overlap point it measures{' '}
+              <strong>4.97&ndash;5.82</strong> for muted text in light and{' '}
+              <strong>6.68&ndash;8.58</strong> in dark. That gap between &ldquo;what the probe can see&rdquo;
+              and &ldquo;what is on screen&rdquo; is worth remembering: every gradient in this file is
+              invisible to it.
               <br />
               <strong><code style={MONO}>error / error-light ON BAND</code></strong> is the one hazard
               left. The semantic tints are <code style={MONO}>rgba()</code> composited over whatever is
@@ -1221,7 +1285,7 @@ export const Recipe: Story = {
   render: () => (
     <>
       <PocStyle />
-      <div style={PAGE}>
+      <div data-mode="light" style={PAGE}>
         <div>
           <h2 style={H2}>What adoption would mean</h2>
           <p style={P}>
