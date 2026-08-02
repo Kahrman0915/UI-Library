@@ -446,8 +446,8 @@ const LAYERS: { n: string; what: string; how: string }[] = [
     how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
   { n: '4 · sheen', what: 'A white band down the top half.',
     how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
-  { n: '5 · sparkle', what: 'One small blurred dot, upper left.',
-    how: '12px at (20,20) with a 4px layer blur — 9.4% wide at 15.6%/15.6% on ::after. The blur is the only value that has to know the pixel size.' },
+  { n: '5 · sparkle', what: 'One small point of light, upper left.',
+    how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
   { n: '6 · icon', what: 'Centred at 46% of the box.',
     how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context.' },
 ];

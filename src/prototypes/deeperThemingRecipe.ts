@@ -526,17 +526,27 @@ ${anchorBlocks()}
     rgba(255, 255, 255, 0) 70%);
   pointer-events: none;
 }
-/* 5 · sparkle — a 12px dot at (20,20) on a 128 box, blurred 4. */
+/* 5 · sparkle — a 12px dot at (20,20) on a 128 box, blurred 4.
+   Figma's version is a flat white circle at alpha 0.32 under a 4px layer blur,
+   which at small sizes disappears into the sheen. Made more legible WITHOUT
+   making it bigger or busier: a radial with a bright core and a soft falloff,
+   and a tighter blur. A blurred flat disc reads as a smudge; a core with
+   falloff reads as a point of light, and it survives being scaled down.
+   Still static — see the MOTION block for why. */
 [data-theme-poc] .poc-mark::after {
   content: '';
   position: absolute;
-  left: 15.6%;
-  top: 15.6%;
-  width: 9.4%;
-  height: 9.4%;
+  left: 14.4%;
+  top: 14.4%;
+  width: 12%;
+  height: 12%;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.32);
-  filter: blur(calc(var(--poc-mark-px) * 0.031));
+  background: radial-gradient(circle at 50% 50%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.5) 42%,
+    rgba(255, 255, 255, 0.12) 72%,
+    transparent 100%);
+  filter: blur(calc(var(--poc-mark-px) * 0.016));
   pointer-events: none;
 }
 /* The glyph has to sit ABOVE the sheen, and a grid child with no z-index would
