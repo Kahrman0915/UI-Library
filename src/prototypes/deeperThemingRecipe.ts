@@ -570,11 +570,12 @@ ${anchorBlocks()}
    Both run long and share no common factor, so the pair never lines up and the
    composite has no visible loop.
 
-   The SPARKLE stays exactly as Figma draws it: one blurred dot at 15.6%/15.6%,
-   9.4% wide, alpha 0.32, and STATIC. Two earlier passes animated it — first a
+   The SPARKLE keeps Figma's position and size and gets a specular's behaviour:
+   it swells and dims IN PHASE with the sheen, and slides across the tile when
+   the tile tilts on hover. Two earlier passes made it louder than that — a
    pulse, then three four-point stars — and both times it stopped being a
    highlight and became the thing you looked at. A mark's job is to show its
-   glyph. The sparkle is a detail on the glass, not an event.
+   glyph; the sparkle is a detail on the glass.
 
    The streak went the same way: solved faithfully from the owner's frame,
    genuinely pretty, and one more moving thing on a 26px tile. Removed.
@@ -602,6 +603,24 @@ ${anchorBlocks()}
   40%  { transform: scaleY(1.16); opacity: 1; }
   70%  { transform: scaleY(0.92); opacity: 0.58; }
   100% { transform: scaleY(1);    opacity: 0.72; }
+}
+/* THE SPARKLE IS A SPECULAR HIGHLIGHT, so it behaves like one.
+   Ambient: it swells and dims on the SAME 7.3s cycle as the sheen, deliberately
+   in phase — they are the same light hitting the same glass, and running them
+   on different clocks makes the tile look like it has two light sources.
+   Amplitude is low on purpose (0.78 to 1 to 0.68): the two passes that made
+   this louder both ended up competing with the glyph.
+   Hover: a highlight on a real surface MOVES when the surface turns. The tile
+   tilts, so the sparkle slides across it, grows and brightens — which is the
+   physically-right answer and also the reason it does not read as a second
+   animation fighting the first. */
+@keyframes poc-sparkle-drift {
+  0%, 100% { opacity: 0.78; transform: scale(1); }
+  45%      { opacity: 1;    transform: scale(1.12); }
+  72%      { opacity: 0.68; transform: scale(0.96); }
+}
+@keyframes poc-sparkle-flare {
+  to { opacity: 1; transform: translate3d(34%, 20%, 0) scale(1.45); }
 }
 @keyframes poc-mark-sweep {
   0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
@@ -633,6 +652,16 @@ ${anchorBlocks()}
 [data-theme-poc] .poc-mark--live::before {
   animation: poc-sheen-tilt 7300ms var(--ease-in-out) infinite;
   transform-origin: 50% 0%;
+}
+[data-theme-poc] .poc-mark--live::after {
+  animation: poc-sparkle-drift 7300ms var(--ease-in-out) infinite;
+}
+/* Swapping the animation NAME on hover, rather than transitioning a property
+   the loop already owns. An animation always beats a transition on the same
+   property, so a hover transform here would simply be ignored; forwards holds
+   the flared state for as long as the pointer stays. */
+[data-theme-poc] .poc-mark--live:hover::after {
+  animation: poc-sparkle-flare var(--duration-slow) var(--ease-spring) forwards;
 }
 
 [data-theme-poc] .poc-mark__bloom {
@@ -708,6 +737,8 @@ ${anchorBlocks()}
      0.01ms still churns frames, so these stop outright. */
   [data-theme-poc] .poc-mark__bloom,
   [data-theme-poc] .poc-mark--live::before,
+  [data-theme-poc] .poc-mark--live::after,
+  [data-theme-poc] .poc-mark--live:hover::after,
   [data-theme-poc] .poc-mark--live:hover .poc-mark__sweep { animation: none; }
   [data-theme-poc] .poc-mark--live:hover,
   [data-theme-poc] .poc-mark--live:hover > svg { transform: none; }

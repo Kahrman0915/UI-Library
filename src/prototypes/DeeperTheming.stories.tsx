@@ -532,17 +532,21 @@ export const MarkAnatomy: Story = {
               Hover any of them. Motion is <strong>opt-in</strong> — a mark that animates unprompted in
               a grid of seven is noise, one that answers a hover is an affordance.
               <br />
-              Two ambient layers only: the <strong>bloom</strong> drifts on an 11s orbit, the{' '}
-              <strong>sheen</strong> tilts on 7.3s. No shared factor, so the pair never lines up and
-              there is no visible loop. The <strong>sparkle stays exactly as Figma draws it — static</strong>.
-              Two earlier passes animated it, first as a pulse and then as three four-point stars, and
-              both times it stopped being a highlight and became the thing you looked at. A mark exists
-              to show its glyph.
+              Three ambient layers. The <strong>bloom</strong> drifts on an 11s orbit; the{' '}
+              <strong>sheen</strong> and the <strong>sparkle</strong> share 7.3s{' '}
+              <em>deliberately in phase</em> — they are the same light on the same glass, and running
+              them on different clocks makes the tile look like it has two light sources. The bloom
+              shares no factor with either, so the set never quite repeats.
+              <br />
+              The sparkle keeps Figma&rsquo;s position and size and gets a specular&rsquo;s behaviour at
+              low amplitude. Two earlier passes made it louder — a pulse, then three four-point stars —
+              and both times it stopped being a highlight and became the thing you looked at.
               <br />
               Hover adds the rest: the tile takes a perspective tilt, the drop shadow grows and swings
-              toward where the light now falls, and the icon translates the <em>other</em> way with its
-              own shadow. That parallax is what sells the depth — a lift with an unchanged shadow reads
-              as a sticker.
+              toward where the light now falls, the icon translates the <em>other</em> way with its own
+              shadow, and the sparkle <strong>slides across the glass</strong> — a highlight on a real
+              surface moves when the surface turns. That parallax is what sells the depth; a lift with
+              an unchanged shadow reads as a sticker.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
               {BRAND_KEYS.map((b) => (
