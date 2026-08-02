@@ -17,6 +17,7 @@ import {
 import type { BrandKey } from './deeperThemingRecipe';
 import SuitePage from './SuitePage';
 import { usePointerTilt } from './usePointerTilt';
+import { AuditPanel, NewTokensPanel, TokenDiffPanel } from './DeeperThemingParts';
 
 /**
  * PROOF OF CONCEPT — deeper theming, rebuilt on the app marks.
@@ -88,21 +89,6 @@ function contrast(fg: [number, number, number, number], bg: [number, number, num
   const [hi, lo] = f > b ? [f, b] : [b, f];
   return (hi + 0.05) / (lo + 0.05);
 }
-function oklab([r, g, b]: [number, number, number, number]) {
-  const R = srgbToLin(r), G = srgbToLin(g), B = srgbToLin(b);
-  const l = Math.cbrt(0.4122214708 * R + 0.5363325363 * G + 0.0514459929 * B);
-  const m = Math.cbrt(0.2119034982 * R + 0.6806995451 * G + 0.1073969566 * B);
-  const s = Math.cbrt(0.0883024619 * R + 0.2817188376 * G + 0.6299787005 * B);
-  return [
-    0.2104542553 * l + 0.793617785 * m - 0.0040720468 * s,
-    1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s,
-    0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s,
-  ] as const;
-}
-const deltaE = (a: [number, number, number, number], b: [number, number, number, number]) => {
-  const [l1, a1, b1] = oklab(a), [l2, a2, b2] = oklab(b);
-  return Math.hypot(l1 - l2, a1 - a2, b1 - b2);
-};
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Shared
@@ -248,10 +234,15 @@ const meta: Meta = {
     layout: 'fullscreen',
     ui: {
       description:
-        'Theming built on the Figma app marks. Each brand is THREE anchors — highlight, primary, deep — ' +
-        'and every surface derives from them. `--primary` IS the middle anchor, so the whole existing ' +
-        '`--primary-*` family re-derives for free. Nothing in `tokens.scss` is modified; every rule is ' +
-        'scoped to a `data-theme-poc` attribute that exists nowhere else in the repo. ' +
+        'Sub-applications that stand on their own while still reading as one suite. Each brand is ' +
+        'THREE anchors — **highlight, primary, deep** — and every surface derives from them, so a ' +
+        'theme reaches past the accent into the page itself. `--primary` IS the middle anchor, which ' +
+        'means the whole existing `--primary-*` family re-derives for free.\n\n' +
+        'Read it in order: **Brands** is the model, **Mark Anatomy** and **Aiden Surface** are the ' +
+        'identity, **Tokens** is what it costs, **Audit** is whether it holds up, and the last three ' +
+        'are the thing itself at full size.\n\n' +
+        'Nothing in `tokens.scss` is modified. Every rule is scoped to a `data-theme-poc` attribute ' +
+        'that exists nowhere else in the repo, so none of this can leak into another story. ' +
         'Light/dark follows the Storybook toolbar — these stories have no mode switch of their own.',
       tags: ['poc', 'theming'],
     },
@@ -260,9 +251,395 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
+/** The six layers, bottom to top, as the Figma component stacks them. */
+const LAYERS: { n: string; what: string; how: string }[] = [
+  { n: '1 · brand ramp', what: 'The three anchors on a 135° axis.',
+    how: 'Figma stores a gradientTransform, not an angle. Solved back: the axis runs (0.5,−0.31) to (1.31,0.5) in unit space, and the 0/0.52/1 stops land at 9.7/51.6/90.3% on the CSS gradient line. 0/52/100% — the obvious guess — compresses the ramp and loses the deep corner.' },
+  { n: '2 · radial highlight', what: 'A soft white lift, just above centre.',
+    how: '35% radius at 45%/40%. Figma layers it at 40% opacity over stops of 0.7/0.3/0; CSS has no layer opacity on a background, so the product is folded into each stop.' },
+  { n: '3 · bloom', what: 'A pale blue glow hanging off the top-left.',
+    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
+  { n: '4 · sheen', what: 'A white band down the top half.',
+    how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
+  { n: '5 · sparkle', what: 'One small point of light, upper left.',
+    how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
+  { n: '6 · icon', what: 'Centred at 46% of the box, always white.',
+    how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context. The glyph briefly tracked --primary-foreground so it would match a button in the same mode; that is wrong for a mark, because the mark does not change between modes either.' },
+];
+
+/** A db page with Aiden arriving in it — the scenario the whole decision rests on. */
+function AidenInHost({ mode }: { mode: Mode }) {
+  return (
+    <Scope brand="db" mode={mode}>
+      <div style={{ background: 'var(--background)', minHeight: 340, position: 'relative', contain: 'layout', display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+          <Mark brand="db" size={30} />
+          <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>db</strong>
+          <Button id="ah-new" label="New report" size="sm" IconLeft={Plus} />
+        </div>
+        <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-2)' }}>
+          <strong style={{ fontSize: 'var(--text-sm)' }}>Active accounts</strong>
+          <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</span>
+          <Progress id="ah-p" value={62} />
+        </div>
+
+        {/* the FAB is the whole argument: an aiden SURFACE inside a db theme */}
+        <AidenFab mode={mode} id="ah-fab" />
+      </div>
+    </Scope>
+  );
+}
+
+/**
+ * The Aiden launcher, pinned to a host page.
+ *
+ * Its own `data-surface` scope INSIDE whatever theme it lands in — that
+ * composition is the whole argument for Aiden being a surface rather than a
+ * seventh brand, and it only shows up when the two are on screen together.
+ *
+ * THE SCOPE WRAPPER IS `display: contents`. Without it the wrapper is a real
+ * box, and dropping one into a grid shell hands it a grid cell — the dashboard
+ * layout collapsed the first time for exactly that reason. `display: contents`
+ * removes the box while leaving the custom properties inheriting normally,
+ * which is the same trick `DirectionProvider` uses for its `dir` wrapper.
+ *
+ * The host gets `contain: layout` as well as `position: relative`. Relative
+ * alone does NOT create a containing block for a FIXED child — only transform /
+ * filter / perspective / contain do — and containment is what keeps every FAB
+ * inside its own dashboard instead of stacking them in the viewport corner.
+ */
+function AidenFab({ mode, id }: { mode: Mode; id: string }) {
+  return (
+    <div data-theme-poc="" data-surface="aiden" data-mode={mode} style={{ display: 'contents' }}>
+      <button
+        id={id}
+        type="button"
+        aria-label="Ask Aiden"
+        className="poc-aiden-fill"
+        style={{
+          position: 'absolute', right: 20, bottom: 20,
+          width: 52, height: 52, borderRadius: 'var(--rounded-full)',
+          border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center',
+          color: '#ffffff', boxShadow: 'var(--shadow-lg)',
+        }}
+      >
+        <Sparkles size={22} aria-hidden="true" />
+      </button>
+    </div>
+  );
+}
+
+function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
+  const [on, setOn] = useState(true);
+  const nav = ['Overview', 'Cohorts', 'Exports', 'Settings'];
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '208px minmax(0,1fr)', minHeight: 560, background: 'var(--background)', position: 'relative', contain: 'layout' }}>
+      <AidenFab mode={mode} id={`${brand}-fab`} />
+      <aside
+        className="poc-rail"
+        style={{
+          backgroundColor: 'var(--sidebar)',
+          borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
+          padding: 'var(--p-4)', display: 'grid', alignContent: 'start', gap: 'var(--p-4)',
+          color: 'var(--sidebar-foreground)',
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2-5)' }}>
+          <Mark brand={brand} size={32} />
+          <strong style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{brand}</strong>
+        </div>
+        <nav style={{ display: 'grid', gap: 'var(--p-0-5)' }}>
+          {nav.map((n, i) => (
+            <span key={n} style={{
+              padding: 'var(--p-2) var(--p-2-5)', borderRadius: 'var(--rounded-md)',
+              fontSize: 'var(--text-sm)',
+              fontWeight: i === 0 ? 'var(--font-medium)' : 'var(--font-normal)',
+              background: i === 0 ? 'var(--sidebar-accent)' : undefined,
+              color: i === 0 ? 'var(--sidebar-accent-foreground)' : 'var(--sidebar-foreground)',
+            }}>{n}</span>
+          ))}
+        </nav>
+      </aside>
+
+      <div style={{ display: 'grid', alignContent: 'start' }}>
+        {/* THE THEMED-SURFACE SET. These three are the only places a --primary
+            derived TINT carries text, and they were the pairing that blocked
+            adoption: colour on a tint has to hold for every brand at once, and
+            with the POC anchors it did not. Text here is neutral; the brand is
+            in the tint, the icon and the border. Read them against the semantic
+            info Alert below, which keeps coloured text because its hue is one
+            audited value rather than eight. */}
+        <Banner
+          id={`${brand}-bn`}
+          variant="brand"
+          Icon={Sparkles}
+          title="Q3 planning workspaces are open."
+          action={<Button id={`${brand}-bn-a`} label="Take a look" style="link" size="sm" />}
+        />
+        <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4) var(--p-6)', borderBottom: 'var(--border-w-100) solid var(--border)', background: 'var(--card)' }}>
+          <strong style={{ flex: 1, fontSize: 'var(--text-base)' }}>Overview</strong>
+          <StatusDot status="online" label="Live" />
+          <Button id={`${brand}-cta2`} label="Export" style="secondary" size="sm" />
+          <Button id={`${brand}-cta`} label="New report" IconLeft={Plus} size="sm" />
+        </header>
+        <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-5)' }}>
+          <Alert id={`${brand}-al-b`} variant="brand" Icon={Zap} title="You are on the new cohort engine" description="Definitions now resolve at query time, so saved reports pick up edits immediately." />
+          <Alert id={`${brand}-al`} variant="info" title="Two sources are still syncing" description="Numbers may move until the last import finishes." />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px,1fr))', gap: 'var(--p-4)' }}>
+            <Card id={`${brand}-c1`}>
+              <CardHeader id={`${brand}-c1`} title="Active accounts" description="Last 7 days" />
+              <CardBody>
+                <div className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</div>
+                <Progress id={`${brand}-pr`} value={68} />
+              </CardBody>
+            </Card>
+            <Card id={`${brand}-c2`}>
+              <CardHeader id={`${brand}-c2`} title="Team" description="Owners of this space" />
+              <CardBody>
+                <AvatarGroup id={`${brand}-ag`} max={3}>
+                  <Avatar id={`${brand}-a1`} fallback="KM" />
+                  <Avatar id={`${brand}-a2`} fallback="JD" />
+                  <Avatar id={`${brand}-a3`} fallback="AR" />
+                  <Avatar id={`${brand}-a4`} fallback="TS" />
+                </AvatarGroup>
+                <div style={{ display: 'flex', gap: 'var(--p-2)', marginTop: 'var(--p-3)', flexWrap: 'wrap' }}>
+                  <Badge id={`${brand}-b1`} variant="default" label="Pro" />
+                  <Badge id={`${brand}-b2`} variant="outline" label="Beta" />
+                </div>
+              </CardBody>
+            </Card>
+          </div>
+          <Input id={`${brand}-s`} label="Find a cohort" IconLeft={Search} placeholder="Search…" />
+          <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+            <Chip id={`${brand}-ch1`} label="Weekly" active />
+            <Chip id={`${brand}-ch2`} label="Monthly" />
+          </div>
+          <ItemGroup id={`${brand}-l`}>
+            <Item id={`${brand}-i1`} variant="outline">
+              <ItemContent><ItemTitle>Trial → paid</ItemTitle><ItemDescription>Conversion fell 5pts after the pricing change</ItemDescription></ItemContent>
+            </Item>
+            <Item id={`${brand}-i2`} variant="outline">
+              <ItemContent><ItemTitle>Legacy plan</ItemTitle><ItemDescription>~400 seats lapsed in the same week</ItemDescription></ItemContent>
+            </Item>
+          </ItemGroup>
+          {/* the knockout set — these punch through with --background */}
+          <div style={{ display: 'flex', gap: 'var(--p-6)', alignItems: 'center', flexWrap: 'wrap' }}>
+            <Switch id={`${brand}-sw`} label="Auto-refresh" checked={on} onCheckedChange={setOn} />
+            <Avatar id={`${brand}-av`} fallback="KM" badge={<StatusDot status="online" label="Online" />} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MarketingPage({ brand }: { brand: BrandKey }) {
+  const feats = [
+    { Icon: Globe, t: 'Shared cohorts', b: 'One definition, every team, no re-cutting.' },
+    { Icon: Zap, t: 'Pipelines', b: 'Scheduled imports with replay and backfill.' },
+    { Icon: FileText, t: 'Reporting', b: 'Exports that match what the dashboard shows.' },
+  ];
+  return (
+    <div style={{ background: 'var(--background)' }}>
+      <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4) var(--p-6)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+        <Mark brand={brand} size={30} />
+        <strong style={{ ...MONO, flex: 1, fontSize: 'var(--text-sm)' }}>{brand}</strong>
+        <Button id={`${brand}-mk-in`} label="Sign in" style="ghost" size="sm" />
+      </header>
+
+      {/* THE BUBBLE FIELD — the highlight's home. Two soft radial washes over the
+          page surface, not a fill: text sits on --background plus a tint, so it
+          keeps the page's own contrast while the corner glows carry the brand as
+          brightly as the mark does. This is the one place the highlight is free,
+          because nothing is read ON a bubble. */}
+      <section
+        className="poc-bubble-field"
+        style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}
+      >
+        <Mark brand={brand} size={56} />
+        <h1 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-4xl)', lineHeight: 'var(--leading-10)', fontWeight: 'var(--font-semibold)', maxWidth: 'var(--max-w-2xl)' }}>
+          Every number in one place
+        </h1>
+        <p style={{ margin: 0, fontSize: 'var(--text-base)', lineHeight: 'var(--leading-7)', maxWidth: 'var(--max-w-xl)', color: 'var(--muted-foreground)' }}>
+          Bring imports, cohorts and reporting under one definition your whole team shares.
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--p-3)', marginTop: 'var(--p-2)' }}>
+          <Button id={`${brand}-mk-a`} label="Start free" IconRight={ArrowRight} />
+          <Button id={`${brand}-mk-b`} label="Book a demo" style="outline" />
+        </div>
+      </section>
+
+      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
+        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+          Built for the whole pipeline
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))', gap: 'var(--p-4)' }}>
+          {feats.map((f) => (
+            <Card id={`${brand}-f-${f.t}`} key={f.t}>
+              <CardBody>
+                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+                  <Mark brand={brand} size={36} />
+                  <strong style={{ fontSize: 'var(--text-base)' }}>{f.t}</strong>
+                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{f.b}</span>
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="poc-band" style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
+        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
+          Trusted where the numbers matter
+        </h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: 'var(--p-4)', textAlign: 'center' }}>
+          {[['99.98%', 'Ingest uptime'], ['4.2 min', 'Median sync'], ['120+', 'Connectors']].map(([n, l]) => (
+            <div key={l} style={{ display: 'grid', gap: 'var(--p-1)' }}>
+              <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>{n}</span>
+              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{l}</span>
+            </div>
+          ))}
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--p-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />)}
+        </div>
+      </section>
+
+      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
+        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>Simple pricing</h2>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))', gap: 'var(--p-4)' }}>
+          {[
+            { n: 'Team', p: '$29', f: ['5 seats', 'Daily sync'], hi: false },
+            { n: 'Business', p: '$99', f: ['25 seats', 'SSO'], hi: true },
+            { n: 'Enterprise', p: 'Custom', f: ['Unlimited', 'Residency'], hi: false },
+          ].map((pl) => (
+            <Card id={`${brand}-p-${pl.n}`} key={pl.n} interactive>
+              <CardBody>
+                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
+                    <strong style={{ flex: 1 }}>{pl.n}</strong>
+                    {pl.hi && <Badge id={`${brand}-pb-${pl.n}`} variant="default" label="Popular" />}
+                  </div>
+                  <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>{pl.p}</span>
+                  {pl.f.map((x) => (
+                    <span key={x} style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center', fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+                      <Check size={16} aria-hidden="true" style={{ color: 'var(--primary-text)' }} />{x}
+                    </span>
+                  ))}
+                  <Button id={`${brand}-pc-${pl.n}`} label="Choose" style={pl.hi ? 'default' : 'outline'} size="sm" />
+                </div>
+              </CardBody>
+            </Card>
+          ))}
+        </div>
+      </section>
+
+      <section className="poc-band-strong" style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}>
+        <h2 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>Ready when you are</h2>
+        <span className="poc-hero-cta"><Button id={`${brand}-fin`} label="Start free" IconRight={ArrowRight} /></span>
+      </section>
+
+      <footer style={{ padding: 'var(--p-6)' }}>
+        <Separator id={`${brand}-sep`} />
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', marginTop: 'var(--p-4)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          <Mark brand={brand} size={22} />
+          <span style={MONO}>{brand}</span>
+          <span style={{ flex: 1 }} />
+          <span>Part of one suite</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+
+/**
+ * Every token the recipe touches, resolved for every brand.
+ *
+ * Grouped by where the value comes from, because that is the part worth seeing:
+ * only the first group is authored. Everything below it is a color-mix over an
+ * anchor, so the whole sheet falls out of four literals per brand per mode.
+ */
+const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boolean }[] = [
+  {
+    group: 'Authored — the anchors',
+    note: 'Three read off the Figma mark, plus --primary solved against the label. The only literals in the system.',
+    tokens: ['--primary-highlight', '--primary', '--primary-deep', '--primary-foreground'],
+  },
+  {
+    group: 'Free — the existing --primary-* family',
+    note: 'Already color-mix over var(--primary) in tokens.scss, so setting the middle anchor re-derives all seven with no new code. This is the whole of the minimal option, and it now comes free with the anchor model too.',
+    tokens: ['--primary-hover', '--primary-light', '--primary-soft', '--primary-border', '--primary-ring', '--primary-focus', '--primary-text'],
+  },
+  {
+    group: 'Surfaces',
+    note: 'Page and card stay white in light mode. Every tinted one derives from --surface-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
+    tokens: ['--surface-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
+  },
+  {
+    group: 'Lines',
+    note: 'Mostly slate. Borders take half the --primary they used to \u2014 a hairline should read as the system, with the brand only just visible in it. --ring is left at full strength on purpose: it is the focus indicator, and WCAG 1.4.11 wants it to stand out rather than agree with the border beside it.',
+    tokens: ['--border', '--border-hover', '--ring'],
+  },
+  {
+    group: 'Chrome — the rail',
+    note: 'A surface like any other, so it takes the same greyed stock at the same order of magnitude — no second recipe.',
+    tokens: ['--sidebar', '--sidebar-border', '--sidebar-accent'],
+  },
+  {
+    group: 'Marketing bands',
+    note: 'The loudest flat surfaces in the system, and still only ~9 ΔE00 off white at their strongest — a band is a surface people read on.',
+    tokens: ['--poc-band', '--poc-band-strong', '--poc-band-deep'],
+  },
+  {
+    group: 'Shadow tints',
+    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
+    tokens: ['--poc-shadow-stock', '--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
+  },
+  {
+    group: 'Gradients',
+    note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
+    tokens: ['--poc-mark', '--poc-hero', '--poc-bubble'],
+    gradient: true,
+  },
+];
+
+type Pairing = { label: string; fg: string; bg: string; onBand?: boolean; floor?: number; note?: string };
+const PAIRINGS: Pairing[] = [
+  { label: 'foreground / background', fg: '--foreground', bg: '--background', note: 'white in light — unchanged' },
+  { label: 'muted-foreground / background', fg: '--muted-foreground', bg: '--background' },
+  { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
+  { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
+  { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
+  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'pure white on every brand — the marks moved, not the label' },
+  { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
+  { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
+  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'the greyed deep stock' },
+  { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc-band-deep' },
+  { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc-band-strong' },
+  { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
+  { label: 'error / error-light ON BAND', fg: '--error', bg: '--error-light', onBand: true, note: 'the remaining hazard' },
+  { label: 'border / background', fg: '--border', bg: '--background', floor: 3, note: '1.4.11 — pre-existing' },
+];
+
 // ─────────────────────────────────────────────────────────────────────────────
-// 1 — Brands: the model
+// STORIES — sidebar order is declaration order, so this list IS the running order
 // ─────────────────────────────────────────────────────────────────────────────
+/*
+ *   1  Brands        the model: three anchors, and what each one is for
+ *   2  Mark Anatomy  one mark taken apart, plus its motion
+ *   3  Aiden Surface the third axis — layered inside a brand, not beside it
+ *   4  Tokens        what changes, and what is new
+ *   5  Audit         every pairing measured live, in both modes
+ *   6  Dashboard     all six as product UI
+ *   7  Marketing     all six as marketing pages
+ *   8  Suite         the parent page the six sit under
+ *
+ * Tokens and Audit each end in a panel imported from ./DeeperThemingParts —
+ * those were a separate "— Adoption" section until 2026-08-02, which split one
+ * argument across two places in the sidebar and buried the measurement that
+ * decides it.
+ */
 
 export const Brands: Story = {
   render: function BrandsStory() {
@@ -451,26 +828,6 @@ export const Brands: Story = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1a — Mark anatomy
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** The six layers, bottom to top, as the Figma component stacks them. */
-const LAYERS: { n: string; what: string; how: string }[] = [
-  { n: '1 · brand ramp', what: 'The three anchors on a 135° axis.',
-    how: 'Figma stores a gradientTransform, not an angle. Solved back: the axis runs (0.5,−0.31) to (1.31,0.5) in unit space, and the 0/0.52/1 stops land at 9.7/51.6/90.3% on the CSS gradient line. 0/52/100% — the obvious guess — compresses the ramp and loses the deep corner.' },
-  { n: '2 · radial highlight', what: 'A soft white lift, just above centre.',
-    how: '35% radius at 45%/40%. Figma layers it at 40% opacity over stops of 0.7/0.3/0; CSS has no layer opacity on a background, so the product is folded into each stop.' },
-  { n: '3 · bloom', what: 'A pale blue glow hanging off the top-left.',
-    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
-  { n: '4 · sheen', what: 'A white band down the top half.',
-    how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
-  { n: '5 · sparkle', what: 'One small point of light, upper left.',
-    how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
-  { n: '6 · icon', what: 'Centred at 46% of the box, always white.',
-    how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context. The glyph briefly tracked --primary-foreground so it would match a button in the same mode; that is wrong for a mark, because the mark does not change between modes either.' },
-];
-
 export const MarkAnatomy: Story = {
   render: function MarkAnatomyStory() {
     const mode = useGlobalMode();
@@ -620,33 +977,6 @@ export const MarkAnatomy: Story = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1c — Aiden: the surface, not a seventh brand
-// ─────────────────────────────────────────────────────────────────────────────
-
-/** A db page with Aiden arriving in it — the scenario the whole decision rests on. */
-function AidenInHost({ mode }: { mode: Mode }) {
-  return (
-    <Scope brand="db" mode={mode}>
-      <div style={{ background: 'var(--background)', minHeight: 340, position: 'relative', contain: 'layout', display: 'grid', gap: 'var(--p-4)', padding: 'var(--p-6)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
-          <Mark brand="db" size={30} />
-          <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>db</strong>
-          <Button id="ah-new" label="New report" size="sm" IconLeft={Plus} />
-        </div>
-        <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-2)' }}>
-          <strong style={{ fontSize: 'var(--text-sm)' }}>Active accounts</strong>
-          <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</span>
-          <Progress id="ah-p" value={62} />
-        </div>
-
-        {/* the FAB is the whole argument: an aiden SURFACE inside a db theme */}
-        <AidenFab mode={mode} id="ah-fab" />
-      </div>
-    </Scope>
-  );
-}
-
 export const AidenSurface: Story = {
   render: function AidenSurfaceStory() {
     const mode = useGlobalMode();
@@ -775,729 +1105,8 @@ export const AidenSurface: Story = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 1b — Suite: the parent page
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const Suite: Story = {
-  render: function SuiteStory() {
-    const mode = useGlobalMode();
-    return (
-      <>
-        <PocStyle />
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>The suite page — all six at once</h2>
-            <p style={P}>
-              Every other view here shows one brand. This one shows the parent, and it is the harder
-              test: six sub-apps on a single page, in a single scroll, each carrying its own mark,
-              accent, border and tinted card. If they read as six unrelated products, the model has
-              failed however good any one of them looks alone.
-            </p>
-            <p style={P}>
-              It is also the only page allowed to use <strong>every brand at once</strong>. The
-              headline ramp and the six-corner bubble field are the parent&rsquo;s identity — the
-              parent is not a colour, it is the set — and both are scoped to{' '}
-              <code style={MONO}>.poc-suite-*</code> so they cannot appear inside a branded page,
-              where the whole point is that one brand is in charge.
-            </p>
-          </div>
-          <Frame label="the suite">
-            <Scope brand="" mode={mode}>
-              <SuitePage mode={mode} />
-            </Scope>
-          </Frame>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 2 — Dashboard
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * The Aiden launcher, pinned to a host page.
- *
- * Its own `data-surface` scope INSIDE whatever theme it lands in — that
- * composition is the whole argument for Aiden being a surface rather than a
- * seventh brand, and it only shows up when the two are on screen together.
- *
- * THE SCOPE WRAPPER IS `display: contents`. Without it the wrapper is a real
- * box, and dropping one into a grid shell hands it a grid cell — the dashboard
- * layout collapsed the first time for exactly that reason. `display: contents`
- * removes the box while leaving the custom properties inheriting normally,
- * which is the same trick `DirectionProvider` uses for its `dir` wrapper.
- *
- * The host gets `contain: layout` as well as `position: relative`. Relative
- * alone does NOT create a containing block for a FIXED child — only transform /
- * filter / perspective / contain do — and containment is what keeps every FAB
- * inside its own dashboard instead of stacking them in the viewport corner.
- */
-function AidenFab({ mode, id }: { mode: Mode; id: string }) {
-  return (
-    <div data-theme-poc="" data-surface="aiden" data-mode={mode} style={{ display: 'contents' }}>
-      <button
-        id={id}
-        type="button"
-        aria-label="Ask Aiden"
-        className="poc-aiden-fill"
-        style={{
-          position: 'absolute', right: 20, bottom: 20,
-          width: 52, height: 52, borderRadius: 'var(--rounded-full)',
-          border: 0, cursor: 'pointer', display: 'grid', placeItems: 'center',
-          color: '#ffffff', boxShadow: 'var(--shadow-lg)',
-        }}
-      >
-        <Sparkles size={22} aria-hidden="true" />
-      </button>
-    </div>
-  );
-}
-
-function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
-  const [on, setOn] = useState(true);
-  const nav = ['Overview', 'Cohorts', 'Exports', 'Settings'];
-  return (
-    <div style={{ display: 'grid', gridTemplateColumns: '208px minmax(0,1fr)', minHeight: 560, background: 'var(--background)', position: 'relative', contain: 'layout' }}>
-      <AidenFab mode={mode} id={`${brand}-fab`} />
-      <aside
-        className="poc-rail"
-        style={{
-          backgroundColor: 'var(--sidebar)',
-          borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
-          padding: 'var(--p-4)', display: 'grid', alignContent: 'start', gap: 'var(--p-4)',
-          color: 'var(--sidebar-foreground)',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2-5)' }}>
-          <Mark brand={brand} size={32} />
-          <strong style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{brand}</strong>
-        </div>
-        <nav style={{ display: 'grid', gap: 'var(--p-0-5)' }}>
-          {nav.map((n, i) => (
-            <span key={n} style={{
-              padding: 'var(--p-2) var(--p-2-5)', borderRadius: 'var(--rounded-md)',
-              fontSize: 'var(--text-sm)',
-              fontWeight: i === 0 ? 'var(--font-medium)' : 'var(--font-normal)',
-              background: i === 0 ? 'var(--sidebar-accent)' : undefined,
-              color: i === 0 ? 'var(--sidebar-accent-foreground)' : 'var(--sidebar-foreground)',
-            }}>{n}</span>
-          ))}
-        </nav>
-      </aside>
-
-      <div style={{ display: 'grid', alignContent: 'start' }}>
-        {/* THE THEMED-SURFACE SET. These three are the only places a --primary
-            derived TINT carries text, and they were the pairing that blocked
-            adoption: colour on a tint has to hold for every brand at once, and
-            with the POC anchors it did not. Text here is neutral; the brand is
-            in the tint, the icon and the border. Read them against the semantic
-            info Alert below, which keeps coloured text because its hue is one
-            audited value rather than eight. */}
-        <Banner
-          id={`${brand}-bn`}
-          variant="brand"
-          Icon={Sparkles}
-          title="Q3 planning workspaces are open."
-          action={<Button id={`${brand}-bn-a`} label="Take a look" style="link" size="sm" />}
-        />
-        <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4) var(--p-6)', borderBottom: 'var(--border-w-100) solid var(--border)', background: 'var(--card)' }}>
-          <strong style={{ flex: 1, fontSize: 'var(--text-base)' }}>Overview</strong>
-          <StatusDot status="online" label="Live" />
-          <Button id={`${brand}-cta2`} label="Export" style="secondary" size="sm" />
-          <Button id={`${brand}-cta`} label="New report" IconLeft={Plus} size="sm" />
-        </header>
-        <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-5)' }}>
-          <Alert id={`${brand}-al-b`} variant="brand" Icon={Zap} title="You are on the new cohort engine" description="Definitions now resolve at query time, so saved reports pick up edits immediately." />
-          <Alert id={`${brand}-al`} variant="info" title="Two sources are still syncing" description="Numbers may move until the last import finishes." />
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px,1fr))', gap: 'var(--p-4)' }}>
-            <Card id={`${brand}-c1`}>
-              <CardHeader id={`${brand}-c1`} title="Active accounts" description="Last 7 days" />
-              <CardBody>
-                <div className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</div>
-                <Progress id={`${brand}-pr`} value={68} />
-              </CardBody>
-            </Card>
-            <Card id={`${brand}-c2`}>
-              <CardHeader id={`${brand}-c2`} title="Team" description="Owners of this space" />
-              <CardBody>
-                <AvatarGroup id={`${brand}-ag`} max={3}>
-                  <Avatar id={`${brand}-a1`} fallback="KM" />
-                  <Avatar id={`${brand}-a2`} fallback="JD" />
-                  <Avatar id={`${brand}-a3`} fallback="AR" />
-                  <Avatar id={`${brand}-a4`} fallback="TS" />
-                </AvatarGroup>
-                <div style={{ display: 'flex', gap: 'var(--p-2)', marginTop: 'var(--p-3)', flexWrap: 'wrap' }}>
-                  <Badge id={`${brand}-b1`} variant="default" label="Pro" />
-                  <Badge id={`${brand}-b2`} variant="outline" label="Beta" />
-                </div>
-              </CardBody>
-            </Card>
-          </div>
-          <Input id={`${brand}-s`} label="Find a cohort" IconLeft={Search} placeholder="Search…" />
-          <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-            <Chip id={`${brand}-ch1`} label="Weekly" active />
-            <Chip id={`${brand}-ch2`} label="Monthly" />
-          </div>
-          <ItemGroup id={`${brand}-l`}>
-            <Item id={`${brand}-i1`} variant="outline">
-              <ItemContent><ItemTitle>Trial → paid</ItemTitle><ItemDescription>Conversion fell 5pts after the pricing change</ItemDescription></ItemContent>
-            </Item>
-            <Item id={`${brand}-i2`} variant="outline">
-              <ItemContent><ItemTitle>Legacy plan</ItemTitle><ItemDescription>~400 seats lapsed in the same week</ItemDescription></ItemContent>
-            </Item>
-          </ItemGroup>
-          {/* the knockout set — these punch through with --background */}
-          <div style={{ display: 'flex', gap: 'var(--p-6)', alignItems: 'center', flexWrap: 'wrap' }}>
-            <Switch id={`${brand}-sw`} label="Auto-refresh" checked={on} onCheckedChange={setOn} />
-            <Avatar id={`${brand}-av`} fallback="KM" badge={<StatusDot status="online" label="Online" />} />
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export const Dashboard: Story = {
-  render: function DashboardStory() {
-    const mode = useGlobalMode();
-    const [strength, setStrength] = useState(1);
-    const [chromeOn, setChromeOn] = useState(1);
-    // EVERY application, not a sample. Three brands was enough to show the
-    // mechanism and not enough to answer the real question — whether six of them
-    // still read as one suite when you scroll past them in a row.
-    const show: BrandKey[] = SUB_BRANDS;
-    return (
-      <>
-        <PocStyle />
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>The same dashboard, every application</h2>
-            <p style={P}>
-              In light mode the content area is <strong>white in all of them</strong>. The brand lives in
-              the mark, the rail and the accent. Borders and shadows are held near the system&rsquo;s
-              slate on purpose — a hairline or a card shadow that carries the brand is the loudest tell
-              of a cheap theme, and the mark carries identity now so the chrome does not have to.
-            </p>
-            <p style={P}>
-              Scroll the whole set rather than comparing two. The question this story exists to answer is
-              not &ldquo;can you tell them apart&rdquo; — you can — but whether six of them in a row still
-              read as one product family. <code style={MONO}>aiden</code> is last because it is the
-              surface, not an application.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
-              <Switch id="d-on" label="Theming on" checked={strength === 1} onCheckedChange={(v) => setStrength(v ? 1 : 0)} />
-              <Switch id="d-chrome" label="Tint the rail" checked={chromeOn === 1} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
-              </div>
-          </div>
-          {show.map((b) => (
-            <Frame key={b} label={`data-brand="${b}"`}>
-              <Scope brand={b} mode={mode} strength={strength} chromeOn={chromeOn}>
-                <DashboardPage brand={b} mode={mode} />
-              </Scope>
-            </Frame>
-          ))}
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 3 — Marketing
-// ─────────────────────────────────────────────────────────────────────────────
-
-function MarketingPage({ brand }: { brand: BrandKey }) {
-  const feats = [
-    { Icon: Globe, t: 'Shared cohorts', b: 'One definition, every team, no re-cutting.' },
-    { Icon: Zap, t: 'Pipelines', b: 'Scheduled imports with replay and backfill.' },
-    { Icon: FileText, t: 'Reporting', b: 'Exports that match what the dashboard shows.' },
-  ];
-  return (
-    <div style={{ background: 'var(--background)' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4) var(--p-6)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-        <Mark brand={brand} size={30} />
-        <strong style={{ ...MONO, flex: 1, fontSize: 'var(--text-sm)' }}>{brand}</strong>
-        <Button id={`${brand}-mk-in`} label="Sign in" style="ghost" size="sm" />
-      </header>
-
-      {/* THE BUBBLE FIELD — the highlight's home. Two soft radial washes over the
-          page surface, not a fill: text sits on --background plus a tint, so it
-          keeps the page's own contrast while the corner glows carry the brand as
-          brightly as the mark does. This is the one place the highlight is free,
-          because nothing is read ON a bubble. */}
-      <section
-        className="poc-bubble-field"
-        style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}
-      >
-        <Mark brand={brand} size={56} />
-        <h1 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-4xl)', lineHeight: 'var(--leading-10)', fontWeight: 'var(--font-semibold)', maxWidth: 'var(--max-w-2xl)' }}>
-          Every number in one place
-        </h1>
-        <p style={{ margin: 0, fontSize: 'var(--text-base)', lineHeight: 'var(--leading-7)', maxWidth: 'var(--max-w-xl)', color: 'var(--muted-foreground)' }}>
-          Bring imports, cohorts and reporting under one definition your whole team shares.
-        </p>
-        <div style={{ display: 'flex', gap: 'var(--p-3)', marginTop: 'var(--p-2)' }}>
-          <Button id={`${brand}-mk-a`} label="Start free" IconRight={ArrowRight} />
-          <Button id={`${brand}-mk-b`} label="Book a demo" style="outline" />
-        </div>
-      </section>
-
-      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
-        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
-          Built for the whole pipeline
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))', gap: 'var(--p-4)' }}>
-          {feats.map((f) => (
-            <Card id={`${brand}-f-${f.t}`} key={f.t}>
-              <CardBody>
-                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-                  <Mark brand={brand} size={36} />
-                  <strong style={{ fontSize: 'var(--text-base)' }}>{f.t}</strong>
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{f.b}</span>
-                </div>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="poc-band" style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
-        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>
-          Trusted where the numbers matter
-        </h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px,1fr))', gap: 'var(--p-4)', textAlign: 'center' }}>
-          {[['99.98%', 'Ingest uptime'], ['4.2 min', 'Median sync'], ['120+', 'Connectors']].map(([n, l]) => (
-            <div key={l} style={{ display: 'grid', gap: 'var(--p-1)' }}>
-              <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>{n}</span>
-              <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{l}</span>
-            </div>
-          ))}
-        </div>
-        <div style={{ display: 'flex', gap: 'var(--p-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />)}
-        </div>
-      </section>
-
-      <section style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-6)' }}>
-        <h2 className="poc-display" style={{ margin: 0, textAlign: 'center', fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>Simple pricing</h2>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px,1fr))', gap: 'var(--p-4)' }}>
-          {[
-            { n: 'Team', p: '$29', f: ['5 seats', 'Daily sync'], hi: false },
-            { n: 'Business', p: '$99', f: ['25 seats', 'SSO'], hi: true },
-            { n: 'Enterprise', p: 'Custom', f: ['Unlimited', 'Residency'], hi: false },
-          ].map((pl) => (
-            <Card id={`${brand}-p-${pl.n}`} key={pl.n} interactive>
-              <CardBody>
-                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
-                    <strong style={{ flex: 1 }}>{pl.n}</strong>
-                    {pl.hi && <Badge id={`${brand}-pb-${pl.n}`} variant="default" label="Popular" />}
-                  </div>
-                  <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>{pl.p}</span>
-                  {pl.f.map((x) => (
-                    <span key={x} style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center', fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-                      <Check size={16} aria-hidden="true" style={{ color: 'var(--primary-text)' }} />{x}
-                    </span>
-                  ))}
-                  <Button id={`${brand}-pc-${pl.n}`} label="Choose" style={pl.hi ? 'default' : 'outline'} size="sm" />
-                </div>
-              </CardBody>
-            </Card>
-          ))}
-        </div>
-      </section>
-
-      <section className="poc-band-strong" style={{ padding: 'var(--p-12) var(--p-6)', display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center' }}>
-        <h2 className="poc-display" style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>Ready when you are</h2>
-        <span className="poc-hero-cta"><Button id={`${brand}-fin`} label="Start free" IconRight={ArrowRight} /></span>
-      </section>
-
-      <footer style={{ padding: 'var(--p-6)' }}>
-        <Separator id={`${brand}-sep`} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', marginTop: 'var(--p-4)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
-          <Mark brand={brand} size={22} />
-          <span style={MONO}>{brand}</span>
-          <span style={{ flex: 1 }} />
-          <span>Part of one suite</span>
-        </div>
-      </footer>
-    </div>
-  );
-}
-
-export const Marketing: Story = {
-  render: function MarketingStory() {
-    const mode = useGlobalMode();
-    return (
-      <>
-        <PocStyle />
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>A marketing page has a bigger brand budget</h2>
-            <p style={P}>
-              A product UI has to stay quiet, so its budget is tiny. A marketing page{' '}
-              <em>alternates</em> — white sections, a full-bleed band, white again. The band takes the
-              same greyed <strong>deep</strong> stock as every other surface, just further along it, so
-              it never becomes a different kind of colour from the app; the colour arrives instead where
-              nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
-              numerals, which are that ramp clipped to text.
-            </p>
-          </div>
-          {SUB_BRANDS.map((b) => (
-            <Frame key={b} label={`data-brand="${b}"`}>
-              <Scope brand={b} mode={mode}>
-                <MarketingPage brand={b} />
-              </Scope>
-            </Frame>
-          ))}
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4 — Marks + the suite
-// ─────────────────────────────────────────────────────────────────────────────
-
-export const Marks: Story = {
-  render: function MarksStory() {
-    const mode = useGlobalMode();
-    const hostRef = useRef<HTMLDivElement>(null);
-    const [pairs, setPairs] = useState<{ a: string; b: string; v: number }[]>([]);
-
-    useEffect(() => {
-      const host = hostRef.current;
-      if (!host) return;
-      const probe = host.firstElementChild as HTMLElement;
-      const read = (v: string) => {
-        probe.style.backgroundColor = '';
-        probe.style.backgroundColor = v;
-        return toRGBA(getComputedStyle(probe).backgroundColor);
-      };
-      const stops = (b: BrandKey) => BRAND_ANCHORS[b].light.map(read).filter(Boolean) as [number, number, number, number][];
-      const out: { a: string; b: string; v: number }[] = [];
-      for (let i = 0; i < SUB_BRANDS.length; i++) {
-        for (let j = i + 1; j < SUB_BRANDS.length; j++) {
-          const A = stops(SUB_BRANDS[i]), B = stops(SUB_BRANDS[j]);
-          const v = Math.min(...A.map((x) => Math.min(...B.map((y) => deltaE(x, y)))));
-          out.push({ a: SUB_BRANDS[i], b: SUB_BRANDS[j], v });
-        }
-      }
-      out.sort((x, y) => x.v - y.v);
-      setPairs(out.slice(0, 6));
-    }, []);
-
-    return (
-      <>
-        <PocStyle />
-        <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}><span /></div>
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>The marks are the brand definition</h2>
-            <p style={P}>
-              Nothing sits on top of a mark, so it carries no contrast constraint at all — the one
-              surface where colour is free. That is why the anchors live here and the UI tokens derive
-              from them rather than the other way round.
-            </p>
-          </div>
-
-          <div style={{ padding: 'var(--p-8)', borderRadius: 'var(--rounded-xl)', background: mode === 'dark' ? '#0f172a' : '#ffffff', border: 'var(--border-w-100) solid var(--border)', display: 'flex', gap: 'var(--p-6)', flexWrap: 'wrap' }}>
-            {(Object.keys(BRAND_ANCHORS) as BrandKey[]).map((b) => (
-              <div key={b} style={{ display: 'grid', gap: 'var(--p-2)', justifyItems: 'center' }}>
-                <Scope brand={b} mode={mode}><Mark brand={b} size={80} /></Scope>
-                <span style={{ ...MONO, color: mode === 'dark' ? '#cbd5e1' : 'var(--muted-foreground)', fontWeight: b === 'aiden' ? 'var(--font-semibold)' : 'var(--font-normal)' }}>
-                  {b}{b === 'aiden' ? ' · surface' : ''}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          <div>
-            <h2 style={H2}>The six tightest pairs</h2>
-            <p style={P}>
-              Worst stop-pair between two marks, in OKLab. Below <strong>0.10</strong> two things stop
-              reading as different colours. These are the pairs worth knowing about — the mark amplifies
-              a hue difference but it cannot create one.
-            </p>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 420 }}>
-              <tbody>
-                {pairs.map((p) => (
-                  <tr key={`${p.a}${p.b}`} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{p.a} / {p.b}</td>
-                    <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', fontWeight: 'var(--font-semibold)', color: p.v >= 0.1 ? 'var(--success)' : 'var(--error)' }}>
-                      {p.v.toFixed(3)}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            <p style={{ ...P, marginTop: 'var(--p-4)' }}>
-              Where a pair is tight, the <strong>glyph</strong> is what separates them, not the colour —
-              Word and Outlook are both blue and nobody confuses them. Hue is a bounded resource;
-              silhouette is not.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4b — The minimal option
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * "What if we just used the derived --primary and left the system alone?"
- *
- * It works, and it is much cheaper than the three-anchor model. Worth building
- * honestly rather than arguing about, because the mechanism is nicer than it
- * sounds: the whole --primary-* family in tokens.scss is already
- * color-mix(... var(--primary) ...), so overriding --primary alone recomputes
- * -hover, -light, -soft, -border, -ring, -focus and -text for free. This story
- * proves it by setting a REAL data-theme scope and overriding only --primary
- * inline — no POC CSS involved on the left-hand side at all.
- */
-const MINIMAL_BRANDS: { key: BrandKey; theme: string }[] = [
-  { key: 'db', theme: 'db' }, { key: 'nb', theme: 'nb' }, { key: 'dc', theme: 'dc' },
-  { key: 'ec', theme: 'ec' }, { key: 'ph', theme: 'ph' }, { key: 'rm', theme: 'rm' },
-];
-
-export const MinimalOption: Story = {
-  render: function MinimalStory() {
-    const hostRef = useRef<HTMLDivElement>(null);
-    const mode = useGlobalMode();
-    const [rows, setRows] = useState<Record<string, { chromaA: number; chromaB: number; textOnLight: number }>>({});
-
-    useEffect(() => {
-      const host = hostRef.current;
-      if (!host) return;
-      const chroma = (c: [number, number, number, number]) => {
-        const [, a, b] = oklab(c);
-        return Math.hypot(a, b);
-      };
-      const next: Record<string, { chromaA: number; chromaB: number; textOnLight: number }> = {};
-      for (const { key } of MINIMAL_BRANDS) {
-        const a = host.querySelector<HTMLElement>(`[data-min="${key}"]`);
-        const b = host.querySelector<HTMLElement>(`[data-anc="${key}"]`);
-        if (!a || !b) continue;
-        const read = (el: HTMLElement, tok: string) => {
-          const p = el.firstElementChild as HTMLElement;
-          p.style.backgroundColor = '';
-          p.style.backgroundColor = `var(${tok})`;
-          return toRGBA(getComputedStyle(p).backgroundColor);
-        };
-        const lightRaw = read(a, '--primary-light');
-        // --primary-light is translucent, so it is only a colour once composited
-        // over the page it sits on — and that page is not the same in both modes
-        const page = toRGBA(mode === 'dark' ? '#0f172a' : '#ffffff')!;
-        const light = lightRaw ? (lightRaw[3] < 1 ? over(lightRaw, page) : lightRaw) : null;
-        const text = read(a, '--primary-text');
-        const band = read(b, '--poc-band');
-        if (light && text && band) {
-          next[key] = { chromaA: chroma(light), chromaB: chroma(band), textOnLight: contrast(text, light) };
-        }
-      }
-      setRows(next);
-    }, [mode]);
-
-    const Fragment = ({ label }: { label: string }) => (
-      <div style={{ display: 'grid', gap: 'var(--p-3)', padding: 'var(--p-4)', background: 'var(--primary-light)', borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--primary-border)' }}>
-        <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--primary-text)' }}>{label}</strong>
-        <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
-          <Button id={`${label}-b`} label="Primary" size="sm" />
-          <Button id={`${label}-o`} label="Outline" style="outline" size="sm" />
-          <Badge id={`${label}-bg`} variant="default" label="Live" />
-        </div>
-      </div>
-    );
-
-    return (
-      <>
-        <PocStyle />
-        <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
-          {MINIMAL_BRANDS.map(({ key, theme }) => (
-            <span key={key}>
-              <span data-min={key} data-theme={theme} data-mode={mode} style={{ '--primary': PRIMARY[mode][key] } as CSSProperties}><span /></span>
-              <span data-anc={key} data-theme-poc="" data-brand={key} data-mode={mode} style={{ '--poc-str': 1 } as CSSProperties}><span /></span>
-            </span>
-          ))}
-        </div>
-
-        <div style={PAGE}>
-          <div>
-            <h2 style={H2}>The minimal option — just swap <code style={MONO}>--primary</code></h2>
-            <p style={P}>
-              No new tokens, no new architecture. Set <code style={MONO}>--primary</code> to the derived
-              value per brand and let the system do what it already does. The whole{' '}
-              <code style={MONO}>--primary-*</code> family in <code style={MONO}>tokens.scss</code> is
-              already <code style={MONO}>color-mix(… var(--primary) …)</code>, so{' '}
-              <code style={MONO}>-hover</code>, <code style={MONO}>-light</code>,{' '}
-              <code style={MONO}>-soft</code>, <code style={MONO}>-border</code>,{' '}
-              <code style={MONO}>-ring</code>, <code style={MONO}>-focus</code> and{' '}
-              <code style={MONO}>-text</code> all recompute for free.
-            </p>
-            <p style={P}>
-              The left column below is <strong>not using the POC stylesheet at all</strong>. It is a real{' '}
-              <code style={MONO}>data-theme</code> scope with one inline override —{' '}
-              <code style={MONO}>{'style={{ \'--primary\': \'#0b8339\' }}'}</code> — which is exactly
-              what shipping this would look like.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px,1fr))', gap: 'var(--p-5)' }}>
-            <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>A · --primary swapped, stock system</span>
-              {MINIMAL_BRANDS.map(({ key, theme }) => (
-                <div key={key} data-theme={theme} data-mode={mode} style={{ '--primary': PRIMARY[mode][key] } as CSSProperties}>
-                  <Fragment label={key} />
-                </div>
-              ))}
-            </div>
-            <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>B · three anchors</span>
-              {MINIMAL_BRANDS.map(({ key }) => (
-                <Scope key={key} brand={key}>
-                  <div style={{ display: 'grid', gap: 'var(--p-3)', padding: 'var(--p-4)', background: 'var(--poc-band)', borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--primary-border)' }}>
-                    <strong style={{ fontSize: 'var(--text-sm)', color: 'var(--primary-text)' }}>{key}</strong>
-                    <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', alignItems: 'center' }}>
-                      <Button id={`${key}-ab`} label="Primary" size="sm" />
-                      <Button id={`${key}-ao`} label="Outline" style="outline" size="sm" />
-                      <Badge id={`${key}-abg`} variant="default" label="Live" />
-                    </div>
-                  </div>
-                </Scope>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <h2 style={H2}>What it costs, measured</h2>
-            <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', maxWidth: 640 }}>
-              <thead>
-                <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-                  <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Brand</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>A · tint chroma</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>B · tint chroma</th>
-                  <th style={{ textAlign: 'right', padding: 'var(--p-2)' }}>A · text on tint</th>
-                </tr>
-              </thead>
-              <tbody>
-                {MINIMAL_BRANDS.map(({ key }) => {
-                  const r = rows[key];
-                  return (
-                    <tr key={key} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{key}</td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--muted-foreground)' }}>{r ? r.chromaA.toFixed(3) : '—'}</td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right', color: 'var(--success)', fontWeight: 'var(--font-semibold)' }}>{r ? r.chromaB.toFixed(3) : '—'}</td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)', textAlign: 'right' }}>{r ? r.textOnLight.toFixed(2) : '—'}</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
-
-          <div>
-            <h2 style={H2}>The honest recommendation</h2>
-            <p style={P}>
-              <strong>Option A is the right first move.</strong> It gets six themed brands, every{' '}
-              <code style={MONO}>--primary</code> consumer in the library themed for free, and{' '}
-              <code style={MONO}>--primary-text</code> on <code style={MONO}>--primary-light</code>{' '}
-              measures 5.47&ndash;5.56 across all six — comfortably AA with no new work. The cost is a
-              handful of hex values in the existing theme scopes and nothing else.
-            </p>
-            <p style={P}>
-              What it does not buy is <em>reach</em>. <code style={MONO}>--primary-light</code> exists,
-              but nothing outside the primary family moves: the page, the panels, the rail, the shadows
-              and the bands all stay exactly as neutral as they are today, because no token in{' '}
-              <code style={MONO}>tokens.scss</code> derives from <code style={MONO}>--primary</code>{' '}
-              except the primary family itself. Option B moves them — deliberately only a little, 4&ndash;8{' '}
-              ΔE00 — but it moves them everywhere at once, which is what makes a sub-app feel like its
-              own place rather than the same page with a different button.
-            </p>
-            <p style={P}>
-              <strong>Neither option lets the tint tell the brands apart</strong> — worst pair 0.005 for
-              A and 0.009 for B, both far under the 0.05 threshold. That was settled in round one and
-              has not moved. So the choice is not &ldquo;which one differentiates&rdquo;; it is how much
-              colour you want on a tinted surface, and whether brand-tinted shadows, gradients and bands
-              are worth three tokens instead of one.
-            </p>
-            <p style={P}>
-              A reasonable path: <strong>ship A now</strong> — it is additive, reversible and needs no
-              new architecture — and keep the highlight and deep anchors in Figma as the mark
-              definition. If the tinted surfaces later feel too pale, adding{' '}
-              <code style={MONO}>--primary-highlight</code> is a second, independent step that does not
-              invalidate anything shipped in A.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 4c — Full token matrix
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Every token the recipe touches, resolved for every brand.
- *
- * Grouped by where the value comes from, because that is the part worth seeing:
- * only the first group is authored. Everything below it is a color-mix over an
- * anchor, so the whole sheet falls out of four literals per brand per mode.
- */
-const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boolean }[] = [
-  {
-    group: 'Authored — the anchors',
-    note: 'Three read off the Figma mark, plus --primary solved against the label. The only literals in the system.',
-    tokens: ['--primary-highlight', '--primary', '--primary-deep', '--primary-foreground'],
-  },
-  {
-    group: 'Free — the existing --primary-* family',
-    note: 'Already color-mix over var(--primary) in tokens.scss, so setting the middle anchor re-derives all seven with no new code. This is the whole of the minimal option, and it now comes free with the anchor model too.',
-    tokens: ['--primary-hover', '--primary-light', '--primary-soft', '--primary-border', '--primary-ring', '--primary-focus', '--primary-text'],
-  },
-  {
-    group: 'Surfaces',
-    note: 'Page and card stay white in light mode. Every tinted one derives from --surface-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
-    tokens: ['--surface-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
-  },
-  {
-    group: 'Lines',
-    note: 'Mostly slate. Borders take half the --primary they used to \u2014 a hairline should read as the system, with the brand only just visible in it. --ring is left at full strength on purpose: it is the focus indicator, and WCAG 1.4.11 wants it to stand out rather than agree with the border beside it.',
-    tokens: ['--border', '--border-hover', '--ring'],
-  },
-  {
-    group: 'Chrome — the rail',
-    note: 'A surface like any other, so it takes the same greyed stock at the same order of magnitude — no second recipe.',
-    tokens: ['--sidebar', '--sidebar-border', '--sidebar-accent'],
-  },
-  {
-    group: 'Marketing bands',
-    note: 'The loudest flat surfaces in the system, and still only ~9 ΔE00 off white at their strongest — a band is a surface people read on.',
-    tokens: ['--poc-band', '--poc-band-strong', '--poc-band-deep'],
-  },
-  {
-    group: 'Shadow tints',
-    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
-    tokens: ['--poc-shadow-stock', '--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
-  },
-  {
-    group: 'Gradients',
-    note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
-    tokens: ['--poc-mark', '--poc-hero', '--poc-bubble'],
-    gradient: true,
-  },
-];
-
-export const TokenMatrix: Story = {
-  render: function TokenMatrixStory() {
+export const Tokens: Story = {
+  render: function TokensStory() {
     const hostRef = useRef<HTMLDivElement>(null);
     const mode = useGlobalMode();
     const [vals, setVals] = useState<Record<string, Record<string, string>>>({});
@@ -1635,33 +1244,17 @@ export const TokenMatrix: Story = {
               with it.
             </p>
           </div>
+
+          {/* What is NEW, then what CHANGES — the same two questions in one place.
+              These were their own sidebar section; splitting the token story from
+              the token diff meant nobody read both. */}
+          <NewTokensPanel />
+          <TokenDiffPanel />
         </div>
       </>
     );
   },
 };
-
-// ─────────────────────────────────────────────────────────────────────────────
-// 5 — Audit
-// ─────────────────────────────────────────────────────────────────────────────
-
-type Pairing = { label: string; fg: string; bg: string; onBand?: boolean; floor?: number; note?: string };
-const PAIRINGS: Pairing[] = [
-  { label: 'foreground / background', fg: '--foreground', bg: '--background', note: 'white in light — unchanged' },
-  { label: 'muted-foreground / background', fg: '--muted-foreground', bg: '--background' },
-  { label: 'muted-foreground / muted', fg: '--muted-foreground', bg: '--muted', note: 'tightest in the system' },
-  { label: 'muted-foreground / secondary', fg: '--muted-foreground', bg: '--secondary' },
-  { label: 'accent-foreground / accent', fg: '--accent-foreground', bg: '--accent' },
-  { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'pure white on every brand — the marks moved, not the label' },
-  { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
-  { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
-  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc-band', note: 'the greyed deep stock' },
-  { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc-band-deep' },
-  { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc-band-strong' },
-  { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
-  { label: 'error / error-light ON BAND', fg: '--error', bg: '--error-light', onBand: true, note: 'the remaining hazard' },
-  { label: 'border / background', fg: '--border', bg: '--background', floor: 3, note: '1.4.11 — pre-existing' },
-];
 
 export const Audit: Story = {
   render: function AuditStory() {
@@ -1767,68 +1360,124 @@ export const Audit: Story = {
               alerts on white, or re-derive the tints.
             </p>
           </div>
+
+          {/* The adoption audit: shipped vs POC through two live cascades, with a
+              guard that withholds every number if the POC scope is not actually
+              in force. Both of this measurement's earlier bugs were silent and
+              plausible, which is why it now refuses to guess. */}
+          <AuditPanel />
         </div>
       </>
     );
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 6 — Recipe
-// ─────────────────────────────────────────────────────────────────────────────
+export const Dashboard: Story = {
+  render: function DashboardStory() {
+    const mode = useGlobalMode();
+    const [strength, setStrength] = useState(1);
+    const [chromeOn, setChromeOn] = useState(1);
+    // EVERY application, not a sample. Three brands was enough to show the
+    // mechanism and not enough to answer the real question — whether six of them
+    // still read as one suite when you scroll past them in a row.
+    const show: BrandKey[] = SUB_BRANDS;
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>The same dashboard, every application</h2>
+            <p style={P}>
+              In light mode the content area is <strong>white in all of them</strong>. The brand lives in
+              the mark, the rail and the accent. Borders and shadows are held near the system&rsquo;s
+              slate on purpose — a hairline or a card shadow that carries the brand is the loudest tell
+              of a cheap theme, and the mark carries identity now so the chrome does not have to.
+            </p>
+            <p style={P}>
+              Scroll the whole set rather than comparing two. The question this story exists to answer is
+              not &ldquo;can you tell them apart&rdquo; — you can — but whether six of them in a row still
+              read as one product family. <code style={MONO}>aiden</code> is last because it is the
+              surface, not an application.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
+              <Switch id="d-on" label="Theming on" checked={strength === 1} onCheckedChange={(v) => setStrength(v ? 1 : 0)} />
+              <Switch id="d-chrome" label="Tint the rail" checked={chromeOn === 1} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
+              </div>
+          </div>
+          {show.map((b) => (
+            <Frame key={b} label={`data-brand="${b}"`}>
+              <Scope brand={b} mode={mode} strength={strength} chromeOn={chromeOn}>
+                <DashboardPage brand={b} mode={mode} />
+              </Scope>
+            </Frame>
+          ))}
+        </div>
+      </>
+    );
+  },
+};
 
-export const Recipe: Story = {
-  render: () => (
-    <>
-      <PocStyle />
-      <div style={PAGE}>
-        <div>
-          <h2 style={H2}>What adoption would mean</h2>
-          <p style={P}>
-            Per brand, <strong>four values</strong>: three anchors and a solved{' '}
-            <code style={MONO}>--primary</code>, times two modes. Everything else is derivation. No brand
-            name appears in the stylesheet after the anchor block, which is the test of whether the model
-            holds — adding an eighth brand is eight lines and no other change.
-          </p>
-          <p style={P}>
-            The three anchors already exist, in Figma, as artwork somebody chose deliberately. That is
-            the part worth keeping from this whole exercise: the marks were not decoration downstream of
-            the theme, they were the theme, and reading them back out was cheaper than inventing a
-            palette and hoping it drew well.
-          </p>
+export const Marketing: Story = {
+  render: function MarketingStory() {
+    const mode = useGlobalMode();
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>A marketing page has a bigger brand budget</h2>
+            <p style={P}>
+              A product UI has to stay quiet, so its budget is tiny. A marketing page{' '}
+              <em>alternates</em> — white sections, a full-bleed band, white again. The band takes the
+              same greyed <strong>deep</strong> stock as every other surface, just further along it, so
+              it never becomes a different kind of colour from the app; the colour arrives instead where
+              nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
+              numerals, which are that ramp clipped to text.
+            </p>
+          </div>
+          {SUB_BRANDS.map((b) => (
+            <Frame key={b} label={`data-brand="${b}"`}>
+              <Scope brand={b} mode={mode}>
+                <MarketingPage brand={b} />
+              </Scope>
+            </Frame>
+          ))}
         </div>
-        <div>
-          <h2 style={H2}>The whole stylesheet</h2>
-          <pre style={{
-            margin: 0, padding: 'var(--p-4)', background: 'var(--muted)', borderRadius: 'var(--rounded-md)',
-            fontFamily: 'var(--font-family-mono)', fontSize: 'var(--text-code)', lineHeight: 'var(--leading-5)',
-            color: 'var(--foreground)', overflowX: 'auto', maxHeight: 560,
-          }}>{POC_CSS}</pre>
+      </>
+    );
+  },
+};
+
+export const Suite: Story = {
+  render: function SuiteStory() {
+    const mode = useGlobalMode();
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>The suite page — all six at once</h2>
+            <p style={P}>
+              Every other view here shows one brand. This one shows the parent, and it is the harder
+              test: six sub-apps on a single page, in a single scroll, each carrying its own mark,
+              accent, border and tinted card. If they read as six unrelated products, the model has
+              failed however good any one of them looks alone.
+            </p>
+            <p style={P}>
+              It is also the only page allowed to use <strong>every brand at once</strong>. The
+              headline ramp and the six-corner bubble field are the parent&rsquo;s identity — the
+              parent is not a colour, it is the set — and both are scoped to{' '}
+              <code style={MONO}>.poc-suite-*</code> so they cannot appear inside a branded page,
+              where the whole point is that one brand is in charge.
+            </p>
+          </div>
+          <Frame label="the suite">
+            <Scope brand="" mode={mode}>
+              <SuitePage mode={mode} />
+            </Scope>
+          </Frame>
         </div>
-        <div>
-          <h2 style={H2}>What this does not prove</h2>
-          <p style={P}>
-            <strong>--primary is solved offline.</strong> CSS cannot search for a contrast target, so the
-            seven derived values are pinned literals. A real adoption either keeps them pinned (and
-            re-solves when a mark changes) or moves the solve into the build.
-            <br />
-            <strong>Portalled overlays escape the scope</strong> — ten components render into{' '}
-            <code style={MONO}>document.body</code>. Pre-existing; this only makes it more visible.
-            <br />
-            <strong>--background is doing two jobs</strong> — page surface and knockout for the Switch
-            thumb, Avatar ring and Tabs indicator. A white light page hides it; adoption needs a separate{' '}
-            <code style={MONO}>--surface-knockout</code>.
-            <br />
-            <strong>The highlight cannot be expressed as one scalar.</strong> A single{' '}
-            <code style={MONO}>--primary</code> cannot say &ldquo;teal at the top, indigo at the
-            bottom&rdquo;. That is the whole argument for three anchors, and it is also the thing that
-            will not survive a naive port to any system that assumes one colour per brand.
-            <br />
-            <strong>Untested:</strong> forced-colors, <code style={MONO}>prefers-contrast</code>, print,
-            nested scopes, and APCA — which weights light-text-on-light-tint very differently.
-          </p>
-        </div>
-      </div>
-    </>
-  ),
+      </>
+    );
+  },
 };
