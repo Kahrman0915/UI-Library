@@ -12,7 +12,7 @@ import {
   Separator, StatusDot, Switch,
 } from '../index';
 import {
-  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, SUB_BRANDS,
+  POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, PRIMARY_IS_AUTHORED, SUB_BRANDS,
 } from './deeperThemingRecipe';
 import type { BrandKey } from './deeperThemingRecipe';
 
@@ -297,8 +297,14 @@ export const Brands: Story = {
                   </div>
                 </Scope>
                 {swatch(a[0], '--primary-highlight', a[0])}
-                {swatch(a[1], '--primary', a[1])}
+                {swatch(a[1], PRIMARY_IS_AUTHORED[b] ? 'mark middle' : '--primary', a[1])}
                 {swatch(a[2], '--primary-deep', a[2])}
+                {PRIMARY_IS_AUTHORED[b] && (
+                  <>
+                    <div style={{ width: 1, height: 56, background: 'var(--border)' }} />
+                    {swatch(PRIMARY[mode][b], '--primary', 'authored apart')}
+                  </>
+                )}
               </div>
             );
           })}

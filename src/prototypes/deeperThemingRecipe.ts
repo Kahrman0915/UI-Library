@@ -37,6 +37,25 @@
  *                    plus shadow.
  *
  * ─────────────────────────────────────────────────────────────────────────────
+ * --primary IS THE MARK'S MIDDLE STOP — UNLESS A BRAND SAYS OTHERWISE.
+ *
+ * Six of the seven take the middle anchor directly. aiden authors its own
+ * (`primary: { light, dark }` on its entry), and that is a supported shape
+ * rather than a special case: the mark is display art with no contrast
+ * constraint, --primary is a UI colour, and once in a while a brand wants them
+ * to be genuinely different colours.
+ *
+ * This is NOT the two-value model removed below. That one had --primary sitting
+ * a few percent off the middle for no reason a consumer could see — a
+ * derivation artifact. aiden's is a 9.2 dE00 gap someone chose: the mark stays
+ * violet (#4d14de, hue 308) because that is the AI identity, and the accent is
+ * an indigo (#2543d2, hue 299) because a violet that saturated is too much on
+ * every button, chip and progress bar in the product.
+ *
+ * The test for adding another: can you SEE the difference, and can you say why
+ * in one sentence? If not, it is drift, and the brand should just use its
+ * middle stop.
+ *
  * ONE COLOUR, ONE LABEL. This is the change that shaped the file.
  *
  * The middle anchor USED to be "main", with --primary a second, slightly darker
@@ -157,15 +176,19 @@ export const BRAND_ANCHORS = {
   ec:    { light: ['#02d1cf', '#007dbc', '#01416b'], dark: ['#00f0ed', '#0091d9', '#0064c3'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   ph:    { light: ['#facf33', '#b66000', '#943c09'], dark: ['#fdd75a', '#d87819', '#a74815'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#c677ff', '#db01b0', '#9d1647'], dark: ['#c986fb', '#f721c8', '#b02267'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#80bdfa', '#4d14de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, icon: 'sparkles' },
+  aiden: { light: ['#80bdfa', '#4d14de', '#1d43a9'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#2543d2', dark: '#8b82f6' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
 export const PRIMARY_LIGHT: Record<string, string> = Object.fromEntries(
-  Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, v.light[1]]),
+  Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, ('primary' in v ? v.primary.light : v.light[1])]),
 );
 export const PRIMARY_DARK: Record<string, string> = Object.fromEntries(
-  Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, v.dark[1]]),
+  Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, ('primary' in v ? v.primary.dark : v.dark[1])]),
+);
+/** True where the UI accent is authored apart from the mark's middle stop. */
+export const PRIMARY_IS_AUTHORED: Record<string, boolean> = Object.fromEntries(
+  Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, 'primary' in v]),
 );
 
 export type BrandKey = keyof typeof BRAND_ANCHORS;
@@ -179,13 +202,15 @@ function anchorBlocks(): string {
     const a = BRAND_ANCHORS[k];
     return `[data-theme-poc][data-brand='${k}'][data-mode='light'] {
   --primary-highlight:  ${a.light[0]};
-  --primary:            ${a.light[1]};
+  --mark-mid:           ${a.light[1]};
+  --primary:            ${PRIMARY_LIGHT[k]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
 }
 [data-theme-poc][data-brand='${k}'][data-mode='dark'] {
   --primary-highlight:  ${a.dark[0]};
-  --primary:            ${a.dark[1]};
+  --mark-mid:           ${a.dark[1]};
+  --primary:            ${PRIMARY_DARK[k]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
 }`;
@@ -298,9 +323,16 @@ ${anchorBlocks()}
 }
 
 /* ── GRADIENTS + MARK ───────────────────────────────────────────────────────
-   Both are just the three anchors, in order. The mark is the artwork; the hero
-   is the same ramp stretched across a page band. Nothing is invented here — if
-   the anchors change in Figma, both follow. */
+   Just the three anchors, in order. The mark is the artwork; the hero is the
+   same ramp stretched across a page band. Nothing is invented here — if the
+   anchors change in Figma, both follow.
+
+   THESE READ --mark-mid, NOT --primary. For six brands the two are the same
+   value and it makes no difference. For aiden they are 9.2 dE00 apart, and
+   using --primary here would drag the mark's violet toward the UI indigo — i.e.
+   it would undo the entire reason the two were split. Caught exactly that way:
+   the first cut of the split left var(--primary) in this block and the aiden
+   mark silently turned indigo while every measurement still passed. */
 [data-theme-poc] {
   /* The scope declares its own text colour. Without this the subtree INHERITS
      whatever colour the surrounding page had — and since a POC scope carries its
@@ -312,10 +344,10 @@ ${anchorBlocks()}
 
   --poc-mark: linear-gradient(140deg,
     var(--primary-highlight) 0%,
-    var(--primary) 52%,
+    var(--mark-mid) 52%,
     var(--primary-deep) 100%);
   --poc-hero: linear-gradient(135deg,
-    var(--primary) 0%,
+    var(--mark-mid) 0%,
     var(--primary-deep) 100%);
   /* Shadows carry the DEEP anchor, GREYED. A grey shadow under a saturated
      object reads as dirt, so the brand's own dark end is still in there — but
@@ -346,7 +378,7 @@ ${anchorBlocks()}
       color-mix(in srgb, var(--primary-highlight) calc(22% * var(--poc-str)), transparent) 0%,
       transparent 68%),
     radial-gradient(72% 58% at 92% 12%,
-      color-mix(in srgb, var(--primary) calc(16% * var(--poc-str)), transparent) 0%,
+      color-mix(in srgb, var(--mark-mid) calc(16% * var(--poc-str)), transparent) 0%,
       transparent 66%);
 }
 
