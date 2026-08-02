@@ -30,6 +30,13 @@ const meta: Meta<typeof InputGroup> = {
       tags: ['compound', '6 parts', 'form'],
       changelog: [
         {
+          date: '2026-08-02',
+          summary:
+            'The default button\u2019s hover now darkens in light mode and lightens in dark, so its label gains contrast rather than losing it.',
+          detail:
+            'Matches the same fix in `Button`. The 10% `--opacity-90` overlay moved the fill toward the label; it now reads `--primary-hover`, which mixes toward `--foreground` and adapts by mode. The `data-surface=\'aiden\'` override is unaffected.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

@@ -223,9 +223,7 @@
     box-shadow: var(--shadow-xs);
 
     &:hover:not(:disabled) {
-      background:
-        linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
-        var(--primary);
+      background: var(--primary-hover);
     }
   }
 

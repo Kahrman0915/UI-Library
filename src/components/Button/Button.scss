@@ -87,9 +87,7 @@
   // ---- Default variant hover states ----
 
   &--default-default:hover:not(:disabled) {
-    background:
-      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
-      var(--primary);
+    background: var(--primary-hover);
   }
 
   &--default-secondary:hover:not(:disabled) {
@@ -172,8 +170,7 @@
   // ---- Error variant hover states ----
 
   &--error-default:hover:not(:disabled) {
-    background:
-      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)), var(--error);
+    background: var(--error-hover);
   }
 
   &--error-secondary:hover:not(:disabled) {
@@ -248,8 +245,7 @@
   // ---- Info variant hover states ----
 
   &--info-default:hover:not(:disabled) {
-    background:
-      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)), var(--info);
+    background: var(--info-hover);
   }
 
   &--info-secondary:hover:not(:disabled) {
@@ -324,9 +320,7 @@
   // ---- Success variant hover states ----
 
   &--success-default:hover:not(:disabled) {
-    background:
-      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
-      var(--success);
+    background: var(--success-hover);
   }
 
   &--success-secondary:hover:not(:disabled) {
@@ -401,9 +395,7 @@
   // ---- Warning variant hover states ----
 
   &--warning-default:hover:not(:disabled) {
-    background:
-      linear-gradient(0deg, var(--opacity-90), var(--opacity-90)),
-      var(--warning);
+    background: var(--warning-hover);
   }
 
   &--warning-secondary:hover:not(:disabled) {

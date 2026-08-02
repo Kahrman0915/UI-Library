@@ -66,6 +66,13 @@ const meta: Meta<typeof Button> = {
       },
       changelog: [
         {
+          date: '2026-08-02',
+          summary:
+            'Hover on every solid button now increases contrast with its label instead of reducing it. In light mode the fill darkens; in dark mode it lightens.',
+          detail:
+            'FIXES A CONTRAST BUG. The five `default`-style variants painted hover as a 10% `--opacity-90` overlay — white in light, slate in dark — which moved the fill toward the label and spent contrast. Seven of eight themes dropped below WCAG AA on hover in light mode (`dc` was worst at 4.57 → 3.85), as did `info` (4.49) and `warning` (4.40). Each variant now reads its existing `--{family}-hover` token, which is `color-mix` toward `--foreground` and so adapts by mode automatically. Themed CTAs now measure 5.62–6.87 in light and 7.17–10.55 in dark. No token changed; the Aiden surface and `variant="aiden"` overrides are unaffected, as they already used their own hand-tuned `--aiden-hover`.',
+        },
+        {
           date: '2026-07-30',
           summary:
             'Size renamed to the abbreviated scale — `xs` / `sm` / `default` / `lg`. The old `xsmall / small / large` spellings no longer work.',
