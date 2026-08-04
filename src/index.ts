@@ -32,39 +32,9 @@ export type { BlockquoteProps } from './components/Blockquote';
 
 export { default as Code, CodeBlock } from './components/Code';
 
-// ── Chart ────────────────────────────────────────────────────────────────────
-// Stays in the single barrel for milestone 1. A `./charts` subpath entry is the
-// eventual answer, but multi-entry changes CSS emission (assetFileNames renames
-// ONE style.css to styles.css today) and dist/styles.css is both the Claude
-// Design artifact and the oracle for `npm run test:preview` — so that conversion
-// is its own change, tripwired on dist/index.js passing ~65 kB gzip.
-export {
-  default as Chart,
-  BarChart,
-  LineChart,
-  AreaChart,
-  ChartGrid,
-  ChartXAxis,
-  ChartYAxis,
-  ChartBars,
-  ChartLine,
-  ChartArea,
-  ChartLegend,
-  ChartTooltip,
-  ChartTable,
-  ChartEmpty,
-  useChartContext,
-} from './components/Chart';
-export type {
-  ChartProps,
-  ChartSeries,
-  ChartView,
-  ChartCurve,
-  BarLayout,
-  BarChartProps,
-  LineChartProps,
-  AreaChartProps,
-} from './components/Chart';
+// ── Charts ───────────────────────────────────────────────────────────────────
+// Its own subsystem, exported wholesale. See src/charts/index.ts.
+export * from './charts';
 export type { CodeProps, CodeBlockProps } from './components/Code';
 
 export { default as StatusDot } from './components/StatusDot';

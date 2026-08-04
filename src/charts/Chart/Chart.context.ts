@@ -20,6 +20,8 @@ export type ChartContextValue = {
   /** ALL declared series, each carrying its own `visible` flag. */
   series: ResolvedSeries[];
   categories: string[];
+  /** Resolved y ticks — chrome parts read them here rather than by prop. */
+  ticks: number[];
   /** Formats a DATA value — tooltip, table, direct labels. */
   valueFormatter: (value: number) => string;
   /**

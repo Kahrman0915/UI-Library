@@ -21,7 +21,8 @@
     "baseUrl": ".",
     "paths": {
       "#/*": ["src/*"],
-      "#components/*": ["src/components/*"]
+      "#components/*": ["src/components/*"],
+      "#charts/*": ["src/charts/*"]
     }
   },
   "include": ["src", ".storybook/**/*"],

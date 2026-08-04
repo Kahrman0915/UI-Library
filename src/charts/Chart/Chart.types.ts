@@ -1,6 +1,7 @@
 import type { ReactNode, HTMLAttributes } from 'react';
 import type { Curve } from '#/utils/path';
 import type { SeriesSlot } from '#/utils/series';
+import type { StackOffset } from '#/utils/stack';
 
 export type ChartCurve = Curve;
 
@@ -43,6 +44,17 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   valueFormatter?: (value: number) => string;
   /** `auto` derives from the data and always includes zero. */
   yDomain?: [number, number] | 'auto';
+  /**
+   * Whether the y domain is the SUM of the series rather than the max.
+   *
+   * A mark cannot decide this for itself — it changes the scale, which the frame
+   * owns and computes before any mark renders. Presets forward it.
+   */
+  stacked?: boolean;
+  /** `expand` normalises each category to a share (100% stacked). */
+  offset?: StackOffset;
+  /** Bars want a gap between categories; line and area want vertices on centre. */
+  bandPadding?: boolean;
   /** Defaults to true once there are 2+ series. */
   showLegend?: boolean;
   showGrid?: boolean;
@@ -56,12 +68,12 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   children?: ReactNode;
 };
 
-export type BarChartProps = ChartProps & { layout?: BarLayout };
-export type LineChartProps = ChartProps & {
+export type BarChartProps = Omit<ChartProps, 'stacked' | 'offset' | 'bandPadding' | 'children'> & { layout?: BarLayout };
+export type LineChartProps = Omit<ChartProps, 'stacked' | 'offset' | 'bandPadding' | 'children'> & {
   curve?: ChartCurve;
   /** `auto` shows markers only when the category count is small enough to bear them. */
   showMarkers?: boolean | 'auto';
 };
-export type AreaChartProps = ChartProps & { curve?: ChartCurve; stacked?: boolean };
+export type AreaChartProps = Omit<ChartProps, 'offset' | 'bandPadding' | 'children'> & { curve?: ChartCurve };
 
 export type ChartPartProps = HTMLAttributes<SVGGElement>;

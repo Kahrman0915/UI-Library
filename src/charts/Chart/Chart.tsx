@@ -2,17 +2,13 @@ import { forwardRef, useCallback, useMemo, useRef, useState } from 'react';
 import type { CSSProperties, KeyboardEvent, PointerEvent } from 'react';
 import { bandScale, linearScale } from '#/utils/scale';
 import { formatTick, niceTicks, thinLabels } from '#/utils/ticks';
-import { areaPath, barPath, linePath, type MaybePoint } from '#/utils/path';
-import { seriesExtent, stackSeries } from '#/utils/stack';
+import { seriesExtent } from '#/utils/stack';
 import { assignSlots } from '#/utils/series';
 import { ChartContext, useChartContext, type ResolvedSeries } from './Chart.context';
 import {
-  BAR_RADIUS, DEFAULT_HEIGHT, DEFAULT_WIDTH, LEGEND_HEIGHT, MARGIN, MARKER_LIMIT,
-  MARKER_RADIUS, MAX_X_LABELS, Y_TICK_COUNT,
+  DEFAULT_HEIGHT, DEFAULT_WIDTH, LEGEND_HEIGHT, MARGIN, MAX_X_LABELS, Y_TICK_COUNT,
 } from './Chart.constants';
-import type {
-  AreaChartProps, BarChartProps, ChartProps, LineChartProps, BarLayout, ChartCurve,
-} from './Chart.types';
+import type { ChartProps } from './Chart.types';
 import { useMeasuredWidth } from '#/hooks/useMeasuredWidth';
 import './Chart.scss';
 
@@ -22,17 +18,24 @@ const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).j
 // Root
 // ─────────────────────────────────────────────────────────────────────────────
 
-type Mark =
-  | { kind: 'bars'; layout: BarLayout }
-  | { kind: 'line'; curve: ChartCurve; markers: boolean | 'auto' }
-  | { kind: 'area'; curve: ChartCurve; stacked: boolean };
-
-type RootProps = ChartProps & { mark?: Mark };
-
-const Chart = forwardRef<HTMLElement, RootProps>(
+/**
+ * The frame. Owns sizing, scales, the series registry and every piece of chrome;
+ * knows nothing about what marks get drawn inside it.
+ *
+ * That ignorance is the point of this file. The root used to switch on a `mark`
+ * discriminated union, which meant adding a chart type edited the frame — so
+ * Bar, Line and Area could not own their own folders. Now a preset composes
+ * `<Chart>` with mark children and the frame never learns their names.
+ *
+ * Two things the marks cannot decide for themselves, because they change the
+ * SCALE rather than the drawing, stay as root props: `stacked` and `offset`.
+ * A stacked bar's y domain is the sum, not the max.
+ */
+const Chart = forwardRef<HTMLElement, ChartProps>(
   (
     {
-      id, title, description, categories, series, mark,
+      id, title, description, categories, series,
+      stacked = false, offset = 'zero', bandPadding = false,
       height = DEFAULT_HEIGHT, width = DEFAULT_WIDTH,
       valueFormatter = (v) => formatTick(v),
       yDomain = 'auto', showLegend, showGrid = true, view = 'chart',
@@ -66,11 +69,6 @@ const Chart = forwardRef<HTMLElement, RootProps>(
     const isEmpty = categories.length === 0 || series.length === 0
       || visible.every((s) => s.data.every((v) => v === null || v === undefined));
 
-    const stacked = mark?.kind === 'bars'
-      ? mark.layout !== 'grouped'
-      : mark?.kind === 'area' ? mark.stacked : false;
-    const offset = mark?.kind === 'bars' && mark.layout === 'stacked100' ? 'expand' : 'zero';
-
     const domain = useMemo<[number, number]>(() => {
       if (yDomain !== 'auto') return yDomain;
       return seriesExtent(visible.map((s) => s.data), stacked ? 'stacked' : 'grouped', offset);
@@ -81,7 +79,7 @@ const Chart = forwardRef<HTMLElement, RootProps>(
     // A 100% stack rescales the data to 0–1 to lay the bands out, so the axis is
     // reporting a SHARE while the tooltip and table still report real figures.
     // They need different formatters or the axis says "0.2" where it means 20%.
-    const isPercentAxis = mark?.kind === 'bars' && mark.layout === 'stacked100';
+    const isPercentAxis = offset === 'expand';
     const axisFormatter = useMemo(
       () => (isPercentAxis ? (v: number) => `${Math.round(v * 100)}%` : valueFormatter),
       [isPercentAxis, valueFormatter],
@@ -102,11 +100,13 @@ const Chart = forwardRef<HTMLElement, RootProps>(
     };
 
     const x = useMemo(
+      // Bars need a padded band (a gap between categories); line and area want
+      // vertices on the band centre with no inner padding at all.
       () => bandScale(categories.length, [0, plot.width], {
-        paddingInner: mark?.kind === 'bars' ? 0.28 : 0,
-        paddingOuter: mark?.kind === 'bars' ? 0.14 : 0.5,
+        paddingInner: bandPadding ? 0.28 : 0,
+        paddingOuter: bandPadding ? 0.14 : 0.5,
       }),
-      [categories.length, plot.width, mark?.kind],
+      [categories.length, plot.width, bandPadding],
     );
     const y = useMemo(
       () => linearScale(domain, [plot.height, 0], { clamp: true }),
@@ -115,9 +115,9 @@ const Chart = forwardRef<HTMLElement, RootProps>(
 
     const ctx = useMemo(() => ({
       x, y, plot, series: resolved, categories, valueFormatter, axisFormatter,
-      activeIndex, setActiveIndex, ids,
+      ticks, activeIndex, setActiveIndex, ids,
     }), [x, y, plot.left, plot.top, plot.width, plot.height, resolved, categories,
-        valueFormatter, axisFormatter, activeIndex, ids]);
+        valueFormatter, axisFormatter, ticks, activeIndex, ids]);
 
     const onPointerMove = useCallback((e: PointerEvent<SVGRectElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -139,19 +139,6 @@ const Chart = forwardRef<HTMLElement, RootProps>(
       e.preventDefault();
       setActiveIndex(next);
     }, [activeIndex, categories.length]);
-
-    const xLabels = thinLabels(categories, MAX_X_LABELS);
-
-    const autoBody = (
-      <>
-        {showGrid && <ChartGrid ticks={ticks} />}
-        <ChartYAxis ticks={ticks} />
-        <ChartXAxis labels={xLabels} />
-        {mark?.kind === 'bars' && <ChartBars layout={mark.layout} />}
-        {mark?.kind === 'area' && <ChartArea curve={mark.curve} stacked={mark.stacked} />}
-        {mark?.kind === 'line' && <ChartLine curve={mark.curve} markers={mark.markers} />}
-      </>
-    );
 
     const active = activeIndex !== null && activeIndex < categories.length ? activeIndex : null;
 
@@ -200,7 +187,10 @@ const Chart = forwardRef<HTMLElement, RootProps>(
                     focusable="false"
                   >
                     <g transform={`translate(${plot.left},${plot.top})`}>
-                      {children ?? autoBody}
+                      {showGrid && <ChartGrid />}
+                      <ChartYAxis />
+                      <ChartXAxis />
+                      {children}
                       {active !== null && (
                         <line
                           className="ui-chart__crosshair"
@@ -250,9 +240,10 @@ Chart.displayName = 'Chart';
 // Chrome
 // ─────────────────────────────────────────────────────────────────────────────
 
-const ChartGrid = ({ ticks }: { ticks: number[] }) => {
+const ChartGrid = () => {
   const c = useChartContext();
   if (!c) return null;
+  const { ticks } = c;
   return (
     <g className="ui-chart__grid" aria-hidden="true">
       {ticks.map((t) => (
@@ -264,9 +255,10 @@ const ChartGrid = ({ ticks }: { ticks: number[] }) => {
 };
 ChartGrid.displayName = 'ChartGrid';
 
-const ChartYAxis = ({ ticks }: { ticks: number[] }) => {
+const ChartYAxis = () => {
   const c = useChartContext();
   if (!c) return null;
+  const { ticks } = c;
   return (
     <g className="ui-chart__axis ui-chart__axis--y" aria-hidden="true">
       {ticks.map((t) => (
@@ -279,9 +271,10 @@ const ChartYAxis = ({ ticks }: { ticks: number[] }) => {
 };
 ChartYAxis.displayName = 'ChartYAxis';
 
-const ChartXAxis = ({ labels }: { labels: (string | null)[] }) => {
+const ChartXAxis = () => {
   const c = useChartContext();
   if (!c) return null;
+  const labels = thinLabels(c.categories, MAX_X_LABELS);
   return (
     <g className="ui-chart__axis ui-chart__axis--x" aria-hidden="true">
       <line x1={0} x2={c.plot.width} y1={c.plot.height} y2={c.plot.height}
@@ -303,143 +296,6 @@ ChartEmpty.displayName = 'ChartEmpty';
 // ─────────────────────────────────────────────────────────────────────────────
 // Marks
 // ─────────────────────────────────────────────────────────────────────────────
-
-const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
-  const c = useChartContext();
-  if (!c) return null;
-  const visible = c.series.filter((s) => s.visible);
-  if (!visible.length) return null;
-
-  const isStacked = layout !== 'grouped';
-  const stacks = isStacked
-    ? stackSeries(visible.map((s) => s.data), { offset: layout === 'stacked100' ? 'expand' : 'zero' })
-    : null;
-  const groupWidth = c.x.bandwidth / (isStacked ? 1 : visible.length);
-  const zero = c.y(0);
-
-  return (
-    <g className="ui-chart__marks ui-chart__marks--bars" aria-hidden="true">
-      {visible.map((s, si) => (
-        <g key={s.key} className="ui-chart__series" style={{ color: s.token } as CSSProperties}>
-          {c.categories.map((_, ci) => {
-            const raw = s.data[ci];
-            if (raw === null || raw === undefined) return null;
-            const bx = c.x(ci) + (isStacked ? 0 : si * groupWidth);
-            let top: number, base: number;
-            if (stacks) {
-              const p = stacks[si][ci];
-              top = c.y(p.y1); base = c.y(p.y0);
-            } else {
-              top = c.y(raw); base = zero;
-            }
-
-            // THE SURFACE GAP — a gap, never a drawn border.
-            //
-            // This is not decoration, it is what makes the chart conform. WCAG
-            // 1.4.11 wants 3:1 between ADJACENT graphical objects, and no
-            // categorical palette can deliver that between eight consecutive
-            // slots: the requirement compounds, and a lightness band (which the
-            // series ramp needs, so no mark dominates) forces neighbouring hues
-            // to similar luminance. Measured on the shipped ramp, adjacent pairs
-            // sit at 1.12–2.24:1. Separating the marks with the surface colour
-            // converts "3:1 against your neighbour" into "3:1 against the
-            // background", which the palette DOES satisfy — and it is what both
-            // the W3C guidance and Chartability #6 prescribe.
-            //
-            // Clamped, not constant. The smallest real segment measured 9.2px;
-            // a flat 2px eats a quarter of it, and a segment thinner than the
-            // gap would invert into a negative height. Below ~3px the gap is
-            // dropped entirely — a visible thin band beats a correctly-gapped
-            // invisible one.
-            const span = Math.abs(base - top);
-            const gap = span < 3 ? 0 : Math.min(2, span * 0.25);
-            const h = span - (isStacked ? gap : 0);
-            const sign = top <= base ? 1 : -1;
-
-            return (
-              <path
-                key={ci}
-                className={cx('ui-chart__bar', c.activeIndex === ci && 'ui-chart__bar--active')}
-                d={barPath(
-                  bx + 1,
-                  // Shrink from the value end so every segment stays anchored to
-                  // the one below it and the stack keeps its cumulative meaning.
-                  base,
-                  Math.max(0, groupWidth - 2),
-                  h <= 0 ? 0 : h * sign,
-                  BAR_RADIUS,
-                )}
-                style={{ '--i': ci } as CSSProperties}
-              />
-            );
-          })}
-        </g>
-      ))}
-    </g>
-  );
-};
-ChartBars.displayName = 'ChartBars';
-
-const pointsOf = (data: (number | null)[], c: NonNullable<ReturnType<typeof useChartContext>>): MaybePoint[] =>
-  c.categories.map((_, i) => {
-    const v = data[i];
-    return v === null || v === undefined ? null : { x: c.x.center(i), y: c.y(v) };
-  });
-
-const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve; markers?: boolean | 'auto' }) => {
-  const c = useChartContext();
-  if (!c) return null;
-  const visible = c.series.filter((s) => s.visible);
-  const showMarkers = markers === 'auto' ? c.categories.length <= MARKER_LIMIT : markers;
-
-  return (
-    <g className="ui-chart__marks ui-chart__marks--line" aria-hidden="true">
-      {visible.map((s) => {
-        const pts = pointsOf(s.data, c);
-        return (
-          <g key={s.key} className="ui-chart__series" style={{ color: s.token } as CSSProperties}>
-            {/* pathLength="1" rescales all dash arithmetic to a declared total,
-                so the draw-on is `dashoffset: 1 → 0` with NO getTotalLength()
-                call. That is what keeps it working in static preview HTML. */}
-            <path className="ui-chart__line" d={linePath(pts, curve)} pathLength={1} />
-            {showMarkers && pts.map((p, i) => p && (
-              <circle key={i} cx={p.x} cy={p.y} r={MARKER_RADIUS}
-                className={cx('ui-chart__marker', c.activeIndex === i && 'ui-chart__marker--active')} />
-            ))}
-          </g>
-        );
-      })}
-    </g>
-  );
-};
-ChartLine.displayName = 'ChartLine';
-
-const ChartArea = ({ curve = 'linear', stacked = false }: { curve?: ChartCurve; stacked?: boolean }) => {
-  const c = useChartContext();
-  if (!c) return null;
-  const visible = c.series.filter((s) => s.visible);
-  const stacks = stacked ? stackSeries(visible.map((s) => s.data)) : null;
-
-  return (
-    <g className="ui-chart__marks ui-chart__marks--area" aria-hidden="true">
-      {visible.map((s, si) => {
-        const top: MaybePoint[] = stacks
-          ? c.categories.map((_, i) => stacks[si][i].value === null ? null : { x: c.x.center(i), y: c.y(stacks[si][i].y1) })
-          : pointsOf(s.data, c);
-        const base = stacks
-          ? c.categories.map((_, i) => ({ x: c.x.center(i), y: c.y(stacks[si][i].y0) }))
-          : c.y(0);
-        return (
-          <g key={s.key} className="ui-chart__series" style={{ color: s.token } as CSSProperties}>
-            <path className="ui-chart__area" d={areaPath(top, base, curve)} />
-            <path className="ui-chart__line" d={linePath(top, curve)} pathLength={1} />
-          </g>
-        );
-      })}
-    </g>
-  );
-};
-ChartArea.displayName = 'ChartArea';
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Legend · tooltip · table
@@ -537,32 +393,9 @@ const ChartTable = ({ id, caption }: { id: string; caption: string }) => {
 };
 ChartTable.displayName = 'ChartTable';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Presets — what a generated page will actually reach for
-// ─────────────────────────────────────────────────────────────────────────────
-
-const BarChart = forwardRef<HTMLElement, BarChartProps>(({ layout = 'grouped', ...rest }, ref) => (
-  <Chart {...rest} ref={ref} mark={{ kind: 'bars', layout }} />
-));
-BarChart.displayName = 'BarChart';
-
-const LineChart = forwardRef<HTMLElement, LineChartProps>(
-  ({ curve = 'linear', showMarkers = 'auto', ...rest }, ref) => (
-    <Chart {...rest} ref={ref} mark={{ kind: 'line', curve, markers: showMarkers }} />
-  ),
-);
-LineChart.displayName = 'LineChart';
-
-const AreaChart = forwardRef<HTMLElement, AreaChartProps>(
-  ({ curve = 'linear', stacked = false, ...rest }, ref) => (
-    <Chart {...rest} ref={ref} mark={{ kind: 'area', curve, stacked }} />
-  ),
-);
-AreaChart.displayName = 'AreaChart';
-
 export {
-  Chart, BarChart, LineChart, AreaChart,
-  ChartGrid, ChartXAxis, ChartYAxis, ChartBars, ChartLine, ChartArea,
+  Chart,
+  ChartGrid, ChartXAxis, ChartYAxis,
   ChartLegend, ChartTooltip, ChartTable, ChartEmpty,
 };
 export default Chart;

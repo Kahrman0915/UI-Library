@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { AreaChart, BarChart, Chart, LineChart } from './Chart';
+import { Chart } from './Chart';
+import { BarChart } from '../Bar/Bar';
+import { LineChart } from '../Line/Line';
 import type { UiDocsParameters } from '#/types/DocsTypes';
 
 const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
@@ -17,15 +19,18 @@ const FOUR = [
 ];
 
 const meta: Meta<typeof Chart> = {
-  title: 'Components/Chart',
+  title: 'Charts/Overview',
   component: Chart,
   parameters: {
     layout: 'padded',
     ui: {
       description:
-        'The chart frame and its three marks — bar, line and area. Renders its own SVG with no ' +
-        'charting dependency, so a chart is plain markup that themes through CSS, exports to ' +
-        'static HTML, and server-renders.\n\n' +
+        'The shared frame every chart mounts on — sizing, scales, axes, grid, legend, tooltip, ' +
+        'the table twin and the keyboard model. It renders its own SVG with no charting ' +
+        'dependency, so a chart is plain markup that themes through CSS, exports to static HTML ' +
+        'and server-renders.\n\n' +
+        'The frame knows nothing about marks. A preset composes `<Chart>` with mark children, ' +
+        'which is what lets `Bar`, `Line` and `Area` each own their folder and their stories.\n\n' +
         'Series colours come from `--chart-1` … `--chart-6`, assigned by series **identity** and ' +
         'never by position among the visible ones — hiding a series must never repaint the ' +
         'others. Past six, the tail folds to `--chart-muted` rather than inventing a seventh step.\n\n' +
@@ -90,60 +95,47 @@ const meta: Meta<typeof Chart> = {
 export default meta;
 type Story = StoryObj<typeof Chart>;
 
-export const Playground: Story = {
+export const Anatomy: Story = {
   render: () => (
-    <BarChart id="pg" title="Sessions by channel" description="Last six months, thousands."
+    <BarChart id="anat" title="Sessions by channel"
+      description="Title, description, plot, axes, grid, legend — and a table twin you cannot see."
       categories={MONTHS} series={TWO} />
   ),
 };
 
-export const Marks: Story = {
+export const SeriesRamp: Story = {
+  name: 'The six-slot ramp',
   render: () => (
-    <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
-      <BarChart id="m-bar" title="Bar — grouped" categories={MONTHS} series={TWO} />
-      <BarChart id="m-stack" title="Bar — stacked" categories={MONTHS} series={FOUR} layout="stacked" />
-      <BarChart id="m-100" title="Bar — 100% stacked" categories={MONTHS} series={FOUR} layout="stacked100" />
-      <LineChart id="m-line" title="Line" categories={MONTHS} series={TWO} />
-      <LineChart id="m-curve" title="Line — monotone curve" categories={MONTHS} series={TWO} curve="monotone" />
-      <AreaChart id="m-area" title="Area — stacked" categories={MONTHS} series={TWO} stacked />
-    </div>
-  ),
-};
-
-export const SixSeries: Story = {
-  name: 'Six series — the full ramp',
-  render: () => (
-    <LineChart id="six" title="Every slot in the series ramp"
-      description="Six evenly-stepped slots. Lightness differences survive every CVD type intact."
+    <LineChart id="ramp" title="Every slot"
+      description="Neutral slate on purpose: a chart that reads in grey is working on form, not hue."
       categories={MONTHS}
       series={Array.from({ length: 6 }, (_, i) => ({
-        key: `s${i}`,
-        label: `Series ${i + 1}`,
-        data: MONTHS.map((_, m) => 100 + i * 60 + m * (12 + i * 3)),
+        key: `s${i}`, label: `Series ${i + 1}`,
+        data: MONTHS.map((_, m) => 100 + i * 70 + m * (10 + i * 3)),
       }))} />
   ),
 };
 
 export const OverflowFolds: Story = {
-  name: 'Overflow folds to "Other"',
+  name: 'Past six, the tail folds',
   render: () => (
-    <LineChart id="over" title="Nine series"
-      description="Past six, the tail renders muted rather than inventing a seventh step."
+    <LineChart id="fold" title="Nine series"
+      description="A seventh step is not invented — the tail renders muted."
       categories={MONTHS}
       series={Array.from({ length: 9 }, (_, i) => ({
         key: `s${i}`, label: `Series ${i + 1}`,
-        data: MONTHS.map((_, m) => 80 + i * 40 + m * 10),
+        data: MONTHS.map((_, m) => 80 + i * 45 + m * 10),
       }))} />
   ),
 };
 
 export const IdentityIsStable: Story = {
-  name: 'Filtering does not repaint survivors',
+  name: 'Hiding a series does not repaint the others',
   render: function Filterable() {
     const [hidden, setHidden] = useState<string[]>([]);
     return (
-      <BarChart id="filter" title="Toggle a series in the legend"
-        description="Every survivor keeps its own colour. Colour follows the entity, never its rank."
+      <BarChart id="ident" title="Toggle any legend entry"
+        description="Colour follows the entity, never its rank among the visible ones."
         categories={MONTHS} series={FOUR} hiddenSeries={hidden}
         onSeriesToggle={(key, visible) =>
           setHidden((h) => (visible ? h.filter((k) => k !== key) : [...h, key]))} />
@@ -151,29 +143,23 @@ export const IdentityIsStable: Story = {
   },
 };
 
-export const EdgeCases: Story = {
+export const AbsentSeries: Story = {
+  name: 'A series missing from the data — and the fix',
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
-      <LineChart id="e-gap" title="Nulls are gaps, not zeros"
-        description="The line breaks rather than drawing through missing data."
+      <BarChart id="abs-all" title="All four present" categories={MONTHS} series={FOUR} />
+
+      <BarChart id="abs-some" title="Organic absent — Paid SHIFTS"
+        description="Slots are assigned from the array as given, so dropping the third entry renumbers the fourth. This is the real behaviour, not the desired one."
+        categories={MONTHS} series={FOUR.filter((s) => s.key !== 'organic')} />
+
+      <BarChart id="abs-pin" title="Organic absent — Paid HOLDS"
+        description="Pinning `slot` makes the assignment independent of array position. Use this whenever the data source can omit a series entirely, rather than passing the full list and hiding it."
         categories={MONTHS}
-        series={[{ key: 'a', label: 'Uptime', data: [98, 97, null, null, 96, 99] }]} />
-      <LineChart id="e-over" title="Monotone curve does not overshoot"
-        description="A dip to zero stays at zero — Catmull–Rom would swing below it."
-        categories={['a', 'b', 'c', 'd', 'e']} curve="monotone"
-        series={[{ key: 'a', label: 'Value', data: [0, 5, 0, 5, 0] }]} />
-      <BarChart id="e-neg" title="Mixed signs"
-        description="Positives stack up from zero, negatives down, independently."
-        categories={MONTHS} layout="stacked"
-        series={[
-          { key: 'gain', label: 'Gained', data: [40, 55, 30, 62, 48, 70] },
-          { key: 'lost', label: 'Lost', data: [-22, -18, -41, -12, -30, -16] },
-        ]} />
-      <BarChart id="e-flat" title="A flat series still draws"
-        categories={MONTHS} series={[{ key: 'a', label: 'Flat', data: [5, 5, 5, 5, 5, 5] }]} />
-      <BarChart id="e-one" title="One category" categories={['Only']}
-        series={[{ key: 'a', label: 'Value', data: [42] }]} />
-      <BarChart id="e-empty" title="Empty" categories={[]} series={[]} />
+        series={FOUR.filter((s) => s.key !== 'organic').map((s) => ({
+          ...s,
+          slot: (FOUR.findIndex((f) => f.key === s.key) + 1) as 1 | 2 | 3 | 4 | 5 | 6,
+        }))} />
     </div>
   ),
 };
@@ -181,9 +167,21 @@ export const EdgeCases: Story = {
 export const TableTwin: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
-      <BarChart id="t-both" title="view=both" description="The same numbers, twice."
+      <BarChart id="tt-both" title="view=both" description="The same numbers, twice."
         categories={MONTHS} series={TWO} view="both" />
-      <BarChart id="t-table" title="view=table" categories={MONTHS} series={TWO} view="table" />
+      <BarChart id="tt-table" title="view=table" categories={MONTHS} series={TWO} view="table" />
+    </div>
+  ),
+};
+
+export const EdgeCases: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
+      <BarChart id="e-flat" title="A flat series still draws"
+        categories={MONTHS} series={[{ key: 'a', label: 'Flat', data: [5, 5, 5, 5, 5, 5] }]} />
+      <BarChart id="e-one" title="One category" categories={['Only']}
+        series={[{ key: 'a', label: 'Value', data: [42] }]} />
+      <BarChart id="e-empty" title="No data" categories={[]} series={[]} />
     </div>
   ),
 };

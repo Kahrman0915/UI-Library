@@ -297,7 +297,7 @@ for (const mode of ['light', 'dark']) {
 }
 
 // #3 — no chart text below 12px
-const chartScss = readFileSync(new URL('../src/components/Chart/Chart.scss', import.meta.url), 'utf8');
+const chartScss = readFileSync(new URL('../src/charts/Chart/Chart.scss', import.meta.url), 'utf8');
 const textTokens = [...chartScss.matchAll(/font-size:\s*var\(--text-([a-z0-9]+)\)/g)].map((m) => m[1]);
 const PX = { xs: 12, code: 13, sm: 14, base: 16, lg: 18 };
 const tooSmall = textTokens.filter((t) => (PX[t] ?? 99) < MIN_TEXT_PX);
