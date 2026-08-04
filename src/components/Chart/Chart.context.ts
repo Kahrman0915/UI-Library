@@ -20,7 +20,17 @@ export type ChartContextValue = {
   /** ALL declared series, each carrying its own `visible` flag. */
   series: ResolvedSeries[];
   categories: string[];
+  /** Formats a DATA value — tooltip, table, direct labels. */
   valueFormatter: (value: number) => string;
+  /**
+   * Formats an AXIS value, which is not always the same number.
+   *
+   * `stacked100` normalises the data to 0–1 to draw the bands, so the axis is
+   * describing a share while the tooltip and table are still reporting the real
+   * figures. Printing `0.2` there is not a cosmetic slip — the axis is making a
+   * false claim about what the reader is looking at.
+   */
+  axisFormatter: (value: number) => string;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
   ids: { title: string; desc: string; table: string; legend: string; readout: string };

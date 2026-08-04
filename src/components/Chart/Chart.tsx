@@ -77,10 +77,20 @@ const Chart = forwardRef<HTMLElement, RootProps>(
     }, [yDomain, visible, stacked, offset]);
 
     const ticks = useMemo(() => niceTicks(domain[0], domain[1], Y_TICK_COUNT), [domain]);
+
+    // A 100% stack rescales the data to 0–1 to lay the bands out, so the axis is
+    // reporting a SHARE while the tooltip and table still report real figures.
+    // They need different formatters or the axis says "0.2" where it means 20%.
+    const isPercentAxis = mark?.kind === 'bars' && mark.layout === 'stacked100';
+    const axisFormatter = useMemo(
+      () => (isPercentAxis ? (v: number) => `${Math.round(v * 100)}%` : valueFormatter),
+      [isPercentAxis, valueFormatter],
+    );
+
     // Widen the y gutter for the widest formatted tick, or long numbers clip.
     const leftMargin = Math.max(
       MARGIN.left,
-      ticks.reduce((m, t) => Math.max(m, valueFormatter(t).length), 0) * 7 + 12,
+      ticks.reduce((m, t) => Math.max(m, axisFormatter(t).length), 0) * 7 + 12,
     );
 
     const legendOn = showLegend ?? resolved.length >= 2;
@@ -104,10 +114,10 @@ const Chart = forwardRef<HTMLElement, RootProps>(
     );
 
     const ctx = useMemo(() => ({
-      x, y, plot, series: resolved, categories, valueFormatter,
+      x, y, plot, series: resolved, categories, valueFormatter, axisFormatter,
       activeIndex, setActiveIndex, ids,
     }), [x, y, plot.left, plot.top, plot.width, plot.height, resolved, categories,
-        valueFormatter, activeIndex, ids]);
+        valueFormatter, axisFormatter, activeIndex, ids]);
 
     const onPointerMove = useCallback((e: PointerEvent<SVGRectElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -261,7 +271,7 @@ const ChartYAxis = ({ ticks }: { ticks: number[] }) => {
     <g className="ui-chart__axis ui-chart__axis--y" aria-hidden="true">
       {ticks.map((t) => (
         <text key={t} x={-8} y={c.y(t)} dy="0.32em" className="ui-chart__tick">
-          {c.valueFormatter(t)}
+          {c.axisFormatter(t)}
         </text>
       ))}
     </g>
@@ -322,14 +332,43 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
             } else {
               top = c.y(raw); base = zero;
             }
-            const h = base - top;
+
+            // THE SURFACE GAP — a gap, never a drawn border.
+            //
+            // This is not decoration, it is what makes the chart conform. WCAG
+            // 1.4.11 wants 3:1 between ADJACENT graphical objects, and no
+            // categorical palette can deliver that between eight consecutive
+            // slots: the requirement compounds, and a lightness band (which the
+            // series ramp needs, so no mark dominates) forces neighbouring hues
+            // to similar luminance. Measured on the shipped ramp, adjacent pairs
+            // sit at 1.12–2.24:1. Separating the marks with the surface colour
+            // converts "3:1 against your neighbour" into "3:1 against the
+            // background", which the palette DOES satisfy — and it is what both
+            // the W3C guidance and Chartability #6 prescribe.
+            //
+            // Clamped, not constant. The smallest real segment measured 9.2px;
+            // a flat 2px eats a quarter of it, and a segment thinner than the
+            // gap would invert into a negative height. Below ~3px the gap is
+            // dropped entirely — a visible thin band beats a correctly-gapped
+            // invisible one.
+            const span = Math.abs(base - top);
+            const gap = span < 3 ? 0 : Math.min(2, span * 0.25);
+            const h = span - (isStacked ? gap : 0);
+            const sign = top <= base ? 1 : -1;
+
             return (
               <path
                 key={ci}
                 className={cx('ui-chart__bar', c.activeIndex === ci && 'ui-chart__bar--active')}
-                // 2px surface gap between adjacent + stacked fills — a gap, never
-                // a drawn border. Half on each side so bands stay centred.
-                d={barPath(bx + 1, base, Math.max(0, groupWidth - 2), h === 0 ? 0 : (h > 0 ? h : -h) * (top <= base ? 1 : -1), BAR_RADIUS)}
+                d={barPath(
+                  bx + 1,
+                  // Shrink from the value end so every segment stays anchored to
+                  // the one below it and the stack keeps its cumulative meaning.
+                  base,
+                  Math.max(0, groupWidth - 2),
+                  h <= 0 ? 0 : h * sign,
+                  BAR_RADIUS,
+                )}
                 style={{ '--i': ci } as CSSProperties}
               />
             );
