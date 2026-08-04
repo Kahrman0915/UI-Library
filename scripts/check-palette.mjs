@@ -15,6 +15,18 @@
 //                          --category-* dark values outright: they are 400-level
 //                          (L 0.68-0.84) against a 0.48-0.67 band, and NO
 //                          ordering fixes it.
+//   4b. ADJACENT CONTRAST is reported, NOT gated — see the block at the end of
+//                          each mode. WCAG 1.4.11 wants 3:1 between touching
+//                          graphical objects, and this palette does not deliver
+//                          it (1.12-2.24:1). That is not a defect to fix in the
+//                          colours: the requirement compounds across eight
+//                          consecutive slots and the lightness band forces
+//                          neighbours to similar luminance. Chart marks are
+//                          separated by a surface-coloured gap instead, which
+//                          converts the obligation into contrast-against-
+//                          background — which the palette DOES satisfy.
+//                          `npm run test:chart-a11y` is what enforces the gap.
+//
 //   4. Semantic clearance  >= 10 dE from --error/--success/--warning/--info, so
 //                          a series never IMPERSONATES a status. A candidate had
 //                          a slot byte-identical to --warning and another 3.2 dE
@@ -212,6 +224,19 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   row(worstCvd[0] >= CVD_FLOOR, 'CVD separation', `worst ${worstCvd[1]} ΔE ${worstCvd[0].toFixed(1)} (floor ${CVD_FLOOR})`);
   row(worstNor[0] >= NORMAL_FLOOR, 'Normal-vision floor', `worst ${worstNor[1]} ΔE ${worstNor[0].toFixed(1)} (floor ${NORMAL_FLOOR})`);
   row(worstSem[0] >= SEMANTIC_FLOOR, 'Semantic clearance', `worst ${worstSem[1]} ΔE ${worstSem[0].toFixed(1)} (floor ${SEMANTIC_FLOOR})`);
+
+  // ADJACENT-PAIR CONTRAST — reported, never gated.
+  //
+  // Printed so the trade is visible in the output rather than living only in a
+  // commit message. If someone later removes the gap from ChartBars believing
+  // these numbers are fine, test:chart-a11y is the gate that catches it.
+  const adjacent = [];
+  for (let i = 0; i < pal.length - 1; i++) adjacent.push([i + 1, contrast(pal[i], pal[i + 1])]);
+  const worstAdj = adjacent.reduce((w, a) => (a[1] < w[1] ? a : w));
+  console.log(
+    `  · ${'Adjacent pairs'.padEnd(22)} ${worstAdj[1].toFixed(2)}:1 worst (slot ${worstAdj[0]}↔${worstAdj[0] + 1}) `
+    + `— under 3:1 BY DESIGN; the surface gap discharges 1.4.11, not the hues`,
+  );
 
   // Contrast is the ONE documented relief: sub-3:1 marks are legal when the
   // chart ships direct labels and a table twin, which Chart always does.
