@@ -7,7 +7,8 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
-  Alert, Avatar, AvatarGroup, Badge, Banner, Button, Card, CardBody, CardHeader, Chip, Fab,
+  Alert, Avatar, AvatarGroup, Badge, Banner, BarChart, Button, Card, CardBody, CardHeader,
+  Chip, Fab, LineChart,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
   Separator, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader,
   SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider,
@@ -412,6 +413,27 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
               </CardBody>
             </Card>
           </div>
+          {/* THE CHART — the surface theming previously did not reach. Series
+              colours come from --chart-1..6, authored per brand, so slot 1
+              carries the brand's own hue. Everything structural around it
+              (radius, type, spacing, shadows) is deliberately identical across
+              all six, which is what keeps them reading as one product family. */}
+          <Card id={`${brand}-ch`}>
+            <CardBody>
+              <BarChart
+                id={`${brand}-chart`}
+                title="Sessions by channel"
+                description="Slot 1 is this brand's hue; slots 2-6 are its own validated companions."
+                categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+                height={220}
+                series={[
+                  { key: 'direct', label: 'Direct', data: [420, 512, 486, 640, 712, 690] },
+                  { key: 'referral', label: 'Referral', data: [280, 310, 402, 380, 460, 520] },
+                  { key: 'organic', label: 'Organic', data: [180, 240, 220, 300, 340, 410] },
+                ]}
+              />
+            </CardBody>
+          </Card>
           <Input id={`${brand}-s`} label="Find a cohort" IconLeft={Search} placeholder="Search…" />
           <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
             <Chip id={`${brand}-ch1`} label="Weekly" active />
@@ -507,6 +529,24 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
         </div>
         <div style={{ display: 'flex', gap: 'var(--p-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
           {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />)}
+        </div>
+        {/* A chart ON THE BAND, not on a card. The harder contrast case: marks
+            are measured against --poc-band here rather than --card, and the band
+            is the one surface that carries a real brand tint. If a series is
+            going to disappear anywhere, it is here. */}
+        <div style={{ maxWidth: 'var(--max-w-3xl)', margin: '0 auto', width: '100%' }}>
+          <LineChart
+            id={`${brand}-mk-chart`}
+            title="Ingest volume"
+            categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+            curve="monotone"
+            height={200}
+            series={[
+              { key: 'events', label: 'Events', data: [3.2, 4.1, 3.8, 5.6, 6.4, 7.1] },
+              { key: 'errors', label: 'Retries', data: [0.9, 0.7, 1.2, 0.6, 0.5, 0.4] },
+            ]}
+            valueFormatter={(v) => `${v}M`}
+          />
         </div>
       </section>
 

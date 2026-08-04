@@ -201,6 +201,81 @@ export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
 /** aiden is a SURFACE, not one of the sub-apps. */
 export const SUB_BRANDS = BRAND_KEYS.filter((k) => k !== 'aiden');
 
+/**
+ * Per-brand CHART palettes — six slots, slot 1 carrying the brand's own hue.
+ *
+ * This is the surface theming previously did not reach: with a fixed series
+ * ramp, a db dashboard and a dc dashboard drew identical colours.
+ *
+ * SEARCHED, NOT DERIVED — and that is not a shortcut, it is the finding. Three
+ * constructions were measured first:
+ *   - dropping --primary into slot 1 fails: light collides wherever the brand
+ *     hue sits near a companion, and dark fails the lightness band for every
+ *     brand (the shipped darks are 400-level, too light to be marks).
+ *   - a rotation rule fails far worse. Spreading hue in OKLCH at CONSTANT
+ *     lightness scores CVD dE 0.5 against a floor of 8: protan and deutan
+ *     collapse the hue axis and leave only lightness, so an even hue wheel is
+ *     the LEAST colour-blind-safe palette obtainable. It looks correct and is
+ *     the trap to avoid.
+ *   - a per-brand search works. These are its frozen output.
+ *
+ * SLOT 1 IS EXEMPT FROM SEMANTIC CLEARANCE; slots 2-6 are not. Three brand hues
+ * ARE semantic hues — ph orange is dE 0.0 from --warning, ec sky 0.3 from
+ * --info, dc teal 3.9 from --success — and every step dark enough to clear 3:1
+ * on white is a step that collides. That collision already exists in every
+ * button and badge those brands render; charts do not create it, and enforcing
+ * the rule only here would mean ph's chart cannot lead with ph's colour, which
+ * is the whole feature. Slots 2-6 keep the full floor because those ARE
+ * arbitrary series and must not impersonate a status.
+ *
+ * Worst measured, both modes: CVD 14.7 (dc) / normal 19.2 (ec), against floors
+ * of 8 and 15. nb sits at 2.83 on the dark card — the documented relief case,
+ * discharged by the direct labels and table twin Chart always ships.
+ */
+export const BRAND_CHARTS: Record<string, { light: string[]; dark: string[] }> = {
+  db: {
+    light: ['#4f46e5', '#65a30d', '#8b5cf6', '#db2777', '#a855f7', '#d97706'],
+    dark:  ['#6366f1', '#65a30d', '#8b5cf6', '#db2777', '#a855f7', '#d97706'],
+  },
+  nb: {
+    light: ['#16a34a', '#1d4ed8', '#65a30d', '#9333ea', '#d97706', '#8b5cf6'],
+    dark:  ['#16a34a', '#2563eb', '#65a30d', '#a855f7', '#d97706', '#8b5cf6'],
+  },
+  dc: {
+    light: ['#0d9488', '#4f46e5', '#65a30d', '#6d28d9', '#ec4899', '#3b82f6'],
+    dark:  ['#0d9488', '#6366f1', '#65a30d', '#8b5cf6', '#ec4899', '#3b82f6'],
+  },
+  ec: {
+    light: ['#0369a1', '#16a34a', '#1d4ed8', '#d97706', '#7e22ce', '#db2777'],
+    dark:  ['#0284c7', '#16a34a', '#3b82f6', '#d97706', '#a855f7', '#ec4899'],
+  },
+  ph: {
+    light: ['#c2410c', '#9333ea', '#d97706', '#6366f1', '#65a30d', '#7c3aed'],
+    dark:  ['#ea580c', '#a855f7', '#d97706', '#6366f1', '#65a30d', '#8b5cf6'],
+  },
+  rm: {
+    light: ['#be185d', '#3b82f6', '#d97706', '#7e22ce', '#16a34a', '#6366f1'],
+    dark:  ['#db2777', '#3b82f6', '#d97706', '#a855f7', '#16a34a', '#6366f1'],
+  },
+};
+
+/**
+ * Emit a brand's chart slots.
+ *
+ * --chart-1..6 are the authored names. --series-1..6 are ALIASES so the shipped
+ * <Chart> picks them up with no component change — it still reads --series-*,
+ * and the rename happens once at adoption rather than twice. 7 and 8 alias the
+ * muted token, which makes the six-slot cap visible: a seventh series renders
+ * de-emphasised rather than inventing a hue.
+ */
+function chartVars(k: string, mode: 'light' | 'dark'): string {
+  const pal = BRAND_CHARTS[k]?.[mode];
+  if (!pal) return ''; // aiden is a surface, not a brand — it keeps the default ramp
+  const slots = pal.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n');
+  const alias = pal.map((_, i) => `  --series-${i + 1}: var(--chart-${i + 1});`).join('\n');
+  return `${slots}\n${alias}\n  --series-7: var(--series-muted);\n  --series-8: var(--series-muted);\n`;
+}
+
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */
 function anchorBlocks(): string {
   return BRAND_KEYS.map((k) => {
@@ -220,7 +295,7 @@ function anchorBlocks(): string {
   --primary:            ${PRIMARY_LIGHT[k]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
-}
+${chartVars(k, 'light')}}
 ${sel}[data-mode='dark'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
@@ -230,7 +305,7 @@ ${sel}[data-mode='dark'] {
   --primary:            ${PRIMARY_DARK[k]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
-}`;
+${chartVars(k, 'dark')}}`;
   }).join('\n');
 }
 
