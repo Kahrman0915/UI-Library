@@ -1,19 +1,30 @@
 #!/usr/bin/env node
 // Chart-palette guardrail.
 //
-// THE RAMP IS NOW A SINGLE-HUE SLATE SEQUENCE, so it is validated as an ORDINAL
-// ramp rather than a categorical one. That is not a weakening — it is the right
-// test for the shape. The categorical checks below (lightness BAND, chroma
-// FLOOR) exist to stop one hue dominating a set of unrelated hues; applied to a
-// mono ramp they fail it by construction, since spanning lightness is the whole
-// point and slate's chroma is 0.04 against a 0.1 floor.
+// THE PALETTE IS A SINGLE-HUE SLATE SET WHOSE SLOTS ARE INTERLEAVED, so it is
+// neither a plain categorical palette nor an ordinal ramp, and the checks are
+// picked accordingly:
 //
-// What an ordinal ramp owes instead: monotone lightness, adjacent steps far
-// enough apart to tell apart, and every step legible on its surface. CVD is
-// measured and reported but cannot realistically fail — lightness differences
-// survive protan, deutan and tritan intact, which makes a mono ramp the most
-// colour-blind-safe palette obtainable. That is the exact inverse of an even
-// hue wheel at constant lightness, which scores CVD dE 0.5 against a floor of 8.
+//   NOT categorical band / chroma floor. Those exist to stop one hue dominating
+//   a set of unrelated hues. Against one hue they fail by construction —
+//   spanning lightness is the point, and slate's chroma is 0.04 against a 0.1
+//   floor.
+//
+//   NOT monotone lightness. An earlier revision WAS a plain ramp and was checked
+//   for monotonicity; interleaving deliberately breaks it. Slot order runs
+//   4,1,5,2,6,3 through the six lightness steps so that consecutive SLOTS are
+//   three steps apart rather than one.
+//
+//   ADJACENT-SLOT SEPARATION is the check that replaced both, and it is the
+//   number the interleaving exists to move: dE 7.8 sequential -> 23.9 light /
+//   21.0 dark. That is what makes touching stacked segments tellable apart.
+//
+// KNOWN AND UNFIXABLE BY ORDERING: the all-pairs worst case stays at one step
+// (dE 7.8 / 6.8). Six steps must fit between the 3:1 contrast ceiling and the
+// surface, so two of them are always adjacent in lightness. Ordering fixes
+// adjacency, not simultaneity — fine for bars and stacks, thin for 5-6 lines,
+// where the answer is emphasis rather than more greys. Reported below so the
+// limit stays visible.
 //
 // The per-brand CATEGORICAL palettes are searched and parked in the POC recipe
 // (BRAND_CHARTS, CHART_THEMING=false). When they land, the categorical checks
@@ -77,7 +88,7 @@ const GRAPHICAL = 3;
 const BAND = { light: [0.43, 0.77], dark: [0.48, 0.67] };
 const CHROMA_FLOOR = 0.1;
 const SLOTS = 6;
-const MIN_STEP_DL = 0.05;   // adjacent steps must be tellable apart
+const MIN_ADJACENT_DE = 15; // consecutive SLOTS must be tellable apart
 const PREFIX = 'chart';
 
 // Machado, Oliveira & Fernandes (2009), severity 1.0, linear RGB.
@@ -204,15 +215,23 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
 
   console.log(`\n${mode} — --${PREFIX}-1..${SLOTS}`);
 
-  // ORDINAL checks — monotone, evenly stepped, each step legible.
-  const Ls = pal.map((c) => oklch(c)[0]);
-  const dir = Ls[1] > Ls[0] ? 1 : -1;
-  const notMonotone = Ls.slice(1)
-    .map((L, i) => [i + 1, (L - Ls[i]) * dir])
-    .filter(([, d]) => d <= 0);
-  const tooClose = Ls.slice(1)
-    .map((L, i) => [i + 1, Math.abs(L - Ls[i])])
-    .filter(([, d]) => d < MIN_STEP_DL);
+  // Adjacent-SLOT separation. Slot order is what the interleaving controls, so
+  // this is the check it has to satisfy.
+  const adjacentDe = pal.slice(1).map((c, i) => [i + 1, deltaE(c, pal[i])]);
+  const tooClose = adjacentDe.filter(([, d]) => d < MIN_ADJACENT_DE);
+
+  // All-pairs worst — reported, never gated. Ordering cannot move it.
+  let allPairs = [Infinity, ''];
+  for (let i = 0; i < pal.length; i++) {
+    for (let j = i + 1; j < pal.length; j++) {
+      const d = deltaE(pal[i], pal[j]);
+      if (d < allPairs[0]) allPairs = [d, `slot ${i + 1}↔${j + 1}`];
+    }
+  }
+
+  // Every lightness step must still be distinct, whatever order they sit in.
+  const Ls = pal.map((c) => oklch(c)[0]).sort((a, b) => a - b);
+  const stepGaps = Ls.slice(1).map((L, i) => L - Ls[i]);
 
   let worstCvd = [Infinity, ''], worstNor = [Infinity, ''];
   for (let i = 0; i < pal.length - 1; i++) {
@@ -242,12 +261,11 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
     if (!ok) failed = true;
     console.log(`  ${ok ? '✓' : '✗'} ${label.padEnd(22)} ${detail}`);
   };
-  row(!notMonotone.length, 'Monotone lightness', notMonotone.length
-    ? `reverses at ${notMonotone.map(([n]) => `slot ${n}→${n + 1}`).join(', ')}`
-    : `${dir > 0 ? 'ascending' : 'descending'} throughout`);
-  row(!tooClose.length, 'Step separation', tooClose.length
-    ? `below ΔL ${MIN_STEP_DL}: ${tooClose.map(([n, d]) => `slot ${n}→${n + 1} ${d.toFixed(3)}`).join(', ')}`
-    : `min ΔL ${Math.min(...Ls.slice(1).map((L, i) => Math.abs(L - Ls[i]))).toFixed(3)}`);
+  row(!tooClose.length, 'Adjacent slots', tooClose.length
+    ? `below ΔE ${MIN_ADJACENT_DE}: ${tooClose.map(([n, d]) => `slot ${n}↔${n + 1} ${d.toFixed(1)}`).join(', ')}`
+    : `worst ΔE ${Math.min(...adjacentDe.map(([, d]) => d)).toFixed(1)} (floor ${MIN_ADJACENT_DE})`);
+  row(Math.min(...stepGaps) >= 0.05, 'Lightness steps distinct',
+    `min ΔL ${Math.min(...stepGaps).toFixed(3)} between the six steps`);
   // CVD is REPORTED, not gated, and the meaningful number is the RATIO.
   //
   // The CVD_FLOOR of 8 and NORMAL_FLOOR of 15 are categorical thresholds: they
@@ -261,6 +279,8 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   // NOTHING, because there is no hue information to lose. A categorical palette
   // typically drops well below 1.0 under simulation. Step separation (above) is
   // the check that actually guards adjacent distinguishability.
+  console.log(`  · ${'All-pairs worst'.padEnd(22)} ΔE ${allPairs[0].toFixed(1)} (${allPairs[1]}) `
+    + `— ordering CANNOT improve this; six steps in the available span always leave two adjacent`);
   const ratio = worstNor[0] === 0 ? 0 : worstCvd[0] / worstNor[0];
   console.log(`  · ${'CVD cost'.padEnd(22)} adjacent ΔE ${worstCvd[0].toFixed(1)} simulated vs `
     + `${worstNor[0].toFixed(1)} normal — ratio ${ratio.toFixed(2)} `
@@ -295,8 +315,9 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
 console.log(
   failed
     ? '\n✗ FAIL — the chart ramp no longer satisfies its constraints.\n'
-      + '  It is an ORDINAL ramp: monotone, evenly stepped, every step >= 3:1 on its\n'
-      + '  surface. Nudging one step usually breaks the spacing either side of it.\n'
+      + '  Slot order is INTERLEAVED (4,1,5,2,6,3 through six lightness steps) so that\n'
+      + '  consecutive slots sit three steps apart. Only two of the 720 orderings reach\n'
+      + '  that optimum — re-derive rather than nudging one value.\n'
     : '\n✓ PASS — chart ramp holds in both modes.\n',
 );
 process.exit(failed ? 1 : 0);

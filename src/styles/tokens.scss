@@ -482,24 +482,41 @@ html {
      the exact opposite of an even hue wheel at constant lightness (that scores
      CVD dE 0.5 against a floor of 8 — the trap that looks most correct).
 
-     Steps are evenly spaced in OKLCH lightness (dL ~0.078) and every one clears
-     3:1 against its surface — the previous ramp failed that badly, with the two
-     lightest light-mode steps at 1.48 and 2.56, i.e. invisible as marks.
-     Chroma tapers toward the light end: held constant it drifts cyan and stops
-     reading as slate. Validated as an ORDINAL ramp by `npm run test:palette`,
-     not as a categorical one — the categorical band and chroma floor do not
-     apply to a single-hue ramp and would fail it by construction.
+     Six lightness steps evenly spaced in OKLCH (dL ~0.078), every one clearing
+     3:1 against its surface — the ramp that previously held this name failed
+     that badly, with its two lightest light-mode steps at 1.48 and 2.56, i.e.
+     invisible as marks. Chroma tapers toward the light end: held constant it
+     drifts cyan and stops reading as slate.
 
-     THE TRADE-OFF, stated: one hue in six steps implies ORDER. For unordered
-     categories that is a mild lie, mitigated by the legend, direct labels and
-     the table twin. It is the right default while the charts are being built
-     and the wrong one forever. */
-  --chart-1: #77879e;
-  --chart-2: #607087;
-  --chart-3: #4a596f;
-  --chart-4: #354358;
-  --chart-5: #212e42;
-  --chart-6: #0e1b2d;
+     THE SLOTS ARE INTERLEAVED, NOT SEQUENTIAL, and that is the important part.
+     Assigned in lightness order, adjacent slots differ by one step — dE 7.8,
+     which is why touching stacked segments were hard to tell apart. Slot order
+     is instead 4,1,5,2,6,3 through the ramp, so consecutive slots are three
+     steps apart: dE 23.9 light / 21.0 dark, a 3x improvement. Exactly two of
+     the 720 possible orderings reach that optimum; this is the one whose slot 1
+     is also a confident mark (10.02:1 rather than 3.66:1), so the first series
+     a consumer declares is not the faintest thing on the chart.
+
+     WHAT INTERLEAVING DOES NOT FIX: adjacency only. In a six-line chart where
+     every series is visible at once, the two closest lines are still one step
+     apart — 7.8 dE — and no ordering changes that, because six steps must fit
+     between the 3:1 ceiling and the surface. Excellent for bars and stacks,
+     adequate for 2-4 lines, thin at 5-6. The answer there is emphasis (one
+     series bold, the rest muted), not more greys.
+
+     So it is NOT an ordinal ramp and must not be validated as one — the
+     monotone-lightness check would fail it by design. `npm run test:palette`
+     checks adjacent-SLOT separation instead, which is the number that matters.
+
+     THE REMAINING TRADE-OFF: one hue still carries no categorical identity, so
+     the legend, direct labels and table twin do that work. Right default while
+     the charts are being built; not the permanent answer. */
+  --chart-1: #354358; /* step 4 of 6 */
+  --chart-2: #77879e; /* step 1 */
+  --chart-3: #212e42; /* step 5 */
+  --chart-4: #607087; /* step 2 */
+  --chart-5: #0e1b2d; /* step 6 */
+  --chart-6: #4a596f; /* step 3 */
   /* The "Other" fold and every de-emphasised mark. */
   --chart-muted: #cbd5e1;
 
@@ -774,12 +791,12 @@ html {
      (dark → light) because "further from the page" is the direction that
      matters, not "darker". Slot 1 stays the nearest to the surface in both
      modes so a series keeps its relative weight across a mode toggle. */
-  --chart-1: #6b7c93;
-  --chart-2: #8190a6;
-  --chart-3: #98a6ba;
-  --chart-4: #afbccd;
-  --chart-5: #c7d2e1;
-  --chart-6: #e0e9f5;
+  --chart-1: #afbccd; /* step 4 of 6 */
+  --chart-2: #6b7c93; /* step 1 */
+  --chart-3: #c7d2e1; /* step 5 */
+  --chart-4: #8190a6; /* step 2 */
+  --chart-5: #e0e9f5; /* step 6 */
+  --chart-6: #98a6ba; /* step 3 */
   --chart-muted: #64748b;
 
 
