@@ -202,6 +202,19 @@ export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
 export const SUB_BRANDS = BRAND_KEYS.filter((k) => k !== 'aiden');
 
 /**
+ * PARKED — flip to true to re-enable per-brand chart colour.
+ *
+ * Charts are deliberately NEUTRAL SLATE while they are being built: a chart that
+ * reads in grey is working on form, hierarchy, motion and interaction rather
+ * than leaning on hue, and colour can flatter a weak chart. The palettes below
+ * are searched, validated and ready — they drop in as a one-line change once
+ * the charts themselves are right. Nothing about them is provisional except the
+ * hues, which the owner has already called out as needing a second pass with an
+ * aesthetic objective rather than a purely accessibility one.
+ */
+const CHART_THEMING = false;
+
+/**
  * Per-brand CHART palettes — six slots, slot 1 carrying the brand's own hue.
  *
  * This is the surface theming previously did not reach: with a fixed series
@@ -269,11 +282,10 @@ export const BRAND_CHARTS: Record<string, { light: string[]; dark: string[] }> =
  * de-emphasised rather than inventing a hue.
  */
 function chartVars(k: string, mode: 'light' | 'dark'): string {
+  if (!CHART_THEMING) return '';
   const pal = BRAND_CHARTS[k]?.[mode];
   if (!pal) return ''; // aiden is a surface, not a brand — it keeps the default ramp
-  const slots = pal.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n');
-  const alias = pal.map((_, i) => `  --series-${i + 1}: var(--chart-${i + 1});`).join('\n');
-  return `${slots}\n${alias}\n  --series-7: var(--series-muted);\n  --series-8: var(--series-muted);\n`;
+  return pal.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
 }
 
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */

@@ -26,11 +26,14 @@ const meta: Meta<typeof Chart> = {
         'The chart frame and its three marks — bar, line and area. Renders its own SVG with no ' +
         'charting dependency, so a chart is plain markup that themes through CSS, exports to ' +
         'static HTML, and server-renders.\n\n' +
-        'Series colours come from `--series-1` … `--series-8`, a fixed order whose slots are ' +
-        'assigned by series **identity**, never by position among the visible ones — hiding a ' +
-        'series must never repaint the others. Past eight, the tail folds to a muted "Other" ' +
-        'rather than generating a ninth hue, which under colour-vision deficiency would be ' +
-        'indistinguishable from an existing slot.',
+        'Series colours come from `--chart-1` … `--chart-6`, assigned by series **identity** and ' +
+        'never by position among the visible ones — hiding a series must never repaint the ' +
+        'others. Past six, the tail folds to `--chart-muted` rather than inventing a seventh step.\n\n' +
+        'The ramp is **neutral slate on purpose.** A chart that reads in grey is working on form, ' +
+        'hierarchy, motion and interaction rather than leaning on hue — colour can flatter a weak ' +
+        'chart. It is also the most colour-blind-safe palette obtainable, since lightness ' +
+        'differences survive every CVD type intact. Per-brand colour is a later additive change; ' +
+        'the searched palettes already exist, parked in the POC recipe.',
       tags: ['data', 'svg', 'a11y'],
       usage: {
         when: [
@@ -107,13 +110,13 @@ export const Marks: Story = {
   ),
 };
 
-export const EightSeries: Story = {
-  name: 'Eight series — the full ramp',
+export const SixSeries: Story = {
+  name: 'Six series — the full ramp',
   render: () => (
-    <LineChart id="eight" title="Every slot in the series ramp"
-      description="Slot order is computed, not chosen. Adjacent pairs clear CVD ΔE 14.7 against a floor of 8."
+    <LineChart id="six" title="Every slot in the series ramp"
+      description="Six evenly-stepped slots. Lightness differences survive every CVD type intact."
       categories={MONTHS}
-      series={Array.from({ length: 8 }, (_, i) => ({
+      series={Array.from({ length: 6 }, (_, i) => ({
         key: `s${i}`,
         label: `Series ${i + 1}`,
         data: MONTHS.map((_, m) => 100 + i * 60 + m * (12 + i * 3)),
@@ -124,10 +127,10 @@ export const EightSeries: Story = {
 export const OverflowFolds: Story = {
   name: 'Overflow folds to "Other"',
   render: () => (
-    <LineChart id="over" title="Eleven series"
-      description="Past eight, the tail renders muted rather than inventing a ninth hue."
+    <LineChart id="over" title="Nine series"
+      description="Past six, the tail renders muted rather than inventing a seventh step."
       categories={MONTHS}
-      series={Array.from({ length: 11 }, (_, i) => ({
+      series={Array.from({ length: 9 }, (_, i) => ({
         key: `s${i}`, label: `Series ${i + 1}`,
         data: MONTHS.map((_, m) => 80 + i * 40 + m * 10),
       }))} />

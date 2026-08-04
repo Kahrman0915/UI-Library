@@ -1,5 +1,23 @@
 #!/usr/bin/env node
-// Series-palette guardrail.
+// Chart-palette guardrail.
+//
+// THE RAMP IS NOW A SINGLE-HUE SLATE SEQUENCE, so it is validated as an ORDINAL
+// ramp rather than a categorical one. That is not a weakening — it is the right
+// test for the shape. The categorical checks below (lightness BAND, chroma
+// FLOOR) exist to stop one hue dominating a set of unrelated hues; applied to a
+// mono ramp they fail it by construction, since spanning lightness is the whole
+// point and slate's chroma is 0.04 against a 0.1 floor.
+//
+// What an ordinal ramp owes instead: monotone lightness, adjacent steps far
+// enough apart to tell apart, and every step legible on its surface. CVD is
+// measured and reported but cannot realistically fail — lightness differences
+// survive protan, deutan and tritan intact, which makes a mono ramp the most
+// colour-blind-safe palette obtainable. That is the exact inverse of an even
+// hue wheel at constant lightness, which scores CVD dE 0.5 against a floor of 8.
+//
+// The per-brand CATEGORICAL palettes are searched and parked in the POC recipe
+// (BRAND_CHARTS, CHART_THEMING=false). When they land, the categorical checks
+// come back for them.
 //
 // The chart series ramp (--series-1..8) is the one place in the system where a
 // colour choice is COMPUTED rather than picked. Four constraints hold it, and
@@ -58,7 +76,9 @@ const SEMANTIC_FLOOR = 10;
 const GRAPHICAL = 3;
 const BAND = { light: [0.43, 0.77], dark: [0.48, 0.67] };
 const CHROMA_FLOOR = 0.1;
-const SLOTS = 8;
+const SLOTS = 6;
+const MIN_STEP_DL = 0.05;   // adjacent steps must be tellable apart
+const PREFIX = 'chart';
 
 // Machado, Oliveira & Fernandes (2009), severity 1.0, linear RGB.
 const MACHADO = {
@@ -174,7 +194,7 @@ const SURFACES = { light: { card: '#ffffff', background: '#ffffff' }, dark: { ca
 for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   const pal = [];
   for (let i = 1; i <= SLOTS; i++) {
-    const v = decl(blk, `series-${i}`);
+    const v = decl(blk, `${PREFIX}-${i}`);
     if (!v || !/^#[0-9a-fA-F]{6}$/.test(v)) {
       console.log(`\n${mode}\n  ✗ --series-${i} missing or not a plain hex (got ${v})`);
       failed = true;
@@ -182,11 +202,17 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   }
   if (pal.length !== SLOTS) continue;
 
-  console.log(`\n${mode} — --series-1..${SLOTS}`);
+  console.log(`\n${mode} — --${PREFIX}-1..${SLOTS}`);
 
-  const [lo, hi] = BAND[mode];
-  const offBand = pal.map((c, i) => [i + 1, c, oklch(c)[0]]).filter(([, , L]) => L < lo || L > hi);
-  const lowChroma = pal.map((c, i) => [i + 1, c, oklch(c)[1]]).filter(([, , C]) => C < CHROMA_FLOOR);
+  // ORDINAL checks — monotone, evenly stepped, each step legible.
+  const Ls = pal.map((c) => oklch(c)[0]);
+  const dir = Ls[1] > Ls[0] ? 1 : -1;
+  const notMonotone = Ls.slice(1)
+    .map((L, i) => [i + 1, (L - Ls[i]) * dir])
+    .filter(([, d]) => d <= 0);
+  const tooClose = Ls.slice(1)
+    .map((L, i) => [i + 1, Math.abs(L - Ls[i])])
+    .filter(([, d]) => d < MIN_STEP_DL);
 
   let worstCvd = [Infinity, ''], worstNor = [Infinity, ''];
   for (let i = 0; i < pal.length - 1; i++) {
@@ -216,14 +242,32 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
     if (!ok) failed = true;
     console.log(`  ${ok ? '✓' : '✗'} ${label.padEnd(22)} ${detail}`);
   };
-  row(!offBand.length, 'Lightness band', offBand.length
-    ? `outside ${lo}–${hi}: ${offBand.map(([n, c, L]) => `slot ${n} ${c} L${L.toFixed(3)}`).join(', ')}`
-    : `all ${SLOTS} inside ${lo}–${hi}`);
-  row(!lowChroma.length, 'Chroma floor', lowChroma.length
-    ? `below ${CHROMA_FLOOR}: ${lowChroma.map(([n, c]) => `slot ${n} ${c}`).join(', ')}` : `all ${SLOTS} >= ${CHROMA_FLOOR}`);
-  row(worstCvd[0] >= CVD_FLOOR, 'CVD separation', `worst ${worstCvd[1]} ΔE ${worstCvd[0].toFixed(1)} (floor ${CVD_FLOOR})`);
-  row(worstNor[0] >= NORMAL_FLOOR, 'Normal-vision floor', `worst ${worstNor[1]} ΔE ${worstNor[0].toFixed(1)} (floor ${NORMAL_FLOOR})`);
-  row(worstSem[0] >= SEMANTIC_FLOOR, 'Semantic clearance', `worst ${worstSem[1]} ΔE ${worstSem[0].toFixed(1)} (floor ${SEMANTIC_FLOOR})`);
+  row(!notMonotone.length, 'Monotone lightness', notMonotone.length
+    ? `reverses at ${notMonotone.map(([n]) => `slot ${n}→${n + 1}`).join(', ')}`
+    : `${dir > 0 ? 'ascending' : 'descending'} throughout`);
+  row(!tooClose.length, 'Step separation', tooClose.length
+    ? `below ΔL ${MIN_STEP_DL}: ${tooClose.map(([n, d]) => `slot ${n}→${n + 1} ${d.toFixed(3)}`).join(', ')}`
+    : `min ΔL ${Math.min(...Ls.slice(1).map((L, i) => Math.abs(L - Ls[i]))).toFixed(3)}`);
+  // CVD is REPORTED, not gated, and the meaningful number is the RATIO.
+  //
+  // The CVD_FLOOR of 8 and NORMAL_FLOOR of 15 are categorical thresholds: they
+  // assume hue is doing the separating, and ask whether two DIFFERENT hues stay
+  // apart. An ordinal ramp separates by lightness instead, and adjacent steps in
+  // a ramp are SUPPOSED to be close — that is what makes it a ramp. Gating a
+  // ramp on 15 would demand steps so far apart that six of them could not fit
+  // between the contrast ceiling and the surface.
+  //
+  // What matters here is cvd/normal ≈ 1.0: colour-blindness costs the reader
+  // NOTHING, because there is no hue information to lose. A categorical palette
+  // typically drops well below 1.0 under simulation. Step separation (above) is
+  // the check that actually guards adjacent distinguishability.
+  const ratio = worstNor[0] === 0 ? 0 : worstCvd[0] / worstNor[0];
+  console.log(`  · ${'CVD cost'.padEnd(22)} adjacent ΔE ${worstCvd[0].toFixed(1)} simulated vs `
+    + `${worstNor[0].toFixed(1)} normal — ratio ${ratio.toFixed(2)} `
+    + `(1.00 = colour-blindness costs nothing)`);
+  // Semantic clearance is REPORTED for a neutral ramp: slate cannot impersonate
+  // a status colour, and the check earns its keep again when colour returns.
+  console.log(`  · ${'Semantic clearance'.padEnd(22)} worst ${worstSem[1]} ΔE ${worstSem[0].toFixed(1)} — n/a while the ramp is neutral`);
 
   // ADJACENT-PAIR CONTRAST — reported, never gated.
   //
@@ -235,7 +279,7 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   const worstAdj = adjacent.reduce((w, a) => (a[1] < w[1] ? a : w));
   console.log(
     `  · ${'Adjacent pairs'.padEnd(22)} ${worstAdj[1].toFixed(2)}:1 worst (slot ${worstAdj[0]}↔${worstAdj[0] + 1}) `
-    + `— under 3:1 BY DESIGN; the surface gap discharges 1.4.11, not the hues`,
+    + `— under 3:1 BY DESIGN; the surface gap discharges 1.4.11, not the colours`,
   );
 
   // Contrast is the ONE documented relief: sub-3:1 marks are legal when the
@@ -250,9 +294,9 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
 
 console.log(
   failed
-    ? '\n✗ FAIL — the series palette no longer satisfies its constraints.\n'
-      + '  Re-derive the order rather than nudging one value: the slots were searched\n'
-      + '  jointly across both modes, so a local edit usually breaks a different check.\n'
-    : '\n✓ PASS — series palette holds in both modes.\n',
+    ? '\n✗ FAIL — the chart ramp no longer satisfies its constraints.\n'
+      + '  It is an ORDINAL ramp: monotone, evenly stepped, every step >= 3:1 on its\n'
+      + '  surface. Nudging one step usually breaks the spacing either side of it.\n'
+    : '\n✓ PASS — chart ramp holds in both modes.\n',
 );
 process.exit(failed ? 1 : 0);

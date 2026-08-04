@@ -4,15 +4,15 @@
  * Pure, dependency-free — see the note at the top of `scale.ts`.
  */
 
-/** The series ramp has eight slots. Past that, fold — never generate a ninth. */
-export const SERIES_SLOTS = 8;
+/** The chart ramp has six slots. Past that, fold — never generate a seventh. */
+export const SERIES_SLOTS = 6;
 
-export type SeriesSlot = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
+export type SeriesSlot = 1 | 2 | 3 | 4 | 5 | 6;
 
 export type SlotAssignment<T> = {
   item: T;
   key: string;
-  /** 1-8, or null for the folded "Other" bucket. */
+  /** 1-6, or null for the folded "Other" bucket. */
   slot: SeriesSlot | null;
   /** The CSS custom property to paint with. */
   token: string;
@@ -64,16 +64,15 @@ export function assignSlots<T>(
       item,
       key: keyOf(item),
       slot,
-      token: slot === null ? 'var(--series-muted)' : `var(--series-${slot})`,
+      token: slot === null ? 'var(--chart-muted)' : `var(--chart-${slot})`,
     };
   });
 }
 
 /**
- * Split a series list into the eight that keep a slot and the tail that folds.
+ * Split a series list into the six that keep a slot and the tail that folds.
  *
- * Past eight, a ninth hue is indistinguishable from an existing one under
- * colour-vision deficiency, so generating one is never the answer — the
+ * Past six, a seventh step is indistinguishable from an existing one — the
  * remainder becomes a single de-emphasised "Other", or the caller facets into
  * small multiples. Returning both halves lets the caller decide which.
  */
@@ -83,6 +82,6 @@ export function foldOverflow<T>(
 ): { kept: readonly T[]; folded: readonly T[] } {
   if (series.length <= max) return { kept: series, folded: [] };
   // Keep max-1 and leave the last slot for "Other", so the fold is visible as
-  // its own entry rather than silently swallowing the 8th real series.
+  // its own entry rather than silently swallowing the 6th real series.
   return { kept: series.slice(0, max - 1), folded: series.slice(max - 1) };
 }
