@@ -266,6 +266,31 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
     : `worst ΔE ${Math.min(...adjacentDe.map(([, d]) => d)).toFixed(1)} (floor ${MIN_ADJACENT_DE})`);
   row(Math.min(...stepGaps) >= 0.05, 'Lightness steps distinct',
     `min ΔL ${Math.min(...stepGaps).toFixed(3)} between the six steps`);
+
+  // The MUTE must be tellable from every slot, at the same floor the slots hold
+  // against each other. It is not decoration: --chart-muted paints the "Other"
+  // fold AND every de-emphasised mark under `emphasis`, so a mute that collides
+  // with a slot means a folded bucket reads as that series, and emphasising that
+  // series produces no visible emphasis — the reader is shown two identical
+  // colours and correctly concludes they are one thing.
+  //
+  // This check is here because the dark value shipped at ΔE 2.7 from --chart-2
+  // and nothing caught it. Contrast-on-surface was measured; distinctness was
+  // not, so the collision was invisible to every gate in the repo.
+  const muteVal = decl(blk, `${PREFIX}-muted`);
+  if (!muteVal || !/^#[0-9a-fA-F]{6}$/.test(muteVal)) {
+    row(false, 'Mute distinct', `--${PREFIX}-muted missing or not a plain hex (got ${muteVal})`);
+  } else {
+    const muteDe = pal.map((c, i) => [i + 1, deltaE(muteVal, c)]);
+    const nearest = muteDe.reduce((w, m) => (m[1] < w[1] ? m : w));
+    row(nearest[1] >= MIN_ADJACENT_DE, 'Mute distinct',
+      `nearest is slot ${nearest[0]} at ΔE ${nearest[1].toFixed(1)} (floor ${MIN_ADJACENT_DE})`);
+    // Reported, not gated — a mute cannot both recede past the lightest slot and
+    // clear 3:1, and receding is the job. test:chart-a11y carries the same note.
+    console.log(`  · ${'Mute on surface'.padEnd(22)} `
+      + `${contrast(muteVal, SURFACES[mode].card).toFixed(2)}:1 — below ${GRAPHICAL} by construction; `
+      + `stroke weight is the second channel`);
+  }
   // CVD is REPORTED, not gated, and the meaningful number is the RATIO.
   //
   // The CVD_FLOOR of 8 and NORMAL_FLOOR of 15 are categorical thresholds: they

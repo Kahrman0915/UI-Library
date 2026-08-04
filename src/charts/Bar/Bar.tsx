@@ -25,8 +25,13 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
 
   return (
     <g className="ui-chart__marks ui-chart__marks--bars" aria-hidden="true">
+      {/* NOT reordered by emphasis, unlike lines: grouped bars sit side by side
+          and a stack's order is its meaning, so neither can overlap and neither
+          may be resorted. */}
       {visible.map((s, si) => (
-        <g key={s.key} className="ui-chart__series" style={{ color: s.token } as CSSProperties}>
+        <g key={s.key}
+          className={cx('ui-chart__series', s.emphasis === 'off' && 'ui-chart__series--muted')}
+          style={{ color: s.token } as CSSProperties}>
           {c.categories.map((_, ci) => {
             const raw = s.data[ci];
             if (raw === null || raw === undefined) return null;

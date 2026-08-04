@@ -8,7 +8,7 @@ import { ChartContext, useChartContext, type ResolvedSeries } from './Chart.cont
 import {
   DEFAULT_HEIGHT, DEFAULT_WIDTH, LEGEND_HEIGHT, MARGIN, MAX_X_LABELS, Y_TICK_COUNT,
 } from './Chart.constants';
-import type { ChartProps } from './Chart.types';
+import type { ChartProps, SeriesEmphasis } from './Chart.types';
 import { useMeasuredWidth } from '#/hooks/useMeasuredWidth';
 import './Chart.scss';
 
@@ -40,6 +40,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       valueFormatter = (v) => formatTick(v),
       yDomain = 'auto', showLegend, showGrid = true, view = 'chart',
       emptyLabel = 'No data to display', hiddenSeries, onSeriesToggle,
+      emphasis, emphasisOnHover = true,
       className, children, ...rest
     },
     ref,
@@ -48,6 +49,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
     const measured = useMeasuredWidth(wrapRef);
     const w = measured ?? width;
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
+    const [hovered, setHovered] = useState<string | null>(null);
     const ids = useMemo(() => ({
       title: `${id}-title`, desc: `${id}-desc`, table: `${id}-table`,
       legend: `${id}-legend`, readout: `${id}-readout`,
@@ -57,13 +59,35 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
     // repaints survivors when a legend entry is switched off.
     const resolved: ResolvedSeries[] = useMemo(() => {
       const assigned = assignSlots(series, (s) => s.key, (s) => s.slot);
-      return assigned.map((a) => ({
-        ...a.item,
-        slot: a.slot,
-        token: a.token,
-        visible: !hiddenSeries?.includes(a.item.key),
-      }));
-    }, [series, hiddenSeries]);
+      const isVisible = (key: string) => !hiddenSeries?.includes(key);
+
+      // Hover wins over the standing subject while it lasts, so a chart can
+      // carry an authored emphasis AND still be explored.
+      const wanted = hovered !== null
+        ? [hovered]
+        : emphasis === undefined ? [] : Array.isArray(emphasis) ? emphasis : [emphasis];
+
+      // A subject that is hidden, or simply misspelled, would mute every series
+      // and foreground none — worse than no emphasis at all. Drop back to plain.
+      const subject = new Set(wanted.filter((k) =>
+        isVisible(k) && series.some((s) => s.key === k)));
+      const active = subject.size > 0;
+
+      return assigned.map((a) => {
+        const state: SeriesEmphasis = !active ? 'none' : subject.has(a.item.key) ? 'on' : 'off';
+        return {
+          ...a.item,
+          slot: a.slot,
+          slotToken: a.token,
+          // Emphasis is resolved HERE, once, rather than at each mark — the
+          // legend swatch and the tooltip key read the same field the mark does,
+          // so they cannot end up disagreeing about who is foregrounded.
+          token: state === 'off' ? 'var(--chart-muted)' : a.token,
+          visible: isVisible(a.item.key),
+          emphasis: state,
+        };
+      });
+    }, [series, hiddenSeries, emphasis, hovered]);
 
     const visible = resolved.filter((s) => s.visible);
     const isEmpty = categories.length === 0 || series.length === 0
@@ -113,11 +137,15 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       [domain, plot.height],
     );
 
+    const hoverSeries = emphasisOnHover ? setHovered : null;
+    const emphasisTransient = hovered !== null;
+
     const ctx = useMemo(() => ({
       x, y, plot, series: resolved, categories, valueFormatter, axisFormatter,
-      ticks, activeIndex, setActiveIndex, ids,
+      ticks, activeIndex, setActiveIndex, hoverSeries, emphasisTransient, ids,
     }), [x, y, plot.left, plot.top, plot.width, plot.height, resolved, categories,
-        valueFormatter, axisFormatter, ticks, activeIndex, ids]);
+        valueFormatter, axisFormatter, ticks, activeIndex, hoverSeries,
+        emphasisTransient, ids]);
 
     const onPointerMove = useCallback((e: PointerEvent<SVGRectElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -304,6 +332,7 @@ ChartEmpty.displayName = 'ChartEmpty';
 const ChartLegend = ({ onToggle }: { onToggle?: (key: string, visible: boolean) => void }) => {
   const c = useChartContext();
   if (!c) return null;
+  const hover = c.hoverSeries;
   return (
     <ul className="ui-chart__legend" id={c.ids.legend}>
       {c.series.map((s) => {
@@ -311,13 +340,34 @@ const ChartLegend = ({ onToggle }: { onToggle?: (key: string, visible: boolean) 
           <>
             <span className="ui-chart__swatch" style={{ background: s.token } as CSSProperties} aria-hidden="true" />
             <span className="ui-chart__legend-label">{s.label}</span>
+            {/* Which series the author foregrounded is authored INTENT, not
+                decoration — a reader who never sees the colours still needs it.
+                A STANDING emphasis only: the same state is reached by pointing
+                and by focusing a legend button, and moving this string on every
+                focus step would chatter down the accessibility tree as a
+                keyboard user arrows along the legend. */}
+            {s.emphasis === 'on' && !c.emphasisTransient && (
+              <span className="ui-chart__sr-only">(highlighted)</span>
+            )}
           </>
         );
         return (
-          <li key={s.key} className="ui-chart__legend-item">
+          <li
+            key={s.key}
+            className="ui-chart__legend-item"
+            // Pointer emphasis hangs off the <li> so it works whether or not the
+            // legend is interactive. Keyboard emphasis can only hang off the
+            // button, since giving a static <li> a tabindex would add a second
+            // tab stop to a widget that deliberately has exactly one.
+            onMouseEnter={hover ? () => hover(s.key) : undefined}
+            onMouseLeave={hover ? () => hover(null) : undefined}
+          >
             {onToggle ? (
               <button type="button" className="ui-chart__legend-button"
-                aria-pressed={s.visible} onClick={() => onToggle(s.key, !s.visible)}>
+                aria-pressed={s.visible}
+                onFocus={hover ? () => hover(s.key) : undefined}
+                onBlur={hover ? () => hover(null) : undefined}
+                onClick={() => onToggle(s.key, !s.visible)}>
                 {content}
               </button>
             ) : content}

@@ -1,6 +1,6 @@
 import type { CSSProperties } from 'react';
 import { forwardRef } from 'react';
-import { useChartContext } from '../Chart/Chart.context';
+import { byEmphasis, useChartContext } from '../Chart/Chart.context';
 import Chart from '../Chart/Chart';
 
 const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ');
@@ -23,15 +23,25 @@ const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve;
 
   return (
     <g className="ui-chart__marks ui-chart__marks--line" aria-hidden="true">
-      {visible.map((s) => {
+      {/* Lines cross, so paint order is legibility, not just taste: the subject
+          has to run OVER its context or the muting is undone wherever they
+          intersect. No-op while nothing is emphasised. */}
+      {[...visible].sort(byEmphasis).map((s) => {
         const pts = pointsOf(s.data, c);
+        const muted = s.emphasis === 'off';
         return (
-          <g key={s.key} className="ui-chart__series" style={{ color: s.token } as CSSProperties}>
+          <g key={s.key}
+            className={cx('ui-chart__series', muted && 'ui-chart__series--muted')}
+            style={{ color: s.token } as CSSProperties}>
             {/* pathLength="1" rescales all dash arithmetic to a declared total,
                 so the draw-on is `dashoffset: 1 → 0` with NO getTotalLength()
                 call. That is what keeps it working in static preview HTML. */}
             <path className="ui-chart__line" d={linePath(pts, curve)} pathLength={1} />
-            {showMarkers && pts.map((p, i) => p && (
+            {/* Markers come off a muted line entirely rather than shrinking. At
+                context weight they read as data points on a series nobody is
+                being asked to read, and they are the thing most likely to be
+                mistaken for the subject's. */}
+            {showMarkers && !muted && pts.map((p, i) => p && (
               <circle key={i} cx={p.x} cy={p.y} r={MARKER_RADIUS}
                 className={cx('ui-chart__marker', c.activeIndex === i && 'ui-chart__marker--active')} />
             ))}

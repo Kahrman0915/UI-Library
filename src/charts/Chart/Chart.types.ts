@@ -64,9 +64,37 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   /** Controlled legend filtering. Keys listed here render de-emphasised. */
   hiddenSeries?: string[];
   onSeriesToggle?: (key: string, visible: boolean) => void;
+  /**
+   * Series to foreground. Everything else becomes muted context.
+   *
+   * The answer to a chart with more series than the eye can hold at once. Six
+   * slots are tellable apart in SEQUENCE (a stack, a legend) but not
+   * SIMULTANEOUSLY — the all-pairs worst case in the ramp is dE 7.8 and no
+   * ordering can move it. Emphasis converts "tell six greys apart" into "tell
+   * one from the rest", which always works.
+   *
+   * Keyed, never indexed, for the same reason slots are: the subject must not
+   * change because someone filtered a different series.
+   *
+   * Ignored when no listed key is currently visible — a subject that is hidden
+   * would otherwise mute the entire chart and leave nothing foregrounded.
+   */
+  emphasis?: string | string[];
+  /**
+   * Pointing at a legend entry emphasises that series for as long as you point.
+   *
+   * On by default wherever a legend renders: it is the cheapest fix for a dense
+   * chart and it costs nothing when unused. Transient — it overrides `emphasis`
+   * while active and restores it on leave, so a chart can have both a standing
+   * subject and an exploratory one.
+   */
+  emphasisOnHover?: boolean;
   /** Compound tree. Omit for the automatic layout. */
   children?: ReactNode;
 };
+
+/** Nothing emphasised · the subject · the context behind it. */
+export type SeriesEmphasis = 'none' | 'on' | 'off';
 
 export type BarChartProps = Omit<ChartProps, 'stacked' | 'offset' | 'bandPadding' | 'children'> & { layout?: BarLayout };
 export type LineChartProps = Omit<ChartProps, 'stacked' | 'offset' | 'bandPadding' | 'children'> & {

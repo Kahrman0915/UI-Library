@@ -41,6 +41,7 @@ const MIN_MARK_GAP = 1;      // Chartability #6
 const MIN_MARK_CONTRAST = 3; // WCAG 1.4.11 / Chartability #1
 const MIN_TEXT_PX = 12;      // Chartability #3
 const MIN_TARGET_PX = 24;    // WCAG 2.5.8 / Chartability #16
+const SLOTS = 6;             // must track SERIES_SLOTS in src/utils/series.ts
 
 // ── colour ───────────────────────────────────────────────────────────────────
 /**
@@ -261,18 +262,42 @@ for (const fx of FIXTURES) {
 for (const mode of ['light', 'dark']) {
   const surface = token(mode, 'chart-surface');
   const worst = [];
-  for (let i = 1; i <= 8; i++) {
-    const c = token(mode, `series-${i}`);
-    if (!c || !surface) continue;
+  for (let i = 1; i <= SLOTS; i++) {
+    const c = token(mode, `chart-${i}`);
+    // A slot that cannot be read is a FAILURE, not a skip. This check spent the
+    // --series-* -> --chart-* rename looking up names that no longer existed,
+    // found nothing, reduced over an empty list and reported "worst slot 0
+    // Infinity:1" — a green tick for measuring nothing at all. Exactly the trap
+    // the header of this file warns about, caught by reading the detail column.
+    if (!c || !surface) { worst.push([i, 0]); continue; }
     worst.push([i, contrast(hex2rgb(c), hex2rgb(surface))]);
   }
   const min = worst.reduce((w, x) => (x[1] < w[1] ? x : w), [0, Infinity]);
-  // Reported, not gated: two dark marks sit at 2.83/2.92 by documented design,
-  // discharged by the direct labels + table twin the relief rule requires.
-  const ok = mode === 'light' ? min[1] >= MIN_MARK_CONTRAST : min[1] >= 2.5;
-  check('#1', `${mode} — marks on --chart-surface`, ok,
-    `worst slot ${min[0]} ${min[1].toFixed(2)}:1`
-    + (mode === 'dark' && min[1] < 3 ? ' (documented relief: labels + table twin)' : ''));
+  check('#1', `${mode} — marks on --chart-surface`, min[1] >= MIN_MARK_CONTRAST,
+    `${worst.length} slots, worst is slot ${min[0]} at ${min[1].toFixed(2)}:1`);
+
+  // #1 again, for the EMPHASIS mute — reported, not gated, and the reason is
+  // structural rather than an oversight.
+  //
+  // A muted mark has to sit lighter than every slot or it does not recede, and
+  // the lightest slot is already close to the 3:1 floor. So "recedes" and
+  // "clears 3:1" cannot both hold — the same compounding squeeze that stops
+  // adjacent slots reaching 3:1 against each other. WCAG 1.4.11 covers objects
+  // REQUIRED to understand the content, and a muted series is by construction
+  // not the one being read; the relief is real and enforced elsewhere: stroke
+  // weight drops with the colour (a second, independent channel), the table twin
+  // is always in the DOM, the tooltip still lists every series at every x, and
+  // moving the emphasis restores full colour.
+  const mutedTok = token(mode, 'chart-muted');
+  if (!mutedTok || !surface) {
+    check('#1', `${mode} — emphasis mute`, false, 'UNRESOLVABLE — no --chart-muted');
+  } else {
+    const r = contrast(hex2rgb(mutedTok), hex2rgb(surface));
+    if (r >= MIN_MARK_CONTRAST) check('#1', `${mode} — emphasis mute`, true, `${r.toFixed(2)}:1`);
+    else warn('#1', `${mode} — emphasis mute`,
+      `${r.toFixed(2)}:1 on surface, below ${MIN_MARK_CONTRAST} — BY DESIGN and structurally `
+      + `unavoidable; relief = stroke weight drops too, plus table twin + tooltip`);
+  }
 
   // #13 — the focus indicator itself must be visible.
   // --focus is translucent, so it is composited over the chart surface before

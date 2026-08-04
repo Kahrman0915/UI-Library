@@ -140,6 +140,46 @@
   fill: currentColor;
 }
 
+// ── Emphasis ────────────────────────────────────────────────────────────────
+// One series forward, the rest as context. The answer to a chart with more
+// series than the eye can separate at once — six slots are tellable apart in
+// SEQUENCE but not SIMULTANEOUSLY (all-pairs worst is dE 7.8 and no slot
+// ordering moves it), and "one versus the rest" always works.
+//
+// THE SUBJECT IS NOT TOUCHED. Everything below demotes the context; nothing
+// promotes the foreground. That is deliberate and it is not only taste: a mark
+// that gains weight gains INK, and ink reads as magnitude. Fattening the
+// emphasised line would make its data look bigger than it is, which is a
+// truthfulness problem rather than a styling one. Removing from the others
+// costs nothing that can be misread.
+//
+// TWO CHANNELS, never colour alone. A mute has to sit lighter than every slot
+// to recede, and the lightest slot is already near the 3:1 floor against the
+// surface — so a muted mark that genuinely recedes CANNOT also clear 3:1, in
+// the same way adjacent slots cannot. Weight is the second channel that makes
+// the distinction hold anyway: a 2px grey line beside a 3px slate one is
+// unmistakable at luminances far closer than these. Same redundant-encoding
+// rule the rest of the library follows for status colour.
+.ui-chart__series--muted {
+  .ui-chart__line { stroke-width: var(--border-w-200); }
+  // Halved. A muted band still has to read as a band — dropping it to a hairline
+  // would turn an area chart into a line chart for every series but one.
+  .ui-chart__area { opacity: var(--o-10); }
+}
+
+// Colour is deliberately NOT transitioned. `color` here comes from an inline
+// `var(--chart-N)`, and Chromium freezes a transitioned var-driven colour when
+// the variable changes without a recalc — the same trap that froze the Tabs
+// trigger on a live data-mode flip. Weight carries the change instead, which
+// interpolates from a literal and cannot freeze.
+.ui-chart__series .ui-chart__line {
+  transition: stroke-width var(--duration-instant) var(--ease-default);
+}
+
+.ui-chart__series .ui-chart__area {
+  transition: opacity var(--duration-instant) var(--ease-default);
+}
+
 // Every end state IS the resting state. Nothing here parks a transform via
 // fill-mode, so under reduced motion (durations collapse to 0.01ms globally)
 // a chart renders complete rather than blank — which is also what the static
@@ -215,6 +255,12 @@
 .ui-chart__legend-item {
   gap: var(--p-2);
 }
+
+// A muted legend entry needs NO rule of its own: the swatch paints from the same
+// resolved token the marks do, so it greys with them for free. The LABEL is left
+// alone on purpose — dimming legend text is how a reader loses the ability to
+// name the very series they are about to point at, and it would drag
+// --muted-foreground below AA for no gain.
 
 // ── Tooltip ─────────────────────────────────────────────────────────────────
 .ui-chart__tooltip {

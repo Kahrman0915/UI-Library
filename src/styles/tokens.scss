@@ -517,8 +517,31 @@ html {
   --chart-4: #607087; /* step 2 */
   --chart-5: #0e1b2d; /* step 6 */
   --chart-6: #4a596f; /* step 3 */
-  /* The "Other" fold and every de-emphasised mark. */
-  --chart-muted: #cbd5e1;
+  /* The "Other" fold and every de-emphasised mark under `emphasis`.
+
+     CONSTRAINED FROM BOTH SIDES, and it is the tighter of the two that sets it.
+
+     It must RECEDE — lighter than every slot here, darker than every slot in
+     dark mode — or context out-weighs the subject. That pushes it toward the
+     surface and away from 3:1, which it does not reach (2.06:1) and structurally
+     cannot: the lightest slot already sits near the floor at 3.66:1, so nothing
+     lighter clears it. Discharged the way the fold always was — the mute drops
+     stroke weight as well as colour, and the table twin and tooltip still carry
+     every muted value.
+
+     It must also stay dE >= 15 FROM EVERY SLOT — the same floor adjacent slots
+     are held to. Miss that and emphasis silently does nothing whenever the
+     subject happens to be the nearest slot: the reader sees two identical
+     colours and reasonably concludes they are one series. The previous dark
+     value was dE 2.7 from --chart-2 and had exactly that bug, in the FOLD as
+     well as in emphasis, which is why `npm run test:palette` now gates it.
+
+     These two pull opposite ways, so each value is the most visible point on the
+     slate ramp that still clears 15. Light was 1.48:1 (too faint to trace once
+     the stroke thins); dark was 3.07:1 but indistinguishable from a real slot,
+     which is the worse failure of the two — a faint mark is merely quiet, a
+     colliding one is wrong. */
+  --chart-muted: #a9b6c7;
 
 
   /* Chart chrome. Recessive by rule — never borrows a series token. */
@@ -797,7 +820,13 @@ html {
   --chart-4: #8190a6; /* step 2 */
   --chart-5: #e0e9f5; /* step 6 */
   --chart-6: #98a6ba; /* step 3 */
-  --chart-muted: #64748b;
+  /* Was #64748b, which sat dE 2.7 from --chart-2 — close enough that a folded
+     "Other" and a real series read as the same colour, and emphasising slot 2
+     produced no visible emphasis at all. See the light block for the full
+     reasoning; this trades 3.07:1 down to 1.79:1 to buy dE 15.4, because a mute
+     that COLLIDES with a slot is a wrong chart, while a faint one is a quiet
+     one. Recedes downward here, toward the surface, as the ramp does. */
+  --chart-muted: #425064;
 
 
   /* Chart chrome. Recessive by rule — never borrows a series token. */
