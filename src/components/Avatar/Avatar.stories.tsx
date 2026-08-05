@@ -1,5 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import Avatar, { AvatarGroup } from './Avatar';
+import Card, { CardHeader, CardBody } from '../Card/Card';
+import HoverCard, { HoverCardTrigger, HoverCardContent } from '../HoverCard/HoverCard';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof Avatar> = {
@@ -14,6 +16,20 @@ const meta: Meta<typeof Avatar> = {
         'with a `+N` overflow chip.',
       tags: ['3 sizes', 'fallback'],
       changelog: [
+        {
+          date: '2026-08-05',
+          summary:
+            'The fallback disc is now a solid slate chip instead of a pale tint, so an '+
+            'avatar with no image stays visible on a `Card` and in a `HoverCard`.',
+          detail:
+            'New `--avatar-background` / `--avatar-foreground`. The disc used `--secondary`, '+
+            'which is 1.23:1 against `--card` in light and 1.00:1 in dark — the circle was '+
+            'invisible and the initials appeared to float. Light is slate-500, the lightest '+
+            'step clearing 3:1 on every surface an avatar lands on. Dark INVERTS to '+
+            'slate-300 rather than reusing it, because dark `--popover` is slate-600 and a '+
+            'slate-500 disc would sit at 1.59:1 on the very HoverCard this fixes. The '+
+            'count badge is unchanged — it carries no small text and wants the weight.',
+        },
         {
           date: '2026-07-29',
           summary: 'Initial build complete.',
@@ -261,6 +277,62 @@ export const GroupSizeInheritance: Story = {
         <Avatar id="gj-3" fallback="EF" />
         <Avatar id="gj-4" fallback="GH" />
       </AvatarGroup>
+    </div>
+  ),
+};
+
+/**
+ * The reason `--avatar-background` exists. The fallback disc used `--secondary`,
+ * which is 1.23:1 against `--card` in light and 1.00:1 in dark — so on the two
+ * surfaces an avatar most often sits on, a user with no photo got an invisible
+ * circle with floating initials.
+ */
+export const FallbackOnSurfaces: Story = {
+  name: 'Fallback stays visible on Card and HoverCard',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-md)' }}>
+      <Card id="av-card">
+        <CardHeader id="av-card" title="On a Card" description="--card is the surface the disc used to disappear into." />
+        <CardBody>
+          <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}>
+            <Avatar id="av-c1" fallback="AL" />
+            <Avatar id="av-c2" fallback="GH" />
+            <AvatarGroup id="av-cg" max={3}>
+              <Avatar id="av-cg1" fallback="AT" />
+              <Avatar id="av-cg2" fallback="KJ" />
+              <Avatar id="av-cg3" fallback="ED" />
+              <Avatar id="av-cg4" fallback="BL" />
+            </AvatarGroup>
+          </div>
+        </CardBody>
+      </Card>
+
+      <HoverCard id="av-hc">
+        <HoverCardTrigger>
+          <span style={{ textDecoration: 'underline', cursor: 'default', fontSize: 'var(--text-sm)' }}>
+            Hover for the HoverCard case
+          </span>
+        </HoverCardTrigger>
+        <HoverCardContent>
+          <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}>
+            <Avatar id="av-h1" fallback="AL" />
+            <div style={{ fontSize: 'var(--text-sm)' }}>
+              <div style={{ fontWeight: 'var(--font-medium)' }}>Ada Lovelace</div>
+              <div style={{ color: 'var(--muted-foreground)' }}>--popover, and in dark it is slate-600</div>
+            </div>
+          </div>
+        </HoverCardContent>
+      </HoverCard>
+
+      {/* Every other surface an avatar can land on, for the 3:1 claim. */}
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        {(['--background', '--muted', '--secondary', '--sidebar'] as const).map((surface) => (
+          <div key={surface} style={{ background: `var(${surface})`, padding: 'var(--p-3)', borderRadius: 'var(--rounded-md)', display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}>
+            <Avatar id={`av-s${surface}`} fallback="AL" />
+            <code style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{surface}</code>
+          </div>
+        ))}
+      </div>
     </div>
   ),
 };
