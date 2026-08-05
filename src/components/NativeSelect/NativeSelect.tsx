@@ -73,6 +73,13 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
           >
             {children}
           </select>
+          {/* Before the chevron, so the affordance keeps the outer edge — same
+              ordering rule as Input's IconRight. */}
+          {required && !label && (
+            <span className="ui-input__required" aria-hidden="true">
+              *
+            </span>
+          )}
           <span
             className="ui-input__icon ui-input__icon--right ui-native-select__chevron"
             aria-hidden="true"

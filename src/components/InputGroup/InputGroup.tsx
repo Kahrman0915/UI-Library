@@ -4,6 +4,7 @@ import type {
   InputGroupButtonProps,
   InputGroupInputProps,
   InputGroupProps,
+  InputGroupRequiredProps,
   InputGroupTextProps,
   InputGroupTextareaProps,
 } from './InputGroup.types';
@@ -174,6 +175,40 @@ const InputGroupButton = forwardRef<HTMLButtonElement, InputGroupButtonProps>(
 
 InputGroupButton.displayName = 'InputGroupButton';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// InputGroupRequired — the asterisk, PLACED rather than injected.
+//
+// Input / Textarea / NativeSelect render this automatically on
+// `required && !label`, because they own a label and can tell whether one is
+// present. InputGroup cannot do either:
+//
+//   1. It renders NO label of its own — its documented use is to wrap it in a
+//      `Field`, and `FieldLabel` already draws `.ui-label__required`. Injecting
+//      an asterisk automatically would mark the common case twice.
+//   2. It is a free-form compound. Addons, text and buttons sit wherever the
+//      consumer puts them, so there is no "after the control, before the right
+//      icon" slot to inject into — position has to be the consumer's call.
+//
+// So it is a part you position, and you only reach for it when nothing above the
+// group is already carrying the mark. `aria-hidden` like every other copy: the
+// native `required` attribute on the inner control is the announcement.
+// ═════════════════════════════════════════════════════════════════════════════
+
+const InputGroupRequired = forwardRef<HTMLSpanElement, InputGroupRequiredProps>(
+  ({ className, ...rest }, ref) => (
+    <span
+      {...rest}
+      ref={ref}
+      className={`ui-input__required${className ? ' ' + className : ''}`}
+      aria-hidden="true"
+    >
+      *
+    </span>
+  ),
+);
+
+InputGroupRequired.displayName = 'InputGroupRequired';
+
 export default InputGroup;
 export {
   InputGroupInput,
@@ -181,4 +216,5 @@ export {
   InputGroupAddon,
   InputGroupText,
   InputGroupButton,
+  InputGroupRequired,
 };

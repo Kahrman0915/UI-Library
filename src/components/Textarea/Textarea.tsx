@@ -65,6 +65,14 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
             }
             onChange={handleChange}
           />
+          {/* Same rule as Input: the visual half of `required`, and only when
+              there is no label to carry it. See Textarea.scss for why a
+              multiline wrap needs the asterisk pinned to the first line. */}
+          {required && !label && (
+            <span className="ui-input__required" aria-hidden="true">
+              *
+            </span>
+          )}
         </div>
         {/*
           `role="alert"` so a validation error that appears after submit is

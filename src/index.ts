@@ -336,6 +336,7 @@ export {
   InputGroupAddon,
   InputGroupText,
   InputGroupButton,
+  InputGroupRequired,
 } from './components/InputGroup';
 export type {
   InputGroupProps,
@@ -344,6 +345,7 @@ export type {
   InputGroupAddonProps,
   InputGroupTextProps,
   InputGroupButtonProps,
+  InputGroupRequiredProps,
   InputGroupSize,
   InputGroupAddonAlign,
   InputGroupButtonSize,

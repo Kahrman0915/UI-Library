@@ -15,6 +15,7 @@ import InputGroup, {
   InputGroupInput,
   InputGroupText,
   InputGroupTextarea,
+  InputGroupRequired,
 } from './InputGroup';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
@@ -29,6 +30,20 @@ const meta: Meta<typeof InputGroup> = {
         'button — all sharing one border with the input.',
       tags: ['compound', '6 parts', 'form'],
       changelog: [
+        {
+          date: '2026-08-05',
+          summary:
+            'New `InputGroupRequired` part — the required asterisk, positioned by you rather than '+
+            'injected automatically.',
+          detail:
+            'Unlike Input / Textarea / NativeSelect, InputGroup renders no label of its own '+
+            '(its documented use is inside a `Field`, whose `FieldLabel` already draws the '+
+            'asterisk) and is a free-form compound with no fixed slot to inject into — so it '+
+            'is opt-in, and must NOT be used when a label above already marks the field. The '+
+            'group lays out by `order` (0 block-start · 1 inline-start · 2 control · '+
+            '3 inline-end · 4 block-end), so the part takes `order: 3`, tying with an '+
+            'inline-end addon so DOM order decides which comes first.',
+        },
         {
           date: '2026-08-02',
           summary:
@@ -312,6 +327,59 @@ export const Disabled: Story = {
         The first group is disabled entirely. The second is live, with only its
         trailing button disabled.
       </p>
+    </div>
+  ),
+};
+
+/**
+ * `InputGroupRequired` is PLACED, not automatic — unlike Input / Textarea /
+ * NativeSelect, which render the asterisk themselves whenever `required` is set
+ * and no label exists.
+ *
+ * InputGroup can do neither. It renders no label of its own (its documented use
+ * is inside a `Field`, whose `FieldLabel` already draws the asterisk), and it is
+ * a free-form compound, so there is no fixed slot to inject into. Reach for this
+ * only when nothing above the group is already carrying the mark.
+ */
+export const RequiredMarker: Story = {
+  name: 'Required marker (placed, not automatic)',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
+      <InputGroup id="ig-req-1">
+        <InputGroupAddon>
+          <InputGroupText>https://</InputGroupText>
+        </InputGroupAddon>
+        <InputGroupInput id="ig-req-1-input" required placeholder="your-site.com" />
+        <InputGroupRequired />
+      </InputGroup>
+
+      {/* Placement is the consumer's, so it can sit before a trailing button. */}
+      <InputGroup id="ig-req-2">
+        <InputGroupInput id="ig-req-2-input" required placeholder="Before a trailing action" />
+        <InputGroupRequired />
+        <InputGroupAddon align="inline-end">
+          <InputGroupButton>Check</InputGroupButton>
+        </InputGroupAddon>
+      </InputGroup>
+
+      {/* The case NOT to use it in: a Field above already marks the label. */}
+      <div style={{ display: 'grid', gap: 'var(--p-1-5)' }}>
+        <label
+          className="ui-field-label ui-label ui-label--sz-default"
+          htmlFor="ig-req-3-input"
+        >
+          <span className="ui-label__text">
+            Website
+            <span className="ui-label__required" aria-hidden="true">*</span>
+          </span>
+        </label>
+        <InputGroup id="ig-req-3">
+          <InputGroupAddon>
+            <InputGroupText>https://</InputGroupText>
+          </InputGroupAddon>
+          <InputGroupInput id="ig-req-3-input" required placeholder="Label already marks it — no InputGroupRequired" />
+        </InputGroup>
+      </div>
     </div>
   ),
 };

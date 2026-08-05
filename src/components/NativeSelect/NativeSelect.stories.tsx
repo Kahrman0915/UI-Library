@@ -19,6 +19,15 @@ const meta: Meta<typeof NativeSelect> = {
       tags: ['form control', '3 sizes'],
       changelog: [
         {
+          date: '2026-08-05',
+          summary:
+            'A `required` field with no `label` now shows the asterisk inside the field.',
+          detail:
+            'Matches Input. `.ui-input__required` renders on `required && !label`, `aria-hidden` '+
+            'since the native attribute is the announcement. Sits inboard of the chevron so '+
+            'the chevron keeps the outer edge.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -118,6 +127,37 @@ export const Disabled: Story = {
         <NativeSelectOption value="free">Free</NativeSelectOption>
         <NativeSelectOption value="pro">Pro</NativeSelectOption>
       </NativeSelect>
+    </div>
+  ),
+};
+
+/**
+ * The asterisk sits inboard of the chevron, so the chevron keeps the outer edge
+ * where the eye looks for it.
+ */
+export const RequiredWithoutLabel: Story = {
+  name: 'Required indicator with no label',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
+      <NativeSelect id="ns-req-labelled" label="Country" required>
+        <NativeSelectOption value="">Label carries the asterisk</NativeSelectOption>
+        <NativeSelectOption value="uk">United Kingdom</NativeSelectOption>
+      </NativeSelect>
+      <NativeSelect id="ns-req-bare" required>
+        <NativeSelectOption value="">Required, no label</NativeSelectOption>
+        <NativeSelectOption value="uk">United Kingdom</NativeSelectOption>
+      </NativeSelect>
+      <NativeSelect id="ns-req-optional">
+        <NativeSelectOption value="">Not required — no marker</NativeSelectOption>
+      </NativeSelect>
+      <NativeSelect id="ns-req-disabled" required disabled>
+        <NativeSelectOption value="">Disabled — the ask recedes</NativeSelectOption>
+      </NativeSelect>
+      {(['sm', 'default', 'lg'] as const).map((s) => (
+        <NativeSelect key={s} id={`ns-req-${s}`} size={s} required>
+          <NativeSelectOption value="">size=&quot;{s}&quot;</NativeSelectOption>
+        </NativeSelect>
+      ))}
     </div>
   ),
 };
