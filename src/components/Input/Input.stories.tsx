@@ -21,6 +21,21 @@ const meta: Meta<typeof Input> = {
       tags: ['form control', '3 sizes'],
       changelog: [
         {
+          date: '2026-08-05',
+          summary:
+            'A `required` field with no `label` now shows the asterisk inside the field. '+
+            'Fields that have a label are unchanged — the label still carries it, and no '+
+            'field is ever marked twice.',
+          detail:
+            'Screen readers were always told, via the native `required` attribute; this is '+
+            'the visual half, which previously had nowhere to live without a label. New '+
+            '`.ui-input__required` renders only when `required && !label`, `aria-hidden` '+
+            'like `.ui-label__required` since the attribute is the announcement. It sits '+
+            'inboard of `IconRight` so an interactive icon keeps the outer edge, inherits '+
+            'font-size so it scales across sm/default/lg, and fades to '+
+            '`--muted-foreground` when disabled.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -277,4 +292,35 @@ export const InForm: Story = {
       </form>
     );
   },
+};
+
+/**
+ * `required` reaches assistive tech through the native attribute either way;
+ * these are the visual halves. With a label the asterisk sits beside the text.
+ * Without one it moves inside the field, because a bare required input
+ * otherwise looks optional right up until the form rejects it.
+ */
+export const RequiredWithoutLabel: Story = {
+  name: 'Required indicator with no label',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
+      <Input id="req-labelled" label="Work email" required placeholder="you@company.com" />
+      <Input id="req-bare" required placeholder="Required, no label" />
+      <Input id="req-optional" placeholder="Not required — no marker" />
+
+      {/* The icon keeps the outer edge; the asterisk sits inboard of it. */}
+      <Input id="req-icon" required placeholder="With a right icon" IconRight={Search} />
+      <Input id="req-both-icons" required placeholder="Both icons" IconLeft={Mail} IconRight={X} />
+
+      {/* Error and disabled, where the marker's colour has somewhere to go. */}
+      <Input id="req-error" required placeholder="In an error state" error errorMessage="This field is required." />
+      <Input id="req-disabled" required placeholder="Disabled — the ask recedes" disabled />
+
+      {/* Every size, to show the asterisk scales with the field rather than
+          needing a rule per rung. */}
+      {(['sm', 'default', 'lg'] as const).map((s) => (
+        <Input key={s} id={`req-sz-${s}`} size={s} required placeholder={`size="${s}"`} />
+      ))}
+    </div>
+  ),
 };
