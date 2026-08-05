@@ -49,7 +49,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`ui-input-wrap${error ? ' ui-input-wrap--error' : ''}${disabled ? ' ui-input-wrap--disabled' : ''}`}
         >
           {IconLeft && (
-            <span className="ui-input__icon ui-input__icon--left" aria-hidden="true">
+            <span className="ui-input__icon" aria-hidden="true">
               <IconLeft />
             </span>
           )}
@@ -71,11 +71,31 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             }
             onChange={handleChange}
           />
+          {/*
+            The required marker, for the LABEL-LESS case only.
+
+            `required` already reaches assistive tech through the native
+            attribute on the input, so this is purely the visual half — and with
+            no label there was nowhere for it to live. A field in a compact row
+            or a toolbar looked optional while the form rejected it on submit.
+
+            `required && !label` is the whole condition: when a label exists it
+            already renders the asterisk, and showing both would mark one field
+            twice. `aria-hidden` for the same reason Label's is — the attribute
+            is the announcement; this is decoration of it.
+
+            Placed BEFORE IconRight so the icon keeps the outer edge. That slot
+            is where an interactive affordance goes (clear, reveal, pick), and
+            the hand expects it at the boundary; a decorative glyph should not
+            push it inward.
+          */}
+          {required && !label && (
+            <span className="ui-input__required" aria-hidden="true">
+              *
+            </span>
+          )}
           {IconRight && (
-            <span
-              className="ui-input__icon ui-input__icon--right"
-              aria-hidden="true"
-            >
+            <span className="ui-input__icon" aria-hidden="true">
               <IconRight />
             </span>
           )}

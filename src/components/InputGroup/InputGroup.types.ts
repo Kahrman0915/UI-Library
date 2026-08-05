@@ -92,3 +92,12 @@ export type InputGroupButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement
   className?: string;
   children?: React.ReactNode;
 };
+
+/**
+ * The required asterisk, for a group that has no label above it.
+ *
+ * Purely visual — `required` on the inner `InputGroupInput` is what assistive
+ * tech reads. Do NOT use it when the group sits inside a `Field` whose
+ * `FieldLabel` already has `required`, or the field is marked twice.
+ */
+export type InputGroupRequiredProps = React.HTMLAttributes<HTMLSpanElement>;

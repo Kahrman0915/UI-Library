@@ -117,6 +117,28 @@
 // ---- Icon slots (either side). Non-interactive by default; consumer can
 //      pass a component that itself handles clicks (e.g. a clear button).
 
+// The required asterisk for a field with no label. Same colour and weight as
+// `.ui-label__required`, because it is the same mark doing the same job — it has
+// just moved inside the field for want of a label to sit beside.
+//
+// No font-size of its own: the wrap is sized by `--sz-*`, so inheriting keeps
+// the asterisk proportional at sm / default / lg instead of needing three rules.
+.ui-input__required {
+  color: var(--error);
+  font-weight: var(--font-normal);
+  flex-shrink: 0;
+  // Reads as part of the field's chrome rather than as typed content, which is
+  // what the muted icons beside it do too.
+  line-height: 1;
+  user-select: none;
+}
+
+// A disabled field is not asking for anything, so the marker recedes with the
+// rest of the control instead of staying an urgent red.
+.ui-input-wrap--disabled .ui-input__required {
+  color: var(--muted-foreground);
+}
+
 .ui-input__icon {
   display: inline-flex;
   align-items: center;

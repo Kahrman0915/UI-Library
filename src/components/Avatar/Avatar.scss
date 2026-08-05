@@ -57,8 +57,12 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--secondary);
-    color: var(--muted-foreground);
+    // A solid slate chip, not a tint. --secondary put this at 1.23:1 against
+    // --card / --popover in light and 1.00:1 against --card in dark, so the
+    // disc simply disappeared on a Card or a HoverCard. See tokens.scss for
+    // why the dark value inverts instead of reusing the light one.
+    background: var(--avatar-background);
+    color: var(--avatar-foreground);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wide);
     z-index: var(--z-0);

@@ -24,6 +24,21 @@ const meta: Meta<typeof Alert> = {
       tags: ['5 variants', 'dismissible'],
       changelog: [
         {
+          date: '2026-08-05',
+          summary:
+            'The `action` button now keeps the main brand’s neutral slate inside every ' +
+            'sub-brand, instead of picking up the surrounding theme. The `brand` variant is ' +
+            'unaffected and still themes.',
+          detail:
+            'New `--primary-main` / `--primary-main-foreground` tokens hold the main brand’s ' +
+            'primary; no `[data-theme]` scope remaps them. `.ui-alert__action` rebuilds the ' +
+            'whole `--primary-*` family from them — all of it, because a theme scope re-declares ' +
+            'every derived token, so overriding `--primary` alone would leave `-soft`/`-border`/' +
+            '`-text` themed and give a slate fill a brand-coloured border. Scoped to the action ' +
+            'slot rather than `.ui-alert` because the `brand` variant reads `--primary-light`/' +
+            '`-text`/`-border` on the alert surface and is meant to follow the theme.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -253,6 +268,48 @@ export const EditMode: Story = {
         title="Edit Mode Active"
         description="Drag cards to reorder your board. Use the menu on each card to change types or configure filters. Click “Done Editing” when finished."
       />
+    </div>
+  ),
+};
+
+const THEMES = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
+
+/**
+ * The action button holds the main brand's slate in every sub-brand, while the
+ * `brand` variant beside it still follows the theme — those two behaviours have
+ * to coexist, which is why the token override is scoped to the action slot and
+ * not to `.ui-alert`.
+ */
+export const ActionStaysMainUnderEveryTheme: Story = {
+  name: 'Action stays main under every sub-brand',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-2xl)' }}>
+      {THEMES.map((code) => (
+        <section key={code} data-theme={code} style={{ display: 'grid', gap: 'var(--p-2)' }}>
+          <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)', fontFamily: 'var(--font-family-mono)' }}>
+            data-theme=&quot;{code}&quot;
+          </span>
+
+          {/* The action must be slate here, not the brand colour. */}
+          <Alert
+            id={`alert-main-${code}`}
+            variant="warning"
+            Icon={TriangleAlert}
+            title="Storage almost full"
+            description="The action reads as the alert's own control, not the page's CTA."
+            action={<Button id={`alert-main-${code}-btn`} label="Upgrade" style="outline" size="sm" />}
+          />
+
+          {/* …and this one must still be the brand colour. */}
+          <Alert
+            id={`alert-brand-${code}`}
+            variant="brand"
+            title="The brand variant still themes"
+            description="Its surface, title and border follow data-theme — only the action slot is pinned."
+            action={<Button id={`alert-brand-${code}-btn`} label="View" style="outline" size="sm" />}
+          />
+        </section>
+      ))}
     </div>
   ),
 };

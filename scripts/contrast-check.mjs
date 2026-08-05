@@ -117,6 +117,12 @@ const PAIRINGS = [
   ['sidebar-foreground', 'sidebar'],
   ['muted-foreground', 'sidebar'],
   ['tooltip-foreground', 'tooltip-background'],
+  // Avatar fallback initials on their own disc. Added 2026-08-05 with the token:
+  // the disc used to be --secondary, which is 1.23:1 against --card in light and
+  // 1.00:1 in dark — invisible on a Card or a HoverCard. Its VISIBILITY against
+  // the surfaces around it is not checkable here (this file measures text on a
+  // surface, not surface on surface); the derivation is recorded in tokens.scss.
+  ['avatar-foreground', 'avatar-background'],
   // Text on solid brand / semantic fills
   ['primary-foreground', 'primary'],
   ['error-foreground', 'error'],

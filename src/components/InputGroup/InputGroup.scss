@@ -262,3 +262,27 @@
 [data-surface='aiden'] .ui-input-group__button--default:hover:not(:disabled) {
   background: var(--aiden-hover);
 }
+
+// ---- Required marker ---------------------------------------------------------
+// The group lays its cells out by `order`, NOT by DOM position:
+//   0 block-start · 1 inline-start · 2 input · 3 inline-end · 4 block-end
+// A span with the default `order: 0` therefore sorts ahead of everything and
+// lands in the top-left corner, overlapping the border — which is exactly what
+// `InputGroupRequired` did before this rule existed.
+//
+// `order: 3` puts it after the control. It TIES with an inline-end addon on
+// purpose: equal orders fall back to DOM order, so a consumer who writes the
+// marker before the addon gets it before the addon, and after if they write it
+// after. Placement stays theirs, which is the point of a placed part.
+.ui-input-group__wrap .ui-input__required {
+  order: 3;
+  // The wrap is `align-items: stretch`, so without this the span fills the
+  // full height and the glyph rides at the top.
+  align-self: center;
+
+  // Only when nothing follows it — an inline-end addon brings its own padding,
+  // and both would read as a gap twice the size of every other cell's.
+  &:last-child {
+    padding-inline-end: var(--p-3);
+  }
+}

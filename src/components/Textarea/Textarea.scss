@@ -40,3 +40,25 @@
   min-height: var(--h-32);
   padding: var(--p-3) var(--p-4);
 }
+
+// ---- Required marker, multiline case -----------------------------------------
+// The single-line rule in Input.scss centres the asterisk, which is right for a
+// 40px field and wrong for a box that can be many lines tall — it would drift to
+// the middle of the block as the textarea grows. Pin it to the first line
+// instead, and give it the textarea's own inset, because `--multi` zeroes the
+// wrap's padding and hands it to the control.
+.ui-input-wrap--multi .ui-input__required {
+  align-self: flex-start;
+}
+
+.ui-input-field--sz-sm .ui-input-wrap--multi .ui-input__required {
+  padding: var(--p-1-5) var(--p-2-5) 0 0;
+}
+
+.ui-input-field--sz-default .ui-input-wrap--multi .ui-input__required {
+  padding: var(--p-2) var(--p-3) 0 0;
+}
+
+.ui-input-field--sz-lg .ui-input-wrap--multi .ui-input__required {
+  padding: var(--p-3) var(--p-4) 0 0;
+}

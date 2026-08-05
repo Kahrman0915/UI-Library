@@ -367,8 +367,19 @@ html {
   /* Core */
   --background: #ffffff;
   --foreground: #0f172a;
-  --primary: #334155;
-  --primary-foreground: #f8fafc;
+  /* THE MAIN BRAND'S PRIMARY, held separately so it survives theming.
+     A [data-theme] scope remaps --primary; it deliberately does NOT remap these.
+     That makes them the escape hatch for chrome that must stay neutral inside a
+     themed subtree — Alert's action button is the first consumer. Same idea as
+     --tooltip-background below, generalised: instead of one bespoke pair per
+     carve-out, anything can rebuild the whole --primary-* family from these. */
+  --primary-main: #334155;
+  --primary-main-foreground: #f8fafc;
+
+  /* --primary STARTS as main and is what themes move. Sourced from the token
+     above rather than repeating the literal, so the slate lives in one place. */
+  --primary: var(--primary-main);
+  --primary-foreground: var(--primary-main-foreground);
   /* Derived primary family — soft/border/ring/hover for the default variant's
      secondary/outline/ghost/link styles. color-mix keeps them in lockstep with
      --primary, so a theme scope (which remaps --primary) gets themed soft
@@ -383,6 +394,18 @@ html {
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #334155;
   --tooltip-foreground: #f8fafc;
+
+  /* Avatar fallback — the initials disc, for when there is no image.
+     A SOLID SLATE CHIP, not a tint, because the fallback has to read as an
+     object on whatever it is sitting on. It used --secondary, which is 1.23:1
+     against --card and --popover in light and 1.00:1 against --card in dark —
+     i.e. the disc was invisible on a Card and on a HoverCard, the two places an
+     avatar most often appears.
+     slate-500 is the LIGHTEST step that still clears 3:1 against every surface
+     an avatar can land on (worst case 3.21 vs --muted); anything lighter starts
+     dissolving into the page again. */
+  --avatar-background: #64748b;
+  --avatar-foreground: #ffffff;
   --secondary: #e2e8f0;
   --secondary-foreground: #1e293b;
   --muted: #cbd5e1;
@@ -718,8 +741,13 @@ html {
   /* Core */
   --background: #0f172a;
   --foreground: #f8fafc;
-  --primary: #cbd5e1;
-  --primary-foreground: #0f172a;
+  /* The main brand's primary, dark. Not remapped by any theme — see the light
+     block for why these exist. */
+  --primary-main: #cbd5e1;
+  --primary-main-foreground: #0f172a;
+
+  --primary: var(--primary-main);
+  --primary-foreground: var(--primary-main-foreground);
   /* Derived primary family (dark). Same color-mix derivation; --foreground is
      light here, so --primary-hover lightens instead of darkens — auto-adapts. */
   --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
@@ -729,6 +757,15 @@ html {
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  /* Avatar fallback, dark. INVERTS rather than reusing slate-500, the way
+     --tooltip-background above does — and here it is forced, not stylistic:
+     dark --popover IS slate-600 (#475569), so a slate-500 disc would sit one
+     step from it at 1.59:1 and vanish on a HoverCard, which is the exact case
+     this token exists to fix. Going lighter clears every dark surface instead
+     (worst 5.10), and slate-300 is the darkest step that does. */
+  --avatar-background: #cbd5e1;
+  --avatar-foreground: #0f172a;
+
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
