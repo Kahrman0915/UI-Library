@@ -97,6 +97,30 @@
   // which reduces to `(panel - column) / 2` — exactly what the header computes.
   // Change one and the title stops lining up with the content under it.
   padding: var(--p-8) var(--p-6) var(--p-6);
+
+  // The page's own scrollbar, styled to match the system — the same treatment
+  // `.ui-sidebar__content` uses, and for the same reason: an unstyled OS bar on
+  // a full-viewport surface is the most prominent scrollbar in the product.
+  //
+  // Deliberately NOT `ScrollArea`. That component is `overflow: hidden` needing
+  // a definite height, so making the body one means either nesting a second
+  // scroller inside a scroller — two thumbs, two styles, fighting over the same
+  // wheel gesture — or reserving its rail with a `column-gap`, which would pull
+  // the bar inward off the viewport edge. Both lose the thing this layout is
+  // built around. CSS gets the same look with neither cost.
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+
+  &::-webkit-scrollbar {
+    width: var(--w-1-5);
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: var(--border);
+    border-radius: var(--rounded-full);
+  }
 }
 
 // Header and footer stay full-bleed — the hairline and the footer's fill run

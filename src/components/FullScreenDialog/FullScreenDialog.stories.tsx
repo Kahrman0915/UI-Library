@@ -24,7 +24,6 @@ import Accordion, {
   AccordionContent,
 } from '../Accordion/Accordion';
 import Card, { CardHeader, CardBody, CardFooter } from '../Card/Card';
-import ScrollArea from '../ScrollArea/ScrollArea';
 import Separator from '../Separator/Separator';
 import Tabs, { TabsList, TabsTrigger, TabsContent } from '../Tabs/Tabs';
 import Sidebar, {
@@ -122,9 +121,11 @@ const meta: Meta<typeof FullScreenDialog> = {
 export default meta;
 type Story = StoryObj<typeof FullScreenDialog>;
 
+// No `display: grid` here — the body is already a grid and supplies the row
+// gap, and making the paragraph one too broke `<strong>1.</strong> text` onto
+// two lines by turning the strong into its own row.
 const PROSE: React.CSSProperties = {
-  display: 'grid',
-  gap: 'var(--p-4)',
+  margin: 0,
   color: 'var(--muted-foreground)',
   fontSize: 'var(--text-sm)',
   lineHeight: 'var(--leading-6)',
@@ -483,7 +484,7 @@ const CLAUSE =
   'to the top and bottom of the viewport, so they stay put however far the content runs.';
 
 export const LongContent: Story = {
-  name: 'Two kinds of scrolling',
+  name: 'The body scrolls, the chrome does not',
   render: function Long() {
     const [open, setOpen] = useState(false);
     return (
@@ -492,39 +493,20 @@ export const LongContent: Story = {
         <FullScreenDialog id="fsd-long" open={open} onClose={() => setOpen(false)}>
           <FullScreenDialogHeader
             title="Terms of service"
-            description="The document sits in a ScrollArea with its own thumb; the page around it scrolls natively. Header and footer stay put through both."
+            description="Scroll — the header and footer stay put, and the page's own scrollbar is styled to match the system rather than left as a raw OS bar."
           />
+          {/*
+            ONE scroll region, deliberately. An earlier cut put a ScrollArea
+            pane in here as well, which left the page with two thumbs in two
+            different styles — the nested one ours, the outer one the OS's. Two
+            scrollbars on one surface read as a bug however correct each is on
+            its own. The body is the page's scroller; its bar is styled in
+            FullScreenDialog.scss.
+          */}
           <FullScreenDialogBody>
-            {/*
-              ScrollArea, used the way it is meant to be: a bounded region with a
-              definite height. It CANNOT wrap the body itself — the body is
-              already the page's scroll container, and ScrollArea is
-              `overflow: hidden` needing a height from its parent, so nesting one
-              there would produce two scrollers fighting over the same gesture.
-            */}
-            <ScrollArea
-              id="fsd-long-doc"
-              style={{
-                height: 'var(--h-64)',
-                border: 'var(--border-w-100) solid var(--border)',
-                borderRadius: 'var(--rounded-lg)',
-                padding: 'var(--p-4)',
-              }}
-            >
-              {Array.from({ length: 20 }, (_, i) => (
-                <p key={i} style={{ ...PROSE, marginBottom: 'var(--p-4)' }}>
-                  <strong style={{ color: 'var(--foreground)' }}>{i + 1}.</strong> {CLAUSE}
-                </p>
-              ))}
-            </ScrollArea>
-
-            <Separator id="fsd-long-sep" />
-
-            {/* Enough below the pane that the BODY scrolls too, which is what
-                proves the chrome is pinned rather than merely tall. */}
-            {Array.from({ length: 8 }, (_, i) => (
+            {Array.from({ length: 24 }, (_, i) => (
               <p key={i} style={PROSE}>
-                <strong style={{ color: 'var(--foreground)' }}>Appendix {i + 1}.</strong> {CLAUSE}
+                <strong style={{ color: 'var(--foreground)' }}>{i + 1}.</strong> {CLAUSE}
               </p>
             ))}
           </FullScreenDialogBody>
