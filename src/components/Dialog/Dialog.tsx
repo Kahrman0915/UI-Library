@@ -20,6 +20,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       onClose,
       children,
       closeOnOutsideClick = false,
+      closeOnEscape = true,
       role = 'dialog',
       inline = false,
       initialFocusRef,
@@ -76,15 +77,19 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       });
     }, [state, id, children]);
 
-    // Escape to close (both inline and overlay modes)
+    // Escape to close (both inline and overlay modes).
+    //
+    // Opt-out rather than opt-in: every dialog wants this, and a panel with no
+    // keyboard exit is a trap. `closeOnEscape={false}` is for the caller who is
+    // taking Escape over — see the prop's JSDoc.
     useEffect(() => {
-      if (!open) return;
+      if (!open || !closeOnEscape) return;
       const handleKeyDown = (e: KeyboardEvent) => {
         if (e.key === 'Escape') onClose();
       };
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [open, onClose]);
+    }, [open, closeOnEscape, onClose]);
 
     // Focus trap + scroll lock (overlay mode only).
     //
@@ -136,7 +141,32 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       };
       document.addEventListener('keydown', handleTab);
 
-      // Scroll lock — preserve scrollbar space to avoid layout shift
+      return () => {
+        document.removeEventListener('keydown', handleTab);
+        previouslyFocused?.focus?.();
+      };
+    }, [state, inline, initialFocusRef]);
+
+    // Scroll lock — its OWN effect, held for as long as the panel is mounted
+    // rather than only while it is `open`. Mirrors Drawer, which already did it
+    // this way; Dialog used to release the lock inside the focus-trap cleanup
+    // above, i.e. at the START of the exit animation.
+    //
+    // Releasing early does NOT shift the page — the `padding-right` swap below
+    // is symmetric with the returning scrollbar. What it did do was let the page
+    // behind move during the ~200ms exit: `previouslyFocused.focus()` in that
+    // same cleanup scrolls its target into view, so restoring focus to an
+    // off-screen trigger scroll-jumped the page while the panel was still
+    // painted over it. Holding the lock through `closing` prevents the scroll,
+    // which is why that call can stay where it is.
+    //
+    // The dep MUST be this boolean, not `state`. Keyed on `state`, the effect
+    // tears down and re-runs on `open → closing`, releasing and re-applying the
+    // lock — a one-frame scrollbar flash, exactly what this is meant to remove.
+    const isLocked = state !== 'closed' && !inline;
+    useEffect(() => {
+      if (!isLocked) return;
+      // Preserve the scrollbar's width as padding so the page does not shift.
       const scrollbarWidth =
         window.innerWidth - document.documentElement.clientWidth;
       const previousOverflow = document.body.style.overflow;
@@ -145,14 +175,11 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       if (scrollbarWidth > 0) {
         document.body.style.paddingRight = `${scrollbarWidth}px`;
       }
-
       return () => {
-        document.removeEventListener('keydown', handleTab);
         document.body.style.overflow = previousOverflow;
         document.body.style.paddingRight = previousPaddingRight;
-        previouslyFocused?.focus?.();
       };
-    }, [state, inline, initialFocusRef]);
+    }, [isLocked]);
 
     const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
       if (closeOnOutsideClick && e.target === e.currentTarget) {
@@ -177,8 +204,19 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
             ).current = node;
         }}
         className={`ui-dialog ${closing ? 'ui-overlay-exit--center' : 'ui-overlay-enter--center'}${className ? ' ' + className : ''}`}
+        // `e.target === e.currentTarget` is load-bearing, not defensive noise.
+        // Animation events bubble, and an `inline` Dialog rendered INSIDE this
+        // one carries the very same `ui-overlay-exit--center` class — so closing
+        // the inner panel fired `ui-overlay-out-center` up here and unmounted
+        // the outer one too. Matching the name alone is not enough when the name
+        // can legitimately come from a descendant.
         onAnimationEnd={(e) => {
-          if (e.animationName === 'ui-overlay-out-center') setState('closed');
+          if (
+            e.target === e.currentTarget &&
+            e.animationName === 'ui-overlay-out-center'
+          ) {
+            setState('closed');
+          }
         }}
         role={role}
         aria-modal={!inline}

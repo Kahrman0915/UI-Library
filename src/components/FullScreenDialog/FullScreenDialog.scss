@@ -1,0 +1,129 @@
+// FullScreenDialog — geometry only.
+//
+// Everything else (surface colour, header/body/footer chrome, entrance and exit
+// keyframes) comes from Dialog. This file's whole job is to turn Dialog's small
+// centred card into a page that fills the viewport.
+//
+// EVERY SELECTOR HERE IS TWO CLASSES (0,2,0) so it cannot lose to `.ui-dialog`
+// (0,1,0) on stylesheet order. `.ui-command-dialog` is the cautionary tale: it
+// is written as a single class, sets `width: min(560px, …)`, and never overrides
+// `max-width` — so the command palette is silently clamped to `--max-w-md`
+// (448px), not the 560px its own code and CLAUDE.md both claim.
+
+// ── The overlay ─────────────────────────────────────────────────────────────
+// Reached with `:has()` rather than by adding an `overlayClassName` prop to
+// Dialog — no new API for three declarations.
+.ui-dialog-overlay:has(> .ui-full-screen-dialog) {
+  // The panel is opaque and covers this element completely. The blur would only
+  // ever be seen through the ~1.5% frame that `scale(0.97)` leaves during the
+  // 220ms entrance — a full-viewport backdrop-filter recomputed every frame to
+  // render a ~19px border. It also creates a backdrop root, which would neuter
+  // any backdrop-filter a consumer uses INSIDE the page (a frosted sticky
+  // sub-header is a very plausible thing on a Help page). The dim stays; it is
+  // what does the crossfade work, at no GPU cost.
+  backdrop-filter: none;
+
+  // --ease-entrance is cubic-bezier(0.34, 1.35, 0.5, 1) — it overshoots PAST
+  // scale(1), so the panel briefly pokes a few px beyond each viewport edge.
+  // Harmless, but clip it rather than let someone file it as a bug.
+  overflow: hidden;
+  // Also the host for this: stops a trackpad flick chaining through to the page
+  // behind once the body has scrolled to its end.
+  overscroll-behavior: contain;
+}
+
+// ── The panel ───────────────────────────────────────────────────────────────
+.ui-dialog.ui-full-screen-dialog {
+  // 100%, NOT 100vh/100dvh, and the reason is worth keeping.
+  //
+  // `.ui-dialog-overlay` is `position: fixed; inset: 0`, so its containing block
+  // IS the viewport and its height is definite — 100% resolves against it. A
+  // fixed box also tracks the SMALL viewport on iOS, so this already behaves
+  // like 100svh and does not jump when the URL bar shows or hides; `100dvh`
+  // would actually be worse. The dependency: if `.ui-dialog-overlay` ever
+  // becomes min-height-based, its height stops being definite and this silently
+  // collapses to zero.
+  width: 100%;
+  height: 100%;
+
+  // Both of these are set on `.ui-dialog` and both must be explicitly nulled —
+  // `--max-w-md` (448px) and `85vh`.
+  max-width: none;
+  max-height: none;
+
+  // Width is the flex MAIN axis on the overlay, so `min-width: auto` applies: a
+  // long unbreakable string (a pasted URL in a feedback textarea, a wide table)
+  // could push the panel past 100%, and `justify-content: center` would then
+  // centre the overflow and carry the left edge off-screen where it cannot be
+  // reached. Height is the cross axis, so it has no equivalent problem.
+  min-width: 0;
+
+  // A page has no edges to decorate.
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+// ── The content column ──────────────────────────────────────────────────────
+// A centred column WITHOUT a wrapper element. The body stays the full-width
+// scroll container — which is the point, because capping the body's own width
+// would drag the scrollbar inward to the column edge instead of letting it hug
+// the viewport, and on a full-screen page that reads as broken.
+//
+// One grid track, centred: auto-placement drops each child into row n of the
+// single column. Children stretch to the column width by default (a form fills
+// it), which they would NOT under the flex + `align-items: flex-start` this
+// replaces, and the body's existing `gap` carries over untouched.
+.ui-dialog.ui-full-screen-dialog .ui-dialog__body {
+  display: grid;
+  // min(), not minmax(). A minmax() with a fixed max sizes the track to that
+  // fixed length, so a 768px column would overflow a 375px phone.
+  grid-template-columns: min(100%, var(--ui-fsd-content-width));
+  justify-content: center;
+  align-content: start;
+  // (0,3,0) — outranks .ui-dialog__body--left / --center, whose flex alignment
+  // means nothing in a grid.
+  align-items: start;
+  padding: var(--p-8) var(--p-6);
+}
+
+// Header and footer stay full-bleed — the hairline and the footer's fill run
+// edge to edge — but their CONTENT is padded to meet the column, so the title
+// lines up with the body below it instead of floating 1900px away from it on a
+// wide monitor. The X stays pinned right, where the hand expects it.
+.ui-dialog.ui-full-screen-dialog .ui-dialog__header,
+.ui-dialog.ui-full-screen-dialog .ui-dialog__footer {
+  padding-inline: max(
+    var(--p-6),
+    calc((100% - min(100%, var(--ui-fsd-content-width))) / 2)
+  );
+}
+
+.ui-dialog.ui-full-screen-dialog .ui-dialog__header {
+  padding-block: var(--p-4);
+}
+
+// ── Content widths ──────────────────────────────────────────────────────────
+// A local custom property, following `--ui-status-color`'s precedent, so one
+// value drives the body track and both chrome paddings.
+.ui-full-screen-dialog {
+  --ui-fsd-content-width: var(--max-w-3xl);
+
+  // Forms — a label and its input stay in one glance.
+  &--content-md {
+    --ui-fsd-content-width: var(--max-w-2xl);
+  }
+  // Default. Prose. The same column Chat uses for its transcript, so the system
+  // has ONE "readable centred column" value rather than two that nearly agree.
+  &--content-lg {
+    --ui-fsd-content-width: var(--max-w-3xl);
+  }
+  // Tables and side-by-side comparisons.
+  &--content-xl {
+    --ui-fsd-content-width: var(--max-w-5xl);
+  }
+  // Opt out — the page owns its own layout.
+  &--content-full {
+    --ui-fsd-content-width: 100%;
+  }
+}
