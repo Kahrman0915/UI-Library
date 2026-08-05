@@ -17,6 +17,16 @@ export type DialogProps = Omit<
   /** Close when the backdrop is clicked. Default `false`. */
   closeOnOutsideClick?: boolean;
   /**
+   * Close on Escape. Default `true`.
+   *
+   * Set `false` only to take Escape over yourself — the panel then has no
+   * keyboard exit until you supply one. `FullScreenDialog` is the reason this
+   * exists: it has to inspect what else is open before deciding whether an
+   * Escape was meant for the page or for a menu floating above it, and there is
+   * no way to suppress this listener selectively from outside the component.
+   */
+  closeOnEscape?: boolean;
+  /**
    * ARIA role for the panel. Default `dialog`. `alertdialog` marks an
    * interruptive confirmation that requires a response — used by AlertDialog.
    */

@@ -109,10 +109,10 @@ function Dashboard() {
         <SidebarHeader>
           <SidebarMenu>
             <SidebarMenuItem>
-              <SidebarMenuButton size="lg" tooltip="Acme Inc">
+              <SidebarMenuButton size="lg" tooltip="Workspace">
                 <SquareTerminal />
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
-                  <span style={{ fontWeight: 'var(--font-medium)' }}>Acme Inc</span>
+                  <span style={{ fontWeight: 'var(--font-medium)' }}>Workspace</span>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
                     Enterprise
                   </span>

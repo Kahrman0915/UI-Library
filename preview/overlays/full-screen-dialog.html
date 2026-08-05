@@ -1,0 +1,277 @@
+<!-- @dsCard group="Overlays" -->
+<!DOCTYPE html>
+<html lang="en" data-mode="light">
+  <head>
+    <meta charset="utf-8" />
+    <title>FullScreenDialog</title>
+    <link rel="stylesheet" href="../../dist/styles.css" />
+    <style>
+      body {
+        margin: 0;
+        padding: var(--p-8);
+        font-family: var(--font-family);
+        color: var(--foreground);
+        background: var(--background);
+      }
+      .page {
+        display: grid;
+        gap: var(--p-8);
+        max-width: var(--max-w-4xl);
+      }
+      h1 {
+        margin: 0;
+        font-size: var(--text-2xl);
+        font-weight: var(--font-semibold);
+      }
+      h2 {
+        margin: 0 0 var(--p-2) 0;
+        font-size: var(--text-lg);
+        font-weight: var(--font-semibold);
+      }
+      p {
+        margin: 0 0 var(--p-4) 0;
+        font-size: var(--text-sm);
+        line-height: var(--leading-5);
+        color: var(--muted-foreground);
+        max-width: var(--max-w-3xl);
+      }
+      code {
+        font-family: var(--font-family-mono);
+        font-size: var(--text-code);
+        background: var(--muted);
+        padding: 2px var(--p-1-5);
+        border-radius: var(--rounded-sm);
+      }
+      /*
+        Re-anchoring, the convention dialog.html established: the real component
+        is portalled and `position: fixed`, which would escape to the page
+        viewport and pile up in the corner. Scope a relative .stage and re-declare
+        the overlay as absolute — a relative parent DOES contain an absolute
+        child, which is why this works (it would NOT contain a fixed one).
+      */
+      .stage {
+        position: relative;
+        min-height: 340px;
+        border-radius: var(--rounded-md);
+        overflow: hidden;
+        border: var(--border-w-100) solid var(--border);
+      }
+      /* The "before" frame — just the shell, so the reader can see what the
+         overlay is about to cover. */
+      .stage--short {
+        min-height: 140px;
+        margin-bottom: var(--p-3);
+      }
+      /* A miniature workspace, so the point of the component is visible: it
+         covers the shell it was opened from. */
+      .shell {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        background: var(--background);
+      }
+      .shell__nav {
+        width: 132px;
+        flex-shrink: 0;
+        background: var(--sidebar);
+        border-right: var(--border-w-100) solid var(--sidebar-border);
+        padding: var(--p-2);
+        display: flex;
+        flex-direction: column;
+        gap: var(--p-1);
+        font-size: var(--text-xs);
+        color: var(--sidebar-foreground);
+      }
+      .shell__row {
+        padding: var(--p-1-5) var(--p-2);
+        border-radius: var(--rounded-md);
+      }
+      .shell__row--active { background: var(--sidebar-accent); }
+      .shell__main { flex: 1; min-width: 0; }
+      .shell__tabs {
+        display: flex;
+        gap: var(--p-1);
+        padding: var(--p-2);
+        border-bottom: var(--border-w-100) solid var(--border);
+        font-size: var(--text-xs);
+        color: var(--muted-foreground);
+      }
+      .shell__tab { padding: var(--p-1) var(--p-2-5); border-radius: var(--rounded-md); }
+      .shell__tab--active { background: var(--accent); color: var(--foreground); }
+      /* Static page: pin the entrance animation to its end state, or the card
+         renders mid-fade. */
+      .ui-dialog-overlay {
+        animation: none !important;
+      }
+      .ui-full-screen-dialog {
+        animation: none !important;
+        transform: none !important;
+      }
+      .icon {
+        width: 16px;
+        height: 16px;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        fill: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div>
+        <h1>FullScreenDialog</h1>
+        <p>
+          A page rendered over the one the user was on — Help, Feedback, settings: anything that is
+          a <strong>destination</strong> rather than a question. Covers the viewport edge to edge
+          with no rounding, so nothing of the app shell shows through, then returns the user exactly
+          where they were. Composed of a <code>FullScreenDialog</code> root plus
+          <code>FullScreenDialogHeader</code> (required — it carries both the accessible name and
+          the close X), <code>FullScreenDialogBody</code> and <code>FullScreenDialogFooter</code>.
+        </p>
+        <p>
+          It is a preset of <code>Dialog</code>: the portal, focus trap, scroll lock, focus restore
+          and exit animation are all Dialog's. Dismissal is the X or Escape —
+          <strong>no click-outside</strong>, so a stray click cannot discard a half-filled form.
+          Use <code>Dialog</code> for one focused task in a card, <code>Drawer</code> for content
+          that belongs beside the page, and <code>AlertDialog</code> for a question with two answers.
+        </p>
+      </div>
+
+      <div>
+        <h2>Over the workspace it was opened from</h2>
+        <p>
+          Before: a workspace with a sidebar and a tab row. After: the same frame with the page
+          over it — the shell is <em>completely</em> covered, which is the whole point of choosing
+          this over a <code>Dialog</code>. The header hairline runs edge to edge while the title
+          aligns to the content column below it.
+        </p>
+        <div class="stage stage--short">
+          <div class="shell">
+            <div class="shell__nav">
+              <div class="shell__row">Home</div>
+              <div class="shell__row shell__row--active">Revenue</div>
+              <div class="shell__row">Pipeline</div>
+            </div>
+            <div class="shell__main">
+              <div class="shell__tabs">
+                <div class="shell__tab shell__tab--active">Revenue</div>
+                <div class="shell__tab">Pipeline</div>
+              </div>
+              <div style="padding: var(--p-4); font-size: var(--text-xs); color: var(--muted-foreground)">
+                The dashboard the user was looking at.
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="stage">
+          <div class="shell">
+            <div class="shell__nav">
+              <div class="shell__row">Home</div>
+              <div class="shell__row shell__row--active">Revenue</div>
+              <div class="shell__row">Pipeline</div>
+            </div>
+            <div class="shell__main">
+              <div class="shell__tabs">
+                <div class="shell__tab shell__tab--active">Revenue</div>
+                <div class="shell__tab">Pipeline</div>
+              </div>
+            </div>
+          </div>
+          <div class="ui-dialog-overlay" role="presentation" style="position: absolute; inset: 0;">
+            <div
+              id="fsd-1"
+              class="ui-dialog ui-full-screen-dialog ui-full-screen-dialog--content-lg"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="fsd-1-title"
+            >
+              <div class="ui-dialog__header">
+                <div class="ui-dialog__header-content ui-dialog__header-content--left">
+                  <h2 id="fsd-1-title" class="ui-dialog__title">Help &amp; feedback</h2>
+                  <p class="ui-dialog__description">Search the docs, or tell us what is not working.</p>
+                </div>
+                <button type="button" class="ui-close-button ui-close-button--background" aria-label="Close dialog">
+                  <span><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+                </button>
+              </div>
+              <div class="ui-dialog__body ui-dialog__body--left">
+                <div class="ui-item ui-item--outline ui-item--sz-default">
+                  <div class="ui-item__content">
+                    <div class="ui-item__title">Getting started</div>
+                    <div class="ui-item__description">Read the guide</div>
+                  </div>
+                </div>
+                <div class="ui-item ui-item--outline ui-item--sz-default">
+                  <div class="ui-item__content">
+                    <div class="ui-item__title">Sharing a dashboard</div>
+                    <div class="ui-item__description">Read the guide</div>
+                  </div>
+                </div>
+                <div class="ui-item ui-item--outline ui-item--sz-default">
+                  <div class="ui-item__content">
+                    <div class="ui-item__title">Billing and invoices</div>
+                    <div class="ui-item__description">Read the guide</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <h2>A form, at <code>contentWidth="md"</code></h2>
+        <p>
+          The panel still fills the viewport; only the content column is capped, so a label and its
+          input stay in one glance rather than a screen apart on a wide monitor. The body remains
+          the full-width scroll container, so its scroll bar hugs the viewport edge rather than the
+          column edge.
+        </p>
+        <div class="stage">
+          <div class="shell">
+            <div class="shell__nav">
+              <div class="shell__row">Home</div>
+              <div class="shell__row shell__row--active">Revenue</div>
+            </div>
+            <div class="shell__main"><div class="shell__tabs"><div class="shell__tab shell__tab--active">Revenue</div></div></div>
+          </div>
+          <div class="ui-dialog-overlay" role="presentation" style="position: absolute; inset: 0;">
+            <div
+              id="fsd-2"
+              class="ui-dialog ui-full-screen-dialog ui-full-screen-dialog--content-md"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="fsd-2-title"
+            >
+              <div class="ui-dialog__header">
+                <div class="ui-dialog__header-content ui-dialog__header-content--left">
+                  <h2 id="fsd-2-title" class="ui-dialog__title">Send feedback</h2>
+                  <p class="ui-dialog__description">Product, bug report, or anything else on your mind.</p>
+                </div>
+                <button type="button" class="ui-close-button ui-close-button--background" aria-label="Close dialog">
+                  <span><svg class="icon" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></span>
+                </button>
+              </div>
+              <div class="ui-dialog__body ui-dialog__body--left">
+                <div class="ui-input-field ui-input-field--sz-default">
+                  <label class="ui-label ui-label--sz-default" for="fsd-2-subject"><span class="ui-label__text">Subject</span></label>
+                  <div class="ui-input-wrap"><input id="fsd-2-subject" type="text" class="ui-input" placeholder="One line" /></div>
+                </div>
+                <div class="ui-input-field ui-input-field--sz-default">
+                  <label class="ui-label ui-label--sz-default" for="fsd-2-body"><span class="ui-label__text">Details</span></label>
+                  <div class="ui-input-wrap ui-input-wrap--multi"><textarea id="fsd-2-body" class="ui-textarea" rows="4" placeholder="What happened?"></textarea></div>
+                </div>
+              </div>
+              <div class="ui-dialog__footer">
+                <button type="button" class="ui-button ui-button--default ui-button--default-ghost ui-button--sz-default">Cancel</button>
+                <button type="button" class="ui-button ui-button--default ui-button--default-default ui-button--sz-default">Send feedback</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

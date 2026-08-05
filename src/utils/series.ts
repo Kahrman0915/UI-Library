@@ -24,7 +24,7 @@ export type SlotAssignment<T> = {
  * COLOUR FOLLOWS THE ENTITY, NEVER ITS RANK. Slots are derived once from the
  * full declared list and keyed by `key`, so hiding a series via the legend must
  * not renumber the survivors. Assigning by "position among visible series" is
- * the classic bug: a reader who learned "Acme is blue" watches Acme turn orange
+ * the classic bug:  * the classic bug: a reader who learned "Direct is blue" watches Direct turn orange
  * because someone filtered out a different company. Callers therefore pass the
  * COMPLETE list here and filter for rendering afterwards — never the reverse.
  *

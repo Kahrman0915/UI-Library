@@ -537,6 +537,20 @@ export type {
   DrawerSide,
 } from './components/Drawer';
 
+export {
+  default as FullScreenDialog,
+  FullScreenDialogHeader,
+  FullScreenDialogBody,
+  FullScreenDialogFooter,
+} from './components/FullScreenDialog';
+export type {
+  FullScreenDialogProps,
+  FullScreenDialogHeaderProps,
+  FullScreenDialogBodyProps,
+  FullScreenDialogFooterProps,
+  FullScreenDialogContentWidth,
+} from './components/FullScreenDialog';
+
 export { default as DirectionProvider, useDirection } from './components/Direction';
 export type { Direction, DirectionProviderProps } from './components/Direction';
 
