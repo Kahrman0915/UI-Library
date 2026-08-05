@@ -33,7 +33,9 @@
     "typecheck": "tsc --noEmit",
     "test:contrast": "node scripts/contrast-check.mjs",
     "test:preview": "node scripts/check-vocabulary.mjs",
-    "test:poc-css": "node scripts/check-poc-css.mjs"
+    "test:poc-css": "node scripts/check-poc-css.mjs",
+    "test:palette": "node scripts/check-palette.mjs",
+    "test:chart-a11y": "node scripts/check-chart-a11y.mjs"
   },
   "peerDependencies": {
     "react": ">=18",

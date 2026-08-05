@@ -15,6 +15,7 @@ export default defineConfig({
   resolve: {
     alias: {
       '#components': resolve(__dirname, 'src/components'),
+      '#charts': resolve(__dirname, 'src/charts'),
       '#': resolve(__dirname, 'src'),
     },
   },

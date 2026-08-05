@@ -468,13 +468,86 @@ html {
   --info-hover: #025582;
   --info-ring: rgba(2, 106, 162, 0.5);
 
-  /* Chart */
-  --chart-1: #cbd5e1;
-  --chart-2: #94a3b8;
-  --chart-3: #64748b;
-  --chart-4: #475569;
-  --chart-5: #334155;
-  --chart-6: #0f172a;
+  /* Chart — the series ramp. Six slots, deliberately NEUTRAL SLATE for now.
+     Slot N is one series; --chart-muted is the fold past six.
+
+     WHY GREY, ON PURPOSE: a chart that reads in slate is working on form,
+     hierarchy, motion and interaction rather than leaning on hue. Colour can
+     flatter a weak chart. Per-brand colour is a later, additive change — the
+     searched palettes exist in the POC recipe (BRAND_CHARTS) and drop straight
+     in once the charts themselves are right.
+
+     Being one hue makes this the MOST colour-blind-safe palette obtainable:
+     lightness differences survive protan, deutan and tritan intact, which is
+     the exact opposite of an even hue wheel at constant lightness (that scores
+     CVD dE 0.5 against a floor of 8 — the trap that looks most correct).
+
+     Six lightness steps evenly spaced in OKLCH (dL ~0.078), every one clearing
+     3:1 against its surface — the ramp that previously held this name failed
+     that badly, with its two lightest light-mode steps at 1.48 and 2.56, i.e.
+     invisible as marks. Chroma tapers toward the light end: held constant it
+     drifts cyan and stops reading as slate.
+
+     THE SLOTS ARE INTERLEAVED, NOT SEQUENTIAL, and that is the important part.
+     Assigned in lightness order, adjacent slots differ by one step — dE 7.8,
+     which is why touching stacked segments were hard to tell apart. Slot order
+     is instead 4,1,5,2,6,3 through the ramp, so consecutive slots are three
+     steps apart: dE 23.9 light / 21.0 dark, a 3x improvement. Exactly two of
+     the 720 possible orderings reach that optimum; this is the one whose slot 1
+     is also a confident mark (10.02:1 rather than 3.66:1), so the first series
+     a consumer declares is not the faintest thing on the chart.
+
+     WHAT INTERLEAVING DOES NOT FIX: adjacency only. In a six-line chart where
+     every series is visible at once, the two closest lines are still one step
+     apart — 7.8 dE — and no ordering changes that, because six steps must fit
+     between the 3:1 ceiling and the surface. Excellent for bars and stacks,
+     adequate for 2-4 lines, thin at 5-6. The answer there is emphasis (one
+     series bold, the rest muted), not more greys.
+
+     So it is NOT an ordinal ramp and must not be validated as one — the
+     monotone-lightness check would fail it by design. `npm run test:palette`
+     checks adjacent-SLOT separation instead, which is the number that matters.
+
+     THE REMAINING TRADE-OFF: one hue still carries no categorical identity, so
+     the legend, direct labels and table twin do that work. Right default while
+     the charts are being built; not the permanent answer. */
+  --chart-1: #354358; /* step 4 of 6 */
+  --chart-2: #77879e; /* step 1 */
+  --chart-3: #212e42; /* step 5 */
+  --chart-4: #607087; /* step 2 */
+  --chart-5: #0e1b2d; /* step 6 */
+  --chart-6: #4a596f; /* step 3 */
+  /* The "Other" fold and every de-emphasised mark under `emphasis`.
+
+     CONSTRAINED FROM BOTH SIDES, and it is the tighter of the two that sets it.
+
+     It must RECEDE — lighter than every slot here, darker than every slot in
+     dark mode — or context out-weighs the subject. That pushes it toward the
+     surface and away from 3:1, which it does not reach (2.06:1) and structurally
+     cannot: the lightest slot already sits near the floor at 3.66:1, so nothing
+     lighter clears it. Discharged the way the fold always was — the mute drops
+     stroke weight as well as colour, and the table twin and tooltip still carry
+     every muted value.
+
+     It must also stay dE >= 15 FROM EVERY SLOT — the same floor adjacent slots
+     are held to. Miss that and emphasis silently does nothing whenever the
+     subject happens to be the nearest slot: the reader sees two identical
+     colours and reasonably concludes they are one series. The previous dark
+     value was dE 2.7 from --chart-2 and had exactly that bug, in the FOLD as
+     well as in emphasis, which is why `npm run test:palette` now gates it.
+
+     These two pull opposite ways, so each value is the most visible point on the
+     slate ramp that still clears 15. Light was 1.48:1 (too faint to trace once
+     the stroke thins); dark was 3.07:1 but indistinguishable from a real slot,
+     which is the worse failure of the two — a faint mark is merely quiet, a
+     colliding one is wrong. */
+  --chart-muted: #a9b6c7;
+
+
+  /* Chart chrome. Recessive by rule — never borrows a series token. */
+  --chart-surface: #ffffff;
+  --chart-grid: rgba(100, 116, 139, 0.16);
+  --chart-axis: #cbd5e1;
 
   /* Overlay alpha ramp — white scrim at increasing opacity (legacy) */
   --opacity-100: rgba(255, 255, 255, 0);
@@ -737,13 +810,29 @@ html {
   --info-hover: #a5e3fe;
   --info-ring: rgba(124, 212, 253, 0.5);
 
-  /* Chart — inverted slate ramp so series stay visible on the dark background */
-  --chart-1: #f8fafc;
-  --chart-2: #e2e8f0;
-  --chart-3: #cbd5e1;
-  --chart-4: #94a3b8;
-  --chart-5: #64748b;
-  --chart-6: #475569;
+  /* Chart — the same ramp, stepped for the dark surface. It runs the other way
+     (dark → light) because "further from the page" is the direction that
+     matters, not "darker". Slot 1 stays the nearest to the surface in both
+     modes so a series keeps its relative weight across a mode toggle. */
+  --chart-1: #afbccd; /* step 4 of 6 */
+  --chart-2: #6b7c93; /* step 1 */
+  --chart-3: #c7d2e1; /* step 5 */
+  --chart-4: #8190a6; /* step 2 */
+  --chart-5: #e0e9f5; /* step 6 */
+  --chart-6: #98a6ba; /* step 3 */
+  /* Was #64748b, which sat dE 2.7 from --chart-2 — close enough that a folded
+     "Other" and a real series read as the same colour, and emphasising slot 2
+     produced no visible emphasis at all. See the light block for the full
+     reasoning; this trades 3.07:1 down to 1.79:1 to buy dE 15.4, because a mute
+     that COLLIDES with a slot is a wrong chart, while a faint one is a quiet
+     one. Recedes downward here, toward the surface, as the ramp does. */
+  --chart-muted: #425064;
+
+
+  /* Chart chrome. Recessive by rule — never borrows a series token. */
+  --chart-surface: #1e293b;
+  --chart-grid: rgba(148, 163, 184, 0.18);
+  --chart-axis: #475569;
 
   /* Overlay alpha ramp — dark scrim at increasing opacity (legacy) */
   --opacity-100: rgba(15, 23, 42, 0);

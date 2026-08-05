@@ -55,6 +55,10 @@ const preview: Preview = {
           'Foundations',
           ['Overview', 'Typography', 'Spacing & Sizing', 'Motion', 'Tokens', 'Themes'],
           'Components',
+          // Charts are their own subsystem, not a member of Components: own
+          // frame, own maths, own accessibility gate.
+          'Charts',
+          ['Overview', 'Bar', 'Line', 'Area'],
           'Hooks',
           'Prototypes',
         ],

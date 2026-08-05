@@ -31,6 +31,10 @@ export { default as Blockquote } from './components/Blockquote';
 export type { BlockquoteProps } from './components/Blockquote';
 
 export { default as Code, CodeBlock } from './components/Code';
+
+// ── Charts ───────────────────────────────────────────────────────────────────
+// Its own subsystem, exported wholesale. See src/charts/index.ts.
+export * from './charts';
 export type { CodeProps, CodeBlockProps } from './components/Code';
 
 export { default as StatusDot } from './components/StatusDot';
