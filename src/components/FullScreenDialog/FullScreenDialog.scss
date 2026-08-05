@@ -84,7 +84,19 @@
   // (0,3,0) — outranks .ui-dialog__body--left / --center, whose flex alignment
   // means nothing in a grid.
   align-items: start;
-  padding: var(--p-8) var(--p-6);
+  // padding-top IS the header-to-content gap (32px) — the header contributes
+  // nothing below itself, so this one value owns the whole space. It is a step
+  // above the horizontal padding on purpose: with the rule under the
+  // description gone, that vertical space is the only thing separating the
+  // header from the content, so it has to do more work than a normal inset.
+  //
+  // The horizontal padding is not arbitrary: it must match the header's
+  // padding-inline floor, and it does so algebraically rather than by accident.
+  // The column is centred inside a content box already inset by p-6 on both
+  // sides, so its left edge lands at `p-6 + (panel - 2*p-6 - column) / 2`,
+  // which reduces to `(panel - column) / 2` — exactly what the header computes.
+  // Change one and the title stops lining up with the content under it.
+  padding: var(--p-8) var(--p-6) var(--p-6);
 }
 
 // Header and footer stay full-bleed — the hairline and the footer's fill run
@@ -99,8 +111,26 @@
   );
 }
 
+// A page opens like a page, not like a dialog: the title sits well down from
+// the top edge rather than tight against it, and there is no rule under the
+// description — at this scale the type hierarchy separates the header from the
+// content on its own, and a hairline reads as a panel seam.
+//
+// padding-bottom is 0 ON PURPOSE. The gap below the header belongs to the body
+// (see its padding-top), so the space between the description and the first
+// piece of content is ONE value rather than two that have to be kept in sync.
 .ui-dialog.ui-full-screen-dialog .ui-dialog__header {
-  padding-block: var(--p-4);
+  padding-block: var(--p-10) 0;
+  border-bottom: 0;
+}
+
+// Page-scale heading. Dialog's title is 16px on a 16px line height, which is
+// fine for a card and would clip badly at 36px — the leading has to move with
+// the size, so both are set here rather than only the font-size.
+.ui-dialog.ui-full-screen-dialog .ui-dialog__title {
+  font-size: var(--text-4xl);
+  font-weight: var(--font-semibold);
+  line-height: var(--leading-11);
 }
 
 // ── Content widths ──────────────────────────────────────────────────────────

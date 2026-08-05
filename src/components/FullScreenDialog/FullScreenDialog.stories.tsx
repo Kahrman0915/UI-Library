@@ -1,6 +1,9 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { CircleHelp, MessageSquare, Search } from 'lucide-react';
+import {
+  ChartColumn, ChartLine, CircleHelp, FileText, House, Layers,
+  LifeBuoy, MessageSquare, Search, Users,
+} from 'lucide-react';
 import FullScreenDialog, {
   FullScreenDialogHeader,
   FullScreenDialogBody,
@@ -15,6 +18,20 @@ import Select, {
   SelectItem,
 } from '../Select/Select';
 import Item, { ItemContent, ItemTitle, ItemDescription } from '../Item/Item';
+import Accordion, {
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from '../Accordion/Accordion';
+import Card, { CardHeader, CardBody, CardFooter } from '../Card/Card';
+import ScrollArea from '../ScrollArea/ScrollArea';
+import Separator from '../Separator/Separator';
+import Tabs, { TabsList, TabsTrigger, TabsContent } from '../Tabs/Tabs';
+import Sidebar, {
+  SidebarProvider, SidebarHeader, SidebarContent, SidebarFooter, SidebarInset,
+  SidebarGroup, SidebarGroupLabel, SidebarGroupContent, SidebarMenu,
+  SidebarMenuItem, SidebarMenuButton, SidebarRail,
+} from '../Sidebar/Sidebar';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof FullScreenDialog> = {
@@ -114,60 +131,97 @@ const PROSE: React.CSSProperties = {
   lineHeight: 'var(--leading-6)',
 };
 
-// ── A fake workspace behind the overlay ─────────────────────────────────────
-// Not decoration: this is the regression test for "nothing shows through". The
-// sidebar sits at --z-30 and the overlay at --z-50, and the only honest way to
-// check that is to put a real shell underneath.
+// ── A real workspace behind the overlay ─────────────────────────────────────
+// Built from the library's own Sidebar and Tabs rather than hand-rolled divs.
+// That matters twice over: it is the scenario this component was designed for
+// (a Help link pinned to the sidebar footer), and it is the honest regression
+// test for "nothing shows through" — the REAL sidebar sits at --z-30 with a
+// viewport-fixed panel, and the overlay has to cover that, not a stand-in.
 const WorkspaceShell = ({ onOpen }: { onOpen: () => void }) => (
-  <div style={{ display: 'flex', height: '100vh', background: 'var(--background)' }}>
-    <aside
-      style={{
-        width: 'var(--sidebar-width)',
-        flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        background: 'var(--sidebar)',
-        borderRight: 'var(--border-w-100) solid var(--sidebar-border)',
-        padding: 'var(--p-2)',
-      }}
-    >
-      <div style={{ padding: 'var(--p-2)', fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>
-        Acme workspace
-      </div>
-      <div style={{ display: 'grid', gap: 'var(--p-1)', flex: 1, alignContent: 'start' }}>
-        {['Home', 'Revenue', 'Pipeline', 'Retention'].map((s) => (
-          <div key={s} style={{ padding: 'var(--p-2)', borderRadius: 'var(--rounded-md)', fontSize: 'var(--text-sm)', color: 'var(--sidebar-foreground)' }}>
-            {s}
-          </div>
-        ))}
-      </div>
-      {/* The trigger the component was designed for. */}
-      <Button id="ws-help" style="ghost" size="sm" onClick={onOpen} IconLeft={CircleHelp} label="Help & feedback" />
-    </aside>
+  <SidebarProvider>
+    <Sidebar collapsible="icon">
+      <SidebarHeader>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton size="lg" tooltip="Acme workspace">
+              <Layers />
+              <span>Acme workspace</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarHeader>
 
-    <main style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', gap: 'var(--p-1)', padding: 'var(--p-2)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-        {['Revenue', 'Pipeline'].map((t, i) => (
-          <div key={t} style={{
-            padding: 'var(--p-1-5) var(--p-3)', fontSize: 'var(--text-sm)',
-            borderRadius: 'var(--rounded-md)',
-            background: i === 0 ? 'var(--accent)' : 'transparent',
-          }}>{t}</div>
-        ))}
-      </div>
-      <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-4)', alignContent: 'start' }}>
-        <h1 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)' }}>Revenue</h1>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--p-4)' }}>
-          {['MRR', 'Churn', 'Expansion'].map((k) => (
-            <div key={k} style={{ padding: 'var(--p-4)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', background: 'var(--card)' }}>
-              <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{k}</div>
-              <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>—</div>
-            </div>
-          ))}
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Dashboards</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {[
+                { label: 'Home', Icon: House },
+                { label: 'Revenue', Icon: ChartLine },
+                { label: 'Pipeline', Icon: ChartColumn },
+                { label: 'Retention', Icon: Users },
+              ].map(({ label, Icon }, i) => (
+                <SidebarMenuItem key={label}>
+                  <SidebarMenuButton isActive={i === 1} tooltip={label}>
+                    <Icon />
+                    <span>{label}</span>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      {/* The trigger this whole component exists for. */}
+      <SidebarFooter>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton tooltip="Help &amp; feedback" onClick={onOpen}>
+              <CircleHelp />
+              <span>Help &amp; feedback</span>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
+      </SidebarFooter>
+      <SidebarRail />
+    </Sidebar>
+
+    <SidebarInset>
+      {/* Tabs as the workspace's open-dashboard row. Content tabs, not browser
+          tabs — the library has no per-tab-close strip, which is noted in
+          CLAUDE.md as its own component if the shell ever needs one. */}
+      <Tabs id="ws-tabs" defaultValue="revenue">
+        <div style={{ padding: 'var(--p-2)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+          <TabsList>
+            <TabsTrigger value="revenue">Revenue</TabsTrigger>
+            <TabsTrigger value="pipeline">Pipeline</TabsTrigger>
+          </TabsList>
         </div>
-      </div>
-    </main>
-  </div>
+        <TabsContent value="revenue">
+          <div style={{ padding: 'var(--p-6)', display: 'grid', gap: 'var(--p-4)', alignContent: 'start' }}>
+            <h1 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)' }}>Revenue</h1>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 'var(--p-4)' }}>
+              {['MRR', 'Churn', 'Expansion'].map((k) => (
+                <Card key={k} id={`ws-card-${k}`}>
+                  <CardBody>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{k}</div>
+                    <div style={{ fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)' }}>—</div>
+                  </CardBody>
+                </Card>
+              ))}
+            </div>
+          </div>
+        </TabsContent>
+        <TabsContent value="pipeline">
+          <div style={{ padding: 'var(--p-6)', color: 'var(--muted-foreground)', fontSize: 'var(--text-sm)' }}>
+            Pipeline dashboard.
+          </div>
+        </TabsContent>
+      </Tabs>
+    </SidebarInset>
+  </SidebarProvider>
 );
 
 export const OverAppShell: Story = {
@@ -195,6 +249,114 @@ export const OverAppShell: Story = {
           </FullScreenDialogBody>
         </FullScreenDialog>
       </>
+    );
+  },
+};
+
+const FAQS = [
+  {
+    q: 'How do I invite someone to my workspace?',
+    a: 'Open the workspace switcher, choose Members, then Invite. Invitees get an email link that expires after seven days. Members added this way start on the Viewer role — you can change it from the same screen once they have accepted.',
+  },
+  {
+    q: 'Can I move a dashboard between workspaces?',
+    a: 'Yes. Open the dashboard, choose Move from the overflow menu, and pick the destination. Anything the dashboard depends on — saved filters, shared queries — moves with it. People who had access through the old workspace lose it, so re-share afterwards if you need to.',
+  },
+  {
+    q: 'Why does my chart show fewer rows than the source table?',
+    a: 'Charts apply the dashboard-level filters before they draw, and rows with a null on the grouping column are dropped rather than bucketed into an "unknown" group. Clear the filters in the toolbar to compare against the raw table.',
+  },
+  {
+    q: 'How long is data kept after I delete it?',
+    a: 'Deleted dashboards sit in Trash for 30 days and can be restored by anyone with Editor access. After that they are removed permanently and cannot be recovered, including by support.',
+  },
+  {
+    q: 'Do you support single sign-on?',
+    a: 'SAML and OIDC are available on Business and Enterprise plans. Setup takes about ten minutes and needs a workspace Owner plus someone who can add an application in your identity provider.',
+  },
+];
+
+/**
+ * The story the component was designed against: a real Help page with sections,
+ * not a paragraph of filler. Also the honest test of the content column — an
+ * accordion and a two-up card row have to sit comfortably at the same width.
+ */
+export const HelpAndSupport: Story = {
+  name: 'Help & Support page',
+  render: function HelpPage() {
+    const [open, setOpen] = useState(false);
+    return (
+      <div style={{ padding: 'var(--p-8)' }}>
+        <Button id="fsd-help-open" onClick={() => setOpen(true)} IconLeft={CircleHelp} label="Help & Support" />
+        <FullScreenDialog id="fsd-help" open={open} onClose={() => setOpen(false)}>
+          <FullScreenDialogHeader
+            title="Help &amp; Support"
+            description="Answers to the questions we get most, and a way to reach a human when they are not enough."
+          />
+          <FullScreenDialogBody>
+            <section style={{ display: 'grid', gap: 'var(--p-4)' }}>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)' }}>
+                Frequently asked questions
+              </h3>
+              {/* `collapsible` so the last open item can be closed again — on a
+                  reference page nothing should be forced open. */}
+              <Accordion id="fsd-help-faq" type="single" collapsible>
+                {FAQS.map((f, i) => (
+                  <AccordionItem key={f.q} value={`faq-${i}`}>
+                    <AccordionTrigger>{f.q}</AccordionTrigger>
+                    <AccordionContent>
+                      <p style={{ margin: 0, fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)' }}>
+                        {f.a}
+                      </p>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+            </section>
+
+            <Separator id="fsd-help-sep" />
+
+            {/* Two-up, and it collapses to one column under 640px rather than
+                squeezing two unreadable cards side by side. */}
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))',
+                gap: 'var(--p-4)',
+                marginTop: 'var(--p-8)',
+              }}
+            >
+              {/* Flex column + a growing header so BOTH footers sit on the same
+                  line. The grid already stretches the cards to equal height;
+                  without this the shorter description leaves its CTA floating
+                  mid-card and the pair reads as misaligned. */}
+              <Card id="fsd-help-terms" style={{ display: 'flex', flexDirection: 'column' }}>
+                <CardHeader
+                  style={{ flex: 1 }}
+                  id="fsd-help-terms"
+                  title="Terms of use"
+                  description="What you agree to when you use the product, in plain language, plus our privacy and data-retention policies."
+                />
+                <CardFooter>
+                  <Button id="fsd-help-terms-cta" style="outline" IconLeft={FileText} label="Read the terms" onClick={() => {}} />
+                </CardFooter>
+              </Card>
+
+              <Card id="fsd-help-contact" style={{ display: 'flex', flexDirection: 'column' }}>
+                <CardHeader
+                  style={{ flex: 1 }}
+                  id="fsd-help-contact"
+                  title="Still need more assistance?"
+                  description="Our support team replies within one business day, and sooner on Business and Enterprise plans."
+                />
+                <CardFooter>
+                  <Button id="fsd-help-contact-cta" IconLeft={LifeBuoy} label="Contact support" onClick={() => {}} />
+                </CardFooter>
+              </Card>
+            </div>
+          </FullScreenDialogBody>
+        </FullScreenDialog>
+      </div>
     );
   },
 };
@@ -292,21 +454,53 @@ export const ContentWidths: Story = {
   },
 };
 
+const CLAUSE =
+  'Every part that scrolls is the body; the header and footer sit outside it and are pinned ' +
+  'to the top and bottom of the viewport, so they stay put however far the content runs.';
+
 export const LongContent: Story = {
-  name: 'The body scrolls, the chrome does not',
+  name: 'Two kinds of scrolling',
   render: function Long() {
     const [open, setOpen] = useState(false);
     return (
       <div style={{ padding: 'var(--p-8)' }}>
         <Button id="fsd-long-open" onClick={() => setOpen(true)} label="Open a long page" />
         <FullScreenDialog id="fsd-long" open={open} onClose={() => setOpen(false)}>
-          <FullScreenDialogHeader title="Terms of service" description="Scroll — the header and footer stay put." />
+          <FullScreenDialogHeader
+            title="Terms of service"
+            description="The document sits in a ScrollArea with its own thumb; the page around it scrolls natively. Header and footer stay put through both."
+          />
           <FullScreenDialogBody>
-            {Array.from({ length: 24 }, (_, i) => (
+            {/*
+              ScrollArea, used the way it is meant to be: a bounded region with a
+              definite height. It CANNOT wrap the body itself — the body is
+              already the page's scroll container, and ScrollArea is
+              `overflow: hidden` needing a height from its parent, so nesting one
+              there would produce two scrollers fighting over the same gesture.
+            */}
+            <ScrollArea
+              id="fsd-long-doc"
+              style={{
+                height: 'var(--h-64)',
+                border: 'var(--border-w-100) solid var(--border)',
+                borderRadius: 'var(--rounded-lg)',
+                padding: 'var(--p-4)',
+              }}
+            >
+              {Array.from({ length: 20 }, (_, i) => (
+                <p key={i} style={{ ...PROSE, marginBottom: 'var(--p-4)' }}>
+                  <strong style={{ color: 'var(--foreground)' }}>{i + 1}.</strong> {CLAUSE}
+                </p>
+              ))}
+            </ScrollArea>
+
+            <Separator id="fsd-long-sep" />
+
+            {/* Enough below the pane that the BODY scrolls too, which is what
+                proves the chrome is pinned rather than merely tall. */}
+            {Array.from({ length: 8 }, (_, i) => (
               <p key={i} style={PROSE}>
-                <strong style={{ color: 'var(--foreground)' }}>{i + 1}.</strong> Every part
-                that scrolls is the body; the header and footer sit outside it and are
-                pinned to the top and bottom of the viewport.
+                <strong style={{ color: 'var(--foreground)' }}>Appendix {i + 1}.</strong> {CLAUSE}
               </p>
             ))}
           </FullScreenDialogBody>
