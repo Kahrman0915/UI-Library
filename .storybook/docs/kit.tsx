@@ -3,28 +3,60 @@ import { Code } from '../../src/index';
 import './docs.scss';
 
 /**
- * Render a `parameters.ui` string, turning `backticked` spans into inline code.
+ * Render a `parameters.ui` string, turning `backticked` spans into inline code
+ * and `**bold**` into `<strong>`.
  *
  * The prose in `parameters.ui` is plain strings by design — parameters cross
  * Storybook's channel on every prepared-story message, so React elements don't
- * belong in them. Markdown's one useful affordance here is inline code (naming
- * a sibling component, a prop, a token), so that much is parsed back out at
- * render time and handed to our own `Code`.
+ * belong in them. Three Markdown affordances survive that constraint and are
+ * parsed back out at render time: inline code (naming a sibling component, a
+ * prop, a token), `{@link Name}` (a real cross-reference in an editor, literal
+ * braces in a table), and bold. Paragraph breaks are the fourth — a `\n\n` is
+ * honoured by `white-space: pre-line` on the elements that render prose, after
+ * `unwrap()` below has made that the ONLY newline that survives.
+ *
+ * Anything beyond those four renders literally. Don't reach for headings,
+ * lists or links here — a docs string that needs them wants to be a story.
  */
 export function prose(text: string): ReactNode {
-  if (!text.includes('`') && !text.includes('{@link')) return text;
-  // Backticked spans, plus JSDoc `{@link Name}` — which is a real cross-reference
-  // in an editor but renders as literal braces in a table. Both become inline
-  // code; the split keeps one capture group so odd indices are the matches.
+  const src = unwrap(text);
+  if (!src.includes('`') && !src.includes('{@link') && !src.includes('**')) {
+    return src;
+  }
+  // Three capture groups, so `split` emits a repeating stride of four:
+  // [plain, code, link, bold, plain, …]. Only one group is ever defined per
+  // match — the other two come back `undefined` and are dropped.
+  return src
+    .split(/`([^`]+)`|\{@link\s+([^}]+)\}|\*\*([^*]+)\*\*/g)
+    .map((part, i) => {
+      if (part === undefined) return null;
+      const slot = i % 4;
+      if (slot === 0) return <Fragment key={i}>{part}</Fragment>;
+      if (slot === 3) return <strong key={i}>{part}</strong>;
+      return <Code key={i}>{part.trim()}</Code>;
+    });
+}
+
+/**
+ * Markdown's paragraph rule: a single newline is a source wrap, a blank line is
+ * a break. Unwrap the first kind so `white-space: pre-line` only ever sees the
+ * second.
+ *
+ * This is load-bearing, not tidying. Prose reaches `prose()` from two places
+ * that wrap differently: `parameters.ui` strings, which are concatenated
+ * literals carrying no incidental newlines, and JSDoc comments above a story or
+ * a prop, which arrive from docgen with the author's source wrapping intact.
+ * Without this, `pre-line` breaks those JSDoc-authored descriptions at whatever
+ * column the comment happened to wrap at — mid-sentence, on seven component
+ * pages. Collapsing here also means an author can wrap a `parameters.ui` string
+ * across lines later without it silently becoming a hard break.
+ */
+function unwrap(text: string): string {
+  if (!text.includes('\n')) return text;
   return text
-    .split(/`([^`]+)`|\{@link\s+([^}]+)\}/g)
-    .map((part, i) =>
-      part === undefined ? null : i % 3 === 0 ? (
-        <Fragment key={i}>{part}</Fragment>
-      ) : (
-        <Code key={i}>{part.trim()}</Code>
-      ),
-    );
+    .split(/\n[^\S\n]*\n\s*/)
+    .map((para) => para.replace(/\s*\n\s*/g, ' ').trim())
+    .join('\n\n');
 }
 
 /**

@@ -111,12 +111,21 @@
 // to lede-sized text, which pulls the lines apart and detaches the paragraph
 // from the title above it. `--leading-7` is 1.56, and the tighter block lets the
 // gap under the title close up too.
+//
+// `white-space: pre-line` is what makes a `\n\n` in a `parameters.ui` string a
+// real paragraph break. Prose comes through as one plain string (see `prose()`
+// in kit.tsx), so there is no second `<p>` to carry a margin — the blank line
+// IS the break. `pre-line` still collapses runs of spaces and wraps normally,
+// so source indentation in the concatenated string literals costs nothing.
+// The other two prose-bearing elements — `.ui-docs-p` and
+// `.ui-docs-example__desc` — carry the same rule for the same reason.
 .ui-docs__lede {
   margin: var(--p-3) 0 0;
   max-width: var(--max-w-2xl);
   font-size: var(--text-lg);
   line-height: var(--leading-7);
   color: var(--muted-foreground);
+  white-space: pre-line;
 }
 
 .ui-docs__pills {
@@ -186,10 +195,19 @@
   font-size: var(--text-sm);
   line-height: var(--leading-6);
   color: var(--muted-foreground);
+  white-space: pre-line;
 }
 
 .ui-docs-p:last-child {
   margin-bottom: 0;
+}
+
+// `**bold**` from `prose()`. Pinned rather than left to the UA default so a
+// reset can't quietly flatten emphasis, and kept on the surrounding colour —
+// bold in muted prose is emphasis, not a second text colour.
+.ui-docs strong {
+  font-weight: var(--font-semibold);
+  color: inherit;
 }
 
 // ---------------------------------------------------------------------------
@@ -645,6 +663,7 @@
   font-size: var(--text-sm);
   line-height: var(--leading-6);
   color: var(--muted-foreground);
+  white-space: pre-line;
 }
 
 // ---------------------------------------------------------------------------
