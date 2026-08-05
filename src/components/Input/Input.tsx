@@ -49,7 +49,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
           className={`ui-input-wrap${error ? ' ui-input-wrap--error' : ''}${disabled ? ' ui-input-wrap--disabled' : ''}`}
         >
           {IconLeft && (
-            <span className="ui-input__icon ui-input__icon--left" aria-hidden="true">
+            <span className="ui-input__icon" aria-hidden="true">
               <IconLeft />
             </span>
           )}
@@ -95,10 +95,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
             </span>
           )}
           {IconRight && (
-            <span
-              className="ui-input__icon ui-input__icon--right"
-              aria-hidden="true"
-            >
+            <span className="ui-input__icon" aria-hidden="true">
               <IconRight />
             </span>
           )}

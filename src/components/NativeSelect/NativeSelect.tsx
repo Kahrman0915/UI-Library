@@ -81,7 +81,7 @@ const NativeSelect = forwardRef<HTMLSelectElement, NativeSelectProps>(
             </span>
           )}
           <span
-            className="ui-input__icon ui-input__icon--right ui-native-select__chevron"
+            className="ui-input__icon ui-native-select__chevron"
             aria-hidden="true"
           >
             <ChevronDown />
