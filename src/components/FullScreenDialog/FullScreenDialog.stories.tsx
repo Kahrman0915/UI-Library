@@ -44,12 +44,11 @@ const meta: Meta<typeof FullScreenDialog> = {
     ui: {
       description:
         'A page rendered over the one the user was on — Help, Feedback, settings: ' +
-        'anything that is a **destination** rather than a question. Covers the viewport ' +
+        'anything that is a destination rather than a question. Covers the viewport ' +
         'edge to edge, so nothing of the app shell shows through, and returns the user ' +
-        'exactly where they were.\n\n' +
-        'It is a preset of `Dialog`, not a reimplementation. The portal, focus trap, ' +
-        'scroll lock, focus restore and exit animation are all Dialog’s; only the ' +
-        'geometry and the Escape handling are new.',
+        'exactly where they were. It is a preset of `Dialog`, not a reimplementation — ' +
+        'the portal, focus trap, scroll lock, focus restore and exit animation are all ' +
+        'Dialog’s, and only the geometry and the Escape handling are new.',
       tags: ['compound', 'modal', 'portal'],
       usage: {
         when: [
@@ -138,14 +137,16 @@ const PROSE: React.CSSProperties = {
 // test for "nothing shows through" — the REAL sidebar sits at --z-30 with a
 // viewport-fixed panel, and the overlay has to cover that, not a stand-in.
 const WorkspaceShell = ({ onOpen }: { onOpen: () => void }) => (
-  <SidebarProvider>
+  // minHeight released from 100svh so the shell fills its frame rather than the
+  // viewport — see the `contain: layout` note on the story that renders it.
+  <SidebarProvider style={{ minHeight: 0, height: '100%' }}>
     <Sidebar collapsible="icon">
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" tooltip="Acme workspace">
+            <SidebarMenuButton size="lg" tooltip="Workspace">
               <Layers />
-              <span>Acme workspace</span>
+              <span>Workspace</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
@@ -229,7 +230,30 @@ export const OverAppShell: Story = {
   render: function Shell() {
     const [open, setOpen] = useState(false);
     return (
-      <>
+      /*
+        A bounded frame so the docs page does not run a full screen per example.
+        `contain: layout` is load-bearing: the Sidebar's panel is
+        `position: fixed`, and `position: relative` does NOT contain a fixed
+        child — only transform / filter / perspective / contain do. Without it
+        the sidebar escapes to the iframe viewport and the shell claims 100svh.
+
+        MEASURED, because the obvious assumption is wrong: this contains the
+        SIDEBAR but NOT the overlay. Dialog portals to `document.body`, so the
+        overlay is not a descendant of this frame and no containing block here
+        can reach it — it still covers the whole iframe when opened. That is
+        correct behaviour for a full-screen page and would need a portal-target
+        prop on Dialog to change, which is not worth adding for a story.
+      */
+      <div
+        style={{
+          contain: 'layout',
+          position: 'relative',
+          height: 'var(--h-96)',
+          overflow: 'hidden',
+          border: 'var(--border-w-100) solid var(--border)',
+          borderRadius: 'var(--rounded-lg)',
+        }}
+      >
         <WorkspaceShell onOpen={() => setOpen(true)} />
         <FullScreenDialog id="fsd-shell" open={open} onClose={() => setOpen(false)}>
           <FullScreenDialogHeader
@@ -248,7 +272,7 @@ export const OverAppShell: Story = {
             ))}
           </FullScreenDialogBody>
         </FullScreenDialog>
-      </>
+      </div>
     );
   },
 };
@@ -295,7 +319,7 @@ export const HelpAndSupport: Story = {
           />
           <FullScreenDialogBody>
             <section style={{ display: 'grid', gap: 'var(--p-4)' }}>
-              <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)' }}>
+              <h3 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)' }}>
                 Frequently asked questions
               </h3>
               {/* `collapsible` so the last open item can be closed again — on a

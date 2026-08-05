@@ -113,7 +113,7 @@ function Dashboard() {
         <Breadcrumb>
           <BreadcrumbList>
             <BreadcrumbItem>
-              <BreadcrumbLink href="#">Acme</BreadcrumbLink>
+              <BreadcrumbLink href="#">Workspace</BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator />
             <BreadcrumbItem>
