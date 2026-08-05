@@ -49,6 +49,43 @@
   &__action {
     flex-shrink: 0;
     align-self: center;
+
+    // THE ACTION BUTTON STAYS MAIN UNDER EVERY SUB-BRAND.
+    //
+    // An Alert is an interruption, not part of the page's voice. Inside a
+    // themed subtree its action was picking up that brand's --primary, so the
+    // same warning wore a different colour in every product — and on a themed
+    // page the button competed with the real CTA instead of reading as the
+    // alert's own control.
+    //
+    // The whole --primary-* family is rebuilt here from --primary-main, which
+    // no [data-theme] scope remaps. Rebuilding ALL of it is the point: a theme
+    // scope re-declares every derived token, not just --primary, so overriding
+    // --primary alone would leave -soft/-border/-text still themed and produce
+    // a slate fill with a brand-coloured border. Same shape as the theme scopes
+    // in tokens.scss, sourced from main instead of a brand.
+    //
+    // SCOPED TO THE ACTION SLOT, NOT `.ui-alert`. The `brand` variant reads
+    // --primary-light/-text/-border on the alert SURFACE and is supposed to
+    // follow the theme; declaring these on the root would turn that variant
+    // slate as well and quietly delete the only themed Alert.
+    --primary: var(--primary-main);
+    --primary-foreground: var(--primary-main-foreground);
+    --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+    --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
+    --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
+    --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+    --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
+    --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
+    --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  }
+
+  // --primary-soft is the one derived token that is mode-split (8% light /
+  // 10% dark) rather than a single ratio, so it needs its own dark rule the way
+  // tokens.scss gives the themed scopes one. Without it a secondary action
+  // renders its fill 2% thin on dark.
+  [data-mode='dark'] &__action {
+    --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
   }
 
   // Composes CloseButton — only variant-color inheritance, geometry, and

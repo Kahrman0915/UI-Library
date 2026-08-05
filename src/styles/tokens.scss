@@ -367,8 +367,19 @@ html {
   /* Core */
   --background: #ffffff;
   --foreground: #0f172a;
-  --primary: #334155;
-  --primary-foreground: #f8fafc;
+  /* THE MAIN BRAND'S PRIMARY, held separately so it survives theming.
+     A [data-theme] scope remaps --primary; it deliberately does NOT remap these.
+     That makes them the escape hatch for chrome that must stay neutral inside a
+     themed subtree — Alert's action button is the first consumer. Same idea as
+     --tooltip-background below, generalised: instead of one bespoke pair per
+     carve-out, anything can rebuild the whole --primary-* family from these. */
+  --primary-main: #334155;
+  --primary-main-foreground: #f8fafc;
+
+  /* --primary STARTS as main and is what themes move. Sourced from the token
+     above rather than repeating the literal, so the slate lives in one place. */
+  --primary: var(--primary-main);
+  --primary-foreground: var(--primary-main-foreground);
   /* Derived primary family — soft/border/ring/hover for the default variant's
      secondary/outline/ghost/link styles. color-mix keeps them in lockstep with
      --primary, so a theme scope (which remaps --primary) gets themed soft
@@ -718,8 +729,13 @@ html {
   /* Core */
   --background: #0f172a;
   --foreground: #f8fafc;
-  --primary: #cbd5e1;
-  --primary-foreground: #0f172a;
+  /* The main brand's primary, dark. Not remapped by any theme — see the light
+     block for why these exist. */
+  --primary-main: #cbd5e1;
+  --primary-main-foreground: #0f172a;
+
+  --primary: var(--primary-main);
+  --primary-foreground: var(--primary-main-foreground);
   /* Derived primary family (dark). Same color-mix derivation; --foreground is
      light here, so --primary-hover lightens instead of darkens — auto-adapts. */
   --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
