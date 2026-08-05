@@ -34,6 +34,18 @@ const meta: Meta<typeof Command> = {
       tags: ['compound', '9 parts', 'portal'],
       changelog: [
         {
+          date: '2026-08-05',
+          summary:
+            '`CommandDialog` is now the intended 560px wide. It had been rendering at 448px.',
+          detail:
+            '`.ui-command-dialog` set `width: min(560px, …)` but never declared a ' +
+            '`max-width`, so it inherited `max-width: var(--max-w-md)` (448px) from ' +
+            '`.ui-dialog` and was clamped 112px narrower than documented. The panel ' +
+            'geometry moved to a two-class `.ui-dialog.ui-command-dialog` selector ' +
+            'that nulls `max-width` and re-declares `max-height`, matching ' +
+            '`.ui-dialog.ui-full-screen-dialog`.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
