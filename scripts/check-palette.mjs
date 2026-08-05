@@ -30,7 +30,7 @@
 // (BRAND_CHARTS, CHART_THEMING=false). When they land, the categorical checks
 // come back for them.
 //
-// The chart series ramp (--series-1..8) is the one place in the system where a
+// The chart series ramp (--chart-1..6) is the one place in the system where a
 // colour choice is COMPUTED rather than picked. Four constraints hold it, and
 // every one of them was violated by a plausible-looking candidate during the
 // original derivation, so none of them are theoretical:
@@ -207,7 +207,7 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   for (let i = 1; i <= SLOTS; i++) {
     const v = decl(blk, `${PREFIX}-${i}`);
     if (!v || !/^#[0-9a-fA-F]{6}$/.test(v)) {
-      console.log(`\n${mode}\n  ✗ --series-${i} missing or not a plain hex (got ${v})`);
+      console.log(`\n${mode}\n  ✗ --${PREFIX}-${i} missing or not a plain hex (got ${v})`);
       failed = true;
     } else pal.push(v);
   }

@@ -275,11 +275,11 @@ export const BRAND_CHARTS: Record<string, { light: string[]; dark: string[] }> =
 /**
  * Emit a brand's chart slots.
  *
- * --chart-1..6 are the authored names. --series-1..6 are ALIASES so the shipped
- * <Chart> picks them up with no component change — it still reads --series-*,
- * and the rename happens once at adoption rather than twice. 7 and 8 alias the
- * muted token, which makes the six-slot cap visible: a seventh series renders
- * de-emphasised rather than inventing a hue.
+ * --chart-1..6, which is what <Chart> reads directly — no aliases, and none
+ * needed. This block used to emit --series-1..8 as well, back when the shipped
+ * component still read the old names; that rename has since landed everywhere,
+ * so the aliases were removed. A seventh series is not given a hue: it folds to
+ * --chart-muted, which is what makes the six-slot cap visible rather than silent.
  */
 function chartVars(k: string, mode: 'light' | 'dark'): string {
   if (!CHART_THEMING) return '';
