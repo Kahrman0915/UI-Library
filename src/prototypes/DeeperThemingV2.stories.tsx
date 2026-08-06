@@ -17,8 +17,7 @@ import {
 import {
   POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, PRIMARY_IS_AUTHORED, SUB_BRANDS,
 } from './deeperThemingRecipeV2';
-import { ALT_ANCHORS, ALT_KEYS } from './deeperThemingRecipeV2';
-import type { BrandKey, AltKey } from './deeperThemingRecipeV2';
+import type { BrandKey } from './deeperThemingRecipeV2';
 import SuitePageV2 from './SuitePageV2';
 import { usePointerTilt } from './usePointerTilt';
 import { AuditPanel, NewTokensPanel, TokenDiffPanel } from './DeeperThemingPartsV2';
@@ -101,10 +100,6 @@ function contrast(fg: [number, number, number, number], bg: [number, number, num
 const ICONS: Record<BrandKey, LucideIcon> = {
   db: ChartColumn, nb: FileText, dc: Globe, ec: Calendar, ph: Zap, rm: Heart, aiden: Sparkles,
 };
-/** An alternate wears the glyph of the brand it would replace. */
-const ALT_ICONS: Record<AltKey, LucideIcon> = {
-  'nb-green': FileText, 'ec-blue': Calendar, 'ph-orange': Zap, 'ph-amber': Zap, 'ph-gold': Zap,
-};
 type Mode = 'light' | 'dark';
 
 const H2: CSSProperties = { margin: '0 0 var(--p-2)', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' };
@@ -166,7 +161,7 @@ function useGlobalMode(): Mode {
 function Scope({
   brand, mode, strength = 1, chromeOn = 1, children,
 }: {
-  brand: BrandKey | AltKey | ''; mode?: Mode; strength?: number; chromeOn?: number; children: ReactNode;
+  brand: BrandKey | ''; mode?: Mode; strength?: number; chromeOn?: number; children: ReactNode;
 }) {
   const global = useGlobalMode();
   mode ??= global;
@@ -199,8 +194,8 @@ function Scope({
  */
 function Mark({
   brand, size = 48, live = false, tilt = false,
-}: { brand: BrandKey | AltKey; size?: number; live?: boolean; tilt?: boolean }) {
-  const Icon = ICONS[brand as BrandKey] ?? ALT_ICONS[brand as AltKey];
+}: { brand: BrandKey; size?: number; live?: boolean; tilt?: boolean }) {
+  const Icon = ICONS[brand];
   const ref = usePointerTilt<HTMLSpanElement>(tilt);
   return (
     <span
@@ -1616,254 +1611,28 @@ export const SideBySide: Story = {
   },
 };
 
-/**
- * ALTERNATES — extra options, not a replacement set (owner, 2026-08-06).
- *
- * Three asks: a greener nb (between v1 and v2, away from forest), a blue ec
- * (v1's azure), and a ph that reads orange rather than brown. Each is solved by
- * the SAME solver, construction and floors as the incumbent it would replace,
- * so what you are comparing here is colour and nothing else.
- *
- * Two findings came out of solving them, and both are visible on this page:
- *
- *   1. THE ALTERNATES ARE NOT INDEPENDENT. nb and ph are wheel neighbours AND
- *      the pair that collapses under deutan simulation — green and orange land
- *      on nearly the same axis for a red-green anomaly. The incumbent set paid
- *      for that by keeping nb dark. A bright green spends that margin, so
- *      nb-green measures CVD ΔE 0.6 against the v2 gold (effectively identical)
- *      and 10.7 against ph-amber. Picking a green picks a gold with it.
- *
- *   2. --primary-text IS A BRIGHTNESS CEILING. It is a fixed 85% blend toward
- *      the foreground, so past roughly L 0.63 no light-mode primary can reach
- *      AA as on-surface text, whatever its hue. That is what stops ph from
- *      being genuinely bright without also making that ratio per-brand.
- */
-export const Alternates: Story = {
-  render: function AlternatesStory() {
-    const mode = useGlobalMode();
-    const other: Mode = mode === 'dark' ? 'light' : 'dark';
-
-    const GROUPS: { swaps: BrandKey; heading: string; ask: string; alts: AltKey[] }[] = [
-      { swaps: 'nb', heading: 'nb — the green', ask: '“slightly more green, away from forest — between v1 and v2”', alts: ['nb-green'] },
-      { swaps: 'ec', heading: 'ec — the blue', ask: '“a blue option like the v1 ec brand”', alts: ['ec-blue'] },
-      { swaps: 'ph', heading: 'ph — the gold', ask: '“more orange than brown”', alts: ['ph-gold', 'ph-orange', 'ph-amber'] },
-    ];
-
-    const chip = (c: string, label: string) => (
-      <div style={{ display: 'grid', gap: 4, minWidth: 68 }}>
-        <div style={{ background: c, height: 34, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
-        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
-        <span style={{ ...MONO, color: 'var(--muted-foreground)', opacity: 0.65 }}>{c}</span>
-      </div>
-    );
-
-    /** One option, rendered in ONE mode — so both modes sit side by side and the
-     *  owner never has to flip the toolbar to compare two candidates. */
-    const option = (key: BrandKey | AltKey, m: Mode) => {
-      // Both maps share the anchor SHAPE; only the alternates carry `label`.
-      type Shown = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; label?: string };
-      const alts = ALT_ANCHORS as unknown as Record<string, Shown>;
-      const incumbents = BRAND_ANCHORS as unknown as Record<string, Shown>;
-      const a: Shown = alts[key] ?? incumbents[key];
-      const trio = m === 'light' ? a.light : a.dark;
-      const isAlt = (ALT_KEYS as string[]).includes(key);
-      return (
-        <Scope key={`${key}-${m}`} brand={key} mode={m}>
-          <div style={{
-            background: 'var(--background)', color: 'var(--foreground)',
-            border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)',
-            padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)',
-          }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
-              <Mark brand={key} size={44} live />
-              <div style={{ display: 'grid', gap: 2 }}>
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>
-                  {key}{!isAlt && ' (current)'}
-                </span>
-                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                  {m} · {isAlt ? a.label : 'the incumbent'}
-                </span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {chip(trio[0], 'highlight')}
-              {chip(trio[1], 'primary')}
-              {chip(trio[2], 'deep')}
-              {chip(a.accent[m], 'accent')}
-            </div>
-
-            {/* Accent duty: the CTA proves the on-colour, the outline proves
-                --primary-text, which is the token ph-amber cannot satisfy. */}
-            <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center' }}>
-              <Button id={`${key}-${m}-cta`} size="sm" label="Primary action" />
-              <Button id={`${key}-${m}-alt`} size="sm" style="outline" label="Outline" />
-              <Badge id={`${key}-${m}-badge`}>Badge</Badge>
-            </div>
-
-            {/* Three series = primary + deep + accent, which is exactly where a
-                brand's colour stops and the neutrals take over. */}
-            <BarChart
-              id={`${key}-${m}-chart`}
-              title="Sessions by channel"
-              categories={['Q1', 'Q2', 'Q3', 'Q4']}
-              height={132}
-              series={[
-                { key: 'a', label: 'Direct', data: [420, 512, 486, 640] },
-                { key: 'b', label: 'Referral', data: [280, 310, 402, 380] },
-                { key: 'c', label: 'Organic', data: [180, 240, 220, 300] },
-              ]}
-            />
-          </div>
-        </Scope>
-      );
-    };
-
-    const MATRIX: { nb: string; cells: { ph: string; cvd: string; ok: boolean }[] }[] = [
-      { nb: 'nb (current)', cells: [{ ph: 'ph (current)', cvd: '6.7', ok: true }, { ph: 'ph-orange', cvd: '5.0', ok: true }, { ph: 'ph-amber', cvd: '18.0', ok: true }, { ph: 'ph-gold', cvd: '13.0', ok: true }] },
-      { nb: 'nb-green', cells: [{ ph: 'ph (current)', cvd: '0.6', ok: false }, { ph: 'ph-orange', cvd: '2.3', ok: false }, { ph: 'ph-amber', cvd: '10.7', ok: true }, { ph: 'ph-gold', cvd: '5.7', ok: true }] },
-    ];
-
-    return (
-      <>
-        <PocStyle />
-        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>Alternates — options, not a new set</h2>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Each option is solved by the same solver, the same construction and the same
-              floors as the brand it would replace, so this page compares colour and nothing
-              else. Every card shows one option in one mode — light and dark sit side by
-              side so nothing depends on flipping the toolbar. The current brand is always
-              the leftmost card in its row.
-            </p>
-          </div>
-
-          {GROUPS.map((g) => (
-            <div key={g.swaps} style={{ display: 'grid', gap: 'var(--p-3)' }}>
-              <div style={{ display: 'grid', gap: 2 }}>
-                <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>{g.heading}</h3>
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{g.ask}</span>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${(g.alts.length + 1) * 2}, minmax(196px, 1fr))`, gap: 'var(--p-3)', overflowX: 'auto' }}>
-                {[g.swaps, ...g.alts].flatMap((k) => [option(k, mode), option(k, other)])}
-              </div>
-            </div>
-          ))}
-
-          {/* FINDING 1 */}
-          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 760 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>The options are not independent</h3>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              nb and ph sit next to each other on the wheel and are also the pair that
-              collapses under deutan simulation — green and orange project onto nearly the
-              same axis for a red-green anomaly. The current set pays for that by keeping nb
-              dark. A brighter green spends the margin, so it only holds against a brighter
-              gold. Figures are colour-blind ΔE in light mode; the floor is 4.
-            </p>
-            <div style={{ border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
-              <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
-                <thead>
-                  <tr style={{ background: 'var(--secondary)' }}>
-                    <th style={{ textAlign: 'left', padding: 'var(--p-2) var(--p-3)' }} />
-                    {MATRIX[0].cells.map((c) => (
-                      <th key={c.ph} style={{ textAlign: 'left', padding: 'var(--p-2) var(--p-3)', ...MONO }}>{c.ph}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {MATRIX.map((r) => (
-                    <tr key={r.nb} style={{ borderTop: 'var(--border-w-100) solid var(--border)' }}>
-                      <td style={{ padding: 'var(--p-2) var(--p-3)', ...MONO }}>{r.nb}</td>
-                      {r.cells.map((c) => (
-                        <td key={c.ph} style={{ padding: 'var(--p-2) var(--p-3)', ...MONO, color: c.ok ? 'var(--success)' : 'var(--error)' }}>
-                          {c.ok ? '✓' : '✗'} {c.cvd}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* FINDING 2 */}
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>Why ph-amber needs a token change</h3>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              <code>--primary-text</code> is a fixed 85% blend of the primary toward the
-              foreground. Past roughly L 0.63 that blend can no longer reach AA on a card,
-              whatever the hue — so a genuinely bright light-mode primary breaks the
-              outline/link/secondary text colour while the filled button stays fine. Look at
-              the two buttons on the ph-amber card: the solid CTA passes at 6.6:1 (it carries
-              dark text, like every dark-mode fill already does), while the outline label
-              lands at 3.53:1. The colour is not the problem; the ratio is. A 72% blend
-              clears it, which means making that ratio per-brand rather than global.
-            </p>
-          </div>
-
-          {/* WHAT THE SEMANTICS COST */}
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>What each option spends on semantics</h3>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Taken against the owner&rsquo;s own discharge — not every product&rsquo;s charts carry
-              both a warning and an error. <strong>nb-green</strong> sits 8.4 from success
-              (light), <strong>ec-blue</strong> 6.0 from info, <strong>ph-orange</strong> 6.5
-              from warning, <strong>ph-amber</strong> 7.6 from warning. The impersonation line
-              is 8.5. Each is safe exactly where that one semantic never appears beside the
-              brand — a status pill in the header is fine, the same hue as a chart series next
-              to a warning series is not.
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
 // ─────────────────────────────────────────────────────────────────────────────
-// EVERY OPTION
+// THE SUITE
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * THE FULL BOARD (owner, 2026-08-06): every option that passes, listed rather
- * than chosen. Nothing here is assigned to a slot — an alternate sits beside
- * the current brand it grew out of purely so the comparison is one glance
- * apart, not because anything has been swapped.
- *
- * An earlier cut of these two views showed ONE option per slot, which read as a
- * replacement. It was not meant to be: the ask was additive, and the browner
- * gold in particular is still a live option. Everything is back.
+ * THE CHOSEN SET (owner, 2026-08-06). The comparison round is over: ec is the
+ * v1 azure, ph is the burnt orange, nb stays as it was but draws its mark
+ * brighter than its primary. Those are not alternates layered on top any more —
+ * they ARE `ec`, `ph` and `nb` in BRAND_ANCHORS, so every story on this page
+ * shows them, not just these two views.
  */
-const OPTION_ROWS: { slot: BrandKey; key: BrandKey | AltKey; kind: 'current' | 'alternate' }[] = [
-  { slot: 'db', key: 'db', kind: 'current' },
-  { slot: 'nb', key: 'nb', kind: 'current' },
-  { slot: 'nb', key: 'nb-green', kind: 'alternate' },
-  { slot: 'dc', key: 'dc', kind: 'current' },
-  { slot: 'ec', key: 'ec', kind: 'current' },
-  { slot: 'ec', key: 'ec-blue', kind: 'alternate' },
-  { slot: 'ph', key: 'ph', kind: 'current' },
-  { slot: 'ph', key: 'ph-gold', kind: 'alternate' },
-  { slot: 'ph', key: 'ph-orange', kind: 'alternate' },
-  { slot: 'ph', key: 'ph-amber', kind: 'alternate' },
-  { slot: 'rm', key: 'rm', kind: 'current' },
-  { slot: 'aiden', key: 'aiden', kind: 'current' },
-];
+const SUITE: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
 
-/** One-liners for the incumbents; the alternates carry their own `label`. */
-const CURRENT_NOTES: Record<string, string> = {
+/** What each brand is, in one line — the roster reads as a suite, not a list. */
+const BRAND_NOTES: Record<BrandKey, string> = {
   db: 'indigo — the flagship',
-  nb: 'deep chartreuse — the darkest green, which is what buys its colour-blind separation from the gold',
+  nb: 'deep chartreuse — the darkest primary in the set, which is what keeps it apart from the orange under a red-green anomaly; its MARK is drawn brighter, because a logo pays no such debt',
   dc: 'teal',
-  ec: 'blue-green — the cool side of teal',
-  ph: 'gold, the browner one — white text',
+  ec: "the v1 azure — crowds --info by design, waived on the icon+label rule",
+  ph: 'burnt orange — crowds --warning on the same terms',
   rm: 'magenta',
   aiden: 'blurple — the AI surface, not a sub-app',
 };
-function noteFor(key: string, kind: 'current' | 'alternate'): string {
-  if (kind === 'current') return CURRENT_NOTES[key] ?? 'current';
-  return (ALT_ANCHORS as unknown as Record<string, { label: string }>)[key]?.label ?? '';
-}
 
 type AnchorShape = {
   light: readonly string[]; dark: readonly string[];
@@ -1889,9 +1658,7 @@ function markSplits(key: string): boolean {
 }
 
 function anchorsOf(key: string): AnchorShape {
-  const alts = ALT_ANCHORS as unknown as Record<string, AnchorShape>;
-  const inc = BRAND_ANCHORS as unknown as Record<string, AnchorShape>;
-  return alts[key] ?? inc[key];
+  return (BRAND_ANCHORS as unknown as Record<string, AnchorShape>)[key];
 }
 
 /**
@@ -1903,7 +1670,7 @@ function anchorsOf(key: string): AnchorShape {
  */
 export const Roster: Story = {
   render: function RosterStory() {
-    const row = (key: BrandKey | AltKey, kind: 'current' | 'alternate', m: Mode) => {
+    const row = (key: BrandKey, m: Mode) => {
       const a = anchorsOf(key);
       const trio = m === 'light' ? a.light : a.dark;
       return (
@@ -1919,9 +1686,6 @@ export const Roster: Story = {
 
             <div style={{ display: 'grid', gap: 2 }}>
               <span style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{key}</span>
-              <span style={{ ...MONO, opacity: 0.55, fontSize: 11 }}>
-                {kind === 'alternate' ? 'alternate' : 'current'}
-              </span>
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
@@ -1969,7 +1733,7 @@ export const Roster: Story = {
         }}
         >
           <span style={{ ...MONO, opacity: 0.6, padding: '0 var(--p-4) var(--p-2)' }}>{m}</span>
-          {OPTION_ROWS.filter((r) => r.slot !== 'aiden').map((r) => row(r.key, r.kind, m))}
+          {SUITE.filter((k) => k !== 'aiden').map((k) => row(k, m))}
           {/* aiden is fenced because it is a SURFACE — it layers inside any of
               the six above rather than sitting beside them */}
           <div style={{
@@ -1977,7 +1741,7 @@ export const Roster: Story = {
             borderRadius: 'var(--rounded-lg)', padding: 'var(--p-1)',
           }}
           >
-            {row('aiden', 'current', m)}
+            {row('aiden', m)}
           </div>
         </div>
       </Scope>
@@ -1988,13 +1752,12 @@ export const Roster: Story = {
         <PocStyle />
         <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>Every option</h2>
+            <h2 style={H2}>The suite</h2>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Every option that passes, listed rather than chosen — nothing is assigned to
-              a slot. Each row is the mark, the three anchors (highlight · primary · deep),
-              the hero rail those anchors build, and the primary button that proves the
-              accent carries a label. Alternates sit directly under the current brand they
-              grew out of, so a comparison is one glance apart.
+              The six sub-apps and the Aiden surface, as chosen. Each row is the mark, the
+              three anchors (highlight · primary · deep), the hero rail those anchors build,
+              and the primary button that proves the accent carries a label — in both modes,
+              so the family can be judged whole rather than half at a time.
             </p>
           </div>
           <div style={{ display: 'grid', gap: 'var(--p-6)' }}>
@@ -2005,17 +1768,17 @@ export const Roster: Story = {
           {/* With nothing assigned to a slot, the only thing that still binds is
               which options can be used TOGETHER — so it belongs on this page. */}
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>The one pairing rule</h3>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>What this set costs</h3>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Every option above passes on its own. Only one <em>combination</em> does not:{' '}
-              <strong>nb-green</strong> with either <strong>ph</strong> (0.6) or{' '}
-              <strong>ph-orange</strong> (2.3), measured as colour-blind ΔE against a floor of
-              4 — under a red-green anomaly those pairs are the same colour. Green cannot fix
-              it from its side, because rotating it toward emerald to clear the gold walks it
-              into <code>--success</code> instead; the bright-green band is boxed in on both
-              sides, which is why the current nb is the darkest of the greens. If you want
-              nb-green, pair it with <strong>ph-gold</strong> (5.7) or{' '}
-              <strong>ph-amber</strong> (10.7). Every other combination on this page is clear.
+              Two brands here buy their character from a sector a semantic already occupies,
+              and both were waived deliberately rather than solved away. <strong>ec</strong>{' '}
+              is hue 240, which <em>is</em> <code>--info</code>&rsquo;s hue — ΔE 6.0 in light,
+              6.9 in dark, against an 8.5 impersonation line. <strong>ph</strong> sits 6.5
+              from <code>--warning</code>. The condition on both is the icon+label rule:
+              neither may plot a series against its waived semantic without a glyph and a
+              label carrying the distinction. Everything else clears on its own —{' '}
+              <strong>nb</strong> is the one to leave alone, since its darkness is what holds
+              it apart from the orange under a red-green anomaly (colour-blind ΔE 5.0).
             </p>
           </div>
         </div>
@@ -2032,7 +1795,7 @@ export const Roster: Story = {
  */
 export const RosterDetail: Story = {
   render: function RosterDetailStory() {
-    const card = (key: BrandKey | AltKey, kind: 'current' | 'alternate', m: Mode) => {
+    const card = (key: BrandKey, m: Mode) => {
       const a = anchorsOf(key);
       const trio = m === 'light' ? a.light : a.dark;
       const chip = (c: string, label: string) => (
@@ -2054,9 +1817,7 @@ export const RosterDetail: Story = {
               <Mark brand={key} size={44} live />
               <div style={{ display: 'grid', gap: 2 }}>
                 <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>{key}</span>
-                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                  {m} · {kind}
-                </span>
+                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{m}</span>
               </div>
             </div>
 
@@ -2099,24 +1860,25 @@ export const RosterDetail: Story = {
         <PocStyle />
         <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>Every option, in detail</h2>
+            <h2 style={H2}>The suite, in detail</h2>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Every option in both modes side by side: the five anchors, the mark, accent
-              duty on a real button pair, and a three-series chart — primary, deep and
-              accent, which is exactly where a brand&rsquo;s colour stops and the neutrals take
-              over. Alternates follow the current brand they grew out of; Aiden closes the
-              list as the surface it is.
+              Every brand in both modes side by side: the anchors, the mark, accent duty on
+              a real button pair, and a three-series chart — primary, deep and accent, which
+              is exactly where a brand&rsquo;s colour stops and the neutrals take over. A
+              &ldquo;mark mid&rdquo; chip appears only on the two brands that draw their logo
+              in a different colour from their primary. Aiden closes the list as the surface
+              it is.
             </p>
           </div>
 
-          {OPTION_ROWS.map(({ key, kind }) => (
+          {SUITE.map((key) => (
             <div key={key} style={{ display: 'grid', gap: 'var(--p-2)' }}>
               <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                {key} — {noteFor(key, kind)}
+                {key} — {BRAND_NOTES[key]}
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(280px, 1fr))', gap: 'var(--p-3)' }}>
-                {card(key, kind, 'dark')}
-                {card(key, kind, 'light')}
+                {card(key, 'dark')}
+                {card(key, 'light')}
               </div>
             </div>
           ))}

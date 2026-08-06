@@ -9,9 +9,12 @@
  * clearance, deeps, per-brand charts, the db/aiden/slate triangle, mark
  * tiles). Hand-edit an anchor -> re-run the solver, that is what it is for.
  *
- * THE MODEL: wheel order ph(78) nb(136) dc(185) ec(206) db(277) aiden(283)
- * rm(348). True red/orange ceded to error/warning; gold + magenta carry the
- * warmth (owner's call). dc<->ec and db<->aiden separate by LIGHTNESS, not hue.
+ * THE MODEL: wheel order ph(57) nb(136) dc(185) ec(240) db(277) aiden(283)
+ * rm(348) — ph and ec updated 2026-08-06 when the owner chose the burnt orange
+ * and the azure over the gold and the teal. True RED stays ceded to --error;
+ * orange and magenta carry the warmth, and ph now shares a sector with
+ * --warning under a written waiver rather than dodging it. ec<->db and
+ * db<->aiden separate by LIGHTNESS, not hue.
  * Cross-brand CVD is discharged by the icon+label rule (hard floor 4, target
  * 8); IN-CHART series keep the full floors, and charts are single-brand
  * (primary + deep/companion + neutrals) so the strict case never crosses
@@ -176,18 +179,19 @@
  * design judgement. Two highlights also moved by hand: nb pulled greener to sit
  * with its new middle, db opened to a brighter cyan.
  *
- * ADJACENCY IS A DECISION HERE, NOT A DEFECT. Three of the seven deeps sit in
- * the same blue family, and that is deliberate:
+ * ADJACENCY IS A DECISION HERE, NOT A DEFECT. Four of the seven deeps now sit
+ * in the same blue family — ec joined them when it left the teal — and that is
+ * deliberate:
  *
  *   db and aiden once shared a deep so their surfaces would be byte-identical.
  *   That rule is now MOOT rather than broken: aiden takes the main neutrals, so
  *   it never derives a surface from its deep at all, and the two match by
  *   construction whatever the deeps do. Aiden's deep is mark artwork only.
  *
- *   ec was then pulled away from both (#014c93 -> #01416b, -6 L*, -13 hue) to
- *   keep the blues from collapsing into one. That took ec closer to dc
- *   (surfaces 1.7 -> 1.2 dE00) — accepted, because dc and ec do not embed in
- *   each other the way db and aiden do.
+ *   ec is the live case now that it is blue: it sits beside db on the wheel at
+ *   ΔE 13.4 light / 11.6 dark — over the 8.5 hard floor, under the 15 target.
+ *   It holds by LIGHTNESS (ec dark runs L 0.78 against db's 0.70), the same
+ *   construction that separates db from aiden. Do not "tidy" ec darker.
  *
  * So do NOT "fix" a small surface distance by measurement alone. Which pairs
  * are allowed to look alike is a product question about which apps sit side by
@@ -215,8 +219,20 @@ export const BRAND_ANCHORS = {
   // markDeep rises with it, from a near-black #063a26 to a real emerald.
   nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
   dc:    { light: ['#4eeeaf', '#025750', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#1a7888' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
-  ec:    { light: ['#2febdb', '#06838f', '#01545c'], dark: ['#2febdb', '#10c1db', '#088fa2'], markDeep: { light: '#0e506f', dark: '#2089bc' }, accent: { light: '#6c9e98', dark: '#85b4ae' }, chart2Dark: '#088fa2', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
-  ph:    { light: ['#ebce29', '#9d6d05', '#674601'], dark: ['#ebce29', '#c98909', '#906104'], markDeep: { light: '#773a0c', dark: '#a35316' }, accent: { light: '#a59548', dark: '#a99f70' }, chart2Dark: '#876d4a', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  // ec = THE BLUE (owner, 2026-08-06; was teal 206/212). v1's azure restored at
+  // hue 240 — which IS --info's hue, so it crowds that semantic by design:
+  // dE 6.0 light / 6.9 dark against an 8.5 impersonation line. The owner waived
+  // it knowingly ("not all of these brands are going to be using charts that
+  // need both a warning and an error"); the condition is the icon+label rule.
+  // Its DARK anchor is pushed bright (L 0.78) so it clears db — the flagship,
+  // and now its wheel neighbour — by LIGHTNESS rather than hue, the same
+  // construction that separates db from aiden.
+  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1e1cd3', dark: '#597df6' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  // ph = THE BURNT ORANGE (owner, 2026-08-06; was gold 78/75). Hue 57, v1's.
+  // Crowds --warning at dE 6.5 in light, waived on the same terms as ec. It
+  // does BUY something back: the retired gold sat only 6 degrees off
+  // dark-warning's amber, where this sits 27 off it.
+  ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#846986' }, chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
   aiden: { light: ['#aed1fd', '#4f06d7', '#2e0186'], dark: ['#aed1fd', '#c3b5fe', '#a07efe'], markDeep: { light: '#450967', dark: '#bc6ff7' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#4f06d7', dark: '#c3b5fe' }, icon: 'sparkles' },
 } as const;
@@ -233,78 +249,19 @@ export const PRIMARY_IS_AUTHORED: Record<string, boolean> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, 'primary' in v]),
 );
 
-/**
- * ALTERNATES (owner, 2026-08-06) — ADDITIVE. The seven above are untouched.
+/*
+ * THE ALTERNATES ARE GONE, and that is the decision landing rather than work
+ * being lost. Five options were solved and shown side by side (nb-green,
+ * ec-blue, ph-gold, ph-orange, ph-amber); the owner chose ec-blue and
+ * ph-orange, which are now simply `ec` and `ph` above, and kept nb. Carrying
+ * the losers as live scopes would leave four brand values in the stylesheet
+ * that nothing may render — the exact drift this POC exists to avoid.
  *
- * Options to put in front of the team, solved by the SAME solver, the same
- * construction and the same floors as the incumbents, so a comparison is a
- * comparison of colour and not of two different systems. Each names the
- * incumbent it would replace; nothing selects one unless a story asks for it by
- * `data-brand`, so the ramp, the brand picker and every existing story are
- * unaffected by their presence.
- *
- * WHAT EACH ONE COSTS — the numbers, not adjectives:
- *
- *   nb-green   Greener and brighter than v2 (between v1 and v2: hue 143 splits
- *              them, and the AA target drops 6.9 -> 5.2 so it stops reading as
- *              forest). COMBINATION CONSTRAINT: nb and ph are the pair that
- *              collapses under deutan simulation, and the incumbent set solved
- *              that by keeping nb dark. Bright green vs the v2 gold measures
- *              CVD dE 0.6 — effectively identical to a red-green anomaly. It
- *              holds against ph-amber (10.7). Choosing this green means
- *              choosing a brighter gold with it.
- *
- *   ec-blue    v1's azure restored (hue 240 = --info's hue). It crowds --info
- *              by design: dE 6.0 light / 6.9 dark, under the 8.5 impersonation
- *              line. Safe exactly where the owner said — a product whose charts
- *              never carry an info series next to the brand. Its DARK anchor is
- *              pushed bright (L~0.78) so it clears db, the flagship, by
- *              lightness rather than hue.
- *
- *   ph-orange  Burnt orange, white text, hue 57 (v1's). Drops in with no system
- *              change. Crowds --warning at dE 6.5 in light. Bonus: it sits 27
- *              degrees off dark-warning's amber where the v2 gold sat only 6.
- *
- *   ph-gold    THE PAIRING FIX, added after the owner picked nb-green AND the
- *              current gold — the one combination the matrix rejects (CVD 0.6).
- *              The green cannot solve it alone: rotating it toward emerald to
- *              clear the gold walks it into --success (dE 3.2 at hue 155), so
- *              the bright-green band is bounded on BOTH sides. The gold moves
- *              instead, and only in LIGHTNESS — same hue family, brighter,
- *              carrying ink text the way every dark-mode fill already does.
- *              Its DARK anchor is byte-identical to today's, so only light mode
- *              changes. It is the only ph option that crowds NO semantic
- *              (13.6 success / 14.5 warning) and it lands at --primary-text
- *              4.52, just inside the 85% ceiling, so it needs no token change.
- *
- *   ph-amber   Bright orange, DARK text — the same construction the whole
- *              system already uses in dark mode, and the only way to reach a
- *              genuinely bright warm hue, since white-on-orange forces the
- *              primary down to L~0.58 where orange reads as brown. COST: it
- *              breaks --primary-text, which is a FIXED 85% blend toward the
- *              foreground; at L 0.708 that lands at 3.53 on the card. The
- *              colour is fine, the ratio is the limit — a 72% blend clears AA.
- *              Adopting it means making that ratio per-brand.
+ * The rejected three are recoverable in full: git history holds the anchors and
+ * the comparison story, and scratchpad/solve-brand-palette.mjs still carries
+ * their CONFIG entries, so `node solve-brand-palette.mjs` re-derives them
+ * against the current gates at any time.
  */
-export const ALT_ANCHORS = {
-  'nb-green':  { light: ['#c4dd29', '#077e0e', '#014f04'], dark: ['#c4dd29', '#6dc759', '#3d9625'], markDeep: { light: '#0b4c39', dark: '#229472' }, accent: { light: '#90996f', dark: '#959d7a' }, chart2Dark: '#3d9625', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'nb', icon: 'file-text', label: 'greener, brighter — between v1 and v2' },
-  'ec-blue':   { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1e1cd3', dark: '#597df6' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ec', icon: 'leaf', label: "v1's azure — crowds --info by design" },
-  'ph-orange': { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'burnt orange, white text' },
-  'ph-gold':   { light: ['#ebce29', '#ad8107', '#785802'], dark: ['#ebce29', '#c98909', '#906104'], markDeep: { light: '#8f4811', dark: '#a35316' }, accent: { light: '#9d956f', dark: '#a99f70' }, chart2Dark: '#876d4a', on: { light: '#0f172a', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'brighter gold, DARK text — pairs safely with nb-green' },
-  'ph-amber':  { light: ['#fdc530', '#e6860a', '#a96004'], dark: ['#fdc530', '#e9800a', '#aa5c04'], markDeep: { light: '#ca3a18', dark: '#c83918' }, accent: { light: '#5d5034', dark: '#a79979' }, chart2Dark: '#a7601d', on: { light: '#0f172a', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'bright orange, DARK text' },
-} as const;
-
-export type AltKey = keyof typeof ALT_ANCHORS;
-export const ALT_KEYS = Object.keys(ALT_ANCHORS) as AltKey[];
-
-/** Solver-chosen slate order for each alternate, same rule as the incumbents. */
-const ALT_CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
-  'nb-green':  { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
-  'ec-blue':   { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
-  'ph-orange': { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
-  'ph-gold':   { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
-  'ph-amber':  { light: ['#77879e', '#354358', '#607087'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
-};
 
 export type BrandKey = keyof typeof BRAND_ANCHORS;
 export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
@@ -326,7 +283,7 @@ const CHART_THEMING = true;
  * on purpose — it is a surface, not a brand, and keeps the neutral ramp.
  */
 const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
-  ph: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  ph: { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
   nb: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
   dc: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
   ec: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
@@ -424,12 +381,6 @@ export const POC_CSS = `
    zero changes anywhere else. */
 ${anchorBlocks()}
 
-/* ── THE ALTERNATES ─────────────────────────────────────────────────────────
-   Additive. Nothing above changes because these exist: they are extra
-   data-brand values, selected only where a story asks for one by name, so the
-   ramp, the picker and every existing story are untouched. Same emitter, same
-   solver, same floors — see ALT_ANCHORS for what each one costs. */
-${anchorBlocks(ALT_KEYS, ALT_ANCHORS as never, ALT_CHART_NEUTRALS)}
 
 /* ── LIGHT ──────────────────────────────────────────────────────────────────
    THE PAGE STAYS WHITE. Stated as a declaration rather than an omission so it
@@ -757,12 +708,12 @@ ${anchorBlocks(ALT_KEYS, ALT_ANCHORS as never, ALT_CHART_NEUTRALS)}
 [data-theme-poc2][data-mode='light'] .poc2-suite-ramp,
 [data-theme-poc2][data-mode='light'] .poc2-suite-text {
   --poc2-ramp: linear-gradient(100deg,
-    #9d6d05 0%, #306602 17%, #025750 33%, #06838f 50%, #6264f4 67%, #4f06d7 83%, #d62496 100%);
+    #b56005 0%, #306602 17%, #025750 33%, #067db8 50%, #6264f4 67%, #4f06d7 83%, #d62496 100%);
 }
 [data-theme-poc2][data-mode='dark'] .poc2-suite-ramp,
 [data-theme-poc2][data-mode='dark'] .poc2-suite-text {
   --poc2-ramp: linear-gradient(100deg,
-    #c98909 0%, #8bca2f 17%, #0db09d 33%, #10c1db 50%, #689cfe 67%, #c3b5fe 83%, #fe68b8 100%);
+    #ee7d0a 0%, #8bca2f 17%, #0db09d 33%, #23c7fe 50%, #689cfe 67%, #c3b5fe 83%, #fe68b8 100%);
 }
 [data-theme-poc2] .poc2-suite-ramp { background-image: var(--poc2-ramp); }
 [data-theme-poc2] .poc2-suite-text {
@@ -779,20 +730,20 @@ ${anchorBlocks(ALT_KEYS, ALT_ANCHORS as never, ALT_CHART_NEUTRALS)}
    page reads as "all of them" without any one of them winning. */
 [data-theme-poc2][data-mode='light'] .poc2-suite-bubbles {
   background-image:
-    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #06838f 20%, transparent) 0%, transparent 70%),
+    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #067db8 20%, transparent) 0%, transparent 70%),
     radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #025750 17%, transparent) 0%, transparent 70%),
     radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #4f06d7 18%, transparent) 0%, transparent 70%),
     radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #d62496 15%, transparent) 0%, transparent 70%),
-    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #9d6d05 12%, transparent) 0%, transparent 72%),
+    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #b56005 12%, transparent) 0%, transparent 72%),
     radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #306602 12%, transparent) 0%, transparent 72%);
 }
 [data-theme-poc2][data-mode='dark'] .poc2-suite-bubbles {
   background-image:
-    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #10c1db 26%, transparent) 0%, transparent 70%),
+    radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #23c7fe 26%, transparent) 0%, transparent 70%),
     radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #0db09d 22%, transparent) 0%, transparent 70%),
     radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #a07efe 24%, transparent) 0%, transparent 70%),
     radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #fe68b8 18%, transparent) 0%, transparent 70%),
-    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #c98909 15%, transparent) 0%, transparent 72%),
+    radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #ee7d0a 15%, transparent) 0%, transparent 72%),
     radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #8bca2f 15%, transparent) 0%, transparent 72%);
 }
 
