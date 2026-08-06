@@ -1138,6 +1138,70 @@ ${anchorBlocks()}
       var(--primary-highlight) 9.7%,
       var(--mark-mid) 51.6%,
       var(--mark-deep) 90.3%);
+  /* THE GLYPH FOLLOWS THE TILE, and only the LIVE mark needs this.
+     The live mark IS mode-aware, so in dark its tile is the pale dark-mode
+     anchor and a white glyph measured 1.74-2.66:1 across the seven — every one
+     under the 3:1 graphical floor, nb and ec effectively illegible. The brand's
+     own "on" colour is already the right answer and already mode-split
+     (#ffffff light / #0f172a dark), so the glyph simply reads it: 6.7-10.2 in
+     dark, 3.3-4.7 in light.
+     The STATIC mark keeps #ffffff, because its tile does NOT change between
+     modes — it stays the mid-dark light-anchor tile in both, where white is
+     correct and ink would be wrong. Same reason the two need different glass
+     below. */
+  color: var(--primary-foreground);
+}
+
+/* ── THE GLASS, INVERTED FOR DARK ───────────────────────────────────────────
+   Owner asked whether there is a dark version of the lens flare. There is not,
+   and the reason is worth stating rather than worked around: a specular
+   highlight is BY DEFINITION brighter than the surface it sits on. That is what
+   makes it read as light. A dark spot on a glossy object is not a flare, it is
+   a shadow. So the white stack — the radial lift, the pale-blue bloom, the
+   sheen band — cannot be "darkened"; on a pale tile it simply stops existing.
+
+   What replaces it is the OTHER HALF OF THE SAME LIGHTING MODEL. The light is
+   still coming from the top left. On a dark tile you read the highlight it
+   makes; on a pale tile you read the SHADE it leaves on the opposite side. So
+   the top-left bloom becomes a bottom-right occlusion, the downward sheen
+   becomes an upward one, and the object still reads as a lit solid rather than
+   a flat chip.
+
+   The sparkle is the single white layer that SURVIVES, and it survives because
+   it is small and near-opaque: a pinpoint specular is a hard edge, and a hard
+   edge reads on any surface where a soft 24%-alpha wash does not. It is
+   tightened rather than removed.
+
+   Scoped to --live only, because the static mark's tile never goes pale. */
+[data-theme-poc2][data-mode='dark'] .poc2-mark--live {
+  background-image:
+    radial-gradient(38% 38% at 84% 88%,
+      rgba(15, 23, 42, 0.30) 0%,
+      rgba(15, 23, 42, 0) 100%),
+    radial-gradient(44% 44% at 46% 74%,
+      rgba(15, 23, 42, 0.13) 0%,
+      rgba(15, 23, 42, 0) 100%),
+    linear-gradient(135deg,
+      var(--primary-highlight) 9.7%,
+      var(--mark-mid) 51.6%,
+      var(--mark-deep) 90.3%);
+}
+[data-theme-poc2][data-mode='dark'] .poc2-mark--live::before {
+  /* the sheen turns over: shade rising from the base instead of light falling
+     from the top. Same lamp, opposite readout. */
+  inset: auto -10% 0 -10%;
+  height: 48%;
+  background-image: linear-gradient(180deg,
+    rgba(15, 23, 42, 0) 0%,
+    rgba(15, 23, 42, 0.07) 45%,
+    rgba(15, 23, 42, 0.17) 100%);
+}
+[data-theme-poc2][data-mode='dark'] .poc2-mark--live::after {
+  /* tightened, not dropped — see above */
+  width: 8%;
+  height: 8%;
+  left: 15.5%;
+  top: 15.5%;
 }
 [data-theme-poc2] .poc2-mark--live::before {
   animation: poc2-sheen-tilt 7300ms var(--ease-in-out) infinite;
