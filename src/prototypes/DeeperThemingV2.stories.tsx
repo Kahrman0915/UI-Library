@@ -1823,26 +1823,47 @@ export const Alternates: Story = {
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
-// THE SELECTED SUITE
+// EVERY OPTION
 // ─────────────────────────────────────────────────────────────────────────────
 /**
- * The owner's picks, in one place (2026-08-06): the greener nb, the blue ec,
- * and the gold kept over the orange. Swapping a choice is one line here — the
- * two roster views below both read this, so they can never disagree.
+ * THE FULL BOARD (owner, 2026-08-06): every option that passes, listed rather
+ * than chosen. Nothing here is assigned to a slot — an alternate sits beside
+ * the current brand it grew out of purely so the comparison is one glance
+ * apart, not because anything has been swapped.
  *
- * `ph-gold` rather than the current `ph` is not a second-guess of "I like the
- * gold": it IS the gold, one step brighter. It is here because nb-green and
- * today's gold are the single pair the colour-blindness matrix rejects (CVD
- * 0.6, effectively identical under a red-green anomaly), and the green cannot
- * fix it from its side — rotating it toward emerald to clear the gold walks it
- * into --success. Moving the gold up in LIGHTNESS clears it at 5.7 while
- * keeping the hue, and its dark anchor is byte-identical to today's, so only
- * light mode changes at all. Set this back to 'ph' to see the collision.
+ * An earlier cut of these two views showed ONE option per slot, which read as a
+ * replacement. It was not meant to be: the ask was additive, and the browner
+ * gold in particular is still a live option. Everything is back.
  */
-const SELECTED: Record<BrandKey, BrandKey | AltKey> = {
-  db: 'db', nb: 'nb-green', dc: 'dc', ec: 'ec-blue', ph: 'ph-gold', rm: 'rm', aiden: 'aiden',
+const OPTION_ROWS: { slot: BrandKey; key: BrandKey | AltKey; kind: 'current' | 'alternate' }[] = [
+  { slot: 'db', key: 'db', kind: 'current' },
+  { slot: 'nb', key: 'nb', kind: 'current' },
+  { slot: 'nb', key: 'nb-green', kind: 'alternate' },
+  { slot: 'dc', key: 'dc', kind: 'current' },
+  { slot: 'ec', key: 'ec', kind: 'current' },
+  { slot: 'ec', key: 'ec-blue', kind: 'alternate' },
+  { slot: 'ph', key: 'ph', kind: 'current' },
+  { slot: 'ph', key: 'ph-gold', kind: 'alternate' },
+  { slot: 'ph', key: 'ph-orange', kind: 'alternate' },
+  { slot: 'ph', key: 'ph-amber', kind: 'alternate' },
+  { slot: 'rm', key: 'rm', kind: 'current' },
+  { slot: 'aiden', key: 'aiden', kind: 'current' },
+];
+
+/** One-liners for the incumbents; the alternates carry their own `label`. */
+const CURRENT_NOTES: Record<string, string> = {
+  db: 'indigo — the flagship',
+  nb: 'deep chartreuse — the darkest green, which is what buys its colour-blind separation from the gold',
+  dc: 'teal',
+  ec: 'blue-green — the cool side of teal',
+  ph: 'gold, the browner one — white text',
+  rm: 'magenta',
+  aiden: 'blurple — the AI surface, not a sub-app',
 };
-const SELECTED_ROWS = (Object.keys(SELECTED) as BrandKey[]).map((slot) => ({ slot, key: SELECTED[slot] }));
+function noteFor(key: string, kind: 'current' | 'alternate'): string {
+  if (kind === 'current') return CURRENT_NOTES[key] ?? 'current';
+  return (ALT_ANCHORS as unknown as Record<string, { label: string }>)[key]?.label ?? '';
+}
 
 type AnchorShape = {
   light: readonly string[]; dark: readonly string[];
@@ -1864,15 +1885,14 @@ function anchorsOf(key: string): AnchorShape {
  */
 export const Roster: Story = {
   render: function RosterStory() {
-    const row = (slot: BrandKey, key: BrandKey | AltKey, m: Mode) => {
+    const row = (key: BrandKey | AltKey, kind: 'current' | 'alternate', m: Mode) => {
       const a = anchorsOf(key);
       const trio = m === 'light' ? a.light : a.dark;
-      const swap = key !== slot;
       return (
         <Scope key={`${key}-${m}`} brand={key} mode={m}>
           <div style={{
             display: 'grid',
-            gridTemplateColumns: 'auto minmax(96px, auto) auto 1fr auto',
+            gridTemplateColumns: 'auto minmax(118px, auto) auto 1fr auto',
             alignItems: 'center', gap: 'var(--p-4)',
             padding: 'var(--p-3) var(--p-4)',
           }}
@@ -1880,8 +1900,10 @@ export const Roster: Story = {
             <Mark brand={key} size={52} live tilt />
 
             <div style={{ display: 'grid', gap: 2 }}>
-              <span style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{slot}</span>
-              {swap && <span style={{ ...MONO, opacity: 0.6 }}>{key}</span>}
+              <span style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{key}</span>
+              <span style={{ ...MONO, opacity: 0.55, fontSize: 11 }}>
+                {kind === 'alternate' ? 'alternate' : 'current'}
+              </span>
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
@@ -1929,7 +1951,7 @@ export const Roster: Story = {
         }}
         >
           <span style={{ ...MONO, opacity: 0.6, padding: '0 var(--p-4) var(--p-2)' }}>{m}</span>
-          {SELECTED_ROWS.filter((r) => r.slot !== 'aiden').map((r) => row(r.slot, r.key, m))}
+          {OPTION_ROWS.filter((r) => r.slot !== 'aiden').map((r) => row(r.key, r.kind, m))}
           {/* aiden is fenced because it is a SURFACE — it layers inside any of
               the six above rather than sitting beside them */}
           <div style={{
@@ -1937,7 +1959,7 @@ export const Roster: Story = {
             borderRadius: 'var(--rounded-lg)', padding: 'var(--p-1)',
           }}
           >
-            {row('aiden', 'aiden', m)}
+            {row('aiden', 'current', m)}
           </div>
         </div>
       </Scope>
@@ -1948,19 +1970,35 @@ export const Roster: Story = {
         <PocStyle />
         <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>The suite — selected</h2>
+            <h2 style={H2}>Every option</h2>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Six sub-apps and the Aiden surface, showing the picks: the greener{' '}
-              <strong>nb</strong>, the blue <strong>ec</strong>, and the gold kept over the
-              orange. Each row is the mark, the three anchors (highlight · primary · deep),
+              Every option that passes, listed rather than chosen — nothing is assigned to
+              a slot. Each row is the mark, the three anchors (highlight · primary · deep),
               the hero rail those anchors build, and the primary button that proves the
-              accent carries a label. A second line under a name means an alternate is
-              standing in that slot.
+              accent carries a label. Alternates sit directly under the current brand they
+              grew out of, so a comparison is one glance apart.
             </p>
           </div>
           <div style={{ display: 'grid', gap: 'var(--p-6)' }}>
             {panel('dark')}
             {panel('light')}
+          </div>
+
+          {/* With nothing assigned to a slot, the only thing that still binds is
+              which options can be used TOGETHER — so it belongs on this page. */}
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>The one pairing rule</h3>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              Every option above passes on its own. Only one <em>combination</em> does not:{' '}
+              <strong>nb-green</strong> with either <strong>ph</strong> (0.6) or{' '}
+              <strong>ph-orange</strong> (2.3), measured as colour-blind ΔE against a floor of
+              4 — under a red-green anomaly those pairs are the same colour. Green cannot fix
+              it from its side, because rotating it toward emerald to clear the gold walks it
+              into <code>--success</code> instead; the bright-green band is boxed in on both
+              sides, which is why the current nb is the darkest of the greens. If you want
+              nb-green, pair it with <strong>ph-gold</strong> (5.7) or{' '}
+              <strong>ph-amber</strong> (10.7). Every other combination on this page is clear.
+            </p>
           </div>
         </div>
       </>
@@ -1976,10 +2014,9 @@ export const Roster: Story = {
  */
 export const RosterDetail: Story = {
   render: function RosterDetailStory() {
-    const card = (slot: BrandKey, key: BrandKey | AltKey, m: Mode) => {
+    const card = (key: BrandKey | AltKey, kind: 'current' | 'alternate', m: Mode) => {
       const a = anchorsOf(key);
       const trio = m === 'light' ? a.light : a.dark;
-      const swap = key !== slot;
       const chip = (c: string, label: string) => (
         <div style={{ display: 'grid', gap: 4, minWidth: 62 }}>
           <div style={{ background: c, height: 32, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
@@ -1998,9 +2035,9 @@ export const RosterDetail: Story = {
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
               <Mark brand={key} size={44} live />
               <div style={{ display: 'grid', gap: 2 }}>
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>{slot}</span>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>{key}</span>
                 <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                  {m}{swap ? ` · ${key}` : ''}
+                  {m} · {kind}
                 </span>
               </div>
             </div>
@@ -2040,23 +2077,24 @@ export const RosterDetail: Story = {
         <PocStyle />
         <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>The suite — selected, in detail</h2>
+            <h2 style={H2}>Every option, in detail</h2>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Every brand in both modes side by side: the five anchors, the mark, accent duty
-              on a real button pair, and a three-series chart — primary, deep and accent,
-              which is exactly where a brand&rsquo;s colour stops and the neutrals take over.
-              Aiden closes the list as the surface it is.
+              Every option in both modes side by side: the five anchors, the mark, accent
+              duty on a real button pair, and a three-series chart — primary, deep and
+              accent, which is exactly where a brand&rsquo;s colour stops and the neutrals take
+              over. Alternates follow the current brand they grew out of; Aiden closes the
+              list as the surface it is.
             </p>
           </div>
 
-          {SELECTED_ROWS.map(({ slot, key }) => (
-            <div key={slot} style={{ display: 'grid', gap: 'var(--p-2)' }}>
+          {OPTION_ROWS.map(({ key, kind }) => (
+            <div key={key} style={{ display: 'grid', gap: 'var(--p-2)' }}>
               <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                {slot}{key !== slot ? ` — ${key}` : ''}{slot === 'aiden' ? ' — the surface, not a sub-app' : ''}
+                {key} — {noteFor(key, kind)}
               </span>
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(280px, 1fr))', gap: 'var(--p-3)' }}>
-                {card(slot, key, 'dark')}
-                {card(slot, key, 'light')}
+                {card(key, kind, 'dark')}
+                {card(key, kind, 'light')}
               </div>
             </div>
           ))}
