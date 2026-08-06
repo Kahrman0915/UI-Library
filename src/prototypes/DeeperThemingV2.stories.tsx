@@ -17,7 +17,8 @@ import {
 import {
   POC_CSS, BRAND_ANCHORS, BRAND_KEYS, PRIMARY_LIGHT, PRIMARY_DARK, PRIMARY_IS_AUTHORED, SUB_BRANDS,
 } from './deeperThemingRecipeV2';
-import type { BrandKey } from './deeperThemingRecipeV2';
+import { ALT_ANCHORS, ALT_KEYS } from './deeperThemingRecipeV2';
+import type { BrandKey, AltKey } from './deeperThemingRecipeV2';
 import SuitePageV2 from './SuitePageV2';
 import { usePointerTilt } from './usePointerTilt';
 import { AuditPanel, NewTokensPanel, TokenDiffPanel } from './DeeperThemingPartsV2';
@@ -100,6 +101,10 @@ function contrast(fg: [number, number, number, number], bg: [number, number, num
 const ICONS: Record<BrandKey, LucideIcon> = {
   db: ChartColumn, nb: FileText, dc: Globe, ec: Calendar, ph: Zap, rm: Heart, aiden: Sparkles,
 };
+/** An alternate wears the glyph of the brand it would replace. */
+const ALT_ICONS: Record<AltKey, LucideIcon> = {
+  'nb-green': FileText, 'ec-blue': Calendar, 'ph-orange': Zap, 'ph-amber': Zap,
+};
 type Mode = 'light' | 'dark';
 
 const H2: CSSProperties = { margin: '0 0 var(--p-2)', fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' };
@@ -161,7 +166,7 @@ function useGlobalMode(): Mode {
 function Scope({
   brand, mode, strength = 1, chromeOn = 1, children,
 }: {
-  brand: BrandKey | ''; mode?: Mode; strength?: number; chromeOn?: number; children: ReactNode;
+  brand: BrandKey | AltKey | ''; mode?: Mode; strength?: number; chromeOn?: number; children: ReactNode;
 }) {
   const global = useGlobalMode();
   mode ??= global;
@@ -194,8 +199,8 @@ function Scope({
  */
 function Mark({
   brand, size = 48, live = false, tilt = false,
-}: { brand: BrandKey; size?: number; live?: boolean; tilt?: boolean }) {
-  const Icon = ICONS[brand];
+}: { brand: BrandKey | AltKey; size?: number; live?: boolean; tilt?: boolean }) {
+  const Icon = ICONS[brand as BrandKey] ?? ALT_ICONS[brand as AltKey];
   const ref = usePointerTilt<HTMLSpanElement>(tilt);
   return (
     <span
@@ -1606,6 +1611,212 @@ export const SideBySide: Story = {
           the button shows accent duty on the brand&rsquo;s own tinted card. Flip the
           global mode toggle to compare dark.
         </p>
+      </>
+    );
+  },
+};
+
+/**
+ * ALTERNATES — extra options, not a replacement set (owner, 2026-08-06).
+ *
+ * Three asks: a greener nb (between v1 and v2, away from forest), a blue ec
+ * (v1's azure), and a ph that reads orange rather than brown. Each is solved by
+ * the SAME solver, construction and floors as the incumbent it would replace,
+ * so what you are comparing here is colour and nothing else.
+ *
+ * Two findings came out of solving them, and both are visible on this page:
+ *
+ *   1. THE ALTERNATES ARE NOT INDEPENDENT. nb and ph are wheel neighbours AND
+ *      the pair that collapses under deutan simulation — green and orange land
+ *      on nearly the same axis for a red-green anomaly. The incumbent set paid
+ *      for that by keeping nb dark. A bright green spends that margin, so
+ *      nb-green measures CVD ΔE 0.6 against the v2 gold (effectively identical)
+ *      and 10.7 against ph-amber. Picking a green picks a gold with it.
+ *
+ *   2. --primary-text IS A BRIGHTNESS CEILING. It is a fixed 85% blend toward
+ *      the foreground, so past roughly L 0.63 no light-mode primary can reach
+ *      AA as on-surface text, whatever its hue. That is what stops ph from
+ *      being genuinely bright without also making that ratio per-brand.
+ */
+export const Alternates: Story = {
+  render: function AlternatesStory() {
+    const mode = useGlobalMode();
+    const other: Mode = mode === 'dark' ? 'light' : 'dark';
+
+    const GROUPS: { swaps: BrandKey; heading: string; ask: string; alts: AltKey[] }[] = [
+      { swaps: 'nb', heading: 'nb — the green', ask: '“slightly more green, away from forest — between v1 and v2”', alts: ['nb-green'] },
+      { swaps: 'ec', heading: 'ec — the blue', ask: '“a blue option like the v1 ec brand”', alts: ['ec-blue'] },
+      { swaps: 'ph', heading: 'ph — the gold', ask: '“more orange than brown”', alts: ['ph-orange', 'ph-amber'] },
+    ];
+
+    const chip = (c: string, label: string) => (
+      <div style={{ display: 'grid', gap: 4, minWidth: 68 }}>
+        <div style={{ background: c, height: 34, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
+        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+        <span style={{ ...MONO, color: 'var(--muted-foreground)', opacity: 0.65 }}>{c}</span>
+      </div>
+    );
+
+    /** One option, rendered in ONE mode — so both modes sit side by side and the
+     *  owner never has to flip the toolbar to compare two candidates. */
+    const option = (key: BrandKey | AltKey, m: Mode) => {
+      // Both maps share the anchor SHAPE; only the alternates carry `label`.
+      type Shown = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; label?: string };
+      const alts = ALT_ANCHORS as unknown as Record<string, Shown>;
+      const incumbents = BRAND_ANCHORS as unknown as Record<string, Shown>;
+      const a: Shown = alts[key] ?? incumbents[key];
+      const trio = m === 'light' ? a.light : a.dark;
+      const isAlt = (ALT_KEYS as string[]).includes(key);
+      return (
+        <Scope key={`${key}-${m}`} brand={key} mode={m}>
+          <div style={{
+            background: 'var(--background)', color: 'var(--foreground)',
+            border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)',
+            padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)',
+          }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+              <Mark brand={key} size={44} live />
+              <div style={{ display: 'grid', gap: 2 }}>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>
+                  {key}{!isAlt && ' (current)'}
+                </span>
+                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
+                  {m} · {isAlt ? a.label : 'the incumbent'}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {chip(trio[0], 'highlight')}
+              {chip(trio[1], 'primary')}
+              {chip(trio[2], 'deep')}
+              {chip(a.accent[m], 'accent')}
+            </div>
+
+            {/* Accent duty: the CTA proves the on-colour, the outline proves
+                --primary-text, which is the token ph-amber cannot satisfy. */}
+            <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center' }}>
+              <Button id={`${key}-${m}-cta`} size="sm">Primary action</Button>
+              <Button id={`${key}-${m}-alt`} size="sm" style="outline">Outline</Button>
+              <Badge id={`${key}-${m}-badge`}>Badge</Badge>
+            </div>
+
+            {/* Three series = primary + deep + accent, which is exactly where a
+                brand's colour stops and the neutrals take over. */}
+            <BarChart
+              id={`${key}-${m}-chart`}
+              title="Sessions by channel"
+              categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              height={132}
+              series={[
+                { key: 'a', label: 'Direct', data: [420, 512, 486, 640] },
+                { key: 'b', label: 'Referral', data: [280, 310, 402, 380] },
+                { key: 'c', label: 'Organic', data: [180, 240, 220, 300] },
+              ]}
+            />
+          </div>
+        </Scope>
+      );
+    };
+
+    const MATRIX: { nb: string; cells: { ph: string; cvd: string; ok: boolean }[] }[] = [
+      { nb: 'nb (current)', cells: [{ ph: 'ph (current)', cvd: '6.7', ok: true }, { ph: 'ph-orange', cvd: '5.0', ok: true }, { ph: 'ph-amber', cvd: '18.0', ok: true }] },
+      { nb: 'nb-green', cells: [{ ph: 'ph (current)', cvd: '0.6', ok: false }, { ph: 'ph-orange', cvd: '2.3', ok: false }, { ph: 'ph-amber', cvd: '10.7', ok: true }] },
+    ];
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h2 style={H2}>Alternates — options, not a new set</h2>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              Each option is solved by the same solver, the same construction and the same
+              floors as the brand it would replace, so this page compares colour and nothing
+              else. Every card shows one option in one mode — light and dark sit side by
+              side so nothing depends on flipping the toolbar. The current brand is always
+              the leftmost card in its row.
+            </p>
+          </div>
+
+          {GROUPS.map((g) => (
+            <div key={g.swaps} style={{ display: 'grid', gap: 'var(--p-3)' }}>
+              <div style={{ display: 'grid', gap: 2 }}>
+                <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>{g.heading}</h3>
+                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)', fontStyle: 'italic' }}>{g.ask}</span>
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: `repeat(${(g.alts.length + 1) * 2}, minmax(196px, 1fr))`, gap: 'var(--p-3)', overflowX: 'auto' }}>
+                {[g.swaps, ...g.alts].flatMap((k) => [option(k, mode), option(k, other)])}
+              </div>
+            </div>
+          ))}
+
+          {/* FINDING 1 */}
+          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 760 }}>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>The options are not independent</h3>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              nb and ph sit next to each other on the wheel and are also the pair that
+              collapses under deutan simulation — green and orange project onto nearly the
+              same axis for a red-green anomaly. The current set pays for that by keeping nb
+              dark. A brighter green spends the margin, so it only holds against a brighter
+              gold. Figures are colour-blind ΔE in light mode; the floor is 4.
+            </p>
+            <div style={{ border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
+              <table style={{ borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' }}>
+                <thead>
+                  <tr style={{ background: 'var(--secondary)' }}>
+                    <th style={{ textAlign: 'left', padding: 'var(--p-2) var(--p-3)' }} />
+                    {MATRIX[0].cells.map((c) => (
+                      <th key={c.ph} style={{ textAlign: 'left', padding: 'var(--p-2) var(--p-3)', ...MONO }}>{c.ph}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {MATRIX.map((r) => (
+                    <tr key={r.nb} style={{ borderTop: 'var(--border-w-100) solid var(--border)' }}>
+                      <td style={{ padding: 'var(--p-2) var(--p-3)', ...MONO }}>{r.nb}</td>
+                      {r.cells.map((c) => (
+                        <td key={c.ph} style={{ padding: 'var(--p-2) var(--p-3)', ...MONO, color: c.ok ? 'var(--success)' : 'var(--error)' }}>
+                          {c.ok ? '✓' : '✗'} {c.cvd}
+                        </td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* FINDING 2 */}
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>Why ph-amber needs a token change</h3>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              <code>--primary-text</code> is a fixed 85% blend of the primary toward the
+              foreground. Past roughly L 0.63 that blend can no longer reach AA on a card,
+              whatever the hue — so a genuinely bright light-mode primary breaks the
+              outline/link/secondary text colour while the filled button stays fine. Look at
+              the two buttons on the ph-amber card: the solid CTA passes at 6.6:1 (it carries
+              dark text, like every dark-mode fill already does), while the outline label
+              lands at 3.53:1. The colour is not the problem; the ratio is. A 72% blend
+              clears it, which means making that ratio per-brand rather than global.
+            </p>
+          </div>
+
+          {/* WHAT THE SEMANTICS COST */}
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>What each option spends on semantics</h3>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              Taken against the owner&rsquo;s own discharge — not every product&rsquo;s charts carry
+              both a warning and an error. <strong>nb-green</strong> sits 8.4 from success
+              (light), <strong>ec-blue</strong> 6.0 from info, <strong>ph-orange</strong> 6.5
+              from warning, <strong>ph-amber</strong> 7.6 from warning. The impersonation line
+              is 8.5. Each is safe exactly where that one semantic never appears beside the
+              brand — a status pill in the header is fine, the same hue as a chart series next
+              to a warning series is not.
+            </p>
+          </div>
+        </div>
       </>
     );
   },

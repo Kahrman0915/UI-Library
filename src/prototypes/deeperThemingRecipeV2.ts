@@ -219,6 +219,65 @@ export const PRIMARY_IS_AUTHORED: Record<string, boolean> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, 'primary' in v]),
 );
 
+/**
+ * ALTERNATES (owner, 2026-08-06) — ADDITIVE. The seven above are untouched.
+ *
+ * Options to put in front of the team, solved by the SAME solver, the same
+ * construction and the same floors as the incumbents, so a comparison is a
+ * comparison of colour and not of two different systems. Each names the
+ * incumbent it would replace; nothing selects one unless a story asks for it by
+ * `data-brand`, so the ramp, the brand picker and every existing story are
+ * unaffected by their presence.
+ *
+ * WHAT EACH ONE COSTS — the numbers, not adjectives:
+ *
+ *   nb-green   Greener and brighter than v2 (between v1 and v2: hue 143 splits
+ *              them, and the AA target drops 6.9 -> 5.2 so it stops reading as
+ *              forest). COMBINATION CONSTRAINT: nb and ph are the pair that
+ *              collapses under deutan simulation, and the incumbent set solved
+ *              that by keeping nb dark. Bright green vs the v2 gold measures
+ *              CVD dE 0.6 — effectively identical to a red-green anomaly. It
+ *              holds against ph-amber (10.7). Choosing this green means
+ *              choosing a brighter gold with it.
+ *
+ *   ec-blue    v1's azure restored (hue 240 = --info's hue). It crowds --info
+ *              by design: dE 6.0 light / 6.9 dark, under the 8.5 impersonation
+ *              line. Safe exactly where the owner said — a product whose charts
+ *              never carry an info series next to the brand. Its DARK anchor is
+ *              pushed bright (L~0.78) so it clears db, the flagship, by
+ *              lightness rather than hue.
+ *
+ *   ph-orange  Burnt orange, white text, hue 57 (v1's). Drops in with no system
+ *              change. Crowds --warning at dE 6.5 in light. Bonus: it sits 27
+ *              degrees off dark-warning's amber where the v2 gold sat only 6.
+ *
+ *   ph-amber   Bright orange, DARK text — the same construction the whole
+ *              system already uses in dark mode, and the only way to reach a
+ *              genuinely bright warm hue, since white-on-orange forces the
+ *              primary down to L~0.58 where orange reads as brown. COST: it
+ *              breaks --primary-text, which is a FIXED 85% blend toward the
+ *              foreground; at L 0.708 that lands at 3.53 on the card. The
+ *              colour is fine, the ratio is the limit — a 72% blend clears AA.
+ *              Adopting it means making that ratio per-brand.
+ */
+export const ALT_ANCHORS = {
+  'nb-green':  { light: ['#c4dd29', '#077e0e', '#014f04'], dark: ['#c4dd29', '#6dc759', '#3d9625'], markDeep: { light: '#0b4c39', dark: '#229472' }, accent: { light: '#90996f', dark: '#959d7a' }, chart2Dark: '#3d9625', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'nb', icon: 'file-text', label: 'greener, brighter — between v1 and v2' },
+  'ec-blue':   { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1e1cd3', dark: '#597df6' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ec', icon: 'leaf', label: "v1's azure — crowds --info by design" },
+  'ph-orange': { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'burnt orange, white text' },
+  'ph-amber':  { light: ['#fdc530', '#e6860a', '#a96004'], dark: ['#fdc530', '#e9800a', '#aa5c04'], markDeep: { light: '#ca3a18', dark: '#c83918' }, accent: { light: '#5d5034', dark: '#a79979' }, chart2Dark: '#a7601d', on: { light: '#0f172a', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'bright orange, DARK text' },
+} as const;
+
+export type AltKey = keyof typeof ALT_ANCHORS;
+export const ALT_KEYS = Object.keys(ALT_ANCHORS) as AltKey[];
+
+/** Solver-chosen slate order for each alternate, same rule as the incumbents. */
+const ALT_CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
+  'nb-green':  { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
+  'ec-blue':   { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  'ph-orange': { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
+  'ph-amber':  { light: ['#77879e', '#354358', '#607087'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
+};
+
 export type BrandKey = keyof typeof BRAND_ANCHORS;
 export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
 /** aiden is a SURFACE, not one of the sub-apps. */
@@ -256,11 +315,17 @@ const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
  * so the aliases were removed. A seventh series is not given a hue: it folds to
  * --chart-muted, which is what makes the six-slot cap visible rather than silent.
  */
-function chartVars(k: string, mode: 'light' | 'dark'): string {
+type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
+function chartVars(
+  k: string,
+  mode: 'light' | 'dark',
+  anchors: Record<string, AnchorSet> = BRAND_ANCHORS as unknown as Record<string, AnchorSet>,
+  neutralMap: Record<string, { light: string[]; dark: string[] }> = CHART_NEUTRALS,
+): string {
   if (!CHART_THEMING) return '';
-  const neutrals = CHART_NEUTRALS[k]?.[mode];
+  const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
-  const a = BRAND_ANCHORS[k as keyof typeof BRAND_ANCHORS];
+  const a = anchors[k];
   const slot1 = mode === 'light' ? a.light[1] : a.dark[1];
   // dark slot 2 is the COMPANION, not the deep — see the header for why.
   // Slot 3 is the ACCENT: the artwork hue tamed to chart duty (3:1 on card,
@@ -272,9 +337,14 @@ function chartVars(k: string, mode: 'light' | 'dark'): string {
 }
 
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */
-function anchorBlocks(): string {
-  return BRAND_KEYS.map((k) => {
-    const a = BRAND_ANCHORS[k];
+function anchorBlocks(
+  keys: readonly string[] = BRAND_KEYS,
+  anchorMap: Record<string, AnchorSet & { markDeep: { light: string; dark: string }; on: { light: string; dark: string } }> =
+    BRAND_ANCHORS as never,
+  neutralMap: Record<string, { light: string[]; dark: string[] }> = CHART_NEUTRALS,
+): string {
+  return keys.map((k) => {
+    const a = anchorMap[k];
     // aiden is a SURFACE, not a brand — it answers "what is speaking", not
     // "which app am I in", so it is selected by data-surface and never appears
     // in the brand picker. Same anchor shape, different attribute.
@@ -295,10 +365,10 @@ function anchorBlocks(): string {
   --mark-deep:          ${a.markDeep.light};
   --primary-highlight:  ${a.light[0]};
   --mark-mid:           ${a.light[1]};
-  --primary:            ${PRIMARY_LIGHT[k]};
+  --primary:            ${PRIMARY_LIGHT[k] ?? a.light[1]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
-${chartVars(k, 'light')}}
+${chartVars(k, 'light', anchorMap, neutralMap)}}
 ${sel}[data-mode='dark'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
@@ -306,10 +376,10 @@ ${sel}[data-mode='dark'] {
   --mark-deep:          ${a.markDeep.dark};
   --primary-highlight:  ${a.dark[0]};
   --mark-mid:           ${a.dark[1]};
-  --primary:            ${PRIMARY_DARK[k]};
+  --primary:            ${PRIMARY_DARK[k] ?? a.dark[1]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
-${chartVars(k, 'dark')}}`;
+${chartVars(k, 'dark', anchorMap, neutralMap)}}`;
   }).join('\n');
 }
 
@@ -321,6 +391,13 @@ export const POC_CSS = `
    the model actually holds: adding an eighth brand is four more lines here and
    zero changes anywhere else. */
 ${anchorBlocks()}
+
+/* ── THE ALTERNATES ─────────────────────────────────────────────────────────
+   Additive. Nothing above changes because these exist: they are extra
+   data-brand values, selected only where a story asks for one by name, so the
+   ramp, the picker and every existing story are untouched. Same emitter, same
+   solver, same floors — see ALT_ANCHORS for what each one costs. */
+${anchorBlocks(ALT_KEYS, ALT_ANCHORS as never, ALT_CHART_NEUTRALS)}
 
 /* ── LIGHT ──────────────────────────────────────────────────────────────────
    THE PAGE STAYS WHITE. Stated as a declaration rather than an omission so it
