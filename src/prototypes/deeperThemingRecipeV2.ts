@@ -21,13 +21,11 @@
  * brands. Aesthetic gate, owner-stated: professional, expensive, important —
  * jewel tones, not candy.
  *
- * DARK CHART SLOT 2 IS A COMPANION, NOT THE DEEP. At blue hues, "3:1 on the
- * dark card" plus "dE 15 BELOW the dark primary" is geometrically unsolvable
- * (chroma drags luminance). The shipped slate ramp already answers this: in
- * dark, deeper-relative-to-the-page means FURTHER FROM IT. The true deep keeps
- * tint/mark/hero duty, where no card contrast is owed.
- *
- * THE CATEGORICAL SLOTS CARRY NO SLATE AT ALL — see CHART_ARTWORK.
+ * DARK CHART SLOT 2 IS THE COMPANION (chart2Dark), NOT THE DEEP. At blue hues,
+ * "3:1 on the dark card" plus "dE 15 BELOW the dark primary" is geometrically
+ * unsolvable (chroma drags luminance). The shipped slate ramp already answers
+ * this: in dark, deeper-relative-to-the-page means FURTHER FROM IT. The true
+ * deep keeps tint/mark/hero duty, where no card contrast is owed.
  * ══════════════════════════════════════════════════════════════════════════
  */
 /**
@@ -226,7 +224,7 @@ export const BRAND_ANCHORS = {
   // of drift is inside the house limit and in line with nb (6) and aiden (7).
   // The whole move is dE 3.4. All db gates re-checked: white 4.54, --primary-text
   // 5.56, deep dE 15.0, chart chain 15/24/25, ec 11.5, aiden 10.2, info 13.7.
-  db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#33b3e3' }, chart2Dark: '#c7dbff', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
   // I don't like about current nb is the light mode mark"). The cause was
   // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
@@ -241,7 +239,7 @@ export const BRAND_ANCHORS = {
   // `primary` pins the functional colour to today's #306602 exactly. Buttons,
   // chart slot 1, tints and every gate are untouched; only the artwork moves.
   // markDeep rises with it, from a near-black #063a26 to a real emerald.
-  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
+  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a3a985' }, chart2Dark: '#8fa37c', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
   // dc's LIGHT MARK DEEP was raised #032930 -> #0c4b55 (owner, 2026-08-06:
   // "light mode just seems really deep"). It was, measurably: at L 0.259 it was
   // the darkest third stop in the set by a distance — the rest of the family
@@ -280,7 +278,7 @@ export const BRAND_ANCHORS = {
   // three (4.8 against their 6.0 and 6.5), and success-beside-teal is a far
   // more common chart pairing than info-beside-blue. The honest alternative is
   // #035b54 (L 0.425), which is most of the brightness and still clears 9.5.
-  dc:    { light: ['#4eeeaf', '#127f76', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#0c4b55', dark: '#075e6f' }, on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
+  dc:    { light: ['#4eeeaf', '#127f76', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#0c4b55', dark: '#075e6f' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#6be1cf', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
   // ec = THE BLUE (owner, 2026-08-06; was teal 206/212). v1's azure restored at
   // hue 240 — which IS --info's hue, so it crowds that semantic by design:
   // dE 6.0 light / 6.9 dark against an 8.5 impersonation line. The owner waived
@@ -289,13 +287,13 @@ export const BRAND_ANCHORS = {
   // Its DARK anchor is pushed bright (L 0.78) so it clears db — the flagship,
   // and now its wheel neighbour — by LIGHTNESS rather than hue, the same
   // construction that separates db from aiden.
-  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1850d1', dark: '#067cbc' }, on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1850d1', dark: '#067cbc' }, accent: { light: '#599fae', dark: '#83b755' }, chart2Dark: '#6c97aa', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   // ph = THE BURNT ORANGE (owner, 2026-08-06; was gold 78/75). Hue 57, v1's.
   // Crowds --warning at dE 6.5 in light, waived on the same terms as ec. It
   // does BUY something back: the retired gold sat only 6 degrees off
   // dark-warning's amber, where this sits 27 off it.
-  ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
-  rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#ca9d42' }, chart2Dark: '#9d7a63', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#cf84d6' }, chart2Dark: '#b3879b', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
   // THE SAME WRONG-CARD BUG HIT THREE FAMILIES, not one. Accents, chart
   // neutrals AND the dark COMPANION (chart2Dark, slot 2) were every one of them
   // gated against the base dark card #1e293b while this POC tints it. Measured
@@ -351,7 +349,7 @@ export const BRAND_ANCHORS = {
   // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
   // construction — but it is the tightest identity pair in the set now, and
   // matching the product is the reason it is accepted.
-  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
+  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -386,91 +384,59 @@ export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
 export const SUB_BRANDS = BRAND_KEYS.filter((k) => k !== 'aiden');
 
 /**
- * ON in v2 — the owner's chart model. Slot 1 is the primary; slots 2-6 come
- * from CHART_ARTWORK below.
+ * ON in v2 — the owner's chart model, verbatim: "celebrate the primary and
+ * deep of the brand and use our neutrals to fill." Slot 1 is the primary,
+ * slot 2 the deep (light) / the companion (dark — see the header), slots 3-6
+ * are the shipped slate steps in a solver-chosen order. The searched 6-hue
+ * palettes v1 parked here are gone; the owner rejected them.
  */
 const CHART_THEMING = true;
 
 /**
- * SLOTS 2-6: THE CATEGORICAL PALETTE, AND THERE IS NO SLATE LEFT IN IT.
- *
- * Owner, 2026-08-06: "I do not like the grey in the categorical ... can we pull
- * from the highlight and deep mark colors more? a light highlight color and
- * darker highlight color and the dark mark and maybe a light version of the
- * dark mark?" And, on db in dark: "looks like it has 4 greys."
- *
- * That count was right, and both halves of it were mine. Slots 4-6 were literal
- * shipped slate. Slot 2 in dark was worse, because it was grey BY ACCIDENT: the
- * companion had been solved alone against "15 dE from the primary AND 3:1 on
- * the card", and at one hue that forces it very light — where the sRGB gamut
- * narrows and chroma collapses. Four of six brands landed on a pale near-grey
- * (db #c7dbff, ec #6c97aa, ph #9d7a63, rm #b3879b). Nobody chose those; the
- * constraint did.
- *
- * THE NEW SHAPE IS THREE HUE FAMILIES AT TWO LIGHTNESS RUNGS EACH, INTERLEAVED
- * so consecutive slots are never the same family:
- *
- *   1 primary      3 highlight-a   5 highlight-b     <- hlHue, rotated one way
- *   2 primary-deep 4 markdeep-a    6 markdeep-b      <- mdHue, rotated the other
- *
- * A 4-series chart therefore paints three different hue families, not two plus
- * a grey. Slot 2 is chosen AS PART OF THE SET in dark rather than in isolation.
- *
- * IT MEASURES BETTER, WHICH I DID NOT ASSUME. The slate build's all-pairs
- * minimum was 6.4 dE and could not be pushed past a 7.9 ceiling — because slate
- * steps differ only in LIGHTNESS, so any two of them chosen from one ramp are
- * near-collinear and the pairs nobody gated sat right on top of each other.
- * Brand hues differ in hue AND lightness. This build runs 10.0-11.7 all-pairs,
- * worst colour-blind 4.6.
- *
- * WHAT IT COSTS, and this is the honest trade to look at rather than the
- * numbers: a brand whose three artwork hues sit close together now paints a
- * near-monochrome chart. ph spans 32-82 degrees, so its six slots are all
- * warm — bronze through orange. That is a recognised and rather expensive
- * charting style, but it IS less immediately separable to the eye than a
- * rainbow, even though it measures further apart than the slate build did.
- *
- * HOW IT IS SOLVED, because the objective matters more than the search:
- * eligibility is all-pairs >= 8.5 (the repo's hard "never near-identical" line)
- * and CVD >= 4, both against the card that ACTUALLY renders. Then the score is
- * lexicographic — separation counts only up to 10.5, after which the solver
- * stops buying more of it and starts preferring the LEAST hue drift, then the
- * most chroma. Capping the objective is the whole trick: pure maximise-min
- * produced technically excellent palettes that had stopped looking like the
- * brand (light rungs at #ffeded, dark rungs at #372d03, ph's mark family
- * drifted 14 degrees into a crimson that reads as an error). With the cap, ten
- * of twelve solves take ZERO hue drift.
- *
- * EC IS THE ONE CARVE-OUT, and it is the same one its accent already took. All
- * three of ec's families are blue — hl 212, primary 228, md 268 — so under a
- * red-green anomaly they collapse onto a single axis and NO combination clears
- * CVD 4. Its accent hit this first and left the family for green; the owner saw
- * that green in the chart and asked why it was there and liked it. So ec's
- * highlight family may rotate as far as it needs (it took -24 degrees, to a
- * teal-green) and the drift penalty keeps it to the least it can get away with.
- *
- * Aiden is absent on purpose — it is a surface, not a brand, and a chart inside
- * it keeps the neutral shipped ramp.
+ * Slots 3-6 per brand and mode: four of the six shipped slate steps, ordered by
+ * the solver to maximise the minimum adjacent dE given slot 2. Aiden is absent
+ * on purpose — it is a surface, not a brand, and keeps the neutral ramp.
  */
-const CHART_ARTWORK: Record<string, { light: string[]; dark: string[] }> = {
-  db: { light: ['#0d3bbf', '#0a526b', '#512898', '#1d9dc9', '#9a79ef'], dark: ['#c7dbff', '#1c99c4', '#9072df', '#73b5d2', '#bba8fc'] },
-  nb: { light: ['#183a00', '#6f7912', '#215241', '#8f9b43', '#1ca07b'], dark: ['#5c8b14', '#bbbd75', '#528773', '#e2e357', '#4efcc6'] },
-  dc: { light: ['#002b27', '#07492b', '#275b67', '#1da667', '#1c99b1'], dark: ['#69e3d0', '#1a9857', '#18889e', '#7dfdad', '#76bacb'] },
-  ec: { light: ['#01517a', '#053946', '#3552bc', '#5e96a7', '#6387f6'], dark: ['#4494b5', '#23b9af', '#5575db', '#33f9ed', '#80a0fb'] },
-  ph: { light: ['#793e01', '#7a6641', '#581d03', '#ad915e', '#e96a37'], dark: ['#f6cfb5', '#b79a64', '#ce533e', '#fbbb2d', '#ee9c8b'] },
-  rm: { light: ['#960366', '#5f0867', '#6f0827', '#c76ccf', '#e25a73'], dark: ['#fecfe3', '#c46fcc', '#d05269', '#f39bfb', '#fc9fab'] },
+const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
+  db: { light: ['#364560', '#586985', '#17253d'], dark: ['#9badc5', '#768aa5', '#c2d1e5'] },
+  nb: { light: ['#364556', '#6b7c8e', '#172534'], dark: ['#a0afb9', '#7b8c9a', '#c7d3d9'] },
+  dc: { light: ['#6a7b90', '#253447', '#46566b'], dark: ['#9baebe', '#768b9f', '#c2d2de'] },
+  ec: { light: ['#6a7d94', '#25364b', '#46586f'], dark: ['#9bafc3', '#778ca3', '#c3d3e3'] },
+  ph: { light: ['#3b4556', '#707c8e', '#1c2534'], dark: ['#a4acb9', '#7f899a', '#cbd0d9'] },
+  rm: { light: ['#717993', '#1d2339', '#4d546e'], dark: ['#a6a9c0', '#8186a1', '#cdcde0'] },
 };
 
-/**
- * SIX SIMULTANEOUS CATEGORICAL SERIES IS AT THE LIMIT OF WHAT ANY PALETTE CAN
- * CARRY, and that survives this rebuild — it is a charting truth, not a
- * shortfall in these hexes. Two colours need ~15 dE to be unmistakable; six
- * cannot all sit 15 apart inside a space bounded by 3:1-against-the-card at
- * BOTH ends and by distinctness from --chart-muted. This is the same
- * compounding the chart component already documents for contrast ("no
- * categorical palette can deliver 3:1 between eight consecutive slots"), and it
- * applies to hue separation too. A six-series chart wants the emphasis pattern,
- * or fewer series, or marks that do not overlap.
+/*
+ * THE NEUTRALS ARE NOW GATED ON ALL PAIRS, NOT JUST ADJACENT ONES — and the
+ * ceiling that exposed is worth more than the fix.
+ *
+ * The chain gate only ever compared slot N with slot N+1, which is sufficient
+ * while the emphasis pattern is on, because every de-emphasised series resolves
+ * to a single --chart-muted grey and only two or three colours ever paint. Turn
+ * emphasis off, as any chart showing all six categories does, and the ungated
+ * pairs appear: slots 4 and 6 measured dE 5.3 on every brand — 5.2 under
+ * colour-blind simulation — because both are dark slates and nothing had ever
+ * asked them to differ.
+ *
+ * Re-solved against every pair among the six, AND against the card that
+ * actually renders — the dark pass first repeated the very bug it had just
+ * fixed for the accents, gating against the base #1e293b while the POC tints
+ * the card, which put the dark swatches at 2.68-2.98:1. Both solves now use
+ * the lightest tinted card in the set. Worst against the real card: 3.58.
+ *
+ * But the honest headline is the CEILING, not the improvement: the best all-pairs minimum reachable is 7.9
+ * with NO tint at all, and 6.4 at the 20% used here. Six colours cannot all sit
+ * 15 apart inside a space bounded by 3:1-against-the-card at BOTH ends and by
+ * distinctness from the mute. This is the same compounding the chart component
+ * already documents for contrast — "no categorical palette can deliver 3:1
+ * between eight consecutive slots" — and it applies to hue separation too.
+ *
+ * WHAT THAT MEANS FOR CONSUMERS, and it is a charting truth rather than a
+ * palette shortfall: six simultaneous categorical series is at the limit of
+ * what any palette can carry. That is precisely why the emphasis pattern
+ * exists. A six-series chart wants emphasis, or fewer series, or marks that do
+ * not overlap — the tint dropped 28% -> 20% to buy separation, and going
+ * further would buy very little.
  */
 
 /**
@@ -562,25 +528,29 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * so the aliases were removed. A seventh series is not given a hue: it folds to
  * --chart-muted, which is what makes the six-slot cap visible rather than silent.
  */
-type AnchorSet = { light: readonly string[]; dark: readonly string[] };
+type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
 function chartVars(
   k: string,
   mode: 'light' | 'dark',
   anchors: Record<string, AnchorSet> = BRAND_ANCHORS as unknown as Record<string, AnchorSet>,
-  artworkMap: Record<string, { light: string[]; dark: string[] }> = CHART_ARTWORK,
+  neutralMap: Record<string, { light: string[]; dark: string[] }> = CHART_NEUTRALS,
 ): string {
   if (!CHART_THEMING) return '';
-  const rest = artworkMap[k]?.[mode];
-  if (!rest) return ''; // aiden is a surface, not a brand — it keeps the default ramp
+  const neutrals = neutralMap[k]?.[mode];
+  if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
   // The AUTHORED primary, not the mark's middle stop. Identical for every brand
   // that does not separate them, so this changes no existing output — but nb
   // now does separate them (see its anchors), and a chart must plot the colour
   // the buttons use, not the one the logo is drawn with.
   const slot1 = (mode === 'light' ? PRIMARY_LIGHT[k] : PRIMARY_DARK[k]) ?? (mode === 'light' ? a.light[1] : a.dark[1]);
-  // Slots 2-6 are CHART_ARTWORK: the primary's deep/companion, then the
-  // highlight and mark-deep families at two rungs each, interleaved.
-  return [slot1, ...rest].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
+  // dark slot 2 is the COMPANION, not the deep — see the header for why.
+  // Slot 3 is the ACCENT: the artwork hue tamed to chart duty (3:1 on card,
+  // capped chroma, chain-dE from slot 2, semantics hard-cleared) — so a
+  // 3-series chart carries colour and branding without leaving the family.
+  const slot2 = mode === 'light' ? a.light[2] : a.chart2Dark;
+  const slot3 = a.accent[mode];
+  return [slot1, slot2, slot3, ...neutrals].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
 }
 
 /**
@@ -603,7 +573,7 @@ function anchorBlocks(
   keys: readonly string[] = BRAND_KEYS,
   anchorMap: Record<string, AnchorSet & { markDeep: { light: string; dark: string }; on: { light: string; dark: string } }> =
     BRAND_ANCHORS as never,
-  artworkMap: Record<string, { light: string[]; dark: string[] }> = CHART_ARTWORK,
+  neutralMap: Record<string, { light: string[]; dark: string[] }> = CHART_NEUTRALS,
 ): string {
   return keys.map((k) => {
     const a = anchorMap[k];
@@ -630,7 +600,7 @@ function anchorBlocks(
   --primary:            ${PRIMARY_LIGHT[k] ?? a.light[1]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
-${chartVars(k, 'light', anchorMap, artworkMap)}${rampVars(k, 'light')}}
+${chartVars(k, 'light', anchorMap, neutralMap)}${rampVars(k, 'light')}}
 ${sel}[data-mode='dark'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
@@ -641,7 +611,7 @@ ${sel}[data-mode='dark'] {
   --primary:            ${PRIMARY_DARK[k] ?? a.dark[1]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
-${chartVars(k, 'dark', anchorMap, artworkMap)}${rampVars(k, 'dark')}}`;
+${chartVars(k, 'dark', anchorMap, neutralMap)}${rampVars(k, 'dark')}}`;
   }).join('\n');
 }
 
