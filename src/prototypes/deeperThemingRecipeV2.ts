@@ -641,49 +641,53 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
 };
 
 /**
- * THE LINE PALETTE IS THREE OF THE BAR PALETTE'S OWN SIX — slots 1, 5 and 6.
+ * THE LINE PALETTE IS THREE OF THE BAR PALETTE'S OWN SIX.
  *
  * Owner: "pick three of the bar chart colors for the line chart in both modes."
- * Every 3-of-6 combination was scored in both modes; this is the one that
- * balances, and the full table is worth keeping because NOTHING clears both
- * floors and the choice is therefore a real trade:
+ * Every 3-of-6 combination was scored in both modes, and the table is the real
+ * answer, because NOTHING clears both floors — the choice is a trade, not a
+ * search result:
  *
  *   slots   worst contrast   worst dE   worst CVD
- *   1,5,6        3.61          10.3        8.0     <- chosen: best contrast
+ *   1,5,6        3.61          10.3        8.0        best contrast
  *   1,3,6        3.24           9.8        9.5
  *   1,2,6        2.67          14.2       12.7        best separation
+ *   1,4,6        1.98          10.0        4.9
  *
- * Contrast wins the tie because it is what the owner has rejected twice by eye:
- * a teal at 3.12 and an indigo at 4.00 were both called hard to see, and both
- * complaints were about DARK. 1,5,6 keeps dark's minimum at 4.07 and light's at
- * 3.61 — the highest floor any bar-colour trio can offer.
+ * THE TWO MODES DO NOT USE THE SAME SLOT FOR SERIES 2, and that is a decision
+ * rather than drift. Slot 4 is the cyan: in DARK it is the strongest value in
+ * the whole set (8.71 against the card) and in LIGHT it is the weakest (1.98).
+ * Slot 5 is the slate: 4.07 dark, 3.61 light. So DARK TAKES SLOT 4 AND LIGHT
+ * TAKES SLOT 5 — each mode picks the slot that is actually visible in it.
  *
- * dE 10.3 IS BELOW THE 15 THIS FILE HOLDS EVERYWHERE ELSE, and that is
- * accepted rather than overlooked. It is affordable here for one reason: this
- * chart no longer asks colour to work alone. Each series carries its own marker
- * SHAPE and names itself at the end of its own line, so colour is one cue of
- * three. Two colours 10 apart with a square on one and a triangle on the other,
- * each labelled where it ends, are easier to tell apart than two colours 15
- * apart in a legend. THAT is what the redundant encoding was for — and it is
- * what makes reusing the bar colours possible at all.
+ * The cause is the asymmetry this file keeps meeting: light's readable band
+ * sits BELOW these colours and dark's sits ABOVE them, so one pale value is dim
+ * in one mode and bright in the other. Insisting on the same slot in both would
+ * force one mode to carry a stroke it cannot show. Nothing is lost by letting
+ * the hue differ, because SERIES IDENTITY IS NOT CARRIED BY HUE HERE — the
+ * marker shape and the end label do not change with the mode.
  *
- * Without it the honest number was three fully-separated invented colours, and
- * the owner would rather have the bar palette. Correctly: a reader moving
- * between the two charts on one page sees one system, not two.
+ *   light  #067db8 (4.53)  #6d8b9c (3.61)  #232f42 (13.49)   dE 10.3 · CVD 8.0
+ *   dark   #1da0f3 (4.51)  #95e2e2 (8.71)  #e1eaf9 (10.59)   dE 10.0 · CVD 4.9
  *
- *   light  #067db8 (4.53)  #6d8b9c (3.61)  #232f42 (13.49)
- *   dark   #1da0f3 (4.51)  #7995a6 (4.07)  #e1eaf9 (10.59)
+ * dE ~10 IS BELOW THE 15 THIS FILE HOLDS EVERYWHERE ELSE, and it is accepted
+ * rather than overlooked. It is affordable for one reason: this chart no longer
+ * asks colour to work alone. Two colours 10 apart, one squared and one
+ * triangular, each labelled where it ends, are easier to tell apart than two
+ * colours 15 apart in a legend. THAT is what the redundant encoding was for,
+ * and it is what makes reusing the bar colours possible at all — the
+ * alternative was three fully-separated invented colours, and a reader moving
+ * between the two charts on one page should see one system, not two.
  *
- * Slot 5 is the quiet slate, which suits a third series; slot 6 is the
- * near-black. Same slots in both modes, so a series does not change identity
- * when the page flips.
+ * Dark's CVD 4.9 is the value to watch: slot 4's pale cyan against slot 6's
+ * near-white are close under a red-green anomaly. Shape carries that pair.
  *
  * A FOURTH SERIES FOLDS TO --chart-muted rather than picking up a colour that
  * cannot carry it — the cap belongs in the chart where it can be seen.
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#4ec8dc', '#232f42'],
+    light: ['#067db8', '#6d8b9c', '#232f42'],
     dark:  ['#1da0f3', '#95e2e2', '#e1eaf9'],
   },
 };
