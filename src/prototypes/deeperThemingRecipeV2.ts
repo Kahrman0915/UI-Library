@@ -205,7 +205,7 @@
  * than the app renders teaches the wrong thing.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#5e19ba', dark: '#843ff4' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
   // I don't like about current nb is the light mode mark"). The cause was
   // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
@@ -221,7 +221,27 @@ export const BRAND_ANCHORS = {
   // chart slot 1, tints and every gate are untouched; only the artwork moves.
   // markDeep rises with it, from a near-black #063a26 to a real emerald.
   nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
-  dc:    { light: ['#4eeeaf', '#025750', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#1a7888' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
+  // dc's LIGHT PRIMARY was brightened by hand (owner, 2026-08-06: #025750 ->
+  // #127f76, L 0.411 -> 0.539). Everything it owns still passes — white 4.86,
+  // --primary-text 5.98, deep dE 28.2, chart chain 28/40/29, neighbours nb 13.2
+  // and ec 10.8 — with ONE cost, and it is not small: clearance from --success
+  // falls 10.7 -> 4.8, well under the 8.5 impersonation line.
+  //
+  // THIS IS NOT FIXABLE BY TUNING, which is worth knowing before anyone tries.
+  // Sweeping lightness at this hue: dc clears success up to L 0.425 and then
+  // crowds it for the entire band from 0.44 to 0.56 (bottoming at 3.8), because
+  // --success sits at L 0.508 on a neighbouring hue. Chroma cannot rescue it —
+  // the gamut at teal caps near 0.09 there, BELOW success's own 0.105 — and
+  // rotating toward cyan only trades the collision for --info (hue 204 gives
+  // success 7.2 but info 8.3). A bright teal and a muted pine at the same
+  // lightness are the same colour to the eye; there is no third option.
+  //
+  // So this is a WAIVER like ec/--info and ph/--warning, and it should be
+  // recorded in semWaiver if it is adopted — but it is the tightest of the
+  // three (4.8 against their 6.0 and 6.5), and success-beside-teal is a far
+  // more common chart pairing than info-beside-blue. The honest alternative is
+  // #035b54 (L 0.425), which is most of the brightness and still clears 9.5.
+  dc:    { light: ['#4eeeaf', '#127f76', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#075e6f' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
   // ec = THE BLUE (owner, 2026-08-06; was teal 206/212). v1's azure restored at
   // hue 240 — which IS --info's hue, so it crowds that semantic by design:
   // dE 6.0 light / 6.9 dark against an 8.5 impersonation line. The owner waived
@@ -230,7 +250,7 @@ export const BRAND_ANCHORS = {
   // Its DARK anchor is pushed bright (L 0.78) so it clears db — the flagship,
   // and now its wheel neighbour — by LIGHTNESS rather than hue, the same
   // construction that separates db from aiden.
-  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1e1cd3', dark: '#597df6' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1850d1', dark: '#067cbc' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   // ph = THE BURNT ORANGE (owner, 2026-08-06; was gold 78/75). Hue 57, v1's.
   // Crowds --warning at dE 6.5 in light, waived on the same terms as ec. It
   // does BUY something back: the retired gold sat only 6 degrees off
@@ -260,7 +280,7 @@ export const BRAND_ANCHORS = {
   // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
   // construction — but it is the tightest identity pair in the set now, and
   // matching the product is the reason it is accepted.
-  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#93c5fd' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
+  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
