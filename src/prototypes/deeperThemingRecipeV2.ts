@@ -1443,6 +1443,40 @@ ${anchorBlocks()}
     calc(var(--poc2-mark-px) * var(--on) * 0.035)
     rgba(35, 14, 75, 0.4));
 }
+/* ── DARK: THE GLYPH'S CAST SHADOW, AND THE THIRD SHEEN-EDGE BUG ────────────
+   Both glyph shadows above are rgba(35,14,75,0.45) — a near-black purple, which
+   is exactly right for a WHITE glyph on a mid-dark tile: the shadow separates
+   the icon from the surface. Under the dark-mode ink glyph on a pale tile it is
+   the SAME VALUE as the glyph, so it stops separating and starts smearing —
+   the icon gains a muddy fringe instead of lifting off. Neutral ink at less
+   than half the alpha and half again the blur keeps the float and loses the
+   smear: it reads as the tile in shade, which is what a shadow on a pale
+   surface actually is.
+
+   AND THE SHEEN EDGE, for the third time. The file already carries the warning
+   twice — once for the keyframes, once for the tilt translate — that the sheen
+   "MAY ONLY EVER MOVE UP", because its brightest edge is pinned at y=0 and any
+   downward move lifts that edge into view as a line across the tile. The dark
+   band inverts the geometry: it is anchored at the BOTTOM and its DARKEST edge
+   is the pinned one, so the rule inverts with it — this band may only ever move
+   DOWN. The light rule's (--my - 1) term is always <= 0; the dark one needs
+   (--my + 1), which is always >= 0. Getting this wrong is what produced the
+   harsh line on hover, and it would have come back on tilt even after the
+   keyframe fix. */
+[data-theme-poc2][data-mode='dark'] .poc2-mark--live:hover > svg {
+  filter: drop-shadow(0 calc(var(--poc2-mark-px) * 0.016) calc(var(--poc2-mark-px) * 0.052) rgba(15, 23, 42, 0.20));
+}
+[data-theme-poc2][data-mode='dark'] .poc2-mark--tilt > svg {
+  filter: drop-shadow(
+    calc(var(--mx) * var(--poc2-mark-px) * -0.010)
+    calc(var(--poc2-mark-px) * var(--on) * 0.016)
+    calc(var(--poc2-mark-px) * var(--on) * 0.052)
+    rgba(15, 23, 42, 0.18));
+}
+[data-theme-poc2][data-mode='dark'] .poc2-mark--tilt::before {
+  translate: calc(var(--mx) * 5%) calc((var(--my) + 1) * 2.5%);
+}
+
 /* the tilt supersedes the plain hover lift — both write transform, and the
    later rule would otherwise win by source order rather than by intent */
 [data-theme-poc2] .poc2-mark--tilt:hover { transform: none; }
