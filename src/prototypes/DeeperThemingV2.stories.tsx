@@ -900,7 +900,7 @@ export const MarkAnatomy: Story = {
               rather than by eye.
             </p>
             <p style={P}>
-              <strong>A mark does not change between modes.</strong> It reads{' '}
+              <strong>The STATIC mark does not change between modes.</strong> It reads{' '}
               <code style={MONO}>--mark-a/b/c</code>, which carry the light anchors in both — an app
               icon is artwork, and an iOS icon is the same object whatever the system theme is doing.
               Treating it as a themed component is what broke it: dark&rsquo;s anchors are lighter by
@@ -908,6 +908,15 @@ export const MarkAnatomy: Story = {
               on a page 87 points darker. They stopped being objects and became lamps. Every layer of
               the glass — the sheen, the inner highlights, the bloom — assumes a mid-dark tile and does
               nothing on a pale one.
+              {'\n\n'}
+              <strong>The LIVE mark does — and that is an unresolved inconsistency, not a feature.</strong>{' '}
+              Turn Motion on (it is on by default) and the tile switches to{' '}
+              <code style={MONO}>--primary-highlight / --mark-mid / --mark-deep</code>, every one of
+              which is mode-aware. So the rule above holds for the mark this POC documents and NOT for
+              the mark it renders in the roster, the marketing heroes or the Figma pages, all of which
+              use the live variant. The swatches below follow whichever mark is on screen. Deciding
+              which behaviour is correct is an open question for the owner; until then, do not quote
+              the paragraph above as though it covered both.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', alignItems: 'center' }}>
               <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
@@ -934,9 +943,24 @@ export const MarkAnatomy: Story = {
                   <code style={MONO}>--poc2-mark-px</code>, which the component sets inline.
                 </p>
                 <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap' }}>
-                  {swatch('highlight', a[0])}
-                  {swatch(PRIMARY_IS_AUTHORED[brand] ? 'mark middle' : 'middle', a[1])}
-                  {swatch('mark deep', BRAND_ANCHORS[brand].markDeep.light)}
+                  {/*
+                    THE SWATCHES MUST FOLLOW THE MARK THAT IS ACTUALLY RENDERED,
+                    and which one that is depends on the Motion toggle — this row
+                    got it wrong twice in the same session, so it is spelled out.
+
+                    STATIC mark  reads --mark-a/b/c, which carry the LIGHT anchors
+                                 in both modes. Mode-independent artwork.
+                    LIVE mark    reads --primary-highlight / --mark-mid /
+                                 --mark-deep, every one of which IS mode-aware.
+
+                    Motion defaults ON, so the default view is the live mark and
+                    the swatches have to be mode-aware with it. Hardcoding
+                    markDeep.light here made the third swatch disagree with both
+                    the tile above it and its own two neighbours in dark mode.
+                  */}
+                  {swatch('highlight', live ? a[0] : BRAND_ANCHORS[brand].light[0])}
+                  {swatch(PRIMARY_IS_AUTHORED[brand] ? 'mark middle' : 'middle', live ? a[1] : BRAND_ANCHORS[brand].light[1])}
+                  {swatch('mark deep', BRAND_ANCHORS[brand].markDeep[live ? mode : 'light'])}
                 </div>
               </div>
             </div>
