@@ -2033,7 +2033,7 @@ export const ChartsInUse: Story = {
     const mode = useGlobalMode();
     const [brand, setBrand] = useState<BrandKey>('db');
 
-    const pct = (v: number) => `${v}%`;
+    const money = (v: number) => `$${v}M`;
     const delta = (v: number) => `${v > 0 ? '+' : ''}${v}%`;
 
     const frame = (children: ReactNode, label: string, attr?: string) => (
@@ -2070,7 +2070,7 @@ export const ChartsInUse: Story = {
           {frame(
             <LineChart
               id="ciu-cat"
-              title="Direct and referral overtook paid search in Q3"
+              title="Direct overtook paid search in Q3"
               description="Monthly signups by acquisition channel. Paid search has fallen every month since March while direct has compounded."
               categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
               valueFormatter={(v) => `${v}k`}
@@ -2080,9 +2080,14 @@ export const ChartsInUse: Story = {
               emphasis={['direct', 'paid']}
               emphasisOnHover
               series={[
+                /* The two series the story is ABOUT take slots 1 and 3, not 1
+                   and 2. Slot 2 is the brand DEEP — same hue as the primary by
+                   construction — so the pair the reader must tell apart at the
+                   crossover would have been the least separable on the plot
+                   (dE 15.2, both blue). Slot 3 is the accent, a different hue. */
                 { key: 'direct', label: 'Direct', slot: 1, data: [18, 21, 24, 29, 34, 41] },
-                { key: 'paid', label: 'Paid search', slot: 2, data: [38, 39, 37, 33, 28, 24] },
-                { key: 'referral', label: 'Referral', slot: 3, data: [12, 14, 15, 18, 21, 26] },
+                { key: 'paid', label: 'Paid search', slot: 3, data: [38, 39, 37, 33, 28, 24] },
+                { key: 'referral', label: 'Referral', slot: 2, data: [12, 14, 15, 18, 21, 26] },
                 { key: 'social', label: 'Social', slot: 4, data: [9, 10, 12, 11, 13, 14] },
                 { key: 'email', label: 'Email', slot: 5, data: [7, 8, 8, 9, 10, 11] },
                 { key: 'partner', label: 'Partner', slot: 6, data: [4, 5, 6, 6, 7, 9] },
@@ -2095,24 +2100,19 @@ export const ChartsInUse: Story = {
           {frame(
             <BarChart
               id="ciu-seq"
-              title="Two thirds of revenue now sits in accounts over a year old"
-              description="Share of recurring revenue by account tenure. The oldest two bands have grown every quarter; the newest band is shrinking as acquisition slows."
-              categories={['Q1', 'Q2', 'Q3', 'Q4']}
-              layout="stacked100"
-              valueFormatter={pct}
+              title="Revenue rises with every year an account stays"
+              description="Recurring revenue by account tenure. Accounts older than a year carry $37.3M of the $54.2M total — the colour ramp is the value, so the trend reads before any number does."
+              categories={['0–3m', '3–6m', '6–12m', '1–2y', '2–3y', '3y+']}
+              valueFormatter={money}
+              colorScale="sequential"
+              scaleSteps={7}
               height={260}
-              showLegend
               showGrid
               series={[
-                { key: 't0', label: '0–3 months', slot: 1, data: [22, 19, 16, 13] },
-                { key: 't1', label: '3–6 months', slot: 2, data: [18, 17, 16, 15] },
-                { key: 't2', label: '6–12 months', slot: 3, data: [17, 17, 17, 16] },
-                { key: 't3', label: '1–2 years', slot: 4, data: [16, 17, 18, 19] },
-                { key: 't4', label: '2–3 years', slot: 5, data: [14, 15, 16, 18] },
-                { key: 't5', label: '3 years +', slot: 6, data: [13, 15, 17, 19] },
+                { key: 'arr', label: 'Recurring revenue', data: [4.1, 5.6, 7.2, 9.8, 12.4, 15.1] },
               ]}
             />,
-            'sequential — ordered bands',
+            'sequential — one series, coloured by value',
             'sequential',
           )}
 
@@ -2125,19 +2125,17 @@ export const ChartsInUse: Story = {
               categories={['LATAM', 'EMEA', 'APAC', 'UK', 'US-East', 'US-West']}
               valueFormatter={delta}
               yDomain={[-24, 24]}
+              colorScale="diverging"
+              scaleCenter={0}
+              scaleSteps={7}
               height={260}
-              showLegend={false}
               showGrid
               view="both"
               series={[
-                { key: 'far-under', label: 'More than 10% under', slot: 1, data: [-21, null, null, null, null, null] },
-                { key: 'under', label: 'Under target', slot: 2, data: [null, -14, -8, null, null, null] },
-                { key: 'near', label: 'Near target', slot: 3, data: [null, null, null, -2, null, null] },
-                { key: 'over', label: 'Over target', slot: 5, data: [null, null, null, null, 11, null] },
-                { key: 'far-over', label: 'More than 15% over', slot: 6, data: [null, null, null, null, null, 19] },
+                { key: 'variance', label: 'Variance vs target', data: [-21, -14, -8, -2, 11, 19] },
               ]}
             />,
-            'diverging — signed variance, slot 4 left empty as the neutral midpoint',
+            'diverging — one series, each bar coloured by its own value',
             'diverging',
           )}
         </div>

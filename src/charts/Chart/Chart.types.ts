@@ -2,6 +2,7 @@ import type { ReactNode, HTMLAttributes } from 'react';
 import type { Curve } from '#/utils/path';
 import type { SeriesSlot } from '#/utils/series';
 import type { StackOffset } from '#/utils/stack';
+import type { ColorScaleKind } from '#/utils/colorScale';
 
 export type ChartCurve = Curve;
 
@@ -79,6 +80,20 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
    * Ignored when no listed key is currently visible — a subject that is hidden
    * would otherwise mute the entire chart and leave nothing foregrounded.
    */
+  /**
+   * Colour each DATUM by its value instead of each series by its slot.
+   *
+   * Categorical is the default and stays the default: colour means identity.
+   * Set this only for ORDERED data, where colour means quantity — and then one
+   * series is usually the right shape, because the scale, not the series list,
+   * is doing the distinguishing.
+   */
+  colorScale?: ColorScaleKind;
+  /** Steps the scale spans; reads `--chart-1 … --chart-{scaleSteps}`. */
+  scaleSteps?: number;
+  /** The value pinned to the middle step. Diverging only. */
+  scaleCenter?: number;
+
   emphasis?: string | string[];
   /**
    * Pointing at a legend entry emphasises that series for as long as you point.

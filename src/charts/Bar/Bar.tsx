@@ -7,6 +7,7 @@ const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).j
 
 import { stackSeries } from '#/utils/stack';
 import { barPath } from '#/utils/path';
+import { scaleStep } from '#/utils/colorScale';
 import { BAR_RADIUS } from '../Chart/Chart.constants';
 import type { BarChartProps, BarLayout } from '../Chart/Chart.types';
 
@@ -62,6 +63,16 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
             // gap would invert into a negative height. Below ~3px the gap is
             // dropped entirely — a visible thin band beats a correctly-gapped
             // invisible one.
+            // ORDERED CHARTS COLOUR THE DATUM, NOT THE SERIES. The group's
+            // `color` is the series' slot; when a scale is active each bar
+            // overrides it with the step its own VALUE lands on. That is what
+            // lets one series carry an ordered encoding — and one series is
+            // also what keeps every bar centred under its own category, since
+            // a grouped layout gives each series its own sub-band.
+            const scaleColor = c.colorScale
+              ? `var(--chart-${scaleStep(raw, c.colorScale.domain, c.colorScale.kind, c.colorScale.steps, c.colorScale.center)})`
+              : undefined;
+
             const span = Math.abs(base - top);
             const gap = span < 3 ? 0 : Math.min(2, span * 0.25);
             const h = span - (isStacked ? gap : 0);
@@ -80,7 +91,7 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
                   h <= 0 ? 0 : h * sign,
                   BAR_RADIUS,
                 )}
-                style={{ '--i': ci } as CSSProperties}
+                style={{ '--i': ci, ...(scaleColor ? { color: scaleColor } : {}) } as CSSProperties}
               />
             );
           })}
