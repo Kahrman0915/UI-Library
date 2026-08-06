@@ -205,7 +205,26 @@
  * than the app renders teaches the wrong thing.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  // db's LIGHT primary and deep rotated 277 -> 268 (owner, 2026-08-06: "light
+  // mode goes slightly too purple"). The eye was reading a real defect: db's
+  // primary drifted 15 degrees between modes, the largest in the set and past
+  // the 12-degree limit this file set itself — every other brand runs 2-12.
+  // The hand-tuned mark deep had just made it MORE visible, not less: at 276/273
+  // the mark became consistent across modes while the UI stayed 15 apart, so the
+  // logo said "one brand" and the buttons did not.
+  //
+  // Rotating LIGHT toward dark's 262 (rather than dark toward light) is what the
+  // owner asked for and is also the cheaper direction: it costs nothing and pays
+  // twice. db<->aiden — the tightest identity pair in the whole set — improves
+  // 9.2 -> 10.2 because db moves AWAY from aiden's violet, and the light mark's
+  // hue sweep becomes monotonic (228 -> 268 -> 276) where before it overshot the
+  // mark deep and came back (228 -> 277 -> 276).
+  //
+  // Stopped at 268, not the full 262: the ask was "just slightly", and 6 degrees
+  // of drift is inside the house limit and in line with nb (6) and aiden (7).
+  // The whole move is dE 3.4. All db gates re-checked: white 4.54, --primary-text
+  // 5.56, deep dE 15.0, chart chain 15/24/25, ec 11.5, aiden 10.2, info 13.7.
+  db:    { light: ['#8cdafd', '#466af4', '#2338bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
   // I don't like about current nb is the light mode mark"). The cause was
   // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
