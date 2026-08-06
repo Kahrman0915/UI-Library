@@ -683,8 +683,8 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#7995a6', '#e1eaf9'],
+    light: ['#067db8', '#4ec8dc', '#232f42'],
+    dark:  ['#1da0f3', '#95e2e2', '#e1eaf9'],
   },
 };
 
