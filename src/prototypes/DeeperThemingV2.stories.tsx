@@ -1660,7 +1660,7 @@ const BRAND_NOTES: Record<BrandKey, string> = {
 
 type AnchorShape = {
   light: readonly string[]; dark: readonly string[];
-  accent: { light: string; dark: string }; markDeep: { light: string; dark: string };
+  markDeep: { light: string; dark: string };
   label?: string;
 };
 /**
@@ -1814,7 +1814,7 @@ export const Roster: Story = {
 /**
  * ROSTER DETAIL — the same selected suite in the card layout the owner liked
  * from Alternates: every brand in both modes at once, with swatches, mark,
- * accent duty and a three-series chart, so the whole system can be judged in
+ * the artwork rungs and a three-series chart, so the whole system can be judged in
  * one scroll rather than by flipping between stories.
  */
 export const RosterDetail: Story = {
@@ -1849,7 +1849,10 @@ export const RosterDetail: Story = {
               {chip(trio[0], 'highlight')}
               {chip(primaryOf(key, m), 'primary')}
               {chip(trio[2], 'deep')}
-              {chip(a.accent[m], 'accent')}
+              {/* The 'accent' chip is gone with the accent itself. It was a
+                  single tamed artwork colour occupying chart slot 3; slots 2-6
+                  are now the highlight and mark-deep families at two rungs
+                  each, and the chart in this card is where they are read. */}
               {/* Only nb and aiden draw their mark in a different colour from
                   their primary, so the extra chip appears only where there is
                   actually a second value to see. */}
@@ -2108,6 +2111,42 @@ export const ChartsInUse: Story = {
               ]}
             />,
             'categorical — the default, no attribute',
+          )}
+
+          {/* ── CATEGORICAL, AS LINES — the same six slots, plotted as trend ── */}
+          {frame(
+            <LineChart
+              id="ciu-cat-line"
+              title="Six channels, six years, no crossings that matter"
+              description="The same palette as trend lines. Series are ordered so trajectories fan apart rather than tangle — where two lines must cross, the pair is chosen from different hue families."
+              categories={['2020', '2021', '2022', '2023', '2024', '2025']}
+              valueFormatter={(v) => `${v}k`}
+              curve="monotone"
+              height={280}
+              showLegend
+              showGrid
+              /* THE FAN IS THE DESIGN, not the data being convenient. Six lines
+                 is past what colour alone can separate (all-pairs bottoms out
+                 near 10 dE against the 15 two colours need), so the chart has to
+                 help: each series holds its own horizontal band for most of its
+                 length, and the one deliberate crossover — direct overtaking
+                 paid in 2023 — is between slots 1 and 3, which are different hue
+                 FAMILIES rather than two rungs of one. Two lines from the same
+                 family (3 and 5, or 4 and 6) never meet.
+
+                 This is the honest counterpart to the grouped bars above: bars
+                 show that all six colours exist, lines show whether they survive
+                 being drawn one pixel wide. */
+              series={[
+                { key: 'direct', label: 'Direct', slot: 1, data: [22, 27, 34, 46, 58, 71] },
+                { key: 'paid', label: 'Paid search', slot: 3, data: [52, 50, 47, 44, 41, 38] },
+                { key: 'email', label: 'Email', slot: 5, data: [30, 31, 32, 33, 34, 35] },
+                { key: 'referral', label: 'Referral', slot: 2, data: [12, 15, 18, 21, 24, 26] },
+                { key: 'social', label: 'Social', slot: 4, data: [7, 9, 11, 13, 15, 17] },
+                { key: 'partner', label: 'Partner', slot: 6, data: [2, 3, 4, 5, 6, 8] },
+              ]}
+            />,
+            'categorical — same six slots, drawn as lines',
           )}
 
           {/* ── SEQUENTIAL — ordered bands, share of a whole ── */}
