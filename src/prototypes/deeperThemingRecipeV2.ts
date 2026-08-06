@@ -554,13 +554,43 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * the reference gets its separation from a 0.47 lightness spread that the dark
  * card's readable band cannot hold.
  *
- * Measured: light all-pairs dE 6.3, CVD 3.5. Dark 9.6 / 3.2 — the dark set is
- * the better-separated of the two.
+ * SLOTS 1 AND 3 ARE SNAPPED TO THE REAL TOKENS. The owner drew #0b79ba and
+ * #024f79 by eye; ec's --primary is #067db8 and its --primary-deep is #01517a,
+ * dE 1.3 and 0.6 away. Invisible as a change, and it makes two of the six slots
+ * LITERALLY brand tokens, so a chart bar and a primary button are provably the
+ * same colour rather than nearly.
+ *
+ * DARK SLOT 3 LIFTED #0c6fa7 -> #2088bb, 2.35 -> 3.24 on the card. The
+ * asymmetry with light is the point: the owner's light slot 4 sits at 1.98 and
+ * is fine, because a PALE bar on white still reads as a shape. A DARK bar on a
+ * dark card sinks INTO it. Same ratio, opposite outcome — so the 3:1 floor is
+ * worth holding downward and worth spending in the other direction.
+ *
+ * DARK SLOT 2 vs --info STAYS AT dE 3.7, AND THAT IS A DECISION. Two escapes
+ * were solved and both cost more than the collision: moving slot 2 off info by
+ * 8.5 drops CVD to 1.7, by 12 it collapses all-pairs to 2.0 — because the dark
+ * set already lives in a narrow blue band with dark --info (#7cd4fd) sitting in
+ * the MIDDLE of it, so every route out runs into slot 6's near-white or slot 1.
+ * ec already carries the documented info waiver; the operational condition is
+ * the icon+label rule, which this inherits.
+ *
+ * Measured: light all-pairs dE 6.3, CVD 3.5, worst neighbour 16.9, min card
+ * contrast 1.98. Dark 9.6 / 3.2 / 16.7 / 3.24.
+ *
+ * THE LIGHTNESS LADDER IS THE ACCESSIBILITY STORY, not the hue placement.
+ * Within one hue family a colour-blind reader has almost no hue channel left,
+ * so LIGHTNESS is the only thing carrying the distinction — and both modes have
+ * exactly one pair standing too close on it: slots 2 and 4, L 0.74 vs 0.77 in
+ * light and 0.84 vs 0.79 in dark. That single 0.03 gap IS the CVD 3.5 / 3.2.
+ * Every other pair in the set is comfortable. Left as-is by owner decision (the
+ * fix turns the cyan into a teal-mint), and recorded here because the same
+ * squeeze is what will bite a LINE chart first: a bar can lean on area and
+ * position, a one-pixel stroke cannot.
  */
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#0b79ba', '#79b2d4', '#024f79', '#4ec8dc', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#a0d4f4', '#0c6fa7', '#1fd2e2', '#7995a6', '#e1eaf9'],
+    light: ['#067db8', '#79b2d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
+    dark:  ['#1da0f3', '#a0d4f4', '#2088bb', '#1fd2e2', '#7995a6', '#e1eaf9'],
   },
 };
 
