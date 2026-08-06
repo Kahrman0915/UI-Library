@@ -224,7 +224,7 @@ export const BRAND_ANCHORS = {
   // of drift is inside the house limit and in line with nb (6) and aiden (7).
   // The whole move is dE 3.4. All db gates re-checked: white 4.54, --primary-text
   // 5.56, deep dE 15.0, chart chain 15/24/25, ec 11.5, aiden 10.2, info 13.7.
-  db:    { light: ['#8cdafd', '#466af4', '#2338bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#447990' }, chart2Dark: '#046de9', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
   // I don't like about current nb is the light mode mark"). The cause was
   // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
@@ -1175,12 +1175,21 @@ ${anchorBlocks()}
    Scoped to --live only, because the static mark's tile never goes pale. */
 [data-theme-poc2][data-mode='dark'] .poc2-mark--live {
   background-image:
-    radial-gradient(38% 38% at 84% 88%,
+    /* form: occlusion pushed into the far corner, deliberately AWAY from the
+       glyph. The first cut put a soft dark radial at 46%/74% — behind the icon —
+       and that is what read as a drop shadow under it. Worse than cosmetic: a
+       dark halo behind a dark glyph on a pale tile eats the contrast the ink
+       glyph was introduced to gain. */
+    radial-gradient(40% 40% at 86% 90%,
       rgba(15, 23, 42, 0.30) 0%,
       rgba(15, 23, 42, 0) 100%),
-    radial-gradient(44% 44% at 46% 74%,
-      rgba(15, 23, 42, 0.13) 0%,
-      rgba(15, 23, 42, 0) 100%),
+    /* the glyph is seated by a LIFT, not a shadow — owner's instinct, and the
+       right physics: on a pale tile the icon is the dark object, so the surface
+       catches light AROUND it. It also raises glyph contrast instead of
+       spending it. */
+    radial-gradient(40% 40% at 50% 47%,
+      rgba(255, 255, 255, 0.24) 0%,
+      rgba(255, 255, 255, 0) 100%),
     linear-gradient(135deg,
       var(--primary-highlight) 9.7%,
       var(--mark-mid) 51.6%,
@@ -1191,6 +1200,16 @@ ${anchorBlocks()}
      from the top. Same lamp, opposite readout. */
   inset: auto -10% 0 -10%;
   height: 48%;
+  /* THE HARSH LINE AT THE BOTTOM CAME FROM HERE. The live sheen animates
+     scaleY(1 -> 1.16 -> 0.92) about transform-origin 50% 0% — its TOP edge.
+     That is correct while the band hangs FROM the top, because the edge it
+     moves is the one already faded to transparent. Anchored at the bottom
+     instead, the same origin swings the band's DARKEST edge: at scaleY(0.92) it
+     lifts clear of the tile floor and terminates mid-tile against undarkened
+     fill, which is a hard horizontal boundary. Pivot on the anchored edge and
+     the dark end never leaves the bottom. Specificity (0,3,1) beats the shared
+     animation rule below, so this wins regardless of source order. */
+  transform-origin: 50% 100%;
   background-image: linear-gradient(180deg,
     rgba(15, 23, 42, 0) 0%,
     rgba(15, 23, 42, 0.07) 45%,
