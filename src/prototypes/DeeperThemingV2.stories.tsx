@@ -936,7 +936,7 @@ export const MarkAnatomy: Story = {
                 <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap' }}>
                   {swatch('highlight', a[0])}
                   {swatch(PRIMARY_IS_AUTHORED[brand] ? 'mark middle' : 'middle', a[1])}
-                  {swatch('deep', a[2])}
+                  {swatch('mark deep', BRAND_ANCHORS[brand].markDeep.light)}
                 </div>
               </div>
             </div>

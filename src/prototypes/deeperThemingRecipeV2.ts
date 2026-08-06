@@ -198,13 +198,13 @@
  * other mark, and db no longer shares the deep so it moved freely.
  */
 export const BRAND_ANCHORS = {
-  db:    { light: ['#90d9fd', '#6264f4', '#3e31bf'], dark: ['#90d9fd', '#689cfe', '#2769ed'], chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
-  nb:    { light: ['#c4dd29', '#306602', '#183a00'], dark: ['#c4dd29', '#8bca2f', '#649807'], chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
-  dc:    { light: ['#63e9c4', '#025750', '#002b27'], dark: ['#63e9c4', '#0db09d', '#057d70'], chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
-  ec:    { light: ['#44e7ec', '#06838f', '#01545c'], dark: ['#44e7ec', '#10c1db', '#088fa2'], chart2Dark: '#088fa2', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
-  ph:    { light: ['#efcc36', '#9d6d05', '#674601'], dark: ['#efcc36', '#c98909', '#906104'], chart2Dark: '#876d4a', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
-  rm:    { light: ['#fdaff5', '#d62496', '#960366'], dark: ['#fdaff5', '#fe68b8', '#d31a8d'], chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#b5cffd', '#4f06d7', '#2e0186'], dark: ['#b5cffd', '#c3b5fe', '#a07efe'], chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#4f06d7', dark: '#c3b5fe' }, icon: 'sparkles' },
+  db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#5e19ba', dark: '#843ff4' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  nb:    { light: ['#c9db29', '#306602', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#063a26', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
+  dc:    { light: ['#4eeeaf', '#025750', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#1a7888' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
+  ec:    { light: ['#2febdb', '#06838f', '#01545c'], dark: ['#2febdb', '#10c1db', '#088fa2'], markDeep: { light: '#0e506f', dark: '#2089bc' }, accent: { light: '#6c9e98', dark: '#85b4ae' }, chart2Dark: '#088fa2', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ph:    { light: ['#ebce29', '#9d6d05', '#674601'], dark: ['#ebce29', '#c98909', '#906104'], markDeep: { light: '#773a0c', dark: '#a35316' }, accent: { light: '#a59548', dark: '#a99f70' }, chart2Dark: '#876d4a', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#846986' }, chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  aiden: { light: ['#aed1fd', '#4f06d7', '#2e0186'], dark: ['#aed1fd', '#c3b5fe', '#a07efe'], markDeep: { light: '#450967', dark: '#bc6ff7' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#4f06d7', dark: '#c3b5fe' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -239,12 +239,12 @@ const CHART_THEMING = true;
  * on purpose — it is a surface, not a brand, and keeps the neutral ramp.
  */
 const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
-  ph: { light: ['#77879e', '#354358', '#607087', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
-  nb: { light: ['#77879e', '#354358', '#607087', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
-  dc: { light: ['#77879e', '#354358', '#607087', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
-  ec: { light: ['#77879e', '#354358', '#607087', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
-  db: { light: ['#354358', '#77879e', '#212e42', '#607087'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
-  rm: { light: ['#354358', '#77879e', '#212e42', '#607087'], dark: ['#afbccd', '#6b7c93', '#c7d2e1', '#8190a6'] },
+  ph: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  nb: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  dc: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  ec: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
+  db: { light: ['#354358', '#77879e', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1'] },
+  rm: { light: ['#354358', '#77879e', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1'] },
 };
 
 /**
@@ -262,9 +262,13 @@ function chartVars(k: string, mode: 'light' | 'dark'): string {
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = BRAND_ANCHORS[k as keyof typeof BRAND_ANCHORS];
   const slot1 = mode === 'light' ? a.light[1] : a.dark[1];
-  // dark slot 2 is the COMPANION, not the deep — see the header for why
+  // dark slot 2 is the COMPANION, not the deep — see the header for why.
+  // Slot 3 is the ACCENT: the artwork hue tamed to chart duty (3:1 on card,
+  // capped chroma, chain-dE from slot 2, semantics hard-cleared) — so a
+  // 3-series chart carries colour and branding without leaving the family.
   const slot2 = mode === 'light' ? a.light[2] : a.chart2Dark;
-  return [slot1, slot2, ...neutrals].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
+  const slot3 = a.accent[mode];
+  return [slot1, slot2, slot3, ...neutrals].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
 }
 
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */
@@ -277,10 +281,18 @@ function anchorBlocks(): string {
     const sel = k === 'aiden' ? "[data-theme-poc2][data-surface='aiden']" : `[data-theme-poc2][data-brand='${k}']`;
     // --mark-* is the SAME in both modes: a mark is artwork, not a themed
     // component. --primary-* stays mode-aware because it paints UI.
+    //
+    // THE ARTWORK SPLIT (owner, 2026-08-06): the mark's third stop is the
+    // ROTATED markDeep, not the functional --primary-deep. The functional deep
+    // keeps charts/tint/hero (same hue = "the brand, quieter"); the mark deep
+    // exists so the tile sweeps through HUE — highlight rotates one way off
+    // the primary, markDeep the other. Artwork only; nothing functional may
+    // read --mark-deep.
     return `${sel}[data-mode='light'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
-  --mark-c:             ${a.light[2]};
+  --mark-c:             ${a.markDeep.light};
+  --mark-deep:          ${a.markDeep.light};
   --primary-highlight:  ${a.light[0]};
   --mark-mid:           ${a.light[1]};
   --primary:            ${PRIMARY_LIGHT[k]};
@@ -290,7 +302,8 @@ ${chartVars(k, 'light')}}
 ${sel}[data-mode='dark'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
-  --mark-c:             ${a.light[2]};
+  --mark-c:             ${a.markDeep.light};
+  --mark-deep:          ${a.markDeep.dark};
   --primary-highlight:  ${a.dark[0]};
   --mark-mid:           ${a.dark[1]};
   --primary:            ${PRIMARY_DARK[k]};
@@ -608,7 +621,10 @@ ${anchorBlocks()}
       transparent 68%),
     radial-gradient(72% 58% at 92% 12%,
       color-mix(in srgb, var(--mark-mid) calc(16% * var(--poc2-str)), transparent) 0%,
-      transparent 66%);
+      transparent 66%),
+    radial-gradient(64% 52% at 50% 96%,
+      color-mix(in srgb, var(--mark-deep) calc(10% * var(--poc2-str)), transparent) 0%,
+      transparent 70%);
 }
 
 /* Small NON-TEXT accents may take the highlight raw — a status dot, a chart
@@ -672,6 +688,19 @@ ${anchorBlocks()}
 }
 
 [data-theme-poc2] .poc2-dot { background: var(--primary-highlight); }
+/* The doctrine's own examples, made real: a chart point and a 2px rule.
+   The ACTIVE line marker takes the highlight — a dot, nothing read on it. */
+[data-theme-poc2] .ui-chart__marker--active {
+  fill: var(--primary-highlight);
+  stroke: var(--primary);
+}
+/* A 2px artwork rule for card/section tops: highlight -> markDeep, the full
+   artwork sweep in a hairline. Decorative; sits on nothing readable. */
+[data-theme-poc2] .poc2-card-rule {
+  height: 2px;
+  border-radius: var(--rounded-full);
+  background: linear-gradient(90deg, var(--primary-highlight), var(--mark-deep));
+}
 [data-theme-poc2] .poc2-bubble-field { background-image: var(--poc2-bubble); }
 
 /* THE MARK DOES NOT INVERT, AND ITS GLYPH IS ALWAYS WHITE.
@@ -900,7 +929,7 @@ ${anchorBlocks()}
     linear-gradient(135deg,
       var(--primary-highlight) 9.7%,
       var(--mark-mid) 51.6%,
-      var(--primary-deep) 90.3%);
+      var(--mark-deep) 90.3%);
 }
 [data-theme-poc2] .poc2-mark--live::before {
   animation: poc2-sheen-tilt 7300ms var(--ease-in-out) infinite;
