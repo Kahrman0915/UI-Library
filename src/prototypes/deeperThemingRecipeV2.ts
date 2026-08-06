@@ -396,34 +396,47 @@ const CHART_SEQ: Record<string, { light: string[]; dark: string[] }> = {
 };
 
 /**
- * DIVERGING — seven steps, two opposing arms through a neutral middle. For
- * SIGNED data: change against a baseline, above/below target, gain/loss.
+ * DIVERGING — seven steps, two opposing arms through a brand-tinted middle.
+ * For SIGNED data: change against a baseline, above/below target, gain/loss.
  *
- * THE ARMS ARE NOT BRAND-THEMED, AND THAT IS A GEOMETRY RESULT RATHER THAN A
- * PREFERENCE. A diverging scale only works if its two arms are unmistakable at
- * a glance, which conventionally means 120-180 degrees of hue apart. Every
- * brand's own poles sit 20-39 degrees apart — db is the widest at 39, nb the
- * tightest at 20 — because that narrowness is precisely what makes a brand read
- * as one brand. Built from a brand's own hues, a "diverging" ramp would render
- * as a sequential one with a kink in it, and the reader would lose the sign.
- * The semantic pair is 138 degrees apart and carries the meaning for free.
+ * THE HIGH ARM IS THE BRAND'S OWN PRIMARY HUE. The first build of this used a
+ * red/green pair on the reasoning that a diverging scale needs 120-180 degrees
+ * of hue separation and a brand's two EXISTING poles sit only 20-39 apart. That
+ * measurement was true but answered the wrong question — the owner was not
+ * proposing the brand's existing poles, but the primary against a COMPUTED
+ * OPPOSITE, which is 180 by construction and keeps one arm on-brand.
  *
- * SO ONLY THE MIDPOINT IS BRANDED — the brand-tinted neutral, which is exactly
- * the job the owner's tinted-neutral idea was made for. The arms stay constant
- * across the whole suite, so a reader learns ONE diverging scale rather than
- * seven, while each product's chart still sits on its own grey.
+ * AND THE RED/GREEN BUILD WAS ACTIVELY WRONG, which matters more. Red against
+ * green is the textbook deuteranopia failure: those arms measured CVD dE
+ * 5.9-8.5, so under a red-green anomaly the scale collapses and the reader
+ * loses the SIGN — the one thing a diverging ramp exists to carry. Every other
+ * decision in this palette was CVD-gated and then the most famous CVD trap in
+ * data visualisation went in unchecked.
  *
- * Min step is 16.0 in light and 8.1-8.9 in dark, where the tinted midpoint sits
- * nearer its neighbours in lightness. Both clear the ~6 an ordered ramp needs.
+ * THE OPPOSING ARM IS CHOSEN BY CVD, NOT BY 180 DEGREES. A naive complement
+ * works for four brands and fails two: dc's true opposite is teal-vs-red and
+ * rm's is magenta-vs-green, which are red-green axes again (CVD 5.1 and 3.8).
+ * So the arm is searched across 100-260 degrees for the hue that MAXIMISES
+ * colour-blind separation while clearing every semantic by 10. Results:
+ *
+ *   db  268 -> 102   CVD 23.8      ec  240 ->  60   CVD 18.2
+ *   nb  136 -> 270   CVD 22.4      ph   57 -> 273   CVD 27.7
+ *   dc  186 -> 286   CVD 15.1      rm  348 ->  90   CVD  8.1
+ *
+ * rm is the weakest and is the one to watch: its primary is magenta, so every
+ * opposition available to it leans green-ish, and 8.1 is the best on offer once
+ * --success is cleared. Still comfortably above the red/green build it replaces.
+ *
+ * The MIDPOINT stays the brand-tinted neutral. Min step is ~16 throughout.
  */
 const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
-  db: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c6cedd', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4059', '#0c4e39', '#1c8161', '#2cb88b'] },
-  nb: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c7ced2', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#34434c', '#0c4e39', '#1c8161', '#2cb88b'] },
-  dc: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c5cdd4', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4152', '#0c4e39', '#1c8161', '#2cb88b'] },
-  ec: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c6cfd9', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4257', '#0c4e39', '#1c8161', '#2cb88b'] },
-  ph: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#ccced2', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#393f4c', '#0c4e39', '#1c8161', '#2cb88b'] },
-  rm: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#cecbd8', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#3b3c54', '#0c4e39', '#1c8161', '#2cb88b'] },
-  aiden: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c8d1df', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#334359', '#0c4e39', '#1c8161', '#2cb88b'] },
+  db: { light: ['#3f3908', '#6e6517', '#a29428', '#c6cedd', '#688bf5', '#3655cd', '#151e98'], dark: ['#4a430c', '#7b701b', '#afa12c', '#2f4059', '#6d9df6', '#2a66db', '#083896'] },
+  nb: { light: ['#1b1c97', '#3c53cd', '#6c8af5', '#c7ced2', '#5ca928', '#3d7318', '#204208'], dark: ['#222ba5', '#4660db', '#7d98f6', '#34434c', '#7bb22c', '#557d1c', '#324c0c'] },
+  dc: { light: ['#38128d', '#6047c8', '#8c7ef5', '#c5cdd4', '#2da79c', '#1c726a', '#0b413c'], dark: ['#421da0', '#6a54d5', '#988ef6', '#2f4152', '#32b5a3', '#207f72', '#0f4d44'] },
+  ec: { light: ['#532d08', '#8e5217', '#cf7b27', '#c6cfd9', '#2b9bdd', '#1a6a98', '#0a3c59'], dark: ['#61360b', '#9e5c1b', '#e0852b', '#2f4257', '#31adda', '#1f799a', '#0e495e'] },
+  ph: { light: ['#221997', '#4451cd', '#7388f5', '#ccced2', '#d37827', '#915017', '#552c08'], dark: ['#2a29a4', '#4e5edb', '#8297f6', '#393f4c', '#e6802b', '#a3591b', '#64340b'] },
+  rm: { light: ['#453608', '#786017', '#af8e27', '#cecbd8', '#e157a7', '#a91e76', '#630c44'], dark: ['#51400c', '#856b1b', '#be9a2b', '#3b3c54', '#f164af', '#b92d7e', '#75114d'] },
+  aiden: { light: ['#423708', '#736217', '#a99127', '#c8d1df', '#8581f5', '#594aca', '#331391'], dark: ['#4e420c', '#806e1b', '#b79d2c', '#334359', '#9d8cf6', '#7052d3', '#471a9e'] },
 };
 
 /**

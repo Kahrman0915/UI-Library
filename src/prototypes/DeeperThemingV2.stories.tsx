@@ -1934,7 +1934,7 @@ export const ChartPalettes: Story = {
       { key: 'seq', attr: 'sequential', title: 'Sequential', n: 7,
         blurb: 'Magnitude — “how much”. One hue, seven even steps. The pale end is meant to recede into the card; the legibility budget is spent at the deep end.' },
       { key: 'div', attr: 'diverging', title: 'Diverging', n: 7,
-        blurb: 'Signed data — “which side of the baseline”. The arms are the same for every brand, because a diverging scale needs 120–180° of hue separation and a brand’s own poles sit 20–39° apart. Only the midpoint is branded.' },
+        blurb: 'Signed data — “which side of the baseline”. The HIGH arm is the brand’s own primary hue; the low arm is its opposite, chosen by colour-blind separation rather than by a naive 180°. The midpoint is the brand-tinted neutral.' },
     ];
 
     const swatchRow = (n: number) => (
@@ -1996,16 +1996,21 @@ export const ChartPalettes: Story = {
           ))}
 
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 820 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>Why diverging is not brand-themed</h3>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>How the diverging arms were chosen</h3>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              This was measured rather than chosen. A diverging scale only reads if its two arms are
-              unmistakable at a glance, which conventionally means 120–180° of hue apart. Every
-              brand&rsquo;s own two poles sit between <strong>20°</strong> (nb) and <strong>39°</strong>{' '}
-              (db) — and that narrowness is exactly what makes a brand read as one brand. Built from a
-              brand&rsquo;s own hues, a diverging ramp would render as a sequential one with a kink in
-              it, and the reader would lose the sign. So the arms are constant across the suite and
-              only the <strong>midpoint</strong> is branded, which is what the brand-tinted neutral was
-              for. One scale to learn, seven greys to sit on.
+              The high arm is the brand&rsquo;s own primary hue. The low arm is <em>not</em> its naive
+              180° complement — that works for four brands and fails two, because dc&rsquo;s true
+              opposite is teal-vs-red and rm&rsquo;s is magenta-vs-green, which are red–green axes and
+              collapse under a colour-blind anomaly (CVD ΔE 5.1 and 3.8). So the opposing arm is
+              searched across 100–260° for the hue that <strong>maximises colour-blind separation</strong>{' '}
+              while clearing every semantic by 10.
+              {'\n\n'}
+              This replaced a red/green build, which was the textbook deuteranopia trap: its arms
+              measured CVD ΔE 5.9–8.5, meaning the scale collapsed for red–green anomalous readers and
+              the <strong>sign</strong> — the one thing a diverging ramp exists to carry — was lost. The
+              brand-anchored arms measure 8.1–27.7. <strong>rm is the weakest at 8.1</strong> and the one
+              to watch: its primary is magenta, so every opposition available leans green-ish once{' '}
+              <code style={MONO}>--success</code> is cleared.
             </p>
           </div>
         </div>
