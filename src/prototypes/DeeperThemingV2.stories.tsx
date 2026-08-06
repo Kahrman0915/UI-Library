@@ -2068,30 +2068,16 @@ export const ChartsInUse: Story = {
 
           {/* ── CATEGORICAL — six unordered series, trend over time ── */}
           {frame(
-            <BarChart
+            <LineChart
               id="ciu-cat"
-              layout="grouped"
               title="Direct overtook paid search in Q3"
-              description="Quarterly signups by acquisition channel — all six slots painting at once. Paid search fell every quarter while direct compounded; hover any series to lift it out of the set."
-              categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              description="Monthly signups by acquisition channel. Paid search has fallen every month since March while direct has compounded."
+              categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
               valueFormatter={(v) => `${v}k`}
               height={260}
               showLegend
               showGrid
-              /* GROUPED BARS, not lines. Six categorical series is at the limit
-                 of what ANY palette can separate — the best all-pairs minimum
-                 available here is 7.9 dE, against the 15 two colours need to be
-                 unmistakable. Lines make that worse by CROSSING, so the pair a
-                 reader must separate is exactly where they overlap. Bars sit
-                 side by side and never occlude, so position carries what colour
-                 alone cannot. This is the honest way to show six at once.
-
-                 NO `emphasis` HERE, deliberately. It is the right tool for a
-                 real dashboard — it is also why this chart showed THREE colours
-                 for six series, because emphasis resolves every de-emphasised
-                 series to a single --chart-muted grey. That is correct focus
-                 behaviour and wrong for the one chart whose job is to show the
-                 categorical palette. Hover still lifts a single series. */
+              emphasis={['direct', 'paid']}
               emphasisOnHover
               series={[
                 /* The two series the story is ABOUT take slots 1 and 3, not 1
@@ -2099,12 +2085,12 @@ export const ChartsInUse: Story = {
                    construction — so the pair the reader must tell apart at the
                    crossover would have been the least separable on the plot
                    (dE 15.2, both blue). Slot 3 is the accent, a different hue. */
-                { key: 'direct', label: 'Direct', slot: 1, data: [19, 24, 33, 41] },
-                { key: 'paid', label: 'Paid search', slot: 3, data: [38, 37, 29, 24] },
-                { key: 'referral', label: 'Referral', slot: 2, data: [13, 16, 21, 26] },
-                { key: 'social', label: 'Social', slot: 4, data: [9, 12, 13, 14] },
-                { key: 'email', label: 'Email', slot: 5, data: [7, 8, 10, 11] },
-                { key: 'partner', label: 'Partner', slot: 6, data: [4, 6, 7, 9] },
+                { key: 'direct', label: 'Direct', slot: 1, data: [18, 21, 24, 29, 34, 41] },
+                { key: 'paid', label: 'Paid search', slot: 3, data: [38, 39, 37, 33, 28, 24] },
+                { key: 'referral', label: 'Referral', slot: 2, data: [12, 14, 15, 18, 21, 26] },
+                { key: 'social', label: 'Social', slot: 4, data: [9, 10, 12, 11, 13, 14] },
+                { key: 'email', label: 'Email', slot: 5, data: [7, 8, 8, 9, 10, 11] },
+                { key: 'partner', label: 'Partner', slot: 6, data: [4, 5, 6, 6, 7, 9] },
               ]}
             />,
             'categorical — the default, no attribute',
