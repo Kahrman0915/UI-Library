@@ -240,6 +240,24 @@ export const BRAND_ANCHORS = {
   // chart slot 1, tints and every gate are untouched; only the artwork moves.
   // markDeep rises with it, from a near-black #063a26 to a real emerald.
   nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
+  // dc's LIGHT MARK DEEP was raised #032930 -> #0c4b55 (owner, 2026-08-06:
+  // "light mode just seems really deep"). It was, measurably: at L 0.259 it was
+  // the darkest third stop in the set by a distance — the rest of the family
+  // sits 0.39-0.48 — and the step down from the middle stop was 0.280 against a
+  // family norm of 0.13-0.19, so dc's light mark fell off a cliff where every
+  // other mark eases down.
+  //
+  // The cause was the primary edit one step removed: this value was derived
+  // from dc's OLD deep, so when the primary rose from L 0.411 to 0.539 the
+  // middle stop moved and the third did not, doubling the gap between them.
+  // Anything derived from an anchor has to be re-derived when that anchor moves.
+  //
+  // Stopped at L 0.38: the step lands at 0.158, between db (0.185) and nb
+  // (0.133), and it keeps dE 6.6 from the DARK mark deep. Going further ran the
+  // two modes together — at L 0.44 they measure dE 1.0, which would erase the
+  // light/dark distinction on that stop entirely. --primary-deep is untouched at
+  // #002b27; the surface tint and hero still want the dark end.
+  //
   // dc's LIGHT PRIMARY was brightened by hand (owner, 2026-08-06: #025750 ->
   // #127f76, L 0.411 -> 0.539). Everything it owns still passes — white 4.86,
   // --primary-text 5.98, deep dE 28.2, chart chain 28/40/29, neighbours nb 13.2
@@ -260,7 +278,7 @@ export const BRAND_ANCHORS = {
   // three (4.8 against their 6.0 and 6.5), and success-beside-teal is a far
   // more common chart pairing than info-beside-blue. The honest alternative is
   // #035b54 (L 0.425), which is most of the brightness and still clears 9.5.
-  dc:    { light: ['#4eeeaf', '#127f76', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#075e6f' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
+  dc:    { light: ['#4eeeaf', '#127f76', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#0c4b55', dark: '#075e6f' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
   // ec = THE BLUE (owner, 2026-08-06; was teal 206/212). v1's azure restored at
   // hue 240 — which IS --info's hue, so it crowds that semantic by design:
   // dE 6.0 light / 6.9 dark against an 8.5 impersonation line. The owner waived
