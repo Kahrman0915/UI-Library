@@ -2018,3 +2018,130 @@ export const ChartPalettes: Story = {
     );
   },
 };
+
+/**
+ * THREE REAL CHARTS — one per palette, built the way a consumer would build
+ * them: the shipped BarChart / LineChart, every relevant prop, every slot in
+ * the palette used, and a title that states the FINDING rather than the topic.
+ *
+ * This is the acceptance test the swatch rows cannot be. A palette that reads
+ * well as seven rectangles can still fail the moment it carries real marks at
+ * real sizes against a real grid.
+ */
+export const ChartsInUse: Story = {
+  render: function ChartsInUseStory() {
+    const mode = useGlobalMode();
+    const [brand, setBrand] = useState<BrandKey>('db');
+
+    const pct = (v: number) => `${v}%`;
+    const delta = (v: number) => `${v > 0 ? '+' : ''}${v}%`;
+
+    const frame = (children: ReactNode, label: string, attr?: string) => (
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+        <Scope brand={brand} mode={mode}>
+          <div
+            {...(attr ? { 'data-chart-palette': attr } : {})}
+            style={{
+              background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)',
+              borderRadius: 'var(--rounded-xl)', padding: 'var(--p-5)',
+            }}
+          >
+            {children}
+          </div>
+        </Scope>
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 900 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+            <h2 style={H2}>The palettes carrying real data</h2>
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {BRAND_KEYS.filter((b) => b !== 'aiden').map((b) => (
+                <Chip key={b} id={`ciu-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
+              ))}
+            </div>
+          </div>
+
+          {/* ── CATEGORICAL — six unordered series, trend over time ── */}
+          {frame(
+            <LineChart
+              id="ciu-cat"
+              title="Direct and referral overtook paid search in Q3"
+              description="Monthly signups by acquisition channel. Paid search has fallen every month since March while direct has compounded."
+              categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
+              valueFormatter={(v) => `${v}k`}
+              height={260}
+              showLegend
+              showGrid
+              emphasis={['direct', 'paid']}
+              emphasisOnHover
+              series={[
+                { key: 'direct', label: 'Direct', slot: 1, data: [18, 21, 24, 29, 34, 41] },
+                { key: 'paid', label: 'Paid search', slot: 2, data: [38, 39, 37, 33, 28, 24] },
+                { key: 'referral', label: 'Referral', slot: 3, data: [12, 14, 15, 18, 21, 26] },
+                { key: 'social', label: 'Social', slot: 4, data: [9, 10, 12, 11, 13, 14] },
+                { key: 'email', label: 'Email', slot: 5, data: [7, 8, 8, 9, 10, 11] },
+                { key: 'partner', label: 'Partner', slot: 6, data: [4, 5, 6, 6, 7, 9] },
+              ]}
+            />,
+            'categorical — the default, no attribute',
+          )}
+
+          {/* ── SEQUENTIAL — ordered bands, share of a whole ── */}
+          {frame(
+            <BarChart
+              id="ciu-seq"
+              title="Two thirds of revenue now sits in accounts over a year old"
+              description="Share of recurring revenue by account tenure. The oldest two bands have grown every quarter; the newest band is shrinking as acquisition slows."
+              categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              layout="stacked100"
+              valueFormatter={pct}
+              height={260}
+              showLegend
+              showGrid
+              series={[
+                { key: 't0', label: '0–3 months', slot: 1, data: [22, 19, 16, 13] },
+                { key: 't1', label: '3–6 months', slot: 2, data: [18, 17, 16, 15] },
+                { key: 't2', label: '6–12 months', slot: 3, data: [17, 17, 17, 16] },
+                { key: 't3', label: '1–2 years', slot: 4, data: [16, 17, 18, 19] },
+                { key: 't4', label: '2–3 years', slot: 5, data: [14, 15, 16, 18] },
+                { key: 't5', label: '3 years +', slot: 6, data: [13, 15, 17, 19] },
+              ]}
+            />,
+            'sequential — ordered bands',
+            'sequential',
+          )}
+
+          {/* ── DIVERGING — signed variance against target ── */}
+          {frame(
+            <BarChart
+              id="ciu-div"
+              title="Four of six regions missed target this quarter"
+              description="Variance against quarterly revenue target. Bars below the line are shortfalls; the two on the right carried the quarter."
+              categories={['LATAM', 'EMEA', 'APAC', 'UK', 'US-East', 'US-West']}
+              valueFormatter={delta}
+              yDomain={[-24, 24]}
+              height={260}
+              showLegend={false}
+              showGrid
+              view="both"
+              series={[
+                { key: 'far-under', label: 'More than 10% under', slot: 1, data: [-21, null, null, null, null, null] },
+                { key: 'under', label: 'Under target', slot: 2, data: [null, -14, -8, null, null, null] },
+                { key: 'near', label: 'Near target', slot: 3, data: [null, null, null, -2, null, null] },
+                { key: 'over', label: 'Over target', slot: 5, data: [null, null, null, null, 11, null] },
+                { key: 'far-over', label: 'More than 15% over', slot: 6, data: [null, null, null, null, null, 19] },
+              ]}
+            />,
+            'diverging — signed variance, slot 4 left empty as the neutral midpoint',
+            'diverging',
+          )}
+        </div>
+      </>
+    );
+  },
+};
