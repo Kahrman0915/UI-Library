@@ -2118,6 +2118,41 @@ export const ChartsInUse: Story = {
             'categorical — the default, no attribute',
           )}
 
+          {/* ── LINES — the same brand, a deliberately SMALLER palette ── */}
+          {frame(
+            <LineChart
+              id="ciu-line"
+              title="Direct passed paid search in 2023"
+              description="Four channels, six years. A line palette is a different palette: every pair here clears the full separation floor in both normal and colour-blind vision, which is why there are four of them and not six."
+              categories={['2020', '2021', '2022', '2023', '2024', '2025']}
+              valueFormatter={(v) => `${v}k`}
+              curve="monotone"
+              height={280}
+              showLegend
+              showGrid
+              /* FOUR, AND FOUR IS THE ANSWER RATHER THAN A COMPROMISE. A line is
+                 harder than a bar in three compounding ways: it has no AREA, so
+                 3:1 against the card stops being advisory and the bar set's two
+                 best colours (the cyan at 1.98, the pale blue at 2.61) are
+                 simply unusable; it CROSSES, so every pair must clear rather
+                 than only the ones adjacent in slot order; and it carries no
+                 POSITION cue, so colour is the whole identity.
+                 Solved to the full floors on every pair, ec's own hue family
+                 fits exactly four — light all-pairs 15.2 / CVD 13.6, dark 16.0 /
+                 12.9. Widening the hues buys nothing until it stops being ec.
+                 A fifth series would fold to --chart-muted, on purpose: the cap
+                 should be visible in the chart, not silent. */
+              series={[
+                { key: 'direct', label: 'Direct', slot: 1, data: [22, 27, 34, 46, 58, 71] },
+                { key: 'paid', label: 'Paid search', slot: 2, data: [52, 50, 47, 44, 41, 38] },
+                { key: 'email', label: 'Email', slot: 3, data: [30, 31, 32, 33, 34, 35] },
+                { key: 'referral', label: 'Referral', slot: 4, data: [12, 15, 18, 21, 24, 26] },
+              ]}
+            />,
+            'line — data-chart-palette="line" (ec only, for now)',
+            'line',
+          )}
+
           {/* ── SEQUENTIAL — ordered bands, share of a whole ── */}
           {frame(
             <BarChart

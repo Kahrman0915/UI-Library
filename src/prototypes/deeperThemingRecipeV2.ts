@@ -626,6 +626,57 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   },
 };
 
+/**
+ * THE LINE PALETTE — FOUR SERIES, AND FOUR IS THE ANSWER, NOT A COMPROMISE.
+ *
+ * Owner: "give me as many colors as you can that work, if that means we only
+ * get four lines then that is all we get." Four is what the search returns.
+ *
+ * A line is a harder problem than a bar in three separate ways, and they
+ * compound rather than overlap:
+ *   1. NO AREA. A 1-2px stroke has to clear 3:1 against the card for real —
+ *      the surface-gap doctrine stops being advisory. The bar set's two best
+ *      colours (#4ec8dc at 1.98, #70a3d4 at 2.61) simply cannot be used here.
+ *   2. LINES CROSS. Any pair can become adjacent anywhere on the plot, so
+ *      EVERY pair must clear both floors, not just the ones neighbouring in
+ *      slot order. The bar set survives on 6.3 all-pairs precisely because its
+ *      weak pair never touches; a line chart has no such guarantee.
+ *   3. NO POSITION CUE. A bar sits fourth in its group whether or not its
+ *      colour reads. A line is only its colour.
+ *
+ * So this is solved to the FULL floors on every pair — dE 15 normal, 8
+ * colour-blind, 3:1 on the card, 10 from every semantic, 12 from the mute — and
+ * asked how many colours fit rather than told to produce six. Inside ec's own
+ * hue family the honest answer is four, in both modes.
+ *
+ * HOW MUCH THE FAMILY COSTS, measured rather than assumed: widening the hue
+ * window buys almost nothing until it stops being ec. 195-275deg gives 4;
+ * holding out to 286deg still gives 4; only at 125deg of span (170-295, well
+ * into green and violet) does a fifth appear. Leaving the family is not worth
+ * one more line, so it stays home.
+ *
+ * HUE-MATCHED ACROSS MODES. Slot N keeps its hue in both modes — brand 240/228,
+ * teal 196, indigo 267, deep 258 — so a series does not change identity when
+ * the page flips. Only the rungs move, and only the DEEP inverts (dark's
+ * furthest-from-page is the lightest), the same construction the bar set uses.
+ * That is the rule the bar palette had to learn by getting it wrong.
+ *
+ * Measured light: all-pairs 15.2, CVD 13.6, min card 4.53.
+ *          dark:  all-pairs 16.0, CVD 12.9, min card 3.12.
+ * Both comfortably past every floor — a much stronger set than the six-slot bar
+ * palette, because it stopped trying to be six.
+ *
+ * A FIFTH SERIES FOLDS TO --chart-muted rather than picking up a colour that
+ * cannot carry it. The cap is visible in the chart instead of silent, which is
+ * the same doctrine the seventh categorical series already follows.
+ */
+const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
+  ec: {
+    light: ['#067db8', '#223fb6', '#0b5859', '#032b61'],
+    dark:  ['#23c7fe', '#638afa', '#188b8c', '#dbe9fe'],
+  },
+};
+
 type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
 function chartVars(
   k: string,
@@ -668,6 +719,24 @@ function rampVars(k: string, mode: 'light' | 'dark'): string {
   if (!seq || !div) return '';
   return seq.map((hex, i) => `  --chart-seq-${i + 1}: ${hex};`).join('\n') + '\n'
        + div.map((hex, i) => `  --chart-div-${i + 1}: ${hex};`).join('\n') + '\n';
+}
+
+/**
+ * The line palette, emitted per mode as a DESCENDANT rule so a panel can opt in
+ * with data-chart-palette="line" the same way it opts into sequential or
+ * diverging. Scoped to the brand that has one — an unscoped switch would leave
+ * --chart-1..4 undefined on every other brand, which fails silently and paints
+ * nothing. Slots 5 and 6 fold to --chart-muted so a fifth series is VISIBLY
+ * past the cap rather than quietly given a colour that cannot carry it.
+ */
+function lineBlocks(k: string, sel: string): string {
+  const set = CHART_LINE[k];
+  if (!set) return '';
+  const block = (mode: 'light' | 'dark') =>
+    `\n${sel}[data-mode='${mode}'] [data-chart-palette='line'] {\n`
+    + set[mode].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n')
+    + `\n  --chart-5: var(--chart-muted);\n  --chart-6: var(--chart-muted);\n}`;
+  return block('light') + block('dark');
 }
 
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */
@@ -713,7 +782,7 @@ ${sel}[data-mode='dark'] {
   --primary:            ${PRIMARY_DARK[k] ?? a.dark[1]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
-${chartVars(k, 'dark', anchorMap, neutralMap)}${rampVars(k, 'dark')}}`;
+${chartVars(k, 'dark', anchorMap, neutralMap)}${rampVars(k, 'dark')}}${lineBlocks(k, sel)}`;
   }).join('\n');
 }
 
