@@ -16,6 +16,41 @@
 - **STANDING RULE — prose is part of the component, not decoration.** Changing a role, an aria relationship, a prop, or a keyboard behaviour means editing that component's page prose in the same pass. Nothing catches this automatically: Figma has no typechecker, and the design-check lint only sees bindings and names. A page that *looks* finished can still describe code from three days ago.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
+### POC pages are NOT template v4 — and must say so (2026-08-06)
+
+Eleven pages were pushed for the deeper-theming v2 palette (`🧪 v2 · 01 Brands` …
+`11 Roster detail`, under their own `───  🧪 POC v2 · Deeper theming  ───` divider),
+one per Storybook story under *Prototypes / Deeper Theming V2*. They deliberately do
+**not** use the four-frame component template, because they are not documenting a
+component — they document a **proposal**, and the four frames would imply a shipped API.
+Each page opens with a line naming the Storybook story it mirrors, so a reader always
+knows where the live version is. Per-page IDs and the build conventions live in
+`figma-ledger.json` under `pocThemingV2`.
+
+**The one thing on those pages that IS shipped is Aiden**, copied verbatim from
+`tokens.scss` rather than solved, and its page says so outright. That distinction is the
+whole reason the pages are labelled: a designer picking colour off a POC page must be
+able to tell a candidate from a token.
+
+**VERIFYING A PAGE YOU JUST BUILT — the trap that cost a false alarm.** Figma loads pages
+incrementally. A script that reads `page.children` **without having switched to that page**
+reports **zero children**, so every page you did not touch in that same call looks empty.
+It is not. Verify with `get_metadata` (which reads the file API, not the plugin sandbox),
+or `await figma.setCurrentPageAsync(page)` first. Do not conclude data loss from a
+`children.length` of 0.
+
+Three build techniques worth reusing, all verified on these pages:
+
+- **Gradient-filled text is native.** `"Infinite possibilities."` is a TEXT node whose
+  `fills` is a `GRADIENT_LINEAR` — so the shipped 14-stop `--gradient-full-ramp` is
+  reproduced exactly rather than approximated with a clipped rectangle.
+- **Soft background blooms are ellipses, not multi-fill rects.** A `GRADIENT_RADIAL` paint's
+  default transform maps to the node's own bounds, so an ellipse filled centre-opaque →
+  edge-transparent gives the bloom for free, and each wash stays independently positionable
+  inside a clipped frame.
+- **Name swatches with their role AND hex** (`primary #6264f4`). The layer list then reads
+  as data, and a hex can be lifted without opening an inspector.
+
 ### Adapting the recipe to non-interactive components
 
 The four frames are the shape, not a straitjacket. Spinner set the precedent: it has
