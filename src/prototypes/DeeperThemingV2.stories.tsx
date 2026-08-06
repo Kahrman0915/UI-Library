@@ -2148,7 +2148,7 @@ export const ChartsInUse: Story = {
                 { key: 'email', label: 'Email', slot: 3, data: [30, 31, 32, 33, 34, 35] },
               ]}
             />,
-            'line — data-chart-palette="line" (ec only, for now)',
+            'line — data-chart-palette="line" (every brand)',
             'line',
           )}
 

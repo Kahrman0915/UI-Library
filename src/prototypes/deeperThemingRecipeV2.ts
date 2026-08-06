@@ -554,6 +554,54 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * the reference gets its separation from a 0.47 lightness spread that the dark
  * card's readable band cannot hold.
  *
+ * ══ EVERY BRAND NOW CARRIES THIS, GENERATED FROM EC ═══════════════════════
+ *
+ * Owner: "using ec as your north star, finish off the rest of the themes
+ * including the aiden surface for both light and dark modes."
+ *
+ * ec was drawn by hand and then tuned over a long thread, so it is not merely
+ * a palette that passes — it encodes a STRUCTURE, and the structure is what
+ * generalises:
+ *
+ *   slot 1  the brand --primary                    brand lock
+ *   slot 2  primary hue, PALE rung                 L .70 light / .79 dark
+ *   slot 3  the brand --primary-deep               L .42 light / .59 dark
+ *   slot 4  the HIGHLIGHT hue, brightest rung      L .77 light / .86 dark
+ *   slot 5  a brand-TINTED slate, low chroma       L .62 light / .65 dark
+ *   slot 6  near-black light / near-white dark     L .30 light / .94 dark
+ *
+ * Read in SLOT ORDER the lightness alternates — mid, high, low, highest,
+ * mid-high, lowest — which is what separates two bars standing shoulder to
+ * shoulder. Read SORTED it is an even ladder. Both properties are load-bearing
+ * and both are reproduced for every brand.
+ *
+ * EC IS NEVER RE-DERIVED. The first generator run regenerated it and produced a
+ * different palette, which is exactly the failure this guard exists to stop.
+ * Note ec's slot 1 is NOT --primary (#067db8 against the token) — the owner
+ * drew a slightly different blue. Every other brand locks slot 1 to --primary.
+ *
+ * WHERE A BRAND COULD NOT TAKE THE TEMPLATE LITERALLY, and the reasons are all
+ * the same shape — a token solved for one job being asked to do another:
+ *
+ * · db, dc, ph, rm, aiden — DARK slot 3 is synthesised, not the real
+ *   --primary-deep. Those deeps measure 2.5-2.6:1 on the dark card. They were
+ *   solved to sit UNDER a surface, not to stand ON one, and a bar painted with
+ *   one disappears into the card it is drawn on.
+ * · nb, dc — LIGHT slot 3 is synthesised. Their deeps sit at L 0.31 and 0.20
+ *   against a slot-6 rung of 0.30, so using them put two near-blacks in the
+ *   same palette (dc measured dE 4.6 between them).
+ * · aiden — dark slot 3 synthesised for the opposite reason: its real deep is a
+ *   PALE blue that crowds the pale rung instead.
+ *
+ * TWO SHORTFALLS ARE ACCEPTED AND SHOULD NOT BE READ AS PASSING:
+ * · rm LIGHT measures CVD 2.6 between its magenta primary and its tinted slate.
+ *   A full sweep of every legal replacement — all lightnesses, all hues, all
+ *   chromas — returns nothing: under a red-green anomaly rm's magenta and any
+ *   near-grey at a usable lightness converge, and the only escape drops the
+ *   grey under 3:1 as well. Structural, not a search failure.
+ * · db and aiden DARK land at 7.7 and 7.8 all-pairs against ec's 8.6.
+ * In all three, marker shape and the direct label carry what colour cannot.
+ *
  * DARK SLOT 5 IS THE LINE PALETTE'S PURPLE (owner, 2026-08-06). It was the
  * slate #7995a6; it is now #aab9ff, the same value the line chart uses for its
  * second series — so in dark the two charts visibly share a colour instead of
@@ -634,10 +682,22 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * The two sub-3:1 tints also stop reading as shapes at 1px.
  */
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
-  ec: {
-    light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'],
-  },
+  // ec is the ORIGINAL — hand-drawn by the owner, then tuned. Every other entry
+  // below is generated from its structure. It is never re-derived.
+  ec:    { light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
+           dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'] },
+  db:    { light: ['#466af4', '#8e99d7', '#0d3bbf', '#5fc3ec', '#7887a1', '#2d2c41'],
+           dark:  ['#689cfe', '#a1bee2', '#4c84c6', '#9ddcfa', '#8092a9', '#e6e8f9'] },
+  nb:    { light: ['#306602', '#7bad7a', '#364e2a', '#b1be6a', '#7e8c70', '#1f3426'],
+           dark:  ['#8bca2f', '#b7bfa8', '#649807', '#cfd9a0', '#8d9479', '#e0eee1'] },
+  dc:    { light: ['#127f76', '#4fb0ae', '#045851', '#6dcba1', '#6a8f86', '#143438'],
+           dark:  ['#0db09d', '#b2beba', '#0d9479', '#a4e2c4', '#6f919b', '#d9efef'] },
+  ph:    { light: ['#b56005', '#d7907c', '#793e01', '#d8ae5e', '#9c7f6f', '#3a2c18'],
+           dark:  ['#ee7d0a', '#ddb09a', '#bd6c42', '#ebce99', '#a6897c', '#f3e7d9'] },
+  rm:    { light: ['#d62496', '#cc86a0', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
+           dark:  ['#fe68b8', '#d8acc6', '#b6679a', '#f0bff5', '#a88d9e', '#f8e4e7'] },
+  aiden: { light: ['#5a37e6', '#9d94d3', '#45447d', '#83b9fa', '#7e85a1', '#322a3f'],
+           dark:  ['#9076f9', '#b4b7e2', '#797bc9', '#b4d5fe', '#8b8ea9', '#ede6f6'] },
 };
 
 /**
@@ -686,10 +746,22 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  * cannot carry it — the cap belongs in the chart where it can be seen.
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
-  ec: {
-    light: ['#067db8', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#95e2e2', '#e1eaf9'],
-  },
+  // ec's trio is the owner's pick — light slots 1,5,6 and dark 1,4,6, chosen
+  // by eye after the generated ones were rejected. It is NOT re-derived.
+  ec:    { light: ['#067db8', '#6d8b9c', '#232f42'], dark: ['#1da0f3', '#95e2e2', '#e1eaf9'] },
+  // The rest take the trio that scores best from their OWN six. Light lands on
+  // slots 1,3,6 everywhere — primary, deep, near-black — because in light the
+  // pale rungs are the ones that cannot be a stroke. Dark lands on 1,2,6, the
+  // mirror image: there the pale rungs are the strong ones and the deep is the
+  // one that sinks into the card.
+  db:    { light: ['#466af4', '#0d3bbf', '#2d2c41'], dark: ['#689cfe', '#a1bee2', '#e6e8f9'] },
+  nb:    { light: ['#306602', '#364e2a', '#1f3426'], dark: ['#8bca2f', '#b7bfa8', '#e0eee1'] },
+  dc:    { light: ['#127f76', '#045851', '#143438'], dark: ['#0db09d', '#b2beba', '#d9efef'] },
+  ph:    { light: ['#b56005', '#793e01', '#3a2c18'], dark: ['#ee7d0a', '#ddb09a', '#f3e7d9'] },
+  rm:    { light: ['#d62496', '#960366', '#3f262b'], dark: ['#fe68b8', '#d8acc6', '#f8e4e7'] },
+  // aiden's dark trio is 1,2,5 rather than 1,2,6 — its near-white slot 6 sits
+  // too close to its pale rung, so the tinted slate carries the third line.
+  aiden: { light: ['#5a37e6', '#45447d', '#322a3f'], dark: ['#9076f9', '#b4b7e2', '#8b8ea9'] },
 };
 
 type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
