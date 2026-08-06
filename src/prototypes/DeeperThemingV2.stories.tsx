@@ -714,7 +714,7 @@ export const Brands: Story = {
       const darkLabel = toRGBA('#0f172a')!;
       const next: Record<string, { onLight: number; onDark: number }> = {};
       for (const b of SUB_BRANDS) {
-        const fill = read(BRAND_ANCHORS[b].light[1]);
+        const fill = read(PRIMARY_LIGHT[b]);   // the authored primary — nb's differs from its mark
         if (fill) next[b] = { onLight: contrast(lightLabel, fill), onDark: contrast(darkLabel, fill) };
       }
       setDrop(next);
@@ -809,7 +809,7 @@ export const Brands: Story = {
                   return (
                     <tr key={b} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                       <td style={{ ...MONO, padding: 'var(--p-2)', fontSize: 'var(--text-sm)' }}>{b}</td>
-                      <td style={{ ...MONO, padding: 'var(--p-2)' }}>{BRAND_ANCHORS[b].light[1]}</td>
+                      <td style={{ ...MONO, padding: 'var(--p-2)' }}>{PRIMARY_LIGHT[b]}</td>
                       {cell(d?.onLight, true)}
                       {cell(d?.onDark, false)}
                     </tr>
@@ -1870,6 +1870,24 @@ type AnchorShape = {
   accent: { light: string; dark: string }; markDeep: { light: string; dark: string };
   label?: string;
 };
+/**
+ * The FUNCTIONAL primary — what the buttons, charts and tints use.
+ *
+ * It is not always the mark's middle stop. aiden has always authored the two
+ * apart, and nb now does too (its mark is brighter than its primary, because
+ * the primary carries a colour-blindness constraint the logo does not). A
+ * swatch labelled "primary" must show the colour that actually is one.
+ */
+function primaryOf(key: string, m: Mode): string {
+  const a = anchorsOf(key) as AnchorShape & { primary?: { light: string; dark: string } };
+  if (a.primary) return a.primary[m];
+  return m === 'light' ? a.light[1] : a.dark[1];
+}
+/** True where the mark's middle stop is authored apart from the primary. */
+function markSplits(key: string): boolean {
+  return !!(anchorsOf(key) as AnchorShape & { primary?: unknown }).primary;
+}
+
 function anchorsOf(key: string): AnchorShape {
   const alts = ALT_ANCHORS as unknown as Record<string, AnchorShape>;
   const inc = BRAND_ANCHORS as unknown as Record<string, AnchorShape>;
@@ -1907,7 +1925,7 @@ export const Roster: Story = {
             </div>
 
             <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
-              {trio.map((c, i) => (
+              {[trio[0], primaryOf(key, m), trio[2]].map((c, i) => (
                 <span
                   key={c}
                   title={`${['highlight', 'primary', 'deep'][i]} ${c}`}
@@ -1923,7 +1941,7 @@ export const Roster: Story = {
                 marketing surface is built from */}
             <span style={{
               height: 10, borderRadius: 'var(--rounded-full)',
-              background: `linear-gradient(90deg, ${trio[0]}, ${trio[1]} 55%, ${trio[2]})`,
+              background: `linear-gradient(90deg, ${trio[0]}, ${primaryOf(key, m)} 55%, ${trio[2]})`,
             }}
             />
 
@@ -2044,9 +2062,13 @@ export const RosterDetail: Story = {
 
             <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
               {chip(trio[0], 'highlight')}
-              {chip(trio[1], 'primary')}
+              {chip(primaryOf(key, m), 'primary')}
               {chip(trio[2], 'deep')}
               {chip(a.accent[m], 'accent')}
+              {/* Only nb and aiden draw their mark in a different colour from
+                  their primary, so the extra chip appears only where there is
+                  actually a second value to see. */}
+              {markSplits(key) && chip(trio[1], 'mark mid')}
               {chip(a.markDeep[m], 'mark deep')}
             </div>
 

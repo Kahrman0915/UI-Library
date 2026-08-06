@@ -199,7 +199,21 @@
  */
 export const BRAND_ANCHORS = {
   db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#5e19ba', dark: '#843ff4' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
-  nb:    { light: ['#c9db29', '#306602', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#063a26', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
+  // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
+  // I don't like about current nb is the light mode mark"). The cause was
+  // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
+  // with the white glyph at ~4.5, but nb's sat at L 0.45 / 6.94 — a much darker,
+  // muddier tile that fell 0.40 in lightness from the first stop. That darkness
+  // is not a style choice, it is nb's CVD budget: its primary was solved to a 6.9
+  // AA target rather than 4.5 precisely so it could not be confused with the gold
+  // under a red-green anomaly. THAT CONSTRAINT IS FUNCTIONAL — it exists because
+  // charts and brand chips put the two side by side. A logo pays no such debt.
+  // So the mark's middle is now the green nb would have had at the ordinary 4.5
+  // floor (#418605, L 0.553, glyph 4.53 — the family's own shape), while
+  // `primary` pins the functional colour to today's #306602 exactly. Buttons,
+  // chart slot 1, tints and every gate are untouched; only the artwork moves.
+  // markDeep rises with it, from a near-black #063a26 to a real emerald.
+  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
   dc:    { light: ['#4eeeaf', '#025750', '#002b27'], dark: ['#4eeeaf', '#0db09d', '#057d70'], markDeep: { light: '#032930', dark: '#1a7888' }, accent: { light: '#789d8b', dark: '#89af9c' }, chart2Dark: '#457b72', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'globe' },
   ec:    { light: ['#2febdb', '#06838f', '#01545c'], dark: ['#2febdb', '#10c1db', '#088fa2'], markDeep: { light: '#0e506f', dark: '#2089bc' }, accent: { light: '#6c9e98', dark: '#85b4ae' }, chart2Dark: '#088fa2', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   ph:    { light: ['#ebce29', '#9d6d05', '#674601'], dark: ['#ebce29', '#c98909', '#906104'], markDeep: { light: '#773a0c', dark: '#a35316' }, accent: { light: '#a59548', dark: '#a99f70' }, chart2Dark: '#876d4a', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
@@ -340,7 +354,11 @@ function chartVars(
   const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
-  const slot1 = mode === 'light' ? a.light[1] : a.dark[1];
+  // The AUTHORED primary, not the mark's middle stop. Identical for every brand
+  // that does not separate them, so this changes no existing output — but nb
+  // now does separate them (see its anchors), and a chart must plot the colour
+  // the buttons use, not the one the logo is drawn with.
+  const slot1 = (mode === 'light' ? PRIMARY_LIGHT[k] : PRIMARY_DARK[k]) ?? (mode === 'light' ? a.light[1] : a.dark[1]);
   // dark slot 2 is the COMPANION, not the deep — see the header for why.
   // Slot 3 is the ACCENT: the artwork hue tamed to chart duty (3:1 on card,
   // capped chroma, chain-dE from slot 2, semantics hard-cleared) — so a
