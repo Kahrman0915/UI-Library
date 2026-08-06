@@ -197,9 +197,12 @@
  * are allowed to look alike is a product question about which apps sit side by
  * side, and only the owner can answer it.
  *
- * RESOLVED IN V2: aiden's mark now travels #b5cffd -> #4f06d7 -> #2e0186 —
- * real lightness falloff (OKLCH L 0.85 -> 0.44 -> 0.30), in family with every
- * other mark, and db no longer shares the deep so it moved freely.
+ * AIDEN IS NO LONGER DERIVED HERE (2026-08-06). Its anchors are the shipped
+ * --aiden-gradient-start/-mid/-end, copied from tokens.scss, because Aiden is
+ * the one identity in this file that already exists in the product. The v2
+ * round did solve its own (#b5cffd -> #4f06d7 -> #2e0186, a cleaner lightness
+ * falloff), and that is precisely the problem: a POC showing a different Aiden
+ * than the app renders teaches the wrong thing.
  */
 export const BRAND_ANCHORS = {
   db:    { light: ['#8cdafd', '#6264f4', '#3e31bf'], dark: ['#8cdafd', '#689cfe', '#2769ed'], markDeep: { light: '#5e19ba', dark: '#843ff4' }, accent: { light: '#2892ba', dark: '#357b97' }, chart2Dark: '#2769ed', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
@@ -234,7 +237,30 @@ export const BRAND_ANCHORS = {
   // dark-warning's amber, where this sits 27 off it.
   ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
   rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#846986' }, chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
-  aiden: { light: ['#aed1fd', '#4f06d7', '#2e0186'], dark: ['#aed1fd', '#c3b5fe', '#a07efe'], markDeep: { light: '#450967', dark: '#bc6ff7' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#4f06d7', dark: '#c3b5fe' }, icon: 'sparkles' },
+  // AIDEN IS NOT SOLVED — IT IS COPIED (owner, 2026-08-06: "update aiden to be
+  // as closely matching to what is in the current tokens.scss").
+  //
+  // Every other brand here is a proposal. Aiden already SHIPPED, so the POC has
+  // no business re-deriving it: a prototype that shows a different Aiden than
+  // the product renders is teaching the wrong thing. Every value below is
+  // lifted verbatim from src/styles/tokens.scss:
+  //
+  //   light  #8455f0 / #5a37e6 / #2c6dea  = --aiden-gradient-start/-mid/-end
+  //   dark   #9076f9 -> #93c5fd           = the dark --aiden-primary, 2 stops
+  //   primary #5a37e6 / #9076f9           = --aiden-outline-border, both modes
+  //
+  // The dark MARK takes #b3a2fa as its lead-in (the shipped dark --aiden-hover
+  // start) because a mark is a three-stop gradient and the shipped dark fill is
+  // only two — so the extra stop is still a real shipped Aiden value rather
+  // than an invented one. The FILL token itself stays a faithful two stops.
+  //
+  // WHAT THIS COSTS, stated rather than buried: db<->aiden falls to dE 9.2
+  // light / 9.9 dark, from 15.3 / 13.9 under the POC's own deeper violet. The
+  // shipped blurple simply sits nearer db's indigo. It stays over the 8.5 hard
+  // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
+  // construction — but it is the tightest identity pair in the set now, and
+  // matching the product is the reason it is accepted.
+  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#93c5fd' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -552,6 +578,62 @@ ${anchorBlocks()}
   --sidebar-accent: #334155;
 }
 /* THE BUTTON FILL IS TWO STOPS. THE MARK STAYS THREE.
+   THE BUTTON GRADIENT IS NOW THE SHIPPED ONE, VERBATIM. What follows is what
+   the POC learned while it still authored its own, kept because it explains
+   what the shipped values are doing and what adopting them cost.
+
+   A mark and a button are not the same object. A mark is 48px of artwork with
+   nothing on it, so a three-stop ramp reads as depth; a button is a wide flat
+   shape with a label across it, where a third stop shows up as a band the eye
+   has to cross. The shipped tokens split exactly that way by mode — three
+   stops in light, two in dark.
+
+   WHAT WAS GIVEN UP: the POC's own light fill (#2456e4 -> #5410db) held its
+   worst white label at 5.96. The shipped three-stop measures 4.63 at the
+   violet end — over AA, with far less room. That margin is what made it a
+   different Aiden, so it is the right thing to lose.
+
+   WHAT THE SHIPPED VALUES GET RIGHT, confirmed by measurement rather than
+   assumed: the two hovers move in OPPOSITE directions, and correctly. Light
+   deepens (#8455f0 -> #6d28d9) because a white label gains contrast as the
+   fill darkens; dark lightens (#9076f9 -> #b3a2fa) because that fill carries
+   ink. That is the same rule the rest of the system follows, and it means the
+   shipped Aiden needs no correction on this axis at adoption.
+
+   The remaining open question is the one the POC could not fix by copying:
+   whether Aiden's blue end should be the same hue in both modes. It is not
+   (light lands on an indigo-leaning azure, dark on a true sky), which is
+   defensible — dark has no lightness to spare and the hue moved with it — but
+   it is a decision, not an accident, and worth confirming at adoption. */
+[data-theme-poc2][data-surface='aiden'][data-mode='light'] {
+  --background: #ffffff;
+  --card:       #ffffff;
+  --popover:    #ffffff;
+  --secondary:  #e2e8f0;
+  --accent:     #f1f5f9;
+  --muted:      #cbd5e1;
+  --input:      #e2e8f0;
+  --border:       #cbd5e1;
+  --border-hover: #64748b;
+  --sidebar:        #f8fafc;
+  --sidebar-border: #e2e8f0;
+  --sidebar-accent: #f1f5f9;
+}
+[data-theme-poc2][data-surface='aiden'][data-mode='dark'] {
+  --background: #0f172a;
+  --card:       #1e293b;
+  --popover:    #475569;
+  --secondary:  #1e293b;
+  --accent:     #334155;
+  --muted:      #334155;
+  --input:      #475569;
+  --border:       #64748b;
+  --border-hover: #cbd5e1;
+  --sidebar:        #1e293b;
+  --sidebar-border: #334155;
+  --sidebar-accent: #334155;
+}
+/* THE BUTTON FILL IS TWO STOPS. THE MARK STAYS THREE.
    They are not the same object and should not be the same gradient. A mark is
    48px of artwork with nothing on it, so a three-stop ramp reads as depth; a
    button is a wide flat shape with a label across it, and the third stop only
@@ -580,12 +662,17 @@ ${anchorBlocks()}
    tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
    of its light), which is worth fixing at adoption. */
 [data-theme-poc2][data-surface='aiden'][data-mode='light'] {
-  --aiden-fill:       linear-gradient(135deg, #2456e4 0%, #5410db 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #1a46c2 0%, #4605bd 100%);
+  /* VERBATIM from tokens.scss --aiden-primary / --aiden-hover. Worst white
+     label across the light fill measures 4.63 — the shipped number, inherited
+     rather than re-solved. The POC's own two-stop reached 5.96, and that extra
+     margin is exactly what made it a different Aiden. */
+  --aiden-fill:       linear-gradient(135deg, #8455f0 0%, #5a37e6 50%, #2c6dea 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #6d28d9 0%, #4a29c9 50%, #1d4ed8 100%);
 }
 [data-theme-poc2][data-surface='aiden'][data-mode='dark'] {
-  --aiden-fill:       linear-gradient(135deg, #7fb1fe 0%, #a07efe 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #9cc3ff 0%, #b598ff 100%);
+  /* Two stops, like the shipped dark --aiden-primary. Ink label worst 5.22. */
+  --aiden-fill:       linear-gradient(135deg, #9076f9 0%, #93c5fd 100%);
+  --aiden-fill-hover: linear-gradient(135deg, #b3a2fa 0%, #bae6fd 100%);
 }
 /* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
    Where it is text or a border it keeps the flat accent, because a gradient
@@ -708,12 +795,12 @@ ${anchorBlocks()}
 [data-theme-poc2][data-mode='light'] .poc2-suite-ramp,
 [data-theme-poc2][data-mode='light'] .poc2-suite-text {
   --poc2-ramp: linear-gradient(100deg,
-    #b56005 0%, #306602 17%, #025750 33%, #067db8 50%, #6264f4 67%, #4f06d7 83%, #d62496 100%);
+    #b56005 0%, #306602 17%, #025750 33%, #067db8 50%, #6264f4 67%, #5a37e6 83%, #d62496 100%);
 }
 [data-theme-poc2][data-mode='dark'] .poc2-suite-ramp,
 [data-theme-poc2][data-mode='dark'] .poc2-suite-text {
   --poc2-ramp: linear-gradient(100deg,
-    #ee7d0a 0%, #8bca2f 17%, #0db09d 33%, #23c7fe 50%, #689cfe 67%, #c3b5fe 83%, #fe68b8 100%);
+    #ee7d0a 0%, #8bca2f 17%, #0db09d 33%, #23c7fe 50%, #689cfe 67%, #9076f9 83%, #fe68b8 100%);
 }
 [data-theme-poc2] .poc2-suite-ramp { background-image: var(--poc2-ramp); }
 [data-theme-poc2] .poc2-suite-text {
@@ -732,7 +819,7 @@ ${anchorBlocks()}
   background-image:
     radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #067db8 20%, transparent) 0%, transparent 70%),
     radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #025750 17%, transparent) 0%, transparent 70%),
-    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #4f06d7 18%, transparent) 0%, transparent 70%),
+    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #5a37e6 18%, transparent) 0%, transparent 70%),
     radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #d62496 15%, transparent) 0%, transparent 70%),
     radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #b56005 12%, transparent) 0%, transparent 72%),
     radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #306602 12%, transparent) 0%, transparent 72%);
@@ -741,7 +828,7 @@ ${anchorBlocks()}
   background-image:
     radial-gradient(46% 52% at 10% 4%,  color-mix(in srgb, #23c7fe 26%, transparent) 0%, transparent 70%),
     radial-gradient(42% 48% at 34% 0%,  color-mix(in srgb, #0db09d 22%, transparent) 0%, transparent 70%),
-    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #a07efe 24%, transparent) 0%, transparent 70%),
+    radial-gradient(44% 50% at 62% 2%,  color-mix(in srgb, #9076f9 24%, transparent) 0%, transparent 70%),
     radial-gradient(40% 46% at 88% 8%,  color-mix(in srgb, #fe68b8 18%, transparent) 0%, transparent 70%),
     radial-gradient(38% 44% at 76% 46%, color-mix(in srgb, #ee7d0a 15%, transparent) 0%, transparent 72%),
     radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #8bca2f 15%, transparent) 0%, transparent 72%);
