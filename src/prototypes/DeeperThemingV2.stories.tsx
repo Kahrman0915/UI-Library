@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import type { CSSProperties, ReactNode } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
 import {
@@ -1906,6 +1906,108 @@ export const RosterDetail: Story = {
               </div>
             </div>
           ))}
+        </div>
+      </>
+    );
+  },
+};
+
+/**
+ * CHART PALETTES — three jobs, three ramps, one attribute.
+ *
+ * The categorical set answers "which series is this"; sequential answers "how
+ * much"; diverging answers "which side of the line, and how far". They are not
+ * interchangeable, and the commonest charting mistake is using one for another
+ * job — a categorical ramp on ordered data invents differences that are not in
+ * the numbers, and a sequential ramp on unordered data implies a rank that does
+ * not exist.
+ *
+ * A consumer states the JOB and the colours follow:
+ *   <div data-chart-palette="sequential"> … </div>
+ */
+export const ChartPalettes: Story = {
+  render: function ChartPalettesStory() {
+    const ORDER: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
+    const KINDS: { key: string; attr?: string; title: string; blurb: string; n: number }[] = [
+      { key: 'cat', title: 'Categorical', n: 6,
+        blurb: 'Unordered series — “which one is this”. Brand primary, deep and accent, then the brand-tinted neutrals. Every adjacent pair holds ΔE 15 so no two series can be mistaken for each other.' },
+      { key: 'seq', attr: 'sequential', title: 'Sequential', n: 7,
+        blurb: 'Magnitude — “how much”. One hue, seven even steps. The pale end is meant to recede into the card; the legibility budget is spent at the deep end.' },
+      { key: 'div', attr: 'diverging', title: 'Diverging', n: 7,
+        blurb: 'Signed data — “which side of the baseline”. The arms are the same for every brand, because a diverging scale needs 120–180° of hue separation and a brand’s own poles sit 20–39° apart. Only the midpoint is branded.' },
+    ];
+
+    const swatchRow = (n: number) => (
+      <div style={{ display: 'flex', gap: 2, borderRadius: 'var(--rounded-md)', overflow: 'hidden' }}>
+        {Array.from({ length: n }, (_, i) => (
+          <div key={i} style={{ background: `var(--chart-${i + 1})`, height: 34, flex: 1 }} />
+        ))}
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 820 }}>
+            <h2 style={H2}>Three palettes, picked by intent</h2>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              The consumer names the job, not the colours — <code style={MONO}>data-chart-palette</code>{' '}
+              re-points <code style={MONO}>--chart-1..N</code> at a different family, so the chart
+              component is unchanged and a chart nested in a brand scope still picks up that brand.
+            </p>
+          </div>
+
+          {KINDS.map((kind) => (
+            <div key={kind.key} style={{ display: 'grid', gap: 'var(--p-3)' }}>
+              <div style={{ display: 'grid', gap: 4, maxWidth: 820 }}>
+                <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>
+                  {kind.title}{' '}
+                  <span style={{ ...MONO, fontWeight: 'var(--font-normal)', color: 'var(--muted-foreground)' }}>
+                    {kind.attr ? `data-chart-palette="${kind.attr}"` : '(default)'}
+                  </span>
+                </h3>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{kind.blurb}</p>
+              </div>
+              {(['dark', 'light'] as Mode[]).map((m) => (
+                <div
+                  key={m}
+                  style={{
+                    background: m === 'dark' ? '#0f172a' : '#f1f5f9',
+                    border: `1px solid ${m === 'dark' ? '#334155' : '#e2e8f0'}`,
+                    borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)',
+                    display: 'grid', gap: 'var(--p-2)',
+                  }}
+                >
+                  <span style={{ ...MONO, color: m === 'dark' ? '#f8fafc' : '#0f172a', opacity: 0.55 }}>{m}</span>
+                  <div style={{ display: 'grid', gridTemplateColumns: '68px 1fr', gap: 'var(--p-2)', alignItems: 'center' }}>
+                    {ORDER.map((b) => (
+                      <Fragment key={b}>
+                        <span style={{ ...MONO, color: m === 'dark' ? '#f8fafc' : '#0f172a', opacity: 0.7 }}>{b}</span>
+                        <Scope brand={b} mode={m}>
+                          <div {...(kind.attr ? { 'data-chart-palette': kind.attr } : {})}>{swatchRow(kind.n)}</div>
+                        </Scope>
+                      </Fragment>
+                    ))}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 820 }}>
+            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>Why diverging is not brand-themed</h3>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              This was measured rather than chosen. A diverging scale only reads if its two arms are
+              unmistakable at a glance, which conventionally means 120–180° of hue apart. Every
+              brand&rsquo;s own two poles sit between <strong>20°</strong> (nb) and <strong>39°</strong>{' '}
+              (db) — and that narrowness is exactly what makes a brand read as one brand. Built from a
+              brand&rsquo;s own hues, a diverging ramp would render as a sequential one with a kink in
+              it, and the reader would lose the sign. So the arms are constant across the suite and
+              only the <strong>midpoint</strong> is branded, which is what the brand-tinted neutral was
+              for. One scale to learn, seven greys to sit on.
+            </p>
+          </div>
         </div>
       </>
     );

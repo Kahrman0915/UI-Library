@@ -366,12 +366,64 @@ const CHART_THEMING = true;
  * on purpose — it is a surface, not a brand, and keeps the neutral ramp.
  */
 const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
-  ph: { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
-  nb: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
-  dc: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
-  ec: { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
-  db: { light: ['#354358', '#77879e', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1'] },
-  rm: { light: ['#354358', '#77879e', '#212e42'], dark: ['#afbccd', '#6b7c93', '#c7d2e1'] },
+  db: { light: ['#283753', '#667795', '#1a2a44'], dark: ['#a5b7d0', '#627997', '#b7c8de'] },
+  nb: { light: ['#283746', '#667788', '#1b2937'], dark: ['#697c88', '#bdcbce', '#798b95'] },
+  dc: { light: ['#273648', '#65768b', '#192839'], dark: ['#627a8f', '#b7c9d5', '#72899c'] },
+  ec: { light: ['#27394e', '#657990', '#192b3f'], dark: ['#637c95', '#b7cadb', '#728aa2'] },
+  ph: { light: ['#2f3746', '#6d7788', '#222a37'], dark: ['#c3c6ce', '#6e7887', '#9fa6b1'] },
+  rm: { light: ['#31334d', '#6f738f', '#24263e'], dark: ['#b3b2c9', '#717491', '#c5c2d8'] },
+};
+
+/**
+ * SEQUENTIAL — one hue, seven steps, even in OKLCH lightness. For MAGNITUDE:
+ * heatmaps, choropleths, density. Ordered ramps do not need the categorical
+ * 15-dE separation because position carries the meaning; they need EVEN steps,
+ * and these hold a minimum of 10.7 per step.
+ *
+ * The pale end is deliberately near the card (1.1-1.2:1). That is not a
+ * contrast failure — the low end of a sequential ramp is supposed to recede
+ * into the surface. The deep end is where the legibility budget goes, and it
+ * lands at 10.7-14.6:1.
+ */
+const CHART_SEQ: Record<string, { light: string[]; dark: string[] }> = {
+  db: { light: ['#e4ebfd', '#b3c7fb', '#84a3f8', '#567bf6', '#3655dd', '#1f30b8', '#0f0e88'], dark: ['#05034e', '#111093', '#243ac1', '#3f61ea', '#6a8df7', '#9db6fa', '#d1defc'] },
+  nb: { light: ['#c8feaf', '#84e64a', '#67c12a', '#529c1f', '#3d7815', '#2a560c', '#183704'], dark: ['#081c00', '#1b3b05', '#2f5e0e', '#448419', '#5bac24', '#74d535', '#9afc63'] },
+  dc: { light: ['#abfef3', '#3be4d5', '#2fbeb2', '#24998f', '#19766e', '#0f554f', '#053631'], dark: ['#001b18', '#063a36', '#115d56', '#1d8279', '#29a99e', '#35d2c4', '#43fdec'] },
+  ec: { light: ['#daeefd', '#95d0fb', '#3ab1f8', '#228fcc', '#186e9f', '#0e4f73', '#05314b'], dark: ['#001828', '#063651', '#10567e', '#1b79ae', '#279ee1', '#70c2fa', '#c1e3fc'] },
+  ph: { light: ['#fde6d6', '#fbb887', '#f18828', '#c36d1e', '#975314', '#6e3a0b', '#472303'], dark: ['#260f00', '#4d2704', '#78400d', '#a65c18', '#d77922', '#faa05a', '#fdd5ba'] },
+  rm: { light: ['#fee3ef', '#fbadd4', '#f96cbc', '#da3f9c', '#b11b7b', '#811058', '#540638'], dark: ['#2e011c', '#5b083d', '#8c1361', '#c12287', '#ea4fab', '#fa91c8', '#fdcfe5'] },
+  aiden: { light: ['#e8e9fd', '#c0c3fb', '#9a9bf8', '#786ff6', '#5c49d9', '#4221b4', '#2a0b7c'], dark: ['#140246', '#2e0d86', '#482cbd', '#6555e6', '#8683f7', '#aeb0fa', '#d8dbfc'] },
+};
+
+/**
+ * DIVERGING — seven steps, two opposing arms through a neutral middle. For
+ * SIGNED data: change against a baseline, above/below target, gain/loss.
+ *
+ * THE ARMS ARE NOT BRAND-THEMED, AND THAT IS A GEOMETRY RESULT RATHER THAN A
+ * PREFERENCE. A diverging scale only works if its two arms are unmistakable at
+ * a glance, which conventionally means 120-180 degrees of hue apart. Every
+ * brand's own poles sit 20-39 degrees apart — db is the widest at 39, nb the
+ * tightest at 20 — because that narrowness is precisely what makes a brand read
+ * as one brand. Built from a brand's own hues, a "diverging" ramp would render
+ * as a sequential one with a kink in it, and the reader would lose the sign.
+ * The semantic pair is 138 degrees apart and carries the meaning for free.
+ *
+ * SO ONLY THE MIDPOINT IS BRANDED — the brand-tinted neutral, which is exactly
+ * the job the owner's tinted-neutral idea was made for. The arms stay constant
+ * across the whole suite, so a reader learns ONE diverging scale rather than
+ * seven, while each product's chart still sits on its own grey.
+ *
+ * Min step is 16.0 in light and 8.1-8.9 in dark, where the tinted midpoint sits
+ * nearer its neighbours in lightness. Both clear the ~6 an ordered ramp needs.
+ */
+const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
+  db: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c6cedd', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4059', '#0c4e39', '#1c8161', '#2cb88b'] },
+  nb: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c7ced2', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#34434c', '#0c4e39', '#1c8161', '#2cb88b'] },
+  dc: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c5cdd4', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4152', '#0c4e39', '#1c8161', '#2cb88b'] },
+  ec: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c6cfd9', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#2f4257', '#0c4e39', '#1c8161', '#2cb88b'] },
+  ph: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#ccced2', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#393f4c', '#0c4e39', '#1c8161', '#2cb88b'] },
+  rm: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#cecbd8', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#3b3c54', '#0c4e39', '#1c8161', '#2cb88b'] },
+  aiden: { light: ['#f0574e', '#b61b1e', '#6b0b0c', '#c8d1df', '#084230', '#187456', '#28aa80'], dark: ['#f86b60', '#c52c2a', '#7d0f11', '#334359', '#0c4e39', '#1c8161', '#2cb88b'] },
 };
 
 /**
@@ -408,6 +460,21 @@ function chartVars(
   return [slot1, slot2, slot3, ...neutrals].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
 }
 
+/**
+ * The two ORDERED palettes, emitted alongside the categorical one so a brand
+ * scope carries all three and the consumer picks by intent rather than by
+ * copying hexes. Aiden gets these even though it has no categorical set — it is
+ * a surface with no chart identity of its own, but a chart INSIDE it still has
+ * to plot magnitude and sign.
+ */
+function rampVars(k: string, mode: 'light' | 'dark'): string {
+  const seq = CHART_SEQ[k]?.[mode];
+  const div = CHART_DIV[k]?.[mode];
+  if (!seq || !div) return '';
+  return seq.map((hex, i) => `  --chart-seq-${i + 1}: ${hex};`).join('\n') + '\n'
+       + div.map((hex, i) => `  --chart-div-${i + 1}: ${hex};`).join('\n') + '\n';
+}
+
 /** Per-brand anchor + primary declarations, emitted for every brand and mode. */
 function anchorBlocks(
   keys: readonly string[] = BRAND_KEYS,
@@ -440,7 +507,7 @@ function anchorBlocks(
   --primary:            ${PRIMARY_LIGHT[k] ?? a.light[1]};
   --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
-${chartVars(k, 'light', anchorMap, neutralMap)}}
+${chartVars(k, 'light', anchorMap, neutralMap)}${rampVars(k, 'light')}}
 ${sel}[data-mode='dark'] {
   --mark-a:             ${a.light[0]};
   --mark-b:             ${a.light[1]};
@@ -451,7 +518,7 @@ ${sel}[data-mode='dark'] {
   --primary:            ${PRIMARY_DARK[k] ?? a.dark[1]};
   --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
-${chartVars(k, 'dark', anchorMap, neutralMap)}}`;
+${chartVars(k, 'dark', anchorMap, neutralMap)}${rampVars(k, 'dark')}}`;
   }).join('\n');
 }
 
@@ -805,6 +872,46 @@ ${anchorBlocks()}
     radial-gradient(44% 40% at 34% 98%,
       color-mix(in srgb, var(--mark-mid) calc(var(--poc2-bubble-mid) * var(--poc2-str)), transparent) 0%,
       transparent 72%);
+}
+
+/* ── DECLARING CHART INTENT ─────────────────────────────────────────────────
+   Three palettes now live in every brand scope, and the consumer says WHICH by
+   naming the job rather than by choosing colours:
+
+     <div data-chart-palette="sequential"> … </div>
+     <div data-chart-palette="diverging">  … </div>
+     (omitted)                             categorical, the default
+
+   The chart component keeps reading --chart-1..N exactly as it does today; the
+   attribute only re-points those slots at a different family. That is the whole
+   mechanism — no colour logic in JS, no second component, and a chart nested in
+   a brand scope still picks up that brand automatically.
+
+   It is deliberately an ATTRIBUTE and not a prop-driven class, so it composes
+   the same way data-mode / data-brand / data-surface already do: set it on one
+   panel and every chart inside inherits the intent.
+
+   ADOPTION COST, stated plainly: the ordered ramps are SEVEN steps and the
+   shipped <Chart> reads six. Categorical stays at six; sequential and diverging
+   want the seventh, so adopting them means --chart-7 exists. That is one slot,
+   not a redesign. */
+[data-theme-poc2] [data-chart-palette='sequential'] {
+  --chart-1: var(--chart-seq-1);
+  --chart-2: var(--chart-seq-2);
+  --chart-3: var(--chart-seq-3);
+  --chart-4: var(--chart-seq-4);
+  --chart-5: var(--chart-seq-5);
+  --chart-6: var(--chart-seq-6);
+  --chart-7: var(--chart-seq-7);
+}
+[data-theme-poc2] [data-chart-palette='diverging'] {
+  --chart-1: var(--chart-div-1);
+  --chart-2: var(--chart-div-2);
+  --chart-3: var(--chart-div-3);
+  --chart-4: var(--chart-div-4);
+  --chart-5: var(--chart-div-5);
+  --chart-6: var(--chart-div-6);
+  --chart-7: var(--chart-div-7);
 }
 
 /* Small NON-TEXT accents may take the highlight raw — a status dot, a chart
