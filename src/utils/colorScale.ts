@@ -44,8 +44,13 @@ export function scaleStep(
   if (kind === 'sequential') {
     const [lo, hi] = domain;
     if (hi === lo) return clamp(Math.ceil(steps / 2));
+    // round(t * (steps-1)) + 1, NOT floor(t * steps) + 1. The floor form bins by
+    // interval rather than by position: with 6 data points across 7 steps it
+    // put two adjacent values on the SAME step while leaving two steps unused,
+    // and sent the maximum to step 8 before the clamp caught it. Two values one
+    // colour is the exact defect this module exists to remove.
     const t = (value - lo) / (hi - lo);
-    return clamp(Math.floor(t * steps) + 1);
+    return clamp(Math.round(t * (steps - 1)) + 1);
   }
 
   const mid = Math.ceil(steps / 2);

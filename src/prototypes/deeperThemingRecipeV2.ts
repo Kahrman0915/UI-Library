@@ -224,7 +224,7 @@ export const BRAND_ANCHORS = {
   // of drift is inside the house limit and in line with nb (6) and aiden (7).
   // The whole move is dE 3.4. All db gates re-checked: white 4.54, --primary-text
   // 5.56, deep dE 15.0, chart chain 15/24/25, ec 11.5, aiden 10.2, info 13.7.
-  db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#447990' }, chart2Dark: '#046de9', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
+  db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#33b3e3' }, chart2Dark: '#046de9', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
   // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
   // I don't like about current nb is the light mode mark"). The cause was
   // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
@@ -239,7 +239,7 @@ export const BRAND_ANCHORS = {
   // `primary` pins the functional colour to today's #306602 exactly. Buttons,
   // chart slot 1, tints and every gate are untouched; only the artwork moves.
   // markDeep rises with it, from a near-black #063a26 to a real emerald.
-  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a1a784' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
+  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a3a985' }, chart2Dark: '#649807', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
   // dc's LIGHT MARK DEEP was raised #032930 -> #0c4b55 (owner, 2026-08-06:
   // "light mode just seems really deep"). It was, measurably: at L 0.259 it was
   // the darkest third stop in the set by a distance — the rest of the family
@@ -287,13 +287,30 @@ export const BRAND_ANCHORS = {
   // Its DARK anchor is pushed bright (L 0.78) so it clears db — the flagship,
   // and now its wheel neighbour — by LIGHTNESS rather than hue, the same
   // construction that separates db from aiden.
-  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1850d1', dark: '#067cbc' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
+  ec:    { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1850d1', dark: '#067cbc' }, accent: { light: '#599fae', dark: '#83b755' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'leaf' },
   // ph = THE BURNT ORANGE (owner, 2026-08-06; was gold 78/75). Hue 57, v1's.
   // Crowds --warning at dE 6.5 in light, waived on the same terms as ec. It
   // does BUY something back: the retired gold sat only 6 degrees off
   // dark-warning's amber, where this sits 27 off it.
-  ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
-  rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#846986' }, chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  ph:    { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#ca9d42' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'zap' },
+  rm:    { light: ['#f7b1fd', '#d62496', '#960366'], dark: ['#f7b1fd', '#fe68b8', '#d31a8d'], markDeep: { light: '#9a153b', dark: '#da2358' }, accent: { light: '#bf7bc5', dark: '#cf84d6' }, chart2Dark: '#d21f8c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'heart' },
+  // DARK ACCENTS RE-SOLVED 2026-08-06 AGAINST THE CARD THAT ACTUALLY RENDERS.
+  // They had been gated against the BASE dark card #1e293b while this POC tints
+  // it — --card is color-mix(surface-tint 12%, #1e293b), and the tint carries
+  // the brand's own deep — so the real surface is lighter and ate the margin:
+  // db measured 3.05 against the base and 2.70 against the card a reader sees,
+  // rm 3.03 and 2.73. Both under the 3:1 the chart subsystem requires of a mark.
+  // Every dark accent is now solved against the LIGHTEST card in the set
+  // (#243346, ec's) so none can fail on any brand.
+  //
+  // ec's accent had to LEAVE ITS OWN HUE FAMILY to do it. A full 360-degree
+  // sweep shows the binding constraint is 15 dE from slot 2: ec's primary and
+  // deep are both mid-cyan, so nothing in the blue-cyan band that also clears
+  // the card can sit far enough from them. Its accent is now green (#83b755).
+  // That abandons the "accent = the artwork hue, tamed" idea for ec alone, and
+  // the trade was taken deliberately — a third series that cannot be seen is
+  // worth less than one that is not in the family.
+  //
   // AIDEN IS NOT SOLVED — IT IS COPIED (owner, 2026-08-06: "update aiden to be
   // as closely matching to what is in the current tokens.scss").
   //
@@ -380,19 +397,34 @@ const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
  * 15-dE separation because position carries the meaning; they need EVEN steps,
  * and these hold a minimum of 10.7 per step.
  *
- * The pale end is deliberately near the card (1.1-1.2:1). That is not a
- * contrast failure — the low end of a sequential ramp is supposed to recede
- * into the surface. The deep end is where the legibility budget goes, and it
- * lands at 10.7-14.6:1.
+ * BOTH RAMPS LIVE INSIDE THE 3:1 BAND, and the first cut did not. I let the
+ * pale end fall to 1.1-1.2:1 against the card on the reasoning that a
+ * sequential ramp's low end is "supposed to recede into the surface". That is
+ * true of a HEATMAP CELL, which tiles and gets structure from its grid. It is
+ * false of a BAR sitting alone on a card, which is what these charts draw — and
+ * the chart subsystem already has a rule for exactly this, the surface-gap
+ * doctrine that converts "3:1 against your neighbour" into "3:1 against the
+ * background". My ramps broke the component's own rule.
+ *
+ * Worse, it only showed in DARK: the light ramp fails at its pale end and the
+ * dark ramp at its deep end, so testing one mode passes and the other collapses
+ * (measured 1.07-1.51:1 across three of seven dark steps).
+ *
+ * So the usable band is bounded on BOTH sides, per mode: light L 0.10-0.675,
+ * dark L 0.585-0.975. The ramps are re-solved inside it. The cost is real and
+ * worth naming — compressing the range drops the per-step separation from
+ * ~10.7 to 5.3, which is near the floor an ordered ramp needs. Seven steps is
+ * the most this band supports; asking for more would be asking for steps a
+ * reader cannot tell apart.
  */
 const CHART_SEQ: Record<string, { light: string[]; dark: string[] }> = {
-  db: { light: ['#e4ebfd', '#b3c7fb', '#84a3f8', '#567bf6', '#3655dd', '#1f30b8', '#0f0e88'], dark: ['#05034e', '#111093', '#243ac1', '#3f61ea', '#6a8df7', '#9db6fa', '#d1defc'] },
-  nb: { light: ['#c8feaf', '#84e64a', '#67c12a', '#529c1f', '#3d7815', '#2a560c', '#183704'], dark: ['#081c00', '#1b3b05', '#2f5e0e', '#448419', '#5bac24', '#74d535', '#9afc63'] },
-  dc: { light: ['#abfef3', '#3be4d5', '#2fbeb2', '#24998f', '#19766e', '#0f554f', '#053631'], dark: ['#001b18', '#063a36', '#115d56', '#1d8279', '#29a99e', '#35d2c4', '#43fdec'] },
-  ec: { light: ['#daeefd', '#95d0fb', '#3ab1f8', '#228fcc', '#186e9f', '#0e4f73', '#05314b'], dark: ['#001828', '#063651', '#10567e', '#1b79ae', '#279ee1', '#70c2fa', '#c1e3fc'] },
-  ph: { light: ['#fde6d6', '#fbb887', '#f18828', '#c36d1e', '#975314', '#6e3a0b', '#472303'], dark: ['#260f00', '#4d2704', '#78400d', '#a65c18', '#d77922', '#faa05a', '#fdd5ba'] },
-  rm: { light: ['#fee3ef', '#fbadd4', '#f96cbc', '#da3f9c', '#b11b7b', '#811058', '#540638'], dark: ['#2e011c', '#5b083d', '#8c1361', '#c12287', '#ea4fab', '#fa91c8', '#fdcfe5'] },
-  aiden: { light: ['#e8e9fd', '#c0c3fb', '#9a9bf8', '#786ff6', '#5c49d9', '#4221b4', '#2a0b7c'], dark: ['#140246', '#2e0d86', '#482cbd', '#6555e6', '#8683f7', '#aeb0fa', '#d8dbfc'] },
+  db: { light: ['#5c81f6', '#4b6ee9', '#3c5cd5', '#2e4ac2', '#2238af', '#17249d', '#0f0e88'], dark: ['#567bf6', '#6d90f7', '#84a3f8', '#9cb6fa', '#b5c8fb', '#cddbfc', '#e6edfe'] },
+  nb: { light: ['#55a121', '#4a8e1b', '#3f7b16', '#356911', '#2b580c', '#214707', '#183704'], dark: ['#529c1f', '#5cae25', '#6bc036', '#7cd24a', '#8de45d', '#9ff770', '#cdfeb7'] },
+  dc: { light: ['#259f94', '#208c82', '#1a7971', '#156860', '#0f5650', '#0a4641', '#053631'], dark: ['#24998f', '#2aaca0', '#2fbfb2', '#35d2c4', '#3be6d6', '#41f9e9', '#b4fef4'] },
+  ec: { light: ['#2494d3', '#1e82bb', '#1971a3', '#13608c', '#0e5075', '#09405f', '#05314b'], dark: ['#228fcc', '#28a0e4', '#3cb2f8', '#6fc2fa', '#97d1fb', '#bbe1fc', '#ddf0fe'] },
+  ph: { light: ['#c9711f', '#b2631a', '#9b5515', '#854810', '#6f3c0b', '#5b2f07', '#472303'], dark: ['#c36d1e', '#da7b23', '#f18828', '#faa059', '#fbb989', '#fcd1b3', '#fee8d9'] },
+  rm: { light: ['#d84f9f', '#c53c8d', '#b1287d', '#9c176c', '#83115a', '#6b0b48', '#540638'], dark: ['#d34a9a', '#e65cab', '#f96dbc', '#fa90c8', '#fbafd5', '#fccbe2', '#fee5f0'] },
+  aiden: { light: ['#7c76f6', '#6d63e5', '#5e52d2', '#5040bf', '#432dac', '#36169a', '#2a0b7c'], dark: ['#7870f3', '#8986f7', '#9a9cf8', '#adb0fa', '#c1c4fb', '#d5d8fc', '#eaebfe'] },
 };
 
 /**
@@ -430,13 +462,13 @@ const CHART_SEQ: Record<string, { light: string[]; dark: string[] }> = {
  * The MIDPOINT stays the brand-tinted neutral. Min step is ~16 throughout.
  */
 const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
-  db: { light: ['#3f3908', '#6e6517', '#a29428', '#c6cedd', '#688bf5', '#3655cd', '#151e98'], dark: ['#4a430c', '#7b701b', '#afa12c', '#2f4059', '#6d9df6', '#2a66db', '#083896'] },
-  nb: { light: ['#1b1c97', '#3c53cd', '#6c8af5', '#c7ced2', '#5ca928', '#3d7318', '#204208'], dark: ['#222ba5', '#4660db', '#7d98f6', '#34434c', '#7bb22c', '#557d1c', '#324c0c'] },
-  dc: { light: ['#38128d', '#6047c8', '#8c7ef5', '#c5cdd4', '#2da79c', '#1c726a', '#0b413c'], dark: ['#421da0', '#6a54d5', '#988ef6', '#2f4152', '#32b5a3', '#207f72', '#0f4d44'] },
-  ec: { light: ['#532d08', '#8e5217', '#cf7b27', '#c6cfd9', '#2b9bdd', '#1a6a98', '#0a3c59'], dark: ['#61360b', '#9e5c1b', '#e0852b', '#2f4257', '#31adda', '#1f799a', '#0e495e'] },
-  ph: { light: ['#221997', '#4451cd', '#7388f5', '#ccced2', '#d37827', '#915017', '#552c08'], dark: ['#2a29a4', '#4e5edb', '#8297f6', '#393f4c', '#e6802b', '#a3591b', '#64340b'] },
-  rm: { light: ['#453608', '#786017', '#af8e27', '#cecbd8', '#e157a7', '#a91e76', '#630c44'], dark: ['#51400c', '#856b1b', '#be9a2b', '#3b3c54', '#f164af', '#b92d7e', '#75114d'] },
-  aiden: { light: ['#423708', '#736217', '#a99127', '#c8d1df', '#8581f5', '#594aca', '#331391'], dark: ['#4e420c', '#806e1b', '#b79d2c', '#334359', '#9d8cf6', '#7052d3', '#471a9e'] },
+  db: { light: ['#3f3906', '#645b11', '#8b7f1c', '#777c83', '#4e71ec', '#2e49c1', '#151e98'], dark: ['#f6e13a', '#c9b82e', '#9f9122', '#80858c', '#6387f6', '#99b3f9', '#d1defc'] },
+  nb: { light: ['#1b1c97', '#3448c1', '#5370ec', '#777c83', '#4c921d', '#356811', '#1f4206'], dark: ['#d2ddfc', '#9cb3f9', '#6785f6', '#80858c', '#58a622', '#7ad047', '#a2fa73'] },
+  dc: { light: ['#390f8f', '#573cbc', '#7864e7', '#777c83', '#218f86', '#146760', '#08413c'], dark: ['#dbdafc', '#b0abf9', '#8979f6', '#80858c', '#27a499', '#34cfc2', '#43fdec'] },
+  ec: { light: ['#532d06', '#824a10', '#b3681b', '#777c83', '#1f85bf', '#135f8b', '#073c59'], dark: ['#fdd6b7', '#fa9d47', '#cc7721', '#80858c', '#2598da', '#69bff9', '#c1e3fc'] },
+  ph: { light: ['#221997', '#3c46c1', '#5b6dec', '#777c83', '#b6661b', '#844810', '#552c06'], dark: ['#d4ddfc', '#9fb1f9', '#6e83f6', '#80858c', '#d07421', '#fa9c51', '#fdd5ba'] },
+  rm: { light: ['#453606', '#6d5710', '#97791c', '#777c83', '#c84091', '#9b166b', '#640a44'], dark: ['#fcdb7e', '#dab12d', '#ac8b21', '#80858c', '#dd54a3', '#fa8cc6', '#fdcfe5'] },
+  aiden: { light: ['#423706', '#685910', '#917c1c', '#777c83', '#7067e9', '#4f3fbe', '#331093'], dark: ['#fcdd57', '#d2b42d', '#a68e21', '#80858c', '#817cf6', '#abadf9', '#d8dbfc'] },
 };
 
 /**
