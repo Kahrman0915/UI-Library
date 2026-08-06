@@ -209,7 +209,7 @@ export default function SuitePageV2({ mode }: { mode: Mode }) {
           >
             One platform.
             <br />
-            <span className="poc2-suite-text">Infinite possibilities.</span>
+            <span className="poc2-suite-text poc2-suite-text--full">Infinite possibilities.</span>
           </h1>
           <p style={{ ...LEDE, textAlign: 'center', fontSize: 'var(--text-lg)', maxWidth: 'var(--max-w-2xl)' }}>
             Six powerful applications unified into one seamless platform — from dashboards to data

@@ -732,20 +732,41 @@ ${anchorBlocks()}
    values are the light PRIMARIES: the deeps would go muddy where they meet and
    the highlights cannot carry text.
 
+   This brand ramp still serves the closing BAND, the wordmark and the stat
+   numerals; only the hero HEADLINE takes the shipped --gradient-full-ramp
+   (see below). The band could not take it in any case: it is a FILL with
+   white text on it, and every one of the shipped ramp's 14 light stops sits
+   under 4.5:1 against white, worst 1.98. The brand primaries were solved to
+   clear exactly that, which is why the two consumers now differ.
+
    Light and dark are separate blocks because dark needs the dark primaries —
    using the light set on a dark page gives a ramp that reads almost black at
    the ph end. */
-[data-theme-poc2][data-mode='light'] .poc2-suite-ramp,
-[data-theme-poc2][data-mode='light'] .poc2-suite-text {
+[data-theme-poc2][data-mode='light'] .poc2-suite-ramp {
   --poc2-ramp: linear-gradient(100deg,
     #b56005 0%, #306602 17%, #025750 33%, #067db8 50%, #6264f4 67%, #5a37e6 83%, #d62496 100%);
 }
-[data-theme-poc2][data-mode='dark'] .poc2-suite-ramp,
-[data-theme-poc2][data-mode='dark'] .poc2-suite-text {
+[data-theme-poc2][data-mode='dark'] .poc2-suite-ramp {
   --poc2-ramp: linear-gradient(100deg,
     #ee7d0a 0%, #8bca2f 17%, #0db09d 33%, #23c7fe 50%, #689cfe 67%, #9076f9 83%, #fe68b8 100%);
 }
 [data-theme-poc2] .poc2-suite-ramp { background-image: var(--poc2-ramp); }
+
+/* THE HEADLINE TAKES THE SHIPPED RAMP, not the brand-derived one (owner,
+   2026-08-06). --gradient-full-ramp is the parent app's own gradient and it
+   already exists in tokens.scss, so a POC inventing a second one for the same
+   job is the Aiden mistake again. It needs no mode branch: the token is
+   redeclared under [data-mode='dark'] in tokens.scss, and the POC scopes carry
+   data-mode themselves, so it resolves per mode on its own.
+
+   MEASURED, because the two ramps are not interchangeable and the difference
+   matters here: as TEXT on the white page, 8 of the shipped light ramp's 14
+   stops fall under the 3:1 large-text floor (worst 1.98 at lime, then amber
+   2.15, green 2.28, cyan 2.43, teal 2.49). The brand ramp held 4.52 at its
+   worst. Dark is untroubled — the 400s measure 5.98 at worst on the dark page.
+   So the light headline now has a genuinely faint stretch through its
+   green-to-cyan half. That is what the shipped token IS; correcting it is a
+   tokens.scss decision, not something to paper over here. */
 [data-theme-poc2] .poc2-suite-text {
   background-image: var(--poc2-ramp);
   -webkit-background-clip: text;
@@ -754,6 +775,13 @@ ${anchorBlocks()}
   /* the clip leaves no painted background for a focus ring or selection to sit
      on, so keep this on display type only — never on a control */
 }
+/* ONLY the hero headline takes it. The class is shared by the 16px "dart"
+   wordmark and the 36px stat numerals, and the shipped ramp cannot carry
+   either: at 16px/700 the wordmark is REGULAR text needing 4.5:1, and the
+   ramp's worst stop is 1.98. (Note the compression — background-size defaults
+   to the box, so a 30px wordmark renders all 14 stops, faint ones included.)
+   The headline is 60px/600, comfortably large text, where the floor is 3:1. */
+[data-theme-poc2] .poc2-suite-text--full { background-image: var(--gradient-full-ramp); }
 
 /* The suite bubble field: one wash per brand instead of one brand's two. Same
    alpha budget as the single-brand field, spread across six corners, so the
