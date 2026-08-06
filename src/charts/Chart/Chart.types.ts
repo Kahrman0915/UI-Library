@@ -58,6 +58,19 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   bandPadding?: boolean;
   /** Defaults to true once there are 2+ series. */
   showLegend?: boolean;
+  /**
+   * Label each series at its own last point instead of in a legend.
+   *
+   * The reason is not decoration. A legend asks the reader to hold a colour in
+   * memory, cross the chart, and match it — which is exactly the step that
+   * fails for anyone who cannot separate two of the colours, and the step that
+   * a crossing line makes hardest. A label at the end of the line removes the
+   * lookup entirely, so colour stops being the only thing carrying identity.
+   *
+   * Widens the right margin to fit the longest label, and turns the legend off
+   * by default, since the labels ARE the key.
+   */
+  endLabels?: boolean;
   showGrid?: boolean;
   /** The table twin is ALWAYS in the DOM; this controls what is visible. */
   view?: ChartView;

@@ -627,53 +627,55 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
 };
 
 /**
- * THE LINE PALETTE — FOUR SERIES, AND FOUR IS THE ANSWER, NOT A COMPROMISE.
+ * THE LINE PALETTE — THREE SERIES, AT A HIGHER VISIBILITY FLOOR THAN THE BARS.
  *
- * Owner: "give me as many colors as you can that work, if that means we only
- * get four lines then that is all we get." Four is what the search returns.
+ * This started at four against a 3:1 floor and the owner rejected it on sight:
+ * "the green is hard to see in dark mode, the purple kind of is too." Both
+ * complaints landed on the two dimmest values in the set — the teal at 3.12:1
+ * and the indigo at 4.00:1. THAT IS THE FINDING: 3:1 is the legal minimum for a
+ * non-text graphic and it assumes a SHAPE. A 3px stroke riding that floor is
+ * compliant and still hard to see. Lines want 4.5:1.
  *
- * A line is a harder problem than a bar in three separate ways, and they
- * compound rather than overlap:
- *   1. NO AREA. A 1-2px stroke has to clear 3:1 against the card for real —
- *      the surface-gap doctrine stops being advisory. The bar set's two best
- *      colours (#4ec8dc at 1.98, #70a3d4 at 2.61) simply cannot be used here.
- *   2. LINES CROSS. Any pair can become adjacent anywhere on the plot, so
- *      EVERY pair must clear both floors, not just the ones neighbouring in
- *      slot order. The bar set survives on 6.3 all-pairs precisely because its
- *      weak pair never touches; a line chart has no such guarantee.
- *   3. NO POSITION CUE. A bar sits fourth in its group whether or not its
- *      colour reads. A line is only its colour.
+ * Raising the floor costs a series, and the arithmetic is worth recording
+ * because it is entirely about DARK. Inside ec's family (hue 205-300):
  *
- * So this is solved to the FULL floors on every pair — dE 15 normal, 8
- * colour-blind, 3:1 on the card, 10 from every semantic, 12 from the mute — and
- * asked how many colours fit rather than told to produce six. Inside ec's own
- * hue family the honest answer is four, in both modes.
+ *     floor      light fits     dark fits
+ *     3.0:1          6              4
+ *     4.0:1          6              4
+ *     4.5:1          6              3      <- the binding constraint
  *
- * HOW MUCH THE FAMILY COSTS, measured rather than assumed: widening the hue
- * window buys almost nothing until it stops being ec. 195-275deg gives 4;
- * holding out to 286deg still gives 4; only at 125deg of span (170-295, well
- * into green and violet) does a fifth appear. Leaving the family is not worth
- * one more line, so it stays home.
+ * Light has room to spare at every floor; dark is where the palette collapses,
+ * because its readable band is L 0.68-0.97 against light's 0.15-0.56. The full
+ * hue wheel would give 8, and ec would stop looking like ec.
  *
- * HUE-MATCHED ACROSS MODES. Slot N keeps its hue in both modes — brand 240/228,
- * teal 196, indigo 267, deep 258 — so a series does not change identity when
- * the page flips. Only the rungs move, and only the DEEP inverts (dark's
- * furthest-from-page is the lightest), the same construction the bar set uses.
- * That is the rule the bar palette had to learn by getting it wrong.
+ * WHY NOT JUST REUSE THE BAR COLOURS — the first question the owner asked, and
+ * it deserved a measurement rather than a new palette. In light, only FOUR of
+ * the six bar colours can be a stroke at all: the cyan is 1.98:1 and the pale
+ * blue 2.67:1, fine as a filled bar and invisible as a line. Of the four
+ * survivors, two pairs fail separation (slots 1/5 at dE 10.3, slots 3/6 at
+ * 12.7). THE MOST THE BAR SET CAN LEND A LINE CHART IS TWO COLOURS. Slot 1 is
+ * one of them and is kept; the rest had to be solved.
  *
- * Measured light: all-pairs 15.2, CVD 13.6, min card 4.53.
- *          dark:  all-pairs 16.0, CVD 12.9, min card 3.12.
- * Both comfortably past every floor — a much stronger set than the six-slot bar
- * palette, because it stopped trying to be six.
+ * HUE-MATCHED ACROSS MODES — 240 / 275 / 300, the same three in both — so a
+ * series does not change identity when the page flips. That is the rule the bar
+ * palette learned by getting it wrong. No hue below 205: that is where the
+ * murky green lived.
  *
- * A FIFTH SERIES FOLDS TO --chart-muted rather than picking up a colour that
- * cannot carry it. The cap is visible in the chart instead of silent, which is
- * the same doctrine the seventh categorical series already follows.
+ * Measured light: all-pairs 15.3, CVD 11.5, min contrast 4.53.
+ *          dark:  all-pairs 15.2, CVD  9.1, min contrast 4.52.
+ *
+ * AND COLOUR IS NO LONGER CARRYING THIS ALONE, which matters more than the
+ * three hexes. The chart now draws a distinct MARKER SHAPE per series and puts
+ * each series NAME at the end of its own line (endLabels). Shape survives every
+ * vision type and a photocopier; a direct label removes the legend lookup —
+ * the exact step that fails when two colours are hard to tell apart, and the
+ * step a crossing makes hardest. Three well-separated colours plus two
+ * non-colour channels beats six colours nobody can hold apart.
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#223fb6', '#0b5859', '#032b61'],
-    dark:  ['#23c7fe', '#638afa', '#188b8c', '#dbe9fe'],
+    light: ['#067db8', '#3f39cf', '#4a0085'],
+    dark:  ['#23c7fe', '#aab9ff', '#f1ebff'],
   },
 };
 
@@ -735,7 +737,7 @@ function lineBlocks(k: string, sel: string): string {
   const block = (mode: 'light' | 'dark') =>
     `\n${sel}[data-mode='${mode}'] [data-chart-palette='line'] {\n`
     + set[mode].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n')
-    + `\n  --chart-5: var(--chart-muted);\n  --chart-6: var(--chart-muted);\n}`;
+    + `\n  --chart-4: var(--chart-muted);\n  --chart-5: var(--chart-muted);\n  --chart-6: var(--chart-muted);\n}`;
   return block('light') + block('dark');
 }
 

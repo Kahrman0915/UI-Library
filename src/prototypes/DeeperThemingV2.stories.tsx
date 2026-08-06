@@ -2118,35 +2118,34 @@ export const ChartsInUse: Story = {
             'categorical — the default, no attribute',
           )}
 
-          {/* ── LINES — the same brand, a deliberately SMALLER palette ── */}
+          {/* ── LINES — three series, and two channels besides colour ── */}
           {frame(
             <LineChart
               id="ciu-line"
               title="Direct passed paid search in 2023"
-              description="Four channels, six years. A line palette is a different palette: every pair here clears the full separation floor in both normal and colour-blind vision, which is why there are four of them and not six."
+              description="Three channels, six years. Each line names itself at its own end and carries its own marker shape, so colour is one cue of three rather than the only one."
               categories={['2020', '2021', '2022', '2023', '2024', '2025']}
               valueFormatter={(v) => `${v}k`}
               curve="monotone"
               height={280}
-              showLegend
               showGrid
-              /* FOUR, AND FOUR IS THE ANSWER RATHER THAN A COMPROMISE. A line is
-                 harder than a bar in three compounding ways: it has no AREA, so
-                 3:1 against the card stops being advisory and the bar set's two
-                 best colours (the cyan at 1.98, the pale blue at 2.61) are
-                 simply unusable; it CROSSES, so every pair must clear rather
-                 than only the ones adjacent in slot order; and it carries no
-                 POSITION cue, so colour is the whole identity.
-                 Solved to the full floors on every pair, ec's own hue family
-                 fits exactly four — light all-pairs 15.2 / CVD 13.6, dark 16.0 /
-                 12.9. Widening the hues buys nothing until it stops being ec.
-                 A fifth series would fold to --chart-muted, on purpose: the cap
-                 should be visible in the chart, not silent. */
+              showMarkers
+              /* endLabels REPLACES the legend — see Chart.types. A legend asks
+                 the reader to hold a colour in memory, cross the chart and
+                 match it, which is exactly the step that fails when two
+                 colours are close and the step a crossing makes hardest. */
+              endLabels
+              /* THREE, because a line needs 4.5:1 and not the 3:1 a bar can
+                 live at. At 3:1 ec's family fits four; the owner rejected that
+                 set on sight, and both colours they named were the two riding
+                 the floor (3.12 and 4.00). Dark is the binding mode — its
+                 readable band is L 0.68-0.97 against light's 0.15-0.56, so
+                 light would fit six at any of these floors and dark fits three.
+                 A fourth series folds to --chart-muted on purpose. */
               series={[
                 { key: 'direct', label: 'Direct', slot: 1, data: [22, 27, 34, 46, 58, 71] },
                 { key: 'paid', label: 'Paid search', slot: 2, data: [52, 50, 47, 44, 41, 38] },
                 { key: 'email', label: 'Email', slot: 3, data: [30, 31, 32, 33, 34, 35] },
-                { key: 'referral', label: 'Referral', slot: 4, data: [12, 15, 18, 21, 24, 26] },
               ]}
             />,
             'line — data-chart-palette="line" (ec only, for now)',

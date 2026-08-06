@@ -39,7 +39,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       stacked = false, offset = 'zero', bandPadding = false,
       height = DEFAULT_HEIGHT, width = DEFAULT_WIDTH,
       valueFormatter = (v) => formatTick(v),
-      yDomain = 'auto', showLegend, showGrid = true, view = 'chart',
+      yDomain = 'auto', showLegend, showGrid = true, view = 'chart', endLabels = false,
       emptyLabel = 'No data to display', hiddenSeries, onSeriesToggle,
       emphasis, emphasisOnHover = true,
       colorScale, scaleSteps = 7, scaleCenter = 0,
@@ -120,11 +120,20 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
     // An ordered chart is usually ONE series, so the "two or more" default would
     // hide the scale — and the scale legend is the only thing that says what the
     // colours mean. A categorical chart with one series still needs no key.
-    const legendOn = showLegend ?? (colorScale ? true : resolved.length >= 2);
+    // End labels REPLACE the legend rather than joining it. Printing both says
+    // the same thing twice and spends the vertical room the labels just earned.
+    const legendOn = showLegend ?? (endLabels ? false : colorScale ? true : resolved.length >= 2);
+    // The labels live OUTSIDE the plot, so the plot has to give the room back —
+    // sized from the longest label, exactly as the y gutter is sized from its
+    // widest tick. Without this the last line runs to the frame edge and its
+    // own label is clipped by the viewBox.
+    const rightMargin = endLabels
+      ? Math.max(MARGIN.right, resolved.reduce((m, s) => Math.max(m, s.label.length), 0) * 6.5 + 14)
+      : MARGIN.right;
     const plot = {
       left: leftMargin,
       top: MARGIN.top,
-      width: Math.max(0, w - leftMargin - MARGIN.right),
+      width: Math.max(0, w - leftMargin - rightMargin),
       height: Math.max(0, height - MARGIN.top - MARGIN.bottom - (legendOn ? LEGEND_HEIGHT : 0)),
     };
 
@@ -157,9 +166,10 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
     const ctx = useMemo(() => ({
       x, y, plot, series: resolved, categories, valueFormatter, axisFormatter,
       ticks, activeIndex, setActiveIndex, hoverSeries, emphasisTransient, colorScale: scale, ids,
+      endLabels,
     }), [x, y, plot.left, plot.top, plot.width, plot.height, resolved, categories,
         valueFormatter, axisFormatter, ticks, activeIndex, hoverSeries,
-        emphasisTransient, scale, ids]);
+        emphasisTransient, scale, ids, endLabels]);
 
     const onPointerMove = useCallback((e: PointerEvent<SVGRectElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();

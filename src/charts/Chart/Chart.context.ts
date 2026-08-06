@@ -58,6 +58,8 @@ export type ChartContextValue = {
    * false claim about what the reader is looking at.
    */
   axisFormatter: (value: number) => string;
+  /** True when each series is labelled at its last point rather than in a legend. */
+  endLabels: boolean;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
   /** Legend hover → transient emphasis. null when `emphasisOnHover` is off. */
