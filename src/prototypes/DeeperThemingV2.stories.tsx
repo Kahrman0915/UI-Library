@@ -2094,14 +2094,22 @@ export const ChartsInUse: Story = {
                  categorical palette. Hover still lifts a single series. */
               emphasisOnHover
               series={[
-                /* The two series the story is ABOUT take slots 1 and 3, not 1
-                   and 2. Slot 2 is the brand DEEP — same hue as the primary by
-                   construction — so the pair the reader must tell apart at the
-                   crossover would have been the least separable on the plot
-                   (dE 15.2, both blue). Slot 3 is the accent, a different hue. */
+                /* SLOT ORDER IS RENDER ORDER, and that is load-bearing rather
+                   than tidy. A categorical palette is authored so that
+                   CONSECUTIVE slots alternate light and dark — that alternation
+                   is what separates two bars standing shoulder to shoulder, and
+                   it is the first thing the eye uses before it gets to hue.
+                   Re-slotting a series to solve some other problem scrambles
+                   the alternation and puts two neighbouring bars on adjacent
+                   rungs of the same family.
+                   This chart previously ran 1,3,2,4,5,6 — the two leading
+                   series were pulled onto slots 1 and 3 so the pair the story is
+                   ABOUT would differ in hue at the crossover. That reasoning
+                   holds for LINES, which cross; for grouped bars, which never
+                   overlap, it bought nothing and cost the alternation. */
                 { key: 'direct', label: 'Direct', slot: 1, data: [19, 24, 33, 41] },
-                { key: 'paid', label: 'Paid search', slot: 3, data: [38, 37, 29, 24] },
-                { key: 'referral', label: 'Referral', slot: 2, data: [13, 16, 21, 26] },
+                { key: 'paid', label: 'Paid search', slot: 2, data: [38, 37, 29, 24] },
+                { key: 'referral', label: 'Referral', slot: 3, data: [13, 16, 21, 26] },
                 { key: 'social', label: 'Social', slot: 4, data: [9, 12, 13, 14] },
                 { key: 'email', label: 'Email', slot: 5, data: [7, 8, 10, 11] },
                 { key: 'partner', label: 'Partner', slot: 6, data: [4, 6, 7, 9] },
