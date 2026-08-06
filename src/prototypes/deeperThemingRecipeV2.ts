@@ -260,7 +260,7 @@ export const BRAND_ANCHORS = {
   // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
   // construction — but it is the tightest identity pair in the set now, and
   // matching the product is the reason it is accepted.
-  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#93c5fd' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#8746fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
+  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#93c5fd' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -577,8 +577,7 @@ ${anchorBlocks()}
   --sidebar-border: #334155;
   --sidebar-accent: #334155;
 }
-/* THE BUTTON FILL IS TWO STOPS. THE MARK STAYS THREE.
-   THE BUTTON GRADIENT IS NOW THE SHIPPED ONE, VERBATIM. What follows is what
+/* THE BUTTON GRADIENT IS THE SHIPPED ONE, VERBATIM. What follows is what
    the POC learned while it still authored its own, kept because it explains
    what the shipped values are doing and what adopting them cost.
 
@@ -605,62 +604,6 @@ ${anchorBlocks()}
    (light lands on an indigo-leaning azure, dark on a true sky), which is
    defensible — dark has no lightness to spare and the hue moved with it — but
    it is a decision, not an accident, and worth confirming at adoption. */
-[data-theme-poc2][data-surface='aiden'][data-mode='light'] {
-  --background: #ffffff;
-  --card:       #ffffff;
-  --popover:    #ffffff;
-  --secondary:  #e2e8f0;
-  --accent:     #f1f5f9;
-  --muted:      #cbd5e1;
-  --input:      #e2e8f0;
-  --border:       #cbd5e1;
-  --border-hover: #64748b;
-  --sidebar:        #f8fafc;
-  --sidebar-border: #e2e8f0;
-  --sidebar-accent: #f1f5f9;
-}
-[data-theme-poc2][data-surface='aiden'][data-mode='dark'] {
-  --background: #0f172a;
-  --card:       #1e293b;
-  --popover:    #475569;
-  --secondary:  #1e293b;
-  --accent:     #334155;
-  --muted:      #334155;
-  --input:      #475569;
-  --border:       #64748b;
-  --border-hover: #cbd5e1;
-  --sidebar:        #1e293b;
-  --sidebar-border: #334155;
-  --sidebar-accent: #334155;
-}
-/* THE BUTTON FILL IS TWO STOPS. THE MARK STAYS THREE.
-   They are not the same object and should not be the same gradient. A mark is
-   48px of artwork with nothing on it, so a three-stop ramp reads as depth; a
-   button is a wide flat shape with a label across it, and the third stop only
-   ever shows up as a band the eye has to cross. Two stops, one sweep.
-
-   The stops are AUTHORED, not derived from the anchors, because both ends have
-   to clear the label and the mark's do not. Solved and measured:
-
-     light   #2456e4 -> #5410db   white,  worst across the ramp 5.96
-             hover deepens 5 L*   #1a46c2 -> #4605bd, worst 7.78
-     dark    #7fb1fe -> #a07efe   ink,    worst 5.87 (violet end = the mark's
-             dark deep, so button and mark stay one family)
-             hover LIGHTENS 5 L*  #9cc3ff -> #b598ff, worst 7.57
-
-   The hovers move in opposite directions on purpose: light carries a white
-   label so darker is more contrast, dark carries ink so lighter is. That is the
-   same rule the rest of the system already follows.
-
-   Violet holds across modes (308/308). The BLUE END DOES NOT: 282 in light
-   against 271 in dark, 11 degrees apart, which is past the point where two
-   colours read as one. Dark's blue is a true sky where light's is an indigo-
-   leaning azure. Owner's call, taken with eyes open — dark needs the extra
-   lightness to carry ink and the hue moved with it. If the two ever need to be
-   the same colour, the fix is light's blue rotating toward 276, not dark's
-   toward 282, because dark has no lightness to spare. The shipped
-   tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
-   of its light), which is worth fixing at adoption. */
 [data-theme-poc2][data-surface='aiden'][data-mode='light'] {
   /* VERBATIM from tokens.scss --aiden-primary / --aiden-hover. Worst white
      label across the light fill measures 4.63 — the shipped number, inherited
