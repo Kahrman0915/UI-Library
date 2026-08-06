@@ -414,6 +414,12 @@ ${anchorBlocks()}
    the surface the system was designed against, which is what makes the whole
    alert family safe without re-derivation. */
 [data-theme-poc2][data-mode='light'] {
+  /* Bubble alphas: light needs MORE, because a wash over white barely moves it
+     (the old 22% highlight measured 4.0 dE). These land 5.4-13.4. */
+  --poc2-bubble-hl:   30%;
+  --poc2-bubble-deep: 20%;
+  --poc2-bubble-mid:  24%;
+
   --background: #ffffff;
   --card:       #ffffff;
   --popover:    #ffffff;
@@ -495,6 +501,13 @@ ${anchorBlocks()}
   /* Greyed toward slate-500 rather than slate-600: the dark deep anchors are
      lighter than their light counterparts, and a mid-slate keeps the stock from
      collapsing into the page it is about to tint. */
+  /* Bubble alphas: dark needs LESS. Every anchor is lighter than the page here,
+     so the same percentage reads far stronger — the old 22% highlight already
+     measured 15.8 dE. These land 9.1-15.6, evened out across the three. */
+  --poc2-bubble-hl:   20%;
+  --poc2-bubble-deep: 22%;
+  --poc2-bubble-mid:  18%;
+
   --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 
   --background: color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #0f172a);
@@ -697,24 +710,44 @@ ${anchorBlocks()}
   --poc2-shadow-far: color-mix(in srgb, var(--poc2-shadow-stock) 13%, transparent);
   --poc2-shadow-amb: color-mix(in srgb, var(--foreground) 6%, transparent);
 
-  /* THE BUBBLE FIELD — where the highlight earns its own token. Two soft radial
-     washes, highlight in one corner and primary in the other, over whatever
-     surface is underneath. Nothing is read ON a bubble (they sit behind a
-     centred column), so the highlight is free here in a way it never is on a
-     panel: this is the one place the brand gets to be as bright as the mark.
-     Alpha is what keeps it safe — the wash is 22%/16% of the anchor, so it
-     tints the page rather than replacing it, and the same declaration works on
-     a white light page and a tinted dark one. */
+  /* THE BUBBLE FIELD — the hero's artwork layer, rebuilt 2026-08-06 because the
+     owner read it as flat. It was, and measuring said why — in two ways that
+     pull in opposite directions, which is why one set of numbers could not fix
+     both modes.
+
+       LIGHT was genuinely too faint: the highlight wash moved the page only
+       4.0 dE. Under about 5 that is a tint you have to look for.
+
+       DARK was not faint at all (15.8 dE) — it was SHAPELESS. All three
+       radials were 64-80% wide and stacked over the same area, so instead of
+       three blooms you got one smooth haze. And in dark every anchor is
+       LIGHTER than the page, so all three push the same way and the hue
+       differences cancel into grey-blue.
+
+     So: alphas are now MODE-AWARE (light gets more, dark less), the radials
+     are tightened to 40-52% and pulled apart so each one has its own
+     territory, and the ORDER changed — --mark-deep is promoted to the
+     prominent right-hand position. That is the point of the artwork split:
+     the highlight and the mark deep are the two HUE-ROTATED anchors, so
+     leading with them is what puts a second hue on the page. --mark-mid is
+     the primary and shares its hue with everything else, so it drops to the
+     supporting corner.
+
+     SAFE BY MEASUREMENT, not by assumption: the hero copy DOES sit on this
+     field (the old comment claiming nothing is read on a bubble was wrong).
+     Worst text contrast over the brightest point of any wash is 12.15 in
+     light and 10.16 in dark, against a 4.5 floor — so there was headroom to
+     spend and this spends only part of it. */
   --poc2-bubble:
-    radial-gradient(80% 62% at 12% 0%,
-      color-mix(in srgb, var(--primary-highlight) calc(22% * var(--poc2-str)), transparent) 0%,
-      transparent 68%),
-    radial-gradient(72% 58% at 92% 12%,
-      color-mix(in srgb, var(--mark-mid) calc(16% * var(--poc2-str)), transparent) 0%,
-      transparent 66%),
-    radial-gradient(64% 52% at 50% 96%,
-      color-mix(in srgb, var(--mark-deep) calc(10% * var(--poc2-str)), transparent) 0%,
-      transparent 70%);
+    radial-gradient(52% 46% at 8% 2%,
+      color-mix(in srgb, var(--primary-highlight) calc(var(--poc2-bubble-hl) * var(--poc2-str)), transparent) 0%,
+      transparent 72%),
+    radial-gradient(48% 44% at 94% 16%,
+      color-mix(in srgb, var(--mark-deep) calc(var(--poc2-bubble-deep) * var(--poc2-str)), transparent) 0%,
+      transparent 70%),
+    radial-gradient(44% 40% at 34% 98%,
+      color-mix(in srgb, var(--mark-mid) calc(var(--poc2-bubble-mid) * var(--poc2-str)), transparent) 0%,
+      transparent 72%);
 }
 
 /* Small NON-TEXT accents may take the highlight raw — a status dot, a chart
