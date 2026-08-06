@@ -636,76 +636,55 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
     light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#aab9ff', '#e1eaf9'],
+    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'],
   },
 };
 
 /**
- * THE LINE PALETTE — THREE SERIES, AT A HIGHER VISIBILITY FLOOR THAN THE BARS.
+ * THE LINE PALETTE IS THREE OF THE BAR PALETTE'S OWN SIX — slots 1, 5 and 6.
  *
- * This started at four against a 3:1 floor and the owner rejected it on sight:
- * "the green is hard to see in dark mode, the purple kind of is too." Both
- * complaints landed on the two dimmest values in the set — the teal at 3.12:1
- * and the indigo at 4.00:1. THAT IS THE FINDING: 3:1 is the legal minimum for a
- * non-text graphic and it assumes a SHAPE. A 3px stroke riding that floor is
- * compliant and still hard to see. Lines want 4.5:1.
+ * Owner: "pick three of the bar chart colors for the line chart in both modes."
+ * Every 3-of-6 combination was scored in both modes; this is the one that
+ * balances, and the full table is worth keeping because NOTHING clears both
+ * floors and the choice is therefore a real trade:
  *
- * Raising the floor costs a series, and the arithmetic is worth recording
- * because it is entirely about DARK. Inside ec's family (hue 205-300):
+ *   slots   worst contrast   worst dE   worst CVD
+ *   1,5,6        3.61          10.3        8.0     <- chosen: best contrast
+ *   1,3,6        3.24           9.8        9.5
+ *   1,2,6        2.67          14.2       12.7        best separation
  *
- *     floor      light fits     dark fits
- *     3.0:1          6              4
- *     4.0:1          6              4
- *     4.5:1          6              3      <- the binding constraint
+ * Contrast wins the tie because it is what the owner has rejected twice by eye:
+ * a teal at 3.12 and an indigo at 4.00 were both called hard to see, and both
+ * complaints were about DARK. 1,5,6 keeps dark's minimum at 4.07 and light's at
+ * 3.61 — the highest floor any bar-colour trio can offer.
  *
- * Light has room to spare at every floor; dark is where the palette collapses,
- * because its readable band is L 0.68-0.97 against light's 0.15-0.56. The full
- * hue wheel would give 8, and ec would stop looking like ec.
+ * dE 10.3 IS BELOW THE 15 THIS FILE HOLDS EVERYWHERE ELSE, and that is
+ * accepted rather than overlooked. It is affordable here for one reason: this
+ * chart no longer asks colour to work alone. Each series carries its own marker
+ * SHAPE and names itself at the end of its own line, so colour is one cue of
+ * three. Two colours 10 apart with a square on one and a triangle on the other,
+ * each labelled where it ends, are easier to tell apart than two colours 15
+ * apart in a legend. THAT is what the redundant encoding was for — and it is
+ * what makes reusing the bar colours possible at all.
  *
- * WHY NOT JUST REUSE THE BAR COLOURS — the first question the owner asked, and
- * it deserved a measurement rather than a new palette. In light, only FOUR of
- * the six bar colours can be a stroke at all: the cyan is 1.98:1 and the pale
- * blue 2.67:1, fine as a filled bar and invisible as a line. Of the four
- * survivors, two pairs fail separation (slots 1/5 at dE 10.3, slots 3/6 at
- * 12.7). THE MOST THE BAR SET CAN LEND A LINE CHART IS TWO COLOURS. Slot 1 is
- * one of them and is kept; the rest had to be solved.
+ * Without it the honest number was three fully-separated invented colours, and
+ * the owner would rather have the bar palette. Correctly: a reader moving
+ * between the two charts on one page sees one system, not two.
  *
- * HUE-MATCHED ACROSS MODES — 240 / 275 / 300, the same three in both — so a
- * series does not change identity when the page flips. That is the rule the bar
- * palette learned by getting it wrong. No hue below 205: that is where the
- * murky green lived.
+ *   light  #067db8 (4.53)  #6d8b9c (3.61)  #232f42 (13.49)
+ *   dark   #1da0f3 (4.51)  #7995a6 (4.07)  #e1eaf9 (10.59)
  *
- * TWO SLOTS CHANGED AFTER THE OWNER SAW IT RENDERED, and both pulled the line
- * palette back toward the bar palette rather than away from it:
+ * Slot 5 is the quiet slate, which suits a third series; slot 6 is the
+ * near-black. Same slots in both modes, so a series does not change identity
+ * when the page flips.
  *
- * · LIGHT SLOT 3 was #4a0085, a deep violet I had solved from scratch. Owner:
- *   "use colors from the bar chart in the line chart, not make up new colors."
- *   Fair, and it is now ec's --primary-deep #01517a — which is ALSO the bar
- *   set's slot 3, so the two charts share two of three colours in light.
- *   Only three bar colours can be a stroke at all (the rest are under 4.5:1),
- *   and of those, #067db8 and #01517a are the two that are on-brand; the third,
- *   #232f42, measures better (17.1 all-pairs against 15.1) but is a near-black
- *   slate rather than a brand colour, so the brand value wins on 15.1.
- *
- * · The PURPLE stays, at the owner's request, and is the one value in this set
- *   with no bar-chart equivalent — so the BAR palette borrowed it instead. See
- *   CHART_HAND: dark bar slot 5 is now this same #aab9ff.
- *
- * Measured light: all-pairs 15.1, CVD 12.3, min contrast 4.53.
- *          dark:  all-pairs 15.2, CVD  9.1, min contrast 4.52.
- *
- * AND COLOUR IS NO LONGER CARRYING THIS ALONE, which matters more than the
- * three hexes. The chart now draws a distinct MARKER SHAPE per series and puts
- * each series NAME at the end of its own line (endLabels). Shape survives every
- * vision type and a photocopier; a direct label removes the legend lookup —
- * the exact step that fails when two colours are hard to tell apart, and the
- * step a crossing makes hardest. Three well-separated colours plus two
- * non-colour channels beats six colours nobody can hold apart.
+ * A FOURTH SERIES FOLDS TO --chart-muted rather than picking up a colour that
+ * cannot carry it — the cap belongs in the chart where it can be seen.
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#3f39cf', '#01517a'],
-    dark:  ['#23c7fe', '#aab9ff', '#f1ebff'],
+    light: ['#067db8', '#6d8b9c', '#232f42'],
+    dark:  ['#1da0f3', '#7995a6', '#e1eaf9'],
   },
 };
 
