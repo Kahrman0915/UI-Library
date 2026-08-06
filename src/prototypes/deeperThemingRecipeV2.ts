@@ -251,6 +251,18 @@ export const PRIMARY_IS_AUTHORED: Record<string, boolean> = Object.fromEntries(
  *              change. Crowds --warning at dE 6.5 in light. Bonus: it sits 27
  *              degrees off dark-warning's amber where the v2 gold sat only 6.
  *
+ *   ph-gold    THE PAIRING FIX, added after the owner picked nb-green AND the
+ *              current gold — the one combination the matrix rejects (CVD 0.6).
+ *              The green cannot solve it alone: rotating it toward emerald to
+ *              clear the gold walks it into --success (dE 3.2 at hue 155), so
+ *              the bright-green band is bounded on BOTH sides. The gold moves
+ *              instead, and only in LIGHTNESS — same hue family, brighter,
+ *              carrying ink text the way every dark-mode fill already does.
+ *              Its DARK anchor is byte-identical to today's, so only light mode
+ *              changes. It is the only ph option that crowds NO semantic
+ *              (13.6 success / 14.5 warning) and it lands at --primary-text
+ *              4.52, just inside the 85% ceiling, so it needs no token change.
+ *
  *   ph-amber   Bright orange, DARK text — the same construction the whole
  *              system already uses in dark mode, and the only way to reach a
  *              genuinely bright warm hue, since white-on-orange forces the
@@ -264,6 +276,7 @@ export const ALT_ANCHORS = {
   'nb-green':  { light: ['#c4dd29', '#077e0e', '#014f04'], dark: ['#c4dd29', '#6dc759', '#3d9625'], markDeep: { light: '#0b4c39', dark: '#229472' }, accent: { light: '#90996f', dark: '#959d7a' }, chart2Dark: '#3d9625', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'nb', icon: 'file-text', label: 'greener, brighter — between v1 and v2' },
   'ec-blue':   { light: ['#57e3fd', '#067db8', '#01517a'], dark: ['#57e3fd', '#23c7fe', '#0995c1'], markDeep: { light: '#1e1cd3', dark: '#597df6' }, accent: { light: '#599fae', dark: '#8cb9c2' }, chart2Dark: '#0995c1', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ec', icon: 'leaf', label: "v1's azure — crowds --info by design" },
   'ph-orange': { light: ['#fdc450', '#b56005', '#793e01'], dark: ['#fdc450', '#ee7d0a', '#ae5904'], markDeep: { light: '#91200d', dark: '#cc3218' }, accent: { light: '#bc8d29', dark: '#a99879' }, chart2Dark: '#ab5e1d', on: { light: '#ffffff', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'burnt orange, white text' },
+  'ph-gold':   { light: ['#ebce29', '#ad8107', '#785802'], dark: ['#ebce29', '#c98909', '#906104'], markDeep: { light: '#8f4811', dark: '#a35316' }, accent: { light: '#9d956f', dark: '#a99f70' }, chart2Dark: '#876d4a', on: { light: '#0f172a', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'brighter gold, DARK text — pairs safely with nb-green' },
   'ph-amber':  { light: ['#fdc530', '#e6860a', '#a96004'], dark: ['#fdc530', '#e9800a', '#aa5c04'], markDeep: { light: '#ca3a18', dark: '#c83918' }, accent: { light: '#5d5034', dark: '#a79979' }, chart2Dark: '#a7601d', on: { light: '#0f172a', dark: '#0f172a' }, swaps: 'ph', icon: 'zap', label: 'bright orange, DARK text' },
 } as const;
 
@@ -275,6 +288,7 @@ const ALT_CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = 
   'nb-green':  { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
   'ec-blue':   { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
   'ph-orange': { light: ['#354358', '#77879e', '#212e42'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
+  'ph-gold':   { light: ['#354358', '#77879e', '#212e42'], dark: ['#6b7c93', '#c7d2e1', '#8190a6'] },
   'ph-amber':  { light: ['#77879e', '#354358', '#607087'], dark: ['#c7d2e1', '#6b7c93', '#afbccd'] },
 };
 

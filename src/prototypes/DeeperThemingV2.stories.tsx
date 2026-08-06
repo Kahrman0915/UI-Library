@@ -103,7 +103,7 @@ const ICONS: Record<BrandKey, LucideIcon> = {
 };
 /** An alternate wears the glyph of the brand it would replace. */
 const ALT_ICONS: Record<AltKey, LucideIcon> = {
-  'nb-green': FileText, 'ec-blue': Calendar, 'ph-orange': Zap, 'ph-amber': Zap,
+  'nb-green': FileText, 'ec-blue': Calendar, 'ph-orange': Zap, 'ph-amber': Zap, 'ph-gold': Zap,
 };
 type Mode = 'light' | 'dark';
 
@@ -1646,7 +1646,7 @@ export const Alternates: Story = {
     const GROUPS: { swaps: BrandKey; heading: string; ask: string; alts: AltKey[] }[] = [
       { swaps: 'nb', heading: 'nb — the green', ask: '“slightly more green, away from forest — between v1 and v2”', alts: ['nb-green'] },
       { swaps: 'ec', heading: 'ec — the blue', ask: '“a blue option like the v1 ec brand”', alts: ['ec-blue'] },
-      { swaps: 'ph', heading: 'ph — the gold', ask: '“more orange than brown”', alts: ['ph-orange', 'ph-amber'] },
+      { swaps: 'ph', heading: 'ph — the gold', ask: '“more orange than brown”', alts: ['ph-gold', 'ph-orange', 'ph-amber'] },
     ];
 
     const chip = (c: string, label: string) => (
@@ -1697,8 +1697,8 @@ export const Alternates: Story = {
             {/* Accent duty: the CTA proves the on-colour, the outline proves
                 --primary-text, which is the token ph-amber cannot satisfy. */}
             <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center' }}>
-              <Button id={`${key}-${m}-cta`} size="sm">Primary action</Button>
-              <Button id={`${key}-${m}-alt`} size="sm" style="outline">Outline</Button>
+              <Button id={`${key}-${m}-cta`} size="sm" label="Primary action" />
+              <Button id={`${key}-${m}-alt`} size="sm" style="outline" label="Outline" />
               <Badge id={`${key}-${m}-badge`}>Badge</Badge>
             </div>
 
@@ -1721,8 +1721,8 @@ export const Alternates: Story = {
     };
 
     const MATRIX: { nb: string; cells: { ph: string; cvd: string; ok: boolean }[] }[] = [
-      { nb: 'nb (current)', cells: [{ ph: 'ph (current)', cvd: '6.7', ok: true }, { ph: 'ph-orange', cvd: '5.0', ok: true }, { ph: 'ph-amber', cvd: '18.0', ok: true }] },
-      { nb: 'nb-green', cells: [{ ph: 'ph (current)', cvd: '0.6', ok: false }, { ph: 'ph-orange', cvd: '2.3', ok: false }, { ph: 'ph-amber', cvd: '10.7', ok: true }] },
+      { nb: 'nb (current)', cells: [{ ph: 'ph (current)', cvd: '6.7', ok: true }, { ph: 'ph-orange', cvd: '5.0', ok: true }, { ph: 'ph-amber', cvd: '18.0', ok: true }, { ph: 'ph-gold', cvd: '13.0', ok: true }] },
+      { nb: 'nb-green', cells: [{ ph: 'ph (current)', cvd: '0.6', ok: false }, { ph: 'ph-orange', cvd: '2.3', ok: false }, { ph: 'ph-amber', cvd: '10.7', ok: true }, { ph: 'ph-gold', cvd: '5.7', ok: true }] },
     ];
 
     return (
@@ -1816,6 +1816,250 @@ export const Alternates: Story = {
               to a warning series is not.
             </p>
           </div>
+        </div>
+      </>
+    );
+  },
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// THE SELECTED SUITE
+// ─────────────────────────────────────────────────────────────────────────────
+/**
+ * The owner's picks, in one place (2026-08-06): the greener nb, the blue ec,
+ * and the gold kept over the orange. Swapping a choice is one line here — the
+ * two roster views below both read this, so they can never disagree.
+ *
+ * `ph-gold` rather than the current `ph` is not a second-guess of "I like the
+ * gold": it IS the gold, one step brighter. It is here because nb-green and
+ * today's gold are the single pair the colour-blindness matrix rejects (CVD
+ * 0.6, effectively identical under a red-green anomaly), and the green cannot
+ * fix it from its side — rotating it toward emerald to clear the gold walks it
+ * into --success. Moving the gold up in LIGHTNESS clears it at 5.7 while
+ * keeping the hue, and its dark anchor is byte-identical to today's, so only
+ * light mode changes at all. Set this back to 'ph' to see the collision.
+ */
+const SELECTED: Record<BrandKey, BrandKey | AltKey> = {
+  db: 'db', nb: 'nb-green', dc: 'dc', ec: 'ec-blue', ph: 'ph-gold', rm: 'rm', aiden: 'aiden',
+};
+const SELECTED_ROWS = (Object.keys(SELECTED) as BrandKey[]).map((slot) => ({ slot, key: SELECTED[slot] }));
+
+type AnchorShape = {
+  light: readonly string[]; dark: readonly string[];
+  accent: { light: string; dark: string }; markDeep: { light: string; dark: string };
+  label?: string;
+};
+function anchorsOf(key: string): AnchorShape {
+  const alts = ALT_ANCHORS as unknown as Record<string, AnchorShape>;
+  const inc = BRAND_ANCHORS as unknown as Record<string, AnchorShape>;
+  return alts[key] ?? inc[key];
+}
+
+/**
+ * ROSTER — the whole suite as one list, the layout the owner sketched: mark,
+ * name, the three anchors, the hero rail, and the primary button that proves
+ * accent duty. Rendered in BOTH modes rather than following the toolbar,
+ * because the point of this view is to see the family hold together, and half
+ * a family is not a comparison.
+ */
+export const Roster: Story = {
+  render: function RosterStory() {
+    const row = (slot: BrandKey, key: BrandKey | AltKey, m: Mode) => {
+      const a = anchorsOf(key);
+      const trio = m === 'light' ? a.light : a.dark;
+      const swap = key !== slot;
+      return (
+        <Scope key={`${key}-${m}`} brand={key} mode={m}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: 'auto minmax(96px, auto) auto 1fr auto',
+            alignItems: 'center', gap: 'var(--p-4)',
+            padding: 'var(--p-3) var(--p-4)',
+          }}
+          >
+            <Mark brand={key} size={52} live tilt />
+
+            <div style={{ display: 'grid', gap: 2 }}>
+              <span style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{slot}</span>
+              {swap && <span style={{ ...MONO, opacity: 0.6 }}>{key}</span>}
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
+              {trio.map((c, i) => (
+                <span
+                  key={c}
+                  title={`${['highlight', 'primary', 'deep'][i]} ${c}`}
+                  style={{
+                    width: 46, height: 46, background: c, borderRadius: 'var(--rounded-lg)',
+                    border: '1px solid rgba(128,138,157,0.45)',
+                  }}
+                />
+              ))}
+            </div>
+
+            {/* the hero rail: highlight → primary → deep, the gradient every
+                marketing surface is built from */}
+            <span style={{
+              height: 10, borderRadius: 'var(--rounded-full)',
+              background: `linear-gradient(90deg, ${trio[0]}, ${trio[1]} 55%, ${trio[2]})`,
+            }}
+            />
+
+            <Button id={`roster-${key}-${m}`} label="Primary" />
+          </div>
+        </Scope>
+      );
+    };
+
+    // The panel is CHROME AROUND the brands, not a branded surface, so it paints
+    // the main app's neutral page directly. It cannot borrow --background from a
+    // brandless scope: in dark mode that token is a color-mix on --primary-deep,
+    // which only a brand block sets, so with no brand it resolves to nothing and
+    // the panel renders transparent over Storybook's white.
+    const NEUTRAL: Record<Mode, { bg: string; fg: string; border: string }> = {
+      dark: { bg: '#0f172a', fg: '#f8fafc', border: '#334155' },
+      light: { bg: '#ffffff', fg: '#0f172a', border: '#e2e8f0' },
+    };
+    const panel = (m: Mode) => (
+      <Scope brand="" mode={m}>
+        <div style={{
+          background: NEUTRAL[m].bg, color: NEUTRAL[m].fg,
+          border: `1px solid ${NEUTRAL[m].border}`, borderRadius: 'var(--rounded-xl)',
+          padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-1)',
+        }}
+        >
+          <span style={{ ...MONO, opacity: 0.6, padding: '0 var(--p-4) var(--p-2)' }}>{m}</span>
+          {SELECTED_ROWS.filter((r) => r.slot !== 'aiden').map((r) => row(r.slot, r.key, m))}
+          {/* aiden is fenced because it is a SURFACE — it layers inside any of
+              the six above rather than sitting beside them */}
+          <div style={{
+            marginTop: 'var(--p-2)', border: `1px solid ${NEUTRAL[m].border}`,
+            borderRadius: 'var(--rounded-lg)', padding: 'var(--p-1)',
+          }}
+          >
+            {row('aiden', 'aiden', m)}
+          </div>
+        </div>
+      </Scope>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h2 style={H2}>The suite — selected</h2>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              Six sub-apps and the Aiden surface, showing the picks: the greener{' '}
+              <strong>nb</strong>, the blue <strong>ec</strong>, and the gold kept over the
+              orange. Each row is the mark, the three anchors (highlight · primary · deep),
+              the hero rail those anchors build, and the primary button that proves the
+              accent carries a label. A second line under a name means an alternate is
+              standing in that slot.
+            </p>
+          </div>
+          <div style={{ display: 'grid', gap: 'var(--p-6)' }}>
+            {panel('dark')}
+            {panel('light')}
+          </div>
+        </div>
+      </>
+    );
+  },
+};
+
+/**
+ * ROSTER DETAIL — the same selected suite in the card layout the owner liked
+ * from Alternates: every brand in both modes at once, with swatches, mark,
+ * accent duty and a three-series chart, so the whole system can be judged in
+ * one scroll rather than by flipping between stories.
+ */
+export const RosterDetail: Story = {
+  render: function RosterDetailStory() {
+    const card = (slot: BrandKey, key: BrandKey | AltKey, m: Mode) => {
+      const a = anchorsOf(key);
+      const trio = m === 'light' ? a.light : a.dark;
+      const swap = key !== slot;
+      const chip = (c: string, label: string) => (
+        <div style={{ display: 'grid', gap: 4, minWidth: 62 }}>
+          <div style={{ background: c, height: 32, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
+          <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+          <span style={{ ...MONO, color: 'var(--muted-foreground)', opacity: 0.65 }}>{c}</span>
+        </div>
+      );
+      return (
+        <Scope key={`${key}-${m}`} brand={key} mode={m}>
+          <div style={{
+            background: 'var(--background)', color: 'var(--foreground)',
+            border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)',
+            padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)', height: '100%',
+          }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
+              <Mark brand={key} size={44} live />
+              <div style={{ display: 'grid', gap: 2 }}>
+                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>{slot}</span>
+                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
+                  {m}{swap ? ` · ${key}` : ''}
+                </span>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {chip(trio[0], 'highlight')}
+              {chip(trio[1], 'primary')}
+              {chip(trio[2], 'deep')}
+              {chip(a.accent[m], 'accent')}
+              {chip(a.markDeep[m], 'mark deep')}
+            </div>
+
+            <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center', flexWrap: 'wrap' }}>
+              <Button id={`rd-${key}-${m}-cta`} size="sm" label="Primary action" />
+              <Button id={`rd-${key}-${m}-out`} size="sm" style="outline" label="Outline" />
+              <Badge id={`rd-${key}-${m}-badge`}>Badge</Badge>
+            </div>
+
+            <BarChart
+              id={`rd-${key}-${m}-chart`}
+              title="Sessions by channel"
+              categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              height={128}
+              series={[
+                { key: 'a', label: 'Direct', data: [420, 512, 486, 640] },
+                { key: 'b', label: 'Referral', data: [280, 310, 402, 380] },
+                { key: 'c', label: 'Organic', data: [180, 240, 220, 300] },
+              ]}
+            />
+          </div>
+        </Scope>
+      );
+    };
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
+            <h2 style={H2}>The suite — selected, in detail</h2>
+            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
+              Every brand in both modes side by side: the five anchors, the mark, accent duty
+              on a real button pair, and a three-series chart — primary, deep and accent,
+              which is exactly where a brand&rsquo;s colour stops and the neutrals take over.
+              Aiden closes the list as the surface it is.
+            </p>
+          </div>
+
+          {SELECTED_ROWS.map(({ slot, key }) => (
+            <div key={slot} style={{ display: 'grid', gap: 'var(--p-2)' }}>
+              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
+                {slot}{key !== slot ? ` — ${key}` : ''}{slot === 'aiden' ? ' — the surface, not a sub-app' : ''}
+              </span>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(280px, 1fr))', gap: 'var(--p-3)' }}>
+                {card(slot, key, 'dark')}
+                {card(slot, key, 'light')}
+              </div>
+            </div>
+          ))}
         </div>
       </>
     );
