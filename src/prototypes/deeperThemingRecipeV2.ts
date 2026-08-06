@@ -554,6 +554,20 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * the reference gets its separation from a 0.47 lightness spread that the dark
  * card's readable band cannot hold.
  *
+ * DARK SLOT 5 IS THE LINE PALETTE'S PURPLE (owner, 2026-08-06). It was the
+ * slate #7995a6; it is now #aab9ff, the same value the line chart uses for its
+ * second series — so in dark the two charts visibly share a colour instead of
+ * being neighbours that never met.
+ *
+ * IT COSTS SEPARATION AND THE NUMBERS SHOULD BE ON THE RECORD: all-pairs falls
+ * 8.6 -> 6.5 (slots 2 and 5, both pale blue-lavender now) and the worst
+ * NEIGHBOURING pair falls 15.0 -> 13.0 (slots 4 and 5, the cyan against the
+ * purple). Both are still well clear of the 8.5 hard floor, and grouped bars
+ * lean on position as well as colour, so this is a real but bounded trade
+ * rather than a break. It is not repairable by moving slot 2: the binding pair
+ * is 4/5, and a search over every legal slot-2 value finds nothing that
+ * restores a 15 neighbour.
+ *
  * SLOTS 1 AND 3 ARE SNAPPED TO THE REAL TOKENS. The owner drew #0b79ba and
  * #024f79 by eye; ec's --primary is #067db8 and its --primary-deep is #01517a,
  * dE 1.3 and 0.6 away. Invisible as a change, and it makes two of the six slots
@@ -622,7 +636,7 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
     light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'],
+    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#aab9ff', '#e1eaf9'],
   },
 };
 
@@ -661,7 +675,23 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  * palette learned by getting it wrong. No hue below 205: that is where the
  * murky green lived.
  *
- * Measured light: all-pairs 15.3, CVD 11.5, min contrast 4.53.
+ * TWO SLOTS CHANGED AFTER THE OWNER SAW IT RENDERED, and both pulled the line
+ * palette back toward the bar palette rather than away from it:
+ *
+ * · LIGHT SLOT 3 was #4a0085, a deep violet I had solved from scratch. Owner:
+ *   "use colors from the bar chart in the line chart, not make up new colors."
+ *   Fair, and it is now ec's --primary-deep #01517a — which is ALSO the bar
+ *   set's slot 3, so the two charts share two of three colours in light.
+ *   Only three bar colours can be a stroke at all (the rest are under 4.5:1),
+ *   and of those, #067db8 and #01517a are the two that are on-brand; the third,
+ *   #232f42, measures better (17.1 all-pairs against 15.1) but is a near-black
+ *   slate rather than a brand colour, so the brand value wins on 15.1.
+ *
+ * · The PURPLE stays, at the owner's request, and is the one value in this set
+ *   with no bar-chart equivalent — so the BAR palette borrowed it instead. See
+ *   CHART_HAND: dark bar slot 5 is now this same #aab9ff.
+ *
+ * Measured light: all-pairs 15.1, CVD 12.3, min contrast 4.53.
  *          dark:  all-pairs 15.2, CVD  9.1, min contrast 4.52.
  *
  * AND COLOUR IS NO LONGER CARRYING THIS ALONE, which matters more than the
@@ -674,7 +704,7 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#3f39cf', '#4a0085'],
+    light: ['#067db8', '#3f39cf', '#01517a'],
     dark:  ['#23c7fe', '#aab9ff', '#f1ebff'],
   },
 };
