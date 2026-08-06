@@ -574,23 +574,55 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * ec already carries the documented info waiver; the operational condition is
  * the icon+label rule, which this inherits.
  *
- * Measured: light all-pairs dE 6.3, CVD 3.5, worst neighbour 16.9, min card
- * contrast 1.98. Dark 9.6 / 3.2 / 16.7 / 3.24.
+ * Measured: light all-pairs dE 9.4, CVD 8.0, worst neighbour 14.2, min card
+ * contrast 1.98. Dark 8.6 / 4.9 / 15.0 / 3.24.
+ *
+ * SLOT 2 PULLED DOWN A RUNG (owner, 2026-08-06). #79b2d4 -> #70a3d4 in light:
+ * same soft pale blue, L 0.74 -> 0.70. It fixes three things at once — the
+ * colour-blind pair 2/4 goes 3.5 -> 8.0, all-pairs 6.3 -> 9.4, and clearance
+ * from --chart-muted 6.2 -> 9.6, so a slot-2 series no longer reads as
+ * de-emphasised when `emphasis` is on. Costs 16.9 -> 14.2 on the worst
+ * neighbouring pair, which is well clear of the 8.5 hard floor. The cyan is
+ * untouched, by owner decision.
+ *
+ * The SOFTNESS was the problem, which is worth knowing before softening
+ * anything else here: a low-chroma colour at high lightness carries almost no
+ * signal on EITHER channel, so it crowds both the cyan and the mute at once. No
+ * value under chroma 0.08 clears both. #70a3d4 buys its way out with a little
+ * chroma (0.077 -> 0.091), not with a hue change.
+ *
+ * DARK DID NOT TAKE THE SAME MOVE — IT TOOK THE ORDER. My dark derivation had
+ * flipped the lightness ORDER of slots 2 and 4 (light has 2 below 4, dark had 2
+ * above), so "pull the pale blue down" walks it TOWARD the cyan there and the
+ * best available version trades neighbour separation 16.7 -> 9.9. Restoring the
+ * light set's order instead — slot 2 to L 0.79, slot 4 to 0.86 — keeps every
+ * neighbour at 15.0+ (worst neighbouring pair under CVD: 12.7) and lifts CVD
+ * 3.2 -> 4.9. That is still under the 8 the light set reaches, and the reason
+ * is structural rather than fixable: dark's readable band is 0.59-0.93 against
+ * light's 0.30-0.77, so the same six rungs have a third less room.
+ *
+ * THE RULE THIS LEAVES: a mode's lightness ORDER is part of the palette, not an
+ * artefact of how it was derived. Derive dark by role AND by rung order, or a
+ * fix that is correct in one mode inverts in the other.
  *
  * THE LIGHTNESS LADDER IS THE ACCESSIBILITY STORY, not the hue placement.
  * Within one hue family a colour-blind reader has almost no hue channel left,
- * so LIGHTNESS is the only thing carrying the distinction — and both modes have
- * exactly one pair standing too close on it: slots 2 and 4, L 0.74 vs 0.77 in
- * light and 0.84 vs 0.79 in dark. That single 0.03 gap IS the CVD 3.5 / 3.2.
- * Every other pair in the set is comfortable. Left as-is by owner decision (the
- * fix turns the cyan into a teal-mint), and recorded here because the same
- * squeeze is what will bite a LINE chart first: a bar can lean on area and
- * position, a one-pixel stroke cannot.
+ * so LIGHTNESS is the only thing carrying the distinction. Both modes had
+ * exactly one pair standing too close on it — slots 2 and 4, a ~0.03 rung apart
+ * — and that single gap WAS the entire colour-blind weakness. Spreading it is
+ * the fix above. The rule generalises: inside one hue family, no two slots may
+ * share a lightness rung, and the ladder is worth checking before the hexes.
+ *
+ * The line chart will test this hardest: a bar leans on area, a shared edge and
+ * a fixed position in its group, so colour is one cue of four. A one-pixel
+ * stroke has none of them, and lines CROSS — the two series a reader is
+ * comparing end up on the same pixels exactly where they must be told apart.
+ * The two sub-3:1 tints also stop reading as shapes at 1px.
  */
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   ec: {
-    light: ['#067db8', '#79b2d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
-    dark:  ['#1da0f3', '#a0d4f4', '#2088bb', '#1fd2e2', '#7995a6', '#e1eaf9'],
+    light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
+    dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'],
   },
 };
 
