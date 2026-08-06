@@ -528,6 +528,42 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * so the aliases were removed. A seventh series is not given a hue: it folds to
  * --chart-muted, which is what makes the six-slot cap visible rather than silent.
  */
+/**
+ * HAND-AUTHORED CHART SLOTS — ec only, from the owner's reference (2026-08-06).
+ *
+ * The owner drew the six bars they want rather than describing them, so this is
+ * the reference read off left to right, not a solve. It overrides the derived
+ * slots entirely for this brand and touches nothing else.
+ *
+ * WHY IT LOOKS BETTER THAN ANYTHING I SOLVED, which is the useful part: two of
+ * its bars sit BELOW the 3:1-against-the-card floor every solve in this file
+ * was gated on — #79b2d4 at 2.30 and #4ec8dc at 1.98. That floor is the chart
+ * subsystem's surface-gap doctrine, and holding it is exactly what forced my
+ * palettes dark and heavy. Light tints are what make a chart look airy. The
+ * owner's reference simply spends that budget differently, and on BARS — which
+ * are large, adjacent, and labelled — it reads fine. It would not on a
+ * one-pixel line or a scatter dot.
+ *
+ * DARK IS DERIVED BY ROLE, NOT BY FORMULA. Each slot keeps the JOB it does in
+ * the reference — brand blue, pale blue, the deep, the cyan, the slate, the
+ * near-black — and only the two that are dark BY DEFINITION invert, because on
+ * a dark ground "deepest" means furthest from the page rather than nearest to
+ * black. So slot 3 stays a saturated deep blue and slot 6, the near-black,
+ * becomes the near-white. A literal lightness mirror was tried first and
+ * measured worse (4.7 all-pairs vs 9.6): mirroring compresses the set, since
+ * the reference gets its separation from a 0.47 lightness spread that the dark
+ * card's readable band cannot hold.
+ *
+ * Measured: light all-pairs dE 6.3, CVD 3.5. Dark 9.6 / 3.2 — the dark set is
+ * the better-separated of the two.
+ */
+const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
+  ec: {
+    light: ['#0b79ba', '#79b2d4', '#024f79', '#4ec8dc', '#6d8b9c', '#232f42'],
+    dark:  ['#1da0f3', '#a0d4f4', '#0c6fa7', '#1fd2e2', '#7995a6', '#e1eaf9'],
+  },
+};
+
 type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
 function chartVars(
   k: string,
@@ -536,6 +572,10 @@ function chartVars(
   neutralMap: Record<string, { light: string[]; dark: string[] }> = CHART_NEUTRALS,
 ): string {
   if (!CHART_THEMING) return '';
+  // A hand-authored set wins outright — it is the owner's drawing, not an input
+  // to a derivation, so nothing downstream may re-solve or "improve" it.
+  const hand = CHART_HAND[k]?.[mode];
+  if (hand) return hand.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
   const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
