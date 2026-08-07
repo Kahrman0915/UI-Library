@@ -102,10 +102,15 @@
   fill: currentColor;
   transform-origin: center bottom;
   animation: ui-chart-bar-in var(--duration-normal) var(--ease-out) backwards;
-  animation-delay: calc(var(--i, 0) * 22ms);
+  animation-delay: calc(var(--i, 0) * var(--duration-stagger));
 }
 
 .ui-chart__bar--active {
+  // DOCUMENTED EXCEPTION — no token, and deliberately so. Every other hover in
+  // the system mixes toward a known colour (`--primary-hover` is a color-mix),
+  // but a series colour is chosen at runtime from the palette, so there is no
+  // authoring-time colour to mix. A relative brightness lift is the only way to
+  // emphasise an arbitrary fill. A token here would have exactly one consumer.
   filter: brightness(1.12);
 }
 
@@ -417,6 +422,10 @@
 }
 .ui-chart__scale-ramp {
   display: flex;
+  // DOCUMENTED EXCEPTION — panel geometry, same category as Toast's 380px stack
+  // and Command's 560px dialog. The ramp is sized to read as a continuous scale
+  // beside its end labels, not to a step on the spacing scale; the nearest
+  // token (--max-w-xs, 320px) would let it dominate the legend row.
   flex: 0 1 220px;
   height: var(--h-2-5);
   border-radius: var(--rounded-full);

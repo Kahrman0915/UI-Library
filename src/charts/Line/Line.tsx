@@ -6,7 +6,7 @@ import Chart from '../Chart/Chart';
 const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ');
 
 import { linePath, type MaybePoint } from '#/utils/path';
-import { MARKER_LIMIT, MARKER_RADIUS } from '../Chart/Chart.constants';
+import { END_LABEL_GAP, END_LABEL_MIN_GAP, MARKER_LIMIT, MARKER_RADIUS } from '../Chart/Chart.constants';
 import type { LineChartProps, ChartCurve } from '../Chart/Chart.types';
 
 const pointsOf = (data: (number | null)[], c: NonNullable<ReturnType<typeof useChartContext>>): MaybePoint[] =>
@@ -56,13 +56,12 @@ const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve;
     notice this code runs.
 
     The fix is the standard one-pass declutter: sort by y, then walk downward
-    pushing any label that would sit within LABEL_GAP of the one above it. It
+    pushing any label that would sit within END_LABEL_MIN_GAP of the one above it. It
     settles in a single pass because the list is sorted — each label only ever
     moves away from the one before it. Deliberately NOT a force simulation:
     a label a few pixels off its line still points at it unambiguously once the
     lines are this far apart, and the alternative is animation jitter.
   */
-  const LABEL_GAP = 13;
   const endLabelY = new Map<string, number>();
   if (c.endLabels) {
     const ends = visible
@@ -75,7 +74,7 @@ const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve;
       .filter(Boolean) as { key: string; y: number }[];
     ends.sort((a, b) => a.y - b.y);
     ends.forEach((e, i) => {
-      if (i > 0) e.y = Math.max(e.y, ends[i - 1].y + LABEL_GAP);
+      if (i > 0) e.y = Math.max(e.y, ends[i - 1].y + END_LABEL_MIN_GAP);
       endLabelY.set(e.key, e.y);
     });
   }
@@ -112,7 +111,7 @@ const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve;
                 already is, and the series name reaches assistive tech through
                 the data table twin. This is purely the sighted shortcut. */}
             {lastPt && !muted && (
-              <text className="ui-chart__end-label" x={lastPt.x + MARKER_RADIUS + 6}
+              <text className="ui-chart__end-label" x={lastPt.x + MARKER_RADIUS + END_LABEL_GAP}
                 y={endLabelY.get(s.key) ?? lastPt.y}
                 dominantBaseline="middle">{s.label}</text>
             )}
