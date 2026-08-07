@@ -733,7 +733,7 @@ const CHART_MUTE: Record<string, { light: string; dark: string }> = {
   dc:    { light: '#d7dede', dark: '#576774' },
   ec:    { light: '#d5d9dd', dark: '#596678' },
   ph:    { light: '#e2ddd6', dark: '#4b4c52' },
-  rm:    { light: '#e8c9d4', dark: '#646272' },
+  rm:    { light: '#e1dadc', dark: '#646272' },
   aiden: { light: '#bec4c8', dark: '#4a5668' },
 };
 
@@ -788,8 +788,12 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
      18.6. Taken as drawn. */
   ph:    { light: ['#b56005', '#ddbf94', '#793e01', '#fdc450', '#d97c1f', '#3a2c18'],
            dark:  ['#ee7d0a', '#ddc19a', '#bd8042', '#fecf70', '#a08c78', '#f3e8d9'] },
-  rm:    { light: ['#d62496', '#cc86b5', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
-           dark:  ['#fe68b8', '#d8acc6', '#b6679a', '#f0bff5', '#a88d9e', '#f8e4e7'] },
+  /* rm reworked by the owner (2026-08-07), the same move as ph: slot 4 becomes
+     the brand's own highlight anchor #f7b1fd — and in BOTH modes, which no
+     other brand does. Its light neighbour separation jumps 16.8 -> 24.6, the
+     best in the set. */
+  rm:    { light: ['#d62496', '#e4c9e7', '#960366', '#f7b1fd', '#997c8f', '#3f262b'],
+           dark:  ['#fe68b8', '#d4acd8', '#b6679c', '#f7b1fd', '#a88d9f', '#f8e4e8'] },
   // AIDEN RE-SOLVED ON THE PINK HIGHLIGHT — and doing it found a defect I had
   // shipped. The previous aiden set was ILLEGAL in BOTH modes and I reported it
   // as passing: light slots 2 and 4 sat 10.2 and 8.1 from --chart-muted against
@@ -873,7 +877,7 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   nb:    { light: ['#306602', '#364e2a', '#1f3426'], dark: ['#8bca2f', '#b7bfa8', '#e0eee1'] },
   dc:    { light: ['#127f76', '#74dbad', '#143438'], dark: ['#0db09d', '#9dedc9', '#d9efef'] },
   ph:    { light: ['#b56005', '#fdc450', '#3a2c18'], dark: ['#ee7d0a', '#fecf70', '#f3e8d9'] },
-  rm:    { light: ['#d62496', '#960366', '#3f262b'], dark: ['#fe68b8', '#d8acc6', '#f8e4e7'] },
+  rm:    { light: ['#d62496', '#f7b1fd', '#3f262b'], dark: ['#fe68b8', '#f7b1fd', '#f8e4e8'] },
   // aiden's trios are 1,2,3 light and 1,3,5 dark. Its pink slot 4 is the
   // highlight and measures 2.20:1 in light — fine as a bar, unusable as a
   // stroke — so light takes the dark end of its own ladder instead.
