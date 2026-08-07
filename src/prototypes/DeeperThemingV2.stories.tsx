@@ -2625,13 +2625,21 @@ export const MuteByForm: Story = {
       <>
         <PocStyle />
         <style>{css}</style>
-        {/* The source is picked per MODE, not per brand: in light the slot
-            closest to the card is the bright highlight (slot 4); in dark it is
-            the deep (slot 3). Both are "the quietest thing the palette already
-            owns", which is what makes this derived rather than authored. */}
+        {/* SLOT 2 IN LIGHT, SLOT 6 IN DARK — the owner's rule, and the
+            criterion I had wrong. I first picked the source by CONTRAST against
+            the card, which chose slot 4 in light. Low contrast is not low
+            SALIENCE: a pale cyan is quiet in luminance and still chromatic, and
+            chroma is what pulls the eye. Owner: "that almost makes me look at
+            those more than the blue 100% filled." Measured, they are right —
+            slot 4 composites to chroma 0.045-0.061 where slot 2 lands at
+            0.021-0.039, and in DARK slot 6 is literally the lowest-chroma slot
+            in six of seven brands.
+            Alphas are the highest that clear the 12-dE floor everywhere: 45% in
+            light (db and ph cap it at ~50, the rest at 45) and 28% in dark (ec
+            caps it). */}
         <style>{`
-          .poc2-mf-e { --poc2-mute-src: var(--chart-4); --poc2-mute-a: 0.42; }
-          [data-mode='dark'] .poc2-mf-e { --poc2-mute-src: var(--chart-3); --poc2-mute-a: 0.52; }
+          .poc2-mf-e { --poc2-mute-src: var(--chart-2); --poc2-mute-a: 0.45; }
+          [data-mode='dark'] .poc2-mf-e { --poc2-mute-src: var(--chart-6); --poc2-mute-a: 0.28; }
         `}</style>
         <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
           <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 820 }}>
@@ -2669,7 +2677,7 @@ export const MuteByForm: Story = {
               'Emphasis by ADDITION rather than by recession. Nothing steps back, so on a busy chart it is the weakest of the four.',
               'poc2-mf-d')}
             {panel('E · One slot, knocked back by opacity',
-              'The owner’s idea. Every muted series takes ONE source slot at reduced opacity — 42% in light, 52% in dark — so the field is calm and the mute is DERIVED from the palette rather than hand-picked.',
+              'Every muted series takes slot 2 in light and slot 6 in dark, knocked back — 45% and 28%. Those are the palette’s LOW-CHROMA slots, which is what makes them read as muted; the mute is now derived rather than hand-picked.',
               'poc2-mf-e')}
           </div>
 
