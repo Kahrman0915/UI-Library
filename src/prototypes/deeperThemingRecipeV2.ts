@@ -699,48 +699,43 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * The two sub-3:1 tints also stop reading as shapes at 1px.
  */
 /**
- * --chart-muted IS DERIVED NOW, not authored (owner, 2026-08-07).
+ * --chart-muted, AUTHORED FROM THE DERIVED START (owner, 2026-08-07).
  *
- * THE RULE: the muted colour is the palette's own LOWEST-CHROMA SLOT, knocked
- * back with alpha — slot 2 in light at 45%, slot 6 in dark at 28%.
+ * The derived rule shipped first: the palette's lowest-chroma slot knocked back
+ * — slot 2 at 45% in light, slot 6 at 28% in dark. The owner then hand-adjusted
+ * every LIGHT mute, and the adjustment is consistent enough to be a finding
+ * rather than taste: THEY TOOK THE TINT OUT.
  *
- * WHY THOSE SLOTS. I first picked the source by CONTRAST against the card,
- * which chose slot 4 in light, and the owner rejected it on sight: "that almost
- * makes me look at those more than the blue 100% filled." They were right, and
- * the mistake was the criterion rather than the value. LOW CONTRAST IS NOT LOW
- * SALIENCE — a pale cyan is quiet in luminance and still chromatic, and chroma
- * is what pulls the eye. Composited, slot 4 lands at chroma 0.045-0.061 where
- * slot 2 lands at 0.021-0.039. In DARK, slot 6 is literally the lowest-chroma
- * slot in six of seven brands, so the rule is not an approximation there.
+ *   brand   derived    chroma      authored   chroma
+ *   nb      #c4dac3    0.039  ->   #d7dad7    0.005
+ *   dc      #c4e5e4    0.035  ->   #d7dede    0.008
+ *   ec      #bfd6ec    0.039  ->   #d5d9dd    0.007
+ *   db      #d5dcea    0.021  ->   #d7dce5    0.013
  *
- * WHY THOSE ALPHAS: the highest that clear the 12-dE floor against all six
- * slots in every brand. Light is capped at 45% by nb, dc and rm (db and ph
- * would allow 50); dark at 28% by ec. Worst clearance across all fourteen
- * combinations is 12.1, contrast runs 1.34-2.23, composited chroma 0.013-0.039.
+ * Every light mute moved toward neutral, most of them by 4-5x. THE DERIVED RULE
+ * WAS RIGHT ABOUT THE SLOT AND WRONG ABOUT THE CHROMA: knocking a colour back
+ * with alpha lowers its contrast but keeps its hue at full saturation relative
+ * to what is left, so the result is a TINT — and a tinted mute still reads as a
+ * colour with an opinion. The dark mutes were left alone, which fits: at 28%
+ * over a dark card the composite is already near-neutral (0.019-0.035).
  *
- * NO COMPONENT CHANGE. --chart-muted is the same variable the Chart already
- * paints de-emphasised series with, so redefining it as a translucent
- * color-mix is the whole implementation. Everything downstream — the legend
- * swatch, the tooltip key — reads the same field the mark does and stays in
- * sync for free, which is the property Chart.context.ts calls out.
+ * If this becomes a rule again it needs a chroma cut as well as an alpha cut.
+ * For now the values are authored, because six hand-picked hexes that are right
+ * beat a formula that is close.
  *
- * IT IS TRANSLUCENT, so it composites over whatever is behind it: the card, and
- * the gridlines. That is wanted. The one case to watch is marks that OVERLAP —
- * grouped bars never do, stacked segments and areas do, and two translucent
- * muted areas would compound where they cross.
- *
- * This retires db's bespoke #e0cfc2 and dc's slot-2 collision at the same time:
- * a mute derived FROM the palette cannot drift away from it.
+ * ph's light mute is the one to look at: #e2ddd6 sits 9.7 from slot 2 against
+ * the 12 floor, so a de-emphasised series and slot 2 are closer than the system
+ * allows anywhere else.
  */
-const CHART_MUTE_SRC: Record<string, { light: string; dark: string }> = {
-  // aiden is the exception, and for the reason the rule predicts: its light
-  // slot 2 is #080e3e, a near-BLACK rather than a pale tint, so knocking it
-  // back gives a mid grey at 3.03 contrast — darker and louder than every other
-  // brand's mute, clearing by only 9.4. Its own lowest-chroma light slot is
-  // slot 6 (chroma 0.009), so the same rule points there instead.
-  aiden: { light: '--chart-6', dark: '--chart-6' },
+const CHART_MUTE: Record<string, { light: string; dark: string }> = {
+  db:    { light: '#d7dce5', dark: '#5a6579' },
+  nb:    { light: '#d7dad7', dark: '#5a676e' },
+  dc:    { light: '#d7dede', dark: '#576774' },
+  ec:    { light: '#d5d9dd', dark: '#596678' },
+  ph:    { light: '#e2ddd6', dark: '#4b4c52' },
+  rm:    { light: '#e8c9d4', dark: '#646272' },
+  aiden: { light: '#bec4c8', dark: '#4a5668' },
 };
-const MUTE_ALPHA = { light: '45%', dark: '28%' };
 
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // ec is the ORIGINAL — hand-drawn by the owner, then tuned. Every other entry
@@ -786,9 +781,14 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
      back. dc DARK CVD IS 3.0, below the hard floor of 4, on slots 3/5. */
   dc:    { light: ['#127f76', '#7bc5c3', '#0c4955', '#74dbad', '#809aa2', '#143438'],
            dark:  ['#0db09d', '#b9d2d2', '#0f91aa', '#9dedc9', '#6f919b', '#d9efef'] },
-  ph:    { light: ['#b56005', '#d7907c', '#793e01', '#d8ae5e', '#9c7f6f', '#3a2c18'],
-           dark:  ['#ee7d0a', '#ddb09a', '#bd6c42', '#ebce99', '#a6897c', '#f3e7d9'] },
-  rm:    { light: ['#d62496', '#cc86a0', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
+  /* ph reworked by the owner in Figma (2026-08-07). Slot 4 is now ph's actual
+     highlight anchor #fdc450 and slot 5 became a vivid orange — the set reads
+     as gold-and-orange rather than bronze-and-grey, and it measures better for
+     it: light all-pairs 9.6 -> 8.5 but CVD 7.5 -> 8.5 and neighbour 15.5 ->
+     18.6. Taken as drawn. */
+  ph:    { light: ['#b56005', '#ddbf94', '#793e01', '#fdc450', '#d97c1f', '#3a2c18'],
+           dark:  ['#ee7d0a', '#ddc19a', '#bd8042', '#fecf70', '#a08c78', '#f3e8d9'] },
+  rm:    { light: ['#d62496', '#cc86b5', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
            dark:  ['#fe68b8', '#d8acc6', '#b6679a', '#f0bff5', '#a88d9e', '#f8e4e7'] },
   // AIDEN RE-SOLVED ON THE PINK HIGHLIGHT — and doing it found a defect I had
   // shipped. The previous aiden set was ILLEGAL in BOTH modes and I reported it
@@ -872,7 +872,7 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   db:    { light: ['#466af4', '#5fc3ec', '#2b406a'], dark: ['#689cfe', '#9ddcfa', '#e6e8f9'] },
   nb:    { light: ['#306602', '#364e2a', '#1f3426'], dark: ['#8bca2f', '#b7bfa8', '#e0eee1'] },
   dc:    { light: ['#127f76', '#74dbad', '#143438'], dark: ['#0db09d', '#9dedc9', '#d9efef'] },
-  ph:    { light: ['#b56005', '#793e01', '#3a2c18'], dark: ['#ee7d0a', '#ddb09a', '#f3e7d9'] },
+  ph:    { light: ['#b56005', '#fdc450', '#3a2c18'], dark: ['#ee7d0a', '#fecf70', '#f3e8d9'] },
   rm:    { light: ['#d62496', '#960366', '#3f262b'], dark: ['#fe68b8', '#d8acc6', '#f8e4e7'] },
   // aiden's trios are 1,2,3 light and 1,3,5 dark. Its pink slot 4 is the
   // highlight and measures 2.20:1 in light — fine as a bar, unusable as a
@@ -891,9 +891,9 @@ function chartVars(
   // A hand-authored set wins outright — it is the owner's drawing, not an input
   // to a derivation, so nothing downstream may re-solve or "improve" it.
   const hand = CHART_HAND[k]?.[mode];
-  const src = CHART_MUTE_SRC[k]?.[mode] ?? (mode === 'light' ? '--chart-2' : '--chart-6');
+  const mute = CHART_MUTE[k]?.[mode];
   if (hand) return hand.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n'
-    + `  --chart-muted: color-mix(in srgb, var(${src}) ${MUTE_ALPHA[mode]}, transparent);\n`;
+    + (mute ? `  --chart-muted: ${mute};\n` : '');
   const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
