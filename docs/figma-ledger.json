@@ -1755,6 +1755,21 @@
         }
       },
       "playbook": "docs/figma-dom-bridge.md \u2014 the extractor, the builder, all eight gotchas, and the measured payload plan for Marketing and Suite. Read it before touching these pages."
+    },
+    "variables_2026_08_07": {
+      "why": "Build the token structure in Figma and drive it there BEFORE any of it reaches tokens.scss. Figma cannot express color-mix, so every value has to resolve \u2014 which surfaces exactly where the CSS still needs a raw neutral layer.",
+      "collections": {
+        "Mode": "Light | Dark \u2014 every resolved hex, incl. the new brand/{theme}/tint/{surface} rgba",
+        "Theme": "Slate Indigo Teal Cobalt Fern Amber Magenta \u2014 renamed off two-letter product codes so a theme survives its product mapping moving. Hues measured in OKLCH: Indigo 268, Cobalt 240, Teal 186, Fern 136, Amber 57, Magenta 348. Cobalt not Azure (Microsoft collision); Fern not Green (stops Emerald/Lime creeping in). dr and ir RETIRED \u2014 no values, and one of the two open blockers.",
+        "Tint page": "Off | On",
+        "Tint rail": "Off | On \u2014 separate collection because tinting the app and tinting the rail are independent preferences"
+      },
+      "chain": "Tint page / page/accent --On--> Theme / tint/accent --Indigo--> Mode / brand/indigo/tint/accent --Dark--> rgba. Mirrors the CSS two-layer indirection exactly, which the file already used for --primary.",
+      "the_trick": "Each tint variable holds the STOCK CARRYING ITS OWN ALPHA and is applied as a SECOND FILL over the neutral, compositing the way color-mix does. Off is the same fill at zero alpha, so toggling changes visibility rather than which fills exist. This was the owner's idea and it cut the variable count from ~144 resolved tinted colours to 88.",
+      "mode_ceiling": "10 per collection \u2014 PROBED, not assumed (addMode throws at 11). Theme sits at 7 after retiring dr/ir, so there are 3 spare.",
+      "live_specimen": "951:50 holds 'Dashboard \u00b7 LIVE' (1039:44) \u2014 a clone of the db light frame whose page background, content background, header, sidebar, active row and three cards are bound to neutral + tint variables. The twelve baked frames stay as the reference render; ONE bound frame covers every combination, which is the point of the modes. Verified by cycling Indigo/on/on, Amber/on/off, Fern/off/off and re-rendering.",
+      "not_bound": "Brand-coloured elements \u2014 banners, CTAs, chart bars, marks \u2014 are still baked. They follow --primary and the decorative ramp, not the tint axis, so they need the Theme collection extended with primary/primary-deep/decorative-hi/decorative-deep before they can move.",
+      "known_gap": "The rail is APPROXIMATED. In CSS the sidebar is a two-layer mix \u2014 tint stock at 8-12% AND --primary at 4%. Only the stock layer is modelled, so the Figma rail sits slightly off the Storybook render."
     }
   }
 }
