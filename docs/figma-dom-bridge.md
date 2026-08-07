@@ -31,8 +31,38 @@ a border, text, or an SVG. That drops most of the tree.
 | Figma page | Story | State |
 |---|---|---|
 | `951:50` Dashboard | Dashboard | **Done** — 12 frames, 6 brands × 2 modes |
-| `951:51` Marketing | Marketing | **Not built** — see "Marketing" below |
-| `951:52` Suite | Suite | **Not built** — see "Suite" below |
+| `951:51` Marketing | Marketing | **Staged, not built** — payload extracted + verified, Figma write blocked |
+| `951:52` Suite | Suite | **Staged, not built** — payload extracted + verified, Figma write blocked |
+
+**Staged** means every browser-side step is finished and checked in: the
+payloads sit in [`figma-payloads/`](./figma-payloads/), the Figma-side builder
+sits in [`../scripts/figma-build-poc-page.js`](../scripts/figma-build-poc-page.js),
+and a dry run replays all of it against a stub Plugin API. What is left is the
+`use_figma` calls themselves, which need the Figma MCP server authorised —
+it was not, in the 2026-08-07 session, and that is the only reason these two
+pages are still unbuilt. **Both pages also still hold their stale earlier
+content, which must be deleted once the new frames are verified.**
+
+### Replaying the staged payloads
+
+Storybook is not needed — the payloads are already on disk.
+
+1. Read `scripts/figma-build-poc-page.js`; it is the body of the call.
+2. Append `const P = <the payload JSON>` and one of the drivers in its footer.
+3. Marketing: one call per mode (6 frames each). Suite: two calls per mode,
+   slice 1 then slice 2 — slice 1 creates the frame, slice 2 finds it by name.
+4. Screenshot each page and diff against the Storybook story before deleting
+   the stale frames.
+
+| file | bytes | builds |
+|---|---|---|
+| `marketing-light.json` | 28.1 kB | 6 frames, 1150×1837 |
+| `marketing-dark.json` | 28.3 kB | 6 frames, 1150×1837 |
+| `suite-light-{1,2}.json` | 33.7 + 21.9 kB | 1 frame, 1150×4137 |
+| `suite-dark-{1,2}.json` | 34.1 + 23.4 kB | 1 frame, 1150×4137 |
+
+`suite-*-full.json` is the unsliced page, kept only so the slicing can be
+redone at a different budget.
 
 ---
 
@@ -61,7 +91,85 @@ The `use_figma` `code` parameter caps at **50 000 characters**, which is the rea
 budget. A page that will not fit must be built across several calls appending
 into the same frame.
 
+### Two compressions that pay for themselves
+
+Applied 2026-08-07; together they took Marketing from 39.1 kB to 27.8 kB and
+its SVG library from 13 entries to 7.
+
+- **Template the SVG library on size.** The same mark is emitted at 30/56/36/22
+  px, and the four strings differ *only* in the numbers inside `width=`,
+  `height=` and `viewBox=`. Replace those with `%w%`/`%h%`, dedupe on the
+  result, and carry the real size per instance. Deduping on the raw string
+  misses every one of them.
+- **Carry colours as hex, not float quadruples.** `[0.2745,0.4157,0.9569,1]` is
+  26 characters; `"466af4"` is 8. Translucent colours take a `@alpha` suffix
+  (`"000000@0.4"`). The delta maps were already hex, so this also makes the
+  scene and the maps speak one vocabulary.
+
+### Let the payload prove itself before it is shipped
+
+A cross-brand colour map is a *guess* that one source colour means one thing.
+Rather than trusting it, build the map, then **replay it against every node and
+record an explicit override wherever it disagrees** with that brand's own
+extract. The builder emits `fix: {nodeIdx: {f?,c?,bc?,sv?}}` for exactly those
+nodes, then re-derives all six brands from `scene + lib + delta` and diffs
+against the extracts. A payload that cannot rebuild the page it came from is
+not worth sending.
+
+On Marketing this cost **one** override in dark and none in light — and the one
+it found is gotcha 8, `ec`'s chart slot 1. That exception no longer needs
+hand-patching or remembering; the audit finds it. `meta.audit` and
+`meta.unresolved` in each payload record the result.
+
 ---
+
+## Moving the payload without paying for it twice
+
+A 28–54 kB scene graph does not need to be read out of the browser and typed
+back in. `scripts/figma-payload-sink.mjs` is a 40-line local HTTP server that
+writes a POST body straight to `docs/figma-payloads/`:
+
+```bash
+node scripts/figma-payload-sink.mjs docs/figma-payloads 7788
+```
+
+```js
+await fetch('http://localhost:7788/marketing-light', {
+  method: 'POST', body: JSON.stringify(payload) });
+```
+
+It only accepts `[\w-]+` as a filename and writes nowhere but its out-dir, so
+the page cannot choose a path. Kill it when the extraction is done.
+
+Two habits that make re-running cheap:
+
+- **Keep the pipeline in `localStorage`, not in the paste buffer.** Serialise
+  the extractor with `Function.prototype.toString()` under one key, and a page
+  reload costs `eval(localStorage.__bridge)` instead of a 10 kB re-paste. The
+  catch: `toString()` captures the function body, **not its closure**, so every
+  helper has to hang off `window` too — `__gradSvg` silently loses `splitTop`
+  and `parseStops` otherwise. Prove it round-trips by deleting the globals and
+  re-evaluating before you rely on it.
+- **Settle the page before measuring.** Extract after `await
+  document.fonts.ready` plus a short timer, or a web font landing mid-walk
+  shifts the geometry — Marketing measured 1837 px tall settled and 1825 px
+  not. **Use `setTimeout`, not `requestAnimationFrame`: rAF does not fire while
+  the Browser pane is hidden**, and the extraction just hangs until the tool
+  times out.
+
+## Checking the builder without Figma
+
+`node scripts/figma-build-dryrun.mjs` replays every staged payload through the
+real builder against a stub Plugin API, asserting that no node is swallowed by
+the builder's `try/catch`, every `lib` reference resolves, no `%w%` placeholder
+survives, no `var()`/`currentColor`/`color(srgb …)` reaches `createNodeFromSvg`,
+every colour channel lands in 0–1, and no geometry is `NaN`.
+
+It slices the builder out of `figma-build-poc-page.js` at run time rather than
+copying it, so the thing under test is the thing that gets pasted.
+
+It cannot tell you the page *looks* right — only that it can be constructed.
+Visual truth is still a Figma screenshot next to the Storybook story.
 
 ## Browser side — the extractor
 
@@ -308,7 +416,17 @@ is exactly why gradient-heavy pages cannot use the clone shortcut.
 8. **`ec` dark is the one brand whose chart slot 1 is not its `--primary`.** A
    blanket map paints its bars `#23c7fe` instead of `#1da0f3`. Correct its chart
    subtree and legend dot after cloning. (The invariant check in the Storybook
-   `Transition` story lists every such exception.)
+   `Transition` story lists every such exception.) **The self-audit above now
+   catches this automatically** — it is the single `fix` entry in
+   `marketing-dark.json`. Do not hand-patch it a second time.
+9. **`requestAnimationFrame` never fires while the Browser pane is hidden.** An
+   extractor that waits on a double-rAF hangs until the tool times out. Use
+   `setTimeout`. (`document.fonts.ready` resolves fine.)
+10. **A brand scope is not always the outermost scope.** Suite nests
+    `BrandScope`s inside the page scope and *both* stamp `data-mode`, so
+    walking up from a child to the *nearest* `data-mode` ancestor finds the
+    672×154 Aiden panel, not the 1150×4137 page — an extract that looked
+    plausible at 13 nodes instead of 240. Walk to the **outermost** match.
 
 ---
 
@@ -323,25 +441,43 @@ stat-text gradient, whereas nb's solid primary is `#306602` but that gradient
 stop is `#418605`. **Keep gradient-text stops out of the solid map** and carry
 them per brand; that leaves zero conflicts.
 
-Payload that fits (measured, light mode):
+Payload as built (light; dark is within 200 bytes):
 
-| part | size |
-|---|---|
-| scene (SVGs replaced by a lib index) | 8.9 kB |
-| SVG lib (13 unique entries, deduped) | 15.8 kB |
-| per-brand `{solid, gradText, svg colour lists}` × 5 | 13.3 kB |
-| **total + builder code** | **~43 kB** |
+| part | first estimate | after compression |
+|---|---|---|
+| scene (SVGs replaced by a lib index) | 8.9 kB | 8.2 kB |
+| SVG lib (deduped) | 15.8 kB / 13 entries | **9.8 kB / 7 entries** |
+| per-brand `{solid, gradText, txt, svgc, fix}` × 5 | 13.3 kB | 9.8 kB |
+| **total** | ~39 kB | **28.1 kB** |
 
-Figma rebuilds each brand from `scene + lib` with substitutions rather than
-cloning. Then repeat for dark.
+Comfortably one call per mode with the builder. Figma rebuilds each brand from
+`scene + lib` with substitutions rather than cloning.
+
+The six brands turned out to be **geometrically identical** — 82 nodes each, and
+the only non-colour difference is the two text nodes carrying the brand code
+itself (`db` → `nb`), which ride along in the delta's `txt`. Verified, not
+assumed; `meta.notes` is empty in both modes.
 
 ## Suite (`951:52`) — the plan
 
-**One composite page, not six variants** — 1280 × 4474, with eleven brand
-scopes inline plus one `data-surface="aiden"`. So it is 2 extracts (light,
-dark), not 12.
+**One composite page, not six variants** — the page scope is **1150 × 4137**
+(measured at a 1280 px viewport; the content column caps at `--max-w-6xl` and
+the page around it is fluid, so pin the viewport or the number moves). Eleven
+brand scopes inline plus one `data-surface="aiden"`. So it is 2 extracts, not 12.
 
-But it is tall: 32 gradient elements and 53 SVGs. It will **not** fit one
-50 kB call. Build it across several calls that append into the same frame —
-create the frame in call 1, then pass slices of the scene graph in calls 2..n
-looking the frame up by name.
+240 nodes and 45 unique SVGs in light, 239 and 44 in dark — the one-node
+difference is real, each mode is its own extract. At 53.2 kB it does **not**
+fit one call, so `__slice` partitions the scene **in document order** (Figma
+paints in append order) at a 34 kB budget, pulling each lib entry into the first
+slice that references it:
+
+| slice | nodes | new lib entries | bytes |
+|---|---|---|---|
+| light 1 | 138 | 30 | 33.7 kB |
+| light 2 | 102 | 18 | 21.9 kB |
+| dark 1 | 128 | 29 | 34.1 kB |
+| dark 2 | 111 | 19 | 23.4 kB |
+
+Three lib entries straddle the boundary and are sent twice; that is cheaper
+than tracking them across calls. Slice 1 creates the frame, slice 2 looks it up
+**by name** — no JavaScript state survives between `use_figma` calls.
