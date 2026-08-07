@@ -651,8 +651,8 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Surfaces',
-    note: 'Page and card stay white in light mode. Every tinted one derives from --surface-tint — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
-    tokens: ['--surface-tint', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
+    note: 'Page and card stay white in light mode. Every tinted one derives from --tint-stock — the DEEP anchor greyed toward slate — applied at single digits, so each lands 4–8 ΔE00 off its neutral base. Never the highlight: a surface should sit under the accent, not beside it.',
+    tokens: ['--tint-stock', '--background', '--card', '--popover', '--secondary', '--accent', '--input', '--muted'],
   },
   {
     group: 'Lines',

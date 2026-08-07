@@ -139,7 +139,7 @@
  * should COMPLEMENT the accent, not compete with it.
  *
  * So the tint source is the deep anchor, desaturated toward slate first (the
- * --surface-tint stock) and then applied at single digits. The target is a
+ * --tint-stock stock) and then applied at single digits. The target is a
  * surface that shifts ~4-8 dE00 off the neutral: you can see it when a brand
  * sits next to another brand, and you never read it as "a coloured page". Deep
  * also has the property that makes this cheap — it is high-chroma, so a few
@@ -818,7 +818,7 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
 
      REMEMBER THE CARD. Aiden is a SURFACE, not a brand, so it gets no tinted
      card: light is #ffffff and dark is plain #1e293b, not the mixed
-     --surface-tint card the six brands render on. Gating aiden against a
+     --tint-stock card the six brands render on. Gating aiden against a
      tinted card reports failures that do not exist.
 
      One number to know: s2 #93c5fd sits 4.4 from dark --info #7cd4fd. That is
@@ -1069,7 +1069,7 @@ ${anchorBlocks()}
      compresses both chroma and lightness toward a common point, so one
      percentage below produces a comparable shift for every brand.
      Deep, not highlight: the surface must sit UNDER the accent, not beside it. */
-  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #475569);
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #475569);
 
   /* SLIGHT, ON PURPOSE. Each surface lands 4-8 dE00 off its neutral base — the
      range where a brand is legible against another brand but never legible as
@@ -1079,10 +1079,10 @@ ${anchorBlocks()}
      takes the least. Worst muted-foreground reading across all seven brands:
      accent 5.61, secondary/input 5.19, muted 4.56 — all above AA, against
      baselines of 6.92 / 6.15 / 5.10. */
-  --accent:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #f1f5f9);
-  --secondary: color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #e2e8f0);
-  --input:     color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #e2e8f0);
-  --muted:     color-mix(in srgb, var(--surface-tint) calc(7%  * var(--tint-surface, 0)), #cbd5e1);
+  --accent:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #f1f5f9);
+  --secondary: color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #e2e8f0);
+  --input:     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #e2e8f0);
+  --muted:     color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-surface, 0)), #cbd5e1);
 
   /* LINES ARE MOSTLY SLATE. They carry no contrast budget, so an earlier pass
      spent freely here — 20-26% of --primary — and the result was a page whose
@@ -1102,7 +1102,7 @@ ${anchorBlocks()}
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
      cheap theme, and the mark carries identity now so the rail does not have to. */
-  /* TWO mixes, and the order is the point. The inner one is --surface-tint (the
+  /* TWO mixes, and the order is the point. The inner one is --tint-stock (the
      greyed deep) and supplies the rail's VALUE — it is what holds the rail apart
      from the content area. The outer one is a little raw --primary and supplies
      HUE, so the rail reads as the brand rather than as generic grey. Swapping
@@ -1115,17 +1115,17 @@ ${anchorBlocks()}
      their own hue. The hue still moves toward the brand, which is the goal here;
      chroma is not the target. */
   --sidebar:         color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(8%  * var(--tint-rail, 0)), #f8fafc));
+                     color-mix(in srgb, var(--tint-stock) calc(8%  * var(--tint-rail, 0)), #f8fafc));
   --sidebar-border:  color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(11% * var(--tint-rail, 0)), #e2e8f0));
+                     color-mix(in srgb, var(--tint-stock) calc(11% * var(--tint-rail, 0)), #e2e8f0));
   --sidebar-accent:  color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-rail, 0)), #f1f5f9));
+                     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-rail, 0)), #f1f5f9));
 
   /* BAND — the alternating marketing strip. Same stock, same restraint: a band
      is still a surface people read on. It is allowed to be the loudest of them
      because it is a deliberate strip rather than page chrome, and even then
      band-strong only reaches ~9 dE00 off white. */
-  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(7%  * var(--tint-surface, 0)), #ffffff);
+  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-surface, 0)), #ffffff);
 }
 
 /* ── DARK ───────────────────────────────────────────────────────────────────
@@ -1145,15 +1145,15 @@ ${anchorBlocks()}
   --poc2-bubble-deep: 22%;
   --poc2-bubble-mid:  18%;
 
-  --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 
-  --background: color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #0f172a);
-  --card:       color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #1e293b);
-  --popover:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #475569);
-  --secondary:  color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #1e293b);
-  --accent:     color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #334155);
-  --muted:      color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #334155);
-  --input:      color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #475569);
+  --background: color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #0f172a);
+  --card:       color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #1e293b);
+  --popover:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #475569);
+  --secondary:  color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #1e293b);
+  --accent:     color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #334155);
+  --muted:      color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #334155);
+  --input:      color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #475569);
 
   /* Same step as light; --ring again left at full strength. */
   --border:       color-mix(in srgb, var(--primary) calc(6% * var(--tint-surface, 0)), #64748b);
@@ -1161,13 +1161,13 @@ ${anchorBlocks()}
   --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-surface, 0)), #94a3b8);
 
   --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--tint-rail, 0)), #1e293b));
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), #1e293b));
   --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-rail, 0)), #334155));
+                    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-rail, 0)), #334155));
   --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--tint-rail, 0)), #334155));
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), #334155));
 
-  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--tint-surface, 0)), #1e293b);
+  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(16% * var(--tint-surface, 0)), #1e293b);
 }
 
 

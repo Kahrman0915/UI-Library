@@ -1041,7 +1041,7 @@ export function TransitionPanel() {
         {[
           { title: 'Brand identity', test: (t: string) => t.startsWith('--mark') || t === '--primary-deep' || t === '--decorative-hi' },
           { title: 'Chart ramps', test: (t: string) => t.startsWith('--chart') },
-          { title: 'Surface machinery', test: (t: string) => t === '--surface-tint' },
+          { title: 'Surface machinery', test: (t: string) => t === '--tint-stock' },
           { title: 'Aiden', test: (t: string) => t.startsWith('--aiden') },
           { title: 'Mark runtime (set in JS, not authored in the sheet)', test: (t: string) => ['--mx', '--my', '--on'].includes(t) },
         ].map((g) => {
