@@ -703,7 +703,22 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // below is generated from its structure. It is never re-derived.
   ec:    { light: ['#067db8', '#70a3d4', '#01517a', '#4ec8dc', '#6d8b9c', '#232f42'],
            dark:  ['#1da0f3', '#96c2de', '#2088bb', '#95e2e2', '#7995a6', '#e1eaf9'] },
-  db:    { light: ['#466af4', '#8e99d7', '#0d3bbf', '#5fc3ec', '#7887a1', '#2d2c41'],
+  /* db LIGHT IS THE OWNER'S, REMEDIATED (2026-08-07). They repainted slots 2, 5
+     and 6 in Figma: slot 2 and 5 lighter and airier, slot 6 from a near-black
+     to a NAVY. Slots 1, 3, 4 and 6 are theirs exactly. Two were nudged, and
+     only as far as the floors demanded:
+       slot 2 #c2cbde -> #d3dbef  (5.0 dE)   it sat 7.0 from --chart-muted
+       slot 5 #96a2b7 -> #7f92a3  (6.0 dE)   6.2 from the mute, and only 10.5
+                                             from slot 4 — the two are NEIGHBOURS,
+                                             which is the pair that has to hold
+     Net against what shipped before their edit: all-pairs 9.3 -> 14.2, CVD
+     7.4 -> 9.5, neighbour 16.9 -> 14.5, still two slots under 3:1.
+     SLOT 2 IS VERY FAINT AT 1.39:1 and that is the honest cost of the
+     direction. A pale desaturated blue-grey and --chart-muted (#a9b6c7) are
+     structurally the same colour, so the only escapes are lighter or more
+     chromatic; lighter keeps their look, chromatic (#a290e1, 2.76) does not.
+     Their own value was already 1.63. */
+  db:    { light: ['#466af4', '#d3dbef', '#0d3bbf', '#5fc3ec', '#7f92a3', '#2b406a'],
            dark:  ['#689cfe', '#a1bee2', '#4c84c6', '#9ddcfa', '#8092a9', '#e6e8f9'] },
   nb:    { light: ['#306602', '#7bad7a', '#364e2a', '#b1be6a', '#7e8c70', '#1f3426'],
            dark:  ['#8bca2f', '#b7bfa8', '#649807', '#cfd9a0', '#8d9479', '#e0eee1'] },
@@ -787,7 +802,12 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   // pale rungs are the ones that cannot be a stroke. Dark lands on 1,2,6, the
   // mirror image: there the pale rungs are the strong ones and the deep is the
   // one that sinks into the card.
-  db:    { light: ['#466af4', '#0d3bbf', '#2d2c41'], dark: ['#689cfe', '#a1bee2', '#e6e8f9'] },
+  /* db's trio moved to slots 1,4,6 in BOTH modes — the owner put the cyan in the
+     middle rather than the deep. Light gains hugely (dE 15.2 -> 24.3, CVD
+     13.3 -> 23.4); DARK LOSES (13.2 -> 9.7, CVD 12.0 -> 5.7), because dark's
+     cyan #9ddcfa and near-white #e6e8f9 are close. Still over the hard floors,
+     and marker shape plus the end label carry that pair. */
+  db:    { light: ['#466af4', '#5fc3ec', '#2b406a'], dark: ['#689cfe', '#9ddcfa', '#e6e8f9'] },
   nb:    { light: ['#306602', '#364e2a', '#1f3426'], dark: ['#8bca2f', '#b7bfa8', '#e0eee1'] },
   dc:    { light: ['#127f76', '#045851', '#143438'], dark: ['#0db09d', '#b2beba', '#d9efef'] },
   ph:    { light: ['#b56005', '#793e01', '#3a2c18'], dark: ['#ee7d0a', '#ddb09a', '#f3e7d9'] },
