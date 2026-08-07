@@ -45,12 +45,14 @@
 // ---------------------------------------------------------------- source of truth
 
 // deeperThemingRecipeV2.ts BRAND_ANCHORS. triple = [decorative-hi, primary, primary-deep];
-// markDeep = decorative-deep. `primary` overrides the triple where a brand pins its
-// functional colour apart from its mark (nb does — its mark is lighter than its primary).
+// markDeep = decorative-deep. The `primary` override — a brand pinning its functional
+// colour apart from its mark's middle stop — is GONE as of 2026-08-07 (owner: use
+// primary, drop the extra token), so the triple's middle is now both. Keep the
+// `a.primary ? … : a[key][1]` read below anyway: it costs nothing and is the only thing
+// that would keep working if a brand ever needs to split again.
 const ANCHORS = {
   indigo:  { l: ['8cdafd','466af4','0d3bbf'], d: ['8cdafd','689cfe','046de9'], mdL: '3419ba', mdD: '3b27ed' },
-  fern:    { l: ['c9db29','418605','183a00'], d: ['c9db29','8bca2f','649807'], mdL: '105b3e', mdD: '249d6e',
-             primary: { l: '306602', d: '8bca2f' } },
+  fern:    { l: ['c9db29','306602','183a00'], d: ['c9db29','8bca2f','649807'], mdL: '105b3e', mdD: '249d6e' },
   teal:    { l: ['4eeeaf','127f76','002b27'], d: ['4eeeaf','0db09d','057d70'], mdL: '0c4b55', mdD: '075e6f' },
   cobalt:  { l: ['57e3fd','067db8','01517a'], d: ['57e3fd','23c7fe','0995c1'], mdL: '1850d1', mdD: '067cbc' },
   amber:   { l: ['fdc450','b56005','793e01'], d: ['fdc450','ee7d0a','ae5904'], mdL: '91200d', mdD: 'cc3218' },
@@ -136,42 +138,158 @@ for (const [slug, a] of Object.entries(ANCHORS)) {
 
 // ---------------------------------------------------------------- gradient paint styles
 
-// tokens.scss lines 716-723 (light) / 1004-1011 (dark). Stops as [hex, alpha, position].
+// A gradient stop's colour BINDS to a variable now, which makes the literal
+// `stop.color` a stale fallback that the renderer never paints. The previous version
+// of this block compared that literal AND keyed on `Aiden/Light/*` names that no
+// longer exist — so every lookup missed, every style hit `continue`, and 22 gradient
+// checks were counted in the total while zero of them ran. Both faults are fixed
+// here: names match the file, stops resolve through the variable, and an unmatched
+// name is now a finding instead of a silent skip.
+//
+// Aiden is ONE mode-aware style per role, not a Light and a Dark copy. Where the
+// code's dark gradient has fewer stops than the light one, the extra stop is carried
+// as 'MID' — it must be the linear midpoint of its neighbours, which is what lets a
+// 3-stop style stand in for a 2-stop gradient without a second style.
+// tokens.scss 721-727 (light) / 1009-1015 (dark).
+//
 // `Aiden/*/Outline-hover` is deliberately absent: --aiden-outline-hover was removed when
 // aiden secondary moved to the shared --opacity-50 overlay, so a style still named that
 // has no counterpart in the code. It lives under Aiden/_deprecated/ rather than deleted.
 const GRADIENTS = {
-  'Aiden/Light/Primary':   [['8455f0',1,0], ['5a37e6',1,.5], ['2c6dea',1,1]],
-  'Aiden/Light/Hover':     [['6d28d9',1,0], ['4a29c9',1,.5], ['1d4ed8',1,1]],
-  'Aiden/Light/Secondary': [['5a37e6',.08,0], ['2c6dea',.08,1]],
-  'Aiden/Light/Border':    [['5a37e6',.80,0], ['2c6dea',.80,1]],
-  'Aiden/Light/Ring':      [['5a37e6',.50,0], ['2c6dea',.50,1]],
-  'Aiden/Dark/Primary':    [['9076f9',1,0], ['93c5fd',1,1]],
-  'Aiden/Dark/Hover':      [['b3a2fa',1,0], ['bae6fd',1,1]],
-  'Aiden/Dark/Secondary':  [['9076f9',.10,0], ['93c5fd',.10,1]],
-  'Aiden/Dark/Border':     [['9076f9',.80,0], ['93c5fd',.80,1]],
-  'Aiden/Dark/Ring':       [['9076f9',.50,0], ['93c5fd',.50,1]],
+  'Aiden/Primary':   { l: [['8455f0',1,0], ['5a37e6',1,.5], ['2c6dea',1,1]],
+                       d: [['9076f9',1,0], ['MID',1,.5],    ['93c5fd',1,1]] },
+  'Aiden/Hover':     { l: [['6d28d9',1,0], ['4a29c9',1,.5], ['1d4ed8',1,1]],
+                       d: [['b3a2fa',1,0], ['MID',1,.5],    ['bae6fd',1,1]] },
+  'Aiden/Secondary': { l: [['5a37e6',.08,0], ['2c6dea',.08,1]],
+                       d: [['9076f9',.10,0], ['93c5fd',.10,1]] },
+  'Aiden/Border':    { l: [['5a37e6',.80,0], ['2c6dea',.80,1]],
+                       d: [['9076f9',.80,0], ['93c5fd',.80,1]] },
+  'Aiden/Ring':      { l: [['5a37e6',.50,0], ['2c6dea',.50,1]],
+                       d: [['9076f9',.50,0], ['93c5fd',.50,1]] },
+};
+
+// The Mark tile styles are DERIVED from ANCHORS rather than restated, so there is no
+// second copy of the brand colours to drift.
+//
+// THE SHIPPED GRADIENT IS FOUR STOPS, and mis-reading it as three is a trap worth
+// spelling out. deeperThemingRecipeV2.ts emits:
+//     --decorative-hi 9.7%, --primary s2, --primary s3, --decorative-deep 90.3%
+// with s2/s3 = 51.6/51.6 for the six brands and 44/62 for aiden. The DUPLICATED pair is
+// `--primary` twice, which is a PLATEAU — "a stop is a point: naming the colour twice is
+// the only way to give it a band". It is NOT a hard edge between primary and deep.
+// decorative-deep sits at 90.3% in every brand.
+//
+// Because s2 === s3 for the six brands the pair collapses to a point, so three stops
+// render identically and that is what the tiles carry. Only aiden needs the fourth stop,
+// and it is the one style declared with all four below.
+const MARK_POS = [0.097, 0.516, 0.903];
+for (const [slug, a] of Object.entries(ANCHORS)) {
+  GRADIENTS[`Mark/${slug[0].toUpperCase()}${slug.slice(1)}`] = {
+    l: [[a.l[0],1,MARK_POS[0]], [a.l[1],1,MARK_POS[1]], [a.mdL,1,MARK_POS[2]]],
+    d: [[a.d[0],1,MARK_POS[0]], [a.d[1],1,MARK_POS[1]], [a.mdD,1,MARK_POS[2]]],
+  };
+}
+// Slate is the neutral main brand and is not in ANCHORS — all three stops collapse
+// onto the one primary, which is why the slate mark reads flat rather than as a ramp.
+GRADIENTS['Mark/Slate'] = {
+  l: [['334155',1,MARK_POS[0]], ['334155',1,MARK_POS[1]], ['334155',1,MARK_POS[2]]],
+  d: [['cbd5e1',1,MARK_POS[0]], ['cbd5e1',1,MARK_POS[1]], ['cbd5e1',1,MARK_POS[2]]],
+};
+
+// Aiden is a SURFACE, not a Brand mode, so it is absent from ANCHORS — and it is the one
+// case where the plateau is real: --primary is named at BOTH 44% and 62%, giving the
+// blurple a band instead of a point. Hence four stops here where the brands need three.
+// Its decorative-hi also moves across the mode flip (#b65ffd -> #b75ef2); no other
+// brand's does, which is why this is stated rather than derived. Values: recipe line 369.
+const MPA = [0.097, 0.44, 0.62, 0.903];
+GRADIENTS['Mark/Aiden'] = {
+  l: [['b65ffd',1,MPA[0]], ['5a37e6',1,MPA[1]], ['5a37e6',1,MPA[2]], ['2c6dea',1,MPA[3]]],
+  d: [['b75ef2',1,MPA[0]], ['9076f9',1,MPA[1]], ['9076f9',1,MPA[2]], ['4f99ec',1,MPA[3]]],
+};
+
+// Resolve a stop to what it actually PAINTS in a given Mode, chasing aliases. An
+// unbound stop is reported as such: a hardcoded stop is exactly the drift this exists
+// to catch, even when its current literal happens to be right.
+const resolveStop = (stop, modeId) => {
+  const bid = stop.boundVariables && stop.boundVariables.color && stop.boundVariables.color.id;
+  if (!bid) return { unbound: true, hex: hx(stop.color), alpha: stop.color.a ?? 1 };
+  let v = all.find((x) => x.id === bid);
+  if (!v) return { dangling: true };
+  let val = v.valuesByMode[modeId];
+  for (let hop = 0; val && val.type === 'VARIABLE_ALIAS' && hop < 4; hop++) {
+    const t = all.find((x) => x.id === val.id);
+    if (!t) return { dangling: true, via: v.name };
+    v = t; val = t.valuesByMode[modeId];
+  }
+  // A Brand-collection variable has no Light/Dark mode, so it cannot be resolved here.
+  if (!val) return { unresolvable: true, via: v.name };
+  if (val.type === 'VARIABLE_ALIAS') return { unresolvable: true, via: v.name };
+  return { hex: hx(val), alpha: val.a ?? 1, via: v.name };
 };
 
 const gradBad = [];
+let gradientChecks = 0;
+const seenStyles = new Set();
+
 for (const s of await figma.getLocalPaintStylesAsync()) {
   const want = GRADIENTS[s.name];
-  if (!want) continue;
-  const p = (s.paints || [])[0];
-  if (!p || !p.gradientStops) { gradBad.push({ style: s.name, issue: 'not a gradient' }); continue; }
-  if (p.gradientStops.length !== want.length) {
-    gradBad.push({ style: s.name, issue: 'stop count', figma: p.gradientStops.length, code: want.length });
+  if (!want) {
+    // Silence here is what hid the last bug. Anything in a namespace we audit but
+    // have no expectation for is a finding, not a skip.
+    if (/^(Aiden|Mark)\//.test(s.name) && !s.name.includes('/_deprecated/'))
+      gradBad.push({ style: s.name, issue: 'no expectation in this script' });
     continue;
   }
-  p.gradientStops.forEach((g, i) => {
-    const [wh, wa, wp] = want[i];
-    if (hx(g.color) !== wh) gradBad.push({ style: s.name, stop: i, issue: 'colour', figma: hx(g.color), code: wh });
-    else if (Math.abs((g.color.a ?? 1) - wa) > 0.002)
-      gradBad.push({ style: s.name, stop: i, issue: 'alpha', figma: Math.round((g.color.a ?? 1)*100)+'%', code: Math.round(wa*100)+'%' });
-    else if (Math.abs(g.position - wp) > 0.005)
-      gradBad.push({ style: s.name, stop: i, issue: 'position', figma: g.position, code: wp });
-  });
+  seenStyles.add(s.name);
+  const p = (s.paints || [])[0];
+  if (!p || !p.gradientStops) { gradBad.push({ style: s.name, issue: 'not a gradient' }); continue; }
+
+  for (const [key, modeId] of [['l', L], ['d', D]]) {
+    const tag = key === 'l' ? 'Light' : 'Dark';
+    const exp = want[key];
+    if (p.gradientStops.length !== exp.length) {
+      gradBad.push({ style: s.name, mode: tag, issue: 'stop count', figma: p.gradientStops.length, code: exp.length });
+      continue;
+    }
+    const got = p.gradientStops.map((g) => resolveStop(g, modeId));
+
+    p.gradientStops.forEach((g, i) => {
+      const [wh, wa, wp] = exp[i];
+      const r = got[i];
+      gradientChecks++;
+
+      if (r.unbound)      return gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'stop is not bound to a variable', figma: r.hex });
+      if (r.dangling)     return gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'bound to a deleted variable', via: r.via });
+      if (r.unresolvable) return gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'bound variable has no Light/Dark value', via: r.via });
+
+      if (wh === 'MID') {
+        // Stands in for a shorter code gradient: must be the midpoint of its neighbours.
+        const a2 = got[i - 1], b2 = got[i + 1];
+        if (!a2 || !b2 || !a2.hex || !b2.hex) return;
+        const want2 = hx(mix(rgb(a2.hex), rgb(b2.hex), 0.5));
+        // A midpoint of two bytes lands on a .5 boundary half the time, and the float
+        // that carries it (0.7156862745 * 255 = 182.49999999999997) rounds DOWN where
+        // the arithmetic says up. Both aiden mids sit on exactly that edge, so an exact
+        // match is the wrong test — same 8-bit-grid hazard as `q()` above. One byte per
+        // channel is still far tighter than any real drift.
+        const off = ['r','g','b'].map((k) => Math.abs(rgb(r.hex)[k]*255 - rgb(want2)[k]*255));
+        if (Math.max(...off) > 1)
+          gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'interpolated mid', figma: r.hex, code: want2, via: r.via });
+      } else if (r.hex !== wh) {
+        gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'colour', figma: r.hex, code: wh, via: r.via });
+      } else if (Math.abs(r.alpha - wa) > 0.002) {
+        gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'alpha', figma: Math.round(r.alpha*100)+'%', code: Math.round(wa*100)+'%', via: r.via });
+      }
+
+      if (Math.abs(g.position - wp) > 0.005)
+        gradBad.push({ style: s.name, mode: tag, stop: i, issue: 'position', figma: g.position, code: wp });
+    });
+  }
 }
+
+// An expectation with no style is the same class of miss, seen from the other side.
+for (const name of Object.keys(GRADIENTS))
+  if (!seenStyles.has(name)) gradBad.push({ style: name, issue: 'expected style not found in file' });
 
 // a dangling alias resolves to nothing and paints the collection default — silent
 const dangling = [];
@@ -189,7 +307,10 @@ for (const colName of ['Brand', 'Tint page', 'Tint rail']) {
 }
 
 const variableChecks = Object.keys(ANCHORS).length * 2 * (4 + Object.keys(DERIVED).length + Object.keys(TINT).length);
-const gradientChecks = Object.values(GRADIENTS).reduce((n, s) => n + s.length, 0);
+// gradientChecks is COUNTED AS IT RUNS, not computed from the expectation table. The
+// old version derived it from GRADIENTS, so the total kept reporting 22 gradient checks
+// during the whole period none of them executed. A count you can inflate by skipping
+// work is worse than no count.
 
 return {
   checked: variableChecks + gradientChecks,

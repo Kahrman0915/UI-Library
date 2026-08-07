@@ -225,21 +225,32 @@ export const BRAND_ANCHORS = {
   // The whole move is dE 3.4. All db gates re-checked: white 4.54, --primary-text
   // 5.56, deep dE 15.0, chart chain 15/24/25, ec 11.5, aiden 10.2, info 13.7.
   db:    { light: ['#8cdafd', '#466af4', '#0d3bbf'], dark: ['#8cdafd', '#689cfe', '#046de9'], markDeep: { light: '#3419ba', dark: '#3b27ed' }, accent: { light: '#2892ba', dark: '#33b3e3' }, chart2Dark: '#c7dbff', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'chart-column' },
-  // nb SEPARATES ITS MARK FROM ITS PRIMARY (owner, 2026-08-06 — "the only thing
-  // I don't like about current nb is the light mode mark"). The cause was
-  // measurable: every other brand's light mark has its middle stop at L 0.56-0.59
-  // with the white glyph at ~4.5, but nb's sat at L 0.45 / 6.94 — a much darker,
-  // muddier tile that fell 0.40 in lightness from the first stop. That darkness
-  // is not a style choice, it is nb's CVD budget: its primary was solved to a 6.9
-  // AA target rather than 4.5 precisely so it could not be confused with the gold
-  // under a red-green anomaly. THAT CONSTRAINT IS FUNCTIONAL — it exists because
-  // charts and brand chips put the two side by side. A logo pays no such debt.
-  // So the mark's middle is now the green nb would have had at the ordinary 4.5
-  // floor (#418605, L 0.553, glyph 4.53 — the family's own shape), while
-  // `primary` pins the functional colour to today's #306602 exactly. Buttons,
-  // chart slot 1, tints and every gate are untouched; only the artwork moves.
-  // markDeep rises with it, from a near-black #063a26 to a real emerald.
-  nb:    { light: ['#c9db29', '#418605', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a3a985' }, chart2Dark: '#8fa37c', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#306602', dark: '#8bca2f' }, icon: 'file-text' },
+  // nb's MARK AND PRIMARY ARE REUNIFIED (owner, 2026-08-07): "we decided to use
+  // primary so we could reduce tokens and get rid of decorative mid". The mark's
+  // middle stop is `primary` again, the `primary` override is gone, and nb is no
+  // longer PRIMARY_IS_AUTHORED. This reverses the 2026-08-06 split below; the
+  // reasoning is kept because the constraint it describes has NOT gone away.
+  //
+  // What the split was for, and what reverting costs: every other brand's light
+  // mark has its middle stop at L 0.56-0.59 with the white glyph at ~4.5. nb's
+  // sits at L 0.45 / 6.94 — a darker, muddier tile that falls 0.40 in lightness
+  // from the first stop, and the reason the owner said on 2026-08-06 that "the
+  // only thing I don't like about current nb is the light mode mark". That
+  // darkness is nb's CVD budget: its primary is solved to a 6.9 AA target rather
+  // than 4.5 so it cannot be confused with the gold under a red-green anomaly.
+  // That constraint is functional and still holds for charts and brand chips,
+  // which put the two side by side. The 2026-08-06 change gave the artwork the
+  // green nb would have had at the ordinary 4.5 floor (#418605, L 0.553, glyph
+  // 4.53); reverting hands the mark back its 6.9-target green.
+  //
+  // The trade taken here is one token against that tile. If the light mark reads
+  // muddy again, this is the line that did it — and the fix is a mark-mid token,
+  // not a change to `primary`, which every gate depends on.
+  //
+  // markDeep is LEFT AS RAISED (#105b3e, up from a near-black #063a26). It moved
+  // in the same 2026-08-06 change but for its own reason, and nothing in this
+  // decision argues for putting it back.
+  nb:    { light: ['#c9db29', '#306602', '#183a00'], dark: ['#c9db29', '#8bca2f', '#649807'], markDeep: { light: '#105b3e', dark: '#249d6e' }, accent: { light: '#919a61', dark: '#a3a985' }, chart2Dark: '#8fa37c', on: { light: '#ffffff', dark: '#0f172a' }, icon: 'file-text' },
   // dc's LIGHT MARK DEEP was raised #032930 -> #0c4b55 (owner, 2026-08-06:
   // "light mode just seems really deep"). It was, measurably: at L 0.259 it was
   // the darkest third stop in the set by a distance — the rest of the family
