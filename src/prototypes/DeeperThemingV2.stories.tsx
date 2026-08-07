@@ -2543,3 +2543,135 @@ export const TheMute: Story = {
     );
   },
 };
+
+/**
+ * MUTE BY FORM, NOT BY HUE — four candidates side by side.
+ *
+ * The owner's question: if an outline ON a filled bar reads as emphasis, does an
+ * outline WITHOUT a fill read as muted? It does — ink is the thing being
+ * removed, and less ink recedes. But the four options differ in what they cost,
+ * and the difference is worth seeing rather than arguing about:
+ *
+ *   A  the mechanism today — every muted series takes --chart-muted, so the
+ *      field is calm and IDENTITY IS DESTROYED: five series become one grey and
+ *      a reader can see that they are context but not which is which.
+ *   B  outline in the SERIES' OWN colour. Identity survives — "Paid search,
+ *      de-emphasised" is still readable as Paid search — but so does the colour
+ *      variety, so the field is busier than A.
+ *   C  outline in the mute colour. Calm like A, and still lighter than a fill,
+ *      but identity is gone again — it is A with less ink.
+ *   D  the inverse the owner named: everything keeps its fill and the SUBJECT
+ *      gains a ring. Nothing recedes, so this is emphasis-by-addition, and on a
+ *      busy chart it is the weakest of the four.
+ *
+ * All four are CSS over the shipped component, deliberately — the question is
+ * which treatment to build, and prototyping it in the POC costs nothing if the
+ * answer turns out to be "none of these".
+ */
+export const MuteByForm: Story = {
+  render: function MuteByFormStory() {
+    const mode = useGlobalMode();
+    const [brand, setBrand] = useState<BrandKey>('db');
+
+    const SERIES = [
+      { key: 'direct', label: 'Direct', slot: 1 as const, data: [19, 24, 33, 41] },
+      { key: 'paid', label: 'Paid search', slot: 2 as const, data: [38, 37, 29, 24] },
+      { key: 'referral', label: 'Referral', slot: 3 as const, data: [13, 16, 21, 26] },
+      { key: 'social', label: 'Social', slot: 4 as const, data: [9, 12, 13, 14] },
+      { key: 'email', label: 'Email', slot: 5 as const, data: [7, 8, 10, 11] },
+      { key: 'partner', label: 'Partner', slot: 6 as const, data: [4, 6, 7, 9] },
+    ];
+
+    /* Series 1 is the subject in every panel; 2-6 are the field. nth-child is
+       safe here ONLY because no `emphasis` prop is set — with one set, Chart
+       re-sorts the groups so the subject paints over its context. */
+    const css = `
+      .poc2-mf-b .ui-chart__series:nth-child(n+2) .ui-chart__bar {
+        fill: none; stroke: currentColor; stroke-width: 1.5;
+      }
+      .poc2-mf-c .ui-chart__series:nth-child(n+2) .ui-chart__bar {
+        fill: none; stroke: var(--chart-muted); stroke-width: 1.5;
+      }
+      .poc2-mf-d .ui-chart__series:nth-child(1) .ui-chart__bar {
+        stroke: var(--foreground); stroke-width: 2; paint-order: stroke fill;
+      }
+    `;
+
+    const panel = (title: string, note: string, cls?: string, emphasis?: string) => (
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <div>
+          <strong style={{ fontSize: 'var(--text-sm)' }}>{title}</strong>
+          <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{note}</p>
+        </div>
+        <Scope brand={brand} mode={mode}>
+          <div className={cls} style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)' }}>
+            <BarChart id={`mf-${cls ?? 'a'}`} title="Quarterly signups by channel" layout="grouped"
+              categories={['Q1', 'Q2', 'Q3', 'Q4']} valueFormatter={(v) => `${v}k`}
+              height={210} showLegend showGrid emphasisOnHover={false}
+              {...(emphasis ? { emphasis } : {})} series={SERIES} />
+          </div>
+        </Scope>
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <style>{css}</style>
+        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 820 }}>
+            <h2 style={H2}>Muting by form instead of by hue</h2>
+            <p style={P}>
+              An outline <em>without</em> a fill does read as muted — ink is what is being removed, and
+              less ink recedes. The question is what each option costs. <strong>A</strong> is the
+              mechanism today; <strong>B</strong> is the one worth arguing for, because it is the only
+              option where a de-emphasised series is still <em>identifiable</em>.
+            </p>
+            <p style={P}>
+              Bars here render about <strong>12.4px</strong> wide, so a 1.5px outline leaves a ~9px
+              hole and reads cleanly. That is the constraint to watch: past roughly eight categories
+              the bars get narrow enough that an outline becomes hatching, and the treatment needs a
+              width floor with a fallback below it.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {BRAND_KEYS.filter((b) => b !== 'aiden').map((b) => (
+                <Chip key={b} id={`mf-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
+              ))}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px,1fr))', gap: 'var(--p-6)' }}>
+            {panel('A · Today — muted takes --chart-muted',
+              'Calm field. Identity destroyed: five series become one grey, so you can see they are context but not which is which.',
+              undefined, 'direct')}
+            {panel('B · Outline in the series’ own colour',
+              'Identity survives — that outlined bar is still readable as Paid search. Costs some calm, because the colour variety survives too.',
+              'poc2-mf-b')}
+            {panel('C · Outline in the mute colour',
+              'Calm like A and lighter than a fill, but identity is gone again. This is A with less ink — it does not buy the thing B buys.',
+              'poc2-mf-c')}
+            {panel('D · Everything filled, subject gains a ring',
+              'Emphasis by ADDITION rather than by recession. Nothing steps back, so on a busy chart it is the weakest of the four.',
+              'poc2-mf-d')}
+          </div>
+
+          <div style={{ maxWidth: 820 }}>
+            <h2 style={H2}>What this would change</h2>
+            <p style={P}>
+              If <strong>B</strong> wins, the mute stops being an emphasis mechanism and survives only
+              as the <em>fold past six</em> — a much weaker constraint, because it then only has to
+              clear the six slots when a seventh series actually exists. The per-brand mute question
+              mostly disappears with it, including <code style={MONO}>db</code>’s bespoke warm value
+              and <code style={MONO}>dc</code>’s slot-2 collision.
+              <br />
+              It does <em>not</em> generalise across marks on its own: a line is already a stroke and
+              has no fill to remove, so lines and areas keep their existing treatments (half stroke
+              weight, 10% opacity). That is not a flaw — it is the same principle, expressed per mark
+              type, which is what the chart already does.
+            </p>
+          </div>
+        </div>
+      </>
+    );
+  },
+};
