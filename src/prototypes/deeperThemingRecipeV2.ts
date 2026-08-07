@@ -699,34 +699,48 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * The two sub-3:1 tints also stop reading as shapes at 1px.
  */
 /**
- * PER-BRAND --chart-muted. Empty for everyone but db, and db is why it exists.
+ * --chart-muted IS DERIVED NOW, not authored (owner, 2026-08-07).
  *
- * The owner drew db's slot 2 as a pale blue-grey three times, and I moved it
- * back twice. --chart-muted is ALSO a pale blue-grey (#a9b6c7), so their third
- * value landed 2.2 dE from it — the same colour. A de-emphasised series and an
- * active slot-2 series would have been indistinguishable.
+ * THE RULE: the muted colour is the palette's own LOWEST-CHROMA SLOT, knocked
+ * back with alpha — slot 2 in light at 45%, slot 6 in dark at 28%.
  *
- * THE MUTE MOVED INSTEAD OF THE SLOT, and that is the right way round: slot 2
- * carries a brand's identity, the mute exists to have none. Arguing with a
- * consistent design intent for a third time to protect the one token with
- * nothing to protect was the wrong trade.
+ * WHY THOSE SLOTS. I first picked the source by CONTRAST against the card,
+ * which chose slot 4 in light, and the owner rejected it on sight: "that almost
+ * makes me look at those more than the blue 100% filled." They were right, and
+ * the mistake was the criterion rather than the value. LOW CONTRAST IS NOT LOW
+ * SALIENCE — a pale cyan is quiet in luminance and still chromatic, and chroma
+ * is what pulls the eye. Composited, slot 4 lands at chroma 0.045-0.061 where
+ * slot 2 lands at 0.021-0.039. In DARK, slot 6 is literally the lowest-chroma
+ * slot in six of seven brands, so the rule is not an approximation there.
  *
- * IT GOES LIGHTER, NOT DARKER. Every candidate that cleared db's six by going
- * DOWN landed at 5.8-7.2 contrast against the shipped mute's 2.06 — which would
- * make an IGNORED series heavier than the ones being read. A mute is context;
- * it recedes. #e0cfc2 sits at 1.51, quieter than shipped, and clears every db
- * slot by 12.6.
+ * WHY THOSE ALPHAS: the highest that clear the 12-dE floor against all six
+ * slots in every brand. Light is capped at 45% by nb, dc and rm (db and ph
+ * would allow 50); dark at 28% by ec. Worst clearance across all fourteen
+ * combinations is 12.1, contrast runs 1.34-2.23, composited chroma 0.013-0.039.
  *
- * IT IS WARM because the cool lane is full: db's slot 2 and slot 5 are both
- * blue-greys, so a low-chroma neutral can only escape them along LIGHTNESS or
- * out of the blue family entirely. A warm pale greige cannot be mistaken for
- * any series in a blue palette, which is exactly the job.
+ * NO COMPONENT CHANGE. --chart-muted is the same variable the Chart already
+ * paints de-emphasised series with, so redefining it as a translucent
+ * color-mix is the whole implementation. Everything downstream — the legend
+ * swatch, the tooltip key — reads the same field the mark does and stays in
+ * sync for free, which is the property Chart.context.ts calls out.
  *
- * Light only. Dark's mute (#425064) already clears db's dark set by 19.4.
+ * IT IS TRANSLUCENT, so it composites over whatever is behind it: the card, and
+ * the gridlines. That is wanted. The one case to watch is marks that OVERLAP —
+ * grouped bars never do, stacked segments and areas do, and two translucent
+ * muted areas would compound where they cross.
+ *
+ * This retires db's bespoke #e0cfc2 and dc's slot-2 collision at the same time:
+ * a mute derived FROM the palette cannot drift away from it.
  */
-const CHART_MUTE: Record<string, { light?: string; dark?: string }> = {
-  db: { light: '#e0cfc2' },
+const CHART_MUTE_SRC: Record<string, { light: string; dark: string }> = {
+  // aiden is the exception, and for the reason the rule predicts: its light
+  // slot 2 is #080e3e, a near-BLACK rather than a pale tint, so knocking it
+  // back gives a mid grey at 3.03 contrast — darker and louder than every other
+  // brand's mute, clearing by only 9.4. Its own lowest-chroma light slot is
+  // slot 6 (chroma 0.009), so the same rule points there instead.
+  aiden: { light: '--chart-6', dark: '--chart-6' },
 };
+const MUTE_ALPHA = { light: '45%', dark: '28%' };
 
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // ec is the ORIGINAL — hand-drawn by the owner, then tuned. Every other entry
@@ -749,9 +763,10 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
      chromatic; lighter keeps their look, chromatic (#a290e1, 2.76) does not.
      Their own value was already 1.63.
 
-     SLOT 2 IS NOW THE OWNER'S #a2b2d0 AND THE MUTE MOVED INSTEAD — see
-     CHART_MUTE. Their value sat 2.2 dE from --chart-muted, and the mute is the
-     token with no identity to defend, so it gave way.
+     SLOT 2 IS THE OWNER'S #a2b2d0. It once sat 2.2 dE from --chart-muted, and
+     the fix was a bespoke warm mute for db alone; that is gone, because the
+     mute is now DERIVED from slot 2 itself (see CHART_MUTE_SRC) and a colour
+     cannot collide with something computed from it.
 
      DARK IS UNTOUCHED BY OWNER DECISION (2026-08-07), including two slots that
      do NOT clear --info: slot 2 at 6.5 and slot 4 at 4.2 against a floor of 10.
@@ -876,9 +891,9 @@ function chartVars(
   // A hand-authored set wins outright — it is the owner's drawing, not an input
   // to a derivation, so nothing downstream may re-solve or "improve" it.
   const hand = CHART_HAND[k]?.[mode];
-  const mute = CHART_MUTE[k]?.[mode];
+  const src = CHART_MUTE_SRC[k]?.[mode] ?? (mode === 'light' ? '--chart-2' : '--chart-6');
   if (hand) return hand.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n'
-    + (mute ? `  --chart-muted: ${mute};\n` : '');
+    + `  --chart-muted: color-mix(in srgb, var(${src}) ${MUTE_ALPHA[mode]}, transparent);\n`;
   const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
