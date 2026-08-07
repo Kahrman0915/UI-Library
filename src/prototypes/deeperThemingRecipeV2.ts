@@ -1071,18 +1071,18 @@ ${anchorBlocks()}
    Every mark in this system is a three-stop gradient, so it is tempting to push
    that into the six brands' buttons too. Don't. The second gradient in the
    system is the one that kills the first. */
-/* AIDEN'S HIGHLIGHT IS A CORNER GLINT, NOT A WASH (owner, 2026-08-06: "I don't
-   want to see the pink as much ... just barely being seen in the top left
-   corner"). Every other brand's highlight is a rotation of 20-30 degrees off
-   its own primary, so at the default stops it reads as light falling on the
-   brand's colour. Aiden's is now pink against a blurple — far enough away that
-   the same geometry reads as a SECOND COLOUR, and the tile stops looking like
-   one object lit from a corner.
-   Compressing the stops fixes it without touching the colour: the pink lands at
-   0% and is gone by 22%, so it is a glint in the corner and the body of the
-   tile is the blurple-to-blue the buttons already carry. This is the highlight
-   doing what the owner says it is for — accents and artwork — rather than
-   competing to be the brand. */
+/* AIDEN GIVES ITS MIDDLE A PLATEAU RATHER THAN SHRINKING ITS HIGHLIGHT.
+   Two attempts, and the second is the one that was right.
+   First I compressed the pink into the corner (stops 0% and 22%). That did
+   remove the pink — and handed the tile to the BLUE, because everything from
+   22% to 90.3% became the run down to the deep. Owner: "now it is too blue."
+   The problem was never how far the pink reached; it was that the blurple in
+   the MIDDLE — the colour that is actually Aiden, the one the buttons carry —
+   had no room. It was a crossing point between two other colours rather than a
+   body. So the ends go back exactly where they were (9.7% and 90.3%) and the
+   middle is named TWICE, holding from 44% to 62%. The pink still opens the
+   corner, the blue still closes it, and the thing between them is now the
+   brand instead of a transition. */
 [data-theme-poc2][data-surface='aiden'] {
   /* --poc2-mark IS RE-DECLARED HERE, not just its stop variables, and that is
      forced by how custom properties resolve rather than by preference. A
@@ -1096,11 +1096,13 @@ ${anchorBlocks()}
      The stop variables above still earn their place — they document the knob
      and keep the two definitions honest — but a brand that wants different
      stops must re-declare the gradient too. */
-  --poc2-mark-a-at: 0%;
-  --poc2-mark-b-at: 22%;
+  --poc2-mark-a-at: 9.7%;
+  --poc2-mark-b-at: 44%;
+  --poc2-mark-b2-at: 62%;
   --poc2-mark: linear-gradient(135deg,
     var(--mark-a) var(--poc2-mark-a-at),
     var(--mark-b) var(--poc2-mark-b-at),
+    var(--mark-b) var(--poc2-mark-b2-at),
     var(--mark-c) 90.3%);
 }
 [data-theme-poc2][data-surface='aiden'][data-mode='light'] {
@@ -1236,9 +1238,16 @@ ${anchorBlocks()}
      second colour rather than as a light source. See the aiden override. */
   --poc2-mark-a-at: 9.7%;
   --poc2-mark-b-at: 51.6%;
+  /* The middle colour gets TWO stops so it can hold a plateau rather than being
+     a single crossing point. Defaulted to the same position as --poc2-mark-b-at,
+     which is a visual no-op — the six brands that do not set it render exactly
+     as before. A gradient stop is a point: the only way to give a colour a BAND
+     is to name it twice. */
+  --poc2-mark-b2-at: 51.6%;
   --poc2-mark: linear-gradient(135deg,
     var(--mark-a) var(--poc2-mark-a-at),
     var(--mark-b) var(--poc2-mark-b-at),
+    var(--mark-b) var(--poc2-mark-b2-at),
     var(--mark-c) 90.3%);
   --poc2-hero: linear-gradient(135deg,
     var(--mark-mid) 0%,
@@ -1675,6 +1684,7 @@ ${anchorBlocks()}
     linear-gradient(135deg,
       var(--primary-highlight) var(--poc2-mark-a-at),
       var(--mark-mid) var(--poc2-mark-b-at),
+      var(--mark-mid) var(--poc2-mark-b2-at),
       var(--mark-deep) 90.3%);
   /* THE GLYPH FOLLOWS THE TILE, and only the LIVE mark needs this.
      The live mark IS mode-aware, so in dark its tile is the pale dark-mode
@@ -1737,6 +1747,7 @@ ${anchorBlocks()}
     linear-gradient(135deg,
       var(--primary-highlight) var(--poc2-mark-a-at),
       var(--mark-mid) var(--poc2-mark-b-at),
+      var(--mark-mid) var(--poc2-mark-b2-at),
       var(--mark-deep) 90.3%);
 }
 [data-theme-poc2][data-mode='dark'] .poc2-mark--live::before {
