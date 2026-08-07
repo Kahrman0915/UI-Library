@@ -326,6 +326,20 @@ export const BRAND_ANCHORS = {
   // the trade was taken deliberately — a third series that cannot be seen is
   // worth less than one that is not in the family.
   //
+  // THE AIDEN HIGHLIGHT IS PINK (owner, 2026-08-06, read from Figma). The mark's
+  // first stop moved #8455f0 -> #c755f0 in light and #b3a2fa -> #c955de in dark
+  // — a 24 and 29 degree rotation out of violet into magenta-pink. Taken from
+  // `mark/aiden` on the v2 Mark anatomy page rather than sampled off a
+  // screenshot: the owner edits the Figma, so the Figma is the source.
+  //
+  // IT REACHES FURTHER THAN THE MARK. --primary-highlight also feeds the hero
+  // bubbles, the artwork rail and the sheen — and CHART SLOT 4 IS BUILT ON THE
+  // HIGHLIGHT HUE, so aiden's chart palette had to be re-solved rather than
+  // recoloured. See CHART_HAND.
+  //
+  // The primary and the deep are UNCHANGED — still copied from tokens.scss, for
+  // the reason immediately below. Only the highlight moved.
+  //
   // AIDEN IS NOT SOLVED — IT IS COPIED (owner, 2026-08-06: "update aiden to be
   // as closely matching to what is in the current tokens.scss").
   //
@@ -349,7 +363,7 @@ export const BRAND_ANCHORS = {
   // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
   // construction — but it is the tightest identity pair in the set now, and
   // matching the product is the reason it is accepted.
-  aiden: { light: ['#8455f0', '#5a37e6', '#2c6dea'], dark: ['#b3a2fa', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
+  aiden: { light: ['#c755f0', '#5a37e6', '#2c6dea'], dark: ['#c955de', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -696,8 +710,24 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
            dark:  ['#ee7d0a', '#ddb09a', '#bd6c42', '#ebce99', '#a6897c', '#f3e7d9'] },
   rm:    { light: ['#d62496', '#cc86a0', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
            dark:  ['#fe68b8', '#d8acc6', '#b6679a', '#f0bff5', '#a88d9e', '#f8e4e7'] },
-  aiden: { light: ['#5a37e6', '#9d94d3', '#45447d', '#83b9fa', '#7e85a1', '#322a3f'],
-           dark:  ['#9076f9', '#b4b7e2', '#797bc9', '#b4d5fe', '#8b8ea9', '#ede6f6'] },
+  // AIDEN RE-SOLVED ON THE PINK HIGHLIGHT — and doing it found a defect I had
+  // shipped. The previous aiden set was ILLEGAL in BOTH modes and I reported it
+  // as passing: light slots 2 and 4 sat 10.2 and 8.1 from --chart-muted against
+  // a floor of 12, and dark slots 2 and 4 sat 8.9 and 6.0 from --info against a
+  // floor of 10. The repair loop had given up on an already-bad starting set
+  // instead of fixing it, and my summary mentioned only the all-pairs
+  // shortfall. Both modes are now clean and better on nearly every axis:
+  //   light  9.3 -> 13.2 all-pairs · 7.7 -> 12.8 CVD · 16.8 -> 20.7 neighbour
+  //   dark   7.8 -> 11.0 all-pairs · 6.7 ->  7.2 CVD · 18.5 -> 17.8 neighbour
+  //
+  // SLOT 4 IS PINNED, NOT SEARCHED. Left free the solver parked it on a dark
+  // plum — legal, well separated, and not what was asked for. The highlight has
+  // a job: the brightest, airiest colour the surface owns. In DARK it sits a
+  // rung below the template (L 0.80 rather than 0.86) because at the template
+  // rung the pale pink crowds slot 6's near-white and no legal sixth colour
+  // exists at all.
+  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1', '#df90fd', '#253541', '#6f7b84'],
+           dark:  ['#9076f9', '#7b7e8b', '#ddaefd', '#b969be', '#d8e8fa', '#a3aeb9'] },
 };
 
 /**
@@ -759,9 +789,10 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   dc:    { light: ['#127f76', '#045851', '#143438'], dark: ['#0db09d', '#b2beba', '#d9efef'] },
   ph:    { light: ['#b56005', '#793e01', '#3a2c18'], dark: ['#ee7d0a', '#ddb09a', '#f3e7d9'] },
   rm:    { light: ['#d62496', '#960366', '#3f262b'], dark: ['#fe68b8', '#d8acc6', '#f8e4e7'] },
-  // aiden's dark trio is 1,2,5 rather than 1,2,6 — its near-white slot 6 sits
-  // too close to its pale rung, so the tinted slate carries the third line.
-  aiden: { light: ['#5a37e6', '#45447d', '#322a3f'], dark: ['#9076f9', '#b4b7e2', '#8b8ea9'] },
+  // aiden's trios are 1,2,3 light and 1,3,5 dark. Its pink slot 4 is the
+  // highlight and measures 2.20:1 in light — fine as a bar, unusable as a
+  // stroke — so light takes the dark end of its own ladder instead.
+  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1'], dark: ['#9076f9', '#ddaefd', '#d8e8fa'] },
 };
 
 type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
