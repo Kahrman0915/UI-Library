@@ -8,6 +8,9 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import {
   Alert, Avatar, AvatarGroup, Badge, Banner, BarChart, Button, Card, CardBody, CardHeader,
+  Chat, ChatBubble, ChatComposer, ChatComposerActions, ChatComposerInput, ChatComposerSend,
+  ChatCitation, ChatMarker, ChatMessage, ChatMessageList, ChatReasoning, ChatSource, ChatSources,
+  ChatSuggestion, ChatSuggestions, ChatToolCall, ChatToolCalls,
   Chip, Fab, LineChart,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
   Separator, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader,
@@ -829,8 +832,10 @@ export const Brands: Story = {
             </p>
             <p style={P}>
               <code style={MONO}>nb</code> and <code style={MONO}>dc</code> gave up about 10&nbsp;L*
-              to earn the white label. <code style={MONO}>db</code> has since been set to the shipped
-              indigo <code style={MONO}>#6063f1</code>, which clears at 4.61 without a solve. The <strong>deep</strong> stops were
+              to earn the white label. <code style={MONO}>db</code> was briefly set to the shipped
+              indigo <code style={MONO}>#6063f1</code>; it has since moved again, to{' '}
+              <code style={MONO}>#466af4</code> (h268), when its mark deeps were rotated toward blue.
+              The <strong>deep</strong> stops were
               then re-cut by hand so the marks kept their depth — those are a design judgement, not a
               derivation, and they are safe: deep only reaches the surfaces through a 60%-slate stock
               applied at single digits, so the re-cut moves every tinted surface by{' '}
@@ -1080,19 +1085,25 @@ export const AidenSurface: Story = {
               That is a categorical difference, where a surface tint is only ever a matter of degree.
             </p>
             <p style={P}>
-              <strong>The button fill is two stops; the mark stays three.</strong> They are not the same
-              object. A mark is 48px of artwork with nothing on it, so a third stop reads as depth; a
-              button is a wide flat shape with a label across it, and the third stop only ever shows up
-              as a band the eye has to cross.
-              <br />
-              Both ends have to clear the label, which the mark&rsquo;s stops do not, so the fill is
-              authored rather than derived: <code style={MONO}>#0060ba → #8244ff</code> in light on
-              white (worst point across the ramp <strong>4.99</strong>) and{' '}
-              <code style={MONO}>#47a6ff → #aa75ff</code> in dark on ink (<strong>5.69</strong>). The
-              violet end holds across modes (308/308); the blue end does not — 282 in light against 271
-              in dark. That is a real 11° split, taken deliberately: dark needs the extra lightness to
-              carry ink, and the hue moved with it. The hovers move in <em>opposite</em> directions: light deepens because it
-              carries white, dark lightens because it carries ink.
+              <strong>The fill is the shipped gradient, verbatim — it is not solved here.</strong> This
+              POC once authored its own two-stop fill and reached a better white-label number
+              (5.96 against 4.99). It was removed on purpose: a prototype that shows a{' '}
+              <em>different</em> Aiden from the one the product renders is teaching the wrong thing.
+              So the fill is <code style={MONO}>#8455f0 → #5a37e6 → #2c6dea</code> in light on white
+              (worst point across the ramp <strong>4.63</strong>) and{' '}
+              <code style={MONO}>#9076f9 → #93c5fd</code> in dark on ink (<strong>5.22</strong>) —
+              the shipped numbers, inherited rather than re-earned. The hovers still move in{' '}
+              <em>opposite</em> directions: light deepens because it carries white, dark lightens
+              because it carries ink.
+            </p>
+            <p style={P}>
+              <strong>The mark and the fill have come apart, and that is now deliberate.</strong> The
+              mark opens on a pink highlight (<code style={MONO}>#b65ffd</code>, h306) and holds its
+              blurple across a plateau from 44% to 62%; the button opens on the old violet{' '}
+              <code style={MONO}>#8455f0</code>. Taking the pink into the fill drops the white label
+              from 4.63 to <strong>3.47</strong> — under AA — because the pink is brighter than the
+              violet it replaced. The mark is artwork with nothing on it; the button is a control
+              carrying text. Same identity, different duty, so they are allowed to differ.
             </p>
           </div>
 
@@ -1131,20 +1142,24 @@ export const AidenSurface: Story = {
           <div>
             <h2 style={H2}>Where this currently does not work</h2>
             <p style={P}>
-              <strong>Aiden&rsquo;s flat accent is 5.9&nbsp;ΔE from db&rsquo;s.</strong>{' '}
-              <code style={MONO}>#5a56d3</code> against <code style={MONO}>#6063f1</code> — the
-              tightest pair in the set, between the two apps that overlap most. It was 20.7 before db
-              moved to the shipped indigo. That accent paints Aiden&rsquo;s text, borders, chips and
-              its own app&rsquo;s buttons, so it matters more than the gradient does, and nothing about
-              the gradient fixes it.
+              <strong>Aiden&rsquo;s flat accent sits 10.2&nbsp;ΔE from db&rsquo;s.</strong>{' '}
+              <code style={MONO}>#5a37e6</code> against <code style={MONO}>#466af4</code> in light,
+              9.9 in dark — the tightest identity pair in the set, between the two apps that overlap
+              most. It clears the 8.5 hard floor and separates by <em>lightness</em> (L 0.50 against
+              0.58) rather than hue, which is the recorded construction. That accent paints
+              Aiden&rsquo;s text, borders, chips and its own app&rsquo;s buttons, so it matters more
+              than the gradient does.
             </p>
             <p style={P}>
-              <strong>The gradient&rsquo;s closest approach to db is 6.6&nbsp;ΔE</strong>, and it is now
-              the <em>violet</em> end rather than the middle — db is violet too. Weighting the ramp no
-              longer helps, because you cannot move an endpoint by changing where it starts. The only
-              lever is rotating the violet away from db&rsquo;s hue 299:{' '}
-              <code style={MONO}>#9a2ff0</code> (h314) reaches 9.3,{' '}
-              <code style={MONO}>#b31fd4</code> (h322) reaches 11.0.
+              <strong>The gradient passes 2.6&nbsp;ΔE from db&rsquo;s primary</strong> at its closest
+              point in light (4.8 in dark), which is closer than anything else in this system is
+              allowed to be — and it is the direct cost of inheriting the shipped fill instead of
+              solving one. The shipped ramp runs straight through db&rsquo;s indigo on its way from
+              violet to blue. Two things keep it survivable: the crossing is a{' '}
+              <em>point on a ramp</em> rather than a flat fill, and a gradient against a flat colour is
+              already categorically different to the eye. It is still the single weakest number on this
+              page, and the only real fix is a bespoke Aiden fill — which is exactly what was given up
+              to match the product.
             </p>
             <p style={P}>
               <strong>The old &ldquo;db and aiden share a deep&rdquo; rule is moot, not broken.</strong>{' '}
@@ -1338,6 +1353,13 @@ export const Tokens: Story = {
   },
 };
 
+/* Everything the audit measures: the six rooms plus the surface that walks into
+   them. Aiden is NOT in SUB_BRANDS — that list answers "which app am I in" —
+   but it renders --primary, its foreground and its own chart slots like any
+   brand, so leaving it out of the audit left the one scope with hand-copied
+   values unmeasured. */
+const AUDIT_SCOPES: BrandKey[] = [...SUB_BRANDS, 'aiden' as BrandKey];
+
 export const Audit: Story = {
   render: function AuditStory() {
     const hostRef = useRef<HTMLDivElement>(null);
@@ -1348,7 +1370,7 @@ export const Audit: Story = {
       const host = hostRef.current;
       if (!host) return;
       const next: Record<string, Record<string, number>> = {};
-      for (const b of SUB_BRANDS) {
+      for (const b of AUDIT_SCOPES) {
         const scope = host.querySelector<HTMLElement>(`[data-a="${b}"]`);
         if (!scope) continue;
         const probe = scope.firstElementChild as HTMLElement;
@@ -1373,8 +1395,10 @@ export const Audit: Story = {
       <>
         <PocStyle />
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
-          {SUB_BRANDS.map((b) => (
-            <span key={b} data-a={b} data-theme-poc2="" data-brand={b} data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
+          {AUDIT_SCOPES.map((b) => (
+            <span key={b} data-a={b} data-theme-poc2=""
+              {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
+              data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
               <span />
             </span>
           ))}
@@ -1387,7 +1411,12 @@ export const Audit: Story = {
               brace-matches only the two <code style={MONO}>[data-mode]</code> blocks, returns null for{' '}
               <code style={MONO}>color-mix</code>, and treats unresolved as <em>not</em> a failure while
               exiting 0. So the POC measures itself, in this browser, at full strength across all six
-              sub-brands.
+              sub-brands <em>and the Aiden surface</em>. Aiden was missing from this table until
+              2026-08-07, which mattered more once it stopped being a copy of{' '}
+              <code style={MONO}>tokens.scss</code> and started carrying a solved chart palette of its
+              own: it is selected by <code style={MONO}>data-surface</code>, so a probe scoped with{' '}
+              <code style={MONO}>data-brand</code> matches no rule and silently reports the un-themed
+              base — which is exactly the bug the Tokens story was carrying.
             </p>
           </div>
           <div style={{ overflowX: 'auto' }}>
@@ -1395,7 +1424,7 @@ export const Audit: Story = {
               <thead>
                 <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Pairing</th>
-                  {SUB_BRANDS.map((b) => <th key={b} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>{b}</th>)}
+                  {AUDIT_SCOPES.map((b) => <th key={b} style={{ ...MONO, textAlign: 'right', padding: 'var(--p-2)' }}>{b}</th>)}
                   <th style={{ textAlign: 'left', padding: 'var(--p-2)' }}>Note</th>
                 </tr>
               </thead>
@@ -1403,7 +1432,7 @@ export const Audit: Story = {
                 {PAIRINGS.map((p) => (
                   <tr key={p.label} style={{ borderBottom: 'var(--border-w-50) solid var(--border)' }}>
                     <td style={{ padding: 'var(--p-2)' }}>{p.label}</td>
-                    {SUB_BRANDS.map((b) => {
+                    {AUDIT_SCOPES.map((b) => {
                       const v = rows[p.label]?.[b];
                       const bad = v != null && v < (p.floor ?? 4.5);
                       return (
@@ -1943,11 +1972,11 @@ export const ChartPalettes: Story = {
     const ORDER: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
     const KINDS: { key: string; attr?: string; title: string; blurb: string; n: number }[] = [
       { key: 'cat', title: 'Categorical', n: 6,
-        blurb: 'Unordered series — “which one is this”. Brand primary, deep and accent, then the brand-tinted neutrals. Every adjacent pair holds ΔE 15 so no two series can be mistaken for each other.' },
+        blurb: 'Unordered series — “which one is this”. Six slots, and no slate left in them: the primary, a pale rung of its hue, the deep, the highlight hue at its brightest, a brand-tinted slate, and a near-black that inverts to near-white in dark. Read in slot order the lightness ALTERNATES, which is what separates two bars standing shoulder to shoulder; read sorted it is an even ladder. Neighbouring pairs hold ΔE 13.5–20.7; all-pairs bottoms out around 8, because six colours cannot all sit 15 apart inside a space bounded by 3:1-against-the-card at both ends. Six simultaneous series is the limit of what any palette carries — which is why the emphasis pattern exists.' },
       { key: 'seq', attr: 'sequential', title: 'Sequential', n: 7,
         blurb: 'Magnitude — “how much”. One hue, seven even steps. The pale end is meant to recede into the card; the legibility budget is spent at the deep end.' },
       { key: 'div', attr: 'diverging', title: 'Diverging', n: 7,
-        blurb: 'Signed data — “which side of the baseline”. The HIGH arm is the brand’s own primary hue; the low arm is its opposite, chosen by colour-blind separation rather than by a naive 180°. The midpoint is the brand-tinted neutral.' },
+        blurb: 'Signed data — “which side of the baseline”. The HIGH arm is the brand’s own primary hue; the low arm is its opposite, chosen by colour-blind separation rather than by a naive 180° — a naive complement makes dc teal-vs-red and rm magenta-vs-green, which are red-green axes again. The midpoint is the brand-tinted neutral.' },
     ];
 
     const swatchRow = (n: number) => (
@@ -2207,6 +2236,187 @@ export const ChartsInUse: Story = {
             'diverging — one series, each bar coloured by its own value',
             'diverging',
           )}
+        </div>
+      </>
+    );
+  },
+};
+
+/**
+ * AIDEN CHAT — the surface doing its actual job.
+ *
+ * Every other story in this POC shows Aiden as a colour system. This one shows
+ * it as a PRODUCT, because the chat is where the surface's central claim gets
+ * tested: that Aiden can carry an identity while staying a reading surface.
+ *
+ * WHAT THE SURFACE IS AND IS NOT DOING HERE, which is the whole point:
+ *   · the PAGE and the CARDS are neutral. Aiden takes the main brand's
+ *     neutrals, so a transcript is read on the same white or slate everything
+ *     else uses. A tinted reading surface is a liability, and Claude and
+ *     ChatGPT are near-neutral for the same reason.
+ *   · the GRADIENT does the identifying, in exactly two places — the send
+ *     button and the mark. That is enough. A gradient is categorically
+ *     different from the flat fills around it, where a surface tint is only
+ *     ever a matter of degree.
+ *   · everything else — the reasoning block, the tool cards, the citations,
+ *     the suggestions — runs on the scalar --primary, which under this surface
+ *     is Aiden's solid blurple. It themes for free through the existing
+ *     plumbing and nothing in the Chat family needed a change.
+ *
+ * The transcript is deliberately a REAL one, not lorem: a question, a reasoning
+ * block, two tool calls, a cited answer and its sources. Those are the parts
+ * that carry colour in an assistant UI, and a demo that skips them is not
+ * testing the surface at all.
+ */
+export const AidenChat: Story = {
+  render: function AidenChatStory() {
+    const mode = useGlobalMode();
+    const [value, setValue] = useState('');
+
+    const transcript = (
+      <ChatMessageList style={{ paddingInline: 'var(--p-4)' }}>
+        <ChatMarker variant="divider">Today</ChatMarker>
+
+        <ChatMessage from="user">
+          <ChatBubble>Which acquisition channel actually grew last year?</ChatBubble>
+        </ChatMessage>
+
+        <ChatMessage from="assistant">
+          {/* Reasoning + tool cards are the two places an assistant UI shows its
+              working. Both compose Collapsible, so they inherit the grid-rows
+              height animation rather than re-implementing one. */}
+          <ChatReasoning id="ac-r" label="Thought for 4s">
+            Direct and paid search are the only two with a full year of data. Paid
+            fell every quarter, so the answer is direct — but I should check
+            whether that is volume or share before saying so.
+          </ChatReasoning>
+
+          <ChatToolCalls>
+            <ChatToolCall id="ac-t1" name="query_warehouse" status="success" statusLabel="1.2s">
+              SELECT channel, quarter, signups FROM acquisition WHERE year = 2025
+            </ChatToolCall>
+            <ChatToolCall id="ac-t2" name="compare_periods" status="success" statusLabel="0.3s">
+              direct +87% · paid −27% · referral +73%
+            </ChatToolCall>
+          </ChatToolCalls>
+
+          <ChatBubble>
+            Direct grew the most — 22k to 41k signups, up 87% over the year, and it
+            passed paid search in Q3.<ChatCitation index="1" href="#" /> Paid search
+            fell every quarter, from 38k to 24k.<ChatCitation index="2" href="#" />{' '}
+            Referral grew faster in percentage terms but from a base small enough
+            that it is not yet the story.
+          </ChatBubble>
+
+          <ChatSources label="Sources">
+            <ChatSource href="#" index="1" title="Acquisition — quarterly signups" domain="warehouse.internal" />
+            <ChatSource href="#" index="2" title="Paid search spend vs return" domain="warehouse.internal" />
+          </ChatSources>
+        </ChatMessage>
+
+        <ChatMessage from="user">
+          <ChatBubble>Chart it by quarter.</ChatBubble>
+        </ChatMessage>
+
+        <ChatMessage from="assistant">
+          <ChatBubble>
+            Here is the quarterly split. The crossover is Q3.
+          </ChatBubble>
+          {/* The chart is the reason this story sits in a THEMING poc rather
+              than in the Chat docs: a chart inside the Aiden surface picks up
+              Aiden's own chart slots, so the assistant's answer is drawn in the
+              assistant's colours without the consumer choosing any. */}
+          <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)', marginTop: 'var(--p-3)' }}>
+            <BarChart
+              id="ac-chart"
+              layout="grouped"
+              title="Direct passed paid search in Q3"
+              categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              valueFormatter={(v) => `${v}k`}
+              height={200}
+              showLegend
+              showGrid
+              series={[
+                { key: 'direct', label: 'Direct', slot: 1, data: [19, 24, 33, 41] },
+                { key: 'paid', label: 'Paid search', slot: 2, data: [38, 37, 29, 24] },
+                { key: 'referral', label: 'Referral', slot: 3, data: [13, 16, 21, 26] },
+              ]}
+            />
+          </div>
+        </ChatMessage>
+      </ChatMessageList>
+    );
+
+    const composer = (
+      <div style={{ padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)' }}>
+        <ChatSuggestions>
+          <ChatSuggestion>Break it down by plan</ChatSuggestion>
+          <ChatSuggestion>What drove the Q3 crossover?</ChatSuggestion>
+          <ChatSuggestion>Export this</ChatSuggestion>
+        </ChatSuggestions>
+        <ChatComposer value={value} onValueChange={setValue} onSubmit={() => setValue('')}>
+          <ChatComposerInput placeholder="Message Aiden…" aria-label="Message Aiden" />
+          <ChatComposerActions>
+            <ChatComposerSend />
+          </ChatComposerActions>
+        </ChatComposer>
+      </div>
+    );
+
+    const shell = (label: string, brand: BrandKey | '') => (
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
+        <Scope brand={brand} mode={mode}>
+          <div style={{ background: 'var(--background)', color: 'var(--foreground)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', overflow: 'hidden' }}>
+            <div data-surface="aiden" style={{ display: 'grid', gridTemplateRows: 'auto 1fr auto', height: 660 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+                <Mark brand="aiden" size={28} />
+                <strong style={{ fontSize: 'var(--text-sm)', flex: 1 }}>Aiden</strong>
+                <Badge id={`ac-badge-${brand || 'own'}`} variant="default" label="Beta" />
+              </div>
+              <Chat style={{ minHeight: 0 }}>{transcript}</Chat>
+              {composer}
+            </div>
+          </div>
+        </Scope>
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={PAGE}>
+          <div>
+            <h2 style={H2}>Aiden, as a product</h2>
+            <p style={P}>
+              The rest of this POC shows Aiden as a colour system. This is the surface doing its
+              actual job — and the chat is where its central claim gets tested, because a transcript
+              is a <strong>reading surface</strong> and a reading surface cannot be tinted.
+            </p>
+            <p style={P}>
+              <strong>The page and the cards are neutral.</strong> Aiden takes the main brand&rsquo;s
+              neutrals, so the transcript is read on the same white or slate as everything else. The{' '}
+              <strong>gradient identifies, in two places</strong> — the send button and the mark — and
+              that is enough, because a gradient is <em>categorically</em> different from the flat
+              fills around it where a tint is only ever a matter of degree.
+            </p>
+            <p style={P}>
+              Everything else — the reasoning block, the tool cards, the citations, the suggestion
+              pills — runs on the scalar <code style={MONO}>--primary</code>, which under this surface
+              is Aiden&rsquo;s solid blurple. It themes for free through the existing plumbing, and{' '}
+              <strong>nothing in the Chat family needed a change to support it</strong>.
+            </p>
+            <p style={P}>
+              The chart is why this sits in a theming POC rather than the Chat docs: a chart inside the
+              surface picks up <em>Aiden&rsquo;s own chart slots</em>, so the assistant answers in the
+              assistant&rsquo;s colours without the consumer choosing any.
+            </p>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px,1fr))', gap: 'var(--p-6)' }}>
+            {shell('data-surface="aiden" — Aiden’s own app', 'aiden')}
+            {shell('data-brand="db" + data-surface="aiden" — nested in a host', 'db')}
+          </div>
         </div>
       </>
     );
