@@ -1079,10 +1079,10 @@ ${anchorBlocks()}
      takes the least. Worst muted-foreground reading across all seven brands:
      accent 5.61, secondary/input 5.19, muted 4.56 — all above AA, against
      baselines of 6.92 / 6.15 / 5.10. */
-  --accent:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #f1f5f9);
-  --secondary: color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #e2e8f0);
-  --input:     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #e2e8f0);
-  --muted:     color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-surface, 0)), #cbd5e1);
+  --accent:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #f1f5f9);
+  --secondary: color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), #e2e8f0);
+  --input:     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), #e2e8f0);
+  --muted:     color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-page, 0)), #cbd5e1);
 
   /* LINES ARE MOSTLY SLATE. They carry no contrast budget, so an earlier pass
      spent freely here — 20-26% of --primary — and the result was a page whose
@@ -1095,9 +1095,9 @@ ${anchorBlocks()}
      WCAG 1.4.11 wants it to stand out from its surroundings, and it is the one
      line on the page whose whole job is to be noticed. Dulling it toward slate
      would make it agree with the border it sits next to. */
-  --border:       color-mix(in srgb, var(--primary) calc(5% * var(--tint-surface, 0)), #cbd5e1);
-  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-surface, 0)), #64748b);
-  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-surface, 0)), #94a3b8);
+  --border:       color-mix(in srgb, var(--primary) calc(5% * var(--tint-page, 0)), #cbd5e1);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-page, 0)), #64748b);
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), #94a3b8);
 
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
@@ -1125,7 +1125,7 @@ ${anchorBlocks()}
      is still a surface people read on. It is allowed to be the loudest of them
      because it is a deliberate strip rather than page chrome, and even then
      band-strong only reaches ~9 dE00 off white. */
-  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-surface, 0)), #ffffff);
+  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-page, 0)), #ffffff);
 }
 
 /* ── DARK ───────────────────────────────────────────────────────────────────
@@ -1147,18 +1147,18 @@ ${anchorBlocks()}
 
   --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 
-  --background: color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #0f172a);
-  --card:       color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #1e293b);
-  --popover:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #475569);
-  --secondary:  color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #1e293b);
-  --accent:     color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #334155);
-  --muted:      color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-surface, 0)), #334155);
-  --input:      color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-surface, 0)), #475569);
+  --background: color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #0f172a);
+  --card:       color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #1e293b);
+  --popover:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #475569);
+  --secondary:  color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #1e293b);
+  --accent:     color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #334155);
+  --muted:      color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), #334155);
+  --input:      color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), #475569);
 
   /* Same step as light; --ring again left at full strength. */
-  --border:       color-mix(in srgb, var(--primary) calc(6% * var(--tint-surface, 0)), #64748b);
-  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-surface, 0)), #cbd5e1);
-  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-surface, 0)), #94a3b8);
+  --border:       color-mix(in srgb, var(--primary) calc(6% * var(--tint-page, 0)), #64748b);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-page, 0)), #cbd5e1);
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), #94a3b8);
 
   --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
                     color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), #1e293b));
@@ -1167,7 +1167,7 @@ ${anchorBlocks()}
   --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
                     color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), #334155));
 
-  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(16% * var(--tint-surface, 0)), #1e293b);
+  --surface-band:        color-mix(in srgb, var(--tint-stock) calc(16% * var(--tint-page, 0)), #1e293b);
 }
 
 
@@ -1335,9 +1335,9 @@ ${anchorBlocks()}
 /* ── THE TINT AXIS ───────────────────────────────────────────────────────────
    Tint is a fourth axis and it is an ATTRIBUTE, like the other three:
 
-     data-theme="db"  data-mode="dark"  data-surface="aiden"  data-tint="surface rail"
+     data-theme="db"  data-mode="dark"  data-surface="aiden"  data-tint="page rail"
 
-   ~= is a whitespace-list match, so "surface", "rail", "surface rail" and the
+   ~= is a whitespace-list match, so "surface", "rail", "page rail" and the
    attribute being ABSENT are four independent, valid states.
 
    ABSENT MEANS NEUTRAL, and that is the point. The multipliers default to 0, so
@@ -1351,7 +1351,7 @@ ${anchorBlocks()}
    Why a multiplier still exists behind the attribute: CSS has no booleans, and
    the value has to enter calc(). Keeping it as a number also leaves the door
    open to a continuous 0-1 strength without changing any of the 34 call sites. */
-[data-theme-poc2][data-tint~='surface'] { --tint-surface: 1; }
+[data-theme-poc2][data-tint~='page'] { --tint-page: 1; }
 [data-theme-poc2][data-tint~='rail']    { --tint-rail: 1; }
 
 [data-theme-poc2] {
@@ -1430,13 +1430,13 @@ ${anchorBlocks()}
      spend and this spends only part of it. */
   --poc2-bubble:
     radial-gradient(52% 46% at 8% 2%,
-      color-mix(in srgb, var(--decorative-hi) calc(var(--poc2-bubble-hl) * var(--tint-surface, 0)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-hi) calc(var(--poc2-bubble-hl) * var(--tint-page, 0)), transparent) 0%,
       transparent 72%),
     radial-gradient(48% 44% at 94% 16%,
-      color-mix(in srgb, var(--decorative-deep) calc(var(--poc2-bubble-deep) * var(--tint-surface, 0)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-deep) calc(var(--poc2-bubble-deep) * var(--tint-page, 0)), transparent) 0%,
       transparent 70%),
     radial-gradient(44% 40% at 34% 98%,
-      color-mix(in srgb, var(--primary) calc(var(--poc2-bubble-mid) * var(--tint-surface, 0)), transparent) 0%,
+      color-mix(in srgb, var(--primary) calc(var(--poc2-bubble-mid) * var(--tint-page, 0)), transparent) 0%,
       transparent 72%);
 }
 

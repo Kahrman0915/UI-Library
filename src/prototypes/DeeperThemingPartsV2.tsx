@@ -284,8 +284,8 @@ function useDerivedAudit() {
         // is really 4.01, and hid two of the four failures completely — the
         // POC column now carries [data-theme-poc2][data-brand], so --card,
         // --primary-soft and --primary-light all resolve through the real
-        // cascade. This probe is measured DETACHED, so the [data-tint~='surface']
-        // rule that normally supplies --tint-surface cannot match it — the
+        // cascade. This probe is measured DETACHED, so the [data-tint~='page']
+        // rule that normally supplies --tint-page cannot match it — the
         // multiplier is set directly here instead of via the attribute.
         const read = (primary: string, poc: boolean) => {
           const scope = document.createElement('div');
@@ -295,7 +295,7 @@ function useDerivedAudit() {
             scope.setAttribute('data-brand', brand);
           }
           scope.style.cssText =
-            `position:absolute;left:-9999px;--tint-surface:1;--primary:${primary}`;
+            `position:absolute;left:-9999px;--tint-page:1;--primary:${primary}`;
           const probe = document.createElement('div');
           scope.appendChild(probe);
           host.appendChild(scope);
@@ -694,7 +694,7 @@ function DiffTable({ rows, mode }: { rows: Row[]; mode: 'light' | 'dark' }) {
           data-brand="dc"
           data-mode={mode}
           data-theme-poc2=""
-          data-tint="surface rail"
+          data-tint="page rail"
         >
           <span />
         </span>
@@ -851,7 +851,7 @@ const BLOCKERS: { q: string; detail: string; severity: 'blocker' | 'decision' }[
     q: 'Tint is a fourth axis — decide its default',
     severity: 'decision',
     detail:
-      'RESOLVED as a blocker, now only a choice. Tint used to be two inline custom properties, and --poc2-str was read 22 times with no fallback: an unresolvable var() makes the whole declaration invalid at computed-value time, so an unset strength did not mean "no tint", it meant --card, --accent, --border and thirteen others fell back to inherited or initial. It never showed because the story root always set it. It is now an ATTRIBUTE — data-tint="surface rail", a whitespace-list so either word, both, or neither are valid — driving --tint-surface / --tint-rail, which default to 0. Absent now means neutral rather than broken. What is left is a product decision, not a defect: should a page with no data-tint render plain (current behaviour, safe) or tinted (needs the attribute set at the app root)?',
+      'RESOLVED as a blocker, now only a choice. Tint used to be two inline custom properties, and --poc2-str was read 22 times with no fallback: an unresolvable var() makes the whole declaration invalid at computed-value time, so an unset strength did not mean "no tint", it meant --card, --accent, --border and thirteen others fell back to inherited or initial. It never showed because the story root always set it. It is now an ATTRIBUTE — data-tint="page rail", a whitespace-list so either word, both, or neither are valid — driving --tint-page / --tint-rail, which default to 0. Absent now means neutral rather than broken. What is left is a product decision, not a defect: should a page with no data-tint render plain (current behaviour, safe) or tinted (needs the attribute set at the app root)?',
   },
   {
     q: 'dr and ir have no values',

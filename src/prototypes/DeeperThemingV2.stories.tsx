@@ -176,7 +176,7 @@ function Scope({
      independent: either, both, or neither. `strength` and `chromeOn` stay
      numeric props because the stories toggle them as 0/1, but all they do is
      decide whether the word is present. */
-  const tint = [strength ? 'surface' : null, chromeOn ? 'rail' : null].filter(Boolean).join(' ');
+  const tint = [strength ? 'page' : null, chromeOn ? 'rail' : null].filter(Boolean).join(' ');
   return (
     <div
       data-theme-poc2=""
@@ -1299,7 +1299,7 @@ export const Tokens: Story = {
           {cols.map((b) => (
             <span key={b} data-m={b} data-theme-poc2=""
               {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
-              data-mode={mode} data-tint="surface rail">
+              data-mode={mode} data-tint="page rail">
               <span />
             </span>
           ))}
@@ -1426,7 +1426,7 @@ export const Audit: Story = {
           {AUDIT_SCOPES.map((b) => (
             <span key={b} data-a={b} data-theme-poc2=""
               {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
-              data-mode={mode} data-tint="surface rail">
+              data-mode={mode} data-tint="page rail">
               <span />
             </span>
           ))}
