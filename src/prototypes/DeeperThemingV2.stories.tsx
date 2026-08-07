@@ -557,7 +557,7 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
           {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />)}
         </div>
         {/* A chart ON THE BAND, not on a card. The harder contrast case: marks
-            are measured against --poc2-band here rather than --card, and the band
+            are measured against --surface-band here rather than --card, and the band
             is the one surface that carries a real brand tint. If a series is
             going to disappear anywhere, it is here. */}
         <div style={{ maxWidth: 'var(--max-w-3xl)', margin: '0 auto', width: '100%' }}>
@@ -635,7 +635,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   {
     group: 'Authored — the anchors',
     note: 'Three read off the Figma mark, plus --primary solved against the label. The only literals in the system.',
-    tokens: ['--primary-highlight', '--primary', '--primary-deep', '--primary-foreground'],
+    tokens: ['--decorative-hi', '--primary', '--primary-deep', '--primary-foreground'],
   },
   {
     group: 'Free — the existing --primary-* family',
@@ -660,12 +660,12 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   {
     group: 'Marketing bands',
     note: 'The loudest flat surfaces in the system, and still only ~9 ΔE00 off white at their strongest — a band is a surface people read on.',
-    tokens: ['--poc2-band', '--poc2-band-strong', '--poc2-band-deep'],
+    tokens: ['--surface-band'],
   },
   {
     group: 'Shadow tints',
     note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
-    tokens: ['--poc2-shadow-stock', '--poc2-shadow-key', '--poc2-shadow-far', '--poc2-shadow-amb'],
+    tokens: ['--poc2-shadow-stock', '--shadow-color-xl', '--shadow-color-lg', '--shadow-color-2xs'],
   },
   {
     group: 'Charts \u2014 the categorical palette',
@@ -690,9 +690,7 @@ const PAIRINGS: Pairing[] = [
   { label: 'primary-foreground / primary', fg: '--primary-foreground', bg: '--primary', note: 'pure white on every brand — the marks moved, not the label' },
   { label: 'sidebar-foreground / sidebar', fg: '--sidebar-foreground', bg: '--sidebar' },
   { label: 'sidebar-accent-fg / sidebar-accent', fg: '--sidebar-accent-foreground', bg: '--sidebar-accent' },
-  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--poc2-band', note: 'the greyed deep stock' },
-  { label: 'muted-foreground / band DEEPEST', fg: '--muted-foreground', bg: '--poc2-band-deep' },
-  { label: 'muted-foreground / band-strong', fg: '--muted-foreground', bg: '--poc2-band-strong' },
+  { label: 'muted-foreground / band', fg: '--muted-foreground', bg: '--surface-band', note: 'the greyed deep stock' },
   { label: 'error / error-light', fg: '--error', bg: '--error-light', note: 'over the WHITE page' },
   { label: 'error / error-light ON BAND', fg: '--error', bg: '--error-light', onBand: true, note: 'the remaining hazard' },
   { label: 'border / background', fg: '--border', bg: '--background', floor: 3, note: '1.4.11 — pre-existing' },
@@ -782,7 +780,7 @@ export const Brands: Story = {
                     <strong style={{ ...MONO, fontSize: 'var(--text-sm)', width: 40 }}>{b}</strong>
                   </div>
                 </Scope>
-                {swatch(a[0], '--primary-highlight', a[0])}
+                {swatch(a[0], '--decorative-hi', a[0])}
                 {swatch(a[1], PRIMARY_IS_AUTHORED[b] ? 'mark middle' : '--primary', a[1])}
                 {swatch(a[2], '--primary-deep', a[2])}
                 {PRIMARY_IS_AUTHORED[b] && (
@@ -876,7 +874,7 @@ export const Brands: Story = {
             <h2 style={H2}>What each anchor is for</h2>
             <p style={P}>
               <strong>Highlight → its own token, and nothing with text on it.</strong>{' '}
-              <code style={MONO}>--primary-highlight</code> drives the mark, the hero gradient, the
+              <code style={MONO}>--decorative-hi</code> drives the mark, the hero gradient, the
               marketing bubble field, and small non-text accents like a status dot. It is the brightest,
               most saturated colour the brand owns, so the test for reaching for it is simply whether
               anything is read on top; if something is, it is the wrong token. An earlier pass built the light surfaces from it; the numbers were good and
@@ -934,7 +932,7 @@ export const MarkAnatomy: Story = {
             </p>
             <p style={P}>
               <strong>The STATIC mark does not change between modes.</strong> It reads{' '}
-              <code style={MONO}>--mark-a/b/c</code>, which carry the light anchors in both — an app
+              <code style={MONO}>--decorative-hi/b/c</code>, which carry the light anchors in both — an app
               icon is artwork, and an iOS icon is the same object whatever the system theme is doing.
               Treating it as a themed component is what broke it: dark&rsquo;s anchors are lighter by
               construction, so the marks came out <strong>8–14&nbsp;L* brighter in dark than in light</strong>,
@@ -944,7 +942,7 @@ export const MarkAnatomy: Story = {
               {'\n\n'}
               <strong>The LIVE mark does — and that is an unresolved inconsistency, not a feature.</strong>{' '}
               Turn Motion on (it is on by default) and the tile switches to{' '}
-              <code style={MONO}>--primary-highlight / --mark-mid / --mark-deep</code>, every one of
+              <code style={MONO}>--decorative-hi / --primary / --decorative-deep</code>, every one of
               which is mode-aware. So the rule above holds for the mark this POC documents and NOT for
               the mark it renders in the roster, the marketing heroes or the Figma pages, all of which
               use the live variant. The swatches below follow whichever mark is on screen. Deciding
@@ -981,10 +979,10 @@ export const MarkAnatomy: Story = {
                     and which one that is depends on the Motion toggle — this row
                     got it wrong twice in the same session, so it is spelled out.
 
-                    STATIC mark  reads --mark-a/b/c, which carry the LIGHT anchors
+                    STATIC mark  reads --decorative-hi/b/c, which carry the LIGHT anchors
                                  in both modes. Mode-independent artwork.
-                    LIVE mark    reads --primary-highlight / --mark-mid /
-                                 --mark-deep, every one of which IS mode-aware.
+                    LIVE mark    reads --decorative-hi / --primary /
+                                 --decorative-deep, every one of which IS mode-aware.
 
                     Motion defaults ON, so the default view is the live mark and
                     the swatches have to be mode-aware with it. Hardcoding
@@ -1289,7 +1287,7 @@ export const Tokens: Story = {
               that layers inside any brand, and its scope in the stylesheet is
               [data-surface='aiden']. Probing it with data-brand matched no rule
               at all, so the aiden column silently reported the UNTHEMED
-              defaults: --primary-highlight as #ffffff and --primary as the base
+              defaults: --decorative-hi as #ffffff and --primary as the base
               slate #334155. The table looked complete and was lying. */}
           {cols.map((b) => (
             <span key={b} data-m={b} data-theme-poc2=""
@@ -1405,7 +1403,7 @@ export const Audit: Story = {
         for (const p of PAIRINGS) {
           const fg = read(p.fg), bg = read(p.bg);
           if (!fg || !bg) continue;
-          const behind = read(p.onBand ? '--poc2-band' : '--background');
+          const behind = read(p.onBand ? '--surface-band' : '--background');
           const solid = bg[3] < 1 && behind ? over(bg, behind) : bg;
           next[p.label] ??= {};
           next[p.label][b] = contrast(fg, solid);

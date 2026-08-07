@@ -1039,7 +1039,7 @@ export function TransitionPanel() {
           reason the charting system can state a job instead of a colour.
         </p>
         {[
-          { title: 'Brand identity', test: (t: string) => t.startsWith('--mark') || t === '--primary-deep' || t === '--primary-highlight' },
+          { title: 'Brand identity', test: (t: string) => t.startsWith('--mark') || t === '--primary-deep' || t === '--decorative-hi' },
           { title: 'Chart ramps', test: (t: string) => t.startsWith('--chart') },
           { title: 'Surface machinery', test: (t: string) => t === '--surface-tint' },
           { title: 'Aiden', test: (t: string) => t.startsWith('--aiden') },

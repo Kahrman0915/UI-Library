@@ -56,7 +56,7 @@
  * times the STRUCTURE: each anchor has a natural home, so the brand reaches
  * further without any of them fighting.
  *
- *     highlight  ->  --primary-highlight. Gradients, marketing bubbles, and
+ *     highlight  ->  --decorative-hi. Gradients, marketing bubbles, and
  *                    small non-text accents (a status dot). NEVER behind text.
  *     primary    ->  --primary itself, which feeds the whole existing family in
  *                    tokens.scss: -hover, -light, -soft, -border, -ring, -focus,
@@ -335,7 +335,7 @@ export const BRAND_ANCHORS = {
   // page rather than sampled off a screenshot: the owner edits the Figma, so
   // the Figma is the source and a screenshot is a lossy copy of it.
   //
-  // IT REACHES FURTHER THAN THE MARK. --primary-highlight also feeds the hero
+  // IT REACHES FURTHER THAN THE MARK. --decorative-hi also feeds the hero
   // bubbles, the artwork rail and the sheen — and CHART SLOT 4 IS BUILT ON THE
   // HIGHLIGHT HUE, so aiden's chart palette had to be re-solved rather than
   // recoloured. See CHART_HAND.
@@ -978,36 +978,61 @@ function anchorBlocks(
     // "which app am I in", so it is selected by data-surface and never appears
     // in the brand picker. Same anchor shape, different attribute.
     const sel = k === 'aiden' ? "[data-theme-poc2][data-surface='aiden']" : `[data-theme-poc2][data-brand='${k}']`;
-    // --mark-* is the SAME in both modes: a mark is artwork, not a themed
-    // component. --primary-* stays mode-aware because it paints UI.
-    //
-    // THE ARTWORK SPLIT (owner, 2026-08-06): the mark's third stop is the
-    // ROTATED markDeep, not the functional --primary-deep. The functional deep
-    // keeps charts/tint/hero (same hue = "the brand, quieter"); the mark deep
-    // exists so the tile sweeps through HUE — highlight rotates one way off
-    // the primary, markDeep the other. Artwork only; nothing functional may
-    // read --mark-deep.
+
+    /* SIX AUTHORED VALUES PER BRAND PER MODE, and nothing else is hand-picked:
+       --primary, --primary-foreground, --primary-deep, --decorative-hi,
+       --decorative-deep, and the gradient composed from them. Everything else
+       in this system derives.
+
+       DECORATIVE IS THE ARTWORK RAMP — marks, hero bubbles, dots, dividers.
+       Never text, never chrome, never load-bearing. It is MODE-AWARE like
+       everything else: "theme = db, mode = dark" has to resolve every token,
+       with no family that quietly opts out of the mode axis.
+
+       THERE IS NO --decorative-mid. The ramp's middle is var(--primary), which
+       was already true for six of the seven brands. Only nb diverged — its
+       primary is darkened to clear AA as text (#306602) while its mark kept the
+       brighter #418605 — and one brand does not earn a token. nb's mark now
+       sits a shade darker; its contrast headroom is untouched, which the swap
+       would have spent (#418605 measures 4.53 against the 4.5 floor).
+
+       THE ARTWORK SPLIT still holds: --decorative-deep is the ROTATED markDeep,
+       not the functional --primary-deep. The functional deep keeps charts,
+       surface tint and the hero (same hue = "the brand, quieter"); the
+       decorative deep exists so the tile sweeps through HUE — hi rotates one
+       way off the primary, deep the other. Nothing functional may read it.
+
+       STOP POSITIONS ARE BAKED PER BRAND rather than held in variables. A
+       custom property substitutes at computed-value time ON THE ELEMENT THAT
+       DECLARES IT, so a gradient declared once upstream could never see a
+       downstream stop override — which is why the old --poc2-mark had to be
+       re-declared inside the aiden scope to move its stops at all. Emitting
+       the gradient per brand removes that trap and the three --poc2-mark-*-at
+       variables with it. Aiden's middle holds a PLATEAU (44%→62%) because a
+       stop is a point: naming the colour twice is the only way to give it a
+       band, and the blurple is the thing Aiden actually is. */
+    const [s1, s2, s3] = k === 'aiden' ? ['9.7%', '44%', '62%'] : ['9.7%', '51.6%', '51.6%'];
+    const gradient = `  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) ${s1},
+    var(--primary) ${s2},
+    var(--primary) ${s3},
+    var(--decorative-deep) 90.3%);`;
+
     return `${sel}[data-mode='light'] {
-  --mark-a:             ${a.light[0]};
-  --mark-b:             ${a.light[1]};
-  --mark-c:             ${a.markDeep.light};
-  --mark-deep:          ${a.markDeep.light};
-  --primary-highlight:  ${a.light[0]};
-  --mark-mid:           ${a.light[1]};
   --primary:            ${PRIMARY_LIGHT[k] ?? a.light[1]};
-  --primary-deep:       ${a.light[2]};
   --primary-foreground: ${a.on.light};
+  --primary-deep:       ${a.light[2]};
+  --decorative-hi:      ${a.light[0]};
+  --decorative-deep:    ${a.markDeep.light};
+${gradient}
 ${chartVars(k, 'light', anchorMap, neutralMap)}${rampVars(k, 'light')}}
 ${sel}[data-mode='dark'] {
-  --mark-a:             ${a.light[0]};
-  --mark-b:             ${a.light[1]};
-  --mark-c:             ${a.markDeep.light};
-  --mark-deep:          ${a.markDeep.dark};
-  --primary-highlight:  ${a.dark[0]};
-  --mark-mid:           ${a.dark[1]};
   --primary:            ${PRIMARY_DARK[k] ?? a.dark[1]};
-  --primary-deep:       ${a.dark[2]};
   --primary-foreground: ${a.on.dark};
+  --primary-deep:       ${a.dark[2]};
+  --decorative-hi:      ${a.dark[0]};
+  --decorative-deep:    ${a.markDeep.dark};
+${gradient}
 ${chartVars(k, 'dark', anchorMap, neutralMap)}${rampVars(k, 'dark')}}${lineBlocks(k, sel)}`;
   }).join('\n');
 }
@@ -1100,9 +1125,7 @@ ${anchorBlocks()}
      is still a surface people read on. It is allowed to be the loudest of them
      because it is a deliberate strip rather than page chrome, and even then
      band-strong only reaches ~9 dE00 off white. */
-  --poc2-band:        color-mix(in srgb, var(--surface-tint) calc(7%  * var(--poc2-str)), #ffffff);
-  --poc2-band-strong: color-mix(in srgb, var(--surface-tint) calc(13% * var(--poc2-str)), #ffffff);
-  --poc2-band-deep:   color-mix(in srgb, var(--poc2-band) 88%, var(--primary));
+  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(7%  * var(--poc2-str)), #ffffff);
 }
 
 /* ── DARK ───────────────────────────────────────────────────────────────────
@@ -1144,9 +1167,7 @@ ${anchorBlocks()}
   --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
                     color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc2-chrome, 0)), #334155));
 
-  --poc2-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--poc2-str)), #1e293b);
-  --poc2-band-strong: color-mix(in srgb, var(--surface-tint) calc(26% * var(--poc2-str)), #1e293b);
-  --poc2-band-deep:   color-mix(in srgb, var(--poc2-band) 88%, var(--primary));
+  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--poc2-str)), #1e293b);
 }
 
 
@@ -1201,14 +1222,6 @@ ${anchorBlocks()}
      The stop variables above still earn their place — they document the knob
      and keep the two definitions honest — but a brand that wants different
      stops must re-declare the gradient too. */
-  --poc2-mark-a-at: 9.7%;
-  --poc2-mark-b-at: 44%;
-  --poc2-mark-b2-at: 62%;
-  --poc2-mark: linear-gradient(135deg,
-    var(--mark-a) var(--poc2-mark-a-at),
-    var(--mark-b) var(--poc2-mark-b-at),
-    var(--mark-b) var(--poc2-mark-b2-at),
-    var(--mark-c) 90.3%);
 }
 [data-theme-poc2][data-surface='aiden'][data-mode='light'] {
   --background: #ffffff;
@@ -1270,13 +1283,13 @@ ${anchorBlocks()}
      label across the light fill measures 4.63 — the shipped number, inherited
      rather than re-solved. The POC's own two-stop reached 5.96, and that extra
      margin is exactly what made it a different Aiden. */
-  --aiden-fill:       linear-gradient(135deg, #8455f0 0%, #5a37e6 50%, #2c6dea 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #6d28d9 0%, #4a29c9 50%, #1d4ed8 100%);
+  --aiden-primary:       linear-gradient(135deg, #8455f0 0%, #5a37e6 50%, #2c6dea 100%);
+  --aiden-hover: linear-gradient(135deg, #6d28d9 0%, #4a29c9 50%, #1d4ed8 100%);
 }
 [data-theme-poc2][data-surface='aiden'][data-mode='dark'] {
   /* Two stops, like the shipped dark --aiden-primary. Ink label worst 5.22. */
-  --aiden-fill:       linear-gradient(135deg, #9076f9 0%, #93c5fd 100%);
-  --aiden-fill-hover: linear-gradient(135deg, #b3a2fa 0%, #bae6fd 100%);
+  --aiden-primary:       linear-gradient(135deg, #9076f9 0%, #93c5fd 100%);
+  --aiden-hover: linear-gradient(135deg, #b3a2fa 0%, #bae6fd 100%);
 }
 /* Anywhere --primary would be a solid FILL, Aiden takes the gradient instead.
    Where it is text or a border it keeps the flat accent, because a gradient
@@ -1286,26 +1299,26 @@ ${anchorBlocks()}
 [data-theme-poc2][data-surface='aiden'] .poc2-aiden-fill,
 /* The real <Fab> already paints the Aiden gradient under this surface — but it
    reads the SHIPPED --aiden-primary, and the POC's two-stop gradient lives in
-   --aiden-fill. Without this the FAB renders the shipped three-stop violet while
+   --aiden-primary. Without this the FAB renders the shipped three-stop violet while
    everything around it is on the new ramp, which is the exact mismatch this POC
    exists to remove. Fab.scss sets it with the background shorthand, so the
    override must use that same property to win, not background-image. */
 [data-theme-poc2][data-surface='aiden'] .ui-fab {
-  background: var(--aiden-fill);
+  background: var(--aiden-primary);
 }
 [data-theme-poc2][data-surface='aiden'] .ui-chip--active:not(:disabled),
 [data-theme-poc2][data-surface='aiden'] .ui-chip--active:hover:not(:disabled) {
-  background-image: var(--aiden-fill);
+  background-image: var(--aiden-primary);
   border-color: transparent;
 }
 /* the hover override has to match the base rule's specificity or Button's own
    :hover wins by being more specific than a plain class selector */
 [data-theme-poc2][data-surface='aiden'] .ui-button--default-default:hover:not(:disabled),
 [data-theme-poc2][data-surface='aiden'] .poc2-aiden-fill:hover {
-  background-image: var(--aiden-fill-hover);
+  background-image: var(--aiden-hover);
 }
 [data-theme-poc2][data-surface='aiden'] .ui-fab:hover:not(:disabled) {
-  background: var(--aiden-fill-hover);
+  background: var(--aiden-hover);
 }
 
 /* ── GRADIENTS + MARK ───────────────────────────────────────────────────────
@@ -1331,7 +1344,7 @@ ${anchorBlocks()}
   /* THE MARK RAMP, and the single definition of it. It used to live here at
      140deg/0/52/100 AND again inside .poc2-mark at the solved 135deg/9.7/51.6/
      90.3 — two gradients called the same thing, with the variable quietly
-     unused by anything. That is how --aiden-fill came to "not match the mark"
+     unused by anything. That is how --aiden-primary came to "not match the mark"
      while looking identical: it matched the rendered mark and disagreed with a
      stale token. One value now, consumed by the mark, the hero and the Aiden
      fill, so they cannot drift apart. */
@@ -1341,21 +1354,13 @@ ${anchorBlocks()}
      whose highlight is a near neighbour of their primary. It is wrong for one
      whose highlight has left the hue family: aiden's pink then reads as a
      second colour rather than as a light source. See the aiden override. */
-  --poc2-mark-a-at: 9.7%;
-  --poc2-mark-b-at: 51.6%;
   /* The middle colour gets TWO stops so it can hold a plateau rather than being
      a single crossing point. Defaulted to the same position as --poc2-mark-b-at,
      which is a visual no-op — the six brands that do not set it render exactly
      as before. A gradient stop is a point: the only way to give a colour a BAND
      is to name it twice. */
-  --poc2-mark-b2-at: 51.6%;
-  --poc2-mark: linear-gradient(135deg,
-    var(--mark-a) var(--poc2-mark-a-at),
-    var(--mark-b) var(--poc2-mark-b-at),
-    var(--mark-b) var(--poc2-mark-b2-at),
-    var(--mark-c) 90.3%);
   --poc2-hero: linear-gradient(135deg,
-    var(--mark-mid) 0%,
+    var(--primary) 0%,
     var(--primary-deep) 100%);
   /* Shadows carry the DEEP anchor, GREYED. A grey shadow under a saturated
      object reads as dirt, so the brand's own dark end is still in there — but
@@ -1369,9 +1374,9 @@ ${anchorBlocks()}
      over a white card the key shadow reads 1.46-1.49 against the page, where
      the raw deep read 1.40-1.55 — same depth, and tighter across brands. */
   --poc2-shadow-stock: color-mix(in srgb, var(--primary-deep) 20%, #334155);
-  --poc2-shadow-key: color-mix(in srgb, var(--poc2-shadow-stock) 22%, transparent);
-  --poc2-shadow-far: color-mix(in srgb, var(--poc2-shadow-stock) 13%, transparent);
-  --poc2-shadow-amb: color-mix(in srgb, var(--foreground) 6%, transparent);
+  --shadow-color-xl: color-mix(in srgb, var(--poc2-shadow-stock) 22%, transparent);
+  --shadow-color-lg: color-mix(in srgb, var(--poc2-shadow-stock) 13%, transparent);
+  --shadow-color-2xs: color-mix(in srgb, var(--foreground) 6%, transparent);
 
   /* THE BUBBLE FIELD — the hero's artwork layer, rebuilt 2026-08-06 because the
      owner read it as flat. It was, and measuring said why — in two ways that
@@ -1389,7 +1394,7 @@ ${anchorBlocks()}
 
      So: alphas are now MODE-AWARE (light gets more, dark less), the radials
      are tightened to 40-52% and pulled apart so each one has its own
-     territory, and the ORDER changed — --mark-deep is promoted to the
+     territory, and the ORDER changed — --decorative-deep is promoted to the
      prominent right-hand position. That is the point of the artwork split:
      the highlight and the mark deep are the two HUE-ROTATED anchors, so
      leading with them is what puts a second hue on the page. --mark-mid is
@@ -1403,13 +1408,13 @@ ${anchorBlocks()}
      spend and this spends only part of it. */
   --poc2-bubble:
     radial-gradient(52% 46% at 8% 2%,
-      color-mix(in srgb, var(--primary-highlight) calc(var(--poc2-bubble-hl) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-hi) calc(var(--poc2-bubble-hl) * var(--poc2-str)), transparent) 0%,
       transparent 72%),
     radial-gradient(48% 44% at 94% 16%,
-      color-mix(in srgb, var(--mark-deep) calc(var(--poc2-bubble-deep) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-deep) calc(var(--poc2-bubble-deep) * var(--poc2-str)), transparent) 0%,
       transparent 70%),
     radial-gradient(44% 40% at 34% 98%,
-      color-mix(in srgb, var(--mark-mid) calc(var(--poc2-bubble-mid) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--primary) calc(var(--poc2-bubble-mid) * var(--poc2-str)), transparent) 0%,
       transparent 72%);
 }
 
@@ -1454,7 +1459,7 @@ ${anchorBlocks()}
 }
 
 /* Small NON-TEXT accents may take the highlight raw — a status dot, a chart
-   point, a 2px rule. The rule for reaching for --primary-highlight is simply
+   point, a 2px rule. The rule for reaching for --decorative-hi is simply
    whether anything is read on top of it; if something is, it is the wrong
    token and --primary (or --primary-text) is the right one. */
 /* ── THE SUITE RAMP ─────────────────────────────────────────────────────────
@@ -1541,11 +1546,11 @@ ${anchorBlocks()}
     radial-gradient(38% 44% at 18% 52%, color-mix(in srgb, #8bca2f 15%, transparent) 0%, transparent 72%);
 }
 
-[data-theme-poc2] .poc2-dot { background: var(--primary-highlight); }
+[data-theme-poc2] .poc2-dot { background: var(--decorative-hi); }
 /* The doctrine's own examples, made real: a chart point and a 2px rule.
    The ACTIVE line marker takes the highlight — a dot, nothing read on it. */
 [data-theme-poc2] .ui-chart__marker--active {
-  fill: var(--primary-highlight);
+  fill: var(--decorative-hi);
   stroke: var(--primary);
 }
 /* A 2px artwork rule for card/section tops: highlight -> markDeep, the full
@@ -1553,7 +1558,7 @@ ${anchorBlocks()}
 [data-theme-poc2] .poc2-card-rule {
   height: 2px;
   border-radius: var(--rounded-full);
-  background: linear-gradient(90deg, var(--primary-highlight), var(--mark-deep));
+  background: linear-gradient(90deg, var(--decorative-hi), var(--decorative-deep));
 }
 [data-theme-poc2] .poc2-bubble-field { background-image: var(--poc2-bubble); }
 
@@ -1630,7 +1635,7 @@ ${anchorBlocks()}
       color-mix(in srgb, #b2d9ff 12%, transparent) 40%,
       transparent 100%),
     /* 1 · the brand ramp — from --poc2-mark, the one definition */
-    var(--poc2-mark);
+    var(--decorative-gradient);
   box-shadow:
     0 calc(var(--poc2-mark-px) * 0.023) calc(var(--poc2-mark-px) * 0.047) rgba(35, 14, 75, 0.4),
     inset 0 calc(var(--poc2-mark-px) * -0.031) calc(var(--poc2-mark-px) * 0.063) rgba(35, 14, 75, 0.3),
@@ -1784,13 +1789,9 @@ ${anchorBlocks()}
        brand that tightens its highlight tightens it on BOTH marks. The live
        mark cannot just use --poc2-mark: that one is the STATIC ramp built from
        --mark-a/b/c, and the live one is mode-aware
-       (--primary-highlight / --mark-mid / --mark-deep). Different colours, same
+       (--decorative-hi / --mark-mid / --decorative-deep). Different colours, same
        geometry — and the geometry is the part that has to agree. */
-    linear-gradient(135deg,
-      var(--primary-highlight) var(--poc2-mark-a-at),
-      var(--mark-mid) var(--poc2-mark-b-at),
-      var(--mark-mid) var(--poc2-mark-b2-at),
-      var(--mark-deep) 90.3%);
+    var(--decorative-gradient);
   /* THE GLYPH FOLLOWS THE TILE, and only the LIVE mark needs this.
      The live mark IS mode-aware, so in dark its tile is the pale dark-mode
      anchor and a white glyph measured 1.74-2.66:1 across the seven — every one
@@ -1847,13 +1848,9 @@ ${anchorBlocks()}
        brand that tightens its highlight tightens it on BOTH marks. The live
        mark cannot just use --poc2-mark: that one is the STATIC ramp built from
        --mark-a/b/c, and the live one is mode-aware
-       (--primary-highlight / --mark-mid / --mark-deep). Different colours, same
+       (--decorative-hi / --mark-mid / --decorative-deep). Different colours, same
        geometry — and the geometry is the part that has to agree. */
-    linear-gradient(135deg,
-      var(--primary-highlight) var(--poc2-mark-a-at),
-      var(--mark-mid) var(--poc2-mark-b-at),
-      var(--mark-mid) var(--poc2-mark-b2-at),
-      var(--mark-deep) 90.3%);
+    var(--decorative-gradient);
 }
 [data-theme-poc2][data-mode='dark'] .poc2-mark--live::before {
   /* the sheen turns over: shade rising from the base instead of light falling
@@ -2152,8 +2149,8 @@ ${anchorBlocks()}
 
 [data-theme-poc2] .poc2-hero { background-image: var(--poc2-hero); }
 [data-theme-poc2] .poc2-hero-cta > .ui-button { background-image: var(--poc2-hero); }
-[data-theme-poc2] .poc2-band { background: var(--poc2-band); }
-[data-theme-poc2] .poc2-band-strong { background: var(--poc2-band-strong); }
+[data-theme-poc2] .poc2-band { background: var(--surface-band); }
+[data-theme-poc2] .poc2-band-strong { background: var(--surface-band); }
 /* The rail gradient. This used to target a hand-drawn .poc2-rail; the dashboards
    now render the real <Sidebar>, so it targets .ui-sidebar — the element that
    actually carries --sidebar. Worth the swap: the sidebar surface is a separate
@@ -2193,18 +2190,18 @@ ${anchorBlocks()}
    card is still lit by the brand without being coloured by it. */
 [data-theme-poc2] .ui-card {
   box-shadow:
-    0 1px 1px var(--poc2-shadow-amb),
-    0 4px 12px var(--poc2-shadow-far),
-    0 20px 48px var(--poc2-shadow-far);
+    0 1px 1px var(--shadow-color-2xs),
+    0 4px 12px var(--shadow-color-lg),
+    0 20px 48px var(--shadow-color-lg);
   transition: box-shadow var(--duration-normal) var(--ease-out),
               transform var(--duration-normal) var(--ease-out);
 }
 [data-theme-poc2] .ui-card--interactive:hover {
   transform: translateY(calc(-1 * var(--motion-slide-sm)));
   box-shadow:
-    0 1px 1px var(--poc2-shadow-amb),
-    0 8px 20px var(--poc2-shadow-far),
-    0 32px 64px var(--poc2-shadow-key);
+    0 1px 1px var(--shadow-color-2xs),
+    0 8px 20px var(--shadow-color-lg),
+    0 32px 64px var(--shadow-color-xl);
 }
 @media (prefers-reduced-motion: reduce) {
   /* the global block in tokens.scss collapses DURATIONS only, so a transform

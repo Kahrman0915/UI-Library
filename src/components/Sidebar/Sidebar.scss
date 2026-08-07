@@ -402,9 +402,15 @@
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
   }
+  /* ACTIVE MUST NOT BE THE SAME PAINT AS HOVER. It was: both set
+     --sidebar-accent, so hovering the active row did nothing at all, and
+     hovering any other row made it indistinguishable from the active one —
+     the state stopped being readable. Only font-weight told them apart.
+     --sidebar-primary / -foreground already existed in tokens.scss and were
+     consumed by nothing; this is what they are for. No new token. */
   &--active {
-    background: var(--sidebar-accent);
-    color: var(--sidebar-accent-foreground);
+    background: var(--sidebar-primary);
+    color: var(--sidebar-primary-foreground);
     font-weight: var(--font-medium);
   }
   &--outline {
@@ -524,9 +530,10 @@
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
   }
+  /* Same collision as the menu button above — active and hover were one paint. */
   &--active {
-    background: var(--sidebar-accent);
-    color: var(--sidebar-accent-foreground);
+    background: var(--sidebar-primary);
+    color: var(--sidebar-primary-foreground);
   }
   &--sz-sm {
     font-size: var(--text-xs);
