@@ -31,10 +31,10 @@ a border, text, or an SVG. That drops most of the tree.
 | Figma page | Story | State |
 |---|---|---|
 | `951:50` Dashboard | Dashboard | **Done** — 12 frames, 6 brands × 2 modes |
-| `951:51` Marketing | Marketing | **Staged, not built** — payload extracted + verified, Figma write blocked |
+| `951:51` Marketing | Marketing | **Done** — 12 frames, 6 brands × 2 modes (built 2026-08-07 by replaying the staged payload) |
 | `951:52` Suite | Suite | **Staged, not built** — payload extracted + verified, Figma write blocked |
 
-**Staged** means every browser-side step is finished and checked in: the
+**Suite is still staged.** Staged means every browser-side step is finished and checked in: the
 payloads sit in [`figma-payloads/`](./figma-payloads/), the Figma-side builder
 sits in [`../scripts/figma-build-poc-page.js`](../scripts/figma-build-poc-page.js),
 and a dry run replays all of it against a stub Plugin API. What is left is the
