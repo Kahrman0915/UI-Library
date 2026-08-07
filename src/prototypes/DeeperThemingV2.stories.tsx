@@ -333,7 +333,26 @@ function AidenFab({ mode, id }: { mode: Mode; id: string }) {
   );
 }
 
-function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
+/**
+ * THREE BARS: which three slots?
+ *
+ * The default is 1,2,3 — take the next free slot. For a three-series chart that
+ * lands primary, the PALE rung, then the deep, and the pale rung is the weakest
+ * thing the palette owns (1.5–2.7:1 in light). One washed-out bar between two
+ * saturated ones is the look this alternative exists to question.
+ *
+ * `slot` is a real per-series prop, so this is a pin rather than a CSS remap.
+ * Do NOT try to do it by re-declaring `--chart-2: var(--chart-3)` on a wrapper:
+ * custom properties substitute at computed-value time ON THE DECLARING ELEMENT,
+ * so declaring `--chart-2: var(--chart-3)` and `--chart-3: var(--chart-4)` on
+ * the same element resolves BOTH to slot 4.
+ */
+const THREE_BAR_SLOTS = { default: [1, 2, 3], skipPale: [1, 3, 4] } as const;
+
+function DashboardPage({
+  brand, mode, barSlots = 'default',
+}: { brand: BrandKey; mode: Mode; barSlots?: keyof typeof THREE_BAR_SLOTS }) {
+  const slots = THREE_BAR_SLOTS[barSlots];
   const [on, setOn] = useState(true);
   const nav = ['Overview', 'Cohorts', 'Exports', 'Settings'];
   return (
@@ -430,13 +449,13 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
               <BarChart
                 id={`${brand}-chart`}
                 title="Sessions by channel"
-                description="Slot 1 is this brand's hue; slots 2-6 are its own validated companions."
+                description={`Three series on slots ${slots.join(', ')}.`}
                 categories={['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun']}
                 height={220}
                 series={[
-                  { key: 'direct', label: 'Direct', data: [420, 512, 486, 640, 712, 690] },
-                  { key: 'referral', label: 'Referral', data: [280, 310, 402, 380, 460, 520] },
-                  { key: 'organic', label: 'Organic', data: [180, 240, 220, 300, 340, 410] },
+                  { key: 'direct', label: 'Direct', data: [420, 512, 486, 640, 712, 690], slot: slots[0] },
+                  { key: 'referral', label: 'Referral', data: [280, 310, 402, 380, 460, 520], slot: slots[1] },
+                  { key: 'organic', label: 'Organic', data: [180, 240, 220, 300, 340, 410], slot: slots[2] },
                 ]}
               />
             </CardBody>
@@ -1492,6 +1511,7 @@ export const Dashboard: Story = {
     const mode = useGlobalMode();
     const [strength, setStrength] = useState(1);
     const [chromeOn, setChromeOn] = useState(1);
+    const [barSlots, setBarSlots] = useState<'default' | 'skipPale'>('default');
     // EVERY application, not a sample. Three brands was enough to show the
     // mechanism and not enough to answer the real question — whether six of them
     // still read as one suite when you scroll past them in a row.
@@ -1517,12 +1537,40 @@ export const Dashboard: Story = {
             <div style={{ display: 'flex', gap: 'var(--p-5)', flexWrap: 'wrap', alignItems: 'center' }}>
               <Switch id="d-on" label="Theming on" checked={strength === 1} onCheckedChange={(v) => setStrength(v ? 1 : 0)} />
               <Switch id="d-chrome" label="Tint the rail" checked={chromeOn === 1} onCheckedChange={(v) => setChromeOn(v ? 1 : 0)} />
+              <Switch
+                id="d-slots"
+                label="3 bars: skip the pale rung (1,3,4)"
+                checked={barSlots === 'skipPale'}
+                onCheckedChange={(v) => setBarSlots(v ? 'skipPale' : 'default')}
+              />
               </div>
+            <p style={{ ...P, marginTop: 'var(--p-4)' }}>
+              <strong>On the three-bar slot question.</strong> The default takes the next free slot,
+              so three series land on <code style={MONO}>1, 2, 3</code> — primary, the pale rung,
+              the deep. Pinning <code style={MONO}>1, 3, 4</code> skips the pale one and gives three
+              saturated bars instead. <strong>Measured, it is not a separation win:</strong>{' '}
+              all-pairs ΔE is <em>identical</em> in 13 of 14 brand&times;mode combinations, because
+              the binding pair is 1-vs-3 either way and that pair is in both sets. What does drop is
+              the adjacent gap — slot 2 was contributing a big lightness jump between neighbours
+              (db light 24.5 → 15.2, rm light 33.2 → 15.2).
+            </p>
+            <p style={P}>
+              So this is an <strong>aesthetic</strong> choice, not an accessibility one, and it is
+              worth making on those terms: the pale rung is the weakest colour the palette owns
+              (1.5–2.7:1 in light) and one washed-out bar between two saturated ones can read as a
+              rendering fault rather than a category.{' '}
+              <strong>Two real cautions:</strong> <code style={MONO}>ec</code> light genuinely
+              improves (all-pairs 14.2 → 15.1, CVD 12.7 → 14.8), but{' '}
+              <code style={MONO}>aiden</code> loses badly under colour-blind simulation — light CVD
+              12.4 → 5.5 and <strong>dark 6.7 → 3.0, under the hard floor of 4</strong>, because its
+              slot 4 is the magenta and slot 1 the violet. If 1,3,4 becomes the rule, Aiden needs an
+              exception.
+            </p>
           </div>
           {show.map((b) => (
             <Frame key={b} label={`data-brand="${b}"`}>
               <Scope brand={b} mode={mode} strength={strength} chromeOn={chromeOn}>
-                <DashboardPage brand={b} mode={mode} />
+                <DashboardPage brand={b} mode={mode} barSlots={barSlots} />
               </Scope>
             </Frame>
           ))}
