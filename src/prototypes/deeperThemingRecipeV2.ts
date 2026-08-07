@@ -763,8 +763,14 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
            dark:  ['#689cfe', '#a1bee2', '#4c84c6', '#9ddcfa', '#8092a9', '#e6e8f9'] },
   nb:    { light: ['#306602', '#7bad7a', '#364e2a', '#b1be6a', '#7e8c70', '#1f3426'],
            dark:  ['#8bca2f', '#b7bfa8', '#649807', '#cfd9a0', '#8d9479', '#e0eee1'] },
-  dc:    { light: ['#127f76', '#4fb0ae', '#045851', '#6dcba1', '#6a8f86', '#143438'],
-           dark:  ['#0db09d', '#b2beba', '#0d9479', '#a4e2c4', '#6f919b', '#d9efef'] },
+  /* dc is the OWNER'S from Figma (2026-08-07), taken as drawn. Slots 2, 3, 4
+     and 5 moved in light; 2, 3 and 4 in dark; the line's middle went to slot 4
+     in both, matching db and ec. What it buys and what it costs is measured in
+     the commit — the short version is that neighbour separation improves a lot
+     (light 16.1 -> 21.1, dark 15.4 -> 19.1) and all-pairs and CVD give some
+     back. dc DARK CVD IS 3.0, below the hard floor of 4, on slots 3/5. */
+  dc:    { light: ['#127f76', '#7bc5c3', '#0c4955', '#74dbad', '#809aa2', '#143438'],
+           dark:  ['#0db09d', '#b9d2d2', '#0f91aa', '#9dedc9', '#6f919b', '#d9efef'] },
   ph:    { light: ['#b56005', '#d7907c', '#793e01', '#d8ae5e', '#9c7f6f', '#3a2c18'],
            dark:  ['#ee7d0a', '#ddb09a', '#bd6c42', '#ebce99', '#a6897c', '#f3e7d9'] },
   rm:    { light: ['#d62496', '#cc86a0', '#960366', '#d89ddd', '#997c8e', '#3f262b'],
@@ -837,7 +843,7 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   // ec's trio is the owner's pick — light slots 1,5,6 and dark 1,4,6, chosen
   // by eye after the generated ones were rejected. It is NOT re-derived.
-  ec:    { light: ['#067db8', '#6d8b9c', '#232f42'], dark: ['#1da0f3', '#95e2e2', '#e1eaf9'] },
+  ec:    { light: ['#067db8', '#4ec8dc', '#232f42'], dark: ['#1da0f3', '#95e2e2', '#e1eaf9'] },
   // The rest take the trio that scores best from their OWN six. Light lands on
   // slots 1,3,6 everywhere — primary, deep, near-black — because in light the
   // pale rungs are the ones that cannot be a stroke. Dark lands on 1,2,6, the
@@ -850,7 +856,7 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
      and marker shape plus the end label carry that pair. */
   db:    { light: ['#466af4', '#5fc3ec', '#2b406a'], dark: ['#689cfe', '#9ddcfa', '#e6e8f9'] },
   nb:    { light: ['#306602', '#364e2a', '#1f3426'], dark: ['#8bca2f', '#b7bfa8', '#e0eee1'] },
-  dc:    { light: ['#127f76', '#045851', '#143438'], dark: ['#0db09d', '#b2beba', '#d9efef'] },
+  dc:    { light: ['#127f76', '#74dbad', '#143438'], dark: ['#0db09d', '#9dedc9', '#d9efef'] },
   ph:    { light: ['#b56005', '#793e01', '#3a2c18'], dark: ['#ee7d0a', '#ddb09a', '#f3e7d9'] },
   rm:    { light: ['#d62496', '#960366', '#3f262b'], dark: ['#fe68b8', '#d8acc6', '#f8e4e7'] },
   // aiden's trios are 1,2,3 light and 1,3,5 dark. Its pink slot 4 is the

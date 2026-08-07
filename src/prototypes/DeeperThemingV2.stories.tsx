@@ -2422,3 +2422,124 @@ export const AidenChat: Story = {
     );
   },
 };
+
+/**
+ * THE MUTE, SHOWN.
+ *
+ * --chart-muted is not a seventh slot. It is the colour a series takes when the
+ * chart is deliberately NOT asking you to read it, and it does two jobs:
+ *
+ *   1 EMPHASIS — name a subject and every OTHER series drops to the mute. In
+ *     Chart.tsx that is one line: `token: state === 'off' ? var(--chart-muted)`.
+ *     Six coloured series become one subject and a grey field, which is how a
+ *     six-series chart becomes readable at all.
+ *   2 THE FOLD PAST SIX — a seventh series does not invent a seventh hue, it
+ *     takes the mute. The cap is visible in the chart rather than silent.
+ *
+ * Both jobs need the same thing: the mute must not look like any slot. If it
+ * does, a de-emphasised series and an active one are the same colour, and the
+ * whole mechanism quietly stops working. That is the 12-dE floor.
+ */
+export const TheMute: Story = {
+  render: function TheMuteStory() {
+    const mode = useGlobalMode();
+    const [brand, setBrand] = useState<BrandKey>('db');
+    const [subject, setSubject] = useState<string | undefined>('direct');
+
+    const SERIES = [
+      { key: 'direct', label: 'Direct', slot: 1 as const, data: [19, 24, 33, 41] },
+      { key: 'paid', label: 'Paid search', slot: 2 as const, data: [38, 37, 29, 24] },
+      { key: 'referral', label: 'Referral', slot: 3 as const, data: [13, 16, 21, 26] },
+      { key: 'social', label: 'Social', slot: 4 as const, data: [9, 12, 13, 14] },
+      { key: 'email', label: 'Email', slot: 5 as const, data: [7, 8, 10, 11] },
+      { key: 'partner', label: 'Partner', slot: 6 as const, data: [4, 6, 7, 9] },
+    ];
+
+    const card = (title: string, note: string, children: ReactNode) => (
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <div>
+          <strong style={{ fontSize: 'var(--text-sm)' }}>{title}</strong>
+          <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{note}</p>
+        </div>
+        <Scope brand={brand} mode={mode}>
+          <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)' }}>
+            {children}
+          </div>
+        </Scope>
+      </div>
+    );
+
+    return (
+      <>
+        <PocStyle />
+        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
+          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 800 }}>
+            <h2 style={H2}>What the mute is for</h2>
+            <p style={P}>
+              <code style={MONO}>--chart-muted</code> is not a seventh colour. It is what a series is
+              painted when the chart is deliberately <em>not</em> asking you to read it — and it only
+              works if it cannot be mistaken for a real slot. Switch brands below:{' '}
+              <code style={MONO}>db</code> carries a bespoke warm mute, everything else uses the
+              shipped slate.
+            </p>
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {BRAND_KEYS.filter((b) => b !== 'aiden').map((b) => (
+                <Chip key={b} id={`mute-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
+              ))}
+            </div>
+          </div>
+
+          {/* The swatch strip: every slot, then the mute, with the gap named. */}
+          {card('The palette, and the mute beside it',
+            'The mute has to sit clear of all six. When it does not, the two states below stop differing.',
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} style={{ display: 'grid', gap: 4, minWidth: 76 }}>
+                  <div style={{ background: `var(--chart-${i})`, height: 46, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
+                  <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>slot {i}</span>
+                </div>
+              ))}
+              <div style={{ width: 1, background: 'var(--border)', margin: 'var(--p-1) var(--p-2)' }} />
+              <div style={{ display: 'grid', gap: 4, minWidth: 76 }}>
+                <div style={{ background: 'var(--chart-muted)', height: 46, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
+                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>muted</span>
+              </div>
+            </div>)}
+
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px,1fr))', gap: 'var(--p-6)' }}>
+            {card('1 · No emphasis — six series, six colours',
+              'Every slot painting at once. This is the hardest thing a categorical palette is ever asked to do.',
+              <BarChart id="mute-a" title="Quarterly signups by channel" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
+                valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
+                emphasisOnHover={false} series={SERIES} />)}
+
+            {card(`2 · Emphasis on “${SERIES.find((s) => s.key === subject)?.label ?? 'none'}”`,
+              'One subject keeps its slot; the other five take --chart-muted. Same chart, same data — colour is doing the focusing.',
+              <BarChart id="mute-b" title="Quarterly signups by channel" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
+                valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
+                emphasis={subject} emphasisOnHover={false} series={SERIES} />)}
+          </div>
+
+          <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+            <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>pick the subject</span>
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+              {SERIES.map((s) => (
+                <Chip key={s.key} id={`subj-${s.key}`} label={s.label} active={s.key === subject}
+                  onClick={() => setSubject(s.key)} />
+              ))}
+              <Chip id="subj-none" label="none" active={subject === undefined} onClick={() => setSubject(undefined)} />
+            </div>
+          </div>
+
+          {/* The other job — and the one that makes the six-slot cap honest. */}
+          {card('3 · The fold past six',
+            'A seventh series does not get a seventh hue. It takes the mute, so the cap is visible in the chart instead of being a silent choice.',
+            <BarChart id="mute-c" title="Seven channels — the seventh folds" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
+              valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
+              emphasisOnHover={false}
+              series={[...SERIES, { key: 'other', label: 'Other (7th)', data: [3, 4, 5, 6] }]} />)}
+        </div>
+      </>
+    );
+  },
+};
