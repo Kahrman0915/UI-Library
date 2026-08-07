@@ -2595,6 +2595,13 @@ export const MuteByForm: Story = {
       .poc2-mf-d .ui-chart__series:nth-child(1) .ui-chart__bar {
         stroke: var(--foreground); stroke-width: 2; paint-order: stroke fill;
       }
+      /* E — the owner's idea, with the numbers corrected. Every muted series
+         takes ONE source slot knocked back by opacity. The source is the slot
+         CLOSEST TO THE CARD in that mode, which is the generalisation of
+         "slot 2 in light, slot 6 in dark" and the version that survives aiden. */
+      .poc2-mf-e .ui-chart__series:nth-child(n+2) .ui-chart__bar {
+        fill: var(--poc2-mute-src); opacity: var(--poc2-mute-a);
+      }
     `;
 
     const panel = (title: string, note: string, cls?: string, emphasis?: string) => (
@@ -2618,6 +2625,14 @@ export const MuteByForm: Story = {
       <>
         <PocStyle />
         <style>{css}</style>
+        {/* The source is picked per MODE, not per brand: in light the slot
+            closest to the card is the bright highlight (slot 4); in dark it is
+            the deep (slot 3). Both are "the quietest thing the palette already
+            owns", which is what makes this derived rather than authored. */}
+        <style>{`
+          .poc2-mf-e { --poc2-mute-src: var(--chart-4); --poc2-mute-a: 0.42; }
+          [data-mode='dark'] .poc2-mf-e { --poc2-mute-src: var(--chart-3); --poc2-mute-a: 0.52; }
+        `}</style>
         <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
           <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 820 }}>
             <h2 style={H2}>Muting by form instead of by hue</h2>
@@ -2653,6 +2668,9 @@ export const MuteByForm: Story = {
             {panel('D · Everything filled, subject gains a ring',
               'Emphasis by ADDITION rather than by recession. Nothing steps back, so on a busy chart it is the weakest of the four.',
               'poc2-mf-d')}
+            {panel('E · One slot, knocked back by opacity',
+              'The owner’s idea. Every muted series takes ONE source slot at reduced opacity — 42% in light, 52% in dark — so the field is calm and the mute is DERIVED from the palette rather than hand-picked.',
+              'poc2-mf-e')}
           </div>
 
           <div style={{ maxWidth: 820 }}>
