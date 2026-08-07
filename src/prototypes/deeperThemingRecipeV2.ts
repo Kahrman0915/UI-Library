@@ -1079,10 +1079,10 @@ ${anchorBlocks()}
      takes the least. Worst muted-foreground reading across all seven brands:
      accent 5.61, secondary/input 5.19, muted 4.56 — all above AA, against
      baselines of 6.92 / 6.15 / 5.10. */
-  --accent:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #f1f5f9);
-  --secondary: color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc2-str)), #e2e8f0);
-  --input:     color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc2-str)), #e2e8f0);
-  --muted:     color-mix(in srgb, var(--surface-tint) calc(7%  * var(--poc2-str)), #cbd5e1);
+  --accent:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #f1f5f9);
+  --secondary: color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #e2e8f0);
+  --input:     color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #e2e8f0);
+  --muted:     color-mix(in srgb, var(--surface-tint) calc(7%  * var(--tint-surface, 0)), #cbd5e1);
 
   /* LINES ARE MOSTLY SLATE. They carry no contrast budget, so an earlier pass
      spent freely here — 20-26% of --primary — and the result was a page whose
@@ -1095,9 +1095,9 @@ ${anchorBlocks()}
      WCAG 1.4.11 wants it to stand out from its surroundings, and it is the one
      line on the page whose whole job is to be noticed. Dulling it toward slate
      would make it agree with the border it sits next to. */
-  --border:       color-mix(in srgb, var(--primary) calc(5% * var(--poc2-str)), #cbd5e1);
-  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc2-str)), #64748b);
-  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc2-str)), #94a3b8);
+  --border:       color-mix(in srgb, var(--primary) calc(5% * var(--tint-surface, 0)), #cbd5e1);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-surface, 0)), #64748b);
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-surface, 0)), #94a3b8);
 
   /* CHROME. The rail is a surface, so it takes the same stock at the same order
      of magnitude — no second recipe. A rail that shouts is the loudest tell of a
@@ -1114,18 +1114,18 @@ ${anchorBlocks()}
      orange drag the slate-blue base through a less saturated point on the way to
      their own hue. The hue still moves toward the brand, which is the goal here;
      chroma is not the target. */
-  --sidebar:         color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(8%  * var(--poc2-chrome, 0)), #f8fafc));
-  --sidebar-border:  color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(11% * var(--poc2-chrome, 0)), #e2e8f0));
-  --sidebar-accent:  color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                     color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc2-chrome, 0)), #f1f5f9));
+  --sidebar:         color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(8%  * var(--tint-rail, 0)), #f8fafc));
+  --sidebar-border:  color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(11% * var(--tint-rail, 0)), #e2e8f0));
+  --sidebar-accent:  color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                     color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-rail, 0)), #f1f5f9));
 
   /* BAND — the alternating marketing strip. Same stock, same restraint: a band
      is still a surface people read on. It is allowed to be the loudest of them
      because it is a deliberate strip rather than page chrome, and even then
      band-strong only reaches ~9 dE00 off white. */
-  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(7%  * var(--poc2-str)), #ffffff);
+  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(7%  * var(--tint-surface, 0)), #ffffff);
 }
 
 /* ── DARK ───────────────────────────────────────────────────────────────────
@@ -1147,27 +1147,27 @@ ${anchorBlocks()}
 
   --surface-tint: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
 
-  --background: color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #0f172a);
-  --card:       color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #1e293b);
-  --popover:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #475569);
-  --secondary:  color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #1e293b);
-  --accent:     color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #334155);
-  --muted:      color-mix(in srgb, var(--surface-tint) calc(10% * var(--poc2-str)), #334155);
-  --input:      color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-str)), #475569);
+  --background: color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #0f172a);
+  --card:       color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #1e293b);
+  --popover:    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #475569);
+  --secondary:  color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #1e293b);
+  --accent:     color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #334155);
+  --muted:      color-mix(in srgb, var(--surface-tint) calc(10% * var(--tint-surface, 0)), #334155);
+  --input:      color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-surface, 0)), #475569);
 
   /* Same step as light; --ring again left at full strength. */
-  --border:       color-mix(in srgb, var(--primary) calc(6% * var(--poc2-str)), #64748b);
-  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--poc2-str)), #cbd5e1);
-  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--poc2-str)), #94a3b8);
+  --border:       color-mix(in srgb, var(--primary) calc(6% * var(--tint-surface, 0)), #64748b);
+  --border-hover: color-mix(in srgb, var(--primary) calc(8% * var(--tint-surface, 0)), #cbd5e1);
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-surface, 0)), #94a3b8);
 
-  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc2-chrome, 0)), #1e293b));
-  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(12% * var(--poc2-chrome, 0)), #334155));
-  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--poc2-chrome, 0)),
-                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--poc2-chrome, 0)), #334155));
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--tint-rail, 0)), #1e293b));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(12% * var(--tint-rail, 0)), #334155));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--surface-tint) calc(9%  * var(--tint-rail, 0)), #334155));
 
-  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--poc2-str)), #1e293b);
+  --surface-band:        color-mix(in srgb, var(--surface-tint) calc(16% * var(--tint-surface, 0)), #1e293b);
 }
 
 
@@ -1332,6 +1332,28 @@ ${anchorBlocks()}
    it would undo the entire reason the two were split. Caught exactly that way:
    the first cut of the split left var(--primary) in this block and the aiden
    mark silently turned indigo while every measurement still passed. */
+/* ── THE TINT AXIS ───────────────────────────────────────────────────────────
+   Tint is a fourth axis and it is an ATTRIBUTE, like the other three:
+
+     data-theme="db"  data-mode="dark"  data-surface="aiden"  data-tint="surface rail"
+
+   ~= is a whitespace-list match, so "surface", "rail", "surface rail" and the
+   attribute being ABSENT are four independent, valid states.
+
+   ABSENT MEANS NEUTRAL, and that is the point. The multipliers default to 0, so
+   a page that never sets data-tint renders the shipped neutrals rather than
+   breaking. The previous shape could not do this: --poc2-str was read 22 times
+   with NO fallback, and an unresolvable var() makes the whole declaration
+   invalid at computed-value time — so an unset strength did not mean "no tint",
+   it meant --card, --accent, --border and thirteen others fell back to
+   inherited or initial. It never showed because the story root always set it.
+
+   Why a multiplier still exists behind the attribute: CSS has no booleans, and
+   the value has to enter calc(). Keeping it as a number also leaves the door
+   open to a continuous 0-1 strength without changing any of the 34 call sites. */
+[data-theme-poc2][data-tint~='surface'] { --tint-surface: 1; }
+[data-theme-poc2][data-tint~='rail']    { --tint-rail: 1; }
+
 [data-theme-poc2] {
   /* The scope declares its own text colour. Without this the subtree INHERITS
      whatever colour the surrounding page had — and since a POC scope carries its
@@ -1408,13 +1430,13 @@ ${anchorBlocks()}
      spend and this spends only part of it. */
   --poc2-bubble:
     radial-gradient(52% 46% at 8% 2%,
-      color-mix(in srgb, var(--decorative-hi) calc(var(--poc2-bubble-hl) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-hi) calc(var(--poc2-bubble-hl) * var(--tint-surface, 0)), transparent) 0%,
       transparent 72%),
     radial-gradient(48% 44% at 94% 16%,
-      color-mix(in srgb, var(--decorative-deep) calc(var(--poc2-bubble-deep) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--decorative-deep) calc(var(--poc2-bubble-deep) * var(--tint-surface, 0)), transparent) 0%,
       transparent 70%),
     radial-gradient(44% 40% at 34% 98%,
-      color-mix(in srgb, var(--primary) calc(var(--poc2-bubble-mid) * var(--poc2-str)), transparent) 0%,
+      color-mix(in srgb, var(--primary) calc(var(--poc2-bubble-mid) * var(--tint-surface, 0)), transparent) 0%,
       transparent 72%);
 }
 

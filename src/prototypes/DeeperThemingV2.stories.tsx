@@ -170,12 +170,19 @@ function Scope({
   const attrs = brand === 'aiden'
     ? { 'data-surface': 'aiden' }
     : { 'data-brand': brand || undefined };
+  /* Tint is an ATTRIBUTE now, not a pair of inline custom properties — the
+     same shape as data-mode / data-theme / data-surface, and visible in the
+     inspector instead of buried in a style attribute. The two words are
+     independent: either, both, or neither. `strength` and `chromeOn` stay
+     numeric props because the stories toggle them as 0/1, but all they do is
+     decide whether the word is present. */
+  const tint = [strength ? 'surface' : null, chromeOn ? 'rail' : null].filter(Boolean).join(' ');
   return (
     <div
       data-theme-poc2=""
       {...attrs}
       data-mode={mode}
-      style={{ '--poc2-str': strength, '--poc2-chrome': chromeOn } as CSSProperties}
+      data-tint={tint || undefined}
     >
       {children}
     </div>
@@ -1292,7 +1299,7 @@ export const Tokens: Story = {
           {cols.map((b) => (
             <span key={b} data-m={b} data-theme-poc2=""
               {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
-              data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
+              data-mode={mode} data-tint="surface rail">
               <span />
             </span>
           ))}
@@ -1419,7 +1426,7 @@ export const Audit: Story = {
           {AUDIT_SCOPES.map((b) => (
             <span key={b} data-a={b} data-theme-poc2=""
               {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
-              data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
+              data-mode={mode} data-tint="surface rail">
               <span />
             </span>
           ))}
