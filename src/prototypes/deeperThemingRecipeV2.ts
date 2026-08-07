@@ -698,6 +698,36 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * comparing end up on the same pixels exactly where they must be told apart.
  * The two sub-3:1 tints also stop reading as shapes at 1px.
  */
+/**
+ * PER-BRAND --chart-muted. Empty for everyone but db, and db is why it exists.
+ *
+ * The owner drew db's slot 2 as a pale blue-grey three times, and I moved it
+ * back twice. --chart-muted is ALSO a pale blue-grey (#a9b6c7), so their third
+ * value landed 2.2 dE from it — the same colour. A de-emphasised series and an
+ * active slot-2 series would have been indistinguishable.
+ *
+ * THE MUTE MOVED INSTEAD OF THE SLOT, and that is the right way round: slot 2
+ * carries a brand's identity, the mute exists to have none. Arguing with a
+ * consistent design intent for a third time to protect the one token with
+ * nothing to protect was the wrong trade.
+ *
+ * IT GOES LIGHTER, NOT DARKER. Every candidate that cleared db's six by going
+ * DOWN landed at 5.8-7.2 contrast against the shipped mute's 2.06 — which would
+ * make an IGNORED series heavier than the ones being read. A mute is context;
+ * it recedes. #e0cfc2 sits at 1.51, quieter than shipped, and clears every db
+ * slot by 12.6.
+ *
+ * IT IS WARM because the cool lane is full: db's slot 2 and slot 5 are both
+ * blue-greys, so a low-chroma neutral can only escape them along LIGHTNESS or
+ * out of the blue family entirely. A warm pale greige cannot be mistaken for
+ * any series in a blue palette, which is exactly the job.
+ *
+ * Light only. Dark's mute (#425064) already clears db's dark set by 19.4.
+ */
+const CHART_MUTE: Record<string, { light?: string; dark?: string }> = {
+  db: { light: '#e0cfc2' },
+};
+
 const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // ec is the ORIGINAL — hand-drawn by the owner, then tuned. Every other entry
   // below is generated from its structure. It is never re-derived.
@@ -717,8 +747,19 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
      direction. A pale desaturated blue-grey and --chart-muted (#a9b6c7) are
      structurally the same colour, so the only escapes are lighter or more
      chromatic; lighter keeps their look, chromatic (#a290e1, 2.76) does not.
-     Their own value was already 1.63. */
-  db:    { light: ['#466af4', '#d3dbef', '#0d3bbf', '#5fc3ec', '#7f92a3', '#2b406a'],
+     Their own value was already 1.63.
+
+     SLOT 2 IS NOW THE OWNER'S #a2b2d0 AND THE MUTE MOVED INSTEAD — see
+     CHART_MUTE. Their value sat 2.2 dE from --chart-muted, and the mute is the
+     token with no identity to defend, so it gave way.
+
+     DARK IS UNTOUCHED BY OWNER DECISION (2026-08-07), including two slots that
+     do NOT clear --info: slot 2 at 6.5 and slot 4 at 4.2 against a floor of 10.
+     Dark --info is #7cd4fd and slot 4 is #9ddcfa — at 4.2 they are effectively
+     one colour, so an info badge beside a db chart is a real hazard. Owner:
+     "do not change dark mode, I don't care that it is near info here." Recorded
+     rather than silently carried: this is accepted, not passing. */
+  db:    { light: ['#466af4', '#a2b2d0', '#0d3bbf', '#5fc3ec', '#7f92a3', '#2b406a'],
            dark:  ['#689cfe', '#a1bee2', '#4c84c6', '#9ddcfa', '#8092a9', '#e6e8f9'] },
   nb:    { light: ['#306602', '#7bad7a', '#364e2a', '#b1be6a', '#7e8c70', '#1f3426'],
            dark:  ['#8bca2f', '#b7bfa8', '#649807', '#cfd9a0', '#8d9479', '#e0eee1'] },
@@ -829,7 +870,9 @@ function chartVars(
   // A hand-authored set wins outright — it is the owner's drawing, not an input
   // to a derivation, so nothing downstream may re-solve or "improve" it.
   const hand = CHART_HAND[k]?.[mode];
-  if (hand) return hand.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
+  const mute = CHART_MUTE[k]?.[mode];
+  if (hand) return hand.map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n'
+    + (mute ? `  --chart-muted: ${mute};\n` : '');
   const neutrals = neutralMap[k]?.[mode];
   if (!neutrals) return ''; // aiden is a surface, not a brand — it keeps the default ramp
   const a = anchors[k];
