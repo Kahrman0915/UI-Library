@@ -8,9 +8,6 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import {
   Alert, Avatar, AvatarGroup, Badge, Banner, BarChart, Button, Card, CardBody, CardHeader,
-  Chat, ChatBubble, ChatComposer, ChatComposerActions, ChatComposerInput, ChatComposerSend,
-  ChatCitation, ChatMarker, ChatMessage, ChatMessageList, ChatReasoning, ChatSource, ChatSources,
-  ChatSuggestion, ChatSuggestions, ChatToolCall, ChatToolCalls,
   Chip, Fab, LineChart,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
   Separator, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader,
@@ -23,7 +20,7 @@ import {
 import type { BrandKey } from './deeperThemingRecipeV2';
 import SuitePageV2 from './SuitePageV2';
 import { usePointerTilt } from './usePointerTilt';
-import { AuditPanel, NewTokensPanel, TokenDiffPanel } from './DeeperThemingPartsV2';
+import { AuditPanel, NewTokensPanel, TokenDiffPanel, TransitionPanel } from './DeeperThemingPartsV2';
 
 /**
  * PROOF OF CONCEPT — deeper theming, rebuilt on the app marks.
@@ -244,12 +241,19 @@ const meta: Meta = {
         'THREE anchors — **highlight, primary, deep** — and every surface derives from them, so a ' +
         'theme reaches past the accent into the page itself. `--primary` IS the middle anchor, which ' +
         'means the whole existing `--primary-*` family re-derives for free.\n\n' +
-        'Read it in order: **Brands** is the model, **Mark Anatomy** and **Aiden Surface** are the ' +
-        'identity, **Tokens** is what it costs, **Audit** is whether it holds up, and the last three ' +
-        'are the thing itself at full size.\n\n' +
+        'This section is now an **adoption dossier**, not an exploration. The question it exists to ' +
+        'answer is whether the model is ready to move into `tokens.scss`, and what that would cost. ' +
+        'Read it in order: **Brands** is the model · **Mark Anatomy** and **Aiden Surface** are the ' +
+        'identity · **Tokens** and **Audit** are the cost and whether it holds up · **Dashboard**, ' +
+        '**Marketing** and **Suite** are the thing itself at full size · **Chart Palettes** and ' +
+        '**Charts In Use** are the data layer · **Transition** is the patch that adoption would ' +
+        'actually write.\n\n' +
         'Nothing in `tokens.scss` is modified. Every rule is scoped to a `data-theme-poc2` attribute ' +
         'that exists nowhere else in the repo, so none of this can leak into another story. ' +
-        'Light/dark follows the Storybook toolbar — these stories have no mode switch of their own.',
+        'Light/dark follows the Storybook toolbar — these stories have no mode switch of their own.\n\n' +
+        'Six earlier stories were retired once they had done their job: the v1/v2 comparison, the two ' +
+        'roster pages, an Aiden chat prototype, and the two studies that settled how `--chart-muted` ' +
+        'should look. Their conclusions live in the recipe comments and in the stories that remain.',
       tags: ['poc', 'theming'],
     },
   },
@@ -1593,380 +1597,6 @@ export const Suite: Story = {
   },
 };
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Side by side — v1 (the hand-tuned POC) against v2 (the solver-derived set)
-// ─────────────────────────────────────────────────────────────────────────────
-
-import { POC_CSS as POC_CSS_V1, BRAND_ANCHORS as ANCHORS_V1 } from './deeperThemingRecipe';
-
-/**
- * The comparison the parallel-POC decision exists for: the same brand row
- * rendered under `[data-theme-poc]` (v1) and `[data-theme-poc2]` (v2), one
- * frame, both modes driven by the global toggle. It is also the regression
- * check that v1 still renders untouched — its column must look exactly as it
- * did before this round.
- */
-export const SideBySide: Story = {
-  name: 'v1 vs v2 — side by side',
-  render: function SideBySideStory() {
-    const mode = useGlobalMode();
-
-    const row = (
-      version: 'v1' | 'v2',
-      b: BrandKey,
-      anchors: { light: readonly [string, string, string]; dark: readonly [string, string, string] },
-    ) => {
-      const [hl, mid, deep] = anchors.light;
-      // aiden is a SURFACE, not a brand — its anchor selector keys on
-      // data-surface, and a data-brand="aiden" wrapper matches nothing.
-      const brandAttr = b === ('aiden' as BrandKey)
-        ? { 'data-surface': 'aiden' }
-        : { 'data-brand': b };
-      const scope =
-        version === 'v1'
-          ? { 'data-theme-poc': '', ...brandAttr, 'data-mode': mode }
-          : { 'data-theme-poc2': '', ...brandAttr, 'data-mode': mode };
-      const markCls = version === 'v1' ? 'poc-mark' : 'poc2-mark';
-      const heroCls = version === 'v1' ? 'poc-hero' : 'poc2-hero';
-      return (
-        <div
-          key={`${version}-${b}`}
-          {...(scope as unknown as Record<string, string>)}
-          style={{
-            display: 'flex', alignItems: 'center', gap: 'var(--p-3)',
-            padding: 'var(--p-2-5) var(--p-3)', borderRadius: 'var(--rounded-lg)',
-            background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)',
-          }}
-        >
-          <span className={markCls} style={{ width: 40, height: 40 }} aria-hidden="true" />
-          <span style={{ ...MONO, width: 44 }}>{b}</span>
-          {[hl, mid, deep].map((c, i) => (
-            <span key={i} title={c} style={{ width: 26, height: 26, borderRadius: 'var(--rounded-md)', background: c, border: 'var(--border-w-100) solid var(--border)' }} />
-          ))}
-          <span className={heroCls} style={{ flex: 1, height: 10, borderRadius: 'var(--rounded-full)' }} />
-          <Button id={`sbs-${version}-${b}`} size="sm" label="Primary" />
-        </div>
-      );
-    };
-
-    const col = (version: 'v1' | 'v2', title: string, anchors: typeof ANCHORS_V1 | typeof BRAND_ANCHORS) => (
-      <div style={{ display: 'grid', gap: 'var(--p-2)', alignContent: 'start' }}>
-        <h3 style={{ margin: 0, fontSize: 'var(--text-base)', fontWeight: 'var(--font-semibold)' }}>{title}</h3>
-        {SUB_BRANDS.map((b) => row(version, b, anchors[b]))}
-        {row(version, 'aiden' as BrandKey, anchors.aiden)}
-      </div>
-    );
-
-    return (
-      <>
-        {/* both stylesheets, one document — the whole point of the poc2 scope */}
-        <style>{POC_CSS_V1}</style>
-        <PocStyle />
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 'var(--p-6)', maxWidth: 1200 }}>
-          {col('v1', 'v1 — hand-tuned', ANCHORS_V1)}
-          {col('v2', 'v2 — solver-derived', BRAND_ANCHORS)}
-        </div>
-        <p style={{ maxWidth: 720, marginTop: 'var(--p-6)', fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-          Same machinery, different values. The ramp strip is each brand&rsquo;s hero
-          gradient (primary → deep); the three chips are highlight / primary / deep;
-          the button shows accent duty on the brand&rsquo;s own tinted card. Flip the
-          global mode toggle to compare dark.
-        </p>
-      </>
-    );
-  },
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// THE SUITE
-// ─────────────────────────────────────────────────────────────────────────────
-/**
- * THE CHOSEN SET (owner, 2026-08-06). The comparison round is over: ec is the
- * v1 azure, ph is the burnt orange, nb stays as it was but draws its mark
- * brighter than its primary. Those are not alternates layered on top any more —
- * they ARE `ec`, `ph` and `nb` in BRAND_ANCHORS, so every story on this page
- * shows them, not just these two views.
- */
-const SUITE: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
-
-/** What each brand is, in one line — the roster reads as a suite, not a list. */
-const BRAND_NOTES: Record<BrandKey, string> = {
-  db: 'indigo — the flagship',
-  nb: 'deep chartreuse — the darkest primary in the set, which is what keeps it apart from the orange under a red-green anomaly; its MARK is drawn brighter, because a logo pays no such debt',
-  dc: 'teal',
-  ec: "the v1 azure — crowds --info by design, waived on the icon+label rule",
-  ph: 'burnt orange — crowds --warning on the same terms',
-  rm: 'magenta',
-  aiden: 'blurple — the AI surface, not a sub-app',
-};
-
-type AnchorShape = {
-  light: readonly string[]; dark: readonly string[];
-  accent: { light: string; dark: string }; markDeep: { light: string; dark: string };
-  label?: string;
-};
-/**
- * The FUNCTIONAL primary — what the buttons, charts and tints use.
- *
- * It is not always the mark's middle stop. aiden has always authored the two
- * apart, and nb now does too (its mark is brighter than its primary, because
- * the primary carries a colour-blindness constraint the logo does not). A
- * swatch labelled "primary" must show the colour that actually is one.
- */
-function primaryOf(key: string, m: Mode): string {
-  const a = anchorsOf(key) as AnchorShape & { primary?: { light: string; dark: string } };
-  if (a.primary) return a.primary[m];
-  return m === 'light' ? a.light[1] : a.dark[1];
-}
-/** True where the mark's middle stop is authored apart from the primary. */
-function markSplits(key: string): boolean {
-  return !!(anchorsOf(key) as AnchorShape & { primary?: unknown }).primary;
-}
-
-function anchorsOf(key: string): AnchorShape {
-  return (BRAND_ANCHORS as unknown as Record<string, AnchorShape>)[key];
-}
-
-/**
- * ROSTER — the whole suite as one list, the layout the owner sketched: mark,
- * name, the three anchors, the hero rail, and the primary button that proves
- * accent duty. Rendered in BOTH modes rather than following the toolbar,
- * because the point of this view is to see the family hold together, and half
- * a family is not a comparison.
- */
-export const Roster: Story = {
-  render: function RosterStory() {
-    const row = (key: BrandKey, m: Mode) => {
-      const a = anchorsOf(key);
-      const trio = m === 'light' ? a.light : a.dark;
-      return (
-        <Scope key={`${key}-${m}`} brand={key} mode={m}>
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'auto minmax(118px, auto) auto 1fr auto',
-            alignItems: 'center', gap: 'var(--p-4)',
-            padding: 'var(--p-3) var(--p-4)',
-          }}
-          >
-            <Mark brand={key} size={52} live tilt />
-
-            <div style={{ display: 'grid', gap: 2 }}>
-              <span style={{ ...MONO, fontSize: 'var(--text-sm)' }}>{key}</span>
-            </div>
-
-            <div style={{ display: 'flex', gap: 'var(--p-2)' }}>
-              {[trio[0], primaryOf(key, m), trio[2]].map((c, i) => (
-                <span
-                  key={c}
-                  title={`${['highlight', 'primary', 'deep'][i]} ${c}`}
-                  style={{
-                    width: 46, height: 46, background: c, borderRadius: 'var(--rounded-lg)',
-                    border: '1px solid rgba(128,138,157,0.45)',
-                  }}
-                />
-              ))}
-            </div>
-
-            {/* the hero rail: highlight → primary → deep, the gradient every
-                marketing surface is built from */}
-            <span style={{
-              height: 10, borderRadius: 'var(--rounded-full)',
-              background: `linear-gradient(90deg, ${trio[0]}, ${primaryOf(key, m)} 55%, ${trio[2]})`,
-            }}
-            />
-
-            <Button id={`roster-${key}-${m}`} label="Primary" />
-          </div>
-        </Scope>
-      );
-    };
-
-    // The panel is CHROME AROUND the brands, not a branded surface, so it paints
-    // the main app's neutral page directly. It cannot borrow --background from a
-    // brandless scope: in dark mode that token is a color-mix on --primary-deep,
-    // which only a brand block sets, so with no brand it resolves to nothing and
-    // the panel renders transparent over Storybook's white.
-    const NEUTRAL: Record<Mode, { bg: string; fg: string; border: string }> = {
-      dark: { bg: '#0f172a', fg: '#f8fafc', border: '#334155' },
-      light: { bg: '#ffffff', fg: '#0f172a', border: '#e2e8f0' },
-    };
-    const panel = (m: Mode) => (
-      <Scope brand="" mode={m}>
-        <div style={{
-          background: NEUTRAL[m].bg, color: NEUTRAL[m].fg,
-          border: `1px solid ${NEUTRAL[m].border}`, borderRadius: 'var(--rounded-xl)',
-          padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-1)',
-        }}
-        >
-          <span style={{ ...MONO, opacity: 0.6, padding: '0 var(--p-4) var(--p-2)' }}>{m}</span>
-          {SUITE.filter((k) => k !== 'aiden').map((k) => row(k, m))}
-          {/* aiden is fenced because it is a SURFACE — it layers inside any of
-              the six above rather than sitting beside them */}
-          <div style={{
-            marginTop: 'var(--p-2)', border: `1px solid ${NEUTRAL[m].border}`,
-            borderRadius: 'var(--rounded-lg)', padding: 'var(--p-1)',
-          }}
-          >
-            {row('aiden', m)}
-          </div>
-        </div>
-      </Scope>
-    );
-
-    return (
-      <>
-        <PocStyle />
-        <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>The suite</h2>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              The six sub-apps and the Aiden surface, as chosen. Each row is the mark, the
-              three anchors (highlight · primary · deep), the hero rail those anchors build,
-              and the primary button that proves the accent carries a label — in both modes,
-              so the family can be judged whole rather than half at a time.
-            </p>
-          </div>
-          <div style={{ display: 'grid', gap: 'var(--p-6)' }}>
-            {panel('dark')}
-            {panel('light')}
-          </div>
-
-          {/* With nothing assigned to a slot, the only thing that still binds is
-              which options can be used TOGETHER — so it belongs on this page. */}
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h3 style={{ ...H2, fontSize: 'var(--text-base)', margin: 0 }}>What this set costs</h3>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Two brands here buy their character from a sector a semantic already occupies,
-              and both were waived deliberately rather than solved away. <strong>ec</strong>{' '}
-              is hue 240, which <em>is</em> <code>--info</code>&rsquo;s hue — ΔE 6.0 in light,
-              6.9 in dark, against an 8.5 impersonation line. <strong>ph</strong> sits 6.5
-              from <code>--warning</code>. The condition on both is the icon+label rule:
-              neither may plot a series against its waived semantic without a glyph and a
-              label carrying the distinction. Everything else clears on its own —{' '}
-              <strong>nb</strong> is the one to leave alone, since its darkness is what holds
-              it apart from the orange under a red-green anomaly (colour-blind ΔE 5.0).
-            </p>
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-/**
- * ROSTER DETAIL — the same selected suite in the card layout the owner liked
- * from Alternates: every brand in both modes at once, with swatches, mark,
- * accent duty and a three-series chart, so the whole system can be judged in
- * one scroll rather than by flipping between stories.
- */
-export const RosterDetail: Story = {
-  render: function RosterDetailStory() {
-    const card = (key: BrandKey, m: Mode) => {
-      const a = anchorsOf(key);
-      const trio = m === 'light' ? a.light : a.dark;
-      const chip = (c: string, label: string) => (
-        <div style={{ display: 'grid', gap: 4, minWidth: 62 }}>
-          <div style={{ background: c, height: 32, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
-          <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
-          <span style={{ ...MONO, color: 'var(--muted-foreground)', opacity: 0.65 }}>{c}</span>
-        </div>
-      );
-      return (
-        <Scope key={`${key}-${m}`} brand={key} mode={m}>
-          <div style={{
-            background: 'var(--background)', color: 'var(--foreground)',
-            border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)',
-            padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)', height: '100%',
-          }}
-          >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
-              <Mark brand={key} size={44} live />
-              <div style={{ display: 'grid', gap: 2 }}>
-                <span style={{ fontSize: 'var(--text-sm)', fontWeight: 'var(--font-semibold)' }}>{key}</span>
-                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{m}</span>
-              </div>
-            </div>
-
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {chip(trio[0], 'highlight')}
-              {chip(primaryOf(key, m), 'primary')}
-              {chip(trio[2], 'deep')}
-              {chip(a.accent[m], 'accent')}
-              {/* Only nb and aiden draw their mark in a different colour from
-                  their primary, so the extra chip appears only where there is
-                  actually a second value to see. */}
-              {markSplits(key) && chip(trio[1], 'mark mid')}
-              {chip(a.markDeep[m], 'mark deep')}
-            </div>
-
-            <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center', flexWrap: 'wrap' }}>
-              <Button id={`rd-${key}-${m}-cta`} size="sm" label="Primary action" />
-              <Button id={`rd-${key}-${m}-out`} size="sm" style="outline" label="Outline" />
-              <Badge id={`rd-${key}-${m}-badge`}>Badge</Badge>
-            </div>
-
-            <BarChart
-              id={`rd-${key}-${m}-chart`}
-              title="Sessions by channel"
-              categories={['Q1', 'Q2', 'Q3', 'Q4']}
-              height={128}
-              series={[
-                { key: 'a', label: 'Direct', data: [420, 512, 486, 640] },
-                { key: 'b', label: 'Referral', data: [280, 310, 402, 380] },
-                { key: 'c', label: 'Organic', data: [180, 240, 220, 300] },
-              ]}
-            />
-          </div>
-        </Scope>
-      );
-    };
-
-    return (
-      <>
-        <PocStyle />
-        <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 1280 }}>
-          <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 760 }}>
-            <h2 style={H2}>The suite, in detail</h2>
-            <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              Every brand in both modes side by side: the anchors, the mark, accent duty on
-              a real button pair, and a three-series chart — primary, deep and accent, which
-              is exactly where a brand&rsquo;s colour stops and the neutrals take over. A
-              &ldquo;mark mid&rdquo; chip appears only on the two brands that draw their logo
-              in a different colour from their primary. Aiden closes the list as the surface
-              it is.
-            </p>
-          </div>
-
-          {SUITE.map((key) => (
-            <div key={key} style={{ display: 'grid', gap: 'var(--p-2)' }}>
-              <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>
-                {key} — {BRAND_NOTES[key]}
-              </span>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, minmax(280px, 1fr))', gap: 'var(--p-3)' }}>
-                {card(key, 'dark')}
-                {card(key, 'light')}
-              </div>
-            </div>
-          ))}
-        </div>
-      </>
-    );
-  },
-};
-
-/**
- * CHART PALETTES — three jobs, three ramps, one attribute.
- *
- * The categorical set answers "which series is this"; sequential answers "how
- * much"; diverging answers "which side of the line, and how far". They are not
- * interchangeable, and the commonest charting mistake is using one for another
- * job — a categorical ramp on ordered data invents differences that are not in
- * the numbers, and a sequential ramp on unordered data implies a rank that does
- * not exist.
- *
- * A consumer states the JOB and the colours follow:
- *   <div data-chart-palette="sequential"> … </div>
- */
 export const ChartPalettes: Story = {
   render: function ChartPalettesStory() {
     const ORDER: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
@@ -2243,142 +1873,44 @@ export const ChartsInUse: Story = {
 };
 
 /**
- * AIDEN CHAT — the surface doing its actual job.
+ * TRANSITION — what `tokens.scss` would actually gain, lose and change.
  *
- * Every other story in this POC shows Aiden as a colour system. This one shows
- * it as a PRODUCT, because the chat is where the surface's central claim gets
- * tested: that Aiden can carry an identity while staying a reading surface.
+ * The POC has proved the mechanism; this is the story that answers "so what
+ * does adopting it cost". Every count and every row in the panel is computed at
+ * render time from `src/styles/tokens.scss` and the recipe's own emitted CSS,
+ * so it cannot drift from the change it describes.
  *
- * WHAT THE SURFACE IS AND IS NOT DOING HERE, which is the whole point:
- *   · the PAGE and the CARDS are neutral. Aiden takes the main brand's
- *     neutrals, so a transcript is read on the same white or slate everything
- *     else uses. A tinted reading surface is a liability, and Claude and
- *     ChatGPT are near-neutral for the same reason.
- *   · the GRADIENT does the identifying, in exactly two places — the send
- *     button and the mark. That is enough. A gradient is categorically
- *     different from the flat fills around it, where a surface tint is only
- *     ever a matter of degree.
- *   · everything else — the reasoning block, the tool cards, the citations,
- *     the suggestions — runs on the scalar --primary, which under this surface
- *     is Aiden's solid blurple. It themes for free through the existing
- *     plumbing and nothing in the Chat family needed a change.
- *
- * The transcript is deliberately a REAL one, not lorem: a question, a reasoning
- * block, two tool calls, a cited answer and its sources. Those are the parts
- * that carry colour in an assistant UI, and a demo that skips them is not
- * testing the surface at all.
+ * The side-by-side at the top is the honest version of the same question: the
+ * LEFT card carries no POC attribute at all, so it renders on the real shipped
+ * tokens; the RIGHT one is the same markup inside the POC scope. Nothing is
+ * mocked on either side.
  */
-export const AidenChat: Story = {
-  render: function AidenChatStory() {
+export const Transition: Story = {
+  name: 'Transition — the tokens.scss diff',
+  render: function TransitionStory() {
     const mode = useGlobalMode();
-    const [value, setValue] = useState('');
+    const [brand, setBrand] = useState<BrandKey>('db');
 
-    const transcript = (
-      <ChatMessageList style={{ paddingInline: 'var(--p-4)' }}>
-        <ChatMarker variant="divider">Today</ChatMarker>
-
-        <ChatMessage from="user">
-          <ChatBubble>Which acquisition channel actually grew last year?</ChatBubble>
-        </ChatMessage>
-
-        <ChatMessage from="assistant">
-          {/* Reasoning + tool cards are the two places an assistant UI shows its
-              working. Both compose Collapsible, so they inherit the grid-rows
-              height animation rather than re-implementing one. */}
-          <ChatReasoning id="ac-r" label="Thought for 4s">
-            Direct and paid search are the only two with a full year of data. Paid
-            fell every quarter, so the answer is direct — but I should check
-            whether that is volume or share before saying so.
-          </ChatReasoning>
-
-          <ChatToolCalls>
-            <ChatToolCall id="ac-t1" name="query_warehouse" status="success" statusLabel="1.2s">
-              SELECT channel, quarter, signups FROM acquisition WHERE year = 2025
-            </ChatToolCall>
-            <ChatToolCall id="ac-t2" name="compare_periods" status="success" statusLabel="0.3s">
-              direct +87% · paid −27% · referral +73%
-            </ChatToolCall>
-          </ChatToolCalls>
-
-          <ChatBubble>
-            Direct grew the most — 22k to 41k signups, up 87% over the year, and it
-            passed paid search in Q3.<ChatCitation index="1" href="#" /> Paid search
-            fell every quarter, from 38k to 24k.<ChatCitation index="2" href="#" />{' '}
-            Referral grew faster in percentage terms but from a base small enough
-            that it is not yet the story.
-          </ChatBubble>
-
-          <ChatSources label="Sources">
-            <ChatSource href="#" index="1" title="Acquisition — quarterly signups" domain="warehouse.internal" />
-            <ChatSource href="#" index="2" title="Paid search spend vs return" domain="warehouse.internal" />
-          </ChatSources>
-        </ChatMessage>
-
-        <ChatMessage from="user">
-          <ChatBubble>Chart it by quarter.</ChatBubble>
-        </ChatMessage>
-
-        <ChatMessage from="assistant">
-          <ChatBubble>
-            Here is the quarterly split. The crossover is Q3.
-          </ChatBubble>
-          {/* The chart is the reason this story sits in a THEMING poc rather
-              than in the Chat docs: a chart inside the Aiden surface picks up
-              Aiden's own chart slots, so the assistant's answer is drawn in the
-              assistant's colours without the consumer choosing any. */}
-          <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)', marginTop: 'var(--p-3)' }}>
-            <BarChart
-              id="ac-chart"
-              layout="grouped"
-              title="Direct passed paid search in Q3"
-              categories={['Q1', 'Q2', 'Q3', 'Q4']}
-              valueFormatter={(v) => `${v}k`}
-              height={200}
-              showLegend
-              showGrid
-              series={[
-                { key: 'direct', label: 'Direct', slot: 1, data: [19, 24, 33, 41] },
-                { key: 'paid', label: 'Paid search', slot: 2, data: [38, 37, 29, 24] },
-                { key: 'referral', label: 'Referral', slot: 3, data: [13, 16, 21, 26] },
-              ]}
-            />
-          </div>
-        </ChatMessage>
-      </ChatMessageList>
-    );
-
-    const composer = (
-      <div style={{ padding: 'var(--p-4)', display: 'grid', gap: 'var(--p-3)' }}>
-        <ChatSuggestions>
-          <ChatSuggestion>Break it down by plan</ChatSuggestion>
-          <ChatSuggestion>What drove the Q3 crossover?</ChatSuggestion>
-          <ChatSuggestion>Export this</ChatSuggestion>
-        </ChatSuggestions>
-        <ChatComposer value={value} onValueChange={setValue} onSubmit={() => setValue('')}>
-          <ChatComposerInput placeholder="Message Aiden…" aria-label="Message Aiden" />
-          <ChatComposerActions>
-            <ChatComposerSend />
-          </ChatComposerActions>
-        </ChatComposer>
-      </div>
-    );
-
-    const shell = (label: string, brand: BrandKey | '') => (
-      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
-        <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>{label}</span>
-        <Scope brand={brand} mode={mode}>
-          <div style={{ background: 'var(--background)', color: 'var(--foreground)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', overflow: 'hidden' }}>
-            <div data-surface="aiden" style={{ display: 'grid', gridTemplateRows: 'auto 1fr auto', height: 660 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)', padding: 'var(--p-4)', borderBottom: 'var(--border-w-100) solid var(--border)' }}>
-                <Mark brand="aiden" size={28} />
-                <strong style={{ fontSize: 'var(--text-sm)', flex: 1 }}>Aiden</strong>
-                <Badge id={`ac-badge-${brand || 'own'}`} variant="default" label="Beta" />
-              </div>
-              <Chat style={{ minHeight: 0 }}>{transcript}</Chat>
-              {composer}
-            </div>
-          </div>
-        </Scope>
+    /* A deliberately ordinary panel: a primary CTA, a soft action, a chip, a
+       chart row. If a change is invisible here it is invisible in the product. */
+    const Panel = ({ children }: { children?: ReactNode }) => (
+      <div style={{ background: 'var(--card)', color: 'var(--foreground)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', padding: 'var(--p-5)', display: 'grid', gap: 'var(--p-4)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
+          <strong style={{ fontSize: 'var(--text-sm)', flex: 1 }}>Quarterly revenue</strong>
+          <Badge id="tr-b" label="Live" />
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+          <Button id="tr-1" label="Export" size="sm" />
+          <Button id="tr-2" label="Filter" size="sm" style="secondary" />
+          <Button id="tr-3" label="Reset" size="sm" style="ghost" />
+        </div>
+        <div style={{ display: 'flex', gap: 'var(--p-1-5)' }}>
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <span key={i} style={{ flex: 1, height: 34, borderRadius: 'var(--rounded-sm)', background: `var(--chart-${i})` }} />
+          ))}
+        </div>
+        <Progress id="tr-p" value={68} />
+        {children}
       </div>
     );
 
@@ -2387,315 +1919,36 @@ export const AidenChat: Story = {
         <PocStyle />
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>Aiden, as a product</h2>
+            <h2 style={H2}>The same panel, both systems</h2>
             <p style={P}>
-              The rest of this POC shows Aiden as a colour system. This is the surface doing its
-              actual job — and the chat is where its central claim gets tested, because a transcript
-              is a <strong>reading surface</strong> and a reading surface cannot be tinted.
+              The left card has <strong>no POC attribute on it at all</strong> — it is rendering on
+              the real <code style={MONO}>tokens.scss</code> under{' '}
+              <code style={MONO}>data-theme=&quot;{brand}&quot;</code>. The right card is the same
+              markup inside <code style={MONO}>data-theme-poc2</code>. The chart strip is the
+              loudest difference and the one with the widest blast radius: those six slots are a
+              single neutral slate ramp today.
             </p>
-            <p style={P}>
-              <strong>The page and the cards are neutral.</strong> Aiden takes the main brand&rsquo;s
-              neutrals, so the transcript is read on the same white or slate as everything else. The{' '}
-              <strong>gradient identifies, in two places</strong> — the send button and the mark — and
-              that is enough, because a gradient is <em>categorically</em> different from the flat
-              fills around it where a tint is only ever a matter of degree.
-            </p>
-            <p style={P}>
-              Everything else — the reasoning block, the tool cards, the citations, the suggestion
-              pills — runs on the scalar <code style={MONO}>--primary</code>, which under this surface
-              is Aiden&rsquo;s solid blurple. It themes for free through the existing plumbing, and{' '}
-              <strong>nothing in the Chat family needed a change to support it</strong>.
-            </p>
-            <p style={P}>
-              The chart is why this sits in a theming POC rather than the Chat docs: a chart inside the
-              surface picks up <em>Aiden&rsquo;s own chart slots</em>, so the assistant answers in the
-              assistant&rsquo;s colours without the consumer choosing any.
-            </p>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(420px,1fr))', gap: 'var(--p-6)' }}>
-            {shell('data-surface="aiden" — Aiden’s own app', 'aiden')}
-            {shell('data-brand="db" + data-surface="aiden" — nested in a host', 'db')}
-          </div>
-        </div>
-      </>
-    );
-  },
-};
-
-/**
- * THE MUTE, SHOWN.
- *
- * --chart-muted is not a seventh slot. It is the colour a series takes when the
- * chart is deliberately NOT asking you to read it, and it does two jobs:
- *
- *   1 EMPHASIS — name a subject and every OTHER series drops to the mute. In
- *     Chart.tsx that is one line: `token: state === 'off' ? var(--chart-muted)`.
- *     Six coloured series become one subject and a grey field, which is how a
- *     six-series chart becomes readable at all.
- *   2 THE FOLD PAST SIX — a seventh series does not invent a seventh hue, it
- *     takes the mute. The cap is visible in the chart rather than silent.
- *
- * Both jobs need the same thing: the mute must not look like any slot. If it
- * does, a de-emphasised series and an active one are the same colour, and the
- * whole mechanism quietly stops working. That is the 12-dE floor.
- */
-export const TheMute: Story = {
-  render: function TheMuteStory() {
-    const mode = useGlobalMode();
-    const [brand, setBrand] = useState<BrandKey>('db');
-    const [subject, setSubject] = useState<string | undefined>('direct');
-
-    const SERIES = [
-      { key: 'direct', label: 'Direct', slot: 1 as const, data: [19, 24, 33, 41] },
-      { key: 'paid', label: 'Paid search', slot: 2 as const, data: [38, 37, 29, 24] },
-      { key: 'referral', label: 'Referral', slot: 3 as const, data: [13, 16, 21, 26] },
-      { key: 'social', label: 'Social', slot: 4 as const, data: [9, 12, 13, 14] },
-      { key: 'email', label: 'Email', slot: 5 as const, data: [7, 8, 10, 11] },
-      { key: 'partner', label: 'Partner', slot: 6 as const, data: [4, 6, 7, 9] },
-    ];
-
-    const card = (title: string, note: string, children: ReactNode) => (
-      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
-        <div>
-          <strong style={{ fontSize: 'var(--text-sm)' }}>{title}</strong>
-          <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{note}</p>
-        </div>
-        <Scope brand={brand} mode={mode}>
-          <div style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)' }}>
-            {children}
-          </div>
-        </Scope>
-      </div>
-    );
-
-    return (
-      <>
-        <PocStyle />
-        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
-          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 800 }}>
-            <h2 style={H2}>What the mute is for</h2>
-            <p style={P}>
-              <code style={MONO}>--chart-muted</code> is not a seventh colour. It is what a series is
-              painted when the chart is deliberately <em>not</em> asking you to read it — and it only
-              works if it cannot be mistaken for a real slot. Switch brands below:{' '}
-              <code style={MONO}>db</code> carries a bespoke warm mute, everything else uses the
-              shipped slate.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {BRAND_KEYS.filter((b) => b !== 'aiden').map((b) => (
-                <Chip key={b} id={`mute-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
+            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', marginBottom: 'var(--p-4)' }}>
+              {SUB_BRANDS.map((b) => (
+                <Chip key={b} id={`tr-c-${b}`} label={b} active={brand === b} onClick={() => setBrand(b)} />
               ))}
             </div>
-          </div>
-
-          {/* The swatch strip: every slot, then the mute, with the gap named. */}
-          {card('The palette, and the mute beside it',
-            'The mute has to sit clear of all six. When it does not, the two states below stop differing.',
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {[1, 2, 3, 4, 5, 6].map((i) => (
-                <div key={i} style={{ display: 'grid', gap: 4, minWidth: 76 }}>
-                  <div style={{ background: `var(--chart-${i})`, height: 46, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
-                  <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>slot {i}</span>
+            <div style={{ display: 'grid', gap: 'var(--p-5)', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))' }}>
+              <Frame label={`today — data-theme="${brand}"`}>
+                <div data-theme={brand} data-mode={mode} style={{ background: 'var(--background)', padding: 'var(--p-5)' }}>
+                  <Panel />
                 </div>
-              ))}
-              <div style={{ width: 1, background: 'var(--border)', margin: 'var(--p-1) var(--p-2)' }} />
-              <div style={{ display: 'grid', gap: 4, minWidth: 76 }}>
-                <div style={{ background: 'var(--chart-muted)', height: 46, borderRadius: 'var(--rounded-md)', border: 'var(--border-w-100) solid var(--border)' }} />
-                <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>muted</span>
-              </div>
-            </div>)}
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px,1fr))', gap: 'var(--p-6)' }}>
-            {card('1 · No emphasis — six series, six colours',
-              'Every slot painting at once. This is the hardest thing a categorical palette is ever asked to do.',
-              <BarChart id="mute-a" title="Quarterly signups by channel" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
-                valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
-                emphasisOnHover={false} series={SERIES} />)}
-
-            {card(`2 · Emphasis on “${SERIES.find((s) => s.key === subject)?.label ?? 'none'}”`,
-              'One subject keeps its slot; the other five take --chart-muted. Same chart, same data — colour is doing the focusing.',
-              <BarChart id="mute-b" title="Quarterly signups by channel" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
-                valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
-                emphasis={subject} emphasisOnHover={false} series={SERIES} />)}
-          </div>
-
-          <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
-            <span style={{ ...MONO, color: 'var(--muted-foreground)' }}>pick the subject</span>
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {SERIES.map((s) => (
-                <Chip key={s.key} id={`subj-${s.key}`} label={s.label} active={s.key === subject}
-                  onClick={() => setSubject(s.key)} />
-              ))}
-              <Chip id="subj-none" label="none" active={subject === undefined} onClick={() => setSubject(undefined)} />
+              </Frame>
+              <Frame label={`proposed — data-brand="${brand}"`}>
+                <Scope brand={brand} mode={mode}>
+                  <div style={{ background: 'var(--background)', padding: 'var(--p-5)' }}>
+                    <Panel />
+                  </div>
+                </Scope>
+              </Frame>
             </div>
           </div>
-
-          {/* The other job — and the one that makes the six-slot cap honest. */}
-          {card('3 · The fold past six',
-            'A seventh series does not get a seventh hue. It takes the mute, so the cap is visible in the chart instead of being a silent choice.',
-            <BarChart id="mute-c" title="Seven channels — the seventh folds" layout="grouped" categories={['Q1', 'Q2', 'Q3', 'Q4']}
-              valueFormatter={(v) => `${v}k`} height={220} showLegend showGrid
-              emphasisOnHover={false}
-              series={[...SERIES, { key: 'other', label: 'Other (7th)', data: [3, 4, 5, 6] }]} />)}
-        </div>
-      </>
-    );
-  },
-};
-
-/**
- * MUTE BY FORM, NOT BY HUE — four candidates side by side.
- *
- * The owner's question: if an outline ON a filled bar reads as emphasis, does an
- * outline WITHOUT a fill read as muted? It does — ink is the thing being
- * removed, and less ink recedes. But the four options differ in what they cost,
- * and the difference is worth seeing rather than arguing about:
- *
- *   A  the mechanism today — every muted series takes --chart-muted, so the
- *      field is calm and IDENTITY IS DESTROYED: five series become one grey and
- *      a reader can see that they are context but not which is which.
- *   B  outline in the SERIES' OWN colour. Identity survives — "Paid search,
- *      de-emphasised" is still readable as Paid search — but so does the colour
- *      variety, so the field is busier than A.
- *   C  outline in the mute colour. Calm like A, and still lighter than a fill,
- *      but identity is gone again — it is A with less ink.
- *   D  the inverse the owner named: everything keeps its fill and the SUBJECT
- *      gains a ring. Nothing recedes, so this is emphasis-by-addition, and on a
- *      busy chart it is the weakest of the four.
- *
- * All four are CSS over the shipped component, deliberately — the question is
- * which treatment to build, and prototyping it in the POC costs nothing if the
- * answer turns out to be "none of these".
- */
-export const MuteByForm: Story = {
-  render: function MuteByFormStory() {
-    const mode = useGlobalMode();
-    const [brand, setBrand] = useState<BrandKey>('db');
-
-    const SERIES = [
-      { key: 'direct', label: 'Direct', slot: 1 as const, data: [19, 24, 33, 41] },
-      { key: 'paid', label: 'Paid search', slot: 2 as const, data: [38, 37, 29, 24] },
-      { key: 'referral', label: 'Referral', slot: 3 as const, data: [13, 16, 21, 26] },
-      { key: 'social', label: 'Social', slot: 4 as const, data: [9, 12, 13, 14] },
-      { key: 'email', label: 'Email', slot: 5 as const, data: [7, 8, 10, 11] },
-      { key: 'partner', label: 'Partner', slot: 6 as const, data: [4, 6, 7, 9] },
-    ];
-
-    /* Series 1 is the subject in every panel; 2-6 are the field. nth-child is
-       safe here ONLY because no `emphasis` prop is set — with one set, Chart
-       re-sorts the groups so the subject paints over its context. */
-    const css = `
-      .poc2-mf-b .ui-chart__series:nth-child(n+2) .ui-chart__bar {
-        fill: none; stroke: currentColor; stroke-width: 1.5;
-      }
-      .poc2-mf-c .ui-chart__series:nth-child(n+2) .ui-chart__bar {
-        fill: none; stroke: var(--chart-muted); stroke-width: 1.5;
-      }
-      .poc2-mf-d .ui-chart__series:nth-child(1) .ui-chart__bar {
-        stroke: var(--foreground); stroke-width: 2; paint-order: stroke fill;
-      }
-      /* E — the owner's idea, with the numbers corrected. Every muted series
-         takes ONE source slot knocked back by opacity. The source is the slot
-         CLOSEST TO THE CARD in that mode, which is the generalisation of
-         "slot 2 in light, slot 6 in dark" and the version that survives aiden. */
-      .poc2-mf-e .ui-chart__series:nth-child(n+2) .ui-chart__bar {
-        fill: var(--poc2-mute-src); opacity: var(--poc2-mute-a);
-      }
-    `;
-
-    const panel = (title: string, note: string, cls?: string, emphasis?: string) => (
-      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
-        <div>
-          <strong style={{ fontSize: 'var(--text-sm)' }}>{title}</strong>
-          <p style={{ margin: '2px 0 0', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{note}</p>
-        </div>
-        <Scope brand={brand} mode={mode}>
-          <div className={cls} style={{ background: 'var(--card)', border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-xl)', padding: 'var(--p-4)' }}>
-            <BarChart id={`mf-${cls ?? 'a'}`} title="Quarterly signups by channel" layout="grouped"
-              categories={['Q1', 'Q2', 'Q3', 'Q4']} valueFormatter={(v) => `${v}k`}
-              height={210} showLegend showGrid emphasisOnHover={false}
-              {...(emphasis ? { emphasis } : {})} series={SERIES} />
-          </div>
-        </Scope>
-      </div>
-    );
-
-    return (
-      <>
-        <PocStyle />
-        <style>{css}</style>
-        {/* SLOT 2 IN LIGHT, SLOT 6 IN DARK — the owner's rule, and the
-            criterion I had wrong. I first picked the source by CONTRAST against
-            the card, which chose slot 4 in light. Low contrast is not low
-            SALIENCE: a pale cyan is quiet in luminance and still chromatic, and
-            chroma is what pulls the eye. Owner: "that almost makes me look at
-            those more than the blue 100% filled." Measured, they are right —
-            slot 4 composites to chroma 0.045-0.061 where slot 2 lands at
-            0.021-0.039, and in DARK slot 6 is literally the lowest-chroma slot
-            in six of seven brands.
-            Alphas are the highest that clear the 12-dE floor everywhere: 45% in
-            light (db and ph cap it at ~50, the rest at 45) and 28% in dark (ec
-            caps it). */}
-        <style>{`
-          .poc2-mf-e { --poc2-mute-src: var(--chart-2); --poc2-mute-a: 0.45; }
-          [data-mode='dark'] .poc2-mf-e { --poc2-mute-src: var(--chart-6); --poc2-mute-a: 0.28; }
-        `}</style>
-        <div style={{ display: 'grid', gap: 'var(--p-8)', maxWidth: 1180 }}>
-          <div style={{ display: 'grid', gap: 'var(--p-3)', maxWidth: 820 }}>
-            <h2 style={H2}>Muting by form instead of by hue</h2>
-            <p style={P}>
-              An outline <em>without</em> a fill does read as muted — ink is what is being removed, and
-              less ink recedes. The question is what each option costs. <strong>A</strong> is the
-              mechanism today; <strong>B</strong> is the one worth arguing for, because it is the only
-              option where a de-emphasised series is still <em>identifiable</em>.
-            </p>
-            <p style={P}>
-              Bars here render about <strong>12.4px</strong> wide, so a 1.5px outline leaves a ~9px
-              hole and reads cleanly. That is the constraint to watch: past roughly eight categories
-              the bars get narrow enough that an outline becomes hatching, and the treatment needs a
-              width floor with a fallback below it.
-            </p>
-            <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-              {BRAND_KEYS.filter((b) => b !== 'aiden').map((b) => (
-                <Chip key={b} id={`mf-${b}`} label={b} active={b === brand} onClick={() => setBrand(b)} />
-              ))}
-            </div>
-          </div>
-
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px,1fr))', gap: 'var(--p-6)' }}>
-            {panel('A · Today — muted takes --chart-muted',
-              'Calm field. Identity destroyed: five series become one grey, so you can see they are context but not which is which.',
-              undefined, 'direct')}
-            {panel('B · Outline in the series’ own colour',
-              'Identity survives — that outlined bar is still readable as Paid search. Costs some calm, because the colour variety survives too.',
-              'poc2-mf-b')}
-            {panel('C · Outline in the mute colour',
-              'Calm like A and lighter than a fill, but identity is gone again. This is A with less ink — it does not buy the thing B buys.',
-              'poc2-mf-c')}
-            {panel('D · Everything filled, subject gains a ring',
-              'Emphasis by ADDITION rather than by recession. Nothing steps back, so on a busy chart it is the weakest of the four.',
-              'poc2-mf-d')}
-            {panel('E · One slot, knocked back by opacity',
-              'Every muted series takes slot 2 in light and slot 6 in dark, knocked back — 45% and 28%. Those are the palette’s LOW-CHROMA slots, which is what makes them read as muted; the mute is now derived rather than hand-picked.',
-              'poc2-mf-e')}
-          </div>
-
-          <div style={{ maxWidth: 820 }}>
-            <h2 style={H2}>What this would change</h2>
-            <p style={P}>
-              If <strong>B</strong> wins, the mute stops being an emphasis mechanism and survives only
-              as the <em>fold past six</em> — a much weaker constraint, because it then only has to
-              clear the six slots when a seventh series actually exists. The per-brand mute question
-              mostly disappears with it, including <code style={MONO}>db</code>’s bespoke warm value
-              and <code style={MONO}>dc</code>’s slot-2 collision.
-              <br />
-              It does <em>not</em> generalise across marks on its own: a line is already a stroke and
-              has no fill to remove, so lines and areas keep their existing treatments (half stroke
-              weight, 10% opacity). That is not a flaw — it is the same principle, expressed per mark
-              type, which is what the chart already does.
-            </p>
-          </div>
+          <TransitionPanel />
         </div>
       </>
     );

@@ -449,8 +449,63 @@ const SURFACE_TOKENS = [
   '--border', '--border-hover', '--ring', '--sidebar', '--sidebar-border', '--sidebar-accent',
 ];
 
+/**
+ * THE ADOPTION FACTS ARE DERIVED, NEVER TYPED IN.
+ *
+ * This block used to open with `const perBrand = 7`. That was true when a theme
+ * scope carried identity only; the recipe now also emits a categorical set, a
+ * mute, a 7-step sequential ramp and a 7-step diverging ramp per brand per
+ * mode, so the real figure is 21 new names and the panel was understating
+ * adoption by 3x. It read as a confident number and was quietly wrong, which is
+ * the exact failure mode the Motion section was rebuilt to avoid.
+ *
+ * Everything below counts the parsed files instead. If the recipe grows another
+ * ramp tomorrow these numbers move on their own.
+ */
+const EXISTING_NAMES = new Set(TOKEN_BLOCKS.flatMap((b) => [...b.decls.keys()]));
+
+/** A representative per-brand block — every brand emits the same shape. */
+const SAMPLE_BRAND_BLOCK = findBlock(
+  POC_BLOCKS,
+  (s) => /\[data-brand='\w+'\]\[data-mode='light'\]$/.test(s.trim()),
+);
+const PER_BRAND_ALL = SAMPLE_BRAND_BLOCK ? [...SAMPLE_BRAND_BLOCK.decls.keys()] : [];
+const PER_BRAND_NEW = PER_BRAND_ALL.filter((t) => !EXISTING_NAMES.has(t));
+const PER_BRAND_EXISTING = PER_BRAND_ALL.filter((t) => EXISTING_NAMES.has(t));
+
+/** Names the POC declares anywhere that tokens.scss has never heard of. */
+const ALL_NEW_NAMES = [
+  ...new Set(
+    POC_BLOCKS.flatMap((b) => [...b.decls.keys()]).filter(
+      (t) => !EXISTING_NAMES.has(t) && !t.startsWith('--poc2-'),
+    ),
+  ),
+].sort();
+
+/** Scaffolding that exists only to drive the prototype and must not ship as-is. */
+const SCAFFOLD_NAMES = [
+  ...new Set(POC_BLOCKS.flatMap((b) => [...b.decls.keys()]).filter((t) => t.startsWith('--poc2-'))),
+].sort();
+
+/**
+ * Tokens that exist today as ONE global value and would start varying by brand.
+ * This is a behavioural change even though no name is added: a consumer reading
+ * --chart-1 gets slate today and a brand hue after.
+ */
+const NEWLY_BRAND_SCOPED = PER_BRAND_EXISTING.filter(
+  (t) => !THEME_BLOCKS.some((b) => b.decls.has(t)),
+).sort();
+
+const THEME_CODES = [
+  ...new Set(
+    THEME_BLOCKS.map((b) => b.selector.match(/data-theme='(\w+)'/)?.[1]).filter(Boolean) as string[],
+  ),
+].sort();
+const COVERED = SUB_BRANDS as readonly string[];
+const UNCOVERED = THEME_CODES.filter((c) => !COVERED.includes(c));
+
 export function NewTokensPanel() {
-  const perBrand = 7;
+  const perBrand = PER_BRAND_NEW.length;
   const brands = SUB_BRANDS.length;
   const themeScopes = THEME_BLOCKS.length;
 
@@ -471,7 +526,7 @@ export function NewTokensPanel() {
           <Stat n={perBrand * brands} label="new brand tokens" tone="var(--success)" />
           <Stat n={SURFACE_TOKENS.length} label="tokens a theme must now remap" />
           <Stat n={themeScopes} label="theme scopes in tokens.scss" />
-          <Stat n={2} label="codes with no POC values" tone="var(--error)" />
+          <Stat n={UNCOVERED.length} label="codes with no POC values" tone="var(--error)" />
         </div>
       </div>
 
@@ -482,6 +537,24 @@ export function NewTokensPanel() {
           These are additions. <code style={CODE}>--&#123;code&#125;-mark-*</code> is{' '}
           <strong>mode-constant</strong> — a mark is artwork and does not invert — so it is three
           declarations rather than six.
+        </p>
+        <p style={P}>
+          <strong>
+            This count is read from the recipe, not written here.
+          </strong>{' '}
+          It said <code style={CODE}>7</code> for a long time, which was right when a theme scope
+          carried identity only. Charts are themed now, so a brand block also emits a categorical
+          set, a mute, and two 7-step ramps — the figure is {perBrand}, and the panel had been
+          understating adoption by roughly 3&times;. Split:{' '}
+          <strong>
+            {PER_BRAND_NEW.filter((t) => !t.startsWith('--chart')).length} identity
+          </strong>{' '}
+          ({PER_BRAND_NEW.filter((t) => !t.startsWith('--chart')).map((t) => t.replace('--', '')).join(', ')}) and{' '}
+          <strong>{PER_BRAND_NEW.filter((t) => t.startsWith('--chart')).length} chart ramp</strong>{' '}
+          steps (<code style={CODE}>--chart-seq-1…7</code>, <code style={CODE}>--chart-div-1…7</code>).
+          Every one is mode-split, so the literal line count in{' '}
+          <code style={CODE}>tokens.scss</code> is {perBrand} &times; 2 &times; {brands} ={' '}
+          {perBrand * 2 * brands} for the six brands, before Aiden.
         </p>
         <table style={{ borderCollapse: 'collapse', fontSize: 'var(--text-sm)', width: '100%', maxWidth: 760 }}>
           <thead>
@@ -721,12 +794,360 @@ export function TokenDiffPanel() {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// 4 — Cascade proof
+// 4 — Transition: the concrete tokens.scss migration
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * THE ADOPTION ANSWER, in the form the question was asked: what in
+ * `tokens.scss` is ADDED, what is UPDATED, and what has to be decided first.
+ *
+ * Every number and every row here is computed from the two real files at render
+ * time — `tokens.scss` via `?raw`, and the recipe's own emitted CSS. Nothing is
+ * transcribed. That is deliberate: an adoption plan that drifts from the thing
+ * it plans is worse than no plan, because it is trusted.
+ *
+ * The one thing NOT derived is the risk commentary at the bottom, because it is
+ * judgement rather than measurement, and it is labelled as such.
+ */
 
+/** POC attribute -> shipped attribute. The renames are the whole mechanical part. */
+const SCOPE_MAP: { poc: string; shipped: string; note: string }[] = [
+  {
+    poc: "[data-theme-poc2]",
+    shipped: '(nothing)',
+    note: 'The POC gate. It exists so none of this can leak into a real story, and it disappears on adoption — the declarations move to :root and the real scopes.',
+  },
+  {
+    poc: "[data-brand='db']",
+    shipped: "[data-theme='db']",
+    note: 'A straight rename. The POC used a different attribute name only to stay off the shipped one while both had to coexist.',
+  },
+  {
+    poc: "[data-mode='light'|'dark']",
+    shipped: 'same',
+    note: 'Unchanged. The mode axis is already exactly this.',
+  },
+  {
+    poc: "[data-surface='aiden']",
+    shipped: 'same',
+    note: 'Unchanged, and already shipped. Aiden is a surface, not a theme code — it layers inside any brand.',
+  },
+  {
+    poc: "[data-chart-palette='sequential'|'diverging'|'line']",
+    shipped: 'NEW',
+    note: 'A new axis. Nothing in tokens.scss reads it today; it is how a consumer states the chart JOB and gets the right ramp.',
+  },
+];
 
-// ─────────────────────────────────────────────────────────────────────────────
-// 5 — Risks
-// ─────────────────────────────────────────────────────────────────────────────
+/** Decisions that must be made BEFORE a patch can be written. Not colour choices. */
+const BLOCKERS: { q: string; detail: string; severity: 'blocker' | 'decision' }[] = [
+  {
+    q: 'The self-reference cycle in the surface layer',
+    severity: 'blocker',
+    detail:
+      'Every tinted surface is "the neutral it already is, mixed with the brand deep" — but a custom property cannot reference itself, so --background: color-mix(…, var(--background)) resolves to unset. The POC dodges it by hardcoding the neutral literals. Adoption has to introduce a raw neutral layer (--surface-base-* or similar) and derive the semantic names from it. This is the single largest piece of work in the whole migration and none of it is about colour.',
+  },
+  {
+    q: '--poc2-str has no default',
+    severity: 'blocker',
+    detail:
+      'The tint strength multiplier is referenced 20+ times and declared nowhere in the recipe — the STORY supplies it inline. Ship the recipe as-is and every tinted surface is invalid at computed-value time. It needs a real default (1) in tokens.scss, or the multiplier gets dropped and the percentages inlined.',
+  },
+  {
+    q: 'dr and ir have no values',
+    severity: 'blocker',
+    detail:
+      'tokens.scss carries these two theme codes; the POC never covered them. Shipping leaves two brands on the old one-value model while six move to three anchors plus charts — a split system, worse than either. Either solve them or retire the scopes.',
+  },
+  {
+    q: '--chart-* stops being neutral',
+    severity: 'decision',
+    detail:
+      'Today the chart slots are one global slate ramp. Under this they vary per brand. Any consumer that picked --chart-1 expecting a neutral gets a brand hue. Nothing in this repo does, but it is a public token and the change is silent — no name moves, so nothing errors.',
+  },
+  {
+    q: 'rm and nb change hue family, not just value',
+    severity: 'decision',
+    detail:
+      'rm goes violet to magenta and nb goes teal-green to grass. Those are not tweaks — anything with a screenshot, a marketing asset or a printed swatch of those two brands is out of date the day this lands.',
+  },
+];
+
+/**
+ * The rule the palettes were built on: a chart's first series IS the brand. It
+ * is checked rather than asserted, because two of the fourteen do not hold and
+ * both are owner-authored — the palettes outrank the rule.
+ */
+const SLOT1_ROWS = [...SUB_BRANDS, 'aiden'].flatMap((k) =>
+  (['light', 'dark'] as const).map((m) => {
+    const sel =
+      k === 'aiden'
+        ? `[data-theme-poc2][data-surface='aiden'][data-mode='${m}']`
+        : `[data-theme-poc2][data-brand='${k}'][data-mode='${m}']`;
+    const b = findBlock(POC_BLOCKS, (s) => s.trim() === sel);
+    const primary = b?.decls.get('--primary') ?? null;
+    const chart1 = b?.decls.get('--chart-1') ?? null;
+    return { k, m, primary, chart1, ok: primary === chart1 };
+  }),
+);
+
+export function TransitionPanel() {
+  const light = (b: string) =>
+    findBlock(POC_BLOCKS, (s) => s.trim() === `[data-theme-poc2][data-brand='${b}'][data-mode='light']`);
+  const dark = (b: string) =>
+    findBlock(POC_BLOCKS, (s) => s.trim() === `[data-theme-poc2][data-brand='${b}'][data-mode='dark']`);
+  const todayVal = (t: string, mode: 'light' | 'dark') =>
+    (mode === 'light' ? LIGHT : DARK)?.decls.get(t) ?? null;
+
+  const sw = (v: string | null) => (
+    <span
+      style={{
+        display: 'inline-block', width: 26, height: 16, borderRadius: 'var(--rounded-sm)',
+        background: v ?? 'transparent', border: 'var(--border-w-100) solid var(--border)',
+        verticalAlign: 'middle', marginRight: 'var(--p-1-5)',
+      }}
+    />
+  );
+  const th: CSSProperties = { textAlign: 'left', padding: 'var(--p-2)', fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)', fontWeight: 'var(--font-medium)' };
+  const td: CSSProperties = { padding: 'var(--p-2)', verticalAlign: 'middle' };
+  const table: CSSProperties = { borderCollapse: 'collapse', width: '100%', fontSize: 'var(--text-sm)' };
+  const rowBorder = { borderBottom: 'var(--border-w-50) solid var(--border)' };
+
+  const primaryRows = SUB_BRANDS.flatMap((b) =>
+    (['light', 'dark'] as const).map((m) => {
+      const now = todayVal(`--${b}-primary`, m);
+      const next = (m === 'light' ? light(b) : dark(b))?.decls.get('--primary') ?? null;
+      return { b, m, now, next, changed: now !== next };
+    }),
+  );
+  const changedCount = primaryRows.filter((r) => r.changed).length;
+
+  return (
+    <div style={PAGE}>
+      <div>
+        <h2 style={H2}>If this ships, here is the patch</h2>
+        <p style={P}>
+          Everything on this page is <strong>read from the two real files at render time</strong> —{' '}
+          <code style={CODE}>src/styles/tokens.scss</code> and the recipe&rsquo;s emitted CSS — so it
+          cannot drift from what would actually land. <code style={CODE}>tokens.scss</code> is{' '}
+          <strong>not modified by this POC</strong>; this is the preview of the change, not the
+          change.
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--p-3)', flexWrap: 'wrap' }}>
+          <Stat n={ALL_NEW_NAMES.length} label="new token names" tone="var(--success)" />
+          <Stat n={changedCount} label="brand primaries change value" tone="var(--warning)" />
+          <Stat n={NEWLY_BRAND_SCOPED.length} label="tokens become brand-dependent" tone="var(--warning)" />
+          <Stat n={BLOCKERS.filter((x) => x.severity === 'blocker').length} label="blockers to resolve first" tone="var(--error)" />
+          <Stat n={SCAFFOLD_NAMES.length} label="scaffolding names that must NOT ship" />
+        </div>
+      </div>
+
+      {/* ── scope model ───────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>1 · How the scopes map</h2>
+        <p style={P}>
+          The POC hides behind an attribute that exists nowhere else in the repo. Adoption is mostly
+          a rename — the model is already the shipped one.
+        </p>
+        <table style={table}>
+          <thead>
+            <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+              <th style={th}>POC</th><th style={th}>Shipped</th><th style={th}>Note</th>
+            </tr>
+          </thead>
+          <tbody>
+            {SCOPE_MAP.map((r) => (
+              <tr key={r.poc} style={rowBorder}>
+                <td style={{ ...td, ...MONO, whiteSpace: 'nowrap' }}>{r.poc}</td>
+                <td style={{ ...td, ...MONO, whiteSpace: 'nowrap', color: r.shipped === 'NEW' ? 'var(--warning)' : undefined }}>{r.shipped}</td>
+                <td style={{ ...td, color: 'var(--muted-foreground)', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-5)' }}>{r.note}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── updated values ────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>2 · UPDATED — every brand primary changes</h2>
+        <p style={P}>
+          <code style={CODE}>tokens.scss</code> routes{' '}
+          <code style={CODE}>[data-theme=&apos;db&apos;]</code> through{' '}
+          <code style={CODE}>--db-primary</code>, so this is the real comparison — and{' '}
+          <strong>{changedCount} of {primaryRows.length} change</strong>. Note that every{' '}
+          <code style={CODE}>--&#123;code&#125;-primary-foreground</code> is{' '}
+          <strong>identical</strong>: the black/white choice per brand does not move, only the hue.
+        </p>
+        <table style={table}>
+          <thead>
+            <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+              <th style={th}>token</th><th style={th}>mode</th><th style={th}>today</th><th style={th}>proposed</th><th style={th} />
+            </tr>
+          </thead>
+          <tbody>
+            {primaryRows.map((r) => (
+              <tr key={r.b + r.m} style={rowBorder}>
+                <td style={{ ...td, ...MONO }}>--{r.b}-primary</td>
+                <td style={{ ...td, ...MONO, color: 'var(--muted-foreground)' }}>{r.m}</td>
+                <td style={{ ...td, ...MONO }}>{sw(r.now)}{r.now}</td>
+                <td style={{ ...td, ...MONO }}>{sw(r.next)}{r.next}</td>
+                <td style={{ ...td, ...MONO, color: r.changed ? 'var(--warning)' : 'var(--muted-foreground)' }}>
+                  {r.changed ? 'changed' : 'same'}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── newly scoped ──────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>3 · CHANGED IN MEANING — {NEWLY_BRAND_SCOPED.length} tokens become brand-dependent</h2>
+        <p style={P}>
+          These names already exist and are not renamed. What changes is that they stop being one
+          global value. <strong>No consumer breaks loudly</strong> — the token still resolves, it
+          just resolves to a brand hue instead of slate. That silence is the risk.
+        </p>
+        <table style={table}>
+          <thead>
+            <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+              <th style={th}>token</th><th style={th}>today (one value)</th>
+              {SUB_BRANDS.map((b) => <th key={b} style={{ ...th, ...MONO }}>{b}</th>)}
+            </tr>
+          </thead>
+          <tbody>
+            {NEWLY_BRAND_SCOPED.map((t) => (
+              <tr key={t} style={rowBorder}>
+                <td style={{ ...td, ...MONO }}>{t}</td>
+                <td style={{ ...td, ...MONO }}>{sw(todayVal(t, 'light'))}{todayVal(t, 'light')}</td>
+                {SUB_BRANDS.map((b) => {
+                  const v = light(b)?.decls.get(t) ?? null;
+                  return <td key={b} style={{ ...td, ...MONO }}>{sw(v)}</td>;
+                })}
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ── added ─────────────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>4 · ADDED — {ALL_NEW_NAMES.length} names that do not exist today</h2>
+        <p style={P}>
+          Grouped by what they are for. The two ramp families are the bulk of the count and the
+          least contentious part of it — they are additive, nothing reads them yet, and they are the
+          reason the charting system can state a job instead of a colour.
+        </p>
+        {[
+          { title: 'Brand identity', test: (t: string) => t.startsWith('--mark') || t === '--primary-deep' || t === '--primary-highlight' },
+          { title: 'Chart ramps', test: (t: string) => t.startsWith('--chart') },
+          { title: 'Surface machinery', test: (t: string) => t === '--surface-tint' },
+          { title: 'Aiden', test: (t: string) => t.startsWith('--aiden') },
+          { title: 'Mark runtime (set in JS, not authored in the sheet)', test: (t: string) => ['--mx', '--my', '--on'].includes(t) },
+        ].map((g) => {
+          const items = ALL_NEW_NAMES.filter(g.test);
+          if (!items.length) return null;
+          return (
+            <div key={g.title} style={{ marginBottom: 'var(--p-4)' }}>
+              <strong style={{ fontSize: 'var(--text-sm)' }}>{g.title} ({items.length})</strong>
+              <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', marginTop: 'var(--p-2)' }}>
+                {items.map((t) => (
+                  <code key={t} style={{ ...CODE, background: 'var(--secondary)' }}>{t}</code>
+                ))}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* ── scaffolding ───────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>5 · MUST NOT SHIP — {SCAFFOLD_NAMES.length} scaffolding names</h2>
+        <p style={P}>
+          Prototype-only. Some are genuine tokens wearing a POC prefix (the mark gradient, the
+          shadows) and would be renamed on adoption; others are demo controls with no place in a
+          shipped sheet. Either way <strong>no <code style={CODE}>--poc2-*</code> name can appear in{' '}
+          <code style={CODE}>tokens.scss</code></strong>.
+        </p>
+        <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
+          {SCAFFOLD_NAMES.map((t) => (
+            <code key={t} style={{ ...CODE, background: 'var(--error-light)', color: 'var(--error-text, var(--error))' }}>{t}</code>
+          ))}
+        </div>
+      </div>
+
+      {/* ── invariants ────────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>6 · Invariant check — is chart slot 1 the brand&rsquo;s primary?</h2>
+        <p style={P}>
+          The rule the palettes were built on is that a chart&rsquo;s first series{' '}
+          <em>is</em> the brand. It holds in {SLOT1_ROWS.filter((r) => r.ok).length} of{' '}
+          {SLOT1_ROWS.length} cases. The exceptions are real and both are owner-authored — recorded
+          here rather than &ldquo;fixed&rdquo;, because a hand-picked palette outranks a rule the
+          rule was only ever a shorthand for.
+        </p>
+        <table style={table}>
+          <thead>
+            <tr style={{ borderBottom: 'var(--border-w-100) solid var(--border)' }}>
+              <th style={th}>scope</th><th style={th}>mode</th><th style={th}>--primary</th>
+              <th style={th}>--chart-1</th><th style={th} />
+            </tr>
+          </thead>
+          <tbody>
+            {SLOT1_ROWS.filter((r) => !r.ok).map((r) => (
+              <tr key={r.k + r.m} style={rowBorder}>
+                <td style={{ ...td, ...MONO }}>{r.k}</td>
+                <td style={{ ...td, ...MONO, color: 'var(--muted-foreground)' }}>{r.m}</td>
+                <td style={{ ...td, ...MONO }}>{sw(r.primary)}{r.primary}</td>
+                <td style={{ ...td, ...MONO }}>{sw(r.chart1)}{r.chart1}</td>
+                <td style={{ ...td, ...MONO, color: 'var(--warning)' }}>differs</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        <p style={{ ...P, marginTop: 'var(--p-3)' }}>
+          <code style={CODE}>ec</code> dark: the brand primary is a bright cyan that reads as a
+          highlight rather than a series, and ec&rsquo;s categorical set was the original
+          hand-drawn one — it was never derived from the primary.{' '}
+          <code style={CODE}>aiden</code> light: the surface&rsquo;s primary is the shipped blurple,
+          and the chart opens a shade brighter so it separates from its own slot 3.{' '}
+          <strong>The consequence to accept:</strong> in those two cases a legend swatch and the
+          brand accent on the same page are not the same colour.
+        </p>
+      </div>
+
+      {/* ── blockers ──────────────────────────────────────────────────────── */}
+      <div>
+        <h2 style={H2}>7 · Resolve before writing a patch</h2>
+        <p style={P}>
+          This section is <strong>judgement, not measurement</strong> — everything above is computed,
+          this is the reading of it. Three are genuine blockers; two are decisions that only need an
+          owner.
+        </p>
+        <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+          {BLOCKERS.map((x) => (
+            <div
+              key={x.q}
+              style={{
+                padding: 'var(--p-4)',
+                borderRadius: 'var(--rounded-lg)',
+                border: 'var(--border-w-100) solid var(--border)',
+                borderInlineStart: `var(--border-w-400) solid ${x.severity === 'blocker' ? 'var(--error)' : 'var(--warning)'}`,
+                background: 'var(--card)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)', marginBottom: 'var(--p-1)' }}>
+                <strong style={{ fontSize: 'var(--text-sm)' }}>{x.q}</strong>
+                <span style={{ ...MONO, color: x.severity === 'blocker' ? 'var(--error)' : 'var(--warning)' }}>
+                  {x.severity}
+                </span>
+              </div>
+              <p style={{ ...P, margin: 0 }}>{x.detail}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
