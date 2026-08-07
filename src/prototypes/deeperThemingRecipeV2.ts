@@ -803,15 +803,29 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // shortfall. Both modes are now clean and better on nearly every axis:
   //   light  9.3 -> 13.2 all-pairs · 7.7 -> 12.8 CVD · 16.8 -> 20.7 neighbour
   //   dark   7.8 -> 11.0 all-pairs · 6.7 ->  7.2 CVD · 18.5 -> 17.8 neighbour
-  //
-  // SLOT 4 IS PINNED, NOT SEARCHED. Left free the solver parked it on a dark
-  // plum — legal, well separated, and not what was asked for. The highlight has
-  // a job: the brightest, airiest colour the surface owns. In DARK it sits a
-  // rung below the template (L 0.80 rather than 0.86) because at the template
-  // rung the pale pink crowds slot 6's near-white and no legal sixth colour
-  // exists at all.
-  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1', '#cc9cfe', '#253541', '#6f7b84'],
-           dark:  ['#9076f9', '#7b7e8b', '#ddaefd', '#a079bf', '#d8e8fa', '#a3aeb9'] },
+  /* AIDEN IS THE OWNER'S IN BOTH MODES (2026-08-07), and it is the strongest
+     set in the system — all-pairs 11.3 dark (no other dark clears 9) and the
+     ONLY palette where all six slots clear 3:1 on the card. Nothing derived,
+     nothing remediated.
+
+     It also breaks the pattern every other brand follows, deliberately. The
+     other six keep their hues across the mode flip and move only lightness.
+     Aiden cannot: LIGHT is three violets (s1 286, s3 280, s5 289) separated on
+     lightness across a 0.36-wide band. Dark's usable band is 0.55-0.97 and s1
+     is pinned to the surface's --primary at L 0.65, so three same-hue violets
+     do not fit — two of them have to leave. The owner's dark rotates s2 to a
+     sky blue and s3 to a mid blue, keeping only s1 and s5 on the violet axis.
+
+     REMEMBER THE CARD. Aiden is a SURFACE, not a brand, so it gets no tinted
+     card: light is #ffffff and dark is plain #1e293b, not the mixed
+     --surface-tint card the six brands render on. Gating aiden against a
+     tinted card reports failures that do not exist.
+
+     One number to know: s2 #93c5fd sits 4.4 from dark --info #7cd4fd. That is
+     the same order as db dark's 4.2, which the owner waived explicitly. Both
+     are pale blues in a blue-family palette; icon and label carry the pair. */
+  aiden: { light: ['#6b4ce7', '#83a9f2', '#3f29b0', '#c755f0', '#886fed', '#252f41'],
+           dark:  ['#9076f9', '#93c5fd', '#4c88cc', '#e86bff', '#dfd8fa', '#9da1b4'] },
 };
 
 /**
@@ -878,10 +892,13 @@ const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
   dc:    { light: ['#127f76', '#74dbad', '#143438'], dark: ['#0db09d', '#9dedc9', '#d9efef'] },
   ph:    { light: ['#b56005', '#fdc450', '#3a2c18'], dark: ['#ee7d0a', '#fecf70', '#f3e8d9'] },
   rm:    { light: ['#d62496', '#f7b1fd', '#3f262b'], dark: ['#fe68b8', '#f7b1fd', '#f8e4e8'] },
-  // aiden's trios are 1,2,3 light and 1,3,5 dark. Its pink slot 4 is the
-  // highlight and measures 2.20:1 in light — fine as a bar, unusable as a
-  // stroke — so light takes the dark end of its own ladder instead.
-  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1'], dark: ['#9076f9', '#ddaefd', '#d8e8fa'] },
+  /* aiden's trios are the owner's: 1,4,6 light — the same shape the other six
+     landed on — and 1,4,5 dark. Dark ends on slot 5 rather than 6 because its
+     s5 is the near-white (L 0.90) and s6 the mid blue-grey, the reverse of
+     every other brand, so 1,4,5 IS aiden's version of "primary, highlight,
+     pale tail". Light 16.7 dE / 5.5 CVD, dark 14.7 / 3.0; stroke contrast 3.51
+     light, 4.28 dark — the best-lit trio in the system. */
+  aiden: { light: ['#6b4ce7', '#c755f0', '#252f41'], dark: ['#9076f9', '#e86bff', '#dfd8fa'] },
 };
 
 type AnchorSet = { light: readonly string[]; dark: readonly string[]; accent: { light: string; dark: string }; chart2Dark: string };
