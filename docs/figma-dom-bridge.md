@@ -32,9 +32,9 @@ a border, text, or an SVG. That drops most of the tree.
 |---|---|---|
 | `951:50` Dashboard | Dashboard | **Done** — 12 frames, 6 brands × 2 modes |
 | `951:51` Marketing | Marketing | **Done** — 12 frames, 6 brands × 2 modes (built 2026-08-07 by replaying the staged payload) |
-| `951:52` Suite | Suite | **Staged, not built** — payload extracted + verified, Figma write blocked |
+| `951:52` Suite | Suite | **Done** — 2 frames, light + dark, 258 nodes each (built 2026-08-07) |
 
-**Suite is still staged.** Staged means every browser-side step is finished and checked in: the
+**All three pages are built.** The staging mechanism is kept below because it is how a page gets rebuilt: every browser-side step is finished and checked in: the
 payloads sit in [`figma-payloads/`](./figma-payloads/), the Figma-side builder
 sits in [`../scripts/figma-build-poc-page.js`](../scripts/figma-build-poc-page.js),
 and a dry run replays all of it against a stub Plugin API. What is left is the
@@ -413,7 +413,8 @@ is exactly why gradient-heavy pages cannot use the clone shortcut.
 6. **CSS paints the first background layer on top; SVG paints last on top.**
    Reverse the layer order.
 7. **Cross-mode colour remapping is unsafe** — white maps to page, card and ink.
-8. **`ec` dark is the one brand whose chart slot 1 is not its `--primary`.** A
+8. **`color: transparent` falls back to BLACK.** An element using `background-clip: text` has a transparent computed `color`; `rgba()` returns null on zero alpha and the extractor substitutes `[0,0,0,1]`. It is only survivable when the gradient is *also* captured into `g`, which overrides the fill. Six nodes in Suite hit this and render black — see the ledger. Handle the transparent case explicitly rather than relying on the gradient rescuing it.
+9. **`ec` dark is the one brand whose chart slot 1 is not its `--primary`.** A
    blanket map paints its bars `#23c7fe` instead of `#1da0f3`. Correct its chart
    subtree and legend dot after cloning. (The invariant check in the Storybook
    `Transition` story lists every such exception.) **The self-audit above now

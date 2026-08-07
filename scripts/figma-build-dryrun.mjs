@@ -53,6 +53,14 @@ const figma = {
   createNodeFromSvg: (svg) => {
     if (/%[wh]%/.test(svg)) throw new Error('unsubstituted size placeholder');
     if (/var\(|currentColor|color\(srgb/.test(svg)) throw new Error('unresolved CSS in SVG');
+    /* A gradient HEAD is not a colour. `radial-gradient(circle at 50% 50%, …)`
+       has no explicit radii, so the head does not match the `RW% RH% at X% Y%`
+       shape the converter expects and falls through into the stop list — the
+       staged Suite payloads carried `stop-color="circle"` on two mark layers.
+       Perfectly parseable SVG, invalid paint, and invisible to every other
+       check here, which is exactly why it needs its own. */
+    for (const m of svg.matchAll(/stop-color="([^"]*)"/g))
+      if (!/^(rgb|#)/.test(m[1])) throw new Error(`bad stop-color "${m[1]}"`);
     const open = (svg.match(/<svg/g) || []).length, close = (svg.match(/<\/svg>/g) || []).length;
     if (open !== 1 || close !== 1) throw new Error('malformed svg envelope');
     const w = +(svg.match(/^<svg[^>]*width="([\d.]+)"/) || [])[1];
