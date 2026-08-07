@@ -1737,8 +1737,10 @@
         "the_conflict_and_its_fix": "Building one cross-brand colour map produced 12 conflicts, ALL of one shape: db's #466af4 is both its solid --primary AND the first stop of its stat-text gradient, whereas nb's solid primary is #306602 but that gradient stop is #418605. Fix is to keep gradient-text stops OUT of the solid map and carry them per brand (6 texts x 2 stops, tiny). With that split there are zero conflicts.",
         "payload_shape_that_works": "Send once: scene (8.9kB, SVGs replaced by a lib index) + svg lib (15.8kB, 13 unique entries, deduped because the mark repeats at several sizes). Then per brand: {solid map, gradText stops, svg colour lists paired positionally per lib entry} (~13kB for five brands). Figma rebuilds each brand from scene+lib with substitutions rather than cloning. Total ~43kB, inside the 50kB script cap.",
         "suite": "Not yet inspected. Page 951:52 still holds the old 'Suite' frame.",
-        "marks_are_not_components": "Checked 951:46 - the marks there are plain FRAMEs, not COMPONENTs, so they cannot be instantiated to avoid re-importing the gradient stacks."
-      }
+        "marks_are_not_components": "Checked 951:46 - the marks there are plain FRAMEs, not COMPONENTs, so they cannot be instantiated to avoid re-importing the gradient stacks.",
+        "suite_shape": "INSPECTED 2026-08-07: Suite is ONE composite page (1280x4474), eleven brand scopes inline plus one data-surface='aiden' \u2014 NOT six variants. So it is 2 extracts (light, dark), not 12. But 32 gradient elements and 53 SVGs mean it will not fit a single 50kB use_figma call; build it across several calls appending into the same frame."
+      },
+      "playbook": "docs/figma-dom-bridge.md \u2014 the extractor, the builder, all eight gotchas, and the measured payload plan for Marketing and Suite. Read it before touching these pages."
     }
   }
 }
