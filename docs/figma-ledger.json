@@ -1729,7 +1729,16 @@
         "CROSS-BRAND remapping is safe and cheap: within one mode the layout is identical, so a clone plus a ~13-pair colour map reproduces a sibling brand exactly (verified 1:1, zero conflicts). CROSS-MODE remapping is NOT safe - white maps to page, card AND ink, so each mode needs its own extract.",
         "ec dark is the one brand whose chart slot 1 is not its --primary, so the blanket map paints its bars with the wrong blue. Its chart subtree and legend dot are corrected explicitly after the clone."
       ],
-      "outstanding": "Marketing (951:51) and Suite (951:52) still hold their old content and need the same treatment. Brands / MarkAnatomy / AidenSurface / Tokens / Audit also predate the db deeps rotation, the ink glyphs, the chart work and the aiden pink."
+      "outstanding": "Marketing (951:51) and Suite (951:52) still hold their old content and need the same treatment. Brands / MarkAnatomy / AidenSurface / Tokens / Audit also predate the db deeps rotation, the ink glyphs, the chart work and the aiden pink.",
+      "marketing_and_suite": {
+        "status": "NOT BUILT. Pipeline extended and verified against Marketing's data, but the payload does not fit the remaining budget in one session. Everything needed is below.",
+        "why_marketing_is_harder_than_dashboard": "Dashboard was affordable because ONE extract per mode plus a ~13-pair colour map reproduced all six brands (layout identical, mapping verified 1:1). Marketing defeats that: its marks and hero bubble field are stacked CSS gradients, and gradient colours are baked into the SVG strings where a solid-paint map cannot reach them.",
+        "gradient_support_added": "The extractor now converts a CSS background-image gradient stack into a standalone SVG (linear + radial, multi-layer, elliptical radials via gradientTransform, layers reversed because CSS paints the FIRST layer on top). SVG gradients are something createNodeFromSvg genuinely understands, so it reuses the one import path already proven. background-clip:text is carried separately as a real Figma gradient text fill.",
+        "the_conflict_and_its_fix": "Building one cross-brand colour map produced 12 conflicts, ALL of one shape: db's #466af4 is both its solid --primary AND the first stop of its stat-text gradient, whereas nb's solid primary is #306602 but that gradient stop is #418605. Fix is to keep gradient-text stops OUT of the solid map and carry them per brand (6 texts x 2 stops, tiny). With that split there are zero conflicts.",
+        "payload_shape_that_works": "Send once: scene (8.9kB, SVGs replaced by a lib index) + svg lib (15.8kB, 13 unique entries, deduped because the mark repeats at several sizes). Then per brand: {solid map, gradText stops, svg colour lists paired positionally per lib entry} (~13kB for five brands). Figma rebuilds each brand from scene+lib with substitutions rather than cloning. Total ~43kB, inside the 50kB script cap.",
+        "suite": "Not yet inspected. Page 951:52 still holds the old 'Suite' frame.",
+        "marks_are_not_components": "Checked 951:46 - the marks there are plain FRAMEs, not COMPONENTs, so they cannot be instantiated to avoid re-importing the gradient stacks."
+      }
     }
   }
 }
