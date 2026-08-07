@@ -327,10 +327,13 @@ export const BRAND_ANCHORS = {
   // worth less than one that is not in the family.
   //
   // THE AIDEN HIGHLIGHT IS PINK (owner, 2026-08-06, read from Figma). The mark's
-  // first stop moved #8455f0 -> #c755f0 in light and #b3a2fa -> #c955de in dark
-  // — a 24 and 29 degree rotation out of violet into magenta-pink. Taken from
-  // `mark/aiden` on the v2 Mark anatomy page rather than sampled off a
-  // screenshot: the owner edits the Figma, so the Figma is the source.
+  // first stop moved #8455f0 -> #b65ffd in light and #b3a2fa -> #b75ef2 in dark.
+  // The Figma reads #c755f0 / #c955de (hue 316 / 321); the owner then asked for
+  // "slightly less pink", so these sit 60% of the way from the old violet 292
+  // toward it — hue 306 / 309, with LIGHTNESS AND CHROMA HELD at the Figma's
+  // values so only the hue moves. Read from `mark/aiden` on the v2 Mark anatomy
+  // page rather than sampled off a screenshot: the owner edits the Figma, so
+  // the Figma is the source and a screenshot is a lossy copy of it.
   //
   // IT REACHES FURTHER THAN THE MARK. --primary-highlight also feeds the hero
   // bubbles, the artwork rail and the sheen — and CHART SLOT 4 IS BUILT ON THE
@@ -363,7 +366,7 @@ export const BRAND_ANCHORS = {
   // floor and separates by LIGHTNESS (aiden L 0.44 vs db 0.58) — the recorded
   // construction — but it is the tightest identity pair in the set now, and
   // matching the product is the reason it is accepted.
-  aiden: { light: ['#c755f0', '#5a37e6', '#2c6dea'], dark: ['#c955de', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
+  aiden: { light: ['#b65ffd', '#5a37e6', '#2c6dea'], dark: ['#b75ef2', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
 /** --primary IS the middle anchor. No derivation, no second colour. */
@@ -726,8 +729,8 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
   // rung below the template (L 0.80 rather than 0.86) because at the template
   // rung the pale pink crowds slot 6's near-white and no legal sixth colour
   // exists at all.
-  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1', '#df90fd', '#253541', '#6f7b84'],
-           dark:  ['#9076f9', '#7b7e8b', '#ddaefd', '#b969be', '#d8e8fa', '#a3aeb9'] },
+  aiden: { light: ['#5a37e6', '#080e3e', '#3c21a1', '#cc9cfe', '#253541', '#6f7b84'],
+           dark:  ['#9076f9', '#7b7e8b', '#ddaefd', '#a079bf', '#d8e8fa', '#a3aeb9'] },
 };
 
 /**

@@ -642,6 +642,11 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
     tokens: ['--poc2-shadow-stock', '--poc2-shadow-key', '--poc2-shadow-far', '--poc2-shadow-amb'],
   },
   {
+    group: 'Charts \u2014 the categorical palette',
+    note: 'Six slots per brand, generated from ec\u2019s structure: the primary, a pale rung of its hue, the deep, the highlight hue at its brightest, a brand-tinted slate, and a near-black that inverts to near-white in dark. Read across a row and the ladder is the point \u2014 in slot order the lightness alternates, which is what separates two bars standing shoulder to shoulder.',
+    tokens: ['--chart-1', '--chart-2', '--chart-3', '--chart-4', '--chart-5', '--chart-6'],
+  },
+  {
     group: 'Gradients',
     note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
     tokens: ['--poc2-mark', '--poc2-hero', '--poc2-bubble'],
@@ -1242,8 +1247,16 @@ export const Tokens: Story = {
       <>
         <PocStyle />
         <div ref={hostRef} aria-hidden="true" style={{ position: 'fixed', left: -9999, top: 0, width: 1, height: 1, overflow: 'hidden' }}>
+          {/* AIDEN IS SELECTED BY data-surface, NOT data-brand — it is a surface
+              that layers inside any brand, and its scope in the stylesheet is
+              [data-surface='aiden']. Probing it with data-brand matched no rule
+              at all, so the aiden column silently reported the UNTHEMED
+              defaults: --primary-highlight as #ffffff and --primary as the base
+              slate #334155. The table looked complete and was lying. */}
           {cols.map((b) => (
-            <span key={b} data-m={b} data-theme-poc2="" data-brand={b} data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
+            <span key={b} data-m={b} data-theme-poc2=""
+              {...(b === 'aiden' ? { 'data-surface': 'aiden' } : { 'data-brand': b })}
+              data-mode={mode} style={{ '--poc2-str': 1, '--poc2-chrome': 1 } as CSSProperties}>
               <span />
             </span>
           ))}
