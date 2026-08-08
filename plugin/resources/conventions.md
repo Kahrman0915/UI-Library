@@ -147,7 +147,7 @@ If any output violates the "allowed" set, undo whatever change introduced it.
 - **Theme codes are 2 letters** (`db`, `dc`, `dr`, `ec`, `ir`, `nb`, `ph`, `rm`), not full product names.
 - **There is no `--brand` token and no `variant="brand"`.** That model was removed: `--primary` *is* the current theme's colour, and the main brand is the absence of `data-theme`. Don't reintroduce it.
 - **Three theming axes, all attributes:** `data-mode` ⊥ `data-theme` ⊥ `data-surface`. Aiden is a *surface*, never a theme code.
-- **Compound containers use `Header/Body/Footer` naming** (Dialog, Card), matching each other, not matching shadcn's `Header/Content/Footer`.
+- **Compound containers use `Header/Body/Footer` naming** (Dialog, Card), matching each other. Internal consistency is what matters, not matching any external library.
 - **Positioning has no collision detection.** Adding it would require `@floating-ui/react` — declined.
 - **Every overlay animates in and out** via the shared `usePresence` state machine (`closed → open → closing`). It must promote to `open` *synchronously during render* — deferring it to an effect mounts the content a render late, after the positioning layout-effect has already run against a null ref.
 - **Reduced motion is global**, in `tokens.scss`. It collapses durations to `0.01ms`, **not** `none`: Drawer and Tooltip unmount on `animationend`, and `none` means that event never fires. Spinner is the deliberate exemption.

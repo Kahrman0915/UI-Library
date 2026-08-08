@@ -58,11 +58,11 @@ type Member = {
 };
 
 const members: Member[] = [
-  { name: 'Ada Lovelace', email: 'ada@acme.io', initials: 'AL', role: 'Admin', roleVariant: 'default', status: 'online', statusLabel: 'Online' },
-  { name: 'Alan Turing', email: 'alan@acme.io', initials: 'AT', role: 'Member', roleVariant: 'outline', status: 'online', statusLabel: 'Online' },
-  { name: 'Grace Hopper', email: 'grace@acme.io', initials: 'GH', role: 'Member', roleVariant: 'outline', status: 'away', statusLabel: 'Away' },
-  { name: 'Katherine Johnson', email: 'katherine@acme.io', initials: 'KJ', role: 'Viewer', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
-  { name: 'Linus Torvalds', email: 'linus@acme.io', initials: 'LT', role: 'Member', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
+  { name: 'Ada Lovelace', email: 'ada@example.com', initials: 'AL', role: 'Admin', roleVariant: 'default', status: 'online', statusLabel: 'Online' },
+  { name: 'Alan Turing', email: 'alan@example.com', initials: 'AT', role: 'Member', roleVariant: 'outline', status: 'online', statusLabel: 'Online' },
+  { name: 'Grace Hopper', email: 'grace@example.com', initials: 'GH', role: 'Member', roleVariant: 'outline', status: 'away', statusLabel: 'Away' },
+  { name: 'Katherine Johnson', email: 'katherine@example.com', initials: 'KJ', role: 'Viewer', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
+  { name: 'Linus Torvalds', email: 'linus@example.com', initials: 'LT', role: 'Member', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
 ];
 
 const STATUSES = ['All', 'Active', 'Invited'] as const;

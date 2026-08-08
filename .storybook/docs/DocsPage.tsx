@@ -26,7 +26,7 @@ import './docs.scss';
 /**
  * The bespoke Docs template, registered globally in `.storybook/preview.tsx`.
  *
- * Shape follows the shadcn component-doc reading order — title · description ·
+ * Shape follows the conventional component-doc reading order — title · description ·
  * preview/code · install · usage · composition · examples · API · a11y — but
  * every pixel of it is built from this library's own components and tokens, so
  * the docs page doubles as a proof that the system composes.

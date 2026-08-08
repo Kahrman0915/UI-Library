@@ -1880,5 +1880,15 @@
     "indexPage": "125:180, retitled \"📇 Component index\". The five-column phase board was removed and rebuilt as an alphabetical directory where every name carries a hyperlink to its page ({type:\"NODE\", value:pageId} — verified by reading .hyperlink back, not by assuming). A hand-maintained index drifts, so it is now generated from the page list itself.",
     "motionPageCaveat": "The Motion page is a TABLE, not a token source. Figma variables have no time or cubic-bezier type, and native Easing/Timing values are UI-only — unreachable from the plugin API. tokens.scss is the source; if they ever disagree the code is right, and the page says so on itself.",
     "gotcha": "A page you have not switched to reports children.length === 0. The deletion log in this sweep recorded \"(0 top-level nodes)\" for four pages that were NOT empty. Harmless here — the deletions were approved — but never use that count as evidence a page is safe to remove."
-  }
+  },
+  "languageSweep": {
+    "date": "2026-08-08",
+    "scope": "All 91 pages · 30,939 nodes.",
+    "spelling": "British → American. 194 occurrences fixed: colour 108, labelled 36, centre 24, behaviour 11, modelling 4, grey 3, favour 2, analyse 2, licence, neighbouring, summarise, labelling. Replacement preserves case (COLOUR→COLOR, Colour→Color).",
+    "brand": "Acme removed — 24 occurrences. \"Acme Suite\" → \"Product suite\"; \"Acme Inc\" / \"Acme\" → \"Kahrman McKenzie\"; every acme.io address → example.com, which is the RFC-2606 domain reserved for documentation and so cannot ever resolve to a real host. No shadcn references existed in Figma; three in the repo were reworded to describe the shape rather than name a vendor.",
+    "gotcha": "A DIRECT WRITE TO .characters SILENTLY FAILS when the text is driven by a component TEXT property. The first pass edited 152 text nodes and reported success; a verification sweep found 127 still unchanged, every one inside a _Doc/* instance (ids of the form I<inst>;<node>). Those values live on the INSTANCE as componentProperties, so the fix is setProperties() on the instance, not .characters on the inner node. Second pass patched 117 instances / 122 properties, and a third sweep confirmed zero remaining. Always verify a bulk text edit by re-scanning, never by the write count.",
+    "alsoNote": "componentPropertyDefinitions cannot be read on a variant COMPONENT inside a set — only on the set or a standalone component. It throws, so guard it. 695 such throws in the first pass were harmless because the text edits ran before them in the same try block."
+  },
+  "startHerePage": "165:506 — rewritten 2026-08-08 for the new structure: 62 components, the FOUR axes (mode / brand / surface / tint, not two), the Foundations·Components·Examples·Internal grouping, and the hue↔code brand table. The build-phase copy is gone.",
+  "choosingComponentsPage": "675:44 — gained a third decision cluster, \"Mark vs FeaturedIcon vs Avatar\" (a product / a category / a person), built by cloning the existing cluster so the layout matches."
 }

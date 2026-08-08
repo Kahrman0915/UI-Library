@@ -200,7 +200,7 @@ function Dashboard() {
                 <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 1.15 }}>
                   <span style={{ fontWeight: 'var(--font-medium)' }}>Ada Lovelace</span>
                   <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
-                    ada@acme.io
+                    ada@example.com
                   </span>
                 </div>
               </SidebarMenuButton>

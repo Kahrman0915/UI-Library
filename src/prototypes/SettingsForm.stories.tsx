@@ -75,7 +75,7 @@ function SettingsPage() {
 
               <Field>
                 <FieldLabel htmlFor="email" required>Work email</FieldLabel>
-                <Input id="email" type="email" placeholder="you@acme.com" value={email} onValueChange={setEmail} error={emailError} />
+                <Input id="email" type="email" placeholder="you@example.com" value={email} onValueChange={setEmail} error={emailError} />
                 {emailError ? (
                   <FieldError>Enter a valid email address.</FieldError>
                 ) : (
