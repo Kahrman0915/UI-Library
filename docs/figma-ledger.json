@@ -1544,7 +1544,7 @@
       "pageName": "2 · Fab"
     },
     "Mark": {
-      "status": "done — set reconciled to the shipped API 2026-08-08; template-v4 doc frames still outstanding",
+      "status": "done — set reconciled to the shipped API 2026-08-08, aiden surface included; template-v4 doc frames still outstanding",
       "pageId": "1192:580",
       "setIds": [
         "1200:24948"
@@ -1568,22 +1568,23 @@
       },
       "themed": true,
       "themingFrame": "IMPLICIT — the component IS the theming demo. The tile ramp binds to Brand/decorative-hi, Brand/primary and Brand/decorative-deep, so it carries a brand's FULL three-anchor identity rather than just --primary. Set Brand in the Appearance panel.",
-      "props": "VARIANT Size (sm|default|lg|xl = 24/32/48/64) x Lockup (false|true) = 8. TEXT Title, Description. INSTANCE_SWAP Glyph, exposed through the nested tile instance. Matches src/components/Mark/Mark.types.ts.",
+      "props": "VARIANT Size (sm|default|lg|xl = 24/32/48/64) x Lockup (false|true) = 8. TEXT Title, Description. On the nested (exposed) tile: INSTANCE_SWAP Glyph, BOOLEAN \"Aiden surface\". Matches src/components/Mark/Mark.types.ts.",
       "codeOnly": "motion (none|ambient|tilt) and label. motion is deliberately NOT a variant axis: all three render IDENTICALLY at rest, so a grid would teach that motion changes appearance — the one thing it does not do. Same treatment as Fab's pulse.",
       "lessons": [
         "MODE IS NOT A VARIANT, and collapsing it needed a new primitive. Light and dark glass differ in GEOMETRY and paint-stack LENGTH (light = top-anchored white sheen over one radial highlight; dark = bottom-anchored ink sheen over a lift plus a bottom-right occlusion, spark 12% -> 8%), so no colour variable can carry it. Solved with whole layer stacks glass-light / glass-dark gated on flag/is-light and flag/is-dark. flag/is-light (VariableID:1197:44) was ADDED for this, the exact inverse of flag/is-dark. Generalises the aiden-dark-gradient overlay pattern from one layer to a pair. Verified against the POC set in both modes before the POC was superseded.",
         "Three mode-dependent layers were FRAME FILLS, not children, so they had to be extracted into rectangles before they could be gated. A paint cannot have its visibility bound; only a node can.",
         "A TRUNCATED STYLE ID FAILS SILENTLY. The first build passed 26-char slices of the text style ids (sliced for display in an earlier read) to setTextStyleIdAsync. Nothing threw, the text rendered in a plausible default, and only the design-check lint caught it — 8 TEXT nodes with no textStyleId. Real ids are 40+ chars WITH a trailing comma.",
-        "Blend (hard|soft) on the POC set was never a prop: hard is the six brands' 3-stop ramp, soft is aiden's 4-stop plateau — the data-surface scope expressed as a variant."
+        "Blend (hard|soft) on the POC set was never a prop: hard is the six brands' 3-stop ramp, soft is aiden's 4-stop plateau — the data-surface scope expressed as a variant.",
+        "AN AMBIENT SCOPE THAT FIGMA CANNOT MODEL AS A COLLECTION BECOMES AN OPAQUE GATED OVERLAY, not a variant. Mode and the aiden surface are the same shape of problem — something the code reads from context rather than from a prop — and they now have the same shape of answer: a layer that covers, gated on a boolean. Variants are for props."
       ],
       "openWork": [
-        "AIDEN SURFACE not reachable from the set. Six brands share a 3-stop ramp (9.7/51.6/90.3); aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point. Stop POSITIONS cannot bind to a variable. Recommended: an opaque ramp-aiden rect above the brand ramp gated by a BOOLEAN property. Until then an aiden mark uses the Mark/Aiden paint style.",
-        "Template-v4 doc frames (Overview / Spec / Examples·Docs·History) not built.",
+        "Template-v4 doc frames (Overview / Spec / Examples·Docs·History) not built. The page holds the set, the four artwork masters, and the POC anatomy + motion specimen frames.",
         "Motion inside a component is still truncated at 2.0s (POC finding, unchanged). Full-length loops live on the \"Mark · motion (specimen)\" frame as plain-frame copies."
       ],
       "lintStatus": "unboundSolid 0 · textNoStyle 0 · genericNames 0 · unboundSpacing 0 · noDescription 0. unboundRadius is a STANDING EXCEPTION: the tile radius is 22.5% of its own size in CSS — a percentage, not a token — so the rescaled values (5.4/7.2/10.8/14.4) have nothing to bind to and must not get a token. Same class as the documented literals in CLAUDE.md.",
-      "version": "1.0 · 2026-08-08",
-      "newComponent": "YES — 61st component. Shipped in code 2026-08-08 (src/components/Mark/)."
+      "version": "1.1 · 2026-08-08",
+      "newComponent": "YES — 61st component. Shipped in code 2026-08-08 (src/components/Mark/).",
+      "aidenSurface": "DONE 2026-08-08. An opaque \"ramp-aiden\" rectangle at child index 0 of each artwork master — above the frame's own brand-ramp fill, below the glass — filled with the Mark/Aiden PAINT STYLE and gated on a BOOLEAN property (default false). Turning it on replaces the brand ramp and leaves the glass, glyph and sizing untouched.\n\nIt is a boolean, not a variant, because it is not a prop: aiden is a data-surface that composes INSIDE any brand, the same class of ambient scope as Mode.\n\nTHE STYLE IS THE POINT — do not inline the gradient. Mark/Aiden's four stops are bound to _brand/aiden/decorative-hi / primary / decorative-deep, so the overlay is mode-aware for free AND stays inside scripts/figma-variable-audit.js's coverage. A copied gradient would be a second literal that can drift — which is exactly how the Aiden family once sat on the pre-blurple #5f61ef mid stop.\n\nWhy a whole overlay rather than swapping the fill: stop POSITIONS cannot bind to a variable. The six brands share 9.7/51.6/90.3; aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point.\n\nVerified on the Amber brand in both modes: overlay off shows Amber, on shows the blurple ramp, and dark correctly uses the paler aiden anchors."
     },
     "FullScreenDialog": {
       "status": "page exists in Figma; ledger entry was never written",
