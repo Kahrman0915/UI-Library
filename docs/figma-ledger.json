@@ -1,7 +1,7 @@
 {
   "runId": "uilib-component-push-2026-07",
   "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
-  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster 59; every component has a v4 page and an index row. Changelogs were reset to a single baseline entry on 2026-07-29 to match the Storybook changelog.)",
+  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster 59; every component has a v4 page and an index row. Changelogs were reset to a single baseline entry on 2026-07-29 to match the Storybook changelog.) | 2026-08-08: component pages renamed to bare names (no \"N · \" prefix) and sorted alphabetically. Any ledger pageId is still valid — ids did not change, only names and order.",
   "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
   "v4": {
     "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",
@@ -1840,5 +1840,45 @@
     ],
     "alreadyClean": "Slider (labels were \"DB · light\" style, 6 brands), Chip, Alert, Banner, Progress, FeaturedIcon — these used hue names or were built after the naming settled.",
     "lesson": "A VARIABLE audit passing is not evidence that the FILE is correct. Deleting a variable mode silently orphans (a) every text label that named it, and (b) every node pinned to it, which falls back to the collection default and renders plausibly rather than erroring. Both are invisible to a variable-level check. After retiring any mode, sweep page CONTENT for its name — and do it CASE-INSENSITIVELY: the first pass here used /^(DR|IR)$/ and missed Pagination entirely, which labels its cells in lowercase."
+  },
+  "fileStructure": {
+    "reorganised": "2026-08-08",
+    "why": "The Phase 1–5 grouping was build-order scaffolding. The build finished, so it had stopped describing anything — and the index board built on it had drifted twice. Replaced with four sections that describe what a page IS rather than when it was made.",
+    "sections": {
+      "top": "📖 Start Here · 🧭 Choosing components · 📇 Component index",
+      "foundations": "Overview · Colour & tokens · Typography · Spacing & sizing · Motion · Themes & brands · Aiden surface · Chart palettes · Icons — mirrors Storybook's Foundations",
+      "components": "62 pages, ALPHABETICAL, no numeric prefix. New components slot in by name.",
+      "examples": "11 composed screens: handoff specs, component builds, and brand-palette pages",
+      "internal": "_Template (the _Doc/* masters) · Patterns"
+    },
+    "newFoundationsPages": {
+      "Overview": "1215:44",
+      "Typography": "1215:45",
+      "Spacing & sizing": "1215:46",
+      "Motion": "1215:47",
+      "note": "Built 2026-08-08 to close the gap against Storybook. Typography renders all 65 text styles as live specimens; Spacing draws the 34-step scale and 9 radii at true size; Motion is a REFERENCE TABLE, not a token source — see below."
+    },
+    "repurposedFromPOC": {
+      "Themes & brands": "951:45 (was v2 · 01 Brands)",
+      "Aiden surface": "951:47 (was v2 · 03)",
+      "Colour & tokens": "951:48 (was v2 · 04 Tokens)",
+      "Chart palettes": "994:44 (was v2 · 12)",
+      "Dashboard — brand palettes": "951:50",
+      "Marketing — brand palettes": "951:51",
+      "Suite — brand palettes": "951:52",
+      "why": "Deeper theming v2 SHIPPED, so these stopped documenting a proposal and started documenting real tokens. Promoting them was cheaper and more accurate than rebuilding."
+    },
+    "deleted": [
+      "v2 · 02 Mark anatomy (contents had already moved to the Mark page)",
+      "v2 · 05 Audit",
+      "v2 · 09 Side by side",
+      "v2 · 10 Roster",
+      "v2 · 11 Roster detail",
+      "POC — App marks (the v1 POC, superseded)",
+      "the Phase 5 and POC v2 dividers"
+    ],
+    "indexPage": "125:180, retitled \"📇 Component index\". The five-column phase board was removed and rebuilt as an alphabetical directory where every name carries a hyperlink to its page ({type:\"NODE\", value:pageId} — verified by reading .hyperlink back, not by assuming). A hand-maintained index drifts, so it is now generated from the page list itself.",
+    "motionPageCaveat": "The Motion page is a TABLE, not a token source. Figma variables have no time or cubic-bezier type, and native Easing/Timing values are UI-only — unreachable from the plugin API. tokens.scss is the source; if they ever disagree the code is right, and the page says so on itself.",
+    "gotcha": "A page you have not switched to reports children.length === 0. The deletion log in this sweep recorded \"(0 top-level nodes)\" for four pages that were NOT empty. Harmless here — the deletions were approved — but never use that count as evidence a page is safe to remove."
   }
 }
