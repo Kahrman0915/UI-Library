@@ -1892,5 +1892,24 @@
     "alsoNote": "componentPropertyDefinitions cannot be read on a variant COMPONENT inside a set — only on the set or a standalone component. It throws, so guard it. 695 such throws in the first pass were harmless because the text edits ran before them in the same try block."
   },
   "startHerePage": "165:506 — rewritten 2026-08-08 for the new structure: 62 components, the FOUR axes (mode / brand / surface / tint, not two), the Foundations·Components·Examples·Internal grouping, and the hue↔code brand table. The build-phase copy is gone.",
-  "choosingComponentsPage": "675:44 — gained a third decision cluster, \"Mark vs FeaturedIcon vs Avatar\" (a product / a category / a person), built by cloning the existing cluster so the layout matches."
+  "choosingComponentsPage": "675:44 — gained a third decision cluster, \"Mark vs FeaturedIcon vs Avatar\" (a product / a category / a person), built by cloning the existing cluster so the layout matches.",
+  "testScreen": {
+    "date": "2026-08-08",
+    "page": "TEST (1244:1814)",
+    "frame": "DART Central — Home (db) — 1250:44, 1280x860",
+    "source": "the owner's TESTING frame (1244:1815) on the same page",
+    "brand": "Brand mode pinned to Indigo (db); Mode pinned to Light. Every colour follows from that.",
+    "builtFrom": "Mark (rail + tab strip), Button + Button/Icon-only, Input (leading search glyph, trailing glyph swapped to a Kbd), Item (quick actions, recent rows, pinned cards), Sidebar/MenuButton, Avatar, Badge, ModeToggler, and the Icon/* lucide library. Hand-built: only the tab strip, the app rail and the section headings — no component covers those.",
+    "responsive": "The content column FILLs the main area with maxWidth 768, and both grids are WRAP auto-layouts, so resizing the frame reflows the cards without touching a breakpoint.",
+    "aidenTint": "The Ask Aiden prompt is a hand-built container, but its fill and stroke are the file's own Aiden/Secondary and Aiden/Border PAINT STYLES. Card cannot carry the surface — Card is neutral chrome by design — so the tint lives on the container, exactly as the code prototype does it.",
+    "lessons": [
+      "INSTANCE_SWAP via setProperties takes a NODE ID. A component key is REJECTED with \"Property value is incompatible with component property type\" — confirmed by a controlled test that tried both against the same icon. This matches the earlier addComponentProperty finding.",
+      "NOT EVERY NESTED GLYPH IS A PROPERTY. Mark's Glyph and Sidebar/MenuButton's icon do not surface on the parent instance's componentProperties, so setProperties silently does nothing and every tile renders the default. Both had to be swapped with swapComponent() on the nested INSTANCE. The rail shipped six identical chart glyphs until this was caught by LOOKING at it — no error was raised at any point.",
+      "Sidebar/MenuButton exposes no icon swap property at all; every instance defaults to Icon/house. Worth adding an INSTANCE_SWAP to that set — a nav is the one place every row needs a different icon.",
+      "TEXT CAN BE APPENDED INTO A SLOT inside an instance. The Recent rows' trailing app name is a real text node placed in ui-item__actions, which is what a slot is for.",
+      "appendChild() returns void — chaining `.name` onto it throws \"cannot set property name of null\".",
+      "layoutPositioning = ABSOLUTE requires the PARENT to have a layoutMode. A plain createFrame() badge slot throws; createAutoLayout() with a fixed size works."
+    ],
+    "openWork": "The design's sidebar nav rows are 12px text; ours render at the component's default size. Left as the component ships rather than overridden — the point of the exercise was to use the system, not to defeat it."
+  }
 }
