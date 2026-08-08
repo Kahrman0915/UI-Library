@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Rocket } from 'lucide-react';
-import Card, { CardHeader, CardBody, CardFooter } from './Card';
+import Card, { CardHeader, CardMedia, CardBody, CardFooter } from './Card';
 import Button from '../Button/Button';
 import Badge from '../Badge/Badge';
 import Avatar from '../Avatar/Avatar';
@@ -17,8 +17,27 @@ const meta: Meta<typeof Card> = {
         'A surface that gathers related content into one unit. The header is ' +
         'prop-driven (`title`, `description`, `action`), and `interactive` opts into ' +
         'the hover lift for cards that are themselves clickable.',
-      tags: ['compound', '4 parts'],
+      tags: ['compound', '5 parts'],
       changelog: [
+        {
+          date: '2026-08-08',
+          summary:
+            'New `CardMedia` part — a full-bleed cover image, video or chart, for the ' +
+            'vertical card layout (cover on top, then header, then description).',
+          detail:
+            '`CardHeader`\'s existing `media` prop is a LEADING visual on the title\'s own ' +
+            'line — an avatar or status dot beside the heading. It could never be a cover: it ' +
+            'is `flex-shrink: 0` inside the header\'s flex row and floored at one line of ' +
+            'title. `CardMedia` is the other thing.\n\n' +
+            'It is a sibling part placed by the caller, not a `media` prop on `Card`, because a ' +
+            'prop would have to choose an order — this way the cover can sit above the header, ' +
+            'between header and body, or under the footer.\n\n' +
+            'It composes `AspectRatio` and defaults to `16 / 9`, so a row of cards keeps a level ' +
+            'top edge and does not jump as images load. It declares no radius of its own: ' +
+            '`.ui-card` is `overflow: hidden`, so a cover touching an edge inherits the card\'s ' +
+            'rounding for free, and adding one would show as a hairline of card background in ' +
+            'the corners.',
+        },
         {
           date: '2026-07-29',
           summary: 'Initial build complete.',
@@ -36,6 +55,34 @@ const meta: Meta<typeof Card> = {
 export default meta;
 
 type Story = StoryObj<typeof Card>;
+
+/**
+ * The vertical layout: a full-bleed cover, then the header, then the body.
+ * `CardMedia` composes `AspectRatio` (default `16 / 9`) so a grid of these keeps
+ * a level top edge and nothing shifts as the images load.
+ *
+ * The cover declares no rounding — `.ui-card` clips, so it inherits the card's
+ * radius. Put it anywhere: above the header, between header and body, or last.
+ */
+export const WithCover: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 280px)', gap: 'var(--p-4)' }}>
+      {[
+        { t: 'Quarterly review', d: 'Revenue, retention and pipeline.', h: 200 },
+        { t: 'Release notes', d: 'What shipped in 4.2.', h: 260 },
+      ].map((c) => (
+        <Card id={`cover-${c.h}`} key={c.t} interactive>
+          <CardMedia>
+            {/* A plain block stands in for the image, so the story has no network
+                dependency and the ratio box is what you actually see. */}
+            <div style={{ width: '100%', height: '100%', background: 'var(--muted)' }} />
+          </CardMedia>
+          <CardHeader id={`cover-${c.h}-h`} title={c.t} description={c.d} />
+        </Card>
+      ))}
+    </div>
+  ),
+};
 
 /**
  * `media` is the leading visual slot — a featured icon, an avatar, a status

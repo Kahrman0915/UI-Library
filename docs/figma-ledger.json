@@ -819,6 +819,7 @@
       "setIds": [
         "364:46",
         "364:61",
+        "1233:25901",
         "364:69",
         "364:72"
       ],
@@ -830,17 +831,18 @@
       "themed": false,
       "themingFrame": "ABSENT — Card is neutral chrome; nothing in it reads --primary. Stated in TOKENS.",
       "props": "NO variant axis. One assembled `Card` COMPONENT with TEXT props (Title, Description, Body) and BOOLEAN props (Show description, Show header action, Show footer), plus Card/Header, Card/Body and Card/Footer as standalone region specimens. `interactive` is modelled as code-only: it has NO resting appearance, only cursor + hover/focus, which are drawn in Spec.",
-      "version": "1.2 · 2026-07-26",
+      "version": "1.3 · 2026-08-08",
       "newTextStyle": "base/leading-5/Semibold (16/20) — created for the card title; base/leading-normal is 24 and base/leading-none is 16.",
-      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring.",
+      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring. | 2026-08-08: gained CardMedia. Also note a SLOT conversion does not report its new type within the SAME use_figma call — the node still reads FRAME and only reads SLOT on the next call. Verify conversions in a fresh call or you will conclude, wrongly, that it failed.",
       "openQuestions": [
         "CardHeader generates `${id}-title` on its heading but nothing in the library references it — it exists for a consumer to point aria-labelledby at.",
         "CardBody and CardFooter take no `id` prop, unlike Card and CardHeader — inconsistent with hard rule 6, probably deliberate since they are layout-only.",
         "overflow:hidden clips any menu/popover/tooltip opened inside a card; those need a portal.",
         "CardHeader always renders an <h3>; the level is not configurable, so a card can produce a heading order that does not match its document position. Still open after the media addition."
       ],
-      "slots": "FOUR slots: ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All four are React.ReactNode in code. Title/Description/Body stay TEXT props; a slot preserves default content so the text property inside the body slot still works. Every slot carries preferredValues (Avatar/StatusDot/icons for media; Badge/Chip/icon-button for action; Button/ButtonGroup for footer) and a description.",
-      "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build."
+      "slots": "FIVE slots: ui-card__media (NEW), ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All are React.ReactNode in code. Title/Description/Body stay TEXT props.",
+      "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build.",
+      "cardMedia": "ADDED 2026-08-08, code first then mirrored — the playbook's own rule, and the same route that produced CardHeader.media.\n\nTHE TWO MEDIA ROLES ARE NOT THE SAME THING, and conflating them is what made this confusing. ui-card__header-media is a LEADING visual on the title's own line — avatar, status dot, featured icon. It can never be a cover: in CSS it is flex-shrink:0 inside the header's flex row, icon-sized, floored at one line of title. ui-card__media is the full-bleed COVER.\n\nIt is a sibling PART, not a `media` prop on Card, because a prop must choose an order; as a part the caller can place the cover above the header, between header and body, or last.\n\nCode composes AspectRatio at a default 16 / 9 so a grid keeps a level top edge and nothing shifts as images load. It declares NO radius — .ui-card is overflow:hidden, so a cover touching an edge inherits the rounding; adding one shows as a hairline of card background in the corners.\n\nFigma: \"Show cover\" BOOLEAN defaults to FALSE, so no existing Card instance grew a cover when the property landed. Card/Media (1233:25901) is the standalone region component."
     },
     "Item": {
       "status": "done-v4",

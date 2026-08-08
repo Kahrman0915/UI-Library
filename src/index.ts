@@ -57,12 +57,14 @@ export type {
 export {
   default as Card,
   CardHeader,
+  CardMedia,
   CardBody,
   CardFooter,
 } from './components/Card';
 export type {
   CardProps,
   CardHeaderProps,
+  CardMediaProps,
   CardBodyProps,
   CardFooterProps,
 } from './components/Card';

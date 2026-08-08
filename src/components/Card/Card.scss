@@ -57,6 +57,25 @@
     }
   }
 
+  // THE COVER. Deliberately almost empty: AspectRatio already supplies the box,
+  // the clip and `object-fit: cover` on img/video/iframe, and `.ui-card` is
+  // `overflow: hidden`, so a cover touching any edge inherits the card's radius
+  // with nothing declared here. Adding a radius would fight the parent and show
+  // as a hairline of card background in the corners.
+  &__media {
+    // `.ui-card` is a flex column, where the default `flex-shrink: 1` would let
+    // a tall card squash the cover and quietly break the ratio it exists to
+    // guarantee.
+    flex: none;
+
+    // A cover BETWEEN sections needs the same hairline the header carries
+    // downward, or the image and the block under it read as one unit.
+    & + .ui-card__body,
+    & + .ui-card__footer {
+      border-top: var(--border-w-100) solid var(--border);
+    }
+  }
+
   &__header {
     display: flex;
     align-items: flex-start;
