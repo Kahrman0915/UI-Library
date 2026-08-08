@@ -239,11 +239,24 @@ const resolveValue = (raw, map, ctx, depth = 0) => {
     const parts = splitTop(cm[1]);
     if (parts.length !== 2) return null;
     // First part is "<color> <pct>", second is "<color>" (optionally with a pct).
+    // Split at the LAST DEPTH-0 SPACE. A regex for a trailing calc(...) looks
+    // right and is not: on the sidebar's nested double mix it swallowed the
+    // inner color-mix as the percentage, and the whole token then resolved to
+    // null and was silently SKIPPED. A fully-parenthesised value has no depth-0
+    // space at all, which is exactly the signal that it carries no percentage.
     const splitColorPct = (s) => {
-      // The percentage is the trailing token — but calc(...) has spaces inside,
-      // so match a trailing calc(...) or N% rather than splitting on whitespace.
-      const mm = s.match(/^([\s\S]+?)\s+(calc\([\s\S]+\)|[\d.]+%)$/);
-      return mm ? { color: mm[1].trim(), pct: mm[2].trim() } : { color: s.trim(), pct: null };
+      let depth = 0;
+      let cut = -1;
+      for (let i = 0; i < s.length; i++) {
+        const ch = s[i];
+        if (ch === '(') depth++;
+        else if (ch === ')') depth--;
+        else if (depth === 0 && /\s/.test(ch)) cut = i;
+      }
+      if (cut < 0) return { color: s.trim(), pct: null };
+      const pct = s.slice(cut + 1).trim();
+      if (!/^(calc\(|[\d.]+%$)/.test(pct)) return { color: s.trim(), pct: null };
+      return { color: s.slice(0, cut).trim(), pct };
     };
     const A = splitColorPct(parts[0]);
     const B = splitColorPct(parts[1]);

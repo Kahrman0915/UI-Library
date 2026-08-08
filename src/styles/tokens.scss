@@ -990,14 +990,24 @@ html {
   --category-blue-bg: rgba(96, 165, 250, 0.15);
   --category-blue-hover: #93c5fd;
   --category-blue-text: #60a5fa;
+  /* INDIGO AND VIOLET ARE THE TWO EXCEPTIONS to "dark -text reuses the base
+     hue", and the page tint is why. Reusing the base gave indigo 4.79 and
+     violet 5.19 against the untinted dark page — passing, but on 0.29 and 0.69
+     of headroom. Tinting the dark page LIGHTENS it, which costs roughly 0.6, so
+     indigo landed at 4.18 under every brand (not one: db 4.22, dc 4.22, ec 4.18,
+     nb 4.19, ph 4.24, rm 4.27) and violet at 4.52, i.e. on the line.
+     Both take their palette's 300 step instead, which restores real headroom
+     (indigo 6.26 tinted / 7.17 plain, violet 6.67 / 7.65) and raises contrast on
+     the untinted page too, so nothing regresses. Every other hue keeps the base.
+     Gated by test:contrast in all 52 contexts — don't darken these back. */
   --category-indigo: #818cf8;
   --category-indigo-bg: rgba(129, 140, 248, 0.15);
   --category-indigo-hover: #a5b4fc;
-  --category-indigo-text: #818cf8;
+  --category-indigo-text: #a5b4fc;
   --category-violet: #a78bfa;
   --category-violet-bg: rgba(167, 139, 250, 0.15);
   --category-violet-hover: #c4b5fd;
-  --category-violet-text: #a78bfa;
+  --category-violet-text: #c4b5fd;
   --category-purple: #c084fc;
   --category-purple-bg: rgba(192, 132, 252, 0.15);
   --category-purple-hover: #d8b4fe;
@@ -1185,6 +1195,102 @@ html {
    renamed and nothing errors, so this is a silent behavioural change for any
    consumer that expected the slate ramp under a brand — it is intended, and it
    is the reason charts now read as the brand rather than as chrome. */
+/* =========================================================================
+   The tint axis
+   =========================================================================
+   Opt-in: `<html data-tint="page rail">`. The multipliers default to 0 in the
+   primitives block, so a page that never sets the attribute renders the shipped
+   neutrals — absence means neutral, and every consumer below also carries a
+   `, 0` fallback so a missing variable cannot invalidate the declaration.
+
+   `page` tints the content surfaces; `rail` tints the sidebar alone, so a
+   tinted rail can sit against a neutral page.
+
+   WHY THESE LIVE UNDER [data-theme] AND NOT IN THE MODE BLOCKS. A var() inside
+   a custom property is substituted at computed-value time ON THE ELEMENT THAT
+   DECLARES IT. --tint-stock derives from --primary-deep, which only exists
+   inside a brand scope; declared up on <html> it would resolve against nothing
+   and take the whole declaration invalid. So the derivation is declared where
+   the brand anchors are visible.
+
+   They mix against --base-*, never against the public token: a custom property
+   cannot reference itself, and `--card: color-mix(…, var(--card))` is a cycle
+   that resolves to `unset` with no error.
+
+   LIGHT DOES NOT TINT THE PAGE. --background/--card/--popover stay white; the
+   shift lands on the secondary surfaces only. Dark has no such carve-out and
+   tints its page too, because a tinted near-black still reads as the page.
+
+   Percentages are the recipe's, solved per token because the BASES differ:
+   --accent is the near-white row-hover surface and takes the most, --muted is
+   the darkest and carries the system's tightest muted-text pairing so it takes
+   the least. --ring is deliberately at full strength — it is the focus
+   indicator, not chrome, and WCAG 1.4.11 wants it to stand out. */
+/* ORDER IS LATER-WINS HERE. Dark is declared FIRST and light second, which
+   looks backwards and is not. Both compounds are 2 attributes, so a light
+   subtree nested inside a dark page matches both and the tie breaks on source
+   order — light has to come last to win it. Plain dark is unaffected: the
+   light rule's bare [data-theme] member is only 1 attribute and loses to the
+   dark compound on specificity. */
+[data-mode='dark'] [data-theme],
+[data-mode='dark'][data-theme] {
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
+
+  --background: color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-background));
+  --card:       color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-card));
+  --popover:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-popover));
+  --secondary:  color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-secondary));
+  --accent:     color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-accent));
+  --muted:      color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-muted));
+  --input:      color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-input));
+
+  --border:       color-mix(in srgb, var(--primary) calc(6%  * var(--tint-page, 0)), var(--base-border));
+  --border-hover: color-mix(in srgb, var(--primary) calc(8%  * var(--tint-page, 0)), var(--base-border-hover));
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), var(--base-ring));
+
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), var(--base-sidebar)));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-rail, 0)), var(--base-sidebar-border)));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), var(--base-sidebar-accent)));
+}
+
+/* Light. The bare [data-theme] is the ':root' equivalent — a themed page with no
+   explicit data-mode. The two compounds re-assert it for a light subtree. */
+[data-theme],
+[data-mode='light'] [data-theme],
+[data-mode='light'][data-theme] {
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #475569);
+
+  --accent:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-accent));
+  --secondary: color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-secondary));
+  --input:     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-input));
+  --muted:     color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-page, 0)), var(--base-muted));
+
+  --border:       color-mix(in srgb, var(--primary) calc(5%  * var(--tint-page, 0)), var(--base-border));
+  --border-hover: color-mix(in srgb, var(--primary) calc(8%  * var(--tint-page, 0)), var(--base-border-hover));
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), var(--base-ring));
+
+  /* TWO mixes, and the order is the point. The inner one is --tint-stock (the
+     greyed deep) and supplies the rail's VALUE — what holds it apart from the
+     content area. The outer one is a little raw --primary and supplies HUE, so
+     the rail reads as the brand rather than as generic grey. Swapping primary
+     in FOR the stock instead of layering on top of it lightens the rail and
+     hands the separation straight back. */
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(8%  * var(--tint-rail, 0)), var(--base-sidebar)));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(11% * var(--tint-rail, 0)), var(--base-sidebar-border)));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-rail, 0)), var(--base-sidebar-accent)));
+}
+
+/* The attribute flippers. `~=` is a whitespace-list match, so data-tint="page rail"
+   turns on both and either alone works. */
+[data-tint~='page'] { --tint-page: 1; }
+[data-tint~='rail'] { --tint-rail: 1; }
+
 /* @generated deeper-theming-v2 — do not hand-edit; run scripts/generate-brand-tokens.mjs */
 
 /* Per-brand identity + categorical chart slots, generated from
