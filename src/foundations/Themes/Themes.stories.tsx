@@ -13,9 +13,7 @@ import Chip from '../../components/Chip';
 const themes = [
   { code: 'db', name: 'DB', hue: 'Indigo' },
   { code: 'dc', name: 'DC', hue: 'Teal' },
-  { code: 'dr', name: 'DR', hue: 'Rose' },
   { code: 'ec', name: 'EC', hue: 'Cyan' },
-  { code: 'ir', name: 'IR', hue: 'Blue' },
   { code: 'nb', name: 'NB', hue: 'Emerald' },
   { code: 'ph', name: 'PH', hue: 'Orange' },
   { code: 'rm', name: 'RM', hue: 'Violet' },

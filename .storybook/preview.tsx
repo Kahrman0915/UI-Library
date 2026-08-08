@@ -6,7 +6,7 @@ import '../src/styles/tokens.scss';
 import './preview.scss';
 
 // Brand themes. 'main' = the neutral slate base (no data-theme attribute).
-const THEMES = ['main', 'db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
+const THEMES = ['main', 'db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;
 
 // Two independent toolbar globals, applied to <html>:
 //   mode  → data-mode="light|dark"   (light / dark)

@@ -129,7 +129,7 @@ export const BrandThemed: Story = {
   parameters: { layout: 'padded' },
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-      {['', 'db', 'dr', 'ph', 'rm'].map((code) => (
+      {['', 'db', 'nb', 'ph', 'rm'].map((code) => (
         <div
           key={code || 'main'}
           data-theme={code || undefined}

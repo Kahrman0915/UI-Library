@@ -741,17 +741,13 @@ html {
      file, which remap --primary / --primary-foreground onto these. The main
      brand is the absence of a theme (--primary stays neutral slate above). */
   /* Light-mode primaries darkened 2026-07 for WCAG AA (white label ≥4.5:1);
-     DR/IR/RM already passed and are unchanged. */
+     RM already passed and is unchanged. */
   --db-primary: #6063f1;
   --db-primary-foreground: #ffffff;
   --dc-primary: #0c8479;
   --dc-primary-foreground: #ffffff;
-  --dr-primary: #e11d48;
-  --dr-primary-foreground: #ffffff;
   --ec-primary: #07809d;
   --ec-primary-foreground: #ffffff;
-  --ir-primary: #2563eb;
-  --ir-primary-foreground: #ffffff;
   --nb-primary: #04865e;
   --nb-primary-foreground: #ffffff;
   --ph-primary: #ca4c0a;
@@ -1053,12 +1049,8 @@ html {
   --db-primary-foreground: #0f172a;
   --dc-primary: #2dd4bf;
   --dc-primary-foreground: #0f172a;
-  --dr-primary: #fb7185;
-  --dr-primary-foreground: #0f172a;
   --ec-primary: #22d3ee;
   --ec-primary-foreground: #0f172a;
-  --ir-primary: #60a5fa;
-  --ir-primary-foreground: #0f172a;
   --nb-primary: #34d399;
   --nb-primary-foreground: #0f172a;
   --ph-primary: #fb923c;
@@ -1130,31 +1122,9 @@ html {
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
-[data-theme='dr'] {
-  --primary: var(--dr-primary);
-  --primary-foreground: var(--dr-primary-foreground);
-  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
-  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
-  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
-  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-}
 [data-theme='ec'] {
   --primary: var(--ec-primary);
   --primary-foreground: var(--ec-primary-foreground);
-  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
-  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
-  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
-  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-}
-[data-theme='ir'] {
-  --primary: var(--ir-primary);
-  --primary-foreground: var(--ir-primary-foreground);
   --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
   --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
   --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
