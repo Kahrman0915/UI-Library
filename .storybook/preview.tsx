@@ -5,6 +5,19 @@ import '../src/styles/fonts.scss';
 import '../src/styles/tokens.scss';
 import './preview.scss';
 
+// Retires the pre-paint literals in preview-head.html. Those exist only to stop
+// a reloading docs iframe flashing white before this bundle runs; they are
+// scoped to `html:not([data-tokens-ready])`, so stamping the attribute here —
+// after the imports above, i.e. once tokens.scss really has been applied —
+// switches them off and hands the page back to `background: var(--background)`.
+//
+// It matters that they DO get switched off: they are literals, so while they
+// apply the page cannot follow a surface tint, and a tinted #storybook-root
+// ends up floating on a frozen background.
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-tokens-ready', '');
+}
+
 // Brand themes. 'main' = the neutral slate base (no data-theme attribute).
 const THEMES = ['main', 'db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;
 

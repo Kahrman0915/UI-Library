@@ -62,16 +62,22 @@
   /*
     Literal values, not var(), because the token file has not loaded yet — that
     is the whole point of this block. They mirror --base-background in
-    tokens.scss; if that ever changes, change these with it. Getting them wrong
-    costs a one-frame mismatch, not a broken page.
-  */
-  html { background: #ffffff; }
-  html[data-mode='dark'] { background: #0f172a; }
+    tokens.scss; if that ever changes, change these with it.
 
-  /*
-    Docs pages render their own surface over the top, so paint the scroll
-    container too — otherwise the gutter either side of the docs column flashes
-    even when <html> is already correct.
+    THE :not() GATE IS LOAD-BEARING — do not drop it for a plain `html`.
+    preview.tsx stamps data-tokens-ready as soon as the bundle (and therefore
+    tokens.scss) has executed, which switches these rules OFF and hands the page
+    back to `background: var(--background)`.
+
+    Without the gate these literals outlive their purpose and win on
+    specificity: `html[data-mode='dark']` is (0,1,1) and beat preview.scss's
+    `html` at (0,0,1). An earlier version of this file also pinned `body`, which
+    was worse — (0,1,2) against (0,0,1) — so with a page tint on, <body> stayed
+    the flat literal while #storybook-root correctly resolved --background and
+    tinted. The result was a tinted rectangle the size of the story floating on
+    an untinted page, on every canvas story. The tint was right; the page behind
+    it was frozen.
   */
-  html[data-mode='dark'] body { background: #0f172a; }
+  html:not([data-tokens-ready]) { background: #ffffff; }
+  html:not([data-tokens-ready])[data-mode='dark'] { background: #0f172a; }
 </style>
