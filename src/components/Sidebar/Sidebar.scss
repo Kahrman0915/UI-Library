@@ -394,8 +394,13 @@
     white-space: nowrap;
   }
 
+  /* A lighter pass of the ACTIVE paint, not the same paint. The overlay is
+     mode-aware: a white scrim in light (so hover sits above active) and a dark
+     one in dark (so it sits below). Either way the two states differ. */
   &:hover {
-    background: var(--sidebar-accent);
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--sidebar-accent);
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
@@ -527,7 +532,9 @@
     white-space: nowrap;
   }
   &:hover {
-    background: var(--sidebar-accent);
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--sidebar-accent);
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
