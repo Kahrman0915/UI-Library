@@ -1708,6 +1708,42 @@ html {
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 
+/* AIDEN TAKES THE MAIN BRAND'S NEUTRALS BACK, and this is a decision rather
+   than a gap. Aiden composes INSIDE a brand, so without this an Aiden panel
+   dropped into a tinted db page would inherit db's tinted surfaces and repaint
+   itself in another product's colour — tearing a hole in the page it is a guest
+   in. And Aiden's own product is a CHAT: a reading surface, where a tint is a
+   liability rather than an asset. Its identity is carried by the gradient and
+   the mark, which is a categorical difference; a surface tint is only ever a
+   matter of degree.
+
+   Re-pinning to var(--base-*) rather than to literals means ONE rule serves both
+   modes — the base layer already flips with data-mode.
+
+   All three forms are needed, and for the same specificity reason as the tint
+   blocks: the derivations that would otherwise leak in are 2-attribute
+   compounds, so a 1-attribute [data-surface='aiden'] loses to them. These come
+   after, and match at equal specificity. */
+[data-surface='aiden'],
+[data-mode='dark'] [data-surface='aiden'],
+[data-mode='dark'][data-surface='aiden'],
+[data-mode='light'] [data-surface='aiden'],
+[data-mode='light'][data-surface='aiden'] {
+  --background: var(--base-background);
+  --card: var(--base-card);
+  --popover: var(--base-popover);
+  --secondary: var(--base-secondary);
+  --accent: var(--base-accent);
+  --muted: var(--base-muted);
+  --input: var(--base-input);
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --ring: var(--base-ring);
+  --sidebar: var(--base-sidebar);
+  --sidebar-border: var(--base-sidebar-border);
+  --sidebar-accent: var(--base-sidebar-accent);
+}
+
 /* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode
    (keeps the colored label more legible on the fill) but stay at the scope's 10%
    in dark, which reads well there. One rule covers every theme via var(--primary);
