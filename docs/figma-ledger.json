@@ -1910,6 +1910,17 @@
       "appendChild() returns void — chaining `.name` onto it throws \"cannot set property name of null\".",
       "layoutPositioning = ABSOLUTE requires the PARENT to have a layoutMode. A plain createFrame() badge slot throws; createAutoLayout() with a fixed size works."
     ],
-    "openWork": "The design's sidebar nav rows are 12px text; ours render at the component's default size. Left as the component ships rather than overridden — the point of the exercise was to use the system, not to defeat it."
+    "openWork": "The design's sidebar nav rows are 12px text; ours render at the component's default size. Left as the component ships rather than overridden — the point of the exercise was to use the system, not to defeat it.",
+    "corrections": {
+      "date": "2026-08-08",
+      "raisedBy": "owner review",
+      "fixed": [
+        "SIDEBAR — was hand-built at 240px. Replaced with a clone of \"Sidebar — template\" (638:557) at its shipped 256px (--sidebar-width). The template existed the whole time on the Sidebar page; I never looked for it, and I took 240 from the mockup over a width the system owns.",
+        "ASK AIDEN — was a hand-built frame with a text node and a Button. Replaced with a real Chat/Composer instance (644:95), which brings the attach / dictate / expand toolbar and the send button with it. The whole Chat family existed: Chat/Message, Chat/Marker, Chat/ToolCall, Chat/Source, Chat/Suggestion, Chat/Composer.",
+        "AVATAR — the instance had been renamed \"account\", which hides which component it is. The instance keeps its component name; the wrapper frame carries the role."
+      ],
+      "rootCause": "I worked from the picture inward instead of from the roster outward — looked at the mockup, saw shapes, reached for the nearest primitive I had already thought of. I never enumerated the roster and asked which component owns each region. That is precisely the failure the \"Choosing components\" page exists to prevent, and none of the three raised an error at any point: a hand-built region looks finished.",
+      "standing": "Two things still hand-built and NOT yet justified in writing: the tab strip and the app rail. No component covers either, but that should be recorded per screen rather than assumed."
+    }
   }
 }
