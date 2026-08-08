@@ -19,6 +19,19 @@
  * All three resolve without error and look plausible. The only thing that
  * catches them is comparing against the source of truth on purpose.
  *
+ * TWO VOCABULARIES FOR THE SAME BRAND — the table this script is written against.
+ * Figma names a brand by its HUE; the code names it by its PRODUCT CODE. The variable
+ * names below (`_brand/indigo/...`) are the Figma side; tokens.scss uses the other.
+ *
+ *     Slate  = main (no data-theme)      Fern    = nb
+ *     Indigo = db                        Amber   = ph
+ *     Teal   = dc                        Magenta = rm
+ *     Cobalt = ec
+ *
+ * `dr` and `ir` were RETIRED 2026-08-08 and are absent from both sides. Seven modes ship.
+ * Keep this table anywhere either vocabulary appears — its absence is what let a violet
+ * sit in `_brand/magenta/primary` unnoticed.
+ *
  * SOURCE OF TRUTH
  * `src/prototypes/deeperThemingRecipeV2.ts` for the anchors, and `tokens.scss`
  * for the derivation formulas. The tint table below was measured out of a
@@ -59,7 +72,10 @@ const ANCHORS = {
   magenta: { l: ['f7b1fd','d62496','960366'], d: ['f7b1fd','fe68b8','d31a8d'], mdL: '9a153b', mdD: 'da2358' },
 };
 
-// tokens.scss lines 387-393 / 753-759. The -transparent mixes are the primary carried
+// tokens.scss: grep `--primary-hover:` in the light and dark [data-mode] blocks. Anchored
+// by token name rather than line number ON PURPOSE — the earlier "lines 387-393 / 753-759"
+// went stale the first time the file grew, and a wrong line reference is worse than none:
+// it sends the next reader to confidently-wrong code. The -transparent mixes are the primary carried
 // at an alpha; -soft is the only one that differs by mode (8% light / 10% dark).
 const DERIVED = {
   'primary-hover':  { mixFg: 0.85 },
@@ -150,7 +166,9 @@ for (const [slug, a] of Object.entries(ANCHORS)) {
 // code's dark gradient has fewer stops than the light one, the extra stop is carried
 // as 'MID' — it must be the linear midpoint of its neighbours, which is what lets a
 // 3-stop style stand in for a 2-stop gradient without a second style.
-// tokens.scss 721-727 (light) / 1009-1015 (dark).
+// tokens.scss: grep `--aiden-primary:` for the light value and again inside the
+// [data-mode='dark'] block for the dark one. Anchored by token name, not line number —
+// see the note on the DERIVED table above for why.
 //
 // `Aiden/*/Outline-hover` is deliberately absent: --aiden-outline-hover was removed when
 // aiden secondary moved to the shared --opacity-50 overlay, so a style still named that
