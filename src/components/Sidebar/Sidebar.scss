@@ -69,6 +69,32 @@
   min-height: 0;
   background: var(--sidebar);
   color: var(--sidebar-foreground);
+
+  /* PAGE SURFACES INSIDE THE RAIL FOLLOW THE RAIL'S TINT, NOT THE PAGE'S.
+     The rail is tinted by --tint-rail; the search field and the outline menu
+     button paint with --background, which is tinted by --tint-page. Those are
+     independent switches, so `data-tint="rail"` alone moved the rail and left
+     its own contents behind: measured in dark/nb the field stayed at 15,23,42
+     while the rail went to 40,55,63, widening the gap between them from 1.22:1
+     to 1.45:1 — the field read as a dark hole punched in a lighter rail.
+     `page rail` hid it by moving both, which is why it only showed up on one
+     of the four combinations.
+
+     Re-deriving --background here with the RAIL's own percentages keeps the
+     relationship constant: the field is still the page-level well it is
+     designed to be (darker than the rail in dark, lighter in light), and it now
+     travels with the rail in every combination instead of only two of them.
+
+     Scoped to __inner deliberately — .ui-sidebar__inset is the real content
+     area beside the rail and must keep the true page surface. */
+  --background: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                color-mix(in srgb, var(--tint-stock) calc(8% * var(--tint-rail, 0)), var(--base-background)));
+}
+/* Dark takes 9% rather than 8%, matching --sidebar's own dark mix above it. */
+[data-mode='dark'] .ui-sidebar__inner,
+[data-mode='dark'].ui-sidebar__inner {
+  --background: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                color-mix(in srgb, var(--tint-stock) calc(9% * var(--tint-rail, 0)), var(--base-background)));
 }
 
 .ui-sidebar-wrap[data-side='left'] .ui-sidebar__inner {

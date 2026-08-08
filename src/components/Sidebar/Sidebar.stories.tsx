@@ -79,9 +79,15 @@ const meta: Meta<typeof Sidebar> = {
             'raw `--primary` for its hue, in that order — swapping primary in for the stock ' +
             'instead of layering over it lightens the rail and gives back the separation from the ' +
             'content area. See docs/deeper-theming-v2-merge.md.\n\n' +
-            'KNOWN GAP: `.ui-sidebar__input` paints with `--background`, a PAGE surface, so with ' +
-            '`rail` alone the rail moves and the search field does not — the gap between them ' +
-            'widens from 1.22:1 to 1.45:1 in dark. `page rail` brings it back to 1.28:1. Unresolved.',
+            'PAGE SURFACES INSIDE THE RAIL FOLLOW THE RAIL. `.ui-sidebar__input` and the outline ' +
+            'menu button paint with `--background`, which is tinted by `--tint-page` — an ' +
+            'independent switch — so `rail` alone moved the rail and left its own contents behind: ' +
+            'the field/rail gap widened from 1.22:1 to 1.45:1 in dark and the search box read as a ' +
+            'hole punched in a lighter rail. `--background` is now re-derived on ' +
+            '`.ui-sidebar__inner` with the rail\'s own percentages, so the relationship holds ' +
+            'across all four tint states (1.22-1.23 dark, 1.04-1.05 light). Scoped to __inner ' +
+            'deliberately — `.ui-sidebar__inset` is the real content area and keeps the true page ' +
+            'surface.',
         },
         {
           date: '2026-07-29',
