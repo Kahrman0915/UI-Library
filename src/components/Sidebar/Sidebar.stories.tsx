@@ -52,6 +52,38 @@ const meta: Meta<typeof Sidebar> = {
       tags: ['compound', '23 parts', 'navigation'],
       changelog: [
         {
+          date: '2026-08-08',
+          summary:
+            'Hovering a menu row no longer looks identical to the selected row. Hover is now a ' +
+            'partial pass of the selected paint rather than the same paint.',
+          detail:
+            'Hover and `--active` both set a flat `--sidebar-accent`, so the two states were one ' +
+            'colour told apart only by `font-weight`. Hover is now ' +
+            '`color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))` — the accent blended ' +
+            'back toward the rail it sits on, which is mode-correct for free: light rails are ' +
+            'lighter than the accent so hover lands above active, dark rails are darker so it ' +
+            'lands below.\n\n' +
+            'IT MUST STAY A COLOUR. The base is `background: transparent` with ' +
+            '`transition: background`. An earlier version of this fix layered a gradient over the ' +
+            'accent, which looks right and breaks the animation — `background-image` cannot ' +
+            'interpolate from `none`, so every row snapped instead of fading. Do not reintroduce ' +
+            'a gradient here.',
+        },
+        {
+          date: '2026-08-08',
+          summary:
+            'The `--sidebar-*` surface can now be tinted toward the active brand with ' +
+            '`data-tint="rail"`. Off by default; nothing changes unless you opt in.',
+          detail:
+            'Part of deeper theming v2. The rail mixes `--tint-stock` for its value and a little ' +
+            'raw `--primary` for its hue, in that order — swapping primary in for the stock ' +
+            'instead of layering over it lightens the rail and gives back the separation from the ' +
+            'content area. See docs/deeper-theming-v2-merge.md.\n\n' +
+            'KNOWN GAP: `.ui-sidebar__input` paints with `--background`, a PAGE surface, so with ' +
+            '`rail` alone the rail moves and the search field does not — the gap between them ' +
+            'widens from 1.22:1 to 1.45:1 in dark. `page rail` brings it back to 1.28:1. Unresolved.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
