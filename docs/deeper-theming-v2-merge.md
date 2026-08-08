@@ -303,9 +303,36 @@ Only two components needed edits. Everything else inherits through token remappi
 
   > **Gotcha, hit twice.** The first fix layered an `--opacity-50` gradient over the accent. It looks right and breaks the animation: the base is `background: transparent` with `transition: background`, so hover used to interpolate colour → colour; a gradient makes it `background-image: none → linear-gradient`, and **`background-image` cannot interpolate from `none`**. Every row snapped instead of fading. Keep it a colour.
 
+- **Sidebar, second issue — a tinted region containing surfaces driven by a *different* multiplier.** This is the one to internalise; it will happen in any library that splits the tint into more than one switch.
+
+  `.ui-sidebar__input` and the outline menu button paint with `--background`, tinted by `--tint-page`. The rail around them is `--sidebar`, tinted by `--tint-rail`. Independent switches, so `data-tint="rail"` alone moved the container and left its own contents behind. Measured in dark/nb: the field stayed at `15,23,42` while the rail went to `40,55,63`, widening the gap between them from **1.22:1 to 1.45:1** — the search box read as a hole punched in a lighter rail.
+
+  Fixed by re-deriving `--background` on `.ui-sidebar__inner` with the *rail's* own percentages, so the field keeps its designed relationship to the rail (darker in dark, lighter in light) in every state:
+
+  |  | off | rail | page+rail |
+  |---|---|---|---|
+  | before | 1.22 | **1.45** | 1.28 |
+  | after | 1.22 | 1.23 | 1.23 |
+
+  Scoped to `__inner` deliberately — `.ui-sidebar__inset` is the real content area beside the rail and must keep the true page surface (verified: still `15,23,42` under rail-only, `25,35,50` under page).
+
+  > **The general rule: any region tinted by one multiplier that contains surfaces driven by another will diverge on the single-axis states, and the both-on state hides it.** That is why it only showed on one of four combinations and why nobody caught it during the POC. Audit every such region when you add a second tint switch.
+
 - **Chart active marker** — `fill: var(--decorative-hi, currentColor)`. **The fallback is load-bearing**: outside a brand scope the token does not exist and the marker renders exactly as before. The POC also sets an unguarded `stroke: var(--primary)` there; that *would* change unthemed output, so it waits.
 
 - **Docs stage** (`.ui-docs-stage`) — `contain: layout`. `position: relative` does **not** create a containing block for a `position: fixed` child; only `transform`, `filter`, `perspective` and `contain` do. Without it every fixed component escapes its card and pins to the iframe viewport — the Sidebar docs page rendered five sidebars stacked on the window edges over the prose. `contain: layout` is the cheapest of the four (no paint or size boundary). Covers Dialog, Drawer, Toast and Fab too.
+
+---
+
+## 11b. Storybook / tooling notes
+
+Not part of the token system, but you will hit both if your library previews in Storybook.
+
+**Changing a toolbar global reloads the docs iframe.** Measured: story (canvas) pages produce **zero** reloads on a globals change; docs pages produce exactly one, and the document genuinely reloads (a marker stamped on `contentWindow` does not survive). Ruled out as causes, each by experiment: our custom docs template (stock autodocs reloads too), `@storybook/addon-themes` (removed, still reloads), and the tint global specifically (`mode` and `theme` do it too). **It is stock Storybook 8.6 behaviour and is not fixable from configuration.** The only escape is a custom toolbar addon that sets the attributes directly and bypasses `globals` — which costs URL-shareable theme state. We chose to live with it.
+
+**A pre-paint background must expire, or it fights the tint.** Because `tokens.scss` is imported from `preview.tsx`, it lives in the JS bundle: on that reload the document has no background until the bundle runs, and the browser paints white. `preview-head.html` closes the gap with an inline script (stamps `data-mode`/`data-theme`/`data-tint`, read from the **parent** URL — Storybook does not put globals in the iframe's own src) and an inline style with literal backgrounds.
+
+  > **The trap, and it shipped for two commits.** Those literals were unscoped, so they never stopped applying — and they outranked the real rule: `html[data-mode='dark']` is (0,1,1) against `preview.scss`'s `html` at (0,0,1), and a `body` variant was worse at (0,1,2). With a page tint on, `<html>` and `<body>` froze at the literal while `#storybook-root` correctly resolved `var(--background)` and tinted. `#storybook-root` is sized to the story, so **every canvas story showed a tinted rectangle floating on an untinted page.** The fix is to gate the literals on `html:not([data-tokens-ready])` and stamp that attribute from `preview.tsx` immediately after the token imports. Any pre-paint fallback needs an expiry, not just a value.
 
 ---
 
@@ -378,6 +405,13 @@ f644f78  feat(tokens): aiden keeps the main brand's neutrals inside a tinted pag
 c965366  fix(sidebar,charts): hover stops matching active, and the marker takes the highlight
 a0aa18f  test(palette): gate the brand chart palettes, and record what fails
 97286b3  fix(sidebar,docs): hover fades again, and fixed components stay in their card
+e62e8f3  docs(theming): the merge record, written for someone who was not here
+7d7d5b2  docs: changelog entries for Sidebar and Charts, and CLAUDE.md catches up
+9cb11cc  fix(sidebar): page surfaces inside the rail follow the rail's tint
+351d0b0  fix(storybook): stop the docs preview flashing white on a toolbar change
+df41169  fix(storybook): the pre-paint background must expire, and drop addon-themes
 ```
 
 The ordering is deliberate: **guardrail first, then the refactor it protects, then the values.** The contrast resolver had to land before the base-layer refactor, because the refactor turns `--card: #ffffff` into `--card: var(--base-card)` and the old parser would have reported that as unresolved.
+
+The last four are worth reading as a group. Everything up to `a0aa18f` is the merge; everything after it is **defects the merge surfaced once real people looked at real screens** — a hover that no longer animated, a search field that stopped tracking its own container, and a pre-paint fallback that outlived its purpose. None were visible in the diff, in the guardrails, or in a static screenshot. Budget for that phase; it is not optional polish.
