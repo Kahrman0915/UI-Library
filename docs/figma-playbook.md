@@ -321,10 +321,27 @@ description too — it's part of the lint.
 
 ## Variables & styles (verified IDs)
 
-- **Collections:** `Primitives` (Value) · `Mode` (Light/Dark) · `Theme`
-  (Main/DB/DC/DR/EC/IR/NB/PH/RM).
-- **Theme collection** (bind ALL theme-able brand color usage here — **never** to
-  `Mode → brand/main/*`, or theme modes won't flip the component):
+- **Collections:** `Primitives` (Value) · `Mode` (Light/Dark) · **`Brand`**
+  (Slate/Indigo/Teal/Cobalt/Fern/Amber/Magenta) · `Icon` (24/20/16/14/12) ·
+  `Tint page` (Off/On) · `Tint rail` (Off/On).
+
+  > **The collection is named `Brand`, and its modes are HUES, not product codes.**
+  > This section used to call it `Theme` with modes `Main/DB/DC/DR/EC/IR/NB/PH/RM`,
+  > which was wrong on both counts and would send you looking for a collection that
+  > does not exist. The mapping — keep it anywhere either vocabulary appears:
+  >
+  > | Figma mode | Code | | Figma mode | Code |
+  > |---|---|---|---|---|
+  > | Slate | *main* (no `data-theme`) | | Fern | `nb` |
+  > | Indigo | `db` | | Amber | `ph` |
+  > | Teal | `dc` | | Magenta | `rm` |
+  > | Cobalt | `ec` | | | |
+  >
+  > **`dr` and `ir` were retired 2026-08-08** and their modes are gone. Seven modes
+  > ship. See `docs/deeper-theming-v2-merge.md`.
+
+- **Brand collection** (bind ALL theme-able brand color usage here — **never** to
+  `Mode → brand/main/*`, or brand modes won't flip the component):
   `primary 2:44` · `primary-foreground 2:45` · `primary-hover 2:46` · `primary-light
   2:47` · `primary-soft 2:48` · `primary-border 2:49` · `primary-ring 2:50` ·
   `primary-focus 2:51` · `primary-text 35:65`. Ghost/quiet text stays
