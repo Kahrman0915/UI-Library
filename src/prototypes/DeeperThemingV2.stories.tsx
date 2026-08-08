@@ -19,7 +19,7 @@ import {
 } from './deeperThemingRecipeV2';
 import type { BrandKey } from './deeperThemingRecipeV2';
 import SuitePageV2 from './SuitePageV2';
-import { usePointerTilt } from './usePointerTilt';
+import { usePointerTilt } from '../hooks/usePointerTilt';
 import { AuditPanel, NewTokensPanel, TokenDiffPanel, TransitionPanel } from './DeeperThemingPartsV2';
 
 /**

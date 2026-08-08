@@ -1,0 +1,481 @@
+/* ── MARK ───────────────────────────────────────────────────────────────────
+   The application mark: the brand ramp under a stack of glass, optionally
+   locked up with the application's name.
+
+   TWO THINGS TO KNOW BEFORE EDITING.
+
+   1. EVERYTHING IS A PERCENTAGE, so one rule serves 24px and 64px. The only
+      exceptions are a blur radius and the shadow offsets, which cannot be
+      expressed as one — those read `--ui-mark-px`, set per size below.
+
+   2. THE PAINT DOES NOT DEPEND ON `motion`. All three motion levels render the
+      same colours; the modifier gates animation and nothing else. The POC this
+      came from had a still mark that was NOT mode-aware and a live one that
+      was, which meant turning motion off silently changed the tile's colours.
+      They are one mark now.
+
+   The gradient's stops are not round numbers. Figma's 135deg mark measures its
+   ramp along the diagonal; projecting those stops onto the CSS gradient line
+   for a square box puts them at 9.7 / 51.6 / 90.3%. The obvious guess — 0 / 52
+   / 100% — compresses the ramp and loses the deep corner entirely. They live in
+   `--decorative-gradient` in tokens.scss, per brand. */
+
+.ui-mark {
+  --ui-mark-px: var(--w-8);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-3);
+}
+
+.ui-mark__tile {
+  position: relative;
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: var(--ui-mark-px);
+  height: var(--ui-mark-px);
+  /* A new stacking context, so the tile's layers can never interleave with
+     whatever the mark is sitting on. */
+  isolation: isolate;
+  overflow: hidden;
+  border-radius: 22.5%;
+  /* The brand's own on-colour, which is already mode-split. A flat white glyph
+     measured 1.74–2.66:1 on the pale dark-mode tiles — under the 3:1 graphical
+     floor for every brand, and effectively illegible on two of them. */
+  color: var(--primary-foreground);
+  /* THE FALLBACK IS LOAD-BEARING. --decorative-gradient exists only inside a
+     [data-theme] or [data-surface] scope; the main brand has no decorative
+     anchors and deliberately never will (see --mark-ramp in tokens.scss). An
+     undefined var() in a comma-separated list does not drop that ONE layer — it
+     makes the whole background-image invalid at computed-value time, so the
+     tile paints `none` and the glyph, which is --primary-foreground, becomes
+     near-white on nothing. That is exactly how the unthemed mark first
+     rendered: an empty white square. */
+  background-image:
+    var(--mark-shade),
+    var(--mark-lift),
+    var(--decorative-gradient, var(--mark-ramp));
+  box-shadow:
+    0 calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * 0.047) var(--mark-shadow-cast),
+    inset 0 calc(var(--ui-mark-px) * -0.031) calc(var(--ui-mark-px) * 0.063) var(--mark-shadow-occlusion),
+    inset 0 calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * 0.047) calc(var(--ui-mark-px) * -0.016) var(--mark-shadow-rim),
+    inset calc(var(--ui-mark-px) * -0.016) calc(var(--ui-mark-px) * 0.016) calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * -0.008) var(--mark-shadow-edge);
+}
+
+/* THE SHEEN — a band across the top, 52.3% of the height.
+   It overhangs the sides so no vertical edge is ever inside the clip; the
+   tile's own overflow trims it. NO border-radius: a percentage radius here
+   resolves against the BAND's box, not the tile's, which gives it elliptical
+   corners of its own that read as curved highlights. */
+.ui-mark__tile::before {
+  content: '';
+  position: absolute;
+  inset: 0 -10% auto -10%;
+  height: 52.3%;
+  background-image: var(--mark-sheen);
+  /* Pivots on its own top edge — see the MAY ONLY EVER MOVE UP note below. */
+  transform-origin: 50% 0%;
+  pointer-events: none;
+}
+
+/* The glyph rides above the sheen. A grid child with no z-index would not:
+   ::before paints after it in the same stacking context. */
+.ui-mark__tile > svg {
+  position: relative;
+  z-index: 1;
+  width: 46%;
+  height: 46%;
+}
+
+.ui-mark__bloom,
+.ui-mark__flare,
+.ui-mark__spark,
+.ui-mark__sweep {
+  position: absolute;
+  z-index: 0;
+  pointer-events: none;
+}
+
+.ui-mark__bloom {
+  left: -30%;
+  top: -29%;
+  width: 101%;
+  height: 101%;
+  border-radius: 50%;
+  background-image: var(--mark-bloom);
+  transition: opacity var(--duration-slow) var(--ease-out);
+}
+
+/* The flare is TWO elements: the ambient loop owns the inner one's translate,
+   the pointer owns the wrapper's. One property, one owner — which is what lets
+   an animation and a live input each hold a piece of the same movement without
+   fighting over it. */
+.ui-mark__flare {
+  inset: 0;
+}
+
+.ui-mark__spark {
+  /* Figma rests this at 14.4%. Moved in to 17% so the ambient drift and the
+     pointer offset TOGETHER can never reach an edge — worst case still leaves
+     about 6% of the tile between the flare and the corner. */
+  left: 17%;
+  top: 17%;
+  width: 12%;
+  height: 12%;
+  border-radius: 50%;
+  background: var(--mark-spark);
+  filter: blur(calc(var(--ui-mark-px) * 0.016));
+  /* Grows from its lower-left, so gaining size also shifts it up and right —
+     the direction the tile turns. */
+  transform-origin: 20% 80%;
+  scale: 1;
+  transition: scale var(--duration-mark-settle) var(--ease-out);
+}
+
+.ui-mark__sweep {
+  inset: -20% -60%;
+  opacity: 0;
+  background-image: var(--mark-sweep);
+  transform: translate3d(-140%, 0, 0) rotate(8deg);
+}
+
+/* ── THE LOCKUP ─────────────────────────────────────────────────────────────
+   Type sizes track the tile, so the pair always reads as one object. */
+.ui-mark__text {
+  display: grid;
+  min-width: 0;
+}
+
+.ui-mark__title {
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ui-mark__description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── SIZES ──────────────────────────────────────────────────────────────────
+   One variable drives the tile, the glass geometry and the shadow offsets. */
+.ui-mark--sz-sm {
+  --ui-mark-px: var(--w-6);
+  gap: var(--p-2);
+
+  .ui-mark__title {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+.ui-mark--sz-default {
+  .ui-mark__title {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+}
+
+.ui-mark--sz-lg {
+  --ui-mark-px: var(--w-12);
+
+  .ui-mark__title {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
+.ui-mark--sz-xl {
+  --ui-mark-px: var(--w-16);
+  gap: var(--p-4);
+
+  .ui-mark__title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-7);
+  }
+
+  .ui-mark__description {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+}
+
+/* ── DARK — THE GLASS, TURNED OVER ──────────────────────────────────────────
+   The colours swap in tokens.scss; only the sheen's GEOMETRY changes here.
+
+   The band now rises from the base instead of falling from the top, so its
+   anchored edge moves from the top of the tile to the bottom — and the pivot
+   must move with it. Left on `50% 0%`, the scaleY animation swings the band's
+   DARKEST edge: at scaleY(0.92) it lifts clear of the tile floor and terminates
+   mid-tile against undarkened fill, which is a hard horizontal line across the
+   mark. Pivot on the anchored edge and the dark end never leaves the bottom. */
+[data-mode='dark'] .ui-mark__tile::before {
+  inset: auto -10% 0 -10%;
+  height: 48%;
+  transform-origin: 50% 100%;
+}
+
+/* ── MOTION ─────────────────────────────────────────────────────────────────
+   TWO AMBIENT LAYERS, AND THE SPARKLE IS NOT ONE OF THEM.
+
+     BLOOM  drifts — a slow orbit and swell
+     SHEEN  tilts  — the band swells and slides
+
+   The SPARKLE is a lens flare, so it stays put: a highlight is caused by one
+   fixed light and one fixed surface; it does not tour the tile. It swells and
+   dims IN PHASE with the sheen and wanders at most 4%, biased up and left so it
+   can never approach the glyph. Two earlier passes made it a pulse and then
+   three four-point stars, and both times it stopped being a highlight and
+   became the thing you looked at. A mark's job is to show its glyph.
+
+   Everything here is either very slow or only happens because you pointed at
+   it. */
+@keyframes ui-mark-bloom-drift {
+  0%   { transform: translate3d(0, 0, 0) scale(1);       opacity: 0.85; }
+  30%  { transform: translate3d(6%, 4%, 0) scale(1.14);  opacity: 1; }
+  62%  { transform: translate3d(-3%, 7%, 0) scale(0.96); opacity: 0.7; }
+  100% { transform: translate3d(0, 0, 0) scale(1);       opacity: 0.85; }
+}
+
+/* SCALE AND FADE ONLY — no translate, no rotate.
+   The sheen is a band whose BRIGHTEST point is its anchored edge, so any move
+   that lifts that edge off the tile exposes it: a bright line running the full
+   width, sliding in and out every few seconds. With transform-origin on the
+   anchored edge, scaleY only ever grows into the gradient's own falloff and the
+   bright edge cannot move. This is the first of three places the same mistake
+   is possible — see the tilt translate below, and the dark geometry above. */
+@keyframes ui-mark-sheen-tilt {
+  0%   { transform: scaleY(1);    opacity: 0.72; }
+  40%  { transform: scaleY(1.16); opacity: 1; }
+  70%  { transform: scaleY(0.92); opacity: 0.58; }
+  100% { transform: scaleY(1);    opacity: 0.72; }
+}
+
+/* SEPARATE TRANSFORM PROPERTIES ARE WHY THIS WORKS. The loop owns `translate`
+   and opacity; hover owns `scale`. Those are individual properties in modern
+   CSS, not one composited transform, so a transition and an animation can hold
+   one each without fighting. The version that put both on `transform` had to
+   swap animation-name on hover — and an animation ending has no exit easing at
+   all, which is exactly the snap-back that felt harsh. */
+@keyframes ui-mark-spark-flare {
+  0%   { opacity: 0.72; translate: 0 0; }
+  26%  { opacity: 0.96; translate: -30% 18%; }
+  52%  { opacity: 0.60; translate: -8% -26%; }
+  76%  { opacity: 0.88; translate: -22% 6%; }
+  100% { opacity: 0.72; translate: 0 0; }
+}
+
+@keyframes ui-mark-sweep {
+  0%   { transform: translate3d(-140%, 0, 0) rotate(8deg); opacity: 0; }
+  12%  { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translate3d(140%, 0, 0) rotate(8deg);  opacity: 0; }
+}
+
+.ui-mark--motion-ambient,
+.ui-mark--motion-tilt {
+  .ui-mark__bloom { animation: ui-mark-bloom-drift var(--duration-mark-bloom) var(--ease-in-out) infinite; }
+  .ui-mark__spark { animation: ui-mark-spark-flare var(--duration-mark-sheen) var(--ease-in-out) infinite; }
+
+  .ui-mark__tile::before {
+    animation: ui-mark-sheen-tilt var(--duration-mark-sheen) var(--ease-in-out) infinite;
+  }
+
+  /* THE EXIT IS SLOWER AND SOFTER THAN THE ENTRY. This base rule is what plays
+     when the pointer LEAVES, so it gets the long ease-out; :hover below gets
+     the short spring. A spring on the way out overshoots back toward rest,
+     which reads as a flinch. */
+  .ui-mark__tile {
+    transition:
+      transform var(--duration-mark-settle) var(--ease-out),
+      box-shadow var(--duration-mark-settle) var(--ease-out);
+  }
+
+  .ui-mark__tile > svg {
+    transition:
+      transform var(--duration-mark-settle) var(--ease-out),
+      filter var(--duration-mark-settle) var(--ease-out);
+  }
+}
+
+/* ── HOVER — lift, tilt, and the shadow that has to follow it ───────────────
+   A lift with an unchanged shadow reads as a sticker, so the drop grows and
+   swings right and down, because that is where the light now is. */
+.ui-mark--motion-ambient .ui-mark__tile:hover,
+.ui-mark--motion-tilt .ui-mark__tile:hover {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    box-shadow var(--duration-normal) var(--ease-out);
+  transform:
+    perspective(520px)
+    rotateX(7deg)
+    rotateY(-9deg)
+    translateY(-5%)
+    scale(1.05);
+  box-shadow:
+    calc(var(--ui-mark-px) * 0.05) calc(var(--ui-mark-px) * 0.11) calc(var(--ui-mark-px) * 0.19) calc(var(--ui-mark-px) * -0.03) var(--mark-shadow-cast-lifted),
+    inset 0 calc(var(--ui-mark-px) * -0.031) calc(var(--ui-mark-px) * 0.063) var(--mark-shadow-occlusion),
+    inset 0 calc(var(--ui-mark-px) * 0.031) calc(var(--ui-mark-px) * 0.055) calc(var(--ui-mark-px) * -0.016) var(--mark-shadow-rim-lifted),
+    inset calc(var(--ui-mark-px) * -0.016) calc(var(--ui-mark-px) * 0.016) calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * -0.008) var(--mark-shadow-edge);
+}
+
+/* Parallax: the glyph goes the OTHER way and casts its own shadow, which is
+   what actually sells the depth — the glass turns, the icon floats over it. */
+.ui-mark--motion-ambient .ui-mark__tile:hover > svg,
+.ui-mark--motion-tilt .ui-mark__tile:hover > svg {
+  transition:
+    transform var(--duration-normal) var(--ease-spring),
+    filter var(--duration-normal) var(--ease-out);
+  transform: translate3d(4%, -4%, 0) scale(1.06);
+  filter: drop-shadow(0 calc(var(--ui-mark-px) * 0.02) calc(var(--ui-mark-px) * 0.035) var(--mark-glyph-shadow));
+}
+
+.ui-mark--motion-ambient .ui-mark__tile:hover .ui-mark__sweep,
+.ui-mark--motion-tilt .ui-mark__tile:hover .ui-mark__sweep {
+  animation: ui-mark-sweep var(--duration-mark-sweep) var(--ease-out);
+}
+
+.ui-mark--motion-ambient .ui-mark__tile:hover .ui-mark__bloom,
+.ui-mark--motion-tilt .ui-mark__tile:hover .ui-mark__bloom {
+  opacity: 1.3;
+}
+
+/* Only SCALE on hover — translate belongs to the ambient drift, and the two are
+   separate properties precisely so neither has to yield. */
+.ui-mark--motion-ambient .ui-mark__tile:hover .ui-mark__spark,
+.ui-mark--motion-tilt .ui-mark__tile:hover .ui-mark__spark {
+  transition: scale var(--duration-normal) var(--ease-spring);
+  scale: 1.55;
+}
+
+/* ── POINTER TILT ───────────────────────────────────────────────────────────
+   The tile turns to follow the pointer and its layers separate in depth, so it
+   reads as a physical object under glass rather than a picture that scales.
+
+   DRIVEN ENTIRELY BY THREE NUMBERS. `usePointerTilt` writes --mx and --my
+   (both −1 to 1, origin at the tile's centre) and --on (0 at rest, 1 while
+   tracking); every rule here is a calc off those three. No per-frame style
+   writing beyond the variables, no layout reads in the loop, and the whole
+   thing falls back to nothing if the handler never runs — which is exactly what
+   happens under reduced motion, where the hook never attaches.
+
+   WHAT MOVES, AND HOW FAR, IS THE WHOLE DESIGN:
+     tile    rotates up to 11 degrees, lifts and scales — the object turning
+     bloom   drifts WITH the tilt, and least: it is furthest back
+     sheen   shifts with it, a little more
+     flare   sweeps AGAINST it, hardest — a specular does not sit still on a
+             turning surface, and this is the detail that sells the glass
+     glyph   moves against the tilt too, so it floats above the face
+     shadow  swings opposite and deepens, because the light did not move
+
+   Tracking is SHORT so the tile feels attached to the pointer; the return is
+   the long settle from the base rule. One duration for both would either lag
+   under the finger or snap on release. */
+.ui-mark--motion-tilt .ui-mark__tile {
+  --mx: 0;
+  --my: 0;
+  --on: 0;
+  transform:
+    perspective(560px)
+    rotateX(calc(var(--my) * -11deg))
+    rotateY(calc(var(--mx) * 11deg))
+    translateY(calc(var(--on) * -4%))
+    scale(calc(1 + var(--on) * 0.06));
+  box-shadow:
+    calc(var(--mx) * var(--ui-mark-px) * -0.07)
+      calc(var(--ui-mark-px) * (0.023 + var(--on) * 0.07))
+      calc(var(--ui-mark-px) * (0.047 + var(--on) * 0.1))
+      calc(var(--ui-mark-px) * var(--on) * -0.02)
+      var(--mark-shadow-cast),
+    inset 0 calc(var(--ui-mark-px) * -0.031) calc(var(--ui-mark-px) * 0.063) var(--mark-shadow-occlusion),
+    inset 0 calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * 0.047) calc(var(--ui-mark-px) * -0.016) var(--mark-shadow-rim),
+    inset calc(var(--ui-mark-px) * -0.016) calc(var(--ui-mark-px) * 0.016) calc(var(--ui-mark-px) * 0.023) calc(var(--ui-mark-px) * -0.008) var(--mark-shadow-edge);
+}
+
+.ui-mark--motion-tilt .ui-mark__tile:hover {
+  transition-duration: var(--duration-mark-track);
+  transition-timing-function: var(--ease-out);
+}
+
+.ui-mark--motion-tilt {
+  .ui-mark__bloom,
+  .ui-mark__flare,
+  .ui-mark__tile > svg {
+    transition: translate var(--duration-mark-settle) var(--ease-out);
+  }
+
+  .ui-mark__tile:hover .ui-mark__bloom,
+  .ui-mark__tile:hover .ui-mark__flare,
+  .ui-mark__tile:hover > svg {
+    transition-duration: var(--duration-mark-track);
+  }
+
+  .ui-mark__bloom { translate: calc(var(--mx) * 4%) calc(var(--my) * 4%); }
+
+  /* THE SHEEN MAY ONLY EVER MOVE UP — second of the three places. Its brightest
+     point is its top edge, pinned at y=0; any downward move lifts that edge
+     into view as a bright line the full width of the tile. The (--my − 1) bias
+     makes the vertical term 0 at the very bottom of the tile and −5% at the
+     top, so it is negative or zero and never positive.
+     Horizontally it travels at most 5% of its own width — 5.6% of the tile,
+     inside the 10% overhang each side — so no vertical edge can appear either. */
+  .ui-mark__tile::before {
+    translate: calc(var(--mx) * 5%) calc((var(--my) - 1) * 2.5%);
+  }
+
+  /* The travel budget is spent against the RESTING position and the ambient
+     drift, not in isolation: base 17%, ambient reaches −3.6%, pointer reaches
+     −7%, which leaves 6.4% clear of the left edge at worst. −22%/−18% put the
+     flare past the tile edge at full deflection. */
+  .ui-mark__flare { translate: calc(var(--mx) * -7%) calc(var(--my) * -6%); }
+
+  .ui-mark__tile > svg {
+    translate: calc(var(--mx) * -7%) calc(var(--my) * -7%);
+    filter: drop-shadow(
+      calc(var(--mx) * var(--ui-mark-px) * -0.012)
+      calc(var(--ui-mark-px) * var(--on) * 0.022)
+      calc(var(--ui-mark-px) * var(--on) * 0.035)
+      var(--mark-glyph-shadow));
+  }
+}
+
+/* AND THE SHEEN EDGE, FOR THE THIRD TIME. The dark band inverts the geometry —
+   it is anchored at the BOTTOM and its DARKEST edge is the pinned one — so the
+   rule inverts with it: this band may only ever move DOWN. The light rule's
+   (--my − 1) term is always ≤ 0; the dark one needs (--my + 1), always ≥ 0.
+   Getting this wrong is what produced a harsh line on hover, and it would have
+   come back on tilt even after the keyframes were fixed. */
+[data-mode='dark'] .ui-mark--motion-tilt .ui-mark__tile::before {
+  translate: calc(var(--mx) * 5%) calc((var(--my) + 1) * 2.5%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* The global block in tokens.scss zeroes DURATIONS. An infinite animation at
+     0.01ms still churns frames, so these stop outright. */
+  .ui-mark__bloom,
+  .ui-mark__spark,
+  .ui-mark__tile::before,
+  .ui-mark__tile:hover .ui-mark__sweep {
+    animation: none;
+  }
+
+  .ui-mark__spark {
+    opacity: 0.85;
+    translate: 0 0;
+  }
+
+  .ui-mark__tile,
+  .ui-mark__tile:hover,
+  .ui-mark__tile:hover > svg {
+    transform: none;
+  }
+
+  .ui-mark__tile:hover .ui-mark__spark { scale: 1; }
+}

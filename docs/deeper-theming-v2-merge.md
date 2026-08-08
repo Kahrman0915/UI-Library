@@ -297,7 +297,7 @@ These are pre-existing properties of solved palettes that nothing had ever measu
 
 ## 11. Component-level changes
 
-Only two components needed edits. Everything else inherits through token remapping.
+Three components needed edits, plus the new `Mark`. Everything else inherits through token remapping.
 
 - **Sidebar** — hover and active painted the *same* `--sidebar-accent`, distinguishable only by `font-weight`. Now `color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))`.
 
@@ -319,6 +319,16 @@ Only two components needed edits. Everything else inherits through token remappi
   > **The general rule: any region tinted by one multiplier that contains surfaces driven by another will diverge on the single-axis states, and the both-on state hides it.** That is why it only showed on one of four combinations and why nobody caught it during the POC. Audit every such region when you add a second tint switch.
 
 - **Chart active marker** — `fill: var(--decorative-hi, currentColor)`. **The fallback is load-bearing**: outside a brand scope the token does not exist and the marker renders exactly as before. The POC also sets an unguarded `stroke: var(--primary)` there; that *would* change unthemed output, so it waits.
+
+- **`Mark` — the consumer of `--decorative-gradient`, added 2026-08-08.** Phase A shipped the artwork anchors but nothing rendered them, so this is where the theming layer is finally load-bearing rather than latent. If you are porting this system, port the mark too: it is the payoff. Three notes that generalise beyond it.
+
+  **The main brand has no `--decorative-*`, and you must not give it any.** They are defined only inside a brand scope, and the chart marker above depends on their *absence* to keep its neutral fallback. Feeding the mark by declaring `--decorative-hi` at `:root` would silently repaint every unthemed chart. The mark carries its own neutral `--mark-ramp` instead — same four-stop plateau geometry, walked down the slate scale.
+
+  > **An undefined `var()` in a comma-separated `background-image` does not drop that one layer — it invalidates the WHOLE property.** So the tile painted `none`, and the glyph (`--primary-foreground`, near-white in light) disappeared with it. The unthemed mark rendered as an empty white square, which is the very first thing a consumer with no `data-theme` sees. Any multi-layer background built from themed tokens needs its fallback written per layer, and needs testing with the theme *absent*.
+
+  **The glass is thirteen `--mark-*` tokens, and four of them flip in dark.** They are whole gradients and whole shadow colours, not hex-plus-alpha — the same call `--shadow-*` already makes. The dark set is not the light set darkened: a specular highlight is *by definition* brighter than its surface, so on a pale tile the white stack stops existing and you read the shade the same lamp leaves on the opposite side. Bloom becomes occlusion; the sheen rises from the base instead of falling from the top.
+
+  **The sheen's anchored edge may only ever move one way, and the direction inverts by mode.** Light: `(--my - 1)`, always ≤ 0. Dark: `(--my + 1)`, always ≥ 0. `transform-origin` sits on the anchored edge in both. The POC hit this three separate times in three different mechanisms (keyframes, tilt translate, dark geometry) — if you re-derive any of the mark's motion, test it at full pointer deflection in both modes, not at rest.
 
 - **Docs stage** (`.ui-docs-stage`) — `contain: layout`. `position: relative` does **not** create a containing block for a `position: fixed` child; only `transform`, `filter`, `perspective` and `contain` do. Without it every fixed component escapes its card and pins to the iframe viewport — the Sidebar docs page rendered five sidebars stacked on the window edges over the prose. `contain: layout` is the cheapest of the four (no paint or size boundary). Covers Dialog, Drawer, Toast and Fab too.
 
