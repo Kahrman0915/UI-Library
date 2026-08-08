@@ -1,0 +1,282 @@
+/* ── DART Central — home ─────────────────────────────────────────────────────
+   A composed screen, not a component. It exists to answer one question: does
+   the library actually build a real application shell, or only look good in a
+   spec grid?
+
+   Everything a component already owns is a component here — the rail is the
+   only hand-built chrome, because an icon-only app switcher is not something
+   the library ships. Every value below is a token; the only literals are the
+   breakpoints, which are viewport facts rather than design decisions.
+
+   FIRST PROTOTYPE WITH ITS OWN STYLESHEET. The others use inline
+   `CSSProperties`, which cannot express a media query — and "responsive" was
+   the requirement, so this one needs real CSS. */
+
+.dc-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+}
+
+/* ── the tab strip ── */
+.dc-tabstrip {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  flex: none;
+  height: var(--h-10);
+  padding-inline: var(--p-2);
+  background: var(--card);
+  border-bottom: var(--border-w-100) solid var(--border);
+
+  &__mark {
+    flex: none;
+    display: inline-flex;
+    padding-inline-end: var(--p-1);
+  }
+
+  /* The open document. Reads as a tab by sitting on the card surface with the
+     strip's own bottom hairline knocked out beneath it. */
+  &__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--p-1-5);
+    height: var(--h-9);
+    padding-inline: var(--p-2-5) var(--p-2);
+    border: var(--border-w-100) solid var(--border);
+    border-bottom-color: transparent;
+    border-radius: var(--rounded-md) var(--rounded-md) 0 0;
+    margin-bottom: calc(var(--border-w-100) * -1);
+    background: var(--background);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--foreground);
+  }
+
+  &__spacer { flex: 1; }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--p-1);
+    flex: none;
+  }
+}
+
+/* ── the body row ── */
+.dc-body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ── the app rail — the one piece of hand-built chrome ── */
+.dc-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--p-0-5);
+  flex: none;
+  width: var(--w-12);
+  padding-block: var(--p-1);
+  background: var(--sidebar);
+  border-inline-end: var(--border-w-100) solid var(--sidebar-border);
+
+  &__group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--p-0-5);
+    width: 100%;
+    padding-block: var(--p-1);
+  }
+
+  &__group--end { margin-top: auto; }
+
+  &__slot { position: relative; }
+
+  /* The count on an app tile. Absolute so it can overhang the tile corner the
+     way a real notification badge does. */
+  &__badge {
+    position: absolute;
+    top: calc(var(--p-1) * -1);
+    inset-inline-end: calc(var(--p-1) * -1);
+    pointer-events: none;
+  }
+
+  /* An app rail is a secondary switcher: below a laptop it costs more width
+     than it earns, and the sidebar already names where you are. */
+  @media (max-width: 1023px) { display: none; }
+}
+
+/* ── the workspace: sidebar + content ──
+   `contain: layout` is load-bearing and is NOT a hack — it is the same fact the
+   docs stage and the preview HTML already rely on. `position: relative` does not
+   create a containing block for a `position: fixed` child; only `transform`,
+   `filter`, `perspective` and `contain` do.
+
+   Sidebar's panel is `position: fixed` by design, with no in-flow variant, so it
+   pins to the VIEWPORT edge. In a plain page that is right. In an app shell with
+   a tab strip above it and an icon rail beside it, it lands at 0,0 and covers
+   both — measured before this line existed: the panel sat at x:0 y:0 over a rail
+   at x:0 y:40.
+
+   `contain: layout` is the cheapest of the four options: no paint boundary, no
+   size boundary, so nothing inside changes how it renders. */
+.dc-workspace {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  contain: layout;
+}
+
+/* ── the scrolling content column ── */
+.dc-main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--background);
+}
+
+.dc-col {
+  max-width: var(--max-w-3xl);   /* 768 − 2×24 padding = the design's 720 column */
+  margin-inline: auto;
+  padding: var(--p-10) var(--p-6);
+
+  @media (max-width: 640px) {
+    padding: var(--p-6) var(--p-4);
+  }
+}
+
+.dc-greeting {
+  &__title {
+    margin: 0;
+    font-size: var(--text-2xl);
+    line-height: var(--leading-8);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+    color: var(--foreground);
+  }
+
+  &__sub {
+    margin: var(--p-1) 0 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+}
+
+.dc-section {
+  margin-top: var(--p-10);
+
+  &__head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--p-3);
+  }
+
+  &__title {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--p-1-5);
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+    color: var(--muted-foreground);
+
+    svg { width: var(--w-3); height: var(--h-3); }
+  }
+
+  &__body { margin-top: var(--p-3); }
+}
+
+/* ── the Aiden prompt ──
+   Card is neutral chrome and deliberately does not read --primary, so it does
+   not pick up the aiden surface either. The tint is applied here rather than in
+   Card.scss, because a Card that changed colour inside data-surface would
+   repaint every card in an Aiden panel — and most of them should stay neutral.
+   Only the assistant's own prompt is the surface's. */
+[data-surface='aiden'] .dc-aiden-card {
+  /* --aiden-secondary is a low-alpha GRADIENT, so it has to go through
+     `background` (it lands on background-image); a `background-color` would
+     silently do nothing. */
+  background: var(--aiden-secondary);
+
+  /* --aiden-border is ALSO a gradient — for a border-image, not a border-color.
+     Passing it to border-color makes the declaration invalid at computed-value
+     time, which falls back to currentColor and paints a near-black outline.
+     The SOLID aiden accent is --aiden-outline-border. */
+  border-color: var(--aiden-outline-border);
+}
+
+.dc-aiden {
+  &__head {
+    display: flex;
+    align-items: center;
+    gap: var(--p-2);
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+
+    svg { width: var(--w-4); height: var(--h-4); }
+  }
+
+  &__row {
+    display: flex;
+    align-items: center;
+    gap: var(--p-2);
+    margin-top: var(--p-3);
+  }
+
+  &__placeholder {
+    flex: 1;
+    min-width: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+}
+
+/* ── grids ──
+   auto-fit + minmax is what makes the reflow automatic: three across on the
+   design's width, two on a tablet, one on a phone, with no breakpoint of its
+   own to keep in sync. */
+.dc-grid {
+  display: grid;
+  gap: var(--p-2);
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+
+  &--wide {
+    gap: var(--p-3);
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  }
+}
+
+/* ── list rows ── */
+.dc-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+}
+
+/* The trailing app name on a recent row. It is context, not content — the
+   first thing to go when the row runs out of width. */
+.dc-row__context {
+  flex: none;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+
+  @media (max-width: 640px) { display: none; }
+}
