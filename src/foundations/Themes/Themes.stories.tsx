@@ -11,12 +11,14 @@ import Chip from '../../components/Chip';
 
 // ─── Theme catalogue ────────────────────────────────────────────────────────
 const themes = [
+  // Hue names match the Figma Brand collection's mode names, so a value can be
+  // traced from a swatch here to a variable there without a lookup table.
   { code: 'db', name: 'DB', hue: 'Indigo' },
   { code: 'dc', name: 'DC', hue: 'Teal' },
-  { code: 'ec', name: 'EC', hue: 'Cyan' },
-  { code: 'nb', name: 'NB', hue: 'Emerald' },
-  { code: 'ph', name: 'PH', hue: 'Orange' },
-  { code: 'rm', name: 'RM', hue: 'Violet' },
+  { code: 'ec', name: 'EC', hue: 'Cobalt' },
+  { code: 'nb', name: 'NB', hue: 'Fern' },
+  { code: 'ph', name: 'PH', hue: 'Amber' },
+  { code: 'rm', name: 'RM', hue: 'Magenta' },
 ] as const;
 
 const meta: Meta = {

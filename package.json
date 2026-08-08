@@ -33,6 +33,8 @@
     "typecheck": "tsc --noEmit",
     "test:contrast": "node scripts/contrast-check.mjs",
     "test:preview": "node scripts/check-vocabulary.mjs",
+    "tokens:gen": "node --experimental-strip-types scripts/generate-brand-tokens.mjs",
+    "test:tokens": "node --experimental-strip-types scripts/generate-brand-tokens.mjs --check",
     "test:poc-css": "node scripts/check-poc-css.mjs",
     "test:palette": "node scripts/check-palette.mjs",
     "test:chart-a11y": "node scripts/check-chart-a11y.mjs"
