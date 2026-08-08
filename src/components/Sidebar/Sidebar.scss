@@ -402,6 +402,16 @@
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
   }
+  /* ACTIVE MUST NOT BE THE SAME PAINT AS HOVER, but it must not SHOUT either.
+     The first fix for the collision reached for --sidebar-primary, a solid
+     slate: that is dL 71 from the rail where the accent was dL 2 — swapping an
+     invisible state for one that pulls the eye off the page content entirely.
+     Both extremes were wrong about the same thing: the accent STEP was too
+     weak in light mode, not the token choice. --sidebar-accent is now slate-200
+     (dL ~7), and hover is a lighter pass of that same paint via the shared
+     --opacity-50 overlay — the pattern secondary buttons already use. Weight
+     carries the rest. Dark mode never had the problem: accent on rail is
+     dL ~13 there, which is why this only ever showed up in light. */
   &--active {
     background: var(--sidebar-accent);
     color: var(--sidebar-accent-foreground);
@@ -524,9 +534,11 @@
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
   }
+  /* Same collision as the menu button above — active and hover were one paint. */
   &--active {
     background: var(--sidebar-accent);
     color: var(--sidebar-accent-foreground);
+    font-weight: var(--font-medium);
   }
   &--sz-sm {
     font-size: var(--text-xs);

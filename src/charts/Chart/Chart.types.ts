@@ -2,6 +2,7 @@ import type { ReactNode, HTMLAttributes } from 'react';
 import type { Curve } from '#/utils/path';
 import type { SeriesSlot } from '#/utils/series';
 import type { StackOffset } from '#/utils/stack';
+import type { ColorScaleKind } from '#/utils/colorScale';
 
 export type ChartCurve = Curve;
 
@@ -57,6 +58,19 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   bandPadding?: boolean;
   /** Defaults to true once there are 2+ series. */
   showLegend?: boolean;
+  /**
+   * Label each series at its own last point instead of in a legend.
+   *
+   * The reason is not decoration. A legend asks the reader to hold a colour in
+   * memory, cross the chart, and match it — which is exactly the step that
+   * fails for anyone who cannot separate two of the colours, and the step that
+   * a crossing line makes hardest. A label at the end of the line removes the
+   * lookup entirely, so colour stops being the only thing carrying identity.
+   *
+   * Widens the right margin to fit the longest label, and turns the legend off
+   * by default, since the labels ARE the key.
+   */
+  endLabels?: boolean;
   showGrid?: boolean;
   /** The table twin is ALWAYS in the DOM; this controls what is visible. */
   view?: ChartView;
@@ -79,6 +93,20 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
    * Ignored when no listed key is currently visible — a subject that is hidden
    * would otherwise mute the entire chart and leave nothing foregrounded.
    */
+  /**
+   * Colour each DATUM by its value instead of each series by its slot.
+   *
+   * Categorical is the default and stays the default: colour means identity.
+   * Set this only for ORDERED data, where colour means quantity — and then one
+   * series is usually the right shape, because the scale, not the series list,
+   * is doing the distinguishing.
+   */
+  colorScale?: ColorScaleKind;
+  /** Steps the scale spans; reads `--chart-1 … --chart-{scaleSteps}`. */
+  scaleSteps?: number;
+  /** The value pinned to the middle step. Diverging only. */
+  scaleCenter?: number;
+
   emphasis?: string | string[];
   /**
    * Pointing at a legend entry emphasises that series for as long as you point.

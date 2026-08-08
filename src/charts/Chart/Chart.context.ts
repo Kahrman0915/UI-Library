@@ -2,6 +2,7 @@ import { createContext, useContext } from 'react';
 import type { BandScale, LinearScale } from '#/utils/scale';
 import type { ChartSeries, SeriesEmphasis } from './Chart.types';
 import type { SeriesSlot } from '#/utils/series';
+import type { ColorScaleKind, ScaleDomain } from '#/utils/colorScale';
 
 // `slot` is OMITTED then redeclared: on ChartSeries it is the optional pin a
 // consumer may pass, here it is the resolved assignment, which is null for a
@@ -57,6 +58,8 @@ export type ChartContextValue = {
    * false claim about what the reader is looking at.
    */
   axisFormatter: (value: number) => string;
+  /** True when each series is labelled at its last point rather than in a legend. */
+  endLabels: boolean;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
   /** Legend hover → transient emphasis. null when `emphasisOnHover` is off. */
@@ -71,6 +74,16 @@ export type ChartContextValue = {
    * exploratory one is the reader's own pointer and announces nothing.
    */
   emphasisTransient: boolean;
+  /**
+   * Set only when the chart is colouring by VALUE rather than by series.
+   * Marks read this instead of `series[].token`; null means categorical.
+   */
+  colorScale: {
+    kind: ColorScaleKind;
+    domain: ScaleDomain;
+    steps: number;
+    center: number;
+  } | null;
   ids: { title: string; desc: string; table: string; legend: string; readout: string };
 };
 

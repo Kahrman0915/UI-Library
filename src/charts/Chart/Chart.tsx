@@ -8,6 +8,7 @@ import { ChartContext, useChartContext, type ResolvedSeries } from './Chart.cont
 import {
   DEFAULT_HEIGHT, DEFAULT_WIDTH, LEGEND_HEIGHT, MARGIN, MAX_X_LABELS, Y_TICK_COUNT,
 } from './Chart.constants';
+import { dataDomain } from '#/utils/colorScale';
 import type { ChartProps, SeriesEmphasis } from './Chart.types';
 import { useMeasuredWidth } from '#/hooks/useMeasuredWidth';
 import './Chart.scss';
@@ -38,9 +39,10 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       stacked = false, offset = 'zero', bandPadding = false,
       height = DEFAULT_HEIGHT, width = DEFAULT_WIDTH,
       valueFormatter = (v) => formatTick(v),
-      yDomain = 'auto', showLegend, showGrid = true, view = 'chart',
+      yDomain = 'auto', showLegend, showGrid = true, view = 'chart', endLabels = false,
       emptyLabel = 'No data to display', hiddenSeries, onSeriesToggle,
       emphasis, emphasisOnHover = true,
+      colorScale, scaleSteps = 7, scaleCenter = 0,
       className, children, ...rest
     },
     ref,
@@ -115,11 +117,23 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       ticks.reduce((m, t) => Math.max(m, axisFormatter(t).length), 0) * 7 + 12,
     );
 
-    const legendOn = showLegend ?? resolved.length >= 2;
+    // An ordered chart is usually ONE series, so the "two or more" default would
+    // hide the scale — and the scale legend is the only thing that says what the
+    // colours mean. A categorical chart with one series still needs no key.
+    // End labels REPLACE the legend rather than joining it. Printing both says
+    // the same thing twice and spends the vertical room the labels just earned.
+    const legendOn = showLegend ?? (endLabels ? false : colorScale ? true : resolved.length >= 2);
+    // The labels live OUTSIDE the plot, so the plot has to give the room back —
+    // sized from the longest label, exactly as the y gutter is sized from its
+    // widest tick. Without this the last line runs to the frame edge and its
+    // own label is clipped by the viewBox.
+    const rightMargin = endLabels
+      ? Math.max(MARGIN.right, resolved.reduce((m, s) => Math.max(m, s.label.length), 0) * 6.5 + 14)
+      : MARGIN.right;
     const plot = {
       left: leftMargin,
       top: MARGIN.top,
-      width: Math.max(0, w - leftMargin - MARGIN.right),
+      width: Math.max(0, w - leftMargin - rightMargin),
       height: Math.max(0, height - MARGIN.top - MARGIN.bottom - (legendOn ? LEGEND_HEIGHT : 0)),
     };
 
@@ -140,12 +154,22 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
     const hoverSeries = emphasisOnHover ? setHovered : null;
     const emphasisTransient = hovered !== null;
 
+    // Resolved once here rather than in each mark, so a chart with two mark
+    // types cannot end up with two different domains for the same scale.
+    const scale = useMemo(
+      () => (colorScale
+        ? { kind: colorScale, domain: dataDomain(series), steps: scaleSteps, center: scaleCenter }
+        : null),
+      [colorScale, series, scaleSteps, scaleCenter],
+    );
+
     const ctx = useMemo(() => ({
       x, y, plot, series: resolved, categories, valueFormatter, axisFormatter,
-      ticks, activeIndex, setActiveIndex, hoverSeries, emphasisTransient, ids,
+      ticks, activeIndex, setActiveIndex, hoverSeries, emphasisTransient, colorScale: scale, ids,
+      endLabels,
     }), [x, y, plot.left, plot.top, plot.width, plot.height, resolved, categories,
         valueFormatter, axisFormatter, ticks, activeIndex, hoverSeries,
-        emphasisTransient, ids]);
+        emphasisTransient, scale, ids, endLabels]);
 
     const onPointerMove = useCallback((e: PointerEvent<SVGRectElement>) => {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -329,9 +353,39 @@ ChartEmpty.displayName = 'ChartEmpty';
 // Legend · tooltip · table
 // ─────────────────────────────────────────────────────────────────────────────
 
+/**
+ * A SCALE legend, for ordered charts. Series swatches would be a lie here —
+ * there is one series and seven colours, so a per-series key describes nothing
+ * a reader needs. What they need is the ramp and the two ends of the domain.
+ */
+const ChartScaleLegend = () => {
+  const c = useChartContext();
+  if (!c || !c.colorScale) return null;
+  const { domain, steps, kind, center } = c.colorScale;
+  const fmt = c.valueFormatter;
+  return (
+    <div className="ui-chart__scale-legend" id={c.ids.legend}>
+      <span className="ui-chart__scale-end">{fmt(domain[0])}</span>
+      <span className="ui-chart__scale-ramp" aria-hidden="true">
+        {Array.from({ length: steps }, (_, i) => (
+          <span key={i} className="ui-chart__scale-step" style={{ background: `var(--chart-${i + 1})` } as CSSProperties} />
+        ))}
+      </span>
+      <span className="ui-chart__scale-end">{fmt(domain[1])}</span>
+      {/* The midpoint is the whole claim of a diverging scale, so it is stated
+          rather than left to be inferred from the colours. */}
+      {kind === 'diverging' && (
+        <span className="ui-chart__scale-note">{`centred on ${fmt(center)}`}</span>
+      )}
+    </div>
+  );
+};
+ChartScaleLegend.displayName = 'ChartScaleLegend';
+
 const ChartLegend = ({ onToggle }: { onToggle?: (key: string, visible: boolean) => void }) => {
   const c = useChartContext();
   if (!c) return null;
+  if (c.colorScale) return <ChartScaleLegend />;
   const hover = c.hoverSeries;
   return (
     <ul className="ui-chart__legend" id={c.ids.legend}>

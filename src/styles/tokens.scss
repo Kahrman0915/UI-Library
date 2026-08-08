@@ -311,6 +311,10 @@ html {
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
   --duration-pulse: 2800ms;   /* Fab "sonar" ring pulse — slow + elegant */
+  /* Per-item INCREMENT for staggered entrances, not a duration in its own right.
+     Multiply by the item index: `animation-delay: calc(var(--i, 0) * var(--duration-stagger))`.
+     Chart bars use it today; any list that animates in wants the same cadence. */
+  --duration-stagger: 22ms;
   /* Easing curves */
   --ease-default: ease;
   --ease-in: ease-in;
@@ -431,7 +435,8 @@ html {
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #334155;
   --sidebar-primary-foreground: #f8fafc;
-  --sidebar-accent: #f1f5f9;
+  --sidebar-accent: #e2e8f0;  /* slate-200. Was #f1f5f9, only dL 2 from the
+                                 rail — a selection nobody could see. */
   --sidebar-accent-foreground: #1e293b;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #94a3b8;
