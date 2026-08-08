@@ -1110,6 +1110,21 @@ html {
    (it uses --tooltip-*). The MAIN BRAND is the absence of data-theme (--primary
    stays neutral slate). Theme-independent: the referenced --{code}-primary
    tokens are defined for both modes, so scopes work in light and dark.
+
+   SIX BRANDS SHIP. `dr` and `ir` were retired rather than shipped half-themed:
+   deeper theming solves six, and a scope where --primary swaps but the
+   surfaces, artwork and charts under it do not is a split system. Re-solving
+   them later uses the same machinery.
+
+   FIGMA NAMES THESE BY HUE AND THE CODE NAMES THEM BY PRODUCT — the same value
+   under two vocabularies, which is a real source of confusion when moving
+   between the file and the Figma library:
+
+     Slate = main    Indigo = db    Teal  = dc    Cobalt = ec
+     Fern  = nb      Amber  = ph    Magenta = rm
+
+   The Brand collection in Figma uses the left column as its mode names;
+   scripts/figma-variable-audit.js cross-checks the two directions.
    ========================================================================= */
 
 /* Each scope remaps --primary + its derived family. The derived members
