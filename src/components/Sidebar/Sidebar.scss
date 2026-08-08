@@ -70,31 +70,45 @@
   background: var(--sidebar);
   color: var(--sidebar-foreground);
 
-  /* PAGE SURFACES INSIDE THE RAIL FOLLOW THE RAIL'S TINT, NOT THE PAGE'S.
-     The rail is tinted by --tint-rail; the search field and the outline menu
-     button paint with --background, which is tinted by --tint-page. Those are
-     independent switches, so `data-tint="rail"` alone moved the rail and left
-     its own contents behind: measured in dark/nb the field stayed at 15,23,42
-     while the rail went to 40,55,63, widening the gap between them from 1.22:1
-     to 1.45:1 — the field read as a dark hole punched in a lighter rail.
-     `page rail` hid it by moving both, which is why it only showed up on one
-     of the four combinations.
+  /* EVERY PAGE SURFACE INSIDE THE RAIL FOLLOWS THE RAIL'S TINT, NOT THE PAGE'S.
+     The rail is tinted by --tint-rail; the page surfaces are tinted by
+     --tint-page. Those are independent switches, so `data-tint="rail"` alone
+     moved the rail and left its own contents behind. Measured in dark/nb: the
+     search field stayed at 15,23,42 while the rail went to 40,55,63, widening
+     the gap between them from 1.22:1 to 1.45:1 — a dark hole punched in a
+     lighter rail. `page rail` hid it by moving both, which is why it only
+     showed on one of the four combinations.
 
-     Re-deriving --background here with the RAIL's own percentages keeps the
-     relationship constant: the field is still the page-level well it is
-     designed to be (darker than the rail in dark, lighter in light), and it now
-     travels with the rail in every combination instead of only two of them.
+     Re-deriving each surface here with the RAIL's own percentages keeps every
+     relationship constant: a field is still the page-level well it is designed
+     to be (darker than the rail in dark, lighter in light), and it now travels
+     WITH the rail in all four states rather than two.
 
-     Scoped to __inner deliberately — .ui-sidebar__inset is the real content
-     area beside the rail and must keep the true page surface. */
-  --background: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                color-mix(in srgb, var(--tint-stock) calc(8% * var(--tint-rail, 0)), var(--base-background)));
+     THE WHOLE SET, not just --background, because this component is consumed.
+     Anything a consumer renders in the rail — a Card, an Input, a Badge, a
+     collapse button on --accent — sits on the rail and has to move with it. The
+     first pass covered only --background, which fixed our own search field and
+     left every other surface a consumer might reach for still pinned to the
+     page. `.ui-sidebar__trigger` is the live example: its hover paints --accent.
+
+     --ring is DELIBERATELY EXCLUDED. It is the focus indicator, not chrome, and
+     the rail already has --sidebar-ring for that. A focus ring's job is to stand
+     out from its surroundings, so tracking them defeats it.
+
+     Scoped to __inner deliberately — .ui-sidebar__inset is the real content area
+     beside the rail and must keep the true page surface. */
+  @each $s in background, card, popover, secondary, accent, muted, input, border, border-hover {
+    --#{$s}: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+             color-mix(in srgb, var(--tint-stock) calc(8% * var(--tint-rail, 0)), var(--base-#{$s})));
+  }
 }
 /* Dark takes 9% rather than 8%, matching --sidebar's own dark mix above it. */
 [data-mode='dark'] .ui-sidebar__inner,
 [data-mode='dark'].ui-sidebar__inner {
-  --background: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
-                color-mix(in srgb, var(--tint-stock) calc(9% * var(--tint-rail, 0)), var(--base-background)));
+  @each $s in background, card, popover, secondary, accent, muted, input, border, border-hover {
+    --#{$s}: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+             color-mix(in srgb, var(--tint-stock) calc(9% * var(--tint-rail, 0)), var(--base-#{$s})));
+  }
 }
 
 .ui-sidebar-wrap[data-side='left'] .ui-sidebar__inner {

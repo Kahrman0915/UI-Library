@@ -6,7 +6,7 @@ import {
 import type { LucideIcon } from 'lucide-react';
 import { Avatar, Badge, Button, Chip, Separator } from '../index';
 import { BRAND_ANCHORS, SUB_BRANDS } from './deeperThemingRecipe';
-import { usePointerTilt } from './usePointerTilt';
+import { usePointerTilt } from '../hooks/usePointerTilt';
 import type { BrandKey } from './deeperThemingRecipe';
 
 type Mode = 'light' | 'dark';

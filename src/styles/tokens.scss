@@ -330,6 +330,19 @@ html {
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
   --duration-pulse: 2800ms;   /* Fab "sonar" ring pulse — slow + elegant */
+  /* Mark glass. Longer than anything else in the scale, and COPRIME on purpose:
+     11s and 7.3s share no common factor, so the bloom and the sheen never line
+     up and the composite has no visible loop. Tuned against each other — moving
+     one without the other reintroduces a beat. */
+  --duration-mark-bloom: 11000ms;
+  --duration-mark-sheen: 7300ms;  /* the spark rides this clock, in phase */
+  --duration-mark-sweep: 1100ms;  /* the one-shot light sweep on hover */
+  /* The mark's RETURN, deliberately slower than its entry: the base rule is what
+     plays when the pointer leaves, so it gets the long ease-out while :hover
+     gets the short spring. One duration for both makes the entry dull or the
+     exit snap. --track is how tightly the tile follows a pointer under tilt. */
+  --duration-mark-settle: 460ms;
+  --duration-mark-track: 110ms;
   /* Per-item INCREMENT for staggered entrances, not a duration in its own right.
      Multiply by the item index: `animation-delay: calc(var(--i, 0) * var(--duration-stagger))`.
      Chart bars use it today; any list that animates in wants the same cadence. */
@@ -487,6 +500,79 @@ html {
   --sidebar-accent-foreground: #1e293b;
   --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #94a3b8;
+
+  /* ── MARK GLASS ───────────────────────────────────────────────────────────
+     The app mark's tile is the brand ramp (--decorative-gradient) under a stack
+     of glass. The RAMP is per-brand and lives in the brand blocks; the GLASS is
+     one lighting model shared by every brand, and lives here.
+
+     These are whole gradients and whole shadow colours rather than a hex plus
+     an alpha, for the same reason --shadow-* embeds its own colour: the layer
+     IS the value. Splitting a four-stop falloff into four tokens would let a
+     consumer set three of them and get something that is no longer a highlight.
+
+     The light is at the top left, and that never changes. What changes by mode
+     is which HALF of it you can see: on the mid-dark light-mode tile you read
+     the highlight the lamp makes, and on the pale dark-mode tile you read the
+     SHADE it leaves on the far side. So --mark-shade and --mark-lift swap jobs
+     between modes rather than one being darkened into the other. A specular
+     highlight is by definition brighter than its surface — there is no dark
+     version of it, only the other side of the same lamp. */
+  /* THE MAIN BRAND'S RAMP, and the only reason it exists is that the main brand
+     has no --decorative-* anchors and MUST NOT GET ANY. Those tokens are defined
+     only inside a [data-theme] scope, deliberately: `Chart.scss` reads
+     `var(--decorative-hi, currentColor)` and depends on the variable being
+     genuinely absent outside a brand, so an unthemed chart keeps its neutral
+     marker. Defining --decorative-hi at :root to feed the mark would silently
+     repaint every unthemed chart.
+     So the mark carries its own neutral fallback instead. Same four-stop
+     plateau geometry as every brand ramp, walked down the slate scale: a step
+     lighter than --primary-main for the highlight, --primary-main itself for
+     the body, and slate-900 for the deep corner. A themed mark never sees it —
+     --decorative-gradient wins the moment there is a brand to win it. */
+  --mark-ramp: linear-gradient(135deg,
+    #94a3b8 9.7%,
+    var(--primary-main) 51.6%,
+    var(--primary-main) 51.6%,
+    #0f172a 90.3%);
+  --mark-lift: radial-gradient(35% 35% at 45% 40%,
+    color-mix(in srgb, #ffffff 28%, transparent) 0%,
+    color-mix(in srgb, #b2d9ff 12%, transparent) 40%,
+    transparent 100%);
+  /* A no-op layer in light, so ONE background-image rule serves both modes.
+     The stack has a fixed layer count; only the paint differs. */
+  --mark-shade: radial-gradient(40% 40% at 86% 90%, transparent 0%, transparent 100%);
+  --mark-bloom: radial-gradient(circle at 50% 50%,
+    color-mix(in srgb, #bfe0ff 23%, transparent) 0%,
+    color-mix(in srgb, #bfe0ff 9%, transparent) 50%,
+    transparent 100%);
+  --mark-sheen: linear-gradient(180deg,
+    rgba(255, 255, 255, 0.245) 0%,
+    rgba(229, 242, 255, 0.074) 35%,
+    rgba(255, 255, 255, 0) 70%);
+  /* A pinpoint, not a blurred disc. It is the one white layer that survives
+     onto a pale tile, because a hard small edge reads where a 24%-alpha wash
+     does not. */
+  --mark-spark: radial-gradient(circle at 50% 50%,
+    rgba(255, 255, 255, 0.92) 0%,
+    rgba(255, 255, 255, 0.5) 42%,
+    rgba(255, 255, 255, 0.12) 72%,
+    transparent 100%);
+  --mark-sweep: linear-gradient(100deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.13) 38%,
+    rgba(255, 255, 255, 0.22) 50%,
+    rgba(255, 255, 255, 0.13) 62%,
+    transparent 100%);
+  --mark-shadow-cast: rgba(35, 14, 75, 0.4);
+  --mark-shadow-cast-lifted: rgba(35, 14, 75, 0.45);
+  --mark-shadow-occlusion: rgba(35, 14, 75, 0.3);
+  --mark-shadow-rim: rgba(255, 255, 255, 0.35);
+  --mark-shadow-rim-lifted: rgba(255, 255, 255, 0.5);
+  --mark-shadow-edge: rgba(204, 229, 255, 0.25);
+  /* Separates a WHITE glyph from a mid-dark tile. See the dark override for why
+     it cannot stay this value once the glyph turns to ink. */
+  --mark-glyph-shadow: rgba(35, 14, 75, 0.45);
 
   /* Code Block — syntax palette darkened 2026-07-25 for WCAG AA on --code-block.
      The originals were Tailwind 500/600 on slate-100 and 10 of 11 sat between
@@ -862,6 +948,43 @@ html {
   --sidebar-accent-foreground: #f8fafc;
   --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #64748b;
+
+  /* ── MARK GLASS, TURNED OVER ──────────────────────────────────────────────
+     Only four of the thirteen move. The dark-mode tile is the PALE anchor, so
+     the white stack stops existing on it and the same lamp is read as shade
+     instead: the top-left bloom becomes a bottom-right occlusion and the sheen
+     rises from the base instead of falling from the top.
+
+     --mark-lift becomes a plain white halo UNDER the glyph, which is the
+     opposite of a drop shadow and deliberately so — on a pale tile the glyph is
+     the dark object, so the surface catches light around it. That gains glyph
+     contrast where a dark halo would spend it.
+
+     --mark-shade is pushed into the far corner, AWAY from the glyph. An earlier
+     cut centred it and it read as a smudge under the icon. */
+  /* The neutral ramp inverts with everything else: the dark tile is PALE, so
+     the highlight steps UP the slate scale and the deep corner is a mid-slate
+     rather than near-black. --primary-main is already slate-300 here, and its
+     foreground is already ink, so the glyph needs no special case. */
+  --mark-ramp: linear-gradient(135deg,
+    #e2e8f0 9.7%,
+    var(--primary-main) 51.6%,
+    var(--primary-main) 51.6%,
+    #64748b 90.3%);
+  --mark-lift: radial-gradient(40% 40% at 50% 47%,
+    rgba(255, 255, 255, 0.24) 0%,
+    rgba(255, 255, 255, 0) 100%);
+  --mark-shade: radial-gradient(40% 40% at 86% 90%,
+    rgba(15, 23, 42, 0.30) 0%,
+    rgba(15, 23, 42, 0) 100%);
+  --mark-sheen: linear-gradient(180deg,
+    rgba(15, 23, 42, 0) 0%,
+    rgba(15, 23, 42, 0.07) 45%,
+    rgba(15, 23, 42, 0.17) 100%);
+  /* Neutral ink at under half the alpha. The light value is a near-black purple
+     — right for a white glyph, but the SAME VALUE as a dark-mode ink glyph, so
+     it stops separating and starts smearing. */
+  --mark-glyph-shadow: rgba(15, 23, 42, 0.20);
 
   /* Code Block — dark already cleared AA (5.4–9.6); only --code-attr changed,
      to break a collision: it and --code-number were BOTH orange-400 here, while

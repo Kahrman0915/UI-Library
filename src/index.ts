@@ -614,6 +614,9 @@ export type {
   DropdownMenuAlign,
 } from './components/DropdownMenu';
 
+export { default as Mark } from './components/Mark';
+export type { MarkProps, MarkSize, MarkMotion } from './components/Mark';
+
 export {
   default as Menubar,
   MenubarMenu,
@@ -781,5 +784,6 @@ export { useAutosizeTextarea } from './hooks/useAutosizeTextarea';
 export type { UseAutosizeTextareaOptions } from './hooks/useAutosizeTextarea';
 export { useStickToBottom } from './hooks/useStickToBottom';
 export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
+export { usePointerTilt } from './hooks/usePointerTilt';
 export { useStreamingText } from './hooks/useStreamingText';
 export type { UseStreamingTextOptions } from './hooks/useStreamingText';

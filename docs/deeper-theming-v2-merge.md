@@ -1,10 +1,37 @@
 # Deeper Theming v2 — merge record
 
-**Status:** Phase A shipped on `feat/deeper-theming-v2-phase-a`. Phase B outlined at the end, not started.
+**Status:** Phase A is **merged to `main`**. `Mark` and the widened Sidebar rail override landed after it on `feat/sidebar-tint-and-mark`. Phase B is outlined at the end and **not started**.
 **Audience:** an engineer or agent replicating this change in a *different* component library.
 **Source of truth for values:** `src/prototypes/deeperThemingRecipeV2.ts` (the POC recipe). Nothing in this document restates a colour that the recipe owns.
 
 This is a working record, not a tutorial. It is written so that someone who has never seen this repo can reproduce the architecture, and — more importantly — avoid the specific mistakes that cost time here. Every "gotcha" below was actually hit.
+
+---
+
+## 0. Where everything lives, and how to start
+
+Take these files. The first two are the system; the rest are what keeps it honest.
+
+| File | What it is |
+|---|---|
+| `src/styles/tokens.scss` | The shipped token system. Brand blocks sit between `/* @generated … */` markers — **do not hand-edit those**. |
+| `src/prototypes/deeperThemingRecipeV2.ts` | **The source of truth for every colour.** Solved anchors per brand, and the emitter that turns three anchors into a full token block. If you port one file, port this one. |
+| `scripts/generate-brand-tokens.mjs` | Reads the recipe's emitted CSS, rewrites selectors, splices into tokens.scss. `--check` mode → `npm run test:tokens`. |
+| `scripts/contrast-check.mjs` | AA gate across all 52 mode × theme × tint contexts. |
+| `scripts/check-palette.mjs` | Chart-slot separation, CVD, and the recorded-not-fixed findings. |
+| `src/components/Mark/` | The one component that renders a brand's full three-anchor identity. |
+| `src/charts/Chart/Chart.scss` | The `var(--decorative-hi, currentColor)` fallback whose behaviour depends on the main brand having **no** decorative anchors. |
+
+**Suggested order of work**, which is also the order these were built and the reason it went smoothly:
+
+1. Read §2 and §5 before writing any CSS. Those two sections are the whole architecture; everything else is consequence.
+2. Extend your contrast checker **first** (§8). It must land before the refactor it protects.
+3. Base neutral layer (§2) — prove it is a no-op (§13).
+4. Tint axis (§4), then the brand blocks via a generator (§6).
+5. Aiden or your equivalent cross-cutting surface (§7).
+6. Only then the components (§11).
+
+If you are adapting rather than porting — different brands, different anchors — everything from §2 to §8 still applies unchanged. The colours are the only part that is ours.
 
 ---
 
@@ -297,7 +324,7 @@ These are pre-existing properties of solved palettes that nothing had ever measu
 
 ## 11. Component-level changes
 
-Only two components needed edits. Everything else inherits through token remapping.
+Three components needed edits, plus the new `Mark`. Everything else inherits through token remapping.
 
 - **Sidebar** — hover and active painted the *same* `--sidebar-accent`, distinguishable only by `font-weight`. Now `color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))`.
 
@@ -307,7 +334,7 @@ Only two components needed edits. Everything else inherits through token remappi
 
   `.ui-sidebar__input` and the outline menu button paint with `--background`, tinted by `--tint-page`. The rail around them is `--sidebar`, tinted by `--tint-rail`. Independent switches, so `data-tint="rail"` alone moved the container and left its own contents behind. Measured in dark/nb: the field stayed at `15,23,42` while the rail went to `40,55,63`, widening the gap between them from **1.22:1 to 1.45:1** — the search box read as a hole punched in a lighter rail.
 
-  Fixed by re-deriving `--background` on `.ui-sidebar__inner` with the *rail's* own percentages, so the field keeps its designed relationship to the rail (darker in dark, lighter in light) in every state:
+  Fixed by re-deriving the page surfaces on `.ui-sidebar__inner` with the *rail's* own percentages, so the field keeps its designed relationship to the rail (darker in dark, lighter in light) in every state:
 
   |  | off | rail | page+rail |
   |---|---|---|---|
@@ -316,9 +343,25 @@ Only two components needed edits. Everything else inherits through token remappi
 
   Scoped to `__inner` deliberately — `.ui-sidebar__inset` is the real content area beside the rail and must keep the true page surface (verified: still `15,23,42` under rail-only, `25,35,50` under page).
 
+  > **Fix the whole class, not the instance you found.** The first pass re-derived `--background` alone, because the search field was the symptom in front of us. That is the wrong shape for a component other people compose into: anything a consumer renders in the rail sits *on* the rail — a Card, an Input, a Badge, a hover that paints `--accent`. `.ui-sidebar__trigger` was already doing exactly that, one file away. It is now an `@each` over the nine tintable page surfaces (`background card popover secondary accent muted input border border-hover`), which is also a smaller thing to keep correct than nine hand-written declarations.
+  >
+  > `--ring` is deliberately excluded: it is the focus indicator, the rail has its own `--sidebar-ring`, and a ring whose whole job is to stand out from its surroundings must not track them.
+  >
+  > Verified in both modes: 8/8 probed surfaces inside `__inner` move on `data-tint="rail"`, 0/8 move in `__inset`.
+
   > **The general rule: any region tinted by one multiplier that contains surfaces driven by another will diverge on the single-axis states, and the both-on state hides it.** That is why it only showed on one of four combinations and why nobody caught it during the POC. Audit every such region when you add a second tint switch.
 
 - **Chart active marker** — `fill: var(--decorative-hi, currentColor)`. **The fallback is load-bearing**: outside a brand scope the token does not exist and the marker renders exactly as before. The POC also sets an unguarded `stroke: var(--primary)` there; that *would* change unthemed output, so it waits.
+
+- **`Mark` — the consumer of `--decorative-gradient`, added 2026-08-08.** Phase A shipped the artwork anchors but nothing rendered them, so this is where the theming layer is finally load-bearing rather than latent. If you are porting this system, port the mark too: it is the payoff. Three notes that generalise beyond it.
+
+  **The main brand has no `--decorative-*`, and you must not give it any.** They are defined only inside a brand scope, and the chart marker above depends on their *absence* to keep its neutral fallback. Feeding the mark by declaring `--decorative-hi` at `:root` would silently repaint every unthemed chart. The mark carries its own neutral `--mark-ramp` instead — same four-stop plateau geometry, walked down the slate scale.
+
+  > **An undefined `var()` in a comma-separated `background-image` does not drop that one layer — it invalidates the WHOLE property.** So the tile painted `none`, and the glyph (`--primary-foreground`, near-white in light) disappeared with it. The unthemed mark rendered as an empty white square, which is the very first thing a consumer with no `data-theme` sees. Any multi-layer background built from themed tokens needs its fallback written per layer, and needs testing with the theme *absent*.
+
+  **The glass is thirteen `--mark-*` tokens (plus `--mark-ramp`, the neutral fallback above — fourteen declarations in all), and four of them flip in dark.** They are whole gradients and whole shadow colours, not hex-plus-alpha — the same call `--shadow-*` already makes. The dark set is not the light set darkened: a specular highlight is *by definition* brighter than its surface, so on a pale tile the white stack stops existing and you read the shade the same lamp leaves on the opposite side. Bloom becomes occlusion; the sheen rises from the base instead of falling from the top.
+
+  **The sheen's anchored edge may only ever move one way, and the direction inverts by mode.** Light: `(--my - 1)`, always ≤ 0. Dark: `(--my + 1)`, always ≥ 0. `transform-origin` sits on the anchored edge in both. The POC hit this three separate times in three different mechanisms (keyframes, tilt translate, dark geometry) — if you re-derive any of the mark's motion, test it at full pointer deflection in both modes, not at rest.
 
 - **Docs stage** (`.ui-docs-stage`) — `contain: layout`. `position: relative` does **not** create a containing block for a `position: fixed` child; only `transform`, `filter`, `perspective` and `contain` do. Without it every fixed component escapes its card and pins to the iframe viewport — the Sidebar docs page rendered five sidebars stacked on the window edges over the prose. `contain: layout` is the cheapest of the four (no paint or size boundary). Covers Dialog, Drawer, Toast and Fab too.
 
@@ -412,6 +455,16 @@ e62e8f3  docs(theming): the merge record, written for someone who was not here
 df41169  fix(storybook): the pre-paint background must expire, and drop addon-themes
 ```
 
+Then, after Phase A merged — the theming layer's first real consumer, and one more
+instance of the same defect class:
+
+```
+431de85  fix(sidebar): every page surface inside the rail follows the rail's tint
+831670c  feat(mark): the application mark becomes a real component
+```
+
 The ordering is deliberate: **guardrail first, then the refactor it protects, then the values.** The contrast resolver had to land before the base-layer refactor, because the refactor turns `--card: #ffffff` into `--card: var(--base-card)` and the old parser would have reported that as unresolved.
 
-The last four are worth reading as a group. Everything up to `a0aa18f` is the merge; everything after it is **defects the merge surfaced once real people looked at real screens** — a hover that no longer animated, a search field that stopped tracking its own container, and a pre-paint fallback that outlived its purpose. None were visible in the diff, in the guardrails, or in a static screenshot. Budget for that phase; it is not optional polish.
+Everything up to `a0aa18f` is the merge. **Everything after it is defects the merge surfaced once real people looked at real screens** — a hover that no longer animated, a search field that stopped tracking its own container, a pre-paint fallback that outlived its purpose, and an unthemed mark that rendered as an empty white square. None were visible in the diff, in the guardrails, or in a static screenshot; two of them only appear on **one** of four tint combinations, and one only when **no** theme is applied. Budget for that phase — it is not optional polish, and it is where most of the real bugs were.
+
+The pattern worth carrying: **a system with N independent axes has more default states than you will think to look at, and the plainest one — nothing switched on — is the one a new consumer sees first.**
