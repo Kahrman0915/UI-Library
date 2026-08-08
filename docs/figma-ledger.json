@@ -105,7 +105,8 @@
       "primary-ring": "VariableID:2:50",
       "primary-focus": "VariableID:2:51",
       "primary-text": "VariableID:35:65"
-    }
+    },
+    "flag/is-light": "VariableID:1197:44 — Mode collection, Light=true / Dark=false. Exact inverse of flag/is-dark (175:26). Added 2026-08-08 for Mark. Reach for it whenever two modes differ in GEOMETRY or in paint-stack LENGTH rather than only in colour — that is the case no colour variable can carry."
   },
   "lessons": [
     "Instances cannot receive appendChild — masters must pre-provision max children; hide extras per-instance (visible=false).",
@@ -1543,31 +1544,45 @@
       "pageName": "2 · Fab"
     },
     "Mark": {
-      "status": "partial — masters moved to their own page 2026-08-08, template-v4 frames NOT built",
+      "status": "done — set reconciled to the shipped API 2026-08-08; template-v4 doc frames still outstanding",
       "pageId": "1192:580",
       "setIds": [
-        "1134:24496"
+        "1200:24948"
       ],
+      "artworkMasters": {
+        "sm": "1199:359",
+        "default": "1199:458",
+        "lg": "1199:557",
+        "xl": "1199:656",
+        "note": "Private per-size masters the set instances. Sized by rescale() from one 84px master so every effect radius, corner and blur is proportional — which is what the CSS does, where all of it is a calc off --ui-mark-px. rescale() was verified to scale effects and corners before being relied on."
+      },
+      "supersededSet": {
+        "id": "1134:24496",
+        "name": "Mark (POC — superseded)",
+        "keptBecause": "the Mark anatomy frame instances it; deleting would break that frame."
+      },
       "frames": {
         "masters": "1132:44",
         "anatomy": "955:44",
         "motionSpecimen": "1164:304"
       },
       "themed": true,
-      "themingFrame": "IMPLICIT — the whole component is the theming demo. The tile paints Mark/{Brand} paint styles (decorative-hi -> primary -> decorative-deep), so it carries a brand's FULL three-anchor identity rather than just --primary. No separate Theming frame yet.",
-      "props": "FIGMA TODAY: VARIANT Blend (hard|soft) x Mode (Light|Dark) + Glyph INSTANCE_SWAP. CODE SHIPPED: Icon, title, description, size (sm|default|lg|xl), motion (none|ambient|tilt), label. THESE DO NOT AGREE — see openWork.",
-      "openWork": [
-        "Mode is a VARIANT AXIS on this set, which the playbook forbids for shipped components (\"mode is an axis, not a variant — owner decision\"). It cannot simply be collapsed: the light and dark glass stacks have DIFFERENT STOP COUNTS and different geometry, so one gradient cannot serve both. Collapsing it needs a `flag/is-light` boolean (mirroring the existing `flag/is-dark` 175:26) so the two glass groups can swap on visibility, exactly like the Aiden dark-overlay pattern.",
-        "No Size axis. Code ships sm/default/lg/xl (24/32/48/64px); Figma has one size.",
-        "No lockup. Code ships an optional title + description beside the tile; Figma is tile-only.",
-        "motion (none|ambient|tilt) should NOT become a variant axis — all three render identically at rest, so a grid of them would teach that motion changes appearance, which is the one thing it deliberately does not do. Document it in Spec as code-only, like Fab's pulse.",
-        "Template-v4 frames (Overview / Spec / Examples·Docs·History) not built."
-      ],
+      "themingFrame": "IMPLICIT — the component IS the theming demo. The tile ramp binds to Brand/decorative-hi, Brand/primary and Brand/decorative-deep, so it carries a brand's FULL three-anchor identity rather than just --primary. Set Brand in the Appearance panel.",
+      "props": "VARIANT Size (sm|default|lg|xl = 24/32/48/64) x Lockup (false|true) = 8. TEXT Title, Description. INSTANCE_SWAP Glyph, exposed through the nested tile instance. Matches src/components/Mark/Mark.types.ts.",
+      "codeOnly": "motion (none|ambient|tilt) and label. motion is deliberately NOT a variant axis: all three render IDENTICALLY at rest, so a grid would teach that motion changes appearance — the one thing it does not do. Same treatment as Fab's pulse.",
       "lessons": [
-        "The glass layers (bloom, sheen, spark) carry RAW gradient fills, not bound variables. That is correct for this file: the design-check lint only checks SOLID fills, and Fab recorded the same convention. Do NOT mirror the 13 --mark-* glass tokens as Figma variables — they are gradients, and the ramp styles (Mark/*) that do matter already exist and already pass the variable audit.",
-        "The tile ramp stops ARE bound, and scripts/figma-variable-audit.js checks all 8 Mark/* paint styles against the recipe. It passed on 2026-08-08."
+        "MODE IS NOT A VARIANT, and collapsing it needed a new primitive. Light and dark glass differ in GEOMETRY and paint-stack LENGTH (light = top-anchored white sheen over one radial highlight; dark = bottom-anchored ink sheen over a lift plus a bottom-right occlusion, spark 12% -> 8%), so no colour variable can carry it. Solved with whole layer stacks glass-light / glass-dark gated on flag/is-light and flag/is-dark. flag/is-light (VariableID:1197:44) was ADDED for this, the exact inverse of flag/is-dark. Generalises the aiden-dark-gradient overlay pattern from one layer to a pair. Verified against the POC set in both modes before the POC was superseded.",
+        "Three mode-dependent layers were FRAME FILLS, not children, so they had to be extracted into rectangles before they could be gated. A paint cannot have its visibility bound; only a node can.",
+        "A TRUNCATED STYLE ID FAILS SILENTLY. The first build passed 26-char slices of the text style ids (sliced for display in an earlier read) to setTextStyleIdAsync. Nothing threw, the text rendered in a plausible default, and only the design-check lint caught it — 8 TEXT nodes with no textStyleId. Real ids are 40+ chars WITH a trailing comma.",
+        "Blend (hard|soft) on the POC set was never a prop: hard is the six brands' 3-stop ramp, soft is aiden's 4-stop plateau — the data-surface scope expressed as a variant."
       ],
-      "version": "0.9 · 2026-08-08 — masters on their own page, doc frames outstanding",
+      "openWork": [
+        "AIDEN SURFACE not reachable from the set. Six brands share a 3-stop ramp (9.7/51.6/90.3); aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point. Stop POSITIONS cannot bind to a variable. Recommended: an opaque ramp-aiden rect above the brand ramp gated by a BOOLEAN property. Until then an aiden mark uses the Mark/Aiden paint style.",
+        "Template-v4 doc frames (Overview / Spec / Examples·Docs·History) not built.",
+        "Motion inside a component is still truncated at 2.0s (POC finding, unchanged). Full-length loops live on the \"Mark · motion (specimen)\" frame as plain-frame copies."
+      ],
+      "lintStatus": "unboundSolid 0 · textNoStyle 0 · genericNames 0 · unboundSpacing 0 · noDescription 0. unboundRadius is a STANDING EXCEPTION: the tile radius is 22.5% of its own size in CSS — a percentage, not a token — so the rescaled values (5.4/7.2/10.8/14.4) have nothing to bind to and must not get a token. Same class as the documented literals in CLAUDE.md.",
+      "version": "1.0 · 2026-08-08",
       "newComponent": "YES — 61st component. Shipped in code 2026-08-08 (src/components/Mark/)."
     },
     "FullScreenDialog": {
