@@ -298,6 +298,25 @@ html {
   --z-100: 100;
 
   /* -----------------------------------------------------------------------
+     Tint multipliers — the fourth theming axis
+     -----------------------------------------------------------------------
+     Deeper theming lets a brand tint the neutral surfaces. These two are the
+     ON/OFF switches, and they default to 0 so ABSENCE MEANS NEUTRAL: a page
+     that never sets data-tint renders exactly the shipped neutrals rather
+     than breaking. Opting in is `<html data-tint="page rail">`.
+
+     They are multipliers rather than booleans because CSS has no booleans and
+     the value has to enter calc(): every tinted surface is
+     `color-mix(…, var(--tint-stock) calc(N% * var(--tint-page)), <base>)`,
+     so 0 collapses the mix to the base colour numerically. It also leaves the
+     door open to a continuous 0–1 strength without touching any call site.
+
+     `page` tints the content surfaces; `rail` tints the sidebar alone, so a
+     tinted rail can sit against a neutral page. */
+  --tint-page: 0;
+  --tint-rail: 0;
+
+  /* -----------------------------------------------------------------------
      Motion / Transitions
      ----------------------------------------------------------------------- */
   --duration-instant: 150ms; /* micro-transitions (hover color shifts) */
@@ -368,8 +387,36 @@ html {
    ========================================================================= */
 :root,
 [data-mode='light'] {
+  /* ── RAW NEUTRAL BASE ────────────────────────────────────────────────────
+     The thirteen surfaces a brand can tint, held as literals apart from the
+     public token that reads them.
+
+     This layer exists because a custom property CANNOT reference itself: a
+     brand scope wanting `--card: color-mix(…, var(--card))` writes a cycle,
+     which resolves to `unset` — not to the old value, and with no error. So
+     the literal moves here and `--card` becomes a pass-through; a brand scope
+     mixes against `--base-card`, which is a different name and therefore not
+     a cycle.
+
+     Untinted output is bit-identical: var() of an inherited literal IS the
+     literal. Nothing else should read --base-* — they are the input to the
+     tint derivation, not a second public surface vocabulary. */
+  --base-background: #ffffff;
+  --base-secondary: #e2e8f0;
+  --base-muted: #cbd5e1;
+  --base-accent: #f1f5f9;
+  --base-card: #ffffff;
+  --base-popover: #ffffff;
+  --base-border: #cbd5e1;
+  --base-border-hover: #64748b;
+  --base-input: #e2e8f0;
+  --base-ring: #94a3b8;
+  --base-sidebar: #f8fafc;
+  --base-sidebar-accent: #e2e8f0;
+  --base-sidebar-border: #e2e8f0;
+
   /* Core */
-  --background: #ffffff;
+  --background: var(--base-background);
   --foreground: #0f172a;
   /* THE MAIN BRAND'S PRIMARY, held separately so it survives theming.
      A [data-theme] scope remaps --primary; it deliberately does NOT remap these.
@@ -410,35 +457,35 @@ html {
      dissolving into the page again. */
   --avatar-background: #64748b;
   --avatar-foreground: #ffffff;
-  --secondary: #e2e8f0;
+  --secondary: var(--base-secondary);
   --secondary-foreground: #1e293b;
-  --muted: #cbd5e1;
+  --muted: var(--base-muted);
   --muted-foreground: #475569;
-  --accent: #f1f5f9;
+  --accent: var(--base-accent);
   --accent-foreground: #0f172a;
-  --card: #ffffff;
+  --card: var(--base-card);
   --card-foreground: #0f172a;
-  --popover: #ffffff;
+  --popover: var(--base-popover);
   --popover-foreground: #0f172a;
-  --border: #cbd5e1;
-  --border-hover: #64748b;
-  --input: #e2e8f0;
-  --ring: #94a3b8;
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --input: var(--base-input);
+  --ring: var(--base-ring);
 
   /* Sidebar — distinct chrome surface (not remapped by a theme). Widths are
      mode-independent. */
   --sidebar-width: 16rem;
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
-  --sidebar: #f8fafc;
+  --sidebar: var(--base-sidebar);
   --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #334155;
   --sidebar-primary-foreground: #f8fafc;
-  --sidebar-accent: #e2e8f0;  /* slate-200. Was #f1f5f9, only dL 2 from the
-                                 rail — a selection nobody could see. */
+  --sidebar-accent: var(--base-sidebar-accent);  /* slate-200. Was #f1f5f9, only
+                                 dL 2 from the rail — a selection nobody could see. */
   --sidebar-accent-foreground: #1e293b;
-  --sidebar-border: #e2e8f0;
+  --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #94a3b8;
 
   /* Code Block — syntax palette darkened 2026-07-25 for WCAG AA on --code-block.
@@ -743,8 +790,25 @@ html {
    Dark Theme
    ========================================================================= */
 [data-mode='dark'] {
+  /* ── RAW NEUTRAL BASE (dark) ─────────────────────────────────────────────
+     Mirrors the light block. See there for why the literal and the public
+     token are held apart. */
+  --base-background: #0f172a;
+  --base-secondary: #1e293b;
+  --base-muted: #334155;
+  --base-accent: #334155;
+  --base-card: #1e293b;
+  --base-popover: #475569;
+  --base-border: #64748b;
+  --base-border-hover: #cbd5e1;
+  --base-input: #475569;
+  --base-ring: #94a3b8;
+  --base-sidebar: #1e293b;
+  --base-sidebar-accent: #334155;
+  --base-sidebar-border: #334155;
+
   /* Core */
-  --background: #0f172a;
+  --background: var(--base-background);
   --foreground: #f8fafc;
   /* The main brand's primary, dark. Not remapped by any theme — see the light
      block for why these exist. */
@@ -774,30 +838,30 @@ html {
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
-  --secondary: #1e293b;
+  --secondary: var(--base-secondary);
   --secondary-foreground: #f8fafc;
-  --muted: #334155;
+  --muted: var(--base-muted);
   --muted-foreground: #e2e8f0;
-  --accent: #334155;
+  --accent: var(--base-accent);
   --accent-foreground: #f8fafc;
-  --card: #1e293b;
+  --card: var(--base-card);
   --card-foreground: #f8fafc;
-  --popover: #475569;
+  --popover: var(--base-popover);
   --popover-foreground: #f8fafc;
-  --border: #64748b;
-  --border-hover: #cbd5e1;
-  --input: #475569;
-  --ring: #94a3b8;
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --input: var(--base-input);
+  --ring: var(--base-ring);
 
   /* Sidebar (dark) — slate-800 surface, distinct from the slate-900 page. */
-  --sidebar: #1e293b;
+  --sidebar: var(--base-sidebar);
   --sidebar-background: #1e293b;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #e2e8f0;
   --sidebar-primary-foreground: #0f172a;
-  --sidebar-accent: #334155;
+  --sidebar-accent: var(--base-sidebar-accent);
   --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #334155;
+  --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #64748b;
 
   /* Code Block — dark already cleared AA (5.4–9.6); only --code-attr changed,
