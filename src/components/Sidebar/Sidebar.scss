@@ -394,13 +394,20 @@
     white-space: nowrap;
   }
 
-  /* A lighter pass of the ACTIVE paint, not the same paint. The overlay is
-     mode-aware: a white scrim in light (so hover sits above active) and a dark
-     one in dark (so it sits below). Either way the two states differ. */
+  /* A partial pass of the ACTIVE paint, not the same paint — the accent mixed
+     back toward the rail it sits on. Mode-correct for free: in light the rail
+     is lighter than the accent so hover lands above active, in dark it is
+     darker so hover lands below. Either way the two states differ, which is the
+     whole point (they used to be one paint, told apart only by font-weight).
+
+     IT MUST STAY A COLOUR. The base is `background: transparent` with
+     `transition: background`, and an earlier version of this fix layered an
+     --opacity-50 gradient over the accent instead. That works visually but
+     background-image CANNOT interpolate from `none`, so the fade turned into a
+     snap on every row. color-mix resolves to a plain colour, so the transition
+     survives. Don't reintroduce a gradient here. */
   &:hover {
-    background:
-      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
-      var(--sidebar-accent);
+    background: color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
@@ -532,9 +539,7 @@
     white-space: nowrap;
   }
   &:hover {
-    background:
-      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
-      var(--sidebar-accent);
+    background: color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
