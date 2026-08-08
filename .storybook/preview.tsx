@@ -5,16 +5,38 @@ import '../src/styles/fonts.scss';
 import '../src/styles/tokens.scss';
 import './preview.scss';
 
-// Brand themes. 'main' = the neutral slate base (no data-theme attribute).
-const THEMES = ['main', 'db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
+// Retires the pre-paint literals in preview-head.html. Those exist only to stop
+// a reloading docs iframe flashing white before this bundle runs; they are
+// scoped to `html:not([data-tokens-ready])`, so stamping the attribute here —
+// after the imports above, i.e. once tokens.scss really has been applied —
+// switches them off and hands the page back to `background: var(--background)`.
+//
+// It matters that they DO get switched off: they are literals, so while they
+// apply the page cannot follow a surface tint, and a tinted #storybook-root
+// ends up floating on a frozen background.
+if (typeof document !== 'undefined') {
+  document.documentElement.setAttribute('data-tokens-ready', '');
+}
 
-// Two independent toolbar globals, applied to <html>:
-//   mode  → data-mode="light|dark"   (light / dark)
-//   theme → data-theme="{code}"      (sub-brand; 'main' clears the attribute)
-// Kept separate so the two toolbars never clobber each other.
+// Brand themes. 'main' = the neutral slate base (no data-theme attribute).
+const THEMES = ['main', 'db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;
+
+// Tint states. '' is the shipped default and renders the plain neutrals — the
+// attribute is only added when something is actually tinted, which is what
+// makes "no attribute" and "tint off" the same rendering rather than two.
+const TINTS = ['', 'page', 'rail', 'page rail'] as const;
+
+// Three independent toolbar globals, applied to <html>:
+//   mode  → data-mode="light|dark"       (light / dark)
+//   theme → data-theme="{code}"          (sub-brand; 'main' clears the attribute)
+//   tint  → data-tint="page rail"        (surface tint; '' clears the attribute)
+// Kept separate so the toolbars never clobber each other. Tint only does
+// anything inside a theme — --tint-stock derives from --primary-deep, which
+// only a brand scope declares.
 const withModeAndTheme: Decorator = (Story, context) => {
   const mode = (context.globals.mode as string) || 'light';
   const theme = (context.globals.theme as string) || 'main';
+  const tint = (context.globals.tint as string) ?? '';
 
   useEffect(() => {
     const html = document.documentElement;
@@ -24,7 +46,12 @@ const withModeAndTheme: Decorator = (Story, context) => {
     } else {
       html.removeAttribute('data-theme');
     }
-  }, [mode, theme]);
+    if (tint) {
+      html.setAttribute('data-tint', tint);
+    } else {
+      html.removeAttribute('data-tint');
+    }
+  }, [mode, theme, tint]);
 
   return <Story />;
 };
@@ -80,7 +107,7 @@ const preview: Preview = {
       },
     },
     theme: {
-      description: 'Brand theme (remaps --primary)',
+      description: 'Brand theme (remaps --primary and the brand surfaces)',
       defaultValue: 'main',
       toolbar: {
         title: 'Theme',
@@ -88,6 +115,23 @@ const preview: Preview = {
         items: THEMES.map((t) => ({
           value: t,
           title: t === 'main' ? 'Main (slate)' : t.toUpperCase(),
+        })),
+        dynamicTitle: true,
+      },
+    },
+    tint: {
+      description: 'Surface tint — opt-in, and only visible inside a brand theme',
+      defaultValue: '',
+      toolbar: {
+        title: 'Tint',
+        icon: 'mirror',
+        items: TINTS.map((t) => ({
+          value: t,
+          title:
+            t === '' ? 'Off (neutral)'
+            : t === 'page' ? 'Page'
+            : t === 'rail' ? 'Rail'
+            : 'Page + rail',
         })),
         dynamicTitle: true,
       },

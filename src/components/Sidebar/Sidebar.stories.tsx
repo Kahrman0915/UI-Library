@@ -52,6 +52,44 @@ const meta: Meta<typeof Sidebar> = {
       tags: ['compound', '23 parts', 'navigation'],
       changelog: [
         {
+          date: '2026-08-08',
+          summary:
+            'Hovering a menu row no longer looks identical to the selected row. Hover is now a ' +
+            'partial pass of the selected paint rather than the same paint.',
+          detail:
+            'Hover and `--active` both set a flat `--sidebar-accent`, so the two states were one ' +
+            'colour told apart only by `font-weight`. Hover is now ' +
+            '`color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))` — the accent blended ' +
+            'back toward the rail it sits on, which is mode-correct for free: light rails are ' +
+            'lighter than the accent so hover lands above active, dark rails are darker so it ' +
+            'lands below.\n\n' +
+            'IT MUST STAY A COLOUR. The base is `background: transparent` with ' +
+            '`transition: background`. An earlier version of this fix layered a gradient over the ' +
+            'accent, which looks right and breaks the animation — `background-image` cannot ' +
+            'interpolate from `none`, so every row snapped instead of fading. Do not reintroduce ' +
+            'a gradient here.',
+        },
+        {
+          date: '2026-08-08',
+          summary:
+            'The `--sidebar-*` surface can now be tinted toward the active brand with ' +
+            '`data-tint="rail"`. Off by default; nothing changes unless you opt in.',
+          detail:
+            'Part of deeper theming v2. The rail mixes `--tint-stock` for its value and a little ' +
+            'raw `--primary` for its hue, in that order — swapping primary in for the stock ' +
+            'instead of layering over it lightens the rail and gives back the separation from the ' +
+            'content area. See docs/deeper-theming-v2-merge.md.\n\n' +
+            'PAGE SURFACES INSIDE THE RAIL FOLLOW THE RAIL. `.ui-sidebar__input` and the outline ' +
+            'menu button paint with `--background`, which is tinted by `--tint-page` — an ' +
+            'independent switch — so `rail` alone moved the rail and left its own contents behind: ' +
+            'the field/rail gap widened from 1.22:1 to 1.45:1 in dark and the search box read as a ' +
+            'hole punched in a lighter rail. `--background` is now re-derived on ' +
+            '`.ui-sidebar__inner` with the rail\'s own percentages, so the relationship holds ' +
+            'across all four tint states (1.22-1.23 dark, 1.04-1.05 light). Scoped to __inner ' +
+            'deliberately — `.ui-sidebar__inset` is the real content area and keeps the true page ' +
+            'surface.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

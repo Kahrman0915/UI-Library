@@ -1,0 +1,83 @@
+<!--
+  Runs in the preview iframe BEFORE the JS bundle, which is the only place that
+  can stop a reloading docs page from flashing white.
+
+  WHY THE FLASH HAPPENS. Changing any toolbar global — mode, theme or tint —
+  reloads the preview iframe on a docs page (measured: one `load` event each,
+  and it is Storybook's behaviour, not the decorator's). On that reload there
+  are two gaps before the page can look right:
+
+    1. `tokens.scss` and `preview.scss` are imported from `preview.tsx`, i.e.
+       they live in the JS bundle. Until it executes, the document has no
+       background at all and the browser paints its default WHITE.
+    2. `data-mode` is applied by the decorator in a React `useEffect`, so even
+       once the CSS has landed, `--background` still resolves to the LIGHT value
+       until React commits. In dark mode that is a second white-ish frame.
+
+  So this file does the two things that must happen before paint: stamp the
+  attributes, and give the document a literal background.
+
+  Everything here is a PRE-PAINT HINT, never the source of truth. The decorator
+  re-applies all three attributes on mount, so if the parse below fails or the
+  globals are not in the URL, the page still ends up correct — just with the
+  flash it has today. That is why it is wrapped in try/catch and why nothing
+  throws.
+-->
+<script>
+  (function () {
+    try {
+      // Storybook does NOT put globals in the iframe's own src — it sends them
+      // over the addons channel after load (verified: the src is only
+      // `iframe.html?viewMode=docs&id=…`). The parent URL is where they live,
+      // and it is same-origin, so read it from there and fall back to our own.
+      var search = '';
+      try {
+        search = (window.parent && window.parent !== window)
+          ? window.parent.location.search
+          : window.location.search;
+      } catch (e) {
+        search = window.location.search;
+      }
+
+      var raw = new URLSearchParams(search).get('globals') || '';
+      var g = {};
+      raw.split(';').forEach(function (pair) {
+        var i = pair.indexOf(':');
+        if (i > 0) g[pair.slice(0, i)] = decodeURIComponent(pair.slice(i + 1));
+      });
+
+      var h = document.documentElement;
+      h.setAttribute('data-mode', g.mode === 'dark' ? 'dark' : 'light');
+      // 'main' is the neutral base and is expressed as the ABSENCE of the
+      // attribute, matching the decorator.
+      if (g.theme && g.theme !== 'main') h.setAttribute('data-theme', g.theme);
+      if (g.tint) h.setAttribute('data-tint', g.tint);
+    } catch (e) {
+      /* Pre-paint only — the decorator is authoritative and runs regardless. */
+    }
+  })();
+</script>
+
+<style>
+  /*
+    Literal values, not var(), because the token file has not loaded yet — that
+    is the whole point of this block. They mirror --base-background in
+    tokens.scss; if that ever changes, change these with it.
+
+    THE :not() GATE IS LOAD-BEARING — do not drop it for a plain `html`.
+    preview.tsx stamps data-tokens-ready as soon as the bundle (and therefore
+    tokens.scss) has executed, which switches these rules OFF and hands the page
+    back to `background: var(--background)`.
+
+    Without the gate these literals outlive their purpose and win on
+    specificity: `html[data-mode='dark']` is (0,1,1) and beat preview.scss's
+    `html` at (0,0,1). An earlier version of this file also pinned `body`, which
+    was worse — (0,1,2) against (0,0,1) — so with a page tint on, <body> stayed
+    the flat literal while #storybook-root correctly resolved --background and
+    tinted. The result was a tinted rectangle the size of the story floating on
+    an untinted page, on every canvas story. The tint was right; the page behind
+    it was frozen.
+  */
+  html:not([data-tokens-ready]) { background: #ffffff; }
+  html:not([data-tokens-ready])[data-mode='dark'] { background: #0f172a; }
+</style>

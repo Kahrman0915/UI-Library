@@ -2,7 +2,11 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.stories.@(ts|tsx|mdx)'],
-  addons: ['@storybook/addon-essentials', '@storybook/addon-themes'],
+  // addon-themes is deliberately absent: it was registered for months and never
+  // used — no withThemeBy* decorator anywhere, because the mode/theme/tint
+  // globals are hand-rolled in preview.tsx. Verified it was not responsible for
+  // the docs-page remount before removing it.
+  addons: ['@storybook/addon-essentials'],
   // Generate a Docs page per component. Without this the prop JSDoc has no
   // home: the Controls panel only renders Name + Control, so the props TABLE
   // (name / description / default / type) never appears anywhere. Remove this

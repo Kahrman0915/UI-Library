@@ -203,9 +203,7 @@ export const AidenIconOnly: Story = {
 const productBrands = [
   'db',
   'dc',
-  'dr',
   'ec',
-  'ir',
   'nb',
   'ph',
   'rm',

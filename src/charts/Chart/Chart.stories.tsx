@@ -94,6 +94,25 @@ const meta: Meta<typeof Chart> = {
       },
       changelog: [
         {
+          date: '2026-08-08',
+          summary:
+            'Series colours now come from the active brand. Inside a `data-theme` scope ' +
+            '`--chart-1..6` are that brand\'s palette instead of the neutral slate ramp, and the ' +
+            'active line marker takes the brand\'s decorative highlight.',
+          detail:
+            'A SILENT BEHAVIOURAL CHANGE, and deliberate: no token is renamed and nothing errors, ' +
+            'so a consumer expecting the slate ramp under a brand simply gets brand colour. ' +
+            'Outside a theme scope nothing moves.\n\n' +
+            'The marker is `fill: var(--decorative-hi, currentColor)` and the fallback is ' +
+            'load-bearing — `--decorative-hi` does not exist outside a brand, so unthemed charts ' +
+            'render exactly as before. The POC also sets an unguarded `stroke: var(--primary)` ' +
+            'there; that WOULD change unthemed output, so it is deferred.\n\n' +
+            '`npm run test:palette` now gates each brand palette (adjacent-slot dE >= 12, CVD ' +
+            'dE >= 8). One finding is recorded rather than fixed: rm dark has an adjacent pair ' +
+            '6.3 apart under protanopia. It prints on every run under "RECORDED, NOT FIXED" and ' +
+            'is deferred to the charting rebuild. See docs/deeper-theming-v2-merge.md.',
+        },
+        {
           date: '2026-08-04',
           summary:
             'Added `emphasis` — foreground one series and demote the rest. Pointing at a legend ' +

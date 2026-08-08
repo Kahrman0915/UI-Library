@@ -163,9 +163,7 @@ export const WithIconCenter: Story = {
 const productBrands = [
   'db',
   'dc',
-  'dr',
   'ec',
-  'ir',
   'nb',
   'ph',
   'rm',

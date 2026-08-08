@@ -298,6 +298,25 @@ html {
   --z-100: 100;
 
   /* -----------------------------------------------------------------------
+     Tint multipliers — the fourth theming axis
+     -----------------------------------------------------------------------
+     Deeper theming lets a brand tint the neutral surfaces. These two are the
+     ON/OFF switches, and they default to 0 so ABSENCE MEANS NEUTRAL: a page
+     that never sets data-tint renders exactly the shipped neutrals rather
+     than breaking. Opting in is `<html data-tint="page rail">`.
+
+     They are multipliers rather than booleans because CSS has no booleans and
+     the value has to enter calc(): every tinted surface is
+     `color-mix(…, var(--tint-stock) calc(N% * var(--tint-page)), <base>)`,
+     so 0 collapses the mix to the base colour numerically. It also leaves the
+     door open to a continuous 0–1 strength without touching any call site.
+
+     `page` tints the content surfaces; `rail` tints the sidebar alone, so a
+     tinted rail can sit against a neutral page. */
+  --tint-page: 0;
+  --tint-rail: 0;
+
+  /* -----------------------------------------------------------------------
      Motion / Transitions
      ----------------------------------------------------------------------- */
   --duration-instant: 150ms; /* micro-transitions (hover color shifts) */
@@ -368,8 +387,36 @@ html {
    ========================================================================= */
 :root,
 [data-mode='light'] {
+  /* ── RAW NEUTRAL BASE ────────────────────────────────────────────────────
+     The thirteen surfaces a brand can tint, held as literals apart from the
+     public token that reads them.
+
+     This layer exists because a custom property CANNOT reference itself: a
+     brand scope wanting `--card: color-mix(…, var(--card))` writes a cycle,
+     which resolves to `unset` — not to the old value, and with no error. So
+     the literal moves here and `--card` becomes a pass-through; a brand scope
+     mixes against `--base-card`, which is a different name and therefore not
+     a cycle.
+
+     Untinted output is bit-identical: var() of an inherited literal IS the
+     literal. Nothing else should read --base-* — they are the input to the
+     tint derivation, not a second public surface vocabulary. */
+  --base-background: #ffffff;
+  --base-secondary: #e2e8f0;
+  --base-muted: #cbd5e1;
+  --base-accent: #f1f5f9;
+  --base-card: #ffffff;
+  --base-popover: #ffffff;
+  --base-border: #cbd5e1;
+  --base-border-hover: #64748b;
+  --base-input: #e2e8f0;
+  --base-ring: #94a3b8;
+  --base-sidebar: #f8fafc;
+  --base-sidebar-accent: #e2e8f0;
+  --base-sidebar-border: #e2e8f0;
+
   /* Core */
-  --background: #ffffff;
+  --background: var(--base-background);
   --foreground: #0f172a;
   /* THE MAIN BRAND'S PRIMARY, held separately so it survives theming.
      A [data-theme] scope remaps --primary; it deliberately does NOT remap these.
@@ -410,35 +457,35 @@ html {
      dissolving into the page again. */
   --avatar-background: #64748b;
   --avatar-foreground: #ffffff;
-  --secondary: #e2e8f0;
+  --secondary: var(--base-secondary);
   --secondary-foreground: #1e293b;
-  --muted: #cbd5e1;
+  --muted: var(--base-muted);
   --muted-foreground: #475569;
-  --accent: #f1f5f9;
+  --accent: var(--base-accent);
   --accent-foreground: #0f172a;
-  --card: #ffffff;
+  --card: var(--base-card);
   --card-foreground: #0f172a;
-  --popover: #ffffff;
+  --popover: var(--base-popover);
   --popover-foreground: #0f172a;
-  --border: #cbd5e1;
-  --border-hover: #64748b;
-  --input: #e2e8f0;
-  --ring: #94a3b8;
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --input: var(--base-input);
+  --ring: var(--base-ring);
 
   /* Sidebar — distinct chrome surface (not remapped by a theme). Widths are
      mode-independent. */
   --sidebar-width: 16rem;
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
-  --sidebar: #f8fafc;
+  --sidebar: var(--base-sidebar);
   --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;
   --sidebar-primary: #334155;
   --sidebar-primary-foreground: #f8fafc;
-  --sidebar-accent: #e2e8f0;  /* slate-200. Was #f1f5f9, only dL 2 from the
-                                 rail — a selection nobody could see. */
+  --sidebar-accent: var(--base-sidebar-accent);  /* slate-200. Was #f1f5f9, only
+                                 dL 2 from the rail — a selection nobody could see. */
   --sidebar-accent-foreground: #1e293b;
-  --sidebar-border: #e2e8f0;
+  --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #94a3b8;
 
   /* Code Block — syntax palette darkened 2026-07-25 for WCAG AA on --code-block.
@@ -693,24 +740,23 @@ html {
      Consumed only by the [data-theme='{code}'] scopes at the bottom of this
      file, which remap --primary / --primary-foreground onto these. The main
      brand is the absence of a theme (--primary stays neutral slate above). */
-  /* Light-mode primaries darkened 2026-07 for WCAG AA (white label ≥4.5:1);
-     DR/IR/RM already passed and are unchanged. */
-  --db-primary: #6063f1;
+  /* Each sub-brand's primary, light. SOLVED, not picked — every value comes out
+     of the deeper-theming recipe's derivation and is gated as white-label text.
+     Generated; edit the recipe, then re-run the generator. */
+  /* @generated brand-anchors:light */
+  --db-primary: #466af4;
   --db-primary-foreground: #ffffff;
-  --dc-primary: #0c8479;
+  --dc-primary: #127f76;
   --dc-primary-foreground: #ffffff;
-  --dr-primary: #e11d48;
-  --dr-primary-foreground: #ffffff;
-  --ec-primary: #07809d;
+  --ec-primary: #067db8;
   --ec-primary-foreground: #ffffff;
-  --ir-primary: #2563eb;
-  --ir-primary-foreground: #ffffff;
-  --nb-primary: #04865e;
+  --nb-primary: #306602;
   --nb-primary-foreground: #ffffff;
-  --ph-primary: #ca4c0a;
+  --ph-primary: #b56005;
   --ph-primary-foreground: #ffffff;
-  --rm-primary: #7c3aed;
+  --rm-primary: #d62496;
   --rm-primary-foreground: #ffffff;
+  /* @endgenerated */
 
   /* Aiden AI surface (data-surface='aiden') — gradient fills + tints + solid fallback.
      Identity is "blurple" #5a37e6 (hue 252°) — deliberately between violet and db's
@@ -743,8 +789,25 @@ html {
    Dark Theme
    ========================================================================= */
 [data-mode='dark'] {
+  /* ── RAW NEUTRAL BASE (dark) ─────────────────────────────────────────────
+     Mirrors the light block. See there for why the literal and the public
+     token are held apart. */
+  --base-background: #0f172a;
+  --base-secondary: #1e293b;
+  --base-muted: #334155;
+  --base-accent: #334155;
+  --base-card: #1e293b;
+  --base-popover: #475569;
+  --base-border: #64748b;
+  --base-border-hover: #cbd5e1;
+  --base-input: #475569;
+  --base-ring: #94a3b8;
+  --base-sidebar: #1e293b;
+  --base-sidebar-accent: #334155;
+  --base-sidebar-border: #334155;
+
   /* Core */
-  --background: #0f172a;
+  --background: var(--base-background);
   --foreground: #f8fafc;
   /* The main brand's primary, dark. Not remapped by any theme — see the light
      block for why these exist. */
@@ -774,30 +837,30 @@ html {
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
-  --secondary: #1e293b;
+  --secondary: var(--base-secondary);
   --secondary-foreground: #f8fafc;
-  --muted: #334155;
+  --muted: var(--base-muted);
   --muted-foreground: #e2e8f0;
-  --accent: #334155;
+  --accent: var(--base-accent);
   --accent-foreground: #f8fafc;
-  --card: #1e293b;
+  --card: var(--base-card);
   --card-foreground: #f8fafc;
-  --popover: #475569;
+  --popover: var(--base-popover);
   --popover-foreground: #f8fafc;
-  --border: #64748b;
-  --border-hover: #cbd5e1;
-  --input: #475569;
-  --ring: #94a3b8;
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --input: var(--base-input);
+  --ring: var(--base-ring);
 
   /* Sidebar (dark) — slate-800 surface, distinct from the slate-900 page. */
-  --sidebar: #1e293b;
+  --sidebar: var(--base-sidebar);
   --sidebar-background: #1e293b;
   --sidebar-foreground: #f8fafc;
   --sidebar-primary: #e2e8f0;
   --sidebar-primary-foreground: #0f172a;
-  --sidebar-accent: #334155;
+  --sidebar-accent: var(--base-sidebar-accent);
   --sidebar-accent-foreground: #f8fafc;
-  --sidebar-border: #334155;
+  --sidebar-border: var(--base-sidebar-border);
   --sidebar-ring: #64748b;
 
   /* Code Block — dark already cleared AA (5.4–9.6); only --code-attr changed,
@@ -927,14 +990,24 @@ html {
   --category-blue-bg: rgba(96, 165, 250, 0.15);
   --category-blue-hover: #93c5fd;
   --category-blue-text: #60a5fa;
+  /* INDIGO AND VIOLET ARE THE TWO EXCEPTIONS to "dark -text reuses the base
+     hue", and the page tint is why. Reusing the base gave indigo 4.79 and
+     violet 5.19 against the untinted dark page — passing, but on 0.29 and 0.69
+     of headroom. Tinting the dark page LIGHTENS it, which costs roughly 0.6, so
+     indigo landed at 4.18 under every brand (not one: db 4.22, dc 4.22, ec 4.18,
+     nb 4.19, ph 4.24, rm 4.27) and violet at 4.52, i.e. on the line.
+     Both take their palette's 300 step instead, which restores real headroom
+     (indigo 6.26 tinted / 7.17 plain, violet 6.67 / 7.65) and raises contrast on
+     the untinted page too, so nothing regresses. Every other hue keeps the base.
+     Gated by test:contrast in all 52 contexts — don't darken these back. */
   --category-indigo: #818cf8;
   --category-indigo-bg: rgba(129, 140, 248, 0.15);
   --category-indigo-hover: #a5b4fc;
-  --category-indigo-text: #818cf8;
+  --category-indigo-text: #a5b4fc;
   --category-violet: #a78bfa;
   --category-violet-bg: rgba(167, 139, 250, 0.15);
   --category-violet-hover: #c4b5fd;
-  --category-violet-text: #a78bfa;
+  --category-violet-text: #c4b5fd;
   --category-purple: #c084fc;
   --category-purple-bg: rgba(192, 132, 252, 0.15);
   --category-purple-hover: #d8b4fe;
@@ -984,23 +1057,22 @@ html {
   --shadow-color-xl: rgba(255, 255, 255, 0.1);
   --shadow-color-2xl: rgba(255, 255, 255, 0.1);
 
-  /* Theme Palettes (dark) — each sub-brand's assigned primary color. */
-  --db-primary: #818cf8;
+  /* Theme Palettes (dark) — each sub-brand's assigned primary color. Generated;
+     edit the recipe, then re-run the generator. */
+  /* @generated brand-anchors:dark */
+  --db-primary: #689cfe;
   --db-primary-foreground: #0f172a;
-  --dc-primary: #2dd4bf;
+  --dc-primary: #0db09d;
   --dc-primary-foreground: #0f172a;
-  --dr-primary: #fb7185;
-  --dr-primary-foreground: #0f172a;
-  --ec-primary: #22d3ee;
+  --ec-primary: #23c7fe;
   --ec-primary-foreground: #0f172a;
-  --ir-primary: #60a5fa;
-  --ir-primary-foreground: #0f172a;
-  --nb-primary: #34d399;
+  --nb-primary: #8bca2f;
   --nb-primary-foreground: #0f172a;
-  --ph-primary: #fb923c;
+  --ph-primary: #ee7d0a;
   --ph-primary-foreground: #0f172a;
-  --rm-primary: #a78bfa;
+  --rm-primary: #fe68b8;
   --rm-primary-foreground: #0f172a;
+  /* @endgenerated */
 
   /* Aiden AI surface (data-surface='aiden') — dark blurple #9076f9 (hue 252°), the
      light-on-dark twin of the light blurple. Saturated enough to read as a deliberate
@@ -1038,6 +1110,21 @@ html {
    (it uses --tooltip-*). The MAIN BRAND is the absence of data-theme (--primary
    stays neutral slate). Theme-independent: the referenced --{code}-primary
    tokens are defined for both modes, so scopes work in light and dark.
+
+   SIX BRANDS SHIP. `dr` and `ir` were retired rather than shipped half-themed:
+   deeper theming solves six, and a scope where --primary swaps but the
+   surfaces, artwork and charts under it do not is a split system. Re-solving
+   them later uses the same machinery.
+
+   FIGMA NAMES THESE BY HUE AND THE CODE NAMES THEM BY PRODUCT — the same value
+   under two vocabularies, which is a real source of confusion when moving
+   between the file and the Figma library:
+
+     Slate = main    Indigo = db    Teal  = dc    Cobalt = ec
+     Fern  = nb      Amber  = ph    Magenta = rm
+
+   The Brand collection in Figma uses the left column as its mode names;
+   scripts/figma-variable-audit.js cross-checks the two directions.
    ========================================================================= */
 
 /* Each scope remaps --primary + its derived family. The derived members
@@ -1066,31 +1153,9 @@ html {
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
-[data-theme='dr'] {
-  --primary: var(--dr-primary);
-  --primary-foreground: var(--dr-primary-foreground);
-  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
-  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
-  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
-  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-}
 [data-theme='ec'] {
   --primary: var(--ec-primary);
   --primary-foreground: var(--ec-primary-foreground);
-  --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-  --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
-  --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
-  --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
-  --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
-}
-[data-theme='ir'] {
-  --primary: var(--ir-primary);
-  --primary-foreground: var(--ir-primary-foreground);
   --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
   --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
   --primary-soft: color-mix(in srgb, var(--primary) 10%, transparent);
@@ -1133,6 +1198,511 @@ html {
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
 }
 
+/* =========================================================================
+   Brand identity + chart slots  (generated)
+   =========================================================================
+   Everything below is emitted from the deeper-theming recipe. The scopes above
+   remap the --primary FAMILY from an anchor; these add what a brand owns beyond
+   its accent — the functional deep, the decorative artwork pair, the composed
+   gradient, and its six categorical chart slots.
+
+   --chart-1..6 STOP BEING NEUTRAL SLATE inside a theme scope. No token is
+   renamed and nothing errors, so this is a silent behavioural change for any
+   consumer that expected the slate ramp under a brand — it is intended, and it
+   is the reason charts now read as the brand rather than as chrome. */
+/* =========================================================================
+   The tint axis
+   =========================================================================
+   Opt-in: `<html data-tint="page rail">`. The multipliers default to 0 in the
+   primitives block, so a page that never sets the attribute renders the shipped
+   neutrals — absence means neutral, and every consumer below also carries a
+   `, 0` fallback so a missing variable cannot invalidate the declaration.
+
+   `page` tints the content surfaces; `rail` tints the sidebar alone, so a
+   tinted rail can sit against a neutral page.
+
+   WHY THESE LIVE UNDER [data-theme] AND NOT IN THE MODE BLOCKS. A var() inside
+   a custom property is substituted at computed-value time ON THE ELEMENT THAT
+   DECLARES IT. --tint-stock derives from --primary-deep, which only exists
+   inside a brand scope; declared up on <html> it would resolve against nothing
+   and take the whole declaration invalid. So the derivation is declared where
+   the brand anchors are visible.
+
+   They mix against --base-*, never against the public token: a custom property
+   cannot reference itself, and `--card: color-mix(…, var(--card))` is a cycle
+   that resolves to `unset` with no error.
+
+   LIGHT DOES NOT TINT THE PAGE. --background/--card/--popover stay white; the
+   shift lands on the secondary surfaces only. Dark has no such carve-out and
+   tints its page too, because a tinted near-black still reads as the page.
+
+   Percentages are the recipe's, solved per token because the BASES differ:
+   --accent is the near-white row-hover surface and takes the most, --muted is
+   the darkest and carries the system's tightest muted-text pairing so it takes
+   the least. --ring is deliberately at full strength — it is the focus
+   indicator, not chrome, and WCAG 1.4.11 wants it to stand out. */
+/* ORDER IS LATER-WINS HERE. Dark is declared FIRST and light second, which
+   looks backwards and is not. Both compounds are 2 attributes, so a light
+   subtree nested inside a dark page matches both and the tie breaks on source
+   order — light has to come last to win it. Plain dark is unaffected: the
+   light rule's bare [data-theme] member is only 1 attribute and loses to the
+   dark compound on specificity. */
+[data-mode='dark'] [data-theme],
+[data-mode='dark'][data-theme] {
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #64748b);
+
+  --background: color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-background));
+  --card:       color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-card));
+  --popover:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-popover));
+  --secondary:  color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-secondary));
+  --accent:     color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-accent));
+  --muted:      color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-muted));
+  --input:      color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-input));
+
+  --border:       color-mix(in srgb, var(--primary) calc(6%  * var(--tint-page, 0)), var(--base-border));
+  --border-hover: color-mix(in srgb, var(--primary) calc(8%  * var(--tint-page, 0)), var(--base-border-hover));
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), var(--base-ring));
+
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), var(--base-sidebar)));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-rail, 0)), var(--base-sidebar-border)));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(9%  * var(--tint-rail, 0)), var(--base-sidebar-accent)));
+}
+
+/* Light. The bare [data-theme] is the ':root' equivalent — a themed page with no
+   explicit data-mode. The two compounds re-assert it for a light subtree. */
+[data-theme],
+[data-mode='light'] [data-theme],
+[data-mode='light'][data-theme] {
+  --tint-stock: color-mix(in srgb, var(--primary-deep) 25%, #475569);
+
+  --accent:    color-mix(in srgb, var(--tint-stock) calc(12% * var(--tint-page, 0)), var(--base-accent));
+  --secondary: color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-secondary));
+  --input:     color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-page, 0)), var(--base-input));
+  --muted:     color-mix(in srgb, var(--tint-stock) calc(7%  * var(--tint-page, 0)), var(--base-muted));
+
+  --border:       color-mix(in srgb, var(--primary) calc(5%  * var(--tint-page, 0)), var(--base-border));
+  --border-hover: color-mix(in srgb, var(--primary) calc(8%  * var(--tint-page, 0)), var(--base-border-hover));
+  --ring:         color-mix(in srgb, var(--primary) calc(30% * var(--tint-page, 0)), var(--base-ring));
+
+  /* TWO mixes, and the order is the point. The inner one is --tint-stock (the
+     greyed deep) and supplies the rail's VALUE — what holds it apart from the
+     content area. The outer one is a little raw --primary and supplies HUE, so
+     the rail reads as the brand rather than as generic grey. Swapping primary
+     in FOR the stock instead of layering on top of it lightens the rail and
+     hands the separation straight back. */
+  --sidebar:        color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(8%  * var(--tint-rail, 0)), var(--base-sidebar)));
+  --sidebar-border: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(11% * var(--tint-rail, 0)), var(--base-sidebar-border)));
+  --sidebar-accent: color-mix(in srgb, var(--primary) calc(4% * var(--tint-rail, 0)),
+                    color-mix(in srgb, var(--tint-stock) calc(10% * var(--tint-rail, 0)), var(--base-sidebar-accent)));
+}
+
+/* The attribute flippers. `~=` is a whitespace-list match, so data-tint="page rail"
+   turns on both and either alone works. */
+[data-tint~='page'] { --tint-page: 1; }
+[data-tint~='rail'] { --tint-rail: 1; }
+
+/* @generated deeper-theming-v2 — do not hand-edit; run scripts/generate-brand-tokens.mjs */
+
+/* Per-brand identity + categorical chart slots, generated from
+   src/prototypes/deeperThemingRecipeV2.ts. 6 brands + the aiden surface.
+   
+   THE LIGHT/DARK SHAPE MIRRORS THE MODE BLOCKS ABOVE. Light rides the bare
+   scope, which is the ':root' equivalent — it is what a page with a theme but
+   no explicit data-mode gets. Dark overrides it from a 2-attribute compound.
+   Light is then re-asserted from its own compound, AFTER dark, so a light
+   subtree nested inside a dark page wins the specificity tie on source order.
+   Both the descendant and same-element forms are emitted because the theme
+   and mode attributes may sit on one element or on two.
+   
+   FIGMA NAMES THESE BY HUE, code names them by product:
+     Slate=main  Indigo=db  Teal=dc  Cobalt=ec  Fern=nb  Amber=ph  Magenta=rm
+   scripts/figma-variable-audit.js cross-checks the two. */
+
+[data-theme='db'] {
+  --primary-deep: #0d3bbf;
+  --decorative-hi: #8cdafd;
+  --decorative-deep: #3419ba;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #466af4;
+  --chart-2: #a2b2d0;
+  --chart-3: #0d3bbf;
+  --chart-4: #5fc3ec;
+  --chart-5: #7f92a3;
+  --chart-6: #2b406a;
+  --chart-muted: #d7dce5;
+}
+[data-mode='dark'] [data-theme='db'],
+[data-mode='dark'][data-theme='db'] {
+  --primary-deep: #046de9;
+  --decorative-hi: #8cdafd;
+  --decorative-deep: #3b27ed;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #689cfe;
+  --chart-2: #a1bee2;
+  --chart-3: #4c84c6;
+  --chart-4: #9ddcfa;
+  --chart-5: #8092a9;
+  --chart-6: #e6e8f9;
+  --chart-muted: #5a6579;
+}
+[data-mode='light'] [data-theme='db'],
+[data-mode='light'][data-theme='db'] {
+  --primary-deep: #0d3bbf;
+  --decorative-hi: #8cdafd;
+  --decorative-deep: #3419ba;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #466af4;
+  --chart-2: #a2b2d0;
+  --chart-3: #0d3bbf;
+  --chart-4: #5fc3ec;
+  --chart-5: #7f92a3;
+  --chart-6: #2b406a;
+  --chart-muted: #d7dce5;
+}
+
+[data-theme='dc'] {
+  --primary-deep: #002b27;
+  --decorative-hi: #4eeeaf;
+  --decorative-deep: #0c4b55;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #127f76;
+  --chart-2: #7bc5c3;
+  --chart-3: #0c4955;
+  --chart-4: #74dbad;
+  --chart-5: #809aa2;
+  --chart-6: #143438;
+  --chart-muted: #d7dede;
+}
+[data-mode='dark'] [data-theme='dc'],
+[data-mode='dark'][data-theme='dc'] {
+  --primary-deep: #057d70;
+  --decorative-hi: #4eeeaf;
+  --decorative-deep: #075e6f;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #0db09d;
+  --chart-2: #b9d2d2;
+  --chart-3: #0f91aa;
+  --chart-4: #9dedc9;
+  --chart-5: #6f919b;
+  --chart-6: #d9efef;
+  --chart-muted: #576774;
+}
+[data-mode='light'] [data-theme='dc'],
+[data-mode='light'][data-theme='dc'] {
+  --primary-deep: #002b27;
+  --decorative-hi: #4eeeaf;
+  --decorative-deep: #0c4b55;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #127f76;
+  --chart-2: #7bc5c3;
+  --chart-3: #0c4955;
+  --chart-4: #74dbad;
+  --chart-5: #809aa2;
+  --chart-6: #143438;
+  --chart-muted: #d7dede;
+}
+
+[data-theme='ec'] {
+  --primary-deep: #01517a;
+  --decorative-hi: #57e3fd;
+  --decorative-deep: #1850d1;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #067db8;
+  --chart-2: #70a3d4;
+  --chart-3: #01517a;
+  --chart-4: #4ec8dc;
+  --chart-5: #6d8b9c;
+  --chart-6: #232f42;
+  --chart-muted: #d5d9dd;
+}
+[data-mode='dark'] [data-theme='ec'],
+[data-mode='dark'][data-theme='ec'] {
+  --primary-deep: #0995c1;
+  --decorative-hi: #57e3fd;
+  --decorative-deep: #067cbc;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #1da0f3;
+  --chart-2: #96c2de;
+  --chart-3: #2088bb;
+  --chart-4: #95e2e2;
+  --chart-5: #7995a6;
+  --chart-6: #e1eaf9;
+  --chart-muted: #596678;
+}
+[data-mode='light'] [data-theme='ec'],
+[data-mode='light'][data-theme='ec'] {
+  --primary-deep: #01517a;
+  --decorative-hi: #57e3fd;
+  --decorative-deep: #1850d1;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #067db8;
+  --chart-2: #70a3d4;
+  --chart-3: #01517a;
+  --chart-4: #4ec8dc;
+  --chart-5: #6d8b9c;
+  --chart-6: #232f42;
+  --chart-muted: #d5d9dd;
+}
+
+[data-theme='nb'] {
+  --primary-deep: #183a00;
+  --decorative-hi: #c9db29;
+  --decorative-deep: #105b3e;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #306602;
+  --chart-2: #7bad7a;
+  --chart-3: #364e2a;
+  --chart-4: #b1be6a;
+  --chart-5: #7e8c70;
+  --chart-6: #1f3426;
+  --chart-muted: #d7dad7;
+}
+[data-mode='dark'] [data-theme='nb'],
+[data-mode='dark'][data-theme='nb'] {
+  --primary-deep: #649807;
+  --decorative-hi: #c9db29;
+  --decorative-deep: #249d6e;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #8bca2f;
+  --chart-2: #b7bfa8;
+  --chart-3: #649807;
+  --chart-4: #cfd9a0;
+  --chart-5: #8d9479;
+  --chart-6: #e0eee1;
+  --chart-muted: #5a676e;
+}
+[data-mode='light'] [data-theme='nb'],
+[data-mode='light'][data-theme='nb'] {
+  --primary-deep: #183a00;
+  --decorative-hi: #c9db29;
+  --decorative-deep: #105b3e;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #306602;
+  --chart-2: #7bad7a;
+  --chart-3: #364e2a;
+  --chart-4: #b1be6a;
+  --chart-5: #7e8c70;
+  --chart-6: #1f3426;
+  --chart-muted: #d7dad7;
+}
+
+[data-theme='ph'] {
+  --primary-deep: #793e01;
+  --decorative-hi: #fdc450;
+  --decorative-deep: #91200d;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #b56005;
+  --chart-2: #ddbf94;
+  --chart-3: #793e01;
+  --chart-4: #fdc450;
+  --chart-5: #d97c1f;
+  --chart-6: #3a2c18;
+  --chart-muted: #e2ddd6;
+}
+[data-mode='dark'] [data-theme='ph'],
+[data-mode='dark'][data-theme='ph'] {
+  --primary-deep: #ae5904;
+  --decorative-hi: #fdc450;
+  --decorative-deep: #cc3218;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #ee7d0a;
+  --chart-2: #ddc19a;
+  --chart-3: #bd8042;
+  --chart-4: #fecf70;
+  --chart-5: #a08c78;
+  --chart-6: #f3e8d9;
+  --chart-muted: #4b4c52;
+}
+[data-mode='light'] [data-theme='ph'],
+[data-mode='light'][data-theme='ph'] {
+  --primary-deep: #793e01;
+  --decorative-hi: #fdc450;
+  --decorative-deep: #91200d;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #b56005;
+  --chart-2: #ddbf94;
+  --chart-3: #793e01;
+  --chart-4: #fdc450;
+  --chart-5: #d97c1f;
+  --chart-6: #3a2c18;
+  --chart-muted: #e2ddd6;
+}
+
+[data-theme='rm'] {
+  --primary-deep: #960366;
+  --decorative-hi: #f7b1fd;
+  --decorative-deep: #9a153b;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #d62496;
+  --chart-2: #e4c9e7;
+  --chart-3: #960366;
+  --chart-4: #f7b1fd;
+  --chart-5: #997c8f;
+  --chart-6: #3f262b;
+  --chart-muted: #e1dadc;
+}
+[data-mode='dark'] [data-theme='rm'],
+[data-mode='dark'][data-theme='rm'] {
+  --primary-deep: #d31a8d;
+  --decorative-hi: #f7b1fd;
+  --decorative-deep: #da2358;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #fe68b8;
+  --chart-2: #d4acd8;
+  --chart-3: #b6679c;
+  --chart-4: #f7b1fd;
+  --chart-5: #a88d9f;
+  --chart-6: #f8e4e8;
+  --chart-muted: #646272;
+}
+[data-mode='light'] [data-theme='rm'],
+[data-mode='light'][data-theme='rm'] {
+  --primary-deep: #960366;
+  --decorative-hi: #f7b1fd;
+  --decorative-deep: #9a153b;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 51.6%,
+    var(--primary) 51.6%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #d62496;
+  --chart-2: #e4c9e7;
+  --chart-3: #960366;
+  --chart-4: #f7b1fd;
+  --chart-5: #997c8f;
+  --chart-6: #3f262b;
+  --chart-muted: #e1dadc;
+}
+
+[data-surface='aiden'] {
+  --primary-deep: #2c6dea;
+  --decorative-hi: #b65ffd;
+  --decorative-deep: #2c6dea;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 44%,
+    var(--primary) 62%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #6b4ce7;
+  --chart-2: #83a9f2;
+  --chart-3: #3f29b0;
+  --chart-4: #c755f0;
+  --chart-5: #886fed;
+  --chart-6: #252f41;
+  --chart-muted: #bec4c8;
+}
+[data-mode='dark'] [data-surface='aiden'],
+[data-mode='dark'][data-surface='aiden'] {
+  --primary-deep: #93c5fd;
+  --decorative-hi: #b75ef2;
+  --decorative-deep: #4f99ec;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 44%,
+    var(--primary) 62%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #9076f9;
+  --chart-2: #93c5fd;
+  --chart-3: #4c88cc;
+  --chart-4: #e86bff;
+  --chart-5: #dfd8fa;
+  --chart-6: #9da1b4;
+  --chart-muted: #4a5668;
+}
+[data-mode='light'] [data-surface='aiden'],
+[data-mode='light'][data-surface='aiden'] {
+  --primary-deep: #2c6dea;
+  --decorative-hi: #b65ffd;
+  --decorative-deep: #2c6dea;
+  --decorative-gradient: linear-gradient(135deg,
+    var(--decorative-hi) 9.7%,
+    var(--primary) 44%,
+    var(--primary) 62%,
+    var(--decorative-deep) 90.3%);
+  --chart-1: #6b4ce7;
+  --chart-2: #83a9f2;
+  --chart-3: #3f29b0;
+  --chart-4: #c755f0;
+  --chart-5: #886fed;
+  --chart-6: #252f41;
+  --chart-muted: #bec4c8;
+}
+
+/* @endgenerated */
+
 /* Aiden AI surface — a scoped overlay, NOT a brand theme. Kept off the data-theme
    axis so it never enters the brand picker and can nest INSIDE any brand (an Aiden
    chat panel inside db keeps its violet identity). Remaps --primary to Aiden's solid
@@ -1151,6 +1721,42 @@ html {
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+}
+
+/* AIDEN TAKES THE MAIN BRAND'S NEUTRALS BACK, and this is a decision rather
+   than a gap. Aiden composes INSIDE a brand, so without this an Aiden panel
+   dropped into a tinted db page would inherit db's tinted surfaces and repaint
+   itself in another product's colour — tearing a hole in the page it is a guest
+   in. And Aiden's own product is a CHAT: a reading surface, where a tint is a
+   liability rather than an asset. Its identity is carried by the gradient and
+   the mark, which is a categorical difference; a surface tint is only ever a
+   matter of degree.
+
+   Re-pinning to var(--base-*) rather than to literals means ONE rule serves both
+   modes — the base layer already flips with data-mode.
+
+   All three forms are needed, and for the same specificity reason as the tint
+   blocks: the derivations that would otherwise leak in are 2-attribute
+   compounds, so a 1-attribute [data-surface='aiden'] loses to them. These come
+   after, and match at equal specificity. */
+[data-surface='aiden'],
+[data-mode='dark'] [data-surface='aiden'],
+[data-mode='dark'][data-surface='aiden'],
+[data-mode='light'] [data-surface='aiden'],
+[data-mode='light'][data-surface='aiden'] {
+  --background: var(--base-background);
+  --card: var(--base-card);
+  --popover: var(--base-popover);
+  --secondary: var(--base-secondary);
+  --accent: var(--base-accent);
+  --muted: var(--base-muted);
+  --input: var(--base-input);
+  --border: var(--base-border);
+  --border-hover: var(--base-border-hover);
+  --ring: var(--base-ring);
+  --sidebar: var(--base-sidebar);
+  --sidebar-border: var(--base-sidebar-border);
+  --sidebar-accent: var(--base-sidebar-accent);
 }
 
 /* Soft-fill tint is mode-tuned: themed secondaries lighten to 8% in light mode

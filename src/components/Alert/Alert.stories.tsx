@@ -272,7 +272,7 @@ export const EditMode: Story = {
   ),
 };
 
-const THEMES = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;
+const THEMES = ['db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;
 
 /**
  * The action button holds the main brand's slate in every sub-brand, while the

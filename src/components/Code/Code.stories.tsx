@@ -76,7 +76,7 @@ export const LongLine: Story = {
       <CodeBlock
         id="cb-long"
         filename="app.tsx"
-        code={`const themes = ['db', 'dc', 'dr', 'ec', 'ir', 'nb', 'ph', 'rm'] as const;`}
+        code={`const themes = ['db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;`}
       />
     </div>
   ),

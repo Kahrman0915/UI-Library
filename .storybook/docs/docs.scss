@@ -232,6 +232,19 @@
   min-height: var(--h-56);
   padding: var(--p-10) var(--p-8);
   overflow: hidden;
+
+  // CONTAINS VIEWPORT-FIXED COMPONENTS. `position: relative` does NOT create a
+  // containing block for a `position: fixed` child — only transform, filter,
+  // perspective and contain do. Without this, every fixed component on a docs
+  // page escapes its own card and pins itself to the IFRAME viewport instead:
+  // the Sidebar page rendered five sidebars stacked on the window edges (four
+  // left, one right from the Right Side story) on top of the prose, which reads
+  // as the page being broken rather than as a containment bug.
+  //
+  // `contain: layout` is the cheapest of the four — it does not create a paint
+  // or size boundary, so a story that legitimately overflows still behaves.
+  // Same fix the Fab stories needed for the same reason.
+  contain: layout;
 }
 
 // Stories that lay out their own page (Sidebar, Chat, Dialog triggers) need the

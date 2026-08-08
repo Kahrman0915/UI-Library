@@ -141,8 +141,14 @@
   animation-delay: var(--duration-slow);
 }
 
+/* The active marker takes the brand's DECORATIVE highlight where there is one.
+   --decorative-hi is artwork, not chrome — never text, never load-bearing — and
+   a dot with nothing read on it is exactly the case it is for.
+   The fallback is what keeps this honest: outside a brand scope --decorative-hi
+   does not exist, so the marker renders currentColor exactly as before. Do not
+   drop it for an unguarded var(), which would change untinted, unthemed output. */
 .ui-chart__marker--active {
-  fill: currentColor;
+  fill: var(--decorative-hi, currentColor);
 }
 
 /*

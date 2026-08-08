@@ -337,12 +337,135 @@ for (const [mode, blk] of [['light', LIGHT], ['dark', DARK]]) {
   }
 }
 
+// ── 3. the per-brand palettes ────────────────────────────────────────────────
+// Everything above gates the NEUTRAL slate ramp. Inside a [data-theme] scope the
+// six slots are replaced wholesale by a brand palette, and until this section
+// existed nothing measured those at all — the script reported PASS on a ramp
+// that most themed pages never render.
+//
+// The neutral ramp's own constraints do NOT transfer. It is a single hue whose
+// slots are interleaved through six lightness steps; the brand palettes are
+// multi-hue and solved for a different shape. So the floors here are set from
+// what the SOLVED values actually achieve, comfortably below the observed
+// minimum, which makes this a regression gate rather than a re-litigation of
+// the owner's tuning.
+//
+//   adjacent-slot dE00   observed min 13.2 (db dark)   -> floor 12
+//   CVD (worse of deuteranopia / protanopia)           -> the system's own
+//                                                         CVD_FLOOR of 8
+//
+// ONE PALETTE DOES NOT MEET THAT, and it is recorded rather than accommodated.
+// rm dark has an adjacent pair 6.3 apart under PROTANOPIA — below the 8 this
+// file already applies to the neutral ramp. It is not a regression from this
+// change: rm's palette is the recipe's solved output and nothing measured it
+// before, which is the whole reason this section exists. A magenta/pink family
+// is exactly where protan vision collapses, so the finding is plausible on its
+// face. It is listed below so the run PASSES while printing the number every
+// time — silently lowering the floor to 6 would have made the gate decorative,
+// and hard-failing would block on a value the owner solved. NEEDS AN OWNER
+// DECISION: re-derive rm's dark slots, or accept and delete this entry.
+//
+// Two things are REPORTED and not gated, because both are known and decided:
+//   · --chart-muted separation, whose min is 5.1 on rm light — far tighter than
+//     any other brand. Gating at 5 would be a gate in name only, so the number
+//     is printed instead and rm is named, which is the honest version.
+//   · slot 1 == --primary, which holds for 11 of the 12 brand/mode pairs. ec
+//     dark is the exception on purpose; the adoption dossier recorded it before
+//     this script existed.
+const BRAND_ADJ_FLOOR = 12;
+const BRAND_CVD_FLOOR = CVD_FLOOR; // 8 — the same bar the neutral ramp answers to
+const SLOT1_EXCEPTIONS = new Set(['ec dark']);
+// brand/mode -> the measured value at the time it was recorded. Printed loudly
+// on every run; delete the entry once the palette is re-derived or accepted.
+const CVD_RECORDED = new Map([['rm dark', 6.3]]);
+
+// Find a block by selector, choosing the one that actually declares chart slots:
+// [data-theme='db'] appears twice — once for the --primary family remap, once
+// for the generated brand tokens.
+const blockWith = (sel, must) => {
+  let from = 0;
+  for (;;) {
+    const i = src.indexOf(`${sel} {`, from);
+    if (i < 0) return null;
+    const open = src.indexOf('{', i);
+    let depth = 0;
+    let end = -1;
+    for (let j = open; j < src.length; j++) {
+      if (src[j] === '{') depth++;
+      else if (src[j] === '}' && --depth === 0) { end = j; break; }
+    }
+    if (end < 0) return null;
+    const body = src.slice(open, end);
+    if (!must || body.includes(must)) return body;
+    from = end;
+  }
+};
+
+const BRANDS = [...new Set(
+  [...src.matchAll(/\[data-theme='([a-z0-9-]+)'\]/g)].map((m) => m[1]),
+)].sort();
+
+const openFindings = [];
+console.log(`\nPer-brand chart palettes  (${BRANDS.length} brands x 2 modes)\n`);
+console.log(`  ${'brand/mode'.padEnd(12)}${'adjacent'.padStart(9)}${'CVD'.padStart(7)}${'muted'.padStart(8)}   slot1`);
+
+for (const mode of ['light', 'dark']) {
+  for (const b of BRANDS) {
+    const sel = mode === 'light' ? `[data-theme='${b}']` : `[data-mode='dark'][data-theme='${b}']`;
+    const blk = blockWith(sel, '--chart-1');
+    if (!blk) { console.log(`  ✗ ${b} ${mode}: no generated chart block`); failed = true; continue; }
+
+    const slots = Array.from({ length: SLOTS }, (_, i) => decl(blk, `chart-${i + 1}`));
+    if (slots.some((s) => !s)) { console.log(`  ✗ ${b} ${mode}: incomplete slots`); failed = true; continue; }
+    const muted = decl(blk, 'chart-muted');
+
+    let adj = Infinity;
+    let cvd = Infinity;
+    for (let i = 0; i < SLOTS - 1; i++) {
+      adj = Math.min(adj, deltaE(slots[i], slots[i + 1]));
+      cvd = Math.min(cvd, Math.min(deltaE(slots[i], slots[i + 1], 'deutan'), deltaE(slots[i], slots[i + 1], 'protan')));
+    }
+    const mu = muted ? Math.min(...slots.map((s) => deltaE(muted, s))) : NaN;
+
+    const anchorBlk = mode === 'light' ? LIGHT : DARK;
+    const prim = decl(anchorBlk, `${b}-primary`);
+    const slot1Ok = prim && slots[0].toLowerCase() === prim.toLowerCase();
+    const excepted = SLOT1_EXCEPTIONS.has(`${b} ${mode}`);
+
+    const key = `${b} ${mode}`;
+    const cvdRecorded = CVD_RECORDED.has(key);
+    const cvdBad = cvd < BRAND_CVD_FLOOR;
+    const bad = adj < BRAND_ADJ_FLOOR || (cvdBad && !cvdRecorded);
+    if (bad) failed = true;
+    if (cvdBad && cvdRecorded) openFindings.push(`${key} CVD ${cvd.toFixed(1)} (floor ${BRAND_CVD_FLOOR}, protan)`);
+
+    console.log(
+      `  ${bad ? '✗' : cvdBad ? '!' : '·'} ${key.padEnd(10)}`
+      + `${adj.toFixed(1).padStart(9)}${cvd.toFixed(1).padStart(7)}${Number.isNaN(mu) ? '    —' : mu.toFixed(1).padStart(8)}`
+      + `   ${slot1Ok ? 'primary' : excepted ? 'differs (recorded)' : 'DIFFERS — unrecorded'}`,
+    );
+    if (!slot1Ok && !excepted) failed = true;
+  }
+}
+console.log(
+  `\n  floors: adjacent dE >= ${BRAND_ADJ_FLOOR}, CVD dE >= ${BRAND_CVD_FLOOR}.`
+  + ` muted separation is reported, not gated (rm light runs 5.1).`,
+);
+
+if (openFindings.length) {
+  console.log('\n  ! RECORDED, NOT FIXED — these pass ONLY because they are listed in CVD_RECORDED:');
+  for (const f of openFindings) console.log(`      ${f}`);
+  console.log('    Re-derive the palette in the recipe, or accept it and delete the entry.');
+}
+
 console.log(
   failed
     ? '\n✗ FAIL — the chart ramp no longer satisfies its constraints.\n'
       + '  Slot order is INTERLEAVED (4,1,5,2,6,3 through six lightness steps) so that\n'
       + '  consecutive slots sit three steps apart. Only two of the 720 orderings reach\n'
       + '  that optimum — re-derive rather than nudging one value.\n'
-    : '\n✓ PASS — chart ramp holds in both modes.\n',
+      + '  For a BRAND palette, re-derive in the recipe and re-run tokens:gen — the\n'
+      + '  values in tokens.scss are generated and editing them there will be reverted.\n'
+    : '\n✓ PASS — neutral ramp and every brand palette hold in both modes.\n',
 );
 process.exit(failed ? 1 : 0);
