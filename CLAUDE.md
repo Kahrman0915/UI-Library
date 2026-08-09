@@ -14,7 +14,8 @@ A React + SCSS component library. 60 shipped component families, one shared toke
 
 ## Hard rules (never break without asking)
 
-1. **Runtime deps are `lucide-react` only.** `react` and `react-dom` are peer-deps. If you feel like reaching for `class-variance-authority`, `clsx`, `@radix-ui/*`, `framer-motion`, `motion`, `tailwindcss`, `@emotion/*`, `styled-components`, `@floating-ui/*` — stop and ask. The user has explicitly rejected each of these.
+1. **Runtime deps are `lucide-react` only — with ONE scoped exception.** `react` and `react-dom` are peer-deps. If you feel like reaching for `class-variance-authority`, `clsx`, `@radix-ui/*`, `framer-motion`, `motion`, `tailwindcss`, `@emotion/*`, `styled-components`, `@floating-ui/*` — stop and ask. The user has explicitly rejected each of these.
+   **The exception (owner-approved 2026-08-09):** `react-markdown`, `remark-gfm` and `highlight.js` may be imported **only under `src/components/ChatMarkdown/`**, which ships on the **`@ui/lib/markdown` subpath** and is deliberately NOT exported from `src/index.ts` — the main entry stays dependency-free, and the build gate (`grep react-markdown dist/index.js` must be empty) enforces it. Do not widen this exception to any other component, and never add `rehype-raw` (it would reopen the XSS surface ChatMarkdown's design closes).
 2. **No Tailwind, no CSS-in-JS.** Styling is SCSS in `.scss` files, imported by the component's `.tsx` as a side effect (`import './Component.scss'`).
 3. **Every value comes from a token.** Grep `src/styles/tokens.scss` before writing any hex, rgba, or px literal. If a value isn't tokenized, add a token in `tokens.scss` first, then use it. See "Rare exceptions" below.
 4. **Every component gets `forwardRef` + `displayName` + `className` passthrough.** Full stop.
@@ -363,6 +364,8 @@ grep -rE "#[0-9a-fA-F]{3,8}" src/components/   # should be empty
 grep -rE "rgba\("              src/components/   # should be empty
 grep -rE "^import.*from"       src/components/ | grep -oE "from ['\"][^'\"]+['\"]" | sort -u
 # ↑ only 'react', 'react-dom', 'lucide-react', '@storybook/react', or relative/alias imports allowed
+# — plus, ONLY under src/components/ChatMarkdown/: 'react-markdown', 'remark-gfm', 'highlight.js/*'
+#   (the scoped exception in hard rule 1; anywhere else these are a violation)
 ```
 
 If any of the greps produces output that doesn't fit the "allowed" list, you've introduced something that violates the rules above.

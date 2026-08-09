@@ -1,0 +1,128 @@
+// The hljs → --code-* palette map rides in with the component that needs it.
+@use '../../styles/hljs';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ChatMarkdown — a model reply's typography.
+//
+// Sits on the transcript ramp (--text-base / --leading-7, the Claude-style
+// restyle) rather than the docs ramp: replies are conversation, not
+// documentation. Headings are deliberately COMPACT — a reply's "# Heading" is
+// a section label inside a chat column, not a page title, so the scale tops
+// out at --text-xl.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-markdown {
+  font-size: var(--text-base);
+  line-height: var(--leading-7);
+  color: var(--foreground);
+
+  // Rhythm between blocks. Margins, not gap: markdown nests (lists in quotes,
+  // paragraphs in list items) and flow layout collapses margins for free.
+  > * {
+    margin-block: var(--p-3);
+  }
+
+  > :first-child {
+    margin-block-start: 0;
+  }
+
+  > :last-child {
+    margin-block-end: 0;
+  }
+
+  h1,
+  h2 {
+    font-size: var(--text-xl);
+    line-height: var(--leading-7);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+    margin-block: var(--p-4) var(--p-2);
+  }
+
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+    font-weight: var(--font-semibold);
+    margin-block: var(--p-3) var(--p-1-5);
+  }
+
+  ul,
+  ol {
+    padding-inline-start: var(--p-6);
+
+    ul,
+    ol {
+      margin-block: var(--p-1);
+    }
+  }
+
+  li {
+    margin-block: var(--p-1);
+
+    &::marker {
+      color: var(--muted-foreground);
+    }
+  }
+
+  strong {
+    font-weight: var(--font-semibold);
+  }
+
+  hr {
+    border: none;
+    border-block-start: var(--border-w-100) solid var(--border);
+    margin-block: var(--p-4);
+  }
+
+  // GFM tables — hairline grid on the card surface, same vocabulary as the
+  // rest of the system. Wide tables scroll inside the reply, never the page.
+  table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  th,
+  td {
+    padding: var(--p-2) var(--p-3);
+    border: var(--border-w-100) solid var(--border);
+    text-align: start;
+  }
+
+  th {
+    font-weight: var(--font-semibold);
+    background: var(--secondary);
+  }
+
+  img {
+    max-width: 100%;
+    border-radius: var(--rounded-md);
+  }
+}
+
+.ui-chat-markdown__link {
+  color: var(--primary-text);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  border-radius: var(--rounded-sm);
+
+  &:hover {
+    color: var(--primary-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// Fenced blocks inside a reply breathe a little more than loose blocks.
+.ui-chat-markdown__block {
+  margin-block: var(--p-3);
+}
