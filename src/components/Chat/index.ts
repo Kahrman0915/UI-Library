@@ -27,6 +27,9 @@ export {
   ChatSource,
   ChatGreeting,
 } from './Chat';
+export { default as ChatMessageAction } from './ChatMessageAction';
+export { default as ChatError } from './ChatError';
+export { default as ChatDisclaimer } from './ChatDisclaimer';
 export type {
   ChatProps,
   ChatMessageListProps,
@@ -56,6 +59,9 @@ export type {
   ChatSourcesProps,
   ChatSourceProps,
   ChatGreetingProps,
+  ChatMessageActionProps,
+  ChatErrorProps,
+  ChatDisclaimerProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

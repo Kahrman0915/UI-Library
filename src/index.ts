@@ -100,6 +100,9 @@ export {
   ChatSources,
   ChatSource,
   ChatGreeting,
+  ChatMessageAction,
+  ChatError,
+  ChatDisclaimer,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -130,6 +133,9 @@ export type {
   ChatSourcesProps,
   ChatSourceProps,
   ChatGreetingProps,
+  ChatMessageActionProps,
+  ChatErrorProps,
+  ChatDisclaimerProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import type { StatusDotStatus } from '../StatusDot/StatusDot.types';
 import type { Size } from '../../types/GlobalTypes';
 import type { DrawerSide } from '../Drawer/Drawer.types';
@@ -411,5 +412,62 @@ export type ChatGreetingProps = Omit<
   description?: React.ReactNode;
   /** Logo / brand-mark slot above the title. */
   icon?: React.ReactNode;
+  className?: string;
+};
+
+export type ChatMessageActionProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> & {
+  /**
+   * The action's glyph. Sized by the button, not by itself — same contract as
+   * `FeaturedIcon`.
+   */
+  icon: LucideIcon;
+  /**
+   * The accessible name AND the tooltip-less affordance. Required — an
+   * icon-only button with no name is unusable to a screen reader.
+   */
+  label: string;
+  /**
+   * Pressed state for toggle-shaped actions (thumbs up / thumbs down).
+   * Renders `aria-pressed` and the active tint; omit for momentary actions
+   * (copy / regenerate), which then carry no `aria-pressed` at all.
+   */
+  active?: boolean;
+  /**
+   * Copy-to-clipboard convenience: pass the text and the button handles
+   * `navigator.clipboard`, the icon↔check swap and the 2s reset itself —
+   * `CodeBlock`'s exact pattern. `onClick` still fires afterwards if given.
+   */
+  copyValue?: string;
+  className?: string;
+};
+
+export type ChatErrorProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children'
+> & {
+  /** Seeds `${id}-retry` on the Retry button. Falls back to a generated id. */
+  id?: string;
+  /** What went wrong, in words a user can act on. */
+  children: React.ReactNode;
+  /** Renders the Retry button when given. The transport is yours. */
+  onRetry?: () => void;
+  /** Default `Retry`. */
+  retryLabel?: string;
+  className?: string;
+};
+
+export type ChatDisclaimerProps = Omit<
+  React.HTMLAttributes<HTMLParagraphElement>,
+  'children'
+> & {
+  /**
+   * The disclaimer copy ("Aiden can make mistakes. Verify important
+   * information."). Required and never baked in — the words are a product
+   * decision, not a library one.
+   */
+  children: React.ReactNode;
   className?: string;
 };

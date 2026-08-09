@@ -10,6 +10,9 @@ import {
   X,
 } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
+import ChatMessageAction from './ChatMessageAction';
+import ChatError from './ChatError';
+import ChatDisclaimer from './ChatDisclaimer';
 import Chat, {
   ChatBubble,
   ChatCitation,
@@ -64,6 +67,20 @@ const meta: Meta<typeof Chat> = {
       tags: ['compound', 'aiden', '26 parts'],
       changelog: [
         {
+          date: '2026-08-09',
+          summary:
+            'Three new parts: `ChatMessageAction` (the copy / regenerate / thumbs icon ' +
+            'button the stories used to hand-roll), `ChatError` (a failed reply with ' +
+            'Retry), and `ChatDisclaimer` (the caveat line under the composer).',
+          detail:
+            '`ChatMessageAction` rides the shared `.ui-icon-button` shell, takes ' +
+            '`aria-pressed` toggle shape via `active`, and handles copy-to-clipboard ' +
+            'itself via `copyValue` — CodeBlock\'s icon↔check pattern. `ChatError` is ' +
+            '`role="alert"` on the `--error-light` tint, assistant-side per the ' +
+            'transcript asymmetry. `ChatDisclaimer` is deliberately trivial — a ' +
+            'paragraph on the right ramp, copy always consumer-provided.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -85,21 +102,6 @@ export default meta;
 type Story = StoryObj<typeof Chat>;
 
 // A ghost action button for the hover row.
-const ActionButton = ({
-  label,
-  icon: Icon,
-}: {
-  label: string;
-  icon: React.FC;
-}) => (
-  <button
-    type="button"
-    aria-label={label}
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-  >
-    <Icon />
-  </button>
-);
 
 const frame = (children: React.ReactNode) => (
   <div
@@ -141,9 +143,9 @@ export const Conversation: Story = {
               />
             </ChatBubble>
             <ChatMessageActions>
-              <ActionButton label="Copy" icon={Copy} />
-              <ActionButton label="Regenerate" icon={RefreshCw} />
-              <ActionButton label="Good response" icon={ThumbsUp} />
+              <ChatMessageAction label="Copy" icon={Copy} copyValue="Of course — here's a runnable example." />
+              <ChatMessageAction label="Regenerate" icon={RefreshCw} />
+              <ChatMessageAction label="Good response" icon={ThumbsUp} />
             </ChatMessageActions>
           </ChatMessage>
 
@@ -243,7 +245,7 @@ const AttachButton = () => (
   <button
     type="button"
     aria-label="Attach file"
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-sm ui-button--icon-only"
+    className="ui-icon-button ui-icon-button--fill ui-chat-composer__tool"
   >
     <Paperclip />
   </button>
@@ -586,6 +588,9 @@ const LayoutDemo = () => {
               <ChatComposerSend />
             </ChatComposerActions>
           </ChatComposer>
+          <ChatDisclaimer>
+            Aiden can make mistakes. Verify important information.
+          </ChatDisclaimer>
         </ChatLayoutFooter>
       </ChatLayout>
     </div>
@@ -618,14 +623,7 @@ export const Editing: StoryObj = {
             <>
               <ChatBubble>{content}</ChatBubble>
               <ChatMessageActions>
-                <button
-                  type="button"
-                  aria-label="Edit"
-                  onClick={() => setEditing(true)}
-                  className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-                >
-                  <Pencil />
-                </button>
+                <ChatMessageAction label="Edit" icon={Pencil} onClick={() => setEditing(true)} />
               </ChatMessageActions>
             </>
           )}
@@ -654,13 +652,7 @@ export const Versions: StoryObj = {
               onPrevious={() => setI((n) => Math.max(0, n - 1))}
               onNext={() => setI((n) => Math.min(answers.length - 1, n + 1))}
             />
-            <button
-              type="button"
-              aria-label="Regenerate"
-              className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-            >
-              <RefreshCw />
-            </button>
+            <ChatMessageAction label="Regenerate" icon={RefreshCw} />
           </ChatMessageActions>
         </ChatMessage>
       </div>
@@ -713,6 +705,31 @@ export const Citations: StoryObj = {
           </ChatSources>
         </ChatBubble>
       </ChatMessage>
+    </div>
+  ),
+};
+
+/**
+ * A reply that failed. `ChatError` renders assistant-side on the error tint
+ * with `role="alert"` — announced when it appears — and the optional Retry
+ * button. The transport and the retry are yours; the component only reports.
+ */
+export const ErrorState: StoryObj = {
+  render: () => (
+    <div style={{ width: 520 }}>
+      <Chat>
+        <ChatMessageList style={{ maxHeight: 360 }}>
+          <ChatMessage from="user">
+            <ChatBubble>Summarize the Q4 report for me.</ChatBubble>
+          </ChatMessage>
+          <ChatMessage from="assistant">
+            <ChatError onRetry={() => {}}>
+              Something went wrong while generating a response. Your message was
+              not lost.
+            </ChatError>
+          </ChatMessage>
+        </ChatMessageList>
+      </Chat>
     </div>
   ),
 };

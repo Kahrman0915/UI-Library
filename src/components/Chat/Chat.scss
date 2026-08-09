@@ -974,3 +974,69 @@ a.ui-chat-source {
   justify-content: center;
   margin-top: var(--p-3);
 }
+
+// ── ChatMessageAction ────────────────────────────────────────────────────────
+// One action in the hover-revealed row under a message. The shared
+// .ui-icon-button shell owns hover/press/focus; this owns only the box, the
+// glyph size, and the toggled (aria-pressed) tint.
+.ui-chat-action {
+  width: var(--w-7);
+  height: var(--h-7);
+  // Under 24px would need --ui-icon-button-hit; 28px clears WCAG 2.5.8 as-is.
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+
+  &--active {
+    color: var(--primary-text);
+    background: var(--primary-light);
+  }
+}
+
+// ── ChatError ────────────────────────────────────────────────────────────────
+// A failed assistant turn. Assistant-side geometry (full width, no bubble),
+// error-tinted surface, message + retry.
+.ui-chat-error {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-3);
+  padding: var(--p-3) var(--p-4);
+  background: var(--error-light);
+  border: var(--border-w-100) solid var(--error-border);
+  border-radius: var(--rounded-lg);
+}
+
+.ui-chat-error__icon {
+  flex-shrink: 0;
+  width: var(--w-4);
+  height: var(--h-4);
+  // Optically centre against the first text line, ItemMedia's trick.
+  margin-top: var(--p-0-5);
+  color: var(--error);
+}
+
+.ui-chat-error__body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--p-2);
+  min-width: 0;
+}
+
+.ui-chat-error__message {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+// ── ChatDisclaimer ───────────────────────────────────────────────────────────
+// The caveat line under the composer. Centered, quiet, never load-bearing.
+.ui-chat-disclaimer {
+  margin: var(--p-2) 0 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
