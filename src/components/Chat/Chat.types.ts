@@ -18,9 +18,12 @@ export type ChatSender = 'user' | 'assistant' | 'system';
 /**
  * Root of the chat family. Provides `density` to every descendant.
  *
- * Message content is **yours to render** — there is no Markdown parser, which
- * would mean a dependency. For a full-page app shell use `ChatLayout` instead;
- * don't nest one inside the other, since both provide the same context.
+ * Message content is **yours to render**. For rendered model markdown use
+ * `ChatMarkdown` from the `@ui/lib/markdown` subpath — the one component
+ * allowed the markdown dependencies, kept off the main entry so apps that
+ * never render AI markdown never pay for a parser. For a full-page app shell
+ * use `ChatLayout` instead; don't nest one inside the other, since both
+ * provide the same context.
  */
 export type ChatProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Default `balanced`. See {@link ChatDensity}. */

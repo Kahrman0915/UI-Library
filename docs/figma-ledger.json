@@ -1663,17 +1663,24 @@
     }
   },
   "aiComponents": {
-    "note": "New build-out started 2026-07-28 (branch aiden-components). AI/Aiden UI components beyond the original 57-roster. Aiden stays a data-surface (accent-only), gradient reserved for signature moments. Build dep-free first.",
+    "note": "New build-out started 2026-07-28 (branch aiden-components). AI/Aiden UI components beyond the original 57-roster. Aiden stays a data-surface (accent-only), gradient reserved for signature moments. Build dep-free first. | 2026-08-09: the suite shipped in code (branch feat/aiden-chat-suite) — see CLAUDE.md \"The Aiden chat suite shipped\". EVERY candidate below is now done in code; the Figma mirror for all of it is the open follow-up.",
     "done": [
-      "Fab"
+      "Fab",
+      "ChatMessageAction",
+      "ChatError",
+      "ChatDisclaimer",
+      "ChatMarkdown (subpath)",
+      "AidenPanel",
+      "AidenFullScreen",
+      "AidenLauncher",
+      "ChatModelPicker",
+      "ChatComposerMenu (slash+@mention)",
+      "ChatArtifact",
+      "ChatArtifactCard",
+      "ChatLayoutAside",
+      "history sidebar (recipe story, by design)"
     ],
-    "candidates": [
-      "Artifacts/Canvas panel",
-      "slash-command / @mention composer menu",
-      "conversation-history sidebar",
-      "model picker",
-      "message error/retry"
-    ]
+    "candidates": []
   },
   "aiden": {
     "blurpleSync": {

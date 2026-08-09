@@ -67,7 +67,7 @@ const meta: Meta<typeof Chat> = {
         'reasoning, citations and the full-page shell. Modelled on the Claude ' +
         'conversation UI: assistant turns are full-width bubble-less prose, user ' +
         'turns are contained bubbles on the trailing edge. Message content is yours ' +
-        'to provide; there is no Markdown parser, which would mean a dependency.',
+        'to provide; rendered markdown lives in `ChatMarkdown` on the `@ui/lib/markdown` subpath.',
       tags: ['compound', 'aiden', '26 parts'],
       changelog: [
         {
