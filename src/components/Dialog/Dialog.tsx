@@ -254,6 +254,7 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
       description,
       alignment = 'left',
       showCloseButton = true,
+      actions,
       onClose,
       className,
       ...rest
@@ -278,6 +279,7 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
             </p>
           )}
         </div>
+        {actions && <div className="ui-dialog__header-actions">{actions}</div>}
         {showCloseButton && onClose && (
           <CloseButton
             id={`${id}-close-btn`}

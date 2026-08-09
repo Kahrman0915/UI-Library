@@ -181,3 +181,22 @@
     --ui-fsd-content-width: 100%;
   }
 }
+
+// ── flush body — the app-shell handover ──────────────────────────────────────
+// FullScreenDialogBody `flush` strips the body's padding and ITS OWN scroll so
+// a full-height child (ChatLayout, a split view) owns scrolling instead. Two
+// classes on the dialog root per the locked lesson — single-class overrides
+// tie .ui-dialog at (0,1,0) and resolve on source order.
+.ui-dialog.ui-full-screen-dialog .ui-dialog__body.ui-full-screen-dialog__body--flush {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+
+  > * {
+    flex: 1;
+    min-height: 0;
+    min-width: 0;
+  }
+}

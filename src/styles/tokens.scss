@@ -490,6 +490,12 @@ html {
   --sidebar-width: 16rem;
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
+
+  /* The Aiden assistant panel (AidenPanel) — wider than a sidebar because it
+     holds a conversation, narrower than the 768px transcript column because it
+     is a companion to the page, not the page. Mode-independent, like the
+     sidebar widths. */
+  --aiden-panel-width: 420px;
   --sidebar: var(--base-sidebar);
   --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;

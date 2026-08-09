@@ -160,7 +160,15 @@ FullScreenDialogHeader.displayName = 'FullScreenDialogHeader';
 const FullScreenDialogBody = forwardRef<
   HTMLDivElement,
   FullScreenDialogBodyProps
->((props, ref) => <DialogBody {...props} ref={ref} />);
+>(({ flush, className, ...props }, ref) => (
+  <DialogBody
+    {...props}
+    ref={ref}
+    className={`${flush ? 'ui-full-screen-dialog__body--flush' : ''}${
+      className ? (flush ? ' ' : '') + className : ''
+    }`}
+  />
+));
 FullScreenDialogBody.displayName = 'FullScreenDialogBody';
 
 /** The action row, pinned to the bottom of the viewport. */

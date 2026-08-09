@@ -1,0 +1,17 @@
+// AidenLauncher — the embedded ask. Nearly everything here is the composed
+// parts' own styling; the launcher owns only the column, its measure and the
+// spacing between greeting, composer and suggestions.
+.ui-aiden-launcher {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  width: 100%;
+  // The composer measure, not the transcript measure: a doorway is a block on
+  // someone else's page and 672px keeps it from reading as the page itself.
+  max-width: var(--max-w-2xl);
+  margin-inline: auto;
+}
+
+.ui-aiden-launcher__suggestions {
+  justify-content: center;
+}

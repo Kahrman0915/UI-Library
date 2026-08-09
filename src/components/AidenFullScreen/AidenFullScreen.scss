@@ -1,0 +1,17 @@
+// AidenFullScreen is a FullScreenDialog preset — the portal, trap, scroll
+// lock, Escape guard, motion and header chrome are all Dialog's. The only
+// styling of its own: the full-screen chat header is a compact bar, not the
+// page-title treatment a Help/Feedback page wants.
+//
+// THREE classes (the two-class FSD rule plus the preset's own), because the
+// override target `.ui-dialog.ui-full-screen-dialog .ui-dialog__header` is
+// already (0,3,0) — matching it exactly would tie and fall to source order.
+.ui-dialog.ui-full-screen-dialog.ui-aiden-full-screen .ui-dialog__header {
+  padding-block: var(--p-3);
+  border-block-end: var(--border-w-100) solid var(--border);
+}
+
+.ui-dialog.ui-full-screen-dialog.ui-aiden-full-screen .ui-dialog__title {
+  font-size: var(--text-lg);
+  line-height: var(--leading-7);
+}
