@@ -1040,3 +1040,96 @@ a.ui-chat-source {
   line-height: var(--leading-4);
   color: var(--muted-foreground);
 }
+
+// ── ChatModelPicker ──────────────────────────────────────────────────────────
+// Ghost trigger — current model + chevron. A form-field border would read as
+// a form; a chat header is not a form.
+.ui-chat-model-picker {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  padding: var(--p-1) var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+  cursor: pointer;
+  transition: background var(--duration-fast) var(--ease-default);
+
+  &:hover:not(:disabled) {
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+}
+
+.ui-chat-model-picker__chevron {
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+}
+
+.ui-chat-model-picker__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  min-width: 0;
+}
+
+.ui-chat-model-picker__item-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-2);
+  font-weight: var(--font-medium);
+}
+
+.ui-chat-model-picker__item-description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+// ── ChatComposerMenu ─────────────────────────────────────────────────────────
+// The popup reuses Command's surface + item classes (copy count stays at 4);
+// this block owns only what Command does not: fixed positioning above the
+// composer, the height cap, and the two-line label.
+.ui-chat-composer-menu {
+  position: fixed;
+  z-index: var(--z-50);
+  max-height: var(--h-64);
+  overflow-y: auto;
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: var(--shadow-md);
+}
+
+.ui-chat-composer-menu__labels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  min-width: 0;
+}
+
+.ui-chat-composer-menu__label {
+  font-weight: var(--font-medium);
+}
+
+.ui-chat-composer-menu__description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}

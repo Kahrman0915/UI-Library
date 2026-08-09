@@ -40,6 +40,9 @@ const NESTED_SURFACES = [
   '.ui-popover__content',
   '.ui-hover-card__content',
   '.ui-context-menu__content',
+  // The composer's slash/@mention popup (ChatComposerMenu) — Escape must
+  // dismiss the menu, not the full-screen chat behind it.
+  '.ui-chat-composer-menu',
 ]
   .map((s) => `${s}:not(.ui-overlay-exit):not(.ui-overlay-exit--center)`)
   .join(', ');

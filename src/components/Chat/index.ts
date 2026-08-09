@@ -30,6 +30,8 @@ export {
 export { default as ChatMessageAction } from './ChatMessageAction';
 export { default as ChatError } from './ChatError';
 export { default as ChatDisclaimer } from './ChatDisclaimer';
+export { default as ChatModelPicker } from './ChatModelPicker';
+export { default as ChatComposerMenu } from './ChatComposerMenu';
 export type {
   ChatProps,
   ChatMessageListProps,
@@ -62,6 +64,10 @@ export type {
   ChatMessageActionProps,
   ChatErrorProps,
   ChatDisclaimerProps,
+  ChatModel,
+  ChatModelPickerProps,
+  ChatComposerMenuItem,
+  ChatComposerMenuProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

@@ -28,6 +28,7 @@ import {
   useChatContext,
   useChatMessageContext,
 } from './Chat.context';
+import type { ComposerKeyInterceptor } from './Chat.context';
 import { useStickToBottom } from '../../hooks/useStickToBottom';
 import { useAutosizeTextarea } from '../../hooks/useAutosizeTextarea';
 import StatusDot from '../StatusDot/StatusDot';
@@ -334,9 +335,42 @@ const ChatComposer = forwardRef<HTMLFormElement, ChatComposerProps>(
       onSubmit?.(value);
     }, [disabled, isStreaming, value, onSubmit]);
 
+    // Interceptor registry + the live textarea ref, both additive (2026-08-09,
+    // for ChatComposerMenu). Refs, not state — registering must never re-render
+    // the composer, and the input reads the list at event time.
+    const interceptorsRef = useRef<ComposerKeyInterceptor[]>([]);
+    const inputRef = useRef<HTMLTextAreaElement | null>(null);
+    const registerKeyInterceptor = useCallback(
+      (fn: ComposerKeyInterceptor) => {
+        interceptorsRef.current.push(fn);
+        return () => {
+          interceptorsRef.current = interceptorsRef.current.filter(
+            (f) => f !== fn,
+          );
+        };
+      },
+      [],
+    );
+    const runInterceptors = useCallback(
+      (e: React.KeyboardEvent<HTMLTextAreaElement>) =>
+        interceptorsRef.current.some((fn) => fn(e)),
+      [],
+    );
+
     const ctx = useMemo(
-      () => ({ value, onValueChange, submit, disabled, isStreaming, onStop }),
-      [value, onValueChange, submit, disabled, isStreaming, onStop],
+      () => ({
+        value,
+        onValueChange,
+        submit,
+        disabled,
+        isStreaming,
+        onStop,
+        registerKeyInterceptor,
+        inputRef,
+        // internal, read by ChatComposerInput
+        runInterceptors,
+      }),
+      [value, onValueChange, submit, disabled, isStreaming, onStop, registerKeyInterceptor, runInterceptors],
     );
 
     const handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -374,19 +408,34 @@ const ChatComposerInput = forwardRef<
   HTMLTextAreaElement,
   ChatComposerInputProps
 >(({ maxRows = 8, rows = 1, className, onKeyDown, ...rest }, ref) => {
-  const { value, onValueChange, submit, disabled } = useChatComposerContext();
+  const composer = useChatComposerContext();
+  const { value, onValueChange, submit, disabled, inputRef } = composer;
+  const runInterceptors = (
+    composer as unknown as {
+      runInterceptors?: (
+        e: React.KeyboardEvent<HTMLTextAreaElement>,
+      ) => boolean;
+    }
+  ).runInterceptors;
   const autoRef = useAutosizeTextarea(value, { maxRows });
 
   const setNode = useCallback(
     (node: HTMLTextAreaElement | null) => {
       autoRef.current = node;
+      inputRef.current = node;
       if (typeof ref === 'function') ref(node);
       else if (ref) ref.current = node;
     },
-    [autoRef, ref],
+    [autoRef, inputRef, ref],
   );
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    // Interceptors first (an open ChatComposerMenu owns arrows/Enter/Escape) —
+    // a `true` return swallows the key before Enter-sends can fire.
+    if (runInterceptors?.(e)) {
+      e.preventDefault();
+      return;
+    }
     onKeyDown?.(e);
     if (e.defaultPrevented) return;
     // Enter submits; Shift+Enter is a newline. Ignore IME composition.

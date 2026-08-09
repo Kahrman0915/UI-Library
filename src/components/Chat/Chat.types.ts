@@ -471,3 +471,67 @@ export type ChatDisclaimerProps = Omit<
   children: React.ReactNode;
   className?: string;
 };
+
+/** One choice in a `ChatModelPicker`. */
+export type ChatModel = {
+  value: string;
+  label: string;
+  /** Second line in the menu — speed/quality tradeoff, context size. */
+  description?: string;
+  /** Small outline `Badge` beside the label — "New", "Preview". */
+  badge?: string;
+  disabled?: boolean;
+};
+
+export type ChatModelPickerProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'value'
+> & {
+  /** Seeds the DropdownMenu's `{id}-trigger` / `{id}-content` aria pair. */
+  id: string;
+  models: ChatModel[];
+  /** The selected model's `value`. Controlled. */
+  value?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
+  /** Menu alignment against the trigger. Default `start`. */
+  align?: 'start' | 'center' | 'end';
+  className?: string;
+};
+
+/** One entry in a `ChatComposerMenu` — a slash command or an @mention target. */
+export type ChatComposerMenuItem = {
+  /** Matched against the typed query (with `label` and `keywords`). */
+  value: string;
+  label: string;
+  /** Second line — what the command does, who the person is. */
+  description?: string;
+  /** Leading glyph — a lucide icon, an `Avatar` for a mention. */
+  icon?: React.ReactNode;
+  /**
+   * What replaces the typed token on select. Defaults to the trigger char +
+   * `value` + a trailing space (`/summarize ` · `@ada `).
+   */
+  insertText?: string;
+  keywords?: string[];
+};
+
+export type ChatComposerMenuProps = {
+  /** Seeds the listbox / option ids. */
+  id?: string;
+  /** Items offered when the token starts with `/` at position 0. */
+  slashItems?: ChatComposerMenuItem[];
+  /** Items offered when a token starts with `@`. */
+  mentionItems?: ChatComposerMenuItem[];
+  /**
+   * Fired AFTER the token is replaced, with the chosen item and what was
+   * typed. Wire command execution here; mentions usually need nothing.
+   */
+  onSelect?: (
+    item: ChatComposerMenuItem,
+    context: { trigger: '/' | '@'; query: string },
+  ) => void;
+  /** Shown when the query matches nothing. Default `No matches`. */
+  emptyLabel?: React.ReactNode;
+  className?: string;
+};

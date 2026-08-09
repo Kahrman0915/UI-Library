@@ -112,6 +112,8 @@ export {
   ChatMessageAction,
   ChatError,
   ChatDisclaimer,
+  ChatModelPicker,
+  ChatComposerMenu,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -145,6 +147,10 @@ export type {
   ChatMessageActionProps,
   ChatErrorProps,
   ChatDisclaimerProps,
+  ChatModel,
+  ChatModelPickerProps,
+  ChatComposerMenuItem,
+  ChatComposerMenuProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

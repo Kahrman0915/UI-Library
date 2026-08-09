@@ -11,6 +11,8 @@ import {
 } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import ChatMessageAction from './ChatMessageAction';
+import ChatComposerMenu from './ChatComposerMenu';
+import ChatModelPicker from './ChatModelPicker';
 import ChatError from './ChatError';
 import ChatDisclaimer from './ChatDisclaimer';
 import Chat, {
@@ -732,6 +734,78 @@ export const ErrorState: StoryObj = {
       </Chat>
     </div>
   ),
+};
+
+/**
+ * Type `/` at the start (commands) or `@` anywhere (mentions): the menu opens
+ * above the composer and filters as you type. ↑↓ move, Enter/Tab insert,
+ * Escape dismisses until the token changes. The textarea keeps focus
+ * throughout — the keys arrive through the composer's interceptor, so
+ * Enter-sends is suppressed while the menu is open.
+ */
+export const ComposerMenu: StoryObj = {
+  render: function ComposerMenuStory() {
+    const [value, setValue] = useState('');
+    const [sent, setSent] = useState<string | null>(null);
+    return (
+      <div style={{ width: 560, display: 'grid', gap: 'var(--p-3)' }}>
+        <ChatComposer
+          id="menu-composer"
+          value={value}
+          onValueChange={setValue}
+          onSubmit={(v) => {
+            setSent(v);
+            setValue('');
+          }}
+        >
+          <ChatComposerInput
+            placeholder="Try / for commands, @ for mentions…"
+            aria-label="Message"
+          />
+          <ChatComposerActions>
+            <ChatComposerSend id="menu-send" />
+          </ChatComposerActions>
+          <ChatComposerMenu
+            slashItems={[
+              { value: 'summarize', label: 'Summarize', description: 'Condense the conversation so far' },
+              { value: 'table', label: 'Make a table', description: 'Turn the answer into a table' },
+              { value: 'explain', label: 'Explain simply', description: 'Rewrite for a non-expert' },
+              { value: 'translate', label: 'Translate', description: 'Translate the reply' },
+            ]}
+            mentionItems={[
+              { value: 'ada', label: 'Ada Lovelace', description: 'ada@example.com' },
+              { value: 'alan', label: 'Alan Turing', description: 'alan@example.com' },
+              { value: 'grace', label: 'Grace Hopper', description: 'grace@example.com' },
+            ]}
+          />
+        </ChatComposer>
+        <p role="status" style={{ margin: 0, font: 'var(--text-xs)/var(--leading-4) var(--font-family)', color: 'var(--muted-foreground)' }}>
+          {sent ? `Sent: "${sent}"` : 'Nothing sent yet.'}
+        </p>
+      </div>
+    );
+  },
+};
+
+/** The header slot ChatLayoutHeader always reserved, finally occupied. */
+export const ModelPicker: StoryObj = {
+  render: function ModelPickerStory() {
+    const [model, setModel] = useState('balanced');
+    return (
+      <div style={{ width: 320 }}>
+        <ChatModelPicker
+          id="model-picker"
+          value={model}
+          onValueChange={setModel}
+          models={[
+            { value: 'fast', label: 'Fast', description: 'Quick answers for everyday tasks' },
+            { value: 'balanced', label: 'Balanced', description: 'The default — capable and responsive' },
+            { value: 'thorough', label: 'Thorough', description: 'Deeper reasoning, slower', badge: 'New' },
+          ]}
+        />
+      </div>
+    );
+  },
 };
 
 export const Greeting: StoryObj = {

@@ -28,6 +28,16 @@ export const ChatMessageContext =
 export const useChatMessageContext = (): ChatMessageContextValue | null =>
   useContext(ChatMessageContext);
 
+/**
+ * A key interceptor sees the composer textarea's keydown BEFORE the built-in
+ * Enter-sends handling. Return `true` to swallow the key (the input calls
+ * preventDefault and stops). Registered by parts like `ChatComposerMenu`, so
+ * ArrowUp/Down/Enter can drive an open menu instead of the transcript.
+ */
+export type ComposerKeyInterceptor = (
+  e: React.KeyboardEvent<HTMLTextAreaElement>,
+) => boolean;
+
 // Composer context: the input state, shared to ChatComposerInput / …Send so
 // they stay a single controlled source. Sub-parts require the provider.
 export type ChatComposerContextValue = {
@@ -37,6 +47,17 @@ export type ChatComposerContextValue = {
   disabled: boolean;
   isStreaming: boolean;
   onStop?: () => void;
+  /**
+   * Register a key interceptor; returns its unregister. Interceptors run in
+   * registration order and the first `true` wins.
+   */
+  registerKeyInterceptor: (fn: ComposerKeyInterceptor) => () => void;
+  /**
+   * The live textarea element, populated by `ChatComposerInput`. Anchors
+   * floating parts (`ChatComposerMenu`) and carries the caret for token
+   * detection and insert-and-restore.
+   */
+  inputRef: React.MutableRefObject<HTMLTextAreaElement | null>;
 };
 
 export const ChatComposerContext =
