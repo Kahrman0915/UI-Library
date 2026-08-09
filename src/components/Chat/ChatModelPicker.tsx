@@ -52,9 +52,11 @@ const ChatModelPicker = forwardRef<HTMLButtonElement, ChatModelPickerProps>(
                   <span className="ui-chat-model-picker__item-label">
                     {m.label}
                     {m.badge && (
-                      <Badge id={`${id}-${m.value}-badge`} variant="outline">
-                        {m.badge}
-                      </Badge>
+                      <Badge
+                        id={`${id}-${m.value}-badge`}
+                        variant="outline"
+                        label={m.badge}
+                      />
                     )}
                   </span>
                   {m.description && (

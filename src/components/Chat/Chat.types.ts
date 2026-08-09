@@ -535,3 +535,58 @@ export type ChatComposerMenuProps = {
   emptyLabel?: React.ReactNode;
   className?: string;
 };
+
+export type ChatArtifactProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  /** Seeds `${id}-title` (labels the region) and the header action ids. */
+  id: string;
+  /** The document's name. */
+  title: React.ReactNode;
+  /** Filetype / kind tag beside the title — rendered as an outline `Badge`. */
+  badge?: string;
+  /** Copy payload for the header copy action. Omit to hide the action. */
+  copyValue?: string;
+  /** Renders a download action — a real `<a download>`. */
+  downloadHref?: string;
+  /** Suggested filename for `downloadHref`. */
+  downloadName?: string;
+  /** Renders an open-externally action. */
+  onOpen?: () => void;
+  /** Renders the close X. The aside's visibility is the consumer's state. */
+  onClose?: () => void;
+  /** The document itself — a `ChatMarkdown`, a `CodeBlock`, an iframe. */
+  children: React.ReactNode;
+  /** Optional pinned footer row (word count, version note). */
+  footer?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * The inline transcript affordance that opens an artifact — a momentary
+ * button, like `ChatSuggestion` (not a `Chip`: nothing toggles).
+ */
+export type ChatArtifactCardProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'title'
+> & {
+  /** The document's name. */
+  title: React.ReactNode;
+  /** Small line under the title — filetype, size, "Click to open". */
+  description?: React.ReactNode;
+  /** Leading glyph. Defaults to a file icon. */
+  icon?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * The split-view region beside the transcript — where an artifact renders.
+ * A sibling of `ChatLayoutBody` inside `ChatLayout`; when present, the layout
+ * becomes a two-column grid (transcript+composer left, aside right). Width via
+ * `--ui-chat-aside-width` (default 40rem). Hidden under 768px — swap to a
+ * `Drawer` there (the Sidebar precedent).
+ */
+export type ChatLayoutAsideProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string;
+};

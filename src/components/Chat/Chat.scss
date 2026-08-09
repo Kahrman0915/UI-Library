@@ -1133,3 +1133,156 @@ a.ui-chat-source {
   line-height: var(--leading-4);
   color: var(--muted-foreground);
 }
+
+// ── ChatArtifact ─────────────────────────────────────────────────────────────
+// The document panel. --card surface — an in-flow reading surface, not a
+// floating one (the popover/card rule).
+.ui-chat-artifact {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+  background: var(--card);
+  color: var(--card-foreground);
+  border-inline-start: var(--border-w-100) solid var(--border);
+}
+
+.ui-chat-artifact__header {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  flex-shrink: 0;
+  padding: var(--p-2) var(--p-3);
+  border-block-end: var(--border-w-100) solid var(--border);
+}
+
+.ui-chat-artifact__title {
+  margin: 0;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-semibold);
+}
+
+.ui-chat-artifact__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-1);
+  margin-inline-start: auto;
+  flex-shrink: 0;
+}
+
+.ui-chat-artifact__body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--p-4);
+}
+
+.ui-chat-artifact__footer {
+  flex-shrink: 0;
+  padding: var(--p-2) var(--p-3);
+  border-block-start: var(--border-w-100) solid var(--border);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+// ── ChatArtifactCard — the inline opener in the transcript ──────────────────
+.ui-chat-artifact-card {
+  display: flex;
+  align-items: center;
+  gap: var(--p-3);
+  width: 100%;
+  max-width: var(--max-w-sm);
+  padding: var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--card);
+  font-family: var(--font-family);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    border-color var(--duration-normal) var(--ease-out),
+    box-shadow var(--duration-normal) var(--ease-out);
+
+  &:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-sm);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-chat-artifact-card__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--w-9);
+  height: var(--h-9);
+  border-radius: var(--rounded-md);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+.ui-chat-artifact-card__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  min-width: 0;
+}
+
+.ui-chat-artifact-card__title {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-chat-artifact-card__description {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+// ── ChatLayoutAside — the split view ────────────────────────────────────────
+// When an aside is present, the layout becomes a grid: transcript + composer
+// in column 1, the aside spanning full height in column 2. `:has()` keeps the
+// no-aside path byte-identical — the flex column rules above never change.
+.ui-chat-layout:has(> .ui-chat-layout__aside) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, var(--ui-chat-aside-width, 40rem));
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  grid-template-areas:
+    'header aside'
+    'body   aside'
+    'footer aside';
+
+  > .ui-chat-layout__header { grid-area: header; }
+  > .ui-chat-layout__body   { grid-area: body; }
+  > .ui-chat-layout__footer { grid-area: footer; }
+}
+
+.ui-chat-layout__aside {
+  grid-area: aside;
+  min-height: 0;
+  min-width: 0;
+
+  // On a phone the split view is neither column — swap the artifact into a
+  // Drawer instead (the Sidebar-below-768 precedent).
+  @media (max-width: 767px) {
+    display: none;
+  }
+}

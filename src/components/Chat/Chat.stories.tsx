@@ -12,6 +12,8 @@ import {
 import type { Meta, StoryObj } from '@storybook/react';
 import ChatMessageAction from './ChatMessageAction';
 import ChatComposerMenu from './ChatComposerMenu';
+import ChatArtifact, { ChatArtifactCard } from './ChatArtifact';
+import ChatLayoutAside from './ChatLayoutAside';
 import ChatModelPicker from './ChatModelPicker';
 import ChatError from './ChatError';
 import ChatDisclaimer from './ChatDisclaimer';
@@ -803,6 +805,86 @@ export const ModelPicker: StoryObj = {
             { value: 'thorough', label: 'Thorough', description: 'Deeper reasoning, slower', badge: 'New' },
           ]}
         />
+      </div>
+    );
+  },
+};
+
+/**
+ * The split view: a `ChatArtifactCard` in the transcript opens a
+ * `ChatLayoutAside` holding the `ChatArtifact` — conversation and composer
+ * stay in the left column, the document takes the right, full height. Close
+ * the artifact and the layout collapses back to a single column (the `:has()`
+ * grid only exists while the aside is mounted).
+ */
+export const Artifacts: StoryObj = {
+  render: function ArtifactsStory() {
+    const [open, setOpen] = useState(true);
+    const [value, setValue] = useState('');
+    const DOC = [
+      '# Launch plan',
+      '',
+      '## Week 1',
+      '- Finalize the pricing page',
+      '- Dry-run the migration',
+      '',
+      '## Week 2',
+      '- Beta invites go out',
+      '- Support rota confirmed',
+    ].join('\n');
+    return (
+      <div style={{ height: 560, border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
+        <ChatLayout>
+          <ChatLayoutHeader>
+            <strong>Aiden</strong>
+          </ChatLayoutHeader>
+          <ChatLayoutBody>
+            <ChatMessageList>
+              <ChatMessage from="user">
+                <ChatBubble>Draft a launch plan I can share.</ChatBubble>
+              </ChatMessage>
+              <ChatMessage from="assistant">
+                <ChatBubble>
+                  Here's a first pass — open it to review the full document.
+                </ChatBubble>
+                <ChatArtifactCard
+                  title="Launch plan"
+                  description={open ? 'Open in the panel' : 'Click to open'}
+                  onClick={() => setOpen(true)}
+                />
+              </ChatMessage>
+            </ChatMessageList>
+          </ChatLayoutBody>
+          <ChatLayoutFooter>
+            <ChatComposer
+              id="artifact-composer"
+              value={value}
+              onValueChange={setValue}
+              onSubmit={() => setValue('')}
+            >
+              <ChatComposerInput placeholder="Ask for changes…" aria-label="Message" />
+              <ChatComposerActions>
+                <ChatComposerSend id="artifact-send" />
+              </ChatComposerActions>
+            </ChatComposer>
+          </ChatLayoutFooter>
+          {open && (
+            <ChatLayoutAside>
+              <ChatArtifact
+                id="artifact-doc"
+                title="Launch plan"
+                badge="markdown"
+                copyValue={DOC}
+                onClose={() => setOpen(false)}
+                footer="Draft · 2 sections"
+              >
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', font: 'var(--text-code)/var(--leading-5) var(--font-family-mono)', color: 'var(--foreground)' }}>
+                  {DOC}
+                </pre>
+              </ChatArtifact>
+            </ChatLayoutAside>
+          )}
+        </ChatLayout>
       </div>
     );
   },

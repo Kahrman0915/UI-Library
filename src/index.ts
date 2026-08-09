@@ -114,6 +114,9 @@ export {
   ChatDisclaimer,
   ChatModelPicker,
   ChatComposerMenu,
+  ChatArtifact,
+  ChatArtifactCard,
+  ChatLayoutAside,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -151,6 +154,9 @@ export type {
   ChatModelPickerProps,
   ChatComposerMenuItem,
   ChatComposerMenuProps,
+  ChatArtifactProps,
+  ChatArtifactCardProps,
+  ChatLayoutAsideProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,

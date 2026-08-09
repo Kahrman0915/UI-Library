@@ -178,7 +178,7 @@ function Shell() {
                 <Mark id={`dc-rail-${code}`} Icon={Icon} size="default" motion="none" label={name} />
                 {count && (
                   <span className="dc-rail__badge">
-                    <Badge id={`dc-rail-${code}-count`} variant="error">{count}</Badge>
+                    <Badge id={`dc-rail-${code}-count`} variant="error" label={String(count)} />
                   </span>
                 )}
               </span>
@@ -197,7 +197,7 @@ function Shell() {
                 aria-label="Notifications"
               />
               <span className="dc-rail__badge">
-                <Badge id="dc-notifications-count" variant="error">3</Badge>
+                <Badge id="dc-notifications-count" variant="error" label="3" />
               </span>
             </span>
             <ModeToggler id="dc-mode" variant="ghost" size="sm" />
