@@ -429,7 +429,9 @@
 
   &--aiden-secondary {
     background: var(--aiden-secondary);
-    color: var(--aiden-outline-border);
+    // TEXT reads --aiden-text (AA on-surface, the --primary-text analogue);
+    // the border keeps the raw blurple — the fills-vs-text rule.
+    color: var(--aiden-text);
     outline: var(--border-w-100) solid var(--aiden-outline-border);
     outline-offset: -1px;
     box-shadow: none;
@@ -437,20 +439,20 @@
 
   &--aiden-outline {
     background: var(--bg-input-30);
-    color: var(--aiden-outline-border);
+    color: var(--aiden-text);
     outline: var(--border-w-100) solid var(--aiden-outline-border);
     outline-offset: -1px;
   }
 
   &--aiden-ghost {
     background: transparent;
-    color: var(--aiden-outline-border);
+    color: var(--aiden-text);
     box-shadow: none;
   }
 
   &--aiden-link {
     background: transparent;
-    color: var(--aiden-outline-border);
+    color: var(--aiden-text);
     border: none;
     box-shadow: none;
   }
@@ -479,7 +481,7 @@
     background:
       linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
       var(--aiden-secondary);
-    color: var(--aiden-outline-border);
+    color: var(--aiden-text);
   }
 
   &--aiden-outline:hover:not(:disabled) {
@@ -491,7 +493,7 @@
   }
 
   &--aiden-link:hover:not(:disabled) {
-    color: color-mix(in srgb, var(--aiden-outline-border) 85%, var(--foreground));
+    color: color-mix(in srgb, var(--aiden-text) 85%, var(--foreground));
   }
 
   // ---- Aiden icon-only special border-radius ----
@@ -616,7 +618,7 @@
 // --opacity-50 hover as every other secondary (lightens in light, darkens in dark).
 [data-surface='aiden'] .ui-button--default-secondary {
   background: var(--aiden-secondary);
-  color: var(--aiden-outline-border);
+  color: var(--aiden-text);
   outline-color: var(--aiden-outline-border);
 }
 [data-surface='aiden'] .ui-button--default-secondary:hover:not(:disabled) {

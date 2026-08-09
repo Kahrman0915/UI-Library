@@ -359,6 +359,15 @@ const PAIRINGS = [
   // the pairing the whole --primary-text token was introduced to make pass.
   ['primary-text', 'background'],
   ['primary-text', 'card'],
+  // Aiden's on-surface text — the analogue of --primary-text for the standalone
+  // `variant="aiden"` (outline / secondary / link text). Before this token those
+  // read raw --aiden-outline-border, which measured ~3.84:1 in light — under AA
+  // and recorded as an open gap since 2026-07-21. Gated across EVERY context, not
+  // just the aiden surface, because a standalone aiden button can sit on any page,
+  // including a brand-tinted one.
+  ['aiden-text', 'background'],
+  ['aiden-text', 'card'],
+  ['aiden-text', 'secondary'],
 ];
 
 // ── Contexts ──────────────────────────────────────────────────────────────────
@@ -407,6 +416,12 @@ for (const [text, surface, over] of PAIRINGS) {
 
   rows.push({ label, worst, worstCtx, measured });
   if (worst != null && worst < AA) failures.push({ label, worst, worstCtx });
+  // A pairing that resolves in SOME contexts may legitimately skip the rest
+  // (e.g. brand-scoped tokens outside a brand). A pairing that resolves in NO
+  // context is a missing or misspelled token, and skipping it is
+  // indistinguishable from passing — the exact failure mode the deeper-theming
+  // merge recorded. Fail loudly instead.
+  if (measured === 0) failures.push({ label, worst: 'unresolvable in every context', worstCtx: 'token missing or misspelled?' });
 }
 
 // ── Report ────────────────────────────────────────────────────────────────────
