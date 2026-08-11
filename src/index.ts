@@ -246,6 +246,20 @@ export type {
 } from './components/Select';
 
 export {
+  default as TabBar,
+  TabBarList,
+  TabBarTab,
+  TabBarNewTab,
+} from './components/TabBar';
+export type {
+  TabBarProps,
+  TabBarListProps,
+  TabBarTabProps,
+  TabBarNewTabProps,
+  TabBarActivationMode,
+} from './components/TabBar';
+
+export {
   default as Tabs,
   TabsList,
   TabsTrigger,

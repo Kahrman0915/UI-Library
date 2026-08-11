@@ -29,7 +29,7 @@ The following unavoidable literals live in the codebase intentionally — don't 
 - `-3px` on Tooltip arrow position (component-internal geometry, not a design-system value)
 - `1000px` in Input's AND InputGroup's `-webkit-autofill` box-shadow (autofill kill-switch)
 - `12px/16px/20px` Switch thumb travel distances (component-internal geometry per size)
-- `380px/300px` Toast stack width / card min-width, `480px/560px` Command max-height / dialog width (panel geometry, deliberately not design-system values)
+- `380px/300px` Toast stack width / card min-width, `480px/560px` Command max-height / dialog width, `140px/200px` TabBar tab min/max width (panel geometry, deliberately not design-system values)
 - `outline-offset: -1px` throughout Button (idiomatic inset outline)
 - `text-underline-offset: 3px` in Breadcrumb links
 - `width/height: 1px` sr-only patterns (Attachment, Breadcrumb)
@@ -315,6 +315,7 @@ Each is exported from `src/index.ts`. See the individual `.tsx` for full prop si
 | `Spinner` | no | lucide `LoaderCircle` + `--duration-spin` rotation; `role="status"` |
 | `StatusDot` | no | Presence dot (online/offline/busy/away/neutral) → semantic tokens via `--ui-status-color`; optional `pulse` ring (reduced-motion aware); `role="status"`+label when named. Mirrors Avatar badge |
 | `Switch` | no | `size` prop; checked track uses `--primary`. Thumb travel distances (12/16/20px) are intentional component-internal literals |
+| `TabBar` + `TabBarList` + `TabBarTab` + `TabBarNewTab` | yes | The **browser-style strip of OPEN DOCUMENTS** — not `Tabs`. A tab stands for something the user opened and can close; a `Tabs` trigger reveals a panel shipped beside it. Root holds `value`/`onValueChange`, `TabBarList` is the scrolling `role="tablist"`, `TabBarNewTab` (the `+`) sits **outside** it. **Activation defaults to `manual`** (inverted from `Tabs`) — arrowing across five tabs would mount five dashboards. A tab is a `div[role="tab"]`, **not a `<button>`**, so the close `<button>` can nest legally; Enter/Space are handled by hand as a result. Closes nothing itself — `onClose` reports intent |
 | `Tabs` + `TabsList` + `TabsTrigger` + `TabsContent` | yes | `orientation` prop |
 | `Textarea` | no | Reuses Input's `.ui-input-wrap` via `--multi` modifier |
 | `Toast` — `Toaster` + `toast()` | yes | **Imperative API, not a compound tree**: render `<Toaster>` once, call `toast()` anywhere. `variant`, `duration`, `position`. 380px stack / 300px card min-width (panel geometry); action reads `--primary`; dismissal X composes `CloseButton` |
@@ -475,6 +476,15 @@ Steps, for reference / re-running:
 - **Dark-mode visual sweep** — verify every component renders correctly with `data-mode="dark"`
 
 ### Recent decisions worth remembering
+
+- **`TabBar` shipped as component #62, built from a Figma frame — and the frame had two wrong bindings (2026-08-11).** The browser-style strip of open documents (the `.dc-tabstrip` the DART Central prototype had hand-rolled). Owner's calls: name `TabBar`, tabs closable with the X on hover + open, underline on **`--primary`** so the bar themes with its application, hairlines on the system **`--border`**.
+  - **Two fills in the Figma frame were bound to the wrong variables, and both rendered correctly anyway** — which is exactly why nobody caught them. The open tab's background was bound to `--muted-foreground` while painting `#f1f5f9` (that is `--accent`), and the inactive label read the raw `slate/500` ramp rather than the semantic `--muted-foreground` that holds the same value in light. A wrong binding is invisible until the mode flips or the token moves; **check what a fill is BOUND to, not what it looks like.** Both corrected in code and in the file.
+  - **The underline was `--category-indigo`, a fixed tag colour.** It looked right only because the screen it was drawn on is themed `db`, whose primary is a near-identical blue. Under `rm` it would have stayed indigo on a magenta application.
+  - **A tab is a `div[role="tab"]`, not a `<button>`, and that is load-bearing.** A closable tab must contain the close `<button>`, and a button inside a button is invalid HTML that browsers silently un-nest. Keeping the tab a div makes the nesting legal AND keeps the close control a real button with its own accessible name and focus. The cost is that Enter/Space are handled by hand, guarded on `e.target === e.currentTarget` so a key pressed on the close button is not stolen.
+  - **`onClose` must `stopPropagation`.** Without it, closing a *background* tab bubbles the click to the tab and switches to the tab on its way out — verified by real click, not synthetically.
+  - **Activation is `manual`, inverting `Tabs`'s default.** Same prop name and vocabulary, opposite default: a `Tabs` panel is already on screen, a `TabBar` tab is a whole document, and arrow-to-activate would mount and tear down a dashboard per keypress.
+  - **The close button is hidden with `opacity`, never `display: none`** — it stays in the tab order and focus reveals it. It therefore holds its 20px of layout at rest, which is why a 19-character label truncates at the 200px cap even when no X is showing. That stability is deliberate: the alternative is a label that reflows under the pointer.
+  - Preview card + the Figma mirror of the *doc page* remain in the deferred follow-up batch with the Aiden suite.
 
 - **The Aiden chat suite shipped — Claude-parity in five phases (2026-08-09).** The Chat family grew from 27 to 35 parts (`ChatMessageAction`, `ChatError`, `ChatDisclaimer`, `ChatModelPicker`, `ChatComposerMenu`, `ChatArtifact`+`Card`, `ChatLayoutAside`), plus `ChatMarkdown` on its own subpath and the three `Aiden*` integration surfaces. Decisions that bind future work:
   - **Hard rule 1 now has its ONE scoped exception** — see the amended rule. The gate is mechanical: `grep react-markdown dist/index.js` must stay empty.
