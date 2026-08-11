@@ -99,10 +99,12 @@ const meta: Meta<typeof TabBar> = {
           date: '2026-08-11',
           summary: 'Initial build complete.',
           detail:
-            'Built from the Figma `TabBar` frame. Two fills were corrected on ' +
-            'the way in: the open tab was bound to `--muted-foreground` while ' +
-            'painting `--accent`, and the inactive label read the raw ' +
-            '`slate/500` ramp rather than the semantic `--muted-foreground`. ' +
+            'Built from a supplied Figma `TabBar` frame, whose fills turned out ' +
+            'to be bound to a FOREIGN variable library rather than this ' +
+            "system's tokens — they reported under names like " +
+            '`--muted-foreground` but resolved to another palette entirely, and ' +
+            'rendered correctly the whole time. Rebound here: the open tab ' +
+            'surface to `--accent`, the resting label to `--muted-foreground`. ' +
             'The active underline moved from the fixed `--category-indigo` to ' +
             '`--primary`, so the bar themes with its application, and the ' +
             'hairlines moved from `--sidebar-border` to the system `--border`.',
@@ -119,19 +121,19 @@ type Story = StoryObj<typeof TabBar>;
 type Doc = { value: string; label: string; Icon: LucideIcon; closable?: boolean };
 
 const DOCS: Doc[] = [
-  { value: 'home', label: 'Dartboards Home', Icon: Home, closable: false },
-  { value: 'ccb', label: 'CCB Health Check', Icon: Box },
-  { value: 'adherence', label: 'Adherence Dashboard', Icon: BarChart3 },
+  { value: 'tab-1', label: 'Tab 1', Icon: Home, closable: false },
+  { value: 'tab-2', label: 'Tab 2', Icon: Box },
+  { value: 'tab-3', label: 'Tab 3', Icon: BarChart3 },
 ];
 
-/** The bar as drawn — a permanent Home tab, two open dashboards, and `+`. */
+/** The bar as drawn — a permanent first tab, two closable ones, and `+`. */
 export const Playground: Story = {
   args: { id: 'tab-bar-playground', activationMode: 'manual' },
   render: (args) => {
-    const [open, setOpen] = useState('home');
+    const [open, setOpen] = useState('tab-1');
     return (
       <TabBar {...args} value={open} onValueChange={setOpen}>
-        <TabBarList aria-label="Open dashboards">
+        <TabBarList aria-label="Open documents">
           {DOCS.map(({ value, label, Icon, closable }) => (
             <TabBarTab key={value} value={value} label={label} Icon={Icon} closable={closable} />
           ))}
@@ -150,8 +152,8 @@ export const Playground: Story = {
 export const Closable: Story = {
   render: () => {
     const [tabs, setTabs] = useState<Doc[]>(DOCS);
-    const [open, setOpen] = useState('home');
-    const [next, setNext] = useState(1);
+    const [open, setOpen] = useState('tab-1');
+    const [next, setNext] = useState(4);
 
     const close = (value: string) => {
       const index = tabs.findIndex((t) => t.value === value);
@@ -164,7 +166,7 @@ export const Closable: Story = {
 
     return (
       <TabBar id="tab-bar-closable" value={open} onValueChange={setOpen}>
-        <TabBarList aria-label="Open dashboards">
+        <TabBarList aria-label="Open documents">
           {tabs.map(({ value, label, Icon, closable }) => (
             <TabBarTab
               key={value}
@@ -178,8 +180,8 @@ export const Closable: Story = {
         </TabBarList>
         <TabBarNewTab
           onClick={() => {
-            const value = `new-${next}`;
-            setTabs([...tabs, { value, label: `Untitled ${next}`, Icon: FileText }]);
+            const value = `tab-${next}`;
+            setTabs([...tabs, { value, label: `Tab ${next}`, Icon: FileText }]);
             setOpen(value);
             setNext(next + 1);
           }}
@@ -196,19 +198,19 @@ export const Closable: Story = {
 export const Overflow: Story = {
   render: () => {
     const many: Doc[] = [
-      { value: 'home', label: 'Dartboards Home', Icon: Home, closable: false },
-      { value: 'ccb', label: 'CCB Health Check', Icon: Box },
-      { value: 'adherence', label: 'Adherence Dashboard', Icon: BarChart3 },
-      { value: 'calls', label: 'Call Center', Icon: Phone },
-      { value: 'irm', label: 'IRM Metrics', Icon: Layers },
-      { value: 'tableau', label: 'Tableau Internal', Icon: ChartColumn },
-      { value: 'notes', label: 'Release Notes', Icon: FileText },
+      { value: 'tab-1', label: 'Tab 1', Icon: Home, closable: false },
+      { value: 'tab-2', label: 'Tab 2', Icon: Box },
+      { value: 'tab-3', label: 'Tab 3', Icon: BarChart3 },
+      { value: 'tab-4', label: 'Tab 4', Icon: Phone },
+      { value: 'tab-5', label: 'Tab 5', Icon: Layers },
+      { value: 'tab-6', label: 'Tab 6', Icon: ChartColumn },
+      { value: 'tab-7', label: 'Tab 7', Icon: FileText },
     ];
-    const [open, setOpen] = useState('adherence');
+    const [open, setOpen] = useState('tab-3');
     return (
       <div style={{ maxWidth: 720 }}>
         <TabBar id="tab-bar-overflow" value={open} onValueChange={setOpen}>
-          <TabBarList aria-label="Open dashboards">
+          <TabBarList aria-label="Open documents">
             {many.map(({ value, label, Icon, closable }) => (
               <TabBarTab key={value} value={value} label={label} Icon={Icon} closable={closable} />
             ))}
@@ -241,8 +243,8 @@ export const Themed: Story = {
           >
             data-theme=&quot;{code}&quot;
           </span>
-          <TabBar id={`tab-bar-${code}`} defaultValue="home">
-            <TabBarList aria-label={`${code} dashboards`}>
+          <TabBar id={`tab-bar-${code}`} defaultValue="tab-1">
+            <TabBarList aria-label={`${code} open documents`}>
               {DOCS.map(({ value, label, Icon, closable }) => (
                 <TabBarTab
                   key={value}
@@ -261,15 +263,20 @@ export const Themed: Story = {
   ),
 };
 
-/** Every state at once: open, resting, hovered (middle), and disabled. */
+/**
+ * Every state at once. The third tab shows what a label too long for the 200px
+ * cap does — it truncates rather than widening the tab, and it does so even
+ * though no close button is visible, because the button holds its space at
+ * rest.
+ */
 export const AllStates: Story = {
   render: () => (
-    <TabBar id="tab-bar-states" defaultValue="home">
+    <TabBar id="tab-bar-states" defaultValue="tab-1">
       <TabBarList aria-label="States">
-        <TabBarTab value="home" label="Open + permanent" Icon={Home} closable={false} />
-        <TabBarTab value="resting" label="Resting" Icon={Box} />
-        <TabBarTab value="long" label="A dashboard name far too long to fit" Icon={BarChart3} />
-        <TabBarTab value="disabled" label="Disabled" Icon={Layers} disabled />
+        <TabBarTab value="tab-1" label="Tab 1 — open, permanent" Icon={Home} closable={false} />
+        <TabBarTab value="tab-2" label="Tab 2 — resting" Icon={Box} />
+        <TabBarTab value="tab-3" label="Tab 3 — a label far too long to fit" Icon={BarChart3} />
+        <TabBarTab value="tab-4" label="Tab 4 — disabled" Icon={Layers} disabled />
       </TabBarList>
       <TabBarNewTab />
     </TabBar>
