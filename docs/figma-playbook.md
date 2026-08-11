@@ -9,7 +9,8 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** **62 component pages**, all built to template v4, plus a full **Foundations** section. `Mark` (#61) and `FullScreenDialog` (#60) are the most recent. Ledger holds per-component IDs + ~95 lessons.
+- **Status:** **63 component pages**, all built to template v4, plus a full **Foundations** section. `TabBar` (#62) is the most recent, then `Mark` (#61) and `FullScreenDialog` (#60). Ledger holds per-component IDs + ~167 lessons.
+- **A supplied frame may be bound to a FOREIGN variable library.** `TabBar` was built from an owner-supplied frame whose fills pointed at another file's variables — reported under names like `--muted-foreground`, resolving to values that were not ours. It rendered correctly, so nothing flagged it. Tell them apart by the id shape: local is `VariableID:N:N`, foreign is `VariableID:<40-hex>/N:N`. **Check what a fill is bound to, not what it looks like.**
 - **FILE REORGANISED 2026-08-08 — the Phase 1–5 grouping is GONE.** It was build-order scaffolding; the build finished, so it had stopped describing anything, and the index board built on it had drifted twice. Four sections now:
 
   | Section | Holds |

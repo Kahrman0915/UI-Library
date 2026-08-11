@@ -272,7 +272,10 @@
     "CSS: a scope wrapper dropped into a grid or flex parent TAKES A CELL. The Aiden FAB's data-surface wrapper collapsed six dashboard layouts before it got display:contents, which removes the box while leaving custom-property inheritance intact — the same trick DirectionProvider uses for its dir wrapper.",
     "DECISION: an app MARK does not invert with the mode. It is brand artwork, not a themed component — an iOS icon is the same object whatever the system theme is doing. The POC's marks now read --mark-a/b/c, which carry the LIGHT anchors in both modes; --primary-* stays mode-aware because it paints UI.",
     "Why the mode-aware mark failed: dark anchors are lighter by construction (middles L* 57-64 vs light's 45-50), so in dark the marks came out 8-14 points BRIGHTER than in light on a page 87 points darker. They read as lamps, not objects — and because the glyph tracked --primary-foreground it went ink, making them look like light-mode stickers on a dark page. Every glass layer (sheen, inner highlights, bloom) assumes a mid-dark tile and does nothing on a pale one.",
-    "OPEN: with constant marks, the tile sits 3.17-3.25 against the dark page — above the 3:1 WCAG 1.4.11 wants for a UI boundary — EXCEPT aiden at 2.70, whose ramp is the darkest in the set. An Aiden FAB on a dark page needs a ring or shadow to hold its edge; the fill alone does not."
+    "OPEN: with constant marks, the tile sits 3.17-3.25 against the dark page — above the 3:1 WCAG 1.4.11 wants for a UI boundary — EXCEPT aiden at 2.70, whose ramp is the darkest in the set. An Aiden FAB on a dark page needs a ring or shadow to hold its edge; the fill alone does not.",
+    "THE SOURCE FRAME WAS BOUND TO A FOREIGN VARIABLE LIBRARY, and it rendered correctly, which is why nobody caught it. Three fills on the owner-supplied TabBar frame (1275:2003) pointed at variable ids carrying remote library keys — d2604e6b.../3243:105 and friends — not this file collections. Figma reported their names as --muted-foreground and colors/slate/500, so they LOOKED like our tokens; the resolved values were another system entirely (that library --muted-foreground is #f1f5f9; ours is #475569). A foreign binding is invisible until the other library moves or unpublishes. CHECK WHAT A FILL IS BOUND TO, NOT WHAT IT LOOKS LIKE: a local id is VariableID:N:N, a foreign one is VariableID:<40-hex>/N:N.",
+    "The component index grid (1220:62) is an auto-layout HORIZONTAL frame with layoutWrap=WRAP, so cell ORDER is child order — writing x/y on its children is a silent no-op that auto-layout immediately overrides. Insert a new component with grid.insertChild(indexOfNextName, cell); everything after re-flows for free. The first attempt re-computed a 6-column grid by hand and assigned coordinates, which appeared to work in the return value because the positions were read back before layout settled.",
+    "Index page counts live in a _Doc/PageHeader INSTANCE, so they are component-property-driven text: setProperties on the instance, never .characters (which silently no-ops). Both the description prose and a _Doc/Chip carry the number independently — updating one and not the other is the drift the playbook already records. Verify by reading the rendered characters back, not by trusting the write."
   ],
   "components": {
     "Button": {
@@ -1599,6 +1602,27 @@
       "note": "Recorded 2026-08-08 during the brand-retirement sweep. Stub — verify before trusting.",
       "themed": true,
       "themingFrame": "Charts read --chart-1..6, which ARE per-brand as of deeper theming v2 Phase A."
+    },
+    "TabBar": {
+      "status": "done-v4",
+      "pageId": "1279:44",
+      "setIds": [
+        "1279:26339",
+        "1280:26322"
+      ],
+      "assembledFrame": "1280:26323",
+      "frames": {
+        "overview": "1281:91",
+        "spec": "1282:132",
+        "theming": "1283:268",
+        "examplesDocsHistory": "1284:356"
+      },
+      "themed": true,
+      "themingFrame": "1283:268 — seven Brand modes (main + db dc ec nb ph rm) x light/dark. ONLY --primary themes: the open tab underline. Everything else is neutral chrome by design.",
+      "props": "VARIANT State (Resting|Hover|Open|Disabled) = 4 on TabBar/Tab; TEXT Label, INSTANCE_SWAP Icon, BOOLEAN Closable. TabBar/New tab: VARIANT State (Resting|Hover) = 2.",
+      "codeOnly": "value / defaultValue / onValueChange / activationMode / onClose / closeLabel / disabled. activationMode defaults to manual, INVERTING Tabs.",
+      "builtFrom": "The TabBar frame at 1275:2003 on the TEST-adjacent page, supplied by the owner.",
+      "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset."
     }
   },
   "queue": {
