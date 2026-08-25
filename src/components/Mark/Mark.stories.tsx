@@ -16,7 +16,7 @@ const meta: Meta<typeof Mark> = {
     id: 'mark-playground',
     Icon: ChartColumn,
     title: 'Analytics',
-    description: 'Acme Suite',
+    description: 'Product suite',
     size: 'lg',
     motion: 'ambient',
   },
@@ -157,7 +157,7 @@ export const Sizes: Story = {
       {(['sm', 'default', 'lg', 'xl'] as const).map((size) => (
         <div key={size}>
           <span style={CAPTION}>{size}</span>
-          <Mark id={`mark-size-${size}`} Icon={ChartColumn} title="Analytics" description="Acme Suite" size={size} />
+          <Mark id={`mark-size-${size}`} Icon={ChartColumn} title="Analytics" description="Product suite" size={size} />
         </div>
       ))}
     </div>

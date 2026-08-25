@@ -490,6 +490,12 @@ html {
   --sidebar-width: 16rem;
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
+
+  /* The Aiden assistant panel (AidenPanel) — wider than a sidebar because it
+     holds a conversation, narrower than the 768px transcript column because it
+     is a companion to the page, not the page. Mode-independent, like the
+     sidebar widths. */
+  --aiden-panel-width: 420px;
   --sidebar: var(--base-sidebar);
   --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;
@@ -862,6 +868,15 @@ html {
   --aiden-gradient-mid: #5a37e6;
   --aiden-gradient-end: #2c6dea;
   --aiden-outline-border: #5a37e6;
+  /* The on-surface aiden text — the analogue of --primary-text, and the close of
+     a gap recorded open since 2026-07-21: the standalone variant="aiden" rendered
+     its outline/secondary/link TEXT in raw --aiden-outline-border, which measures
+     ~3.84:1 on white. Same formula as --primary-text (85% toward the mode's
+     foreground), precomputed as a literal because this hand-editable section has
+     no derivation layer. Solid FILLS and borders keep the raw blurple — this is
+     text-only, per the fills-vs-text rule. Gated by test:contrast on
+     background/card/secondary across all 52 contexts. */
+  --aiden-text: #4f32ca;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #8b5cf6 0%, #06b6d4 52%, #10b981 100%);
@@ -1213,6 +1228,9 @@ html {
   --aiden-gradient-mid: #9076f9;
   --aiden-gradient-end: #93c5fd;
   --aiden-outline-border: #9076f9;
+  /* Dark lifts toward the dark foreground rather than deepening — same direction
+     every dark on-surface text moves. See the light block for the whole story. */
+  --aiden-text: #a08af9;
 
   /* Gradient Ramps */
   --gradient-violet-cyan-emerald: linear-gradient(90deg, #a78bfa 0%, #22d3ee 52%, #34d399 100%);
@@ -1843,7 +1861,12 @@ html {
   --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
   --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
   --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
-  --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+  /* Was the same 85%-toward-foreground color-mix as the siblings above; now
+     points at the precomputed --aiden-text literal so the surface's on-surface
+     text and the standalone variant="aiden"'s (Button.scss) are ONE value with
+     ONE source, and the contrast gate covers both. The mode split comes from
+     the literal living in both mode blocks. */
+  --primary-text: var(--aiden-text);
 }
 
 /* AIDEN TAKES THE MAIN BRAND'S NEUTRALS BACK, and this is a decision rather

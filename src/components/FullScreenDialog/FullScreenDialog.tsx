@@ -40,6 +40,9 @@ const NESTED_SURFACES = [
   '.ui-popover__content',
   '.ui-hover-card__content',
   '.ui-context-menu__content',
+  // The composer's slash/@mention popup (ChatComposerMenu) — Escape must
+  // dismiss the menu, not the full-screen chat behind it.
+  '.ui-chat-composer-menu',
 ]
   .map((s) => `${s}:not(.ui-overlay-exit):not(.ui-overlay-exit--center)`)
   .join(', ');
@@ -160,7 +163,15 @@ FullScreenDialogHeader.displayName = 'FullScreenDialogHeader';
 const FullScreenDialogBody = forwardRef<
   HTMLDivElement,
   FullScreenDialogBodyProps
->((props, ref) => <DialogBody {...props} ref={ref} />);
+>(({ flush, className, ...props }, ref) => (
+  <DialogBody
+    {...props}
+    ref={ref}
+    className={`${flush ? 'ui-full-screen-dialog__body--flush' : ''}${
+      className ? (flush ? ' ' : '') + className : ''
+    }`}
+  />
+));
 FullScreenDialogBody.displayName = 'FullScreenDialogBody';
 
 /** The action row, pinned to the bottom of the viewport. */

@@ -1,3 +1,4 @@
+import type { LucideIcon } from 'lucide-react';
 import type { StatusDotStatus } from '../StatusDot/StatusDot.types';
 import type { Size } from '../../types/GlobalTypes';
 import type { DrawerSide } from '../Drawer/Drawer.types';
@@ -17,9 +18,12 @@ export type ChatSender = 'user' | 'assistant' | 'system';
 /**
  * Root of the chat family. Provides `density` to every descendant.
  *
- * Message content is **yours to render** — there is no Markdown parser, which
- * would mean a dependency. For a full-page app shell use `ChatLayout` instead;
- * don't nest one inside the other, since both provide the same context.
+ * Message content is **yours to render**. For rendered model markdown use
+ * `ChatMarkdown` from the `@ui/lib/markdown` subpath — the one component
+ * allowed the markdown dependencies, kept off the main entry so apps that
+ * never render AI markdown never pay for a parser. For a full-page app shell
+ * use `ChatLayout` instead; don't nest one inside the other, since both
+ * provide the same context.
  */
 export type ChatProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Default `balanced`. See {@link ChatDensity}. */
@@ -411,5 +415,181 @@ export type ChatGreetingProps = Omit<
   description?: React.ReactNode;
   /** Logo / brand-mark slot above the title. */
   icon?: React.ReactNode;
+  className?: string;
+};
+
+export type ChatMessageActionProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> & {
+  /**
+   * The action's glyph. Sized by the button, not by itself — same contract as
+   * `FeaturedIcon`.
+   */
+  icon: LucideIcon;
+  /**
+   * The accessible name AND the tooltip-less affordance. Required — an
+   * icon-only button with no name is unusable to a screen reader.
+   */
+  label: string;
+  /**
+   * Pressed state for toggle-shaped actions (thumbs up / thumbs down).
+   * Renders `aria-pressed` and the active tint; omit for momentary actions
+   * (copy / regenerate), which then carry no `aria-pressed` at all.
+   */
+  active?: boolean;
+  /**
+   * Copy-to-clipboard convenience: pass the text and the button handles
+   * `navigator.clipboard`, the icon↔check swap and the 2s reset itself —
+   * `CodeBlock`'s exact pattern. `onClick` still fires afterwards if given.
+   */
+  copyValue?: string;
+  className?: string;
+};
+
+export type ChatErrorProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children'
+> & {
+  /** Seeds `${id}-retry` on the Retry button. Falls back to a generated id. */
+  id?: string;
+  /** What went wrong, in words a user can act on. */
+  children: React.ReactNode;
+  /** Renders the Retry button when given. The transport is yours. */
+  onRetry?: () => void;
+  /** Default `Retry`. */
+  retryLabel?: string;
+  className?: string;
+};
+
+export type ChatDisclaimerProps = Omit<
+  React.HTMLAttributes<HTMLParagraphElement>,
+  'children'
+> & {
+  /**
+   * The disclaimer copy ("Aiden can make mistakes. Verify important
+   * information."). Required and never baked in — the words are a product
+   * decision, not a library one.
+   */
+  children: React.ReactNode;
+  className?: string;
+};
+
+/** One choice in a `ChatModelPicker`. */
+export type ChatModel = {
+  value: string;
+  label: string;
+  /** Second line in the menu — speed/quality tradeoff, context size. */
+  description?: string;
+  /** Small outline `Badge` beside the label — "New", "Preview". */
+  badge?: string;
+  disabled?: boolean;
+};
+
+export type ChatModelPickerProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'value'
+> & {
+  /** Seeds the DropdownMenu's `{id}-trigger` / `{id}-content` aria pair. */
+  id: string;
+  models: ChatModel[];
+  /** The selected model's `value`. Controlled. */
+  value?: string;
+  onValueChange?: (value: string) => void;
+  disabled?: boolean;
+  /** Menu alignment against the trigger. Default `start`. */
+  align?: 'start' | 'center' | 'end';
+  className?: string;
+};
+
+/** One entry in a `ChatComposerMenu` — a slash command or an @mention target. */
+export type ChatComposerMenuItem = {
+  /** Matched against the typed query (with `label` and `keywords`). */
+  value: string;
+  label: string;
+  /** Second line — what the command does, who the person is. */
+  description?: string;
+  /** Leading glyph — a lucide icon, an `Avatar` for a mention. */
+  icon?: React.ReactNode;
+  /**
+   * What replaces the typed token on select. Defaults to the trigger char +
+   * `value` + a trailing space (`/summarize ` · `@ada `).
+   */
+  insertText?: string;
+  keywords?: string[];
+};
+
+export type ChatComposerMenuProps = {
+  /** Seeds the listbox / option ids. */
+  id?: string;
+  /** Items offered when the token starts with `/` at position 0. */
+  slashItems?: ChatComposerMenuItem[];
+  /** Items offered when a token starts with `@`. */
+  mentionItems?: ChatComposerMenuItem[];
+  /**
+   * Fired AFTER the token is replaced, with the chosen item and what was
+   * typed. Wire command execution here; mentions usually need nothing.
+   */
+  onSelect?: (
+    item: ChatComposerMenuItem,
+    context: { trigger: '/' | '@'; query: string },
+  ) => void;
+  /** Shown when the query matches nothing. Default `No matches`. */
+  emptyLabel?: React.ReactNode;
+  className?: string;
+};
+
+export type ChatArtifactProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  /** Seeds `${id}-title` (labels the region) and the header action ids. */
+  id: string;
+  /** The document's name. */
+  title: React.ReactNode;
+  /** Filetype / kind tag beside the title — rendered as an outline `Badge`. */
+  badge?: string;
+  /** Copy payload for the header copy action. Omit to hide the action. */
+  copyValue?: string;
+  /** Renders a download action — a real `<a download>`. */
+  downloadHref?: string;
+  /** Suggested filename for `downloadHref`. */
+  downloadName?: string;
+  /** Renders an open-externally action. */
+  onOpen?: () => void;
+  /** Renders the close X. The aside's visibility is the consumer's state. */
+  onClose?: () => void;
+  /** The document itself — a `ChatMarkdown`, a `CodeBlock`, an iframe. */
+  children: React.ReactNode;
+  /** Optional pinned footer row (word count, version note). */
+  footer?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * The inline transcript affordance that opens an artifact — a momentary
+ * button, like `ChatSuggestion` (not a `Chip`: nothing toggles).
+ */
+export type ChatArtifactCardProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'title'
+> & {
+  /** The document's name. */
+  title: React.ReactNode;
+  /** Small line under the title — filetype, size, "Click to open". */
+  description?: React.ReactNode;
+  /** Leading glyph. Defaults to a file icon. */
+  icon?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * The split-view region beside the transcript — where an artifact renders.
+ * A sibling of `ChatLayoutBody` inside `ChatLayout`; when present, the layout
+ * becomes a two-column grid (transcript+composer left, aside right). Width via
+ * `--ui-chat-aside-width` (default 40rem). Hidden under 768px — swap to a
+ * `Drawer` there (the Sidebar precedent).
+ */
+export type ChatLayoutAsideProps = React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
 };

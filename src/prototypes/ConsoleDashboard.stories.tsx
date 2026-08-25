@@ -289,7 +289,7 @@ function Dashboard() {
       <Dialog id="confirm" open={dialogOpen} onClose={() => setDialogOpen(false)}>
         <DialogHeader id="confirm" title="Create a new project" description="Projects group your builds, deploys, and members." onClose={() => setDialogOpen(false)} />
         <DialogBody>
-          <Input id="proj-name" label="Project name" placeholder="acme-web" />
+          <Input id="proj-name" label="Project name" placeholder="my-project" />
         </DialogBody>
         <DialogFooter>
           <Button id="confirm-cancel" label="Cancel" style="ghost" onClick={() => setDialogOpen(false)} />

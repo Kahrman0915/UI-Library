@@ -1,0 +1,134 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// AidenPanel — the non-modal assistant panel.
+//
+// NO overlay element exists in this file, and that is the design, not an
+// omission: the page behind stays readable and interactive. See the component
+// header for the full non-modality contract.
+//
+// Z-INDEX IS --z-40 ON PURPOSE — below the floating surfaces at --z-50. A
+// Select, DropdownMenu or Popover opened INSIDE the panel portals to
+// document.body; at --z-60 the panel would paint over its own menus. Above
+// page content (and the Sidebar at --z-30); below Tooltip (70) and Toast/Fab
+// (80). The Fab is hidden by the consumer while the panel is open — the
+// documented convention, shown in the stories.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-aiden-panel {
+  position: fixed;
+  // Consumers with a fixed app header set --ui-aiden-panel-inset-top on any
+  // ancestor (or :root) so the panel starts below their chrome.
+  inset-block-start: var(--ui-aiden-panel-inset-top, 0);
+  inset-block-end: 0;
+  inset-inline-end: 0;
+  z-index: var(--z-40);
+  display: flex;
+  flex-direction: column;
+  width: var(--aiden-panel-width);
+  max-width: 100vw;
+  min-height: 0;
+  background: var(--background);
+  border-inline-start: var(--border-w-100) solid var(--border);
+  box-shadow: var(--shadow-lg);
+  animation: ui-aiden-panel-in var(--duration-slow) var(--ease-out);
+
+  &--closing {
+    animation: ui-aiden-panel-out var(--duration-slow) var(--ease-in) forwards;
+  }
+
+  // Under the sidebar's own breakpoint the panel takes the viewport — a
+  // 420px strip on a phone is neither the page nor the panel. Still
+  // non-modal in mechanics; visually it covers, as everything does at 375px.
+  @media (max-width: 767px) {
+    inset-inline-start: 0;
+    width: auto;
+    border-inline-start: none;
+  }
+}
+
+// Literal keyframes, never var() inside them — a var()'d keyframe parks the
+// end value without interpolation and animationend NEVER FIRES, which is the
+// stuck-open trap the Drawer notes document. The 400ms JS timeout is the
+// second belt.
+@keyframes ui-aiden-panel-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes ui-aiden-panel-out {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.ui-aiden-panel__header {
+  display: flex;
+  align-items: center;
+  gap: var(--p-3);
+  flex-shrink: 0;
+  padding: var(--p-3) var(--p-4);
+  border-block-end: var(--border-w-100) solid var(--border);
+}
+
+.ui-aiden-panel__header-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+}
+
+.ui-aiden-panel__header-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ui-aiden-panel__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ui-aiden-panel__description {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ui-aiden-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-1);
+  flex-shrink: 0;
+}
+
+.ui-aiden-panel__header-button {
+  width: var(--w-7);
+  height: var(--h-7);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+// The content region — whatever the consumer puts after the header, almost
+// always a ChatLayout, which wants a definite height. Only the LAST child
+// stretches: with several loose children an every-child flex:1 would split
+// the panel evenly, which nobody means.
+.ui-aiden-panel > :last-child:not(.ui-aiden-panel__header) {
+  flex: 1;
+  min-height: 0;
+}
+
+// Reduced motion needs NO local rule, and that absence is deliberate: the
+// global block in tokens.scss collapses durations to 0.01ms rather than
+// `none`, so animationend still fires and the close machine still advances.
+// Do not "fix" this by adding `animation: none` — that is the stuck-open trap
+// the Drawer notes document.

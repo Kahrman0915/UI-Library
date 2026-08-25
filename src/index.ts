@@ -21,6 +21,15 @@ export type {
 export { default as Badge } from './components/Badge';
 export type { BadgeProps, BadgeVariant } from './components/Badge';
 
+export { default as AidenFullScreen } from './components/AidenFullScreen';
+export type { AidenFullScreenProps } from './components/AidenFullScreen';
+
+export { default as AidenLauncher } from './components/AidenLauncher';
+export type { AidenLauncherProps } from './components/AidenLauncher';
+
+export { default as AidenPanel, AidenPanelHeader } from './components/AidenPanel';
+export type { AidenPanelProps, AidenPanelHeaderProps } from './components/AidenPanel';
+
 export { default as AspectRatio } from './components/AspectRatio';
 export type { AspectRatioProps } from './components/AspectRatio';
 
@@ -57,12 +66,14 @@ export type {
 export {
   default as Card,
   CardHeader,
+  CardMedia,
   CardBody,
   CardFooter,
 } from './components/Card';
 export type {
   CardProps,
   CardHeaderProps,
+  CardMediaProps,
   CardBodyProps,
   CardFooterProps,
 } from './components/Card';
@@ -98,6 +109,14 @@ export {
   ChatSources,
   ChatSource,
   ChatGreeting,
+  ChatMessageAction,
+  ChatError,
+  ChatDisclaimer,
+  ChatModelPicker,
+  ChatComposerMenu,
+  ChatArtifact,
+  ChatArtifactCard,
+  ChatLayoutAside,
 } from './components/Chat';
 export type {
   ChatProps,
@@ -128,6 +147,16 @@ export type {
   ChatSourcesProps,
   ChatSourceProps,
   ChatGreetingProps,
+  ChatMessageActionProps,
+  ChatErrorProps,
+  ChatDisclaimerProps,
+  ChatModel,
+  ChatModelPickerProps,
+  ChatComposerMenuItem,
+  ChatComposerMenuProps,
+  ChatArtifactProps,
+  ChatArtifactCardProps,
+  ChatLayoutAsideProps,
   ChatDensity,
   ChatSender,
   ChatMarkerVariant,
@@ -215,6 +244,20 @@ export type {
   SelectSide,
   SelectAlign,
 } from './components/Select';
+
+export {
+  default as TabBar,
+  TabBarList,
+  TabBarTab,
+  TabBarNewTab,
+} from './components/TabBar';
+export type {
+  TabBarProps,
+  TabBarListProps,
+  TabBarTabProps,
+  TabBarNewTabProps,
+  TabBarActivationMode,
+} from './components/TabBar';
 
 export {
   default as Tabs,

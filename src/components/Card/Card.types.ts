@@ -38,6 +38,24 @@ export type CardHeaderProps = Omit<
   className?: string;
 };
 
+export type CardMediaProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children'
+> & {
+  /**
+   * Width-to-height ratio, as a division expression — `16 / 9`, `4 / 3`, `1`
+   * for a square. Default `16 / 9`.
+   *
+   * It exists so a row of cards keeps a level top edge and does not jump as
+   * images load: the box reserves its height before the image arrives. Composes
+   * {@link AspectRatio} rather than re-deriving it.
+   */
+  ratio?: number;
+  /** The cover itself — an `<img>`, a `<video>`, an illustration, a chart. */
+  children: React.ReactNode;
+  className?: string;
+};
+
 export type CardBodyProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children'

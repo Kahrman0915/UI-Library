@@ -1,7 +1,7 @@
 {
   "runId": "uilib-component-push-2026-07",
   "fileKey": "jzc2ME8xVmfX1V8OCt2HC2",
-  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster 59; every component has a v4 page and an index row. Changelogs were reset to a single baseline entry on 2026-07-29 to match the Storybook changelog.)",
+  "note": "Machine state for the Figma component push. The human recipe is docs/figma-playbook.md — read it FIRST. Update this file after every shipped page. (Roster 59; every component has a v4 page and an index row. Changelogs were reset to a single baseline entry on 2026-07-29 to match the Storybook changelog.) | 2026-08-08: component pages renamed to bare names (no \"N · \" prefix) and sorted alphabetically. Any ledger pageId is still valid — ids did not change, only names and order.",
   "templateVersion": "v4 (LOCKED — owner approved; do not redesign without asking)",
   "v4": {
     "layout": "Frames horizontal left→right, top-aligned y=80, gap 80. Frame names (no prefixes): Overview · Spec — matrix × states · Theming (themed comps only) · Examples · Docs · History.",
@@ -272,7 +272,11 @@
     "CSS: a scope wrapper dropped into a grid or flex parent TAKES A CELL. The Aiden FAB's data-surface wrapper collapsed six dashboard layouts before it got display:contents, which removes the box while leaving custom-property inheritance intact — the same trick DirectionProvider uses for its dir wrapper.",
     "DECISION: an app MARK does not invert with the mode. It is brand artwork, not a themed component — an iOS icon is the same object whatever the system theme is doing. The POC's marks now read --mark-a/b/c, which carry the LIGHT anchors in both modes; --primary-* stays mode-aware because it paints UI.",
     "Why the mode-aware mark failed: dark anchors are lighter by construction (middles L* 57-64 vs light's 45-50), so in dark the marks came out 8-14 points BRIGHTER than in light on a page 87 points darker. They read as lamps, not objects — and because the glyph tracked --primary-foreground it went ink, making them look like light-mode stickers on a dark page. Every glass layer (sheen, inner highlights, bloom) assumes a mid-dark tile and does nothing on a pale one.",
-    "OPEN: with constant marks, the tile sits 3.17-3.25 against the dark page — above the 3:1 WCAG 1.4.11 wants for a UI boundary — EXCEPT aiden at 2.70, whose ramp is the darkest in the set. An Aiden FAB on a dark page needs a ring or shadow to hold its edge; the fill alone does not."
+    "OPEN: with constant marks, the tile sits 3.17-3.25 against the dark page — above the 3:1 WCAG 1.4.11 wants for a UI boundary — EXCEPT aiden at 2.70, whose ramp is the darkest in the set. An Aiden FAB on a dark page needs a ring or shadow to hold its edge; the fill alone does not.",
+    "THE SOURCE FRAME WAS BOUND TO A FOREIGN VARIABLE LIBRARY, and it rendered correctly, which is why nobody caught it. Three fills on the owner-supplied TabBar frame (1275:2003) pointed at variable ids carrying remote library keys — d2604e6b.../3243:105 and friends — not this file collections. Figma reported their names as --muted-foreground and colors/slate/500, so they LOOKED like our tokens; the resolved values were another system entirely (that library --muted-foreground is #f1f5f9; ours is #475569). A foreign binding is invisible until the other library moves or unpublishes. CHECK WHAT A FILL IS BOUND TO, NOT WHAT IT LOOKS LIKE: a local id is VariableID:N:N, a foreign one is VariableID:<40-hex>/N:N.",
+    "The component index grid (1220:62) is an auto-layout HORIZONTAL frame with layoutWrap=WRAP, so cell ORDER is child order — writing x/y on its children is a silent no-op that auto-layout immediately overrides. Insert a new component with grid.insertChild(indexOfNextName, cell); everything after re-flows for free. The first attempt re-computed a 6-column grid by hand and assigned coordinates, which appeared to work in the return value because the positions were read back before layout settled.",
+    "Index page counts live in a _Doc/PageHeader INSTANCE, so they are component-property-driven text: setProperties on the instance, never .characters (which silently no-ops). Both the description prose and a _Doc/Chip carry the number independently — updating one and not the other is the drift the playbook already records. Verify by reading the rendered characters back, not by trusting the write.",
+    "Renaming instance labels invalidates PROSE that described them. Switching the TabBar page to generic Tab 1..N labels silently falsified two section descriptions that explained why the third tab truncated — with short labels nothing truncates. Figma has no typechecker for this: the prose still reads fluently and is simply wrong. After any content rename, re-read the surrounding prose, and sweep for product names in component DESCRIPTIONS too, not just TEXT nodes."
   ],
   "components": {
     "Button": {
@@ -819,6 +823,7 @@
       "setIds": [
         "364:46",
         "364:61",
+        "1233:25901",
         "364:69",
         "364:72"
       ],
@@ -830,17 +835,18 @@
       "themed": false,
       "themingFrame": "ABSENT — Card is neutral chrome; nothing in it reads --primary. Stated in TOKENS.",
       "props": "NO variant axis. One assembled `Card` COMPONENT with TEXT props (Title, Description, Body) and BOOLEAN props (Show description, Show header action, Show footer), plus Card/Header, Card/Body and Card/Footer as standalone region specimens. `interactive` is modelled as code-only: it has NO resting appearance, only cursor + hover/focus, which are drawn in Spec.",
-      "version": "1.2 · 2026-07-26",
+      "version": "1.3 · 2026-08-08",
       "newTextStyle": "base/leading-5/Semibold (16/20) — created for the card title; base/leading-normal is 24 and base/leading-none is 16.",
-      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring.",
+      "notes": "First Phase 3 page. Deliberately NOT a variant set: the only prop that could be an axis (`interactive`) looks identical at rest, and this file's convention (set by Button) is that states live in the Spec table, not as variants. Region components exist because a Figma instance cannot take children, so a designer building a custom card needs the three parts separately. Spec is 'anatomy x states'. Ships with a code fix — the interactive card now carries the system focus ring. | 2026-08-08: gained CardMedia. Also note a SLOT conversion does not report its new type within the SAME use_figma call — the node still reads FRAME and only reads SLOT on the next call. Verify conversions in a fresh call or you will conclude, wrongly, that it failed.",
       "openQuestions": [
         "CardHeader generates `${id}-title` on its heading but nothing in the library references it — it exists for a consumer to point aria-labelledby at.",
         "CardBody and CardFooter take no `id` prop, unlike Card and CardHeader — inconsistent with hard rule 6, probably deliberate since they are layout-only.",
         "overflow:hidden clips any menu/popover/tooltip opened inside a card; those need a portal.",
         "CardHeader always renders an <h3>; the level is not configurable, so a card can produce a heading order that does not match its document position. Still open after the media addition."
       ],
-      "slots": "FOUR slots: ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All four are React.ReactNode in code. Title/Description/Body stay TEXT props; a slot preserves default content so the text property inside the body slot still works. Every slot carries preferredValues (Avatar/StatusDot/icons for media; Badge/Chip/icon-button for action; Button/ButtonGroup for footer) and a description.",
-      "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build."
+      "slots": "FIVE slots: ui-card__media (NEW), ui-card__header-media, ui-card__header-action, ui-card__body, ui-card__footer — on the assembled Card and on each region component. All are React.ReactNode in code. Title/Description/Body stay TEXT props.",
+      "codeChange": "CardHeader gained `media?: React.ReactNode` (2026-07-26). Card was the only one of the four media families without a leading slot — ItemMedia, EmptyMedia and AttachmentMedia already existed. Driven by the Figma side: a whole-header slot would have let a designer draw a featured icon no developer could build.",
+      "cardMedia": "ADDED 2026-08-08, code first then mirrored — the playbook's own rule, and the same route that produced CardHeader.media.\n\nTHE TWO MEDIA ROLES ARE NOT THE SAME THING, and conflating them is what made this confusing. ui-card__header-media is a LEADING visual on the title's own line — avatar, status dot, featured icon. It can never be a cover: in CSS it is flex-shrink:0 inside the header's flex row, icon-sized, floored at one line of title. ui-card__media is the full-bleed COVER.\n\nIt is a sibling PART, not a `media` prop on Card, because a prop must choose an order; as a part the caller can place the cover above the header, between header and body, or last.\n\nCode composes AspectRatio at a default 16 / 9 so a grid keeps a level top edge and nothing shifts as images load. It declares NO radius — .ui-card is overflow:hidden, so a cover touching an edge inherits the rounding; adding one shows as a hairline of card background in the corners.\n\nFigma: \"Show cover\" BOOLEAN defaults to FALSE, so no existing Card instance grew a cover when the property landed. Card/Media (1233:25901) is the standalone region component."
     },
     "Item": {
       "status": "done-v4",
@@ -1597,6 +1603,29 @@
       "note": "Recorded 2026-08-08 during the brand-retirement sweep. Stub — verify before trusting.",
       "themed": true,
       "themingFrame": "Charts read --chart-1..6, which ARE per-brand as of deeper theming v2 Phase A."
+    },
+    "TabBar": {
+      "status": "done-v4",
+      "pageId": "1279:44",
+      "setIds": [
+        "1279:26339",
+        "1280:26322"
+      ],
+      "assembledFrame": "1280:26323",
+      "frames": {
+        "overview": "1281:91",
+        "spec": "1282:132",
+        "theming": "1283:268",
+        "examplesDocsHistory": "1284:356"
+      },
+      "themed": true,
+      "themingFrame": "1283:268 — seven Brand modes (main + db dc ec nb ph rm) x light/dark. ONLY --primary themes: the open tab underline. Everything else is neutral chrome by design.",
+      "props": "VARIANT State (Resting|Hover|Open|Disabled) = 4 on TabBar/Tab; TEXT Label, INSTANCE_SWAP Icon, BOOLEAN Closable. TabBar/New tab: VARIANT State (Resting|Hover) = 2.",
+      "codeOnly": "value / defaultValue / onValueChange / activationMode / onClose / closeLabel / disabled. activationMode defaults to manual, INVERTING Tabs.",
+      "builtFrom": "The TabBar frame at 1275:2003 on the TEST-adjacent page, supplied by the owner.",
+      "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset.",
+      "labels": "Generic Tab 1..N throughout, in both Figma and Storybook (owner call 2026-08-11). The set default Label is \"Tab 1\". Short labels sit at the 140px floor, so the assembled bar is 140/140/140 x47 — byte-for-byte the widths the code measures.",
+      "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match."
     }
   },
   "queue": {
@@ -1661,17 +1690,24 @@
     }
   },
   "aiComponents": {
-    "note": "New build-out started 2026-07-28 (branch aiden-components). AI/Aiden UI components beyond the original 57-roster. Aiden stays a data-surface (accent-only), gradient reserved for signature moments. Build dep-free first.",
+    "note": "New build-out started 2026-07-28 (branch aiden-components). AI/Aiden UI components beyond the original 57-roster. Aiden stays a data-surface (accent-only), gradient reserved for signature moments. Build dep-free first. | 2026-08-09: the suite shipped in code (branch feat/aiden-chat-suite) — see CLAUDE.md \"The Aiden chat suite shipped\". EVERY candidate below is now done in code; the Figma mirror for all of it is the open follow-up.",
     "done": [
-      "Fab"
+      "Fab",
+      "ChatMessageAction",
+      "ChatError",
+      "ChatDisclaimer",
+      "ChatMarkdown (subpath)",
+      "AidenPanel",
+      "AidenFullScreen",
+      "AidenLauncher",
+      "ChatModelPicker",
+      "ChatComposerMenu (slash+@mention)",
+      "ChatArtifact",
+      "ChatArtifactCard",
+      "ChatLayoutAside",
+      "history sidebar (recipe story, by design)"
     ],
-    "candidates": [
-      "Artifacts/Canvas panel",
-      "slash-command / @mention composer menu",
-      "conversation-history sidebar",
-      "model picker",
-      "message error/retry"
-    ]
+    "candidates": []
   },
   "aiden": {
     "blurpleSync": {
@@ -1840,5 +1876,85 @@
     ],
     "alreadyClean": "Slider (labels were \"DB · light\" style, 6 brands), Chip, Alert, Banner, Progress, FeaturedIcon — these used hue names or were built after the naming settled.",
     "lesson": "A VARIABLE audit passing is not evidence that the FILE is correct. Deleting a variable mode silently orphans (a) every text label that named it, and (b) every node pinned to it, which falls back to the collection default and renders plausibly rather than erroring. Both are invisible to a variable-level check. After retiring any mode, sweep page CONTENT for its name — and do it CASE-INSENSITIVELY: the first pass here used /^(DR|IR)$/ and missed Pagination entirely, which labels its cells in lowercase."
+  },
+  "fileStructure": {
+    "reorganised": "2026-08-08",
+    "why": "The Phase 1–5 grouping was build-order scaffolding. The build finished, so it had stopped describing anything — and the index board built on it had drifted twice. Replaced with four sections that describe what a page IS rather than when it was made.",
+    "sections": {
+      "top": "📖 Start Here · 🧭 Choosing components · 📇 Component index",
+      "foundations": "Overview · Colour & tokens · Typography · Spacing & sizing · Motion · Themes & brands · Aiden surface · Chart palettes · Icons — mirrors Storybook's Foundations",
+      "components": "62 pages, ALPHABETICAL, no numeric prefix. New components slot in by name.",
+      "examples": "11 composed screens: handoff specs, component builds, and brand-palette pages",
+      "internal": "_Template (the _Doc/* masters) · Patterns"
+    },
+    "newFoundationsPages": {
+      "Overview": "1215:44",
+      "Typography": "1215:45",
+      "Spacing & sizing": "1215:46",
+      "Motion": "1215:47",
+      "note": "Built 2026-08-08 to close the gap against Storybook. Typography renders all 65 text styles as live specimens; Spacing draws the 34-step scale and 9 radii at true size; Motion is a REFERENCE TABLE, not a token source — see below."
+    },
+    "repurposedFromPOC": {
+      "Themes & brands": "951:45 (was v2 · 01 Brands)",
+      "Aiden surface": "951:47 (was v2 · 03)",
+      "Colour & tokens": "951:48 (was v2 · 04 Tokens)",
+      "Chart palettes": "994:44 (was v2 · 12)",
+      "Dashboard — brand palettes": "951:50",
+      "Marketing — brand palettes": "951:51",
+      "Suite — brand palettes": "951:52",
+      "why": "Deeper theming v2 SHIPPED, so these stopped documenting a proposal and started documenting real tokens. Promoting them was cheaper and more accurate than rebuilding."
+    },
+    "deleted": [
+      "v2 · 02 Mark anatomy (contents had already moved to the Mark page)",
+      "v2 · 05 Audit",
+      "v2 · 09 Side by side",
+      "v2 · 10 Roster",
+      "v2 · 11 Roster detail",
+      "POC — App marks (the v1 POC, superseded)",
+      "the Phase 5 and POC v2 dividers"
+    ],
+    "indexPage": "125:180, retitled \"📇 Component index\". The five-column phase board was removed and rebuilt as an alphabetical directory where every name carries a hyperlink to its page ({type:\"NODE\", value:pageId} — verified by reading .hyperlink back, not by assuming). A hand-maintained index drifts, so it is now generated from the page list itself.",
+    "motionPageCaveat": "The Motion page is a TABLE, not a token source. Figma variables have no time or cubic-bezier type, and native Easing/Timing values are UI-only — unreachable from the plugin API. tokens.scss is the source; if they ever disagree the code is right, and the page says so on itself.",
+    "gotcha": "A page you have not switched to reports children.length === 0. The deletion log in this sweep recorded \"(0 top-level nodes)\" for four pages that were NOT empty. Harmless here — the deletions were approved — but never use that count as evidence a page is safe to remove."
+  },
+  "languageSweep": {
+    "date": "2026-08-08",
+    "scope": "All 91 pages · 30,939 nodes.",
+    "spelling": "British → American. 194 occurrences fixed: colour 108, labelled 36, centre 24, behaviour 11, modelling 4, grey 3, favour 2, analyse 2, licence, neighbouring, summarise, labelling. Replacement preserves case (COLOUR→COLOR, Colour→Color).",
+    "brand": "Acme removed — 24 occurrences. \"Acme Suite\" → \"Product suite\"; \"Acme Inc\" / \"Acme\" → \"Kahrman McKenzie\"; every acme.io address → example.com, which is the RFC-2606 domain reserved for documentation and so cannot ever resolve to a real host. No shadcn references existed in Figma; three in the repo were reworded to describe the shape rather than name a vendor.",
+    "gotcha": "A DIRECT WRITE TO .characters SILENTLY FAILS when the text is driven by a component TEXT property. The first pass edited 152 text nodes and reported success; a verification sweep found 127 still unchanged, every one inside a _Doc/* instance (ids of the form I<inst>;<node>). Those values live on the INSTANCE as componentProperties, so the fix is setProperties() on the instance, not .characters on the inner node. Second pass patched 117 instances / 122 properties, and a third sweep confirmed zero remaining. Always verify a bulk text edit by re-scanning, never by the write count.",
+    "alsoNote": "componentPropertyDefinitions cannot be read on a variant COMPONENT inside a set — only on the set or a standalone component. It throws, so guard it. 695 such throws in the first pass were harmless because the text edits ran before them in the same try block."
+  },
+  "startHerePage": "165:506 — rewritten 2026-08-08 for the new structure: 62 components, the FOUR axes (mode / brand / surface / tint, not two), the Foundations·Components·Examples·Internal grouping, and the hue↔code brand table. The build-phase copy is gone.",
+  "choosingComponentsPage": "675:44 — gained a third decision cluster, \"Mark vs FeaturedIcon vs Avatar\" (a product / a category / a person), built by cloning the existing cluster so the layout matches.",
+  "testScreen": {
+    "date": "2026-08-08",
+    "page": "TEST (1244:1814)",
+    "frame": "DART Central — Home (db) — 1250:44, 1280x860",
+    "source": "the owner's TESTING frame (1244:1815) on the same page",
+    "brand": "Brand mode pinned to Indigo (db); Mode pinned to Light. Every colour follows from that.",
+    "builtFrom": "Mark (rail + tab strip), Button + Button/Icon-only, Input (leading search glyph, trailing glyph swapped to a Kbd), Item (quick actions, recent rows, pinned cards), Sidebar/MenuButton, Avatar, Badge, ModeToggler, and the Icon/* lucide library. Hand-built: only the tab strip, the app rail and the section headings — no component covers those.",
+    "responsive": "The content column FILLs the main area with maxWidth 768, and both grids are WRAP auto-layouts, so resizing the frame reflows the cards without touching a breakpoint.",
+    "aidenTint": "The Ask Aiden prompt is a hand-built container, but its fill and stroke are the file's own Aiden/Secondary and Aiden/Border PAINT STYLES. Card cannot carry the surface — Card is neutral chrome by design — so the tint lives on the container, exactly as the code prototype does it.",
+    "lessons": [
+      "INSTANCE_SWAP via setProperties takes a NODE ID. A component key is REJECTED with \"Property value is incompatible with component property type\" — confirmed by a controlled test that tried both against the same icon. This matches the earlier addComponentProperty finding.",
+      "NOT EVERY NESTED GLYPH IS A PROPERTY. Mark's Glyph and Sidebar/MenuButton's icon do not surface on the parent instance's componentProperties, so setProperties silently does nothing and every tile renders the default. Both had to be swapped with swapComponent() on the nested INSTANCE. The rail shipped six identical chart glyphs until this was caught by LOOKING at it — no error was raised at any point.",
+      "Sidebar/MenuButton exposes no icon swap property at all; every instance defaults to Icon/house. Worth adding an INSTANCE_SWAP to that set — a nav is the one place every row needs a different icon.",
+      "TEXT CAN BE APPENDED INTO A SLOT inside an instance. The Recent rows' trailing app name is a real text node placed in ui-item__actions, which is what a slot is for.",
+      "appendChild() returns void — chaining `.name` onto it throws \"cannot set property name of null\".",
+      "layoutPositioning = ABSOLUTE requires the PARENT to have a layoutMode. A plain createFrame() badge slot throws; createAutoLayout() with a fixed size works."
+    ],
+    "openWork": "The design's sidebar nav rows are 12px text; ours render at the component's default size. Left as the component ships rather than overridden — the point of the exercise was to use the system, not to defeat it.",
+    "corrections": {
+      "date": "2026-08-08",
+      "raisedBy": "owner review",
+      "fixed": [
+        "SIDEBAR — was hand-built at 240px. Replaced with a clone of \"Sidebar — template\" (638:557) at its shipped 256px (--sidebar-width). The template existed the whole time on the Sidebar page; I never looked for it, and I took 240 from the mockup over a width the system owns.",
+        "ASK AIDEN — was a hand-built frame with a text node and a Button. Replaced with a real Chat/Composer instance (644:95), which brings the attach / dictate / expand toolbar and the send button with it. The whole Chat family existed: Chat/Message, Chat/Marker, Chat/ToolCall, Chat/Source, Chat/Suggestion, Chat/Composer.",
+        "AVATAR — the instance had been renamed \"account\", which hides which component it is. The instance keeps its component name; the wrapper frame carries the role."
+      ],
+      "rootCause": "I worked from the picture inward instead of from the roster outward — looked at the mockup, saw shapes, reached for the nearest primitive I had already thought of. I never enumerated the roster and asked which component owns each region. That is precisely the failure the \"Choosing components\" page exists to prevent, and none of the three raised an error at any point: a hand-built region looks finished.",
+      "standing": "Two things still hand-built and NOT yet justified in writing: the tab strip and the app rail. No component covers either, but that should be recorded per screen rather than assumed."
+    }
   }
 }

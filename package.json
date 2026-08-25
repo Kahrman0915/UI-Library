@@ -14,7 +14,12 @@
     },
     "./styles.css": "./dist/styles.css",
     "./fonts.css": "./dist/fonts.css",
-    "./styles/tokens.scss": "./src/styles/tokens.scss"
+    "./styles/tokens.scss": "./src/styles/tokens.scss",
+    "./markdown": {
+      "types": "./dist/markdown.d.ts",
+      "import": "./dist/markdown.js",
+      "require": "./dist/markdown.cjs"
+    }
   },
   "files": [
     "dist",
@@ -59,6 +64,9 @@
     "vite-plugin-dts": "^4.4.0"
   },
   "dependencies": {
-    "lucide-react": "^1.23.0"
+    "highlight.js": "^11.11.1",
+    "lucide-react": "^1.23.0",
+    "react-markdown": "^10.1.0",
+    "remark-gfm": "^4.0.1"
   }
 }

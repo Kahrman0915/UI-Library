@@ -52,5 +52,14 @@ export type FullScreenDialogHeaderProps = Omit<DialogHeaderProps, 'id'> & {
   id?: string;
 };
 
-export type FullScreenDialogBodyProps = DialogBodyProps;
+export type FullScreenDialogBodyProps = DialogBodyProps & {
+  /**
+   * Hand the body over to an app shell. Strips the body's padding and its own
+   * scrolling (`overflow: hidden`, flex column) so a full-height child — a
+   * `ChatLayout`, a split view — owns the scroll instead. Without it the body
+   * and the shell would both scroll, and the shell's stick-to-bottom logic
+   * would watch the wrong container.
+   */
+  flush?: boolean;
+};
 export type FullScreenDialogFooterProps = DialogFooterProps;

@@ -110,3 +110,12 @@
     flex-shrink: 0;
   }
 }
+
+// Trailing header controls (DialogHeader `actions`) — sits between the title
+// block and the X, on the header's existing flex row.
+.ui-dialog__header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  flex-shrink: 0;
+}

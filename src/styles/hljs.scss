@@ -1,0 +1,95 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// highlight.js → the library's own syntax palette.
+//
+// The 11 `--code-*` tokens have existed in tokens.scss since 2026-07-25 —
+// AA-gated on `--code-block` by test:contrast, mirrored to Figma as `code/*`,
+// and with ZERO consumers: "a palette pre-picked for a highlighter we do not
+// have" (owner deferred the tokenizer decision until something needed it).
+// This file is the day something needed it.
+//
+// hljs emits CLASSES, not inline styles — which is precisely why it was chosen
+// over shiki: one rule per scope binds the palette to our custom properties,
+// so highlighting is mode-aware and theme-safe with no JS involvement.
+//
+// Scoped under .ui-code-block so a stray .hljs-* class elsewhere can never
+// pick these up. Every rule is a token; there is nothing to re-derive.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-code-block {
+  .hljs-keyword,
+  .hljs-literal,
+  .hljs-operator,
+  .hljs-meta {
+    color: var(--code-keyword);
+  }
+
+  .hljs-string,
+  .hljs-regexp,
+  .hljs-symbol,
+  .hljs-char\.escape_ {
+    color: var(--code-string);
+  }
+
+  .hljs-comment,
+  .hljs-quote {
+    color: var(--code-comment);
+    font-style: italic;
+  }
+
+  .hljs-title,
+  .hljs-title.function_,
+  .hljs-function .hljs-title {
+    color: var(--code-function);
+  }
+
+  .hljs-number {
+    color: var(--code-number);
+  }
+
+  .hljs-variable,
+  .hljs-template-variable,
+  .hljs-params,
+  .hljs-property,
+  .hljs-subst {
+    color: var(--code-variable);
+  }
+
+  .hljs-type,
+  .hljs-title.class_,
+  .hljs-class .hljs-title {
+    color: var(--code-type);
+  }
+
+  .hljs-built_in {
+    color: var(--code-built-in);
+  }
+
+  .hljs-attr,
+  .hljs-attribute,
+  .hljs-doctag {
+    color: var(--code-attr);
+  }
+
+  .hljs-selector-tag,
+  .hljs-selector-id,
+  .hljs-selector-class,
+  .hljs-selector-attr,
+  .hljs-selector-pseudo {
+    color: var(--code-selector);
+  }
+
+  .hljs-tag,
+  .hljs-name,
+  .hljs-section {
+    color: var(--code-tag);
+  }
+
+  // The markdown language's own emphasis scopes — style, not colour.
+  .hljs-emphasis {
+    font-style: italic;
+  }
+
+  .hljs-strong {
+    font-weight: var(--font-semibold);
+  }
+}

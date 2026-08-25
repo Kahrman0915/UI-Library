@@ -69,6 +69,13 @@ export type DialogHeaderProps = Omit<
   /** Show the X. Default `true`; `AlertDialog` locks it off, since an alert
    *  dialog must be answered rather than dismissed. */
   showCloseButton?: boolean;
+  /**
+   * Trailing header controls rendered before the X — a model picker, a
+   * settings button. The same role `CardHeader.action` plays. Added for
+   * `AidenFullScreen`; note plain children are NOT rendered by this header
+   * (its layout is owned), which is why this is a named slot.
+   */
+  actions?: React.ReactNode;
   /** Fires when the X is pressed. Wire it to the same setter as the Dialog's
    *  own `onClose`. */
   onClose?: () => void;

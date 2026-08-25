@@ -50,7 +50,7 @@ const timezones: ComboboxOption[] = [
 
 function SettingsScreen() {
   const [name, setName] = useState('Jane Doe');
-  const [email, setEmail] = useState('jane@acme.io');
+  const [email, setEmail] = useState('jane@example.com');
   const [role, setRole] = useState<string | undefined>('member');
   const [theme, setTheme] = useState('light');
 

@@ -10,6 +10,13 @@ import {
   X,
 } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
+import ChatMessageAction from './ChatMessageAction';
+import ChatComposerMenu from './ChatComposerMenu';
+import ChatArtifact, { ChatArtifactCard } from './ChatArtifact';
+import ChatLayoutAside from './ChatLayoutAside';
+import ChatModelPicker from './ChatModelPicker';
+import ChatError from './ChatError';
+import ChatDisclaimer from './ChatDisclaimer';
 import Chat, {
   ChatBubble,
   ChatCitation,
@@ -60,9 +67,23 @@ const meta: Meta<typeof Chat> = {
         'reasoning, citations and the full-page shell. Modelled on the Claude ' +
         'conversation UI: assistant turns are full-width bubble-less prose, user ' +
         'turns are contained bubbles on the trailing edge. Message content is yours ' +
-        'to provide; there is no Markdown parser, which would mean a dependency.',
+        'to provide; rendered markdown lives in `ChatMarkdown` on the `@ui/lib/markdown` subpath.',
       tags: ['compound', 'aiden', '26 parts'],
       changelog: [
+        {
+          date: '2026-08-09',
+          summary:
+            'Three new parts: `ChatMessageAction` (the copy / regenerate / thumbs icon ' +
+            'button the stories used to hand-roll), `ChatError` (a failed reply with ' +
+            'Retry), and `ChatDisclaimer` (the caveat line under the composer).',
+          detail:
+            '`ChatMessageAction` rides the shared `.ui-icon-button` shell, takes ' +
+            '`aria-pressed` toggle shape via `active`, and handles copy-to-clipboard ' +
+            'itself via `copyValue` — CodeBlock\'s icon↔check pattern. `ChatError` is ' +
+            '`role="alert"` on the `--error-light` tint, assistant-side per the ' +
+            'transcript asymmetry. `ChatDisclaimer` is deliberately trivial — a ' +
+            'paragraph on the right ramp, copy always consumer-provided.',
+        },
         {
           date: '2026-07-29',
           summary: 'Initial build complete.',
@@ -85,21 +106,6 @@ export default meta;
 type Story = StoryObj<typeof Chat>;
 
 // A ghost action button for the hover row.
-const ActionButton = ({
-  label,
-  icon: Icon,
-}: {
-  label: string;
-  icon: React.FC;
-}) => (
-  <button
-    type="button"
-    aria-label={label}
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-  >
-    <Icon />
-  </button>
-);
 
 const frame = (children: React.ReactNode) => (
   <div
@@ -141,9 +147,9 @@ export const Conversation: Story = {
               />
             </ChatBubble>
             <ChatMessageActions>
-              <ActionButton label="Copy" icon={Copy} />
-              <ActionButton label="Regenerate" icon={RefreshCw} />
-              <ActionButton label="Good response" icon={ThumbsUp} />
+              <ChatMessageAction label="Copy" icon={Copy} copyValue="Of course — here's a runnable example." />
+              <ChatMessageAction label="Regenerate" icon={RefreshCw} />
+              <ChatMessageAction label="Good response" icon={ThumbsUp} />
             </ChatMessageActions>
           </ChatMessage>
 
@@ -243,7 +249,7 @@ const AttachButton = () => (
   <button
     type="button"
     aria-label="Attach file"
-    className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-sm ui-button--icon-only"
+    className="ui-icon-button ui-icon-button--fill ui-chat-composer__tool"
   >
     <Paperclip />
   </button>
@@ -586,6 +592,9 @@ const LayoutDemo = () => {
               <ChatComposerSend />
             </ChatComposerActions>
           </ChatComposer>
+          <ChatDisclaimer>
+            Aiden can make mistakes. Verify important information.
+          </ChatDisclaimer>
         </ChatLayoutFooter>
       </ChatLayout>
     </div>
@@ -618,14 +627,7 @@ export const Editing: StoryObj = {
             <>
               <ChatBubble>{content}</ChatBubble>
               <ChatMessageActions>
-                <button
-                  type="button"
-                  aria-label="Edit"
-                  onClick={() => setEditing(true)}
-                  className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-                >
-                  <Pencil />
-                </button>
+                <ChatMessageAction label="Edit" icon={Pencil} onClick={() => setEditing(true)} />
               </ChatMessageActions>
             </>
           )}
@@ -654,13 +656,7 @@ export const Versions: StoryObj = {
               onPrevious={() => setI((n) => Math.max(0, n - 1))}
               onNext={() => setI((n) => Math.min(answers.length - 1, n + 1))}
             />
-            <button
-              type="button"
-              aria-label="Regenerate"
-              className="ui-button ui-button--default ui-button--default-ghost ui-button--sz-xs ui-button--icon-only"
-            >
-              <RefreshCw />
-            </button>
+            <ChatMessageAction label="Regenerate" icon={RefreshCw} />
           </ChatMessageActions>
         </ChatMessage>
       </div>
@@ -715,6 +711,183 @@ export const Citations: StoryObj = {
       </ChatMessage>
     </div>
   ),
+};
+
+/**
+ * A reply that failed. `ChatError` renders assistant-side on the error tint
+ * with `role="alert"` — announced when it appears — and the optional Retry
+ * button. The transport and the retry are yours; the component only reports.
+ */
+export const ErrorState: StoryObj = {
+  render: () => (
+    <div style={{ width: 520 }}>
+      <Chat>
+        <ChatMessageList style={{ maxHeight: 360 }}>
+          <ChatMessage from="user">
+            <ChatBubble>Summarize the Q4 report for me.</ChatBubble>
+          </ChatMessage>
+          <ChatMessage from="assistant">
+            <ChatError onRetry={() => {}}>
+              Something went wrong while generating a response. Your message was
+              not lost.
+            </ChatError>
+          </ChatMessage>
+        </ChatMessageList>
+      </Chat>
+    </div>
+  ),
+};
+
+/**
+ * Type `/` at the start (commands) or `@` anywhere (mentions): the menu opens
+ * above the composer and filters as you type. ↑↓ move, Enter/Tab insert,
+ * Escape dismisses until the token changes. The textarea keeps focus
+ * throughout — the keys arrive through the composer's interceptor, so
+ * Enter-sends is suppressed while the menu is open.
+ */
+export const ComposerMenu: StoryObj = {
+  render: function ComposerMenuStory() {
+    const [value, setValue] = useState('');
+    const [sent, setSent] = useState<string | null>(null);
+    return (
+      <div style={{ width: 560, display: 'grid', gap: 'var(--p-3)' }}>
+        <ChatComposer
+          id="menu-composer"
+          value={value}
+          onValueChange={setValue}
+          onSubmit={(v) => {
+            setSent(v);
+            setValue('');
+          }}
+        >
+          <ChatComposerInput
+            placeholder="Try / for commands, @ for mentions…"
+            aria-label="Message"
+          />
+          <ChatComposerActions>
+            <ChatComposerSend id="menu-send" />
+          </ChatComposerActions>
+          <ChatComposerMenu
+            slashItems={[
+              { value: 'summarize', label: 'Summarize', description: 'Condense the conversation so far' },
+              { value: 'table', label: 'Make a table', description: 'Turn the answer into a table' },
+              { value: 'explain', label: 'Explain simply', description: 'Rewrite for a non-expert' },
+              { value: 'translate', label: 'Translate', description: 'Translate the reply' },
+            ]}
+            mentionItems={[
+              { value: 'ada', label: 'Ada Lovelace', description: 'ada@example.com' },
+              { value: 'alan', label: 'Alan Turing', description: 'alan@example.com' },
+              { value: 'grace', label: 'Grace Hopper', description: 'grace@example.com' },
+            ]}
+          />
+        </ChatComposer>
+        <p role="status" style={{ margin: 0, font: 'var(--text-xs)/var(--leading-4) var(--font-family)', color: 'var(--muted-foreground)' }}>
+          {sent ? `Sent: "${sent}"` : 'Nothing sent yet.'}
+        </p>
+      </div>
+    );
+  },
+};
+
+/** The header slot ChatLayoutHeader always reserved, finally occupied. */
+export const ModelPicker: StoryObj = {
+  render: function ModelPickerStory() {
+    const [model, setModel] = useState('balanced');
+    return (
+      <div style={{ width: 320 }}>
+        <ChatModelPicker
+          id="model-picker"
+          value={model}
+          onValueChange={setModel}
+          models={[
+            { value: 'fast', label: 'Fast', description: 'Quick answers for everyday tasks' },
+            { value: 'balanced', label: 'Balanced', description: 'The default — capable and responsive' },
+            { value: 'thorough', label: 'Thorough', description: 'Deeper reasoning, slower', badge: 'New' },
+          ]}
+        />
+      </div>
+    );
+  },
+};
+
+/**
+ * The split view: a `ChatArtifactCard` in the transcript opens a
+ * `ChatLayoutAside` holding the `ChatArtifact` — conversation and composer
+ * stay in the left column, the document takes the right, full height. Close
+ * the artifact and the layout collapses back to a single column (the `:has()`
+ * grid only exists while the aside is mounted).
+ */
+export const Artifacts: StoryObj = {
+  render: function ArtifactsStory() {
+    const [open, setOpen] = useState(true);
+    const [value, setValue] = useState('');
+    const DOC = [
+      '# Launch plan',
+      '',
+      '## Week 1',
+      '- Finalize the pricing page',
+      '- Dry-run the migration',
+      '',
+      '## Week 2',
+      '- Beta invites go out',
+      '- Support rota confirmed',
+    ].join('\n');
+    return (
+      <div style={{ height: 560, border: 'var(--border-w-100) solid var(--border)', borderRadius: 'var(--rounded-lg)', overflow: 'hidden' }}>
+        <ChatLayout>
+          <ChatLayoutHeader>
+            <strong>Aiden</strong>
+          </ChatLayoutHeader>
+          <ChatLayoutBody>
+            <ChatMessageList>
+              <ChatMessage from="user">
+                <ChatBubble>Draft a launch plan I can share.</ChatBubble>
+              </ChatMessage>
+              <ChatMessage from="assistant">
+                <ChatBubble>
+                  Here's a first pass — open it to review the full document.
+                </ChatBubble>
+                <ChatArtifactCard
+                  title="Launch plan"
+                  description={open ? 'Open in the panel' : 'Click to open'}
+                  onClick={() => setOpen(true)}
+                />
+              </ChatMessage>
+            </ChatMessageList>
+          </ChatLayoutBody>
+          <ChatLayoutFooter>
+            <ChatComposer
+              id="artifact-composer"
+              value={value}
+              onValueChange={setValue}
+              onSubmit={() => setValue('')}
+            >
+              <ChatComposerInput placeholder="Ask for changes…" aria-label="Message" />
+              <ChatComposerActions>
+                <ChatComposerSend id="artifact-send" />
+              </ChatComposerActions>
+            </ChatComposer>
+          </ChatLayoutFooter>
+          {open && (
+            <ChatLayoutAside>
+              <ChatArtifact
+                id="artifact-doc"
+                title="Launch plan"
+                badge="markdown"
+                copyValue={DOC}
+                onClose={() => setOpen(false)}
+                footer="Draft · 2 sections"
+              >
+                <pre style={{ margin: 0, whiteSpace: 'pre-wrap', font: 'var(--text-code)/var(--leading-5) var(--font-family-mono)', color: 'var(--foreground)' }}>
+                  {DOC}
+                </pre>
+              </ChatArtifact>
+            </ChatLayoutAside>
+          )}
+        </ChatLayout>
+      </div>
+    );
+  },
 };
 
 export const Greeting: StoryObj = {

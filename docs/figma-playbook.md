@@ -9,23 +9,39 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** COMPLETE — all **59** components have a v4 doc page **and an index row**. Phases 1–5 shipped by 2026-07-27; `FeaturedIcon` (Phase 3) and `Fab` (Phase 2) were built after and have since been folded into the phase structure. Nothing queued. Ledger holds per-component IDs + ~90 lessons.
+- **Status:** **63 component pages**, all built to template v4, plus a full **Foundations** section. `TabBar` (#62) is the most recent, then `Mark` (#61) and `FullScreenDialog` (#60). Ledger holds per-component IDs + ~167 lessons.
+- **A supplied frame may be bound to a FOREIGN variable library.** `TabBar` was built from an owner-supplied frame whose fills pointed at another file's variables — reported under names like `--muted-foreground`, resolving to values that were not ours. It rendered correctly, so nothing flagged it. Tell them apart by the id shape: local is `VariableID:N:N`, foreign is `VariableID:<40-hex>/N:N`. **Check what a fill is bound to, not what it looks like.**
+- **FILE REORGANISED 2026-08-08 — the Phase 1–5 grouping is GONE.** It was build-order scaffolding; the build finished, so it had stopped describing anything, and the index board built on it had drifted twice. Four sections now:
+
+  | Section | Holds |
+  |---|---|
+  | *(top)* | Start Here · Choosing components · **Component index** |
+  | `Foundations` | Overview · Colour & tokens · Typography · Spacing & sizing · Motion · Themes & brands · Aiden surface · Chart palettes · Icons |
+  | `Components` | **62 pages, ALPHABETICAL, no numeric prefix** — a new one slots in by name |
+  | `Examples` | 11 composed screens (handoff specs, component builds, brand-palette pages) |
+  | `Internal` | `_Template` · `Patterns` |
+
+  **Page IDs did not change** — only names and order — so every `pageId` in the ledger is still valid. Anything built from here goes under its section, gets an index row, and is recorded in the ledger.
+
 - **Reconciled 2026-07-29.** The index title, the Phase 2/3 count badges and the page ordering had all drifted. Anything built from here goes under its phase divider, gets an index row, and is recorded in the ledger.
 - **Changelogs are a single baseline row per page** — `1.0 · 2026-07-29 · — · "Initial build complete…"`, identical to the Storybook changelog. The per-page build history that used to live here was cleared deliberately: git and the Storybook changelog are the record, and two divergent histories is worse than one. Append from that baseline.
 - **Prose sweep 2026-07-29.** Each page carries a few hundred words of a11y contract, behaviour notes and props pills, written the day the page was built. Code kept moving; the prose did not. A sweep against source corrected: HoverCard (documented `role="tooltip"` + "non-interactive" in five places, when it is now `role="dialog"`, keyboard-enterable, Escape-dismissable), the five form controls (error messages are `role="alert"` live regions), Select/Combobox (single `role="combobox"` on the trigger, `searchbox` inside; whole-field click target), Accordion (it renders its own heading via `headingLevel` — the page still told you to add one), Label (`description` is `aria-hidden` + referenced by `aria-describedby`, no longer folded into the name), Dialog/AlertDialog (`initialFocusRef`), Toast (pause-on-hover, persistent labelled region, `label`/`dismissLabel`), Chat (`role="log"` + tab stop set by the component, not the consumer), Popover (`PopoverClose` restores focus too), Breadcrumb (`aria-hidden` on the glyph, never the wrapper), Button/Chip (both size vocabularies accepted), plus motion pills for the overlay enter/exit, press-scale, stagger and the sliding Tabs indicator.
 - **STANDING RULE — prose is part of the component, not decoration.** Changing a role, an aria relationship, a prop, or a keyboard behaviour means editing that component's page prose in the same pass. Nothing catches this automatically: Figma has no typechecker, and the design-check lint only sees bindings and names. A page that *looks* finished can still describe code from three days ago.
 - **Button page is v1.2** — it now carries a second set, `Button/Icon-only` (120 variants). Both sets are all-zeros on lint.
 
-### POC pages are NOT template v4 — and must say so (2026-08-06)
+### The POC pages are gone — RETIRED 2026-08-08
 
-Eleven pages were pushed for the deeper-theming v2 palette (`🧪 v2 · 01 Brands` …
-`11 Roster detail`, under their own `───  🧪 POC v2 · Deeper theming  ───` divider),
-one per Storybook story under *Prototypes / Deeper Theming V2*. They deliberately do
-**not** use the four-frame component template, because they are not documenting a
-component — they document a **proposal**, and the four frames would imply a shipped API.
-Each page opens with a line naming the Storybook story it mirrors, so a reader always
-knows where the live version is. Per-page IDs and the build conventions live in
-`figma-ledger.json` under `pocThemingV2`.
+Twelve pages once documented the deeper-theming v2 palette as a **proposal**, under their
+own POC divider. Phase A shipped, so the proposal became the token system and the label
+became wrong. Four of them were **promoted into Foundations** (Brands → *Themes & brands*,
+Tokens → *Colour & tokens*, plus *Aiden surface* and *Chart palettes*) and three into
+**Examples**; the remaining five were comparison scaffolding and were deleted along with
+the v1 app-marks POC. Per-page history stays in `figma-ledger.json` under `pocThemingV2`
+and `fileStructure`.
+
+**The rule that produced them still stands:** a page documenting a *candidate* must say so,
+because a designer picking colour off it has no other way to tell a proposal from a token.
+What changed is that these pages are no longer candidates.
 
 **The one thing on those pages that IS shipped is Aiden**, copied verbatim from
 `tokens.scss` rather than solved, and its page says so outright. That distinction is the
