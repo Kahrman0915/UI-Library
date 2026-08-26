@@ -58,7 +58,11 @@ const meta: Meta<typeof Tabs> = {
             'and unchanged in dark where both tokens resolve to #334155. `variant` is presentation only and styles off a ' +
             'single root class, so no part gained a prop. The shared sliding indicator is reused rather than rebuilt — ' +
             'its box is set inline from the active trigger, so each variant repaints it through a pseudo-element and ' +
-            'inherits the slide. `browser` is horizontal-only and falls back to `line` when vertical.',
+            'inherits the slide. `browser` is horizontal-only and falls back to `line` when vertical.\n\n' +
+            '`browser` draws NO hairline on the tablist. The panel\'s own `border-top` already spans the full width and ' +
+            'sits flush against the list (the root gap is 0 there), so a list hairline stacked into a 2px rule under the ' +
+            'inactive tabs — measured, not guessed. The panel border is the strip\'s rule, and the active tab\'s seam ' +
+            'masks exactly that pixel.',
         },
         {
           date: '2026-07-29',
