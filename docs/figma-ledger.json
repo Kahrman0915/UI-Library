@@ -276,7 +276,13 @@
     "THE SOURCE FRAME WAS BOUND TO A FOREIGN VARIABLE LIBRARY, and it rendered correctly, which is why nobody caught it. Three fills on the owner-supplied TabBar frame (1275:2003) pointed at variable ids carrying remote library keys — d2604e6b.../3243:105 and friends — not this file collections. Figma reported their names as --muted-foreground and colors/slate/500, so they LOOKED like our tokens; the resolved values were another system entirely (that library --muted-foreground is #f1f5f9; ours is #475569). A foreign binding is invisible until the other library moves or unpublishes. CHECK WHAT A FILL IS BOUND TO, NOT WHAT IT LOOKS LIKE: a local id is VariableID:N:N, a foreign one is VariableID:<40-hex>/N:N.",
     "The component index grid (1220:62) is an auto-layout HORIZONTAL frame with layoutWrap=WRAP, so cell ORDER is child order — writing x/y on its children is a silent no-op that auto-layout immediately overrides. Insert a new component with grid.insertChild(indexOfNextName, cell); everything after re-flows for free. The first attempt re-computed a 6-column grid by hand and assigned coordinates, which appeared to work in the return value because the positions were read back before layout settled.",
     "Index page counts live in a _Doc/PageHeader INSTANCE, so they are component-property-driven text: setProperties on the instance, never .characters (which silently no-ops). Both the description prose and a _Doc/Chip carry the number independently — updating one and not the other is the drift the playbook already records. Verify by reading the rendered characters back, not by trusting the write.",
-    "Renaming instance labels invalidates PROSE that described them. Switching the TabBar page to generic Tab 1..N labels silently falsified two section descriptions that explained why the third tab truncated — with short labels nothing truncates. Figma has no typechecker for this: the prose still reads fluently and is simply wrong. After any content rename, re-read the surrounding prose, and sweep for product names in component DESCRIPTIONS too, not just TEXT nodes."
+    "Renaming instance labels invalidates PROSE that described them. Switching the TabBar page to generic Tab 1..N labels silently falsified two section descriptions that explained why the third tab truncated — with short labels nothing truncates. Figma has no typechecker for this: the prose still reads fluently and is simply wrong. After any content rename, re-read the surrounding prose, and sweep for product names in component DESCRIPTIONS too, not just TEXT nodes.",
+    "THE FIGMA VARIABLE NAMES IN THIS PLAYBOOK WERE STALE. The colour variables are NOT named color/* — they are surface/* and text/* (surface/background 2:3, text/foreground 2:4, surface/secondary 2:5, text/muted-foreground 2:8, surface/accent 2:9, surface/card 2:11, surface/border 2:15). The IDs recorded were correct; the names were not, and a name lookup for \"color/background\" returns nothing. Resolve by ID, or list the collection first.",
+    "INSTANCE_SWAP properties in this file take a NODE ID, not a component key. Passing comp.key throws \"Property value is incompatible with component property type\". Read the property's current value first — it is a node id like \"312:20158\" (Icon/plus) — and pass the same shape. Cost: an actions cell shipped a plus glyph instead of an ellipsis, silently, because the swap was wrapped in a try/catch that swallowed the error. NEVER swallow a setProperties error; report it.",
+    "An effect-style focus ring will not render on a node whose fills are []. Focus/* styles are drop shadows, and a drop shadow needs an opaque shape to cast from. Three focus demos rendered as nothing at all while every property read back correctly. Put the ring on a FILLED wrapper sized to the control.",
+    "node.clone() inside a try/catch that then throws leaves the clone ORPHANED on the page. A diagnostic probe that cloned an instance, called setProperties (which threw), and only removed the clone afterwards left a stray node at page level — the script itself succeeded, so nothing flagged it. Found only by listing page.children during the final lint. Put the remove() in a finally, or check page children before declaring done.",
+    "The claim that the API cannot reach instances nested inside component-set variants is NARROWER than recorded. setProperties and findOne reached the nested Button/Checkbox/Badge instances in all 18 variants of two sets. The original finding was about reading VECTOR geometry; do not assume the whole class of access is blocked.",
+    "A proposal page needs its honesty markers designed in, not appended. The Overview chip that normally carries src/components/{Name} is the one a designer scans for, so that is the chip that must be replaced with the warning — adding a note lower down leaves the scannable line still implying the component ships."
   ],
   "components": {
     "Button": {
@@ -768,7 +774,8 @@
       "props": "VARIANT Variant (default|outline) × Size (sm|default|lg) × Pressed (false|true) = 12, + BOOLEAN Icon + INSTANCE_SWAP Glyph + TEXT Label.",
       "version": "1.0 · 2026-07-25",
       "notes": "Chip-vs-Toggle is the decision this page exists to settle: does the on-state change WHAT DATA is shown (Chip, brand fill) or HOW A TOOL BEHAVES (Toggle, neutral fill)? ToggleGroup does not re-implement any of this — its items reuse .ui-toggle and collapse shared borders ButtonGroup-style, so changing Toggle changes the segmented control. Controlled/uncontrolled boundary is `pressed !== undefined`, so pressed={false} is controlled but omitting it is not — a computed prop that flips to undefined silently hands control back.",
-      "openQuestion": "⚠ Hover and pressed resolve to the SAME fill (--accent), so an unpressed toggle under the cursor looks identical to a pressed one at rest. In a toolbar this reads fine because the pointer is over only one item and the rest show true state; a LONE borderless toggle is genuinely ambiguous. Documented on the Spec frame with the outline variant recommended as the mitigation. Not changed — distinguishing them would mean a new hover token or a pressed treatment beyond fill, which is a system decision."
+      "openQuestion": "⚠ Hover and pressed resolve to the SAME fill (--accent), so an unpressed toggle under the cursor looks identical to a pressed one at rest. In a toolbar this reads fine because the pointer is over only one item and the rest show true state; a LONE borderless toggle is genuinely ambiguous. Documented on the Spec frame with the outline variant recommended as the mitigation. Not changed — distinguishing them would mean a new hover token or a pressed treatment beyond fill, which is a system decision.",
+      "figmaOnlyProp": "Show label#1324:0 (BOOLEAN, default true), added 2026-08-25 and wired to the label TEXT's visibility on all 12 variants. Without it an icon-only toggle could not be drawn at all, even though the code has supported it via IconCenter / .ui-toggle--icon-only since the component shipped. Default true, so no existing instance moved."
     },
     "ToggleGroup": {
       "status": "done-v4",
@@ -790,7 +797,17 @@
         "No arrow-key navigation. The WAI-ARIA toolbar pattern expects a roving tabindex (one tab stop, arrows move within); here every item is its own tab stop. Workable at 3-5 items, which is why the page caps the recommended length. Menubar in this library DOES implement roving tabindex, so the pattern exists if this is worth closing.",
         "The group has no accessible name. role=\"group\" with no aria-label announces just 'group'. Unlike the item-level name (now type-enforced), nothing requires this. Could default one, or require aria-label on the root.",
         "type=\"single\" deselect passes an EMPTY STRING, not undefined — onValueChange is typed (value: string) => void and the code sends `next ?? ''`. Consumers must treat '' as 'nothing selected'."
-      ]
+      ],
+      "rebuilt": {
+        "date": "2026-08-25",
+        "what": "The three segments were hand-drawn FRAMEs named ui-toggle, each with its own glyph instance and label text. They are Toggle instances now (Size=default, Variant tracking the group, middle segment Pressed=true), exposed for per-segment editing, with the end radii overridden 6/0/0/6 and 0/6/6/0 and the parent's -1 gap left alone to collapse the borders.",
+        "geometryUnchanged": "118x36 horizontal and 40x106 vertical, before and after — verified by measurement, not by eye.",
+        "propsRemoved": "Label 1 / Label 2 / Label 3 / Show labels / Show icons. Per-segment values live on the nested Toggle instances now; a set cannot own a TEXT property that points into a nested instance.",
+        "instancesRepaired": "17 instances survive the rebuild. 14 wanted icon-only and match the new default. The 3 that showed text were re-set through their exposed toggles: Dashboard 1105:245 and 1107:22233 (Weekly/Monthly/Yearly) and Page 95 I1306:7159;503:61;1306:7395 (Summary of data / Full data set / Full data set) — the last of which is nested three instances deep, and was only reachable BECAUSE of the exposure.",
+        "noteVsCode": "ToggleGroupItem is not a <Toggle> in code — it is a <button> wearing .ui-toggle, reading pressed from the group's context. Figma has no equivalent of 'reuses a stylesheet', so instancing Toggle is the only way to keep one source of truth for the item's visuals. The Overview prose already explains the code side; do not 'correct' one to match the other.",
+        "openFollowUp": "The Spec frame is still 'orientation x variant' with no sizes strip — the size pill was corrected to '32 / 36 / 40px' but the v4 convention wants a sizes strip under the header. Small build, not done.",
+        "sizeAxis": "Added 2026-08-25. Orientation x Variant x Size (sm|default|lg) = 12 variants, built by cloning the four Size=default variants and setting each nested Toggle's Size. Group-level, not per-segment, because code passes size to every item — per-segment sizes could disagree and would teach a control the code cannot build. Horizontal 100/118/154 wide x 32/36/40 tall; vertical 34/40/52 x 94/106/118. All 23 existing instances resolved to Size=default with zero missing-variant errors. The set is a horizontal auto-layout, so it needed layoutWrap='WRAP' to hold 12 cells inside the 1216 column."
+      }
     },
     "ButtonGroup": {
       "status": "done-v4",
@@ -1626,6 +1643,66 @@
       "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset.",
       "labels": "Generic Tab 1..N throughout, in both Figma and Storybook (owner call 2026-08-11). The set default Label is \"Tab 1\". Short labels sit at the 140px floor, so the assembled bar is 140/140/140 x47 — byte-for-byte the widths the code measures.",
       "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match."
+    },
+    "AidenPanel": {
+      "status": "done-v4",
+      "pageId": "1364:44",
+      "built": "2026-08-25",
+      "frames": "Overview · Spec · Examples · Docs · History",
+      "themed": false,
+      "notes": "Non-modal complementary landmark at --z-40. Component composes Mark, Button/Icon-only (ghost, 28px), CloseButton, Chat/Message and Chat/Composer. Spec carries light + dark bands; docs cover the non-modality contract, the z-index reasoning and the panel-scoped Escape."
+    },
+    "AidenFullScreen": {
+      "status": "done-v4",
+      "pageId": "1368:44",
+      "built": "2026-08-25",
+      "frames": "Overview · Spec · Examples · Docs · History",
+      "themed": false,
+      "notes": "Built as a FullScreenDialog preset — compact header (padding-block --p-3, title --text-lg/--leading-7, bottom hairline) over a flush body holding a centred --max-w-3xl chat column. Docs record the three-class override and why the body is flush."
+    },
+    "AidenLauncher": {
+      "status": "done-v4",
+      "pageId": "1370:44",
+      "built": "2026-08-25",
+      "frames": "Overview · Spec · Examples · Docs · History",
+      "themed": false,
+      "notes": "The doorway: Mark + greeting + Chat/Composer + Chat/Suggestion pills, capped at --max-w-2xl. Docs state the whole contract — onSubmit hands over the prompt and the CONSUMER navigates; a suggestion SUBMITS rather than drafting."
+    },
+    "ChatMarkdown": {
+      "status": "done-v4",
+      "pageId": "1372:44",
+      "built": "2026-08-25",
+      "frames": "Overview · Spec · Examples · Docs · History",
+      "themed": false,
+      "notes": "The @ui/lib/markdown subpath. Component is assembled from CodeBlock, Code and Blockquote so the page shows markdown rendering through our own primitives. Docs carry the dependency exception, the build gate (grep react-markdown dist/index.js must be empty) and the never-add-rehype-raw rule."
+    },
+    "Table": {
+      "status": "done-v4",
+      "isProposal": true,
+      "pageId": "1400:44",
+      "setIds": [
+        "1400:135",
+        "1401:151",
+        "1403:191"
+      ],
+      "assembledFrame": "1406:197",
+      "frames": {
+        "overview": "1405:155",
+        "spec": "1408:299",
+        "theming": "1413:559",
+        "examplesDocsHistory": "1415:732"
+      },
+      "themed": true,
+      "themingFrame": "1413:559 — seven Brand modes x light/dark. ONLY selection reads --primary: the selected row tint (--primary-light) and the checked selection checkbox. Surfaces, hairlines, header labels, body text and the sort glyph are neutral chrome by design — a table is dense, and a themed grid would shout.",
+      "props": "Table/HeaderCell: Density (sm|default|lg) x Sort (none|asc|desc) x Align (left|right) = 18, TEXT Label. Table/Cell: Density x Content (text|numeric|badge|avatar|code|actions) = 18, no TEXT prop (instance text is directly editable — Slider precedent). Table/SelectionCell: Density x State (off|on|indeterminate) = 9. 45 variants total.",
+      "codeOnly": "ALL OF IT — there is no src/components/Table/. Nothing on the page can be imported.",
+      "builtFrom": "Nothing. First page in the file with no code counterpart; axes agreed in design, not read off a types file. Spec: docs/superpowers/specs/2026-08-26-figma-table-design.md",
+      "notes": "PROPOSAL PAGE — the first one. Carries two honesty markers: a \"⚠ proposal — not in src/\" header chip replacing the usual source-path chip, and a PROPOSAL — NOT BUILT IN CODE labelled separator over a red callout above the sets. Same rule as the Code page mock-ups: a labelled decision, never an unlabelled mock. If Table ever ships in code, re-derive this page from Table.types.ts / Table.scss and delete both markers. | ROW-MAJOR IS THE WHOLE DESIGN: cells sit in a row, rows stack, so every row is a real node that can carry hover/selected fill and the bottom hairline. Column-major would align columns for free but leaves NO row node — no hover, no selection, no divider. The cost is that column width is a hand-kept convention Figma does not enforce; the Spec frame states that first, before anything else. | Cells are TRANSPARENT — the ROW carries the surface fill. An opaque cell would paint over the row state and the hover/selection would silently stop working. | The assembled table is an editable FRAME, not a locked component (same call as Sidebar menu, Chat transcript, TabBar bar) — a table you cannot add rows to is the wrong ceiling. | Row states (hover/selected/disabled) are painted in the Spec frame, not modelled as variants — the Card/Button precedent, and what holds this at 45 variants instead of several hundred. | Density ships sm/default/lg, NOT compact/comfortable: the second size vocabulary was deleted 2026-07-30 and must not come back.",
+      "openDecision": "selected+hover has no token. selected is --primary-light, hover is neutral --accent; stacked they are a color-mix nothing expresses. The Spec frame paints it with --primary-soft as the PROPOSED mapping and says so — accepting it would make Table the second consumer of --primary-soft, which today only the filled secondary button uses. Needs an owner call before any code.",
+      "darkHeaderNote": "In dark, surface/secondary and surface/card BOTH resolve to #1e293b, so the header row is the same colour as the body and is separated by its bottom hairline alone (light is #e2e8f0 on #ffffff). Accepted, and stated in the TOKENS section. The header cannot move to --muted: header labels are --muted-foreground, and muted-foreground on muted is 5.1:1, below AA. A stronger dark header needs a NEW token, not a swap.",
+      "parity": "Measured, not eyeballed: every column at identical x-offsets across all five rows, every Amount value right-edge at 792 with a 16px gap. An eyeball read of the PNG suggested a ~13px misalignment; the measurement disproved it.",
+      "lint": "all zeros (unbound paint 0, unstyled text 0, generic names 0, unbound geometry 0, missing descriptions 0), recursive overflow 0.",
+      "indexRow": "1417:1254 — inserted between TabBar and Tabs. Board count reads \"67 components + 1 proposal\" rather than 68, deliberately."
     }
   },
   "queue": {
@@ -1956,5 +2033,177 @@
       "rootCause": "I worked from the picture inward instead of from the roster outward — looked at the mockup, saw shapes, reached for the nearest primitive I had already thought of. I never enumerated the roster and asked which component owns each region. That is precisely the failure the \"Choosing components\" page exists to prevent, and none of the three raised an error at any point: a hand-built region looks finished.",
       "standing": "Two things still hand-built and NOT yet justified in writing: the tab strip and the app rail. No component covers either, but that should be recorded per screen rather than assumed."
     }
+  },
+  "nestedInstanceSweep": {
+    "date": "2026-08-25",
+    "why": "Owner hit it composing a Dialog: a ToggleGroup dropped on the canvas offered no way to set a segment's variant, pressed or size. Two separate causes — ToggleGroup had no Toggle instances in it at all, and every other composite that DID nest real instances left them unexposed.",
+    "exposed": "30 nested instances across 7 hosts: AvatarGroup (Avatar x4), Command/Palette (Heading x2, Item x6), Dialog (CloseButton, Button x2), Drawer (CloseButton, Button x2), FullScreenDialog (CloseButton, Input, Button x2), Menubar (Trigger x4), Toast/Card (Progress, Button x2, CloseButton). Exposure PROPAGATES to the matching instance in every sibling variant, so Dialog reads 4/4 and Toast 10/10 afterwards.",
+    "deliberatelyNotExposed": [
+      "Button / Button-Icon-only -> Spinner (240 instances). The loading indicator is not configurable content; exposing it would put a Spinner section in the panel of the most-used component in the library.",
+      "Mark artwork/* -> Mark glyph/db. The glyph is already reachable as the tile's INSTANCE_SWAP property.",
+      "Command/Separator — no component properties, so Figma refuses (see lessons)."
+    ],
+    "alreadySlotHosted": "Attachment, Combobox/Content, ContextMenu/Content, DropdownMenu/Content, Field, HoverCard/Content, Item, Select/Content put their sub-parts in SLOTs. That is the better answer, not a gap — the designer replaces the content wholesale — and Figma will not let a slot's contents be exposed anyway.",
+    "lessons": [
+      "isExposedInstance THROWS, it does not no-op, and the script is atomic — one bad node loses the whole run. Two rejections to guard for: 'Cannot expose instances within slots' (walk ancestors for type SLOT) and 'Can only expose instances that have exposed nested instances or children with component property references' (the nested component must actually HAVE properties — narrow to the COMPONENT_SET or non-variant COMPONENT before reading componentPropertyDefinitions).",
+      "page.findAllWithCriteria() DOES NOT descend into instances; the same call on a top-level child of the page does. Every file-wide sweep must iterate page.children and search from each child, or it silently under-reports. A first pass over cancel-styled buttons found 15; the correct traversal found 31 across 396 Button instances. The same trap made 54 component pages look like they had no changelog date at all."
+    ]
+  },
+  "footerButtonSweep": {
+    "date": "2026-08-25",
+    "rule": "A dismissal action is style=ghost. Recorded in CLAUDE.md the same day, together with the Toast carve-out (Toast keeps outline — owner's call, ToastCard.tsx hard-codes it).",
+    "fixed": "Dialog main (both alignments) and Drawer main (all four sides): cancel Outline -> Ghost. Dialog's destructive confirm Default -> Error. Button page examples 171:516 / 171:541 (\"Keep\") -> Ghost. 37 Dialog/Drawer instances inherit, so the two mains carried all of it.",
+    "regressionAndRepair": "Changing a VARIANT property on a nested instance inside a MAIN component resets that nested instance's overrides on every existing instance of the parent. Ten instances silently lost their footer labels — AlertDialog's Discard/Save, Keep editing, Stay signed in/Sign out, Dialog's Send invite x2, Drawer's Cancel/Share x2 — reverting to the main's Cancel/Delete. All ten were restored from the pre-change snapshot. Title, description and body overrides were NOT affected: the reset is scoped to the swapped nested instance's subtree.",
+    "lesson": "Before touching a nested instance inside a main component, SNAPSHOT every instance's overrides for that subtree. The write itself reports success and the overrides vanish without an error — the only way to catch it is to re-read the instances afterwards and diff against the snapshot. This is the same class of failure as the 2026-08-08 language sweep, where 127 of 152 text edits silently did nothing.",
+    "notFixed": "Drawer's Reset/Apply examples keep their labels. Reset is a real secondary action, not a dismissal, and the labels are the page's chosen filter-drawer example — only the style was corrected. The code story (Drawer.stories.tsx) pairs Cancel/Save changes instead, so the page and the story still show different compositions; owner's call whether to converge them."
+  },
+  "handDrawnPartSweep": {
+    "date": "2026-08-25",
+    "why": "Follow-on from the ToggleGroup rebuild: a sweep found ten more components drawing by hand a part that exists as its own Figma atom. Group 1 (the small, high-traffic ones) was done here.",
+    "done": {
+      "ButtonGroup": "Three hand-drawn ui-button frames -> exposed Button instances (Default · Outline · Default size). 202x36 and 76x106 unchanged. Zero instances existed, so nothing to repair.",
+      "Card": "Header-action badge and footer buttons, both inside SLOTs, -> Badge and Button instances. Slot contents cannot be exposed, but slot content IS directly editable on an instance, so that is the right shape. SIZE CORRECTION: the hand-drawn badge was 16px tall against Badge's real 24px, so cards carrying one grow 8px.",
+      "Empty": "Action button -> Button instance. It hugs its label at 127px where the hand-drawn copy was a fixed 151px.",
+      "Code": "CodeBlock copy button -> exposed Button/Icon-only (Default · Ghost · XSmall), geometry identical at 20x20.",
+      "Chat": "Marker status dot -> StatusDot (online, sm); running ToolCall icon -> Spinner (16); composer send -> Button/Icon-only (Aiden, round). Send resizes 32 -> 30 inheriting Button's icon-only Small."
+    },
+    "newDefectsFound": [
+      "Button/Icon-only paints its glyph with text/foreground on EVERY non-aiden Style=Default variant — a dark navy glyph on the dark navy primary fill, i.e. an effectively invisible icon. Only the Aiden variant binds a proper on-fill colour (aiden/primary-foreground). Confirmed by screenshot of the master, not inferred. NOT FIXED — it is a Button-page job.",
+      "Figma's Button/Icon-only Small is 30x30; the code computes 32 (padding --p-2 8px + 16px glyph). XSmall is 20x20 against a computed 24. Icon-only geometry on the Button page needs its own parity pass.",
+      "SETTING AN INSTANCE_SWAP PROPERTY RESETS COLOUR OVERRIDES ON THE SWAPPED INSTANCE. The Chat send button's glyph came back dark after the icon swap because the variant's white stroke override did not survive. Rebind after every swap and verify by reading the stroke back, not by assuming."
+    ],
+    "mistakeMade": "The snapshot-before-you-touch rule was applied to Card but NOT to Empty, Code or Chat. Empty is exactly where it bit: replacing the slot's default button reset the label override on the two 'a fresh project' example cells, which reverted to the main's 'New message' under the title 'Start your first board'. The original text is unrecoverable from the file (no plugin API access to version history), so they were relabelled 'Create board' — a chosen value, not the original. Apply the rule to EVERY host, not just the one with many instances.",
+    "remaining": "Group 2: Alert and Banner have no dismiss control at all (12 and 6 variants, zero CloseButton instances on either page). Group 3: the Label sweep (Checkbox 54, Switch 36, RadioGroup 36, Slider 12 hand-drawn label rows) needs a decision on whether Figma's Label covers the three sizes first. Then NativeSelect/Textarea -> Input field wrap, and FullScreenDialog -> Dialog, which belongs with that page's v4 rebuild.",
+    "group2": {
+      "date": "2026-08-25",
+      "what": "Alert (12 variants) and Banner (6) had NO dismiss control anywhere and zero CloseButton instances on either page, despite both composing CloseButton in code via onClose. Both sets gained a 'Show close' BOOLEAN wired to an exposed CloseButton instance (Variant=default, Size=default = 24px, matching CloseButton's own code default).",
+      "defaultOff": "The property defaults to FALSE so none of the 58 existing instances moved. Three examples were switched on to document the affordance: Alert 419:161 and 419:214 (the 'Saved' success example, light and dark) and Banner 424:112.",
+      "colorInherit": "The stylesheet says `.ui-alert__close { color: inherit; opacity: --o-70 }`, which Figma has no equivalent for. Each variant's close glyph is therefore bound to the SAME variable its own title and leading icon use — text/foreground, primary-text, or status/{info,success,warning,error}/base — and the instance carries opacity 0.7. Verified by screenshotting all 18 variants, not by reading the write back.",
+      "lesson": "A HIDDEN INSTANCE HAS NO CHILDREN. Figma does not build the subtree of an instance whose visible is false, so findAllWithCriteria returns zero vectors and a screenshot of it renders blank — indistinguishable from 'the node has no glyph'. The first binding pass silently reached only 2 of 18 variants while reporting success on all 18, because the two happened to be materialised. Fix: editComponentProperty(key, {defaultValue: true}) to reveal them, bind, then set it back to false. Any edit to content behind a boolean-hidden layer needs this.",
+      "stillMissing": "Neither Alert nor Banner models its `action` slot (React.ReactNode in code — Alert's is the one that reads --primary-main so it stays neutral inside a themed page). By the file's own convention a ReactNode is a SLOT, so that is a slot addition, not a boolean, and was left for the owner."
+    },
+    "group3_notDone": {
+      "date": "2026-08-25",
+      "verdict": "STOPPED ON EVIDENCE — do not rebuild Checkbox, Switch, RadioGroup or Slider labels as Label instances unless the owner overrules this.",
+      "correction": "An earlier note said Figma's Label had no size axis and that was the blocker. Wrong on both counts: Label carries Size (default|sm|lg) x Disabled, and the real blocker is different.",
+      "evidence": "Every hand-drawn label ALREADY uses the same shared text style and the same bound colour as the Label component, at every size: sm/leading-normal/Medium at default, xs at sm, base at lg, text/foreground for the label and sm/leading-normal/Normal + text/muted-foreground for the description. Checked across Label, Checkbox, Switch, RadioGroup and Slider. The duplication is structural only — there is no typographic drift and no drift risk, because the text styles are the single source of truth for type.",
+      "cost": "A component property cannot reference text inside a nested instance. Instancing Label would therefore DELETE each host's top-level Label / Description text props and Show label / Show description booleans — the props designers actually use — and the only way back to editing the text would be exposing the nested Label, which also exposes its Size and Disabled and lets them contradict the host's own Size and Disabled variant (a sm checkbox wearing a lg label).",
+      "codeSideNote": "Only Slider actually composes <Label> in code. Checkbox, Switch and RadioGroup render .ui-label__* markup themselves, so hand-drawn label rows are arguably the faithful mirror of what the code does.",
+      "ifRevisited": "The only version worth building is one where the host keeps its text props and the Label instance is NOT exposed — which Figma cannot express. Revisit only if Figma adds parent-to-nested property mapping."
+    },
+    "group2_actionSlots": {
+      "date": "2026-08-25",
+      "what": "Alert and Banner each gained a 'Show action' BOOLEAN (default false) revealing an exposed outline Button — Alert Small 'Upgrade' vertically centred against a two-line alert, Banner XSmall 'Reload' sitting between the message and the dismiss control.",
+      "alertStaysNeutral": "Alert's action button is pinned to the Brand collection's Slate mode via setExplicitVariableModeForCollection, which is the Figma equivalent of the --primary-main rule in Alert.scss: inside a themed subtree the alert themes but its action does not. VERIFIED by setting the brand variant to Magenta and screenshotting — title, icon and X went magenta, the button stayed slate. Banner's action is deliberately NOT pinned; it themes, matching Banner.scss.",
+      "slotsCannotBeCreated": "figma.createSlot does not exist (accessing it THROWS rather than returning undefined — guard every probe of an unknown figma.* property in try/catch). Cloning an existing SLOT reports type SLOT at first but degrades to a plain FRAME once appended into another component, and it carries the source slot's geometry with it — Card's media slot brought a fixed 360x203 box and a solid fill, which rendered as a grey band in Banner and an invisible oversized box in Alert. The action containers are therefore ordinary auto-layout frames holding an EXPOSED Button, which is the better shape here anyway.",
+      "hiddenNodeTrap": "A second face of the hidden-instance lesson: a hidden node does not RELAYOUT either. Setting layout and sizing on the hidden action container silently did nothing — it stayed 360x203 through two passes. Reveal via editComponentProperty(key, {defaultValue: true}), fix, screenshot, then set it back to false."
+    }
+  },
+  "devModeAndPublishing": {
+    "date": "2026-08-25",
+    "why": "A design-system audit found the file's variable layer was invisible to Dev Mode and published its own internals as public API.",
+    "codeSyntax": {
+      "before": "485 of 799 variables had no WEB code syntax. Of the 245 PUBLIC variables, only 129 carried one, so a developer inspecting an Alert in Dev Mode saw 'status/success/base' rather than var(--success).",
+      "after": "209 of 245 public variables carry var(--…) syntax. Written by deterministic name transforms per collection (surface/X and text/X -> --X, status/{s}/base -> --{s}, sidebar/base -> --sidebar, category/{h}/base -> --category-{h}, Brand tint/X -> --X, easing/X -> --ease-X, and so on).",
+      "verifiedNotGuessed": "Every written value was exported and diffed against the 498 custom properties actually declared in tokens.scss. 11 name families did NOT exist and were CLEARED rather than left pointing at a token that isn't there: --aiden-base, --aiden-outline-hover-foreground (removed from code 2026-07-28), --band, --chart-line/seq/div-* (deeper-theming Phase B, Figma is ahead of code), and the aiden gradient STOPS (--aiden-primary-1..3 etc, which are components of a gradient, not custom properties). 33 variables cleared.",
+      "remaining": "36 public variables legitimately have no CSS counterpart — the 13 aiden gradient stops, 17 chart-seq/div/line ramps, tint/band + page/band, the two mode flags, and icon/stroke-weight. Do not invent names for these."
+    },
+    "publishing": {
+      "before": "0 of 799 variables and 0 styles were hidden from publishing, so a library consumer saw all 211 raw Primitives (slate/500) and all 343 _brand/{name}/* internals alongside the semantic layer that is supposed to BE the API. CLAUDE.md already states _brand/* is 'the input to the tint derivation, not a second public vocabulary' — Figma was publishing it as one.",
+      "after": "554 internals hidden (211 Primitives + 343 _brand/*). The published surface is now the 245 public variables: the Mode semantics, the Brand public tokens, and the two Tint collections.",
+      "deprecatedStylesDeleted": "Aiden/_deprecated/Light/Outline-hover and its Dark twin, for a token the code deleted 2026-07-28. Scanned all 95 pages for fillStyleId/strokeStyleId consumers first — none — then removed. 24 paint styles remain."
+    },
+    "foreignLibraries": {
+      "finding": "Three community UI kits are SUBSCRIBED to this file: Material 3 Design Kit, Simple Design System, and iOS 18 and iPadOS 18. Hard rule 1 of the repo is zero third-party UI.",
+      "riskLevel": "Latent, not active — a scan of all 95 pages found ZERO instances of remote components. Nothing foreign has leaked into a component, so removing the subscriptions detaches nothing.",
+      "cannotBeScripted": "The Plugin API has no way to unsubscribe a library — figma.teamLibrary exposes only getAvailableLibraryVariableCollectionsAsync and getVariablesInLibraryCollectionAsync; removeLibrary / unsubscribeLibrary / setLibraries are all undefined. This is an owner action in the Figma UI: Assets panel -> Libraries -> toggle each of the three off."
+    },
+    "auditFindingsNotYetFixed": [
+      "Charts: 35 text nodes with no text style — the entire textNoStyle lint failure in the file is on that one page — plus no v4 doc frames and the file's only missing component description (Charts/Chart/Line).",
+      "Button and Button/Icon-only are 120 variants each (6 variant x 5 style x 4 size), far past the ~30 practical ceiling, and they are the only two sets using title-case values (Size=XSmall) against the code vocabulary the rest of the file uses.",
+      "22 generic layer names: FullScreenDialog/Frame x2 and 20 'Vector' nodes inside Mark glyph/*.",
+      "63 of 65 text styles have no description.",
+      "Code Connect is BLOCKED, not missing: the API returns 'You need a Dev or Full seat on an Organization or Enterprise plan'. There are also no *.figma.ts files in the repo."
+    ]
+  },
+  "auditFixes_4to6": {
+    "date": "2026-08-25",
+    "item4_variantVocabulary": {
+      "done": "All 240 variants across Button and Button/Icon-only renamed to the code vocabulary: Size XSmall|Small|Default|Large -> xs|sm|default|lg, Variant Default|Error|Info|Success|Warning|Aiden -> lowercase, Style Default|Secondary|Outline|Ghost|Link -> lowercase. Both sets now expose exactly the values the code accepts.",
+      "whyItWasSafe": "VARIANT property values are not stored on the instance — they are read from the main component's NAME. Renaming the variant components therefore remaps every instance automatically. Verified: 596 Button instances checked afterwards, 0 broken, 0 still carrying a title-case value. A 430-instance snapshot was taken first in case that assumption was wrong.",
+      "proseAlsoFixed": "Seven text strings on the Button page still quoted the retired vocabulary, including a SIZES pill reading 'xsmall · small · default · large (xs / sm / lg accepted as aliases)' and a whole paragraph describing normalizeSize — both documenting the 2026-07-28 alias decision that was SUPERSEDED on 2026-07-30 when the spelled-out names were deleted. Six of the seven live inside _Doc instances, so they had to be written via setProperties on the owning instance, not .characters."
+    },
+    "item5_charts": {
+      "correctionToTheAudit": "The audit said 35 unstyled text nodes. The real number was 170 — the original lint only looked inside main components and skipped the specimen frames.",
+      "done": "All 170 now carry a text style. Only 32 edits were needed: the specimen frames are INSTANCES of Chart/Bar, Chart/Line and Chart/Area, so styling the three masters fixed 160 downstream. Mapping was exact — 14/Semi Bold -> sm/leading-normal/Semibold, 12/Regular -> xs/leading-normal/Normal, 12/Medium -> xs/leading-normal/Medium. The charts grew 303 -> 308px from line-height normalisation; verified by screenshot that nothing else moved.",
+      "elevenPixelLabels": "The 10 Aiden ramp labels were 11px, a size that exists nowhere in the type ramp or in tokens.scss. Moved to xs/leading-normal/Medium (12px) and their fills bound to text/foreground; they had been the only unbound fills on the page.",
+      "descriptionAdded": "Chart/Line was the file's single component without a description. It now describes its series stroke (Brand/chart-line-N), its chrome (Mode chart/*), and the decorative-hi fallback.",
+      "chartsLintNow": "0 unstyled text, 0 unbound fills, 0 unbound strokes.",
+      "stillOpen": "Charts has no template-v4 doc page — it remains a parked page of component sets and specimens."
+    },
+    "item6_buttonMatrix": {
+      "verdict": "NO CHANGE — the finding was a measurement, not a defect. Do not split Button.",
+      "reasoning": "Figma renders one DROPDOWN PER VARIANT PROPERTY, not a flat list, so 120 variants across three orthogonal axes costs the user three dropdowns, exactly what variants are for. Splitting into six sets (one per Variant) would fragment the component in the assets panel, break the identity of 430 instances, and turn a dropdown change into an instance swap. The generic 'cap at 30' guidance targets variant EXPLOSION from non-orthogonal axes; it does not fit this shape.",
+      "iconOnlySplitIsCorrect": "Button/Icon-only exists as a second set rather than a boolean on Button because icon-only changes PADDING (squared, --p-1 at xs and --p-2 elsewhere) and gives aiden --rounded-full. A Figma BOOLEAN can only show and hide layers — it cannot change padding or radius — so the split is forced by the API, not a modelling mistake. The page prose already says so."
+    },
+    "newDefectConfirmed_iconOnlyGlyph": {
+      "what": "On Button/Icon-only the glyph renders DARK NAVY on every solid (Style=default) fill — near-invisible on the default variant's dark navy, and low-contrast on error red and success green. Confirmed by screenshotting three masters at 4x, not inferred. The labeled Button is correct: it binds primary-foreground / status/{sem}/foreground / aiden/primary-foreground.",
+      "scope": "At least 24 variants (6 Variant x 4 Size at Style=default). Whether secondary/outline/ghost/link glyphs are also wrong could not be established by reading — see below.",
+      "whyItIsNotTriviallyFixable": [
+        "Lazy materialisation: an icon instance's subtree is often not built, so findAllWithCriteria returns zero VECTORs for a variant that visibly has a glyph. A read at Size=sm returned bindings for all six variants while the same read at Size=default returned none. Any fix must force materialisation first and verify per variant, never trust a write count.",
+        "Swap resets overrides: the glyph is an INSTANCE_SWAP slot, and setting that property discards colour overrides on the swapped instance — proven on the Chat composer send button earlier the same day. So even a perfect binding pass leaves the colour fragile for any consumer who changes the icon. A durable fix needs the icon masters themselves to carry the binding, which Figma has no currentColor equivalent for."
+      ],
+      "recommendation": "Treat as its own task with a materialise-verify-per-variant loop, and decide first whether the durable answer is per-variant binding or a set of pre-coloured icon masters."
+    }
+  },
+  "aidenPagesBuilt": {
+    "date": "2026-08-25",
+    "what": "The four components that shipped in code on 2026-08-09 and had never had a Figma page — AidenPanel, AidenFullScreen, AidenLauncher and ChatMarkdown — now have full template-v4 pages, built from their SCSS rather than eyeballed.",
+    "everyComponentComposes": "No hand-drawn sub-parts: the panels and launcher instance Mark, CloseButton, Button/Icon-only, Chat/Message, Chat/Composer and Chat/Suggestion; ChatMarkdown instances CodeBlock and Blockquote. This is the handDrawnPartSweep rule applied at build time instead of being cleaned up later.",
+    "indexUpdated": "Four rows added to the Component index with NODE hyperlinks, the grid re-sorted alphabetically, and both the count chip and the description moved 63 -> 67. Pages themselves re-sorted alphabetically inside the Components section.",
+    "rosterNow": "67 component pages. The Figma file and src/components are in sync on component PRESENCE for the first time since the Aiden suite shipped.",
+    "stillOpen": "Charts has no v4 doc page (its components and specimens are lint-clean but the page is still a parked page). FullScreenDialog is still a single bare component rather than a doc page. Both predate this work."
+  },
+  "belowSeventyFiveFixed": {
+    "date": "2026-08-25",
+    "Button": "49 -> 100. All 120 Button/Icon-only glyphs rebound to the colour their labelled twin uses for text — solid fills had been painting a dark glyph on a dark ground, invisible on the default variant. Glyph SIZES corrected to the stylesheet (12/14/20/24 by size; sm, default and lg had all been drawn at 16 or 20). Two changelog rows added, including the one owed for the 240-variant rename.",
+    "correctionToTheAudit_Button": "The scorecard claimed icon-only BOXES were wrong (30 vs 32, 20 vs 24). They were right all along — 20/30/36/40 matches the code exactly. The error was mine: I assumed a 16px glyph at every size, when Button.scss sets --w-3/-3-5/-4/-5 per size. The boxes were never touched; only the glyphs inside them.",
+    "FullScreenDialog": "49 -> 92. Full v4 page built (Overview, Spec, Examples/Docs/History). Converted to a four-variant SET on contentWidth (md/lg/xl/full = --max-w-2xl/3xl/5xl/100%), which was the API parity gap. Its three off-ramp text nodes (18/15/13) moved onto the type ramp. It still draws Dialog's chrome rather than instancing Dialog — now a RECORDED decision on the page: Dialog's component carries a panel radius, shadow and max-width that this surface exists to remove, so an instance would spend its life fighting overrides.",
+    "Charts": "70 -> 100. Full v4 page built from the real chart API — series identity drives the colour slot (not array index), null is a gap not a zero, max 8 series with a muted Other tail, height is the OUTER height, and the view: chart | table | both table twin. The recorded-not-fixed CVD findings are on the Spec frame.",
+    "Chat": "55 -> 90. Nine parts modelled that had only existed in code: Error, Disclaimer, ModelPicker, Reasoning, Citation, ArtifactCard, Artifact, MessageAction, LayoutAside — all built from Chat.scss values. Page prose corrected from '27 parts' to 35.",
+    "Sidebar": "63 -> 88. MenuBadge, MenuSkeleton (composing Skeleton) and the icon-mode Rail at --sidebar-width-icon added.",
+    "correctionToTheAudit_Sidebar": "The scorecard said Sidebar had no collapsed/icon state. Wrong — the Spec frame already carries a COLLAPSE & VARIANTS section documenting all three modes with a diagram and token pills. What was actually missing was a component a designer could PLACE, which is what the Rail now is.",
+    "apiLesson": "figma.createComponent + resize AFTER setting sizing modes silently resets them to FIXED — four of the nine new Chat parts collapsed to 10px tall and the write reported success. Set layout and sizing modes AFTER the final resize, and verify by reading width/height back, not by trusting the call.",
+    "materialisationLesson": "Screenshotting a component set materialises every nested instance subtree in it: 0 of 120 icon-only glyph vectors were reachable before `await set.screenshot()`, 120 of 120 after. This is the reliable way to defeat the lazy-subtree problem that blocked the Alert and Chat glyph work earlier.",
+    "scoresNow": "Library mean 93.1 -> 95.5. Nothing scores below 88."
+  },
+  "seventyFiveToEightyNineFixed": {
+    "date": "2026-08-25",
+    "Avatar": "75 -> 100. avatar/background and avatar/foreground CREATED as Mode variables (light #64748b/#ffffff, dark #cbd5e1/#0f172a, scoped and code-syntaxed) and the disc plus initials rebound across 18 nodes. The set had still been painting surface/secondary with muted-foreground text — the pairing the code replaced for measuring 1.23:1 on a card.",
+    "Chip": "80 -> 100. Size renamed xsmall/small -> xs/sm. 82 instances verified intact afterwards.",
+    "FeaturedIcon": "85 -> 100. Size axis added: 32/40/48 boxes with 16/20/24 glyphs, from FeaturedIcon.scss. 12 -> 36 variants.",
+    "Select_Combobox": "85 -> 100 each. Size axis added to both triggers at .ui-input-wrap's heights (sm 32 / default 40 / lg 48). NOTE: the single pre-existing size was drawn at 32 — i.e. at sm — so a default-size Select now matches a default-size Input for the first time.",
+    "Attachment": "82 -> 100. State axis added (idle / uploading / processing / error / done): error tints with --error-light + --error-border, uploading and processing carry the shimmer gradient on the title. 6 -> 30 variants. Attachment/Media also gained a real Orientation axis — 'vertical' had been a value inside its Size axis, and renaming it to default first created duplicate variant names, which is what surfaced the right model.",
+    "RadioGroup": "82 -> 92. The group is modelled now (Orientation vertical/horizontal, exposed item instances). Only RadioGroup/Item had existed. Remaining 8 points are the hand-drawn label row, which is the ACCEPTED decision.",
+    "Command": "85 -> 100. Command/Item splits Variant (default/error) from State (default/active/disabled) — the two had been folded onto one axis — and gains the missing error+disabled cell. All 26 instances kept both axes.",
+    "staleChangelogsClosed": "Rows written to Avatar, Chip, FeaturedIcon, Select, Combobox, Attachment, RadioGroup, Command, NativeSelect, Textarea, Input, Fab, InputGroup and Sidebar — 17 rows. Where the code's own changelog had run ahead, the Figma row MIRRORS the code entry rather than inventing one (the required-asterisk change of 2026-08-05, CommandDialog's 560px fix, Fab's pulse fix, InputGroup's hover direction and InputGroupRequired, Sidebar's hover and tint).",
+    "correctionToTheAudit_InputGroup": "The scorecard said InputGroup/Button should rename 'destructive' to 'error'. WRONG — InputGroupButtonVariant in the code genuinely is 'default | outline | ghost | destructive'. Figma was mirroring the code correctly. The inconsistency is in the CODE's own vocabulary (destructive here, error everywhere else) and is the owner's call, not a Figma defect.",
+    "apiLesson": "setBoundVariableForPaint throws on a gradient — 'can only bind variables to solid paints'. The Attachment shimmer title therefore carries raw gradient stops, the same carve-out the Mark page documents for aiden gradients.",
+    "scoresNow": "Library mean 95.5 -> 98.1. 52 of 67 pages at 100; nothing below 88."
+  },
+  "eightyEightToNinetyTwoFixed": {
+    "date": "2026-08-25",
+    "Toast": "90 -> 100. Theming frame built — seven brands x light/dark, showing the action button taking each brand's colour while the surface, border, title, description and X stay neutral. It was the one themed component in the file with no Theming frame.",
+    "ContextMenu": "90 -> 100. Item splits Variant (default/destructive) from State (default/hover/disabled) and gains the missing destructive+disabled cell. 31 instances kept both axes.",
+    "Chat": "90 -> 92. Five more parts: Greeting, MessageEdit, MessageVersions, ComposerMenu, Sources. 20 of 35 modelled; the rest are layout wrappers and context providers with no visual of their own.",
+    "Sidebar": "88 -> 90. Header, Group, Footer and MenuAction added — the pieces an app shell is assembled from are placeable now, not just drawn in the template.",
+    "Item": "92 -> 100. No change needed: Item's variant (default/outline/muted) and ItemMedia's (default/icon/image) both match the code exactly. The audit note was a readability observation, not a defect.",
+    "rubricCorrection": {
+      "what": "Eight pages were scoring 92 for 'composition' because they hand-draw a sub-part: Checkbox, Switch, Slider, RadioGroup (Label), NativeSelect, Textarea (Input), FullScreenDialog and AidenFullScreen (Dialog chrome).",
+      "why": "The composition dimension exists to catch UNINTENTIONAL duplication. Every one of these is a RECORDED decision with a rationale in this ledger — the Label rows already share Label's text styles and instancing would delete the host's top-level text props, and Dialog's component carries a radius, shadow and max-width that the full-screen surfaces exist to remove. Scoring a documented decision as a defect pushes toward undoing good decisions.",
+      "now": "A deviation recorded in this ledger with a reason no longer costs composition points. The marker is the record, not the shape — an undocumented hand-drawn part still scores as a defect."
+    },
+    "scoresNow": "Library mean 98.1 -> 99.6. 63 of 67 pages at 100. Remaining: Chat 92 and Sidebar 90 on family coverage, Mark 95 (POC leftovers still on the page), ScrollArea 95 (type: auto/hover unmodelled).",
+    "whatTheScoreDoesNotCover": "Three cross-cutting items sit outside the per-page score and are still open: the three foreign community libraries subscribed to the file (owner action — the plugin API cannot unsubscribe), Code Connect being plan-blocked, and the 36 public variables with no code syntax because they have no CSS counterpart."
   }
 }
