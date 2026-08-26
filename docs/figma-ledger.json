@@ -317,7 +317,10 @@
     "A count variant of EXPOSED nested instances gives a locked component per-row editability without detaching. Accordion ships Rows 3-8 with 33 exposed Accordion/Item instances; a placed instance let every row be opened, retitled and given its own divider setting, and resizing the whole accordion carried through to row, wrap and divider. This is the ToggleGroup model and it generalises to any fixed-length homogeneous list.",
     "YOU CANNOT FILL A SLOT WITH setProperties — Figma throws \"Slot component property values cannot be edited\" for both a component key and a node id. Fill it by calling appendChild directly on the SLOT node inside the placed instance. That is the one instance sublayer you are allowed to add to, and it is the whole point of a slot. The ledger documented creating slots but never filling one.",
     "A slot inherits the geometry of the frame it was converted from, including a FIXED size. If the CSS counterpart hugs its content (inline-flex + min-width), set the slot to auto-layout with primary/counterAxisSizingMode AUTO and minWidth/minHeight equal to the old fixed size. Avatar's badge was a fixed 16px box, so a Badge dropped in would have clipped; hugging makes it grow 16 -> 24 and extend from its bottom-right anchor exactly as the CSS does.",
-    "Check the page PROSE before assuming the component is right. Avatar's example caption already read \"badge slot — usually a StatusDot\" while the component modelled a boolean over an empty frame — the writing was ahead of the build. Prose that describes a capability the component lacks is the same signal as a hand-drawn example."
+    "Check the page PROSE before assuming the component is right. Avatar's example caption already read \"badge slot — usually a StatusDot\" while the component modelled a boolean over an empty frame — the writing was ahead of the build. Prose that describes a capability the component lacks is the same signal as a hand-drawn example.",
+    "A VARIANT switch on a parent PRESERVES the property values of its exposed nested instances. Switching an assembled Breadcrumb from Glyph=chevron to Glyph=slash changed all three separators at once and left all four crumb labels intact. Do NOT generalise the recorded \"an INSTANCE_SWAP property swap DISCARDS nested overrides\" lesson to variant switching — they behave differently, and the difference decides whether a count/style axis on an assembly is safe. Verified on a placed instance.",
+    "Put the shared style axis on the ASSEMBLY, not only on the exposed children. Breadcrumb separators are individually exposed, but a designer changing a four-level trail from chevrons to slashes would make three separate edits and any missed one leaves a mismatched trail. A Glyph axis on the parent makes it one action and makes the inconsistent state unreachable. Cost: it doubles the variant count, which is trivial next to the correctness win.",
+    "Watch for the fix that overshoots. Breadcrumb went locked-single-trail (rejected: examples had to be hand-drawn) -> atoms only (correct, but nothing in Assets to drag) -> atoms PLUS an assembled set. Each step fixed the previous complaint and created the next. When correcting a modelling decision, check whether the opposite failure is now available."
   ],
   "components": {
     "Button": {
@@ -1144,7 +1147,8 @@
       "pageId": "458:44",
       "setIds": [
         "464:226",
-        "464:235"
+        "464:235",
+        "1552:434"
       ],
       "frames": {
         "overview": "458:55",
@@ -1153,13 +1157,14 @@
       },
       "themed": false,
       "themingFrame": "ABSENT — neutral chrome, no --primary. Links --muted-foreground, current page --foreground. Same stance as Tooltip / Sidebar; stated in TOKENS.",
-      "props": "Atom components (mirrors the compound code, NOT one fixed trail): Breadcrumb/Crumb — VARIANT Type (link|current) + TEXT Label (link=--muted-foreground <a>, current=--foreground <span aria-current>); Breadcrumb/Separator — VARIANT Glyph (chevron|slash), aria-hidden; Breadcrumb/Ellipsis — single component. Every trail on the page (overview, spec cells, all six example trails) is COMPOSED FROM REAL INSTANCES of these, so they stay in sync with the masters and a designer drags atoms to build any depth.",
-      "version": "1.0 · 2026-07-27",
-      "notes": "NO code change. Verified in-browser the link's `transition: color` does NOT hit the Chromium var()-transition freeze Tabs dodged: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent), so a plain mode flip settles to the correct dark value (8.93:1) — documented on the a11y frame. REBUILT from a fixed hand-drawn trail to instanceable ATOMS after the owner asked why examples weren't the real component: Crumb/Separator/Ellipsis are real components, and overview + spec + examples compose instances (dark frames set Mode=Dark so the instances flip automatically — verified). Separator glyphs are lucide icon instances (chevron 312:18466, slash 312:20530, ellipsis 312:18936) stroke re-weighted (2·rendered/24) and bound to --muted-foreground. Hover cell overrides the link instance text fill to --foreground; focus cell wraps a link instance in a Focus/Default effect frame (2px pad bound to spacing/0-5). Lint all-zeros, no overflow, index row 125:396 linked.",
+      "props": "ATOMS: Breadcrumb/Crumb — VARIANT Type (link|current) + TEXT Label; Breadcrumb/Separator — VARIANT Glyph (chevron|slash); Breadcrumb/Ellipsis — single component. ASSEMBLED: Breadcrumb — VARIANT Levels (2|3|4|5) x Glyph (chevron|slash) = 8 variants of EXPOSED atom instances, last crumb already Type=current. Levels and Glyph are Figma-only; in code you render as many BreadcrumbItem children as you like.",
+      "version": "1.1 · 2026-08-26",
+      "notes": "NO code change. Verified in-browser the link's `transition: color` does NOT hit the Chromium var()-transition freeze Tabs dodged: the link colour is `inherit` (the --muted-foreground var lives on the untransitioned .ui-breadcrumb parent), so a plain mode flip settles to the correct dark value (8.93:1) — documented on the a11y frame. REBUILT from a fixed hand-drawn trail to instanceable ATOMS after the owner asked why examples weren't the real component: Crumb/Separator/Ellipsis are real components, and overview + spec + examples compose instances (dark frames set Mode=Dark so the instances flip automatically — verified). Separator glyphs are lucide icon instances (chevron 312:18466, slash 312:20530, ellipsis 312:18936) stroke re-weighted (2·rendered/24) and bound to --muted-foreground. Hover cell overrides the link instance text fill to --foreground; focus cell wraps a link instance in a Focus/Default effect frame (2px pad bound to spacing/0-5). Lint all-zeros, no overflow, index row 125:396 linked. | [1.1 — 2026-08-26] Owner: \"there is no actual breadcrumb component in assets, only crumb.\" True — 1.0 shipped atoms ONLY, which was itself the fix for the first cut (a single locked trail with no text props). The swing had gone one notch too far: only components appear in the Assets panel, so there was nothing to drag. Added an assembled Breadcrumb set — Levels 2–5 x Glyph chevron|slash, 48 exposed atom instances. Glyph is on the parent deliberately: with only exposed separators, changing a 4-level trail from chevrons to slashes is three separate edits and trails drift into mismatched glyphs. This is NOT a return to the rejected version. That one was a fixed trail with no text properties; this composes the atoms, which stay the source of truth, and every existing trail on the page is still built from them. The Ellipsis, collapsed trails and anything deeper than five levels are still atom compositions.",
       "componentIds": {
         "crumb": "464:226",
         "separator": "464:235",
-        "ellipsis": "464:236"
+        "ellipsis": "464:236",
+        "assembled": "1552:434"
       }
     },
     "Field": {
