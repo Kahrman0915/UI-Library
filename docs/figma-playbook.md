@@ -163,10 +163,10 @@ Frames **left → right**, top-aligned at `y=80`, gap `80`, width 1280 (Spec is 
 Frame names carry **no prefix** — exactly: `Overview`, `Spec — matrix × states`,
 `Theming`, `Examples · Docs · History`.
 
-Cards are **plain auto-layout frames** styled like `_Doc/Card` (fill `surface/card`,
+Cards are **plain auto-layout frames** styled like `_Doc/Panel` (fill `surface/card`,
 stroke `surface/border`, radius `radius/xl`, padding `spacing/8`, gap `spacing/6`,
-`clipsContent=false`). **Never instance `_Doc/Card`** — instances can't take children.
-`_Doc/Separator` instances (`layoutSizingHorizontal='FILL'`) divide sub-sections.
+`clipsContent=false`). **Never instance `_Doc/Panel`** — instances can't take children.
+`_Doc/Rule` instances (`layoutSizingHorizontal='FILL'`) divide sub-sections.
 
 ### 1 · Overview
 `_Doc/PageHeader` (Title, Description, 4 chips: `Phase N · role` / `primitive|compound`
@@ -185,7 +185,7 @@ sep → a horizontal `Light + Dark` wrapper holding **two tables side by side**:
 `setExplicitVariableModeForCollection(Mode, Dark)` and its label-caption explains the
 override). Table anatomy:
 - Header row: `variant · style` + columns `Enabled · Hover · Focus · Disabled`
-- Variant groups delimited by **`_Doc/SeparatorLabeled`** (label = variant, uppercase)
+- Variant groups delimited by **`_Doc/Rule labelled`** (label = variant, uppercase)
 - Rows = styles; every cell = a 132×44 frame (`clipsContent=false`) holding one instance
 - Painted states: Hover = fill the variant's `-hover` variable (solid style) or
   `-light`/`accent` (ghost); Focus = apply the `Focus/{Variant}` effect style
@@ -316,21 +316,33 @@ the split: its 8 labelled variants keep `Label` as TEXT, and only the 8 icon-onl
 `glyph`. The two coexist happily — a slot keeps its default content, so a TEXT-bound node *inside* a slot
 still works, which is how Card keeps an editable `Body` inside `ui-card__body`.
 
+> **RENAMED 2026-08-26 — three of these collided with real components in the Assets
+> panel.** A designer searching "chip" got `Chip` *and* `_Doc/Chip`; "separator" returned
+> `_Doc/Separator` alongside nine real ones; "card" returned `_Doc/Card` beside `Card` and
+> `Toast/Card`. The `_` prefix does **not** keep them out of the Assets panel of the file
+> they live in. Node IDs are unchanged and every instance survived the rename — a master's
+> name is display only, instances track by id.
+>
+> `_Doc/Chip` → **`_Doc/Meta pill`** · `_Doc/Separator` → **`_Doc/Rule`** ·
+> `_Doc/SeparatorLabeled` → **`_Doc/Rule labelled`** · `_Doc/Card` → **`_Doc/Panel`**
+>
+> Rule for any new `_Doc/*` master: **its leaf name must not match a component name.**
+
 ## `_Doc/*` masters (page `146:122`)
 
 | Master | ID | Notes |
 |---|---|---|
 | `_Doc/PageHeader` | `146:134` | Title/Description props; 4 chip slots (hide extras via `visible=false`) |
 | `_Doc/Section` | `146:139` | Overline / Title / Description props |
-| `_Doc/Chip` | `146:125` | neutral metadata pill |
+| `_Doc/Meta pill` | `146:125` | neutral metadata pill |
 | `_Doc/TokenPill` | `146:142` | mono pill (tokens, classes, prop values) |
 | `_Doc/Annotation` | `146:163` | small muted label (grid axes, captions) |
-| `_Doc/Separator` | `157:278` | plain hairline |
-| `_Doc/SeparatorLabeled` | `175:594` | line — LABEL — line; table group headings |
+| `_Doc/Rule` | `157:278` | plain hairline |
+| `_Doc/Rule labelled` | `175:594` | line — LABEL — line; table group headings |
 | `_Doc/DoDont` | `146:154` | Do/Dont props; fixed width, hugs height |
 | `_Doc/ChangelogRow` | `146:160` | Version/Date/Author/Change props |
 | `_Doc/PropRow` | `164:451` | kept but unused in v4 (props table was cut) |
-| `_Doc/Card` | `157:276` | **style reference only — never instance** |
+| `_Doc/Panel` | `157:276` | **style reference only — never instance** |
 
 All masters have descriptions (Assets-panel hover). Give every new component set a
 description too — it's part of the lint.
