@@ -320,7 +320,9 @@
     "Check the page PROSE before assuming the component is right. Avatar's example caption already read \"badge slot — usually a StatusDot\" while the component modelled a boolean over an empty frame — the writing was ahead of the build. Prose that describes a capability the component lacks is the same signal as a hand-drawn example.",
     "A VARIANT switch on a parent PRESERVES the property values of its exposed nested instances. Switching an assembled Breadcrumb from Glyph=chevron to Glyph=slash changed all three separators at once and left all four crumb labels intact. Do NOT generalise the recorded \"an INSTANCE_SWAP property swap DISCARDS nested overrides\" lesson to variant switching — they behave differently, and the difference decides whether a count/style axis on an assembly is safe. Verified on a placed instance.",
     "Put the shared style axis on the ASSEMBLY, not only on the exposed children. Breadcrumb separators are individually exposed, but a designer changing a four-level trail from chevrons to slashes would make three separate edits and any missed one leaves a mismatched trail. A Glyph axis on the parent makes it one action and makes the inconsistent state unreachable. Cost: it doubles the variant count, which is trivial next to the correctness win.",
-    "Watch for the fix that overshoots. Breadcrumb went locked-single-trail (rejected: examples had to be hand-drawn) -> atoms only (correct, but nothing in Assets to drag) -> atoms PLUS an assembled set. Each step fixed the previous complaint and created the next. When correcting a modelling decision, check whether the opposite failure is now available."
+    "Watch for the fix that overshoots. Breadcrumb went locked-single-trail (rejected: examples had to be hand-drawn) -> atoms only (correct, but nothing in Assets to drag) -> atoms PLUS an assembled set. Each step fixed the previous complaint and created the next. When correcting a modelling decision, check whether the opposite failure is now available.",
+    "Adding instances of an atom whose geometry is UNBOUND multiplies the lint finding. A new TabBar set added 40 unbound-geometry hits purely because TabBar/Tab carried raw 12px padding that every instance inherits. Fix the ATOM, not the instances: binding the master cleared all 40 and 72 pre-existing on the same page, 226 -> 76. Before adding a set built from existing atoms, lint the atoms first — otherwise you inherit and multiply their debt and it looks like you caused it.",
+    "An exposed-instance count variant cannot enforce a single-selection invariant. An assembled TabBar with Tabs=4 lets a designer set two tabs to State=Open, which is invalid. Figma has no cross-instance constraint, so the only honest options are to state it in the set description or to make selection a variant axis on the parent (which multiplies the set). Stated it. Same class applies to any assembly with one-of-N state."
   ],
   "components": {
     "Button": {
@@ -1684,7 +1686,8 @@
       "pageId": "1279:44",
       "setIds": [
         "1279:26339",
-        "1280:26322"
+        "1280:26322",
+        "1557:688"
       ],
       "assembledFrame": "1280:26323",
       "frames": {
@@ -1695,12 +1698,14 @@
       },
       "themed": true,
       "themingFrame": "1283:268 — seven Brand modes (main + db dc ec nb ph rm) x light/dark. ONLY --primary themes: the open tab underline. Everything else is neutral chrome by design.",
-      "props": "VARIANT State (Resting|Hover|Open|Disabled) = 4 on TabBar/Tab; TEXT Label, INSTANCE_SWAP Icon, BOOLEAN Closable. TabBar/New tab: VARIANT State (Resting|Hover) = 2.",
+      "props": "ATOMS: TabBar/Tab — VARIANT State (Resting|Hover|Open|Disabled) + TEXT Label + INSTANCE_SWAP Icon + BOOLEAN Closable; TabBar/New tab — VARIANT State (Resting|Hover). ASSEMBLED: TabBar — VARIANT Tabs (2|3|4|5|6) + BOOLEAN \"Show new tab\", built from exposed atom instances with the first tab already Open. Tabs and Show new tab are Figma-only.",
       "codeOnly": "value / defaultValue / onValueChange / activationMode / onClose / closeLabel / disabled. activationMode defaults to manual, INVERTING Tabs.",
       "builtFrom": "The TabBar frame at 1275:2003 on the TEST-adjacent page, supplied by the owner.",
-      "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset.",
+      "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset. | [1.1 — 2026-08-26] Same gap as Breadcrumb and Accordion: the atoms and every composition were healthy, but only components appear in the Assets panel, so there was nothing to drag. Added an assembled TabBar set (Tabs 2–6 + Show new tab), 25 exposed instances. Verified on a placed instance: tabs retitled, Open moved from tab 1 to tab 3, the + toggled, and a Tabs 4->5 switch KEPT all four renames while adding \"Tab 5\". ONE THING NOTHING ENFORCES: exactly one tab should be State=Open. The exposed instances let a designer set two, which is invalid. Stated in the set description; not expressible as a constraint. The editable \"TabBar — assembled\" frame (1280:26323) stays for strips longer than six and for the overflow-scroll behaviour.",
       "labels": "Generic Tab 1..N throughout, in both Figma and Storybook (owner call 2026-08-11). The set default Label is \"Tab 1\". Short labels sit at the 140px floor, so the assembled bar is 140/140/140 x47 — byte-for-byte the widths the code measures.",
-      "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match."
+      "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match.",
+      "version": "1.1 · 2026-08-26",
+      "geometryFix": "Binding the atoms fixed more than the new set cost. TabBar/Tab carried RAW 12px horizontal padding and both atom sets had Figma's default radius-5 wrapper, all unbound — so every tab instance on the page inherited the finding. The new set added 40 (20 tabs x 2 sides); binding the atom cleared those AND 72 pre-existing, taking the page from 226 unbound-geometry findings to 76. What remains is the 80px page-frame padding on Spec/Theming/Examples, part of the file-wide unboundGeometryFinding."
     },
     "AidenPanel": {
       "status": "done-v4",
@@ -1760,7 +1765,8 @@
       "darkHeaderNote": "In dark, surface/secondary and surface/card BOTH resolve to #1e293b, so the header row is the same colour as the body and is separated by its bottom hairline alone (light is #e2e8f0 on #ffffff). Accepted, and stated in the TOKENS section. The header cannot move to --muted: header labels are --muted-foreground, and muted-foreground on muted is 5.1:1, below AA. A stronger dark header needs a NEW token, not a swap.",
       "parity": "Measured, not eyeballed: every column at identical x-offsets across all five rows, every Amount value right-edge at 792 with a 16px gap. An eyeball read of the PNG suggested a ~13px misalignment; the measurement disproved it.",
       "lint": "all zeros (unbound paint 0, unstyled text 0, generic names 0, unbound geometry 0, missing descriptions 0), recursive overflow 0.",
-      "indexRow": "1417:1254 — inserted between TabBar and Tabs. Board count reads \"67 components + 1 proposal\" rather than 68, deliberately."
+      "indexRow": "1417:1254 — inserted between TabBar and Tabs. Board count reads \"67 components + 1 proposal\" rather than 68, deliberately.",
+      "assetsPanelStance": "DELIBERATELY template-frame only, owner decision 2026-08-26 while Accordion, Breadcrumb and TabBar each gained an assembled component. A table's row count is genuinely unbounded and its columns vary per use, so a Rows/Columns count variant would either explode or cap the wrong thing. Do not add an assembled Table set without asking."
     }
   },
   "queue": {
