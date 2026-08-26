@@ -1,6 +1,25 @@
 export type TabsOrientation = 'horizontal' | 'vertical';
 
 /**
+ * The visual treatment of the tablist. Purely presentational — every variant
+ * has identical semantics, keyboard behaviour and aria wiring.
+ * - `default` — the enclosed pill track. The active tab is a lifted pill.
+ * - `line` — no track; the active tab is marked by a bar on `--primary`,
+ *   sitting on the list's own hairline. Themes.
+ * - `browser` — the active tab is a card-shaped tab merging into the panel
+ *   below, which becomes a bordered surface.
+ *
+ * **`browser` is horizontal-only.** Paired with `orientation="vertical"` it
+ * falls back to `line` styling rather than render something incoherent.
+ *
+ * **`browser` is not {@link TabBar}.** It borrows the shape, not the job: a
+ * Tabs trigger reveals a panel shipped beside it, and has no close affordance
+ * or overflow scrolling. A strip of open documents the user can close is
+ * `TabBar`, whatever either one looks like.
+ */
+export type TabsVariant = 'default' | 'line' | 'browser';
+
+/**
  * How arrow-key navigation selects tabs (WAI-ARIA APG).
  * - `automatic` — moving focus with the arrows selects that tab immediately.
  *   Right for cheap, instant panels.
@@ -20,6 +39,11 @@ export type TabsProps = React.HTMLAttributes<HTMLDivElement> & {
   onValueChange?: (value: string) => void;
   /** Also drives which arrow keys navigate (Left/Right vs Up/Down). */
   orientation?: TabsOrientation;
+  /**
+   * Default `default`. Presentation only — see {@link TabsVariant}. Set on the
+   * root; the parts style off a single root class, so nothing is threaded down.
+   */
+  variant?: TabsVariant;
   /** Default `automatic`. See {@link TabsActivationMode}. */
   activationMode?: TabsActivationMode;
   className?: string;

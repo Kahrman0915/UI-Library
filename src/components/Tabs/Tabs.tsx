@@ -41,6 +41,7 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
       defaultValue,
       onValueChange,
       orientation = 'horizontal',
+      variant = 'default',
       activationMode = 'automatic',
       className,
       children,
@@ -48,6 +49,11 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
     },
     ref,
   ) => {
+    // `browser` is horizontal-only — a vertical browser tab strip isn't a
+    // thing. Fall back to `line`, which reads correctly in both orientations,
+    // rather than emit a class whose rules assume a horizontal list.
+    const resolvedVariant =
+      variant === 'browser' && orientation === 'vertical' ? 'line' : variant;
     const controlled = valueProp !== undefined;
     const [internalValue, setInternalValue] = useState<string | undefined>(
       defaultValue,
@@ -74,7 +80,13 @@ const Tabs = forwardRef<HTMLDivElement, TabsProps>(
           ref={ref}
           id={id}
           data-orientation={orientation}
-          className={`ui-tabs ui-tabs--${orientation}${className ? ' ' + className : ''}`}
+          data-variant={resolvedVariant}
+          // `default` deliberately emits NO modifier class — it is the base
+          // styling, so `.ui-tabs--default` would be a class nothing selects,
+          // which is the dead-BEM noise this repo scans for. Same call as
+          // Mark's `motion="none"`. `data-variant` is always present and is the
+          // hook to target the default case.
+          className={`ui-tabs ui-tabs--${orientation}${resolvedVariant === 'default' ? '' : ` ui-tabs--${resolvedVariant}`}${className ? ' ' + className : ''}`}
         >
           {children}
         </div>

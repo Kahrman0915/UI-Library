@@ -314,12 +314,18 @@ const PAIRINGS = [
   ['foreground', 'card'],
   ['muted-foreground', 'card'],
   ['foreground', 'muted'],
-  ['muted-foreground', 'muted'], // guard only — no component puts muted text on --muted now (fills/tiles have no small text)
+  // Guard only — no component puts muted text on --muted now (fills/tiles carry
+  // no small text). That claim was NOT true when it was written: Tabs' tablist
+  // was --muted with --muted-foreground triggers on it, at 5.1:1, and was simply
+  // missed by the 2026-07-21 sweep. Fixed 2026-08-26 by moving the list to
+  // --accent. Keep the guard so the next such surface trips it.
+  ['muted-foreground', 'muted'],
   ['secondary-foreground', 'secondary'],
   ['muted-foreground', 'secondary'], // Alert desc, Banner desc, Item muted, Avatar initials, Kbd — moved here off --muted for headroom
   ['popover-foreground', 'popover'],
   ['muted-foreground', 'popover'],
   ['accent-foreground', 'accent'],
+  ['muted-foreground', 'accent'], // Tabs tablist triggers (default variant) — moved here off --muted 2026-08-26
   ['sidebar-foreground', 'sidebar'],
   ['muted-foreground', 'sidebar'],
   ['tooltip-foreground', 'tooltip-background'],
