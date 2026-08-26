@@ -223,7 +223,12 @@
     padding: 0;
     background: none;
     border-radius: 0;
-    box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 0 var(--border);
+    // Deliberately NO hairline of its own, unlike `line`. The panel's own
+    // border-top already spans the full width and sits flush against the list
+    // (the root gap is 0 here), so adding one would stack two 1px rules into a
+    // 2px line under the inactive tabs. Measured: it did, before this comment.
+    // The panel's top border IS the strip's rule, and the active tab's seam
+    // masks exactly that pixel.
   }
 
   // The indicator IS the tab shape here: a card with the bottom edge opened up
