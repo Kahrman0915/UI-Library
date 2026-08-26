@@ -338,7 +338,14 @@
     "textAutoResize=WIDTH_AND_HEIGHT inside a fixed-width auto-layout parent silently clips MID-WORD — the node grows sideways past its container instead of wrapping, and Figma shows no overflow warning. Two Chat demos were unreadable this way. Fix is textAutoResize=HEIGHT then layoutSizingHorizontal=FILL, IN THAT ORDER: setting FILL first is undone by the resize-mode change.",
     "A repeated instance showing IDENTICAL content reads as a rendering bug, not as a demo. Chat/Sources shipped three cards all saying \"1 · Q3 Financial Report\". Where a component contains N of the same child, give each one distinct content — it costs one setProperties call and is the difference between \"the list works\" and \"the list is broken\".",
     "When a Figma master is the PLURAL of a code component, name it that way. Chat/MessageAction contained four buttons; ChatMessageAction in code is ONE button and ChatMessageActions is the row. A singular name on a plural master sends a designer looking for a container that does not exist.",
-    "Zero unmapped values in a geometry-binding pass is itself the finding: it proves the numbers were always right and only the BINDINGS were missing. 83 of 83 Chat values matched an existing spacing/radius token. If a binding pass instead turns up literals with no token, that is a design-system gap and must be recorded, never rounded to the nearest rung."
+    "Zero unmapped values in a geometry-binding pass is itself the finding: it proves the numbers were always right and only the BINDINGS were missing. 83 of 83 Chat values matched an existing spacing/radius token. If a binding pass instead turns up literals with no token, that is a design-system gap and must be recorded, never rounded to the nearest rung.",
+    "Before calling a component family \"nothing to drag from Assets\", check its componentPropertyDefinitions for a SLOT. Four of the six families in the Tier-2 audit already had a wired Body slot on their Content component and needed no work at all; the claim was made from the atom list alone.",
+    "figma.createSlot does not exist — ACCESSING it throws, it does not return undefined. Slots in this file were authored in the UI. A plugin building a new assembly cannot create one, so a bounded count variant plus exposed nested instances is the mechanism available.",
+    "isExposedInstance can only be set on an instance that is ALREADY inside a component or set. When building an assembly from a cloned frame, call createComponentFromNode FIRST and expose afterwards — the other order throws.",
+    "Figma refuses to expose an instance that has nothing to configure: \"Can only expose instances that have exposed nested instances or children with component property references.\" A propertyless atom (Command/Separator) cannot be exposed, so filter by whether the main component has any property definitions rather than exposing every nested instance blindly.",
+    "combineAsVariants does NOT lay the variants out — they keep their source coordinates and can land stacked at 0,0, which renders as overlapping garbage that looks like a corrupted component. Every set in this file is a VERTICAL auto-layout with 16px padding and spacing (Breadcrumb and TabBar are the reference); set layoutMode, padding, itemSpacing and HUG explicitly after combining, and screenshot it.",
+    "A newly created COMPONENT_SET wrapper defaults to corner radius 5 — Figma's own container chrome, which matches no design token and will show up as an unbound-geometry finding with nothing to bind it to. The file's convention is 8 bound to radius/lg; copy it from a sibling set rather than reaching for the nearest token.",
+    "Hand-ASSEMBLED is not hand-DRAWN, and only the second is a finding. The \"examples are hand-drawn therefore the component is under-modelled\" test (from Accordion) applies to frames faking geometry. Command's example palettes are frames of REAL Command/Item and Command/Empty instances showing shapes the fixed assembly cannot express — converting them would have made the page worse."
   ],
   "components": {
     "Button": {
@@ -1219,10 +1226,12 @@
         "cell": "483:49",
         "prev": "483:50",
         "next": "483:55",
-        "ellipsis": "483:60"
+        "ellipsis": "483:60",
+        "assembled": "1604:455"
       },
       "setIds": [
-        "483:49"
+        "483:49",
+        "1604:455"
       ],
       "frames": {
         "overview": "484:50",
@@ -1233,8 +1242,17 @@
       "themed": true,
       "themingFrame": "PRESENT (488:182) — the active cell borders/text read --primary-border / --primary-text, so it themes; shown under Main/db/dr/ph. Ghost cells + prev/next stay neutral.",
       "props": "Instanceable atoms, cells reuse the Button visual: Pagination/Cell — VARIANT State (default|active) + TEXT Number (default=ghost --secondary-foreground; active=outline inset --primary-border + --primary-text + semibold, aria-current). Pagination/Prev + /Next — BOOL Show label (chevron + optional text; false = icon-only pager). Pagination/Ellipsis — single component. isActive/disabled/showLabel are the code props; the current page is app state.",
-      "version": "1.0 · 2026-07-27",
-      "notes": "NO code change. Built instanceable per the Breadcrumb lesson — overview, spec cells, theming rows and every example pager are real atom instances; dark frames set Mode=Dark and flip automatically. Cells are DEDICATED atoms styled to match the Button ghost/outline-small look (transparent + --secondary-foreground; active = inset --primary-border stroke strokeAlign=INSIDE + --primary-text + semibold) rather than instancing the Button set, since pagination adds a square 36px cell + semibold-active. Theming frame proves the active cell picks up the theme (setExplicitVariableModeForCollection on the Theme collection: Main 2:2 / DB 2:3 / DR 51:0 / PH 51:4). GOTCHA repeat: resize() froze Prev/Next width to 10px until primaryAxisSizingMode was re-set to AUTO after the resize. Lint all-zeros, no overflow, index 125:401 linked."
+      "version": "1.1 · 2026-08-26",
+      "notes": "NO code change. Built instanceable per the Breadcrumb lesson — overview, spec cells, theming rows and every example pager are real atom instances; dark frames set Mode=Dark and flip automatically. Cells are DEDICATED atoms styled to match the Button ghost/outline-small look (transparent + --secondary-foreground; active = inset --primary-border stroke strokeAlign=INSIDE + --primary-text + semibold) rather than instancing the Button set, since pagination adds a square 36px cell + semibold-active. Theming frame proves the active cell picks up the theme (setExplicitVariableModeForCollection on the Theme collection: Main 2:2 / DB 2:3 / DR 51:0 / PH 51:4). GOTCHA repeat: resize() froze Prev/Next width to 10px until primaryAxisSizingMode was re-set to AUTO after the resize. Lint all-zeros, no overflow, index 125:401 linked. — UPDATED 2026-08-26 (v1.1): gained the assembled Pagination set (1604:455). Before this the page had FOUR atoms and no assembly at all, so every pager on it was a hand-drawn frame and there was nothing to drag from Assets.",
+      "assembledSet": {
+        "id": "1604:455",
+        "axis": "Pages(3|5|7)",
+        "variants": 3,
+        "exposed": "every part in every variant — both arrows and all cells, so numbers, the active page and each arrow's own Show label are set from the panel",
+        "builtFrom": "cloned 484:122 (the hero pager), grown by cloning the last cell before Next",
+        "converted": "9 of 12 hand-drawn pager frames became instances (hero, 4 theme frames, 4 example cells)",
+        "notConverted": "3 stay built from atoms and SHOULD: the Spec anatomy diagram (it labels all four atoms, ellipsis included) and both \"a long list, collapsed\" examples (1 … 6 7 8 … 24). The ellipsis sits BETWEEN cells at positions a count axis cannot express — the same escape hatch Breadcrumb documents."
+      }
     },
     "Tooltip": {
       "status": "done-v4",
@@ -1497,8 +1515,9 @@
       "themed": false,
       "themingFrame": "ABSENT — neutral menu recipe (--popover surface, --accent highlight, --error for the error variant); no --primary. Same as the other three menu families.",
       "props": "Instanceable. Command/Item — VARIANT State (default|active|disabled|error|error-active) + TEXT Label + TEXT Shortcut (mono) + BOOL Show icon + BOOL Show shortcut. Command/Heading — group label (uppercase, xs medium, muted). Command/Separator — 1px hairline. Command/Empty — no-results text. Command/Palette — a --popover surface: a search Input row (search icon + query) over a scrollable List (compose Heading / Item / Separator / Empty inside). CommandDialog wrapping, filtering, keyboard nav and aria-activedescendant are code-only.",
-      "version": "1.0 · 2026-07-27",
-      "notes": "Twelfth Overlays page — the LAST Phase 4 item before Toast. The 4th (final) menu-item styling copy, per the standing policy (DropdownMenu / ContextMenu / Select / Command). NO code change. It is a ⌘K command palette: a search row on top, a grouped/scrollable command list, mono ⌘ shortcuts right-aligned, and an error item variant (--error text / --error-light active). Overview renders the palette on a bg-overlay scrim to show the classic CommandDialog top-anchored ⌘K feel (plain NONE-layout stage, palette placed absolutely + centered). Spec shows all five item states in light + dark side-by-side on a --popover surface (dark card via setExplicitVariableModeForCollection Mode 2:2 -> Dark 2:1). Examples build fresh palettes from the atoms (not palette instances) to show live filtering: query 'cal' -> RESULTS(Calendar active, Calculator); query 'xyzzy' -> Empty. The example search-input text is --foreground when a query is present, --muted-foreground when it is the placeholder. shadow-lg via the 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:474 linked. [Fix 2026-07-27] Atom masters were initially left as loose top-level components at y~3200 (stranded far below the frames); relocated INSIDE the Overview frame under a 'SOURCE · Component master(s)' section, matching the convention (masters live nested in Overview, never loose on the canvas)."
+      "version": "1.3 · 2026-08-26",
+      "notes": "Twelfth Overlays page — the LAST Phase 4 item before Toast. The 4th (final) menu-item styling copy, per the standing policy (DropdownMenu / ContextMenu / Select / Command). NO code change. It is a ⌘K command palette: a search row on top, a grouped/scrollable command list, mono ⌘ shortcuts right-aligned, and an error item variant (--error text / --error-light active). Overview renders the palette on a bg-overlay scrim to show the classic CommandDialog top-anchored ⌘K feel (plain NONE-layout stage, palette placed absolutely + centered). Spec shows all five item states in light + dark side-by-side on a --popover surface (dark card via setExplicitVariableModeForCollection Mode 2:2 -> Dark 2:1). Examples build fresh palettes from the atoms (not palette instances) to show live filtering: query 'cal' -> RESULTS(Calendar active, Calculator); query 'xyzzy' -> Empty. The example search-input text is --foreground when a query is present, --muted-foreground when it is the placeholder. shadow-lg via the 'Shadow/lg' effect style. Lint all-zeros, no overflow, index 125:474 linked. [Fix 2026-07-27] Atom masters were initially left as loose top-level components at y~3200 (stranded far below the frames); relocated INSIDE the Overview frame under a 'SOURCE · Component master(s)' section, matching the convention (masters live nested in Overview, never loose on the canvas). — UPDATED 2026-08-26 (v1.3): see paletteProps. The four hand-assembled example palettes were deliberately NOT converted to instances — they are real Command/Item and Command/Empty instances showing shapes the fixed nine-row assembly cannot express (a two-result filter; Empty REPLACING the list).",
+      "paletteProps": "Command/Palette (590:54) shipped with ZERO properties — search line and all nine rows baked in. Now: Search (TEXT) + Show settings group (BOOLEAN, drops the separator and the whole second group) + 8 exposed rows (2 headings, 6 items). Command/Separator is NOT exposed: Figma refuses to expose an instance that has no properties to configure."
     },
     "Toast": {
       "status": "done-v4",
@@ -2378,5 +2397,15 @@
     "method": "The first pass flagged 16 components for \"documents disabled but cannot do it\" by matching the WORD disabled anywhere in page text. That was far too loose. Re-checking against real Spec STATE COLUMNS — _Doc/Annotation labels reading enabled / hover / focus-visible / disabled — cut it to three: Toggle, CloseButton, Fab.",
     "clearedByTheStricterCheck": "ModeToggler, ToggleGroup, Item, Collapsible, Code, Field, Progress — their \"disabled\" mentions are prose, not columns. Do not add axes to these on the strength of a text search.",
     "done": "Toggle 12->24, CloseButton 6->12, Fab 2->4. With Button (240->480 across two sets) and Chip (6->12) earlier the same day, that is every component whose Spec documented a disabled state it could not produce."
+  },
+  "tier2AssemblySweep": {
+    "date": "2026-08-26",
+    "auditClaimCorrected": "The 2026-08-26 audit listed six families under \"nothing to drag from Assets\": Pagination, Select, Combobox, DropdownMenu, ContextMenu, Command. That was WRONG for four of them. Select/Content, Combobox/Content, DropdownMenu/Content and ContextMenu/Content each carry a wired Body SLOT — drag the Content, drop your own row stack in. That is the right model for an unbounded, heterogeneous menu and it was already built. Check componentPropertyDefinitions for type SLOT before concluding a family has no assembly.",
+    "realGaps": [
+      "Pagination — no assembly of any kind, 12 hand-drawn pager frames",
+      "Command/Palette — a COMPONENT with zero properties, so placeable but not configurable"
+    ],
+    "slotApiFinding": "figma.createSlot DOES NOT EXIST — reading the property throws rather than returning undefined. The four Body slots were made in the Figma UI. A plugin building a NEW assembly therefore cannot use a slot, and exposed nested instances are the only available mechanism. This is why Pagination and Command/Palette use a count axis + exposure rather than matching the menu families.",
+    "lint": "all zeros on 483:44 and 588:44 — fills, strokes, text styles, layer names, descriptions, own geometry, and no overflow."
   }
 }
