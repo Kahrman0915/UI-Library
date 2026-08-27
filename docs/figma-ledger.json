@@ -2524,5 +2524,35 @@
     "cause": "Lucide glyphs are VECTORs painted by a STROKE, and Figma's colour picker filters variables by scope — a stroke shows only STROKE_COLOR-scoped variables. Every text/* and *-foreground token was scoped TEXT_FILL only, so none appeared. The existing icon bindings were made by the plugin API, WHICH IGNORES SCOPES — scopes gate the human picker only. text/muted-foreground was the most-used icon paint in the file (166 glyph bindings) while being impossible to apply by hand.",
     "fix": "50 foreground-family COLOR variables widened to TEXT_FILL + STROKE_COLOR + SHAPE_FILL: text/* (6), primary-foreground/-text, status/*/foreground, tooltip/foreground, sidebar foregrounds, aiden foregrounds, category/*/text + category/foreground, avatar/foreground, and the _brand/* foreground/text ramps. Deliberately NOT FRAME_FILL — a text token as a surface background stays blocked. code/* (11) stays TEXT_FILL-only: syntax colours should never paint an icon.",
     "risk": "zero rendering change — scopes affect the picker, not resolved paints."
+  },
+  "designerAudit2026_08": {
+    "date": "2026-08-27",
+    "artifact": "https://claude.ai/code/artifact/1c896b2c-08af-41c5-9970-86422ae91e32",
+    "brief": "Owner-requested designer-perspective audit: letter grade per component against four criteria — pull from Assets, configure via properties without detaching, everything variable-bound, flexible within a standard. Report-only; everything re-measured fresh (not recited from this ledger) plus 14 drive-tests on a scratch page, deleted afterward (28 placements). Table proposal excluded by owner scope. Overall: A-, 68 entries.",
+    "distribution": {
+      "A": 34,
+      "A-": 19,
+      "B+": 6,
+      "B": 4,
+      "B-/C": 3,
+      "C-/D": 2
+    },
+    "drivetests": "All 14 passed without detaching: Button toolbar (incl. glyph swap), Input+error, Checkbox/Switch/RadioGroup settings list, Accordion 6-row FAQ (the acceptance test — 6 exposed items, last divider off), Pagination Pages=5 icon-only arrows, Badge/Chip/Toggle, Card, Select open+items, Tabs browser + TabBar Tabs=4, Sidebar template clone, Chat transcript, AidenPanel+Mark lockup, FeaturedIcon glyph attempt, Dialog+Drawer.",
+    "tailEvidence": {
+      "ButtonGroup_D": "353:61 — Orientation only, ZERO instances file-wide, members hand-drawn on its own page (31 frames); corner-flattening is CSS Figma cannot express without a Button shape axis. Owner decision.",
+      "InputGroup_Cminus": "208:32 — no wrap master exists at all; only InputGroup/Button (208:97).",
+      "Progress_C": "435:90 — master is a bare track: no header/label/value text, no indeterminate placement though code has the prop.",
+      "InputTextareaNativeSelect_Bplus": "192:281 / 199:257 / 205:233 — Show label boolean exists but the label TEXT has no property; InputOTP (212:441) has Label:T proving the convention.",
+      "SelectCombobox_B": "574:55 / 581:61 — triggers model default|open only; code has error+disabled on both.",
+      "FeaturedIcon_B": "442:105 — glyph fixed per variant, no INSTANCE_SWAP; code takes any lucide icon.",
+      "Collapsible_Bminus": "404:44 set — content baked, no slot/exposure.",
+      "AlertDialog_Bminus": "page 510:44 says Preset of Dialog (11 Dialog instances) but nothing exists in Assets under the name.",
+      "Mark_Bplus": "Mark (POC — superseded) 1134:24496 still in Assets with 28 instances beside the real Mark 1200:24948.",
+      "Fab_Bplus": "693:44 — code pulse prop absent from the set.",
+      "Charts_Bplus": "series count / data geometry fixed; Chart/Bar description only 98 chars."
+    },
+    "strengths": "65/66 pages have fully bound masters (fills/strokes/text styles/geometry — Mark artwork the sole documented exception); Body SLOTs on all four menu families + Card/Dialog/Drawer/Field/Empty/Item/Attachment/Avatar; exposed-instance assemblies (Accordion/Pagination/Breadcrumb/TabBar/RadioGroup/ToggleGroup/Command/Chat); documented template escape hatches; descriptions on every master.",
+    "foundationsNote": "Owner found the foreground-scope trap live during audit setup (see foregroundScopeWidening) — the strongest argument for drive-testing over structural reads: bindings were perfect while the picker refused the convention they encode. Variant-value casing drift also recorded: Checkbox/Switch/RadioGroup spell Disabled=False capitalized where Button uses lowercase — invisible to humans, breaks scripted matching.",
+    "fileUnchanged": "scratch page _audit scratch deleted (28 children); spot lint on Accordion/Pagination/Sidebar/Button all zeros after."
   }
 }
