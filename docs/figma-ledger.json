@@ -361,7 +361,9 @@
     "Scan for hand-drawn depictions by finding ui-* frames that sit OUTSIDE any COMPONENT or INSTANCE, then CLASSIFY before fixing: a container holding real instances (ui-radio-group, ui-item-group) is correct composition, and a frame explicitly labelled a mock is a recorded decision. Only pure geometry where a master already exists is a finding. Of 164 matches, 40 were not findings.",
     "The clearest signal a doc page is not using its own component is the instance count on the master. FeaturedIcon had a 36-variant set with TWO instances while the page drew the tile 44 times. Compare master instance count against how often the page depicts the thing before reading any geometry.",
     "A track that FILLs its cell while its indicator stays FIXED will silently paint 100% forever, because the oversized indicator just clips. Progress's spec table showed 10%, 50% and 100% as three identical full bars. Any progress / meter / slider built as clip-a-wide-child needs BOTH sides pinned, and the check is a screenshot — the raw numbers read as a harmless layout quirk.",
-    "When a state exists in the Spec table but not on the axis, extend the axis only where the file's convention says that state is placeable. Tabs/Trigger gained hover and disabled (tab and menu items carry hover here) but NOT focus, which stays painted — so 16 of the 20 spec triggers became instances and 4 deliberately did not. A mixed table is the correct outcome, not an unfinished one."
+    "When a state exists in the Spec table but not on the axis, extend the axis only where the file's convention says that state is placeable. Tabs/Trigger gained hover and disabled (tab and menu items carry hover here) but NOT focus, which stays painted — so 16 of the 20 spec triggers became instances and 4 deliberately did not. A mixed table is the correct outcome, not an unfinished one.",
+    "Variable SCOPES gate the human colour picker only — the plugin API binds regardless. A file can therefore be full of bindings a designer cannot recreate or modify by hand, and it looks fine until someone tries. Audit scopes against actual usage: any token bound to icon strokes needs STROKE_COLOR, to vector fills SHAPE_FILL. text/muted-foreground had 166 stroke bindings and a TEXT_FILL-only scope.",
+    "Scope foreground-family tokens TEXT_FILL + STROKE_COLOR + SHAPE_FILL, never FRAME_FILL — icons are stroked vectors so text colours must reach strokes (the currentColor convention), but a text token offered as a frame fill invites painting surfaces with it."
   ],
   "components": {
     "Button": {
@@ -2515,5 +2517,12 @@
     },
     "deliberatelyLeft": "4 Tabs focus triggers (focus is not a variant anywhere in this file — the convention is that it stays painted in the Spec table) and the Code page's 8 labelled mock-ups.",
     "lint": "all zeros on FeaturedIcon, AspectRatio, Progress and Tabs."
+  },
+  "foregroundScopeWidening": {
+    "date": "2026-08-27",
+    "reportedBy": "owner, live: icons default to text/foreground but muted-foreground cannot be selected",
+    "cause": "Lucide glyphs are VECTORs painted by a STROKE, and Figma's colour picker filters variables by scope — a stroke shows only STROKE_COLOR-scoped variables. Every text/* and *-foreground token was scoped TEXT_FILL only, so none appeared. The existing icon bindings were made by the plugin API, WHICH IGNORES SCOPES — scopes gate the human picker only. text/muted-foreground was the most-used icon paint in the file (166 glyph bindings) while being impossible to apply by hand.",
+    "fix": "50 foreground-family COLOR variables widened to TEXT_FILL + STROKE_COLOR + SHAPE_FILL: text/* (6), primary-foreground/-text, status/*/foreground, tooltip/foreground, sidebar foregrounds, aiden foregrounds, category/*/text + category/foreground, avatar/foreground, and the _brand/* foreground/text ramps. Deliberately NOT FRAME_FILL — a text token as a surface background stays blocked. code/* (11) stays TEXT_FILL-only: syntax colours should never paint an icon.",
+    "risk": "zero rendering change — scopes affect the picker, not resolved paints."
   }
 }
