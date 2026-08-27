@@ -345,7 +345,10 @@
     "Figma refuses to expose an instance that has nothing to configure: \"Can only expose instances that have exposed nested instances or children with component property references.\" A propertyless atom (Command/Separator) cannot be exposed, so filter by whether the main component has any property definitions rather than exposing every nested instance blindly.",
     "combineAsVariants does NOT lay the variants out — they keep their source coordinates and can land stacked at 0,0, which renders as overlapping garbage that looks like a corrupted component. Every set in this file is a VERTICAL auto-layout with 16px padding and spacing (Breadcrumb and TabBar are the reference); set layoutMode, padding, itemSpacing and HUG explicitly after combining, and screenshot it.",
     "A newly created COMPONENT_SET wrapper defaults to corner radius 5 — Figma's own container chrome, which matches no design token and will show up as an unbound-geometry finding with nothing to bind it to. The file's convention is 8 bound to radius/lg; copy it from a sibling set rather than reaching for the nearest token.",
-    "Hand-ASSEMBLED is not hand-DRAWN, and only the second is a finding. The \"examples are hand-drawn therefore the component is under-modelled\" test (from Accordion) applies to frames faking geometry. Command's example palettes are frames of REAL Command/Item and Command/Empty instances showing shapes the fixed assembly cannot express — converting them would have made the page worse."
+    "Hand-ASSEMBLED is not hand-DRAWN, and only the second is a finding. The \"examples are hand-drawn therefore the component is under-modelled\" test (from Accordion) applies to frames faking geometry. Command's example palettes are frames of REAL Command/Item and Command/Empty instances showing shapes the fixed assembly cannot express — converting them would have made the page worse.",
+    "A loose master with ZERO instances and ZERO properties is two findings wearing one coat: it is invisible to its doc page (Tier 3) and unconfigurable if you do find it (Tier 5). All seven of Sidebar's were exactly this. Count both when triaging, because adopting them without adding properties only fixes half of it.",
+    "Corner radius 5 unbound on a COMPONENT_SET is Figma's own container chrome, not a design value — no token will match it and a binding sweep will report it as unmappable. This file's convention is 8 on radius/lg. It turned up on a set built by a plugin (Pagination) AND on one built long before (RadioGroup/Item), so treat four unbindable radius findings on a set as this, and copy the value from a sibling set rather than reaching for the nearest token.",
+    "INSTANCE_SWAP is the right property for an icon that carries the meaning of a row. Sidebar/Rail got Icon 1-4 rather than visibility booleans, because a rail IS its icons — hiding rows would have been the cheaper edit and the less useful one. Ask what the component is FOR before choosing between a swap, a boolean and an exposure."
   ],
   "components": {
     "Button": {
@@ -531,7 +534,8 @@
       "status": "done-v4",
       "pageId": "223:32",
       "setIds": [
-        "223:129"
+        "223:129",
+        "1389:599"
       ],
       "setNote": "223:129 is RadioGroup/Item — the group root is a layout container + context provider, documented as composition per the compound-family rule.",
       "frames": {
@@ -543,8 +547,17 @@
       "themed": true,
       "themingFrame": "PRESENT — checked circle fills with --primary (Theme collection), dot is --primary-foreground.",
       "props": "RadioGroup/Item: VARIANT Size (sm/default/lg) × State (Unchecked/Checked) × Disabled = 12; BOOLEAN 'Show label' / 'Show description'; TEXT Label / Description.",
-      "version": "1.0 · 2026-07-25",
-      "notes": "Same hidden-input pattern as Checkbox. DOCUMENTED DIVERGENCE: in code `size` is set ONCE on the group and cascades to every item via CSS descendant selectors; Figma cannot model a descendant selector reaching into instances, so each item carries its own Size and the Overview says so explicitly under a '⚠ CODE vs FIGMA' section. The group owns three things the items never receive as props: name/value/callbacks via React context, the size cascade via CSS, and role=radiogroup + aria-labelledby via ARIA. RadioGroupItem throws outside a RadioGroup because a nameless radio silently stops excluding its siblings. Label visibility bound to the ui-label CONTAINER (Checkbox lesson)."
+      "version": "1.2 · 2026-08-26",
+      "notes": "Same hidden-input pattern as Checkbox. DOCUMENTED DIVERGENCE: in code `size` is set ONCE on the group and cascades to every item via CSS descendant selectors; Figma cannot model a descendant selector reaching into instances, so each item carries its own Size and the Overview says so explicitly under a '⚠ CODE vs FIGMA' section. The group owns three things the items never receive as props: name/value/callbacks via React context, the size cascade via CSS, and role=radiogroup + aria-labelledby via ARIA. RadioGroupItem throws outside a RadioGroup because a nameless radio silently stops excluding its siblings. Label visibility bound to the ui-label CONTAINER (Checkbox lesson). — UPDATED 2026-08-26 (v1.2): the assembled set was loose on the canvas with a single Orientation axis and no way to change a word of it. Adopted into the Overview, given Label, and all six items exposed.",
+      "componentIds": {
+        "assembled": "1389:599"
+      },
+      "assembledSet": {
+        "id": "1389:599",
+        "axis": "Orientation(vertical|horizontal)",
+        "props": "Label (TEXT) + 6 exposed RadioGroup/Item instances (3 per variant)",
+        "note": "Size is a GROUP prop in code that cascades to every item via one root class and descendant selectors. Figma cannot express that cascade, so Size is set per exposed item instead — stated in the set description."
+      }
     },
     "Switch": {
       "status": "done-v4",
@@ -1583,7 +1596,14 @@
         "subButton": "627:104",
         "groupLabel": "627:105",
         "separator": "627:107",
-        "input": "636:553"
+        "input": "636:553",
+        "menuBadge": "1385:398",
+        "menuSkeleton": "1385:400",
+        "rail": "1385:405",
+        "header": "1394:416",
+        "group": "1394:453",
+        "footer": "1394:474",
+        "menuAction": "1394:481"
       },
       "setIds": [
         "627:99",
@@ -1597,12 +1617,20 @@
       "themed": false,
       "themingFrame": "ABSENT — own --sidebar-* surface (neutral chrome, like Tooltip); NOT remapped by data-theme.",
       "props": "Instanceable atoms: Sidebar/MenuButton — VARIANT State (default|active|outline) × Size (sm|default|lg) + TEXT Label + TEXT Badge + BOOL Show badge + BOOL Show icon. Sidebar/MenuSubButton — VARIANT State (default|active) + TEXT Label. Sidebar/GroupLabel (TEXT). Sidebar/Separator. Sidebar/Panel — an assembled 256px panel (header brand+search, grouped content menus + sub-menu + badge, footer user row). The subsystem (24 exports: Provider/useSidebar/Trigger/Rail/Inset/Input/Header/Footer/Content/Group/GroupLabel/GroupAction/GroupContent/Menu/MenuItem/MenuButton/MenuAction/MenuBadge/MenuSkeleton/MenuSub/MenuSubItem/MenuSubButton/Separator) with side/variant/collapsible props, the ⌘B toggle, localStorage persistence, the gap+fixed-container collapse, and the <768px Drawer swap are code-only.",
-      "version": "1.0 · 2026-07-27",
-      "notes": "Largest atom-based page so far. NO code change. Own --sidebar-* palette (7:36-7:43): sidebar 7:36, -foreground 7:37, -primary 7:38, -primary-foreground 7:39, -accent 7:40, -accent-foreground 7:41, -border 7:42, -ring 7:43. Built 4 atom masters + an assembled Sidebar/Panel component (composes the atoms + brand/search/user primitives; nested 'icon' instances swapComponent-ed per row for variety, stroke rebound to --sidebar-foreground/-accent-foreground after swap). Panel initially clipped at fixed height 600 -> switched inner + content to primaryAxisSizingMode AUTO so it hugs (689). Overview: hero panel on a stage + masters nested under SOURCE. Spec: menu states/sizes on --sidebar cards (light + dark via Mode 2:2->2:1) + an icon-rail collapse illustration + collapse/variant pills. Examples: a full app-shell (Panel + inset topbar/stat-cards/content) in light + dark. GOTCHA (again): the app-shell frames froze to 10px tall because resize(880,10) freezes BOTH axes — fixed by re-asserting counterAxisSizingMode='AUTO' AFTER resize (they then hug the 689 panel). Icons: house/inbox/calendar/frame/bot/square-terminal/settings/user/ellipsis/search/panel-left. Lint all-zeros, no overflow, index 125:502 linked. [Refine 2026-07-27, owner feedback] (1) The panel search was a hand-drawn frame — replaced with a real Sidebar/Input ATOM (636:553) that mirrors the code's distinct SidebarInput (--background fill, --sidebar-border edge, --sidebar-ring focus; NOT the shared Input), TEXT Placeholder prop; swapped into the Panel and nested under the Overview SOURCE parts. (2) Added show/hide toggles to Sidebar/Panel — BOOL 'Show search' (wired to the input instance visible) + BOOL 'Show footer' (wired to the footer frame visible) — per owner's 'atoms + toggles' choice over INSTANCE_SWAP region slots (real composition stays with the atom instances). App-shell instances auto-updated. Lint still all-zeros. [Refine 2026-07-27 #2, owner] The assembled sidebar is now an EDITABLE TEMPLATE FRAME, not a locked component. Reason: Figma has NO arbitrary-children slot — you cannot add rows inside a locked component instance — so the only way to 'add menu items as needed' is a non-component frame whose menu is an open auto-layout of MenuButton instances. Converted by detachInstance() on all 3 Panel instances (Overview hero 638:557, app-light 638:618, app-dark 638:654) — detaching the OUTER panel turns it into a frame while the nested MenuButton/SubButton/Input INSTANCES stay linked to their atom sets, so the menu is now an open AL you copy + add/remove/reorder. The locked Sidebar/Panel master (628:62) + its Show search/footer booleans were REMOVED (booleans are moot on a template — just delete what you don't want). detachInstance preserved every variable binding (lint still all-zeros). The atoms (MenuButton/SubButton/GroupLabel/Separator/Input) remain the linked library components.",
+      "version": "1.4 · 2026-08-26",
+      "notes": "Largest atom-based page so far. NO code change. Own --sidebar-* palette (7:36-7:43): sidebar 7:36, -foreground 7:37, -primary 7:38, -primary-foreground 7:39, -accent 7:40, -accent-foreground 7:41, -border 7:42, -ring 7:43. Built 4 atom masters + an assembled Sidebar/Panel component (composes the atoms + brand/search/user primitives; nested 'icon' instances swapComponent-ed per row for variety, stroke rebound to --sidebar-foreground/-accent-foreground after swap). Panel initially clipped at fixed height 600 -> switched inner + content to primaryAxisSizingMode AUTO so it hugs (689). Overview: hero panel on a stage + masters nested under SOURCE. Spec: menu states/sizes on --sidebar cards (light + dark via Mode 2:2->2:1) + an icon-rail collapse illustration + collapse/variant pills. Examples: a full app-shell (Panel + inset topbar/stat-cards/content) in light + dark. GOTCHA (again): the app-shell frames froze to 10px tall because resize(880,10) freezes BOTH axes — fixed by re-asserting counterAxisSizingMode='AUTO' AFTER resize (they then hug the 689 panel). Icons: house/inbox/calendar/frame/bot/square-terminal/settings/user/ellipsis/search/panel-left. Lint all-zeros, no overflow, index 125:502 linked. [Refine 2026-07-27, owner feedback] (1) The panel search was a hand-drawn frame — replaced with a real Sidebar/Input ATOM (636:553) that mirrors the code's distinct SidebarInput (--background fill, --sidebar-border edge, --sidebar-ring focus; NOT the shared Input), TEXT Placeholder prop; swapped into the Panel and nested under the Overview SOURCE parts. (2) Added show/hide toggles to Sidebar/Panel — BOOL 'Show search' (wired to the input instance visible) + BOOL 'Show footer' (wired to the footer frame visible) — per owner's 'atoms + toggles' choice over INSTANCE_SWAP region slots (real composition stays with the atom instances). App-shell instances auto-updated. Lint still all-zeros. [Refine 2026-07-27 #2, owner] The assembled sidebar is now an EDITABLE TEMPLATE FRAME, not a locked component. Reason: Figma has NO arbitrary-children slot — you cannot add rows inside a locked component instance — so the only way to 'add menu items as needed' is a non-component frame whose menu is an open auto-layout of MenuButton instances. Converted by detachInstance() on all 3 Panel instances (Overview hero 638:557, app-light 638:618, app-dark 638:654) — detaching the OUTER panel turns it into a frame while the nested MenuButton/SubButton/Input INSTANCES stay linked to their atom sets, so the menu is now an open AL you copy + add/remove/reorder. The locked Sidebar/Panel master (628:62) + its Show search/footer booleans were REMOVED (booleans are moot on a template — just delete what you don't want). detachInstance preserved every variable binding (lint still all-zeros). The atoms (MenuButton/SubButton/GroupLabel/Separator/Input) remain the linked library components. — UPDATED 2026-08-26 (v1.4): all 7 loose masters adopted and given properties; see tier3Sweep. Before this they had 0 instances each AND no properties, so they were placeable but not configurable and invisible to the page documenting them.",
       "templateFrames": {
         "overviewHero": "638:557",
         "exampleAppLight": "638:618",
         "exampleAppDark": "638:654"
+      },
+      "tier3Sweep": {
+        "date": "2026-08-26",
+        "adopted": "All 7 loose masters moved into Overview > parts (630:270), already HORIZONTAL + WRAP. Page now has zero loose components.",
+        "propsAdded": "MenuBadge.Count (TEXT) · Header.Name/.Meta (TEXT) · MenuAction.Icon (INSTANCE_SWAP) · Rail.Icon 1-4 (INSTANCE_SWAP) · MenuSkeleton.Show icon (BOOLEAN) · Group.Show row 2/.Show row 3 (BOOLEAN)",
+        "exposed": "Header→Mark, Group→GroupLabel + 3 MenuButton, Footer→MenuButton (6 total). Footer carries no own properties by design — everything it holds is the exposed MenuButton, same shape as Chat/LayoutAside.",
+        "geometryBound": "40 padding/radius values, zero unmapped.",
+        "lint": "all zeros on 627:44."
       }
     },
     "Chat": {
@@ -1740,9 +1768,17 @@
         "Motion inside a component is still truncated at 2.0s (POC finding, unchanged). Full-length loops live on the \"Mark · motion (specimen)\" frame as plain-frame copies."
       ],
       "lintStatus": "unboundSolid 0 · textNoStyle 0 · genericNames 0 · unboundSpacing 0 · noDescription 0. unboundRadius is a STANDING EXCEPTION: the tile radius is 22.5% of its own size in CSS — a percentage, not a token — so the rescaled values (5.4/7.2/10.8/14.4) have nothing to bind to and must not get a token. Same class as the documented literals in CLAUDE.md.",
-      "version": "1.1 · 2026-08-08",
+      "version": "1.1 · 2026-08-26",
       "newComponent": "YES — 61st component. Shipped in code 2026-08-08 (src/components/Mark/).",
-      "aidenSurface": "DONE 2026-08-08. An opaque \"ramp-aiden\" rectangle at child index 0 of each artwork master — above the frame's own brand-ramp fill, below the glass — filled with the Mark/Aiden PAINT STYLE and gated on a BOOLEAN property (default false). Turning it on replaces the brand ramp and leaves the glass, glyph and sizing untouched.\n\nIt is a boolean, not a variant, because it is not a prop: aiden is a data-surface that composes INSIDE any brand, the same class of ambient scope as Mode.\n\nTHE STYLE IS THE POINT — do not inline the gradient. Mark/Aiden's four stops are bound to _brand/aiden/decorative-hi / primary / decorative-deep, so the overlay is mode-aware for free AND stays inside scripts/figma-variable-audit.js's coverage. A copied gradient would be a second literal that can drift — which is exactly how the Aiden family once sat on the pre-blurple #5f61ef mid stop.\n\nWhy a whole overlay rather than swapping the fill: stop POSITIONS cannot bind to a variable. The six brands share 9.7/51.6/90.3; aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point.\n\nVerified on the Amber brand in both modes: overlay off shows Amber, on shows the blurple ramp, and dark correctly uses the paler aiden anchors."
+      "aidenSurface": "DONE 2026-08-08. An opaque \"ramp-aiden\" rectangle at child index 0 of each artwork master — above the frame's own brand-ramp fill, below the glass — filled with the Mark/Aiden PAINT STYLE and gated on a BOOLEAN property (default false). Turning it on replaces the brand ramp and leaves the glass, glyph and sizing untouched.\n\nIt is a boolean, not a variant, because it is not a prop: aiden is a data-surface that composes INSIDE any brand, the same class of ambient scope as Mode.\n\nTHE STYLE IS THE POINT — do not inline the gradient. Mark/Aiden's four stops are bound to _brand/aiden/decorative-hi / primary / decorative-deep, so the overlay is mode-aware for free AND stays inside scripts/figma-variable-audit.js's coverage. A copied gradient would be a second literal that can drift — which is exactly how the Aiden family once sat on the pre-blurple #5f61ef mid stop.\n\nWhy a whole overlay rather than swapping the fill: stop POSITIONS cannot bind to a variable. The six brands share 9.7/51.6/90.3; aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point.\n\nVerified on the Amber brand in both modes: overlay off shows Amber, on shows the blurple ramp, and dark correctly uses the paler aiden anchors.",
+      "componentIds": {
+        "artworkSm": "1199:359",
+        "artworkDefault": "1199:458",
+        "artworkLg": "1199:557",
+        "artworkXl": "1199:656"
+      },
+      "artworkShelf": "1617:33338",
+      "notes": " — UPDATED 2026-08-26 (v1.1): the four artwork masters (sm/default/lg/xl) moved off the page canvas into a new artwork masters shelf (1617:33338) beside glyph masters. They already carried Glyph + Aiden surface properties and 55 instances between them — only their filing was wrong. MARK IS STILL THE LARGEST TIER-4 DEBT: 237 unbound fills, 96 unbound strokes, 171 unstyled text nodes, 142 generic layer names and 708 unbound geometry values on 1192:580. Much of that is glass/gradient artwork that may legitimately resist tokenisation; it needs a judgement pass, not a binding sweep."
     },
     "FullScreenDialog": {
       "status": "page exists in Figma; ledger entry was never written",
@@ -2407,5 +2443,14 @@
     ],
     "slotApiFinding": "figma.createSlot DOES NOT EXIST — reading the property throws rather than returning undefined. The four Body slots were made in the Figma UI. A plugin building a NEW assembly therefore cannot use a slot, and exposed nested instances are the only available mechanism. This is why Pagination and Command/Palette use a count axis + exposure rather than matching the menu families.",
     "lint": "all zeros on 483:44 and 588:44 — fills, strokes, text styles, layer names, descriptions, own geometry, and no overflow."
+  },
+  "tier3LooseSweep": {
+    "date": "2026-08-26",
+    "scope": "The audit counted 26 loose masters across Chat (14), Sidebar (7), Mark (4) and RadioGroup (1). Chat was cleared earlier the same day; this closes the other 12. Every page in the file now has zero COMPONENT/COMPONENT_SET children directly on the canvas.",
+    "sidebar": "7 adopted AND given properties — they were Tier 3 and Tier 5 at once, with 0 instances each.",
+    "mark": "4 adopted into a new artwork masters shelf. Filing only — they already had properties and 55 instances.",
+    "radioGroup": "1 adopted, given Label, 6 items exposed.",
+    "radiusDefaultFinding": "RadioGroup/Item (223:129) was sitting at corner radius 5 unbound — Figma's default COMPONENT_SET container chrome, the same value the newly built Pagination set came out at. Every other set in the file is 8 bound to radius/lg. Fixed. Worth checking on any set whose lint shows four unbindable radius findings.",
+    "markStillOwed": "Mark page lint is NOT clean and was deliberately left: 237 unbound fills, 96 strokes, 171 unstyled text, 142 generic names, 708 geometry. That is the Tier-4 job and needs a judgement pass about which glass/gradient artwork should be tokenised at all."
   }
 }
