@@ -353,7 +353,11 @@
     "Split geometry findings into DOC PAGES (where geometry is the design-system spec and must be bound) and SPECIMEN pages (swatch grids, imported prototypes) before sweeping. Binding 1,712 values on a brand-palette page adds volume, not truth — a swatch exists to show a colour and its corner radius is incidental.",
     "Fractional geometry is the signature of proportional ARTWORK and must be left alone. Mark's 368 remaining values are all 0.225 times a tile size (5.4/24, 7.2/32, 10.8/48, 14.4/64, 18.9/84). Tokenising one ratio scaled across five sizes is impossible and would break the artwork; \"all remaining findings are fractional\" is a clean end state, not an incomplete one.",
     "There is a real difference between rounding to the nearest token (wrong) and matching a measured house convention (right). Mark's anatomy cards were pad 18 / radius 14; rather than pick 16 or 20 arbitrarily, a histogram of comparable doc cards across seven pages showed pad 20-or-24 on radius 12, which made the target defensible. For a COMPONENT's own geometry neither move is allowed — that would misstate the spec.",
-    "Figma's default COMPONENT_SET radius of 5 was file-wide, not incidental: 14 sets carried it, spanning components built months apart. When the same unbindable value appears on a third page, stop fixing it locally and sweep the whole file for it."
+    "Figma's default COMPONENT_SET radius of 5 was file-wide, not incidental: 14 sets carried it, spanning components built months apart. When the same unbindable value appears on a third page, stop fixing it locally and sweep the whole file for it.",
+    "A propertyless component is not automatically a gap. Census by what it COULD configure — own text nodes, nested instances carrying properties, icons — and three categories fall out as correct: separators with zero children, artwork masters that are the targets of an INSTANCE_SWAP elsewhere (Mark glyphs MUST stay bare or the swap has nothing to point at), and assemblies whose configuration lives entirely in exposed instances.",
+    "Naming a text layer after its own content is a trap that springs later. Three Chart components had layers literally called \"Sessions by channel\" and \"Weekly active users\"; the name is accurate exactly until a designer uses the component. Name by ROLE — title, subtitle, axis-N, series-N — which is also what makes the property list readable.",
+    "A side-by-side light/dark specimen pair binds BOTH frames to the same mode-aware variable and pins one with setExplicitVariableModeForCollection(modeCollection, darkModeId). Hardcoding the two hexes is what makes them drift: the Charts page dark band was #0f1729 against a real token value of #0f172a, off by one and invisible to the eye.",
+    "Exclude the Icons page before running any file-wide component census. It holds ~1,700 single-child glyph masters with no properties, and they will bury the 13 findings that matter."
   ],
   "components": {
     "Button": {
@@ -2471,5 +2475,22 @@
     "markAnatomyNormalised": "The anatomy cards were pad 18 / radius 14, with their two outer frames at radius 18 — all off-scale. This was NOT artwork: they are 300x200 doc-chrome demo cards. Comparable cards elsewhere in the file measure pad 20 or 24 on radius 12 (histogram over TabBar / AidenPanel / FullScreenDialog / Select / Combobox / Pagination / Chat), so they were brought onto pad 20 (spacing/5) and radius 12 (radius/xl). This is matching a measured house convention, NOT rounding to the nearest rung — the distinction matters, because rounding a COMPONENT's geometry would misstate its spec.",
     "notDone": "5,141 findings remain on 18 NON-doc pages and were deliberately not touched: Dashboard brand palettes 1712, Marketing brand palettes 912, Chart palettes 728, Themes & brands 692, Suite brand palettes 304, Color & tokens 300, and smaller. These are swatch grids (hundreds of identical box / bg / Rectangle nodes) and imported prototype pages (Chat — showcase and TEST carry radius 16777200, a fully-rounded sentinel from an import). A swatch's corner radius is specimen chrome, not a design-system decision; binding it would be volume without truth. Needs an owner call before any sweep.",
     "supersededComponentFlagged": "Mark (POC — superseded) (1134:24496) is explicitly named superseded yet still carries 28 instances and was one of the radius-5 sets. Its geometry was fixed with the rest, but whether a superseded component should still be in the file at all is an owner decision, not a lint one."
+  },
+  "tier5PropertySweep": {
+    "date": "2026-08-26",
+    "method": "Censused every COMPONENT / COMPONENT_SET on the 26 component doc pages (Icons page excluded — 1,700 glyph masters are legitimately propertyless) and classified each by whether it had anything to configure: own text nodes, nested instances that carry properties, or icons.",
+    "scanned": 26,
+    "realGaps": 7,
+    "fixed": {
+      "AidenLauncher": "Title + Description; composer and all 3 suggestion pills exposed (6 exposed total).",
+      "AidenPanel": "Title + Description; composer, both transcript messages and 2 header buttons exposed (7 total).",
+      "AidenFullScreen": "Title; composer and 3 transcript messages exposed (6 total).",
+      "ChatMarkdown": "Heading, Body, Bullet 1-3; Blockquote and CodeBlock exposed. Demonstrating what markdown renders as is the whole point of the component and none of it could be changed.",
+      "ButtonGroup/Text": "Label. The passive label cell had shipped reading \"Sort by\" with no way to say anything else.",
+      "Chart/Bar · Chart/Line · Chart/Area": "Title, Subtitle, Label 1-6 (axis) and Series 1-N (legend) — 11 / 11 / 10 properties. Their TEXT LAYERS had also been named after their own content (a layer called \"Sessions by channel\"), which stops being true the moment a designer edits it; renamed to title / subtitle / axis-N / series-N."
+    },
+    "correctlyPropertyless": "18 remain and every one is right: 6 Separators (zero children — a hairline has nothing to configure), 7 Mark glyph masters (fixed brand artwork, and they are the TARGETS of Mark artwork's Glyph INSTANCE_SWAP, so they must stay bare), 3 that are configurable through exposed instances instead of own properties (Chat/LayoutAside, Menubar, Sidebar/Footer), and 2 icon-only Ellipsis components (Breadcrumb, Pagination).",
+    "incidentalFixes": "10 layers named \"Rectangle\" on the Charts page renamed to swatch (colour chips inside already-named Aiden ramp rows). The two Aiden ramp specimen frames were unbound fills; bound to surface/background with the dark one pinned to Mode=Dark via setExplicitVariableModeForCollection, matching how every other light/dark band pair in the file is built. The dark literal was #0f1729 and resolved to #0f172a once bound — it had drifted one unit off the token.",
+    "lint": "all zeros on AidenLauncher, AidenPanel, AidenFullScreen, ChatMarkdown, ButtonGroup and Charts."
   }
 }
