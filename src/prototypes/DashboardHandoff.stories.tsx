@@ -16,6 +16,8 @@ import {
   Button,
   Card,
   CardBody,
+  CardTitle,
+  CardOverline,
   CardHeader,
   Item,
   ItemActions,
@@ -63,33 +65,27 @@ function Stat({
   label: string;
   value: string;
   trend: string;
-  trendVariant: 'success' | 'outline';
+  /** Two axes now: a hue, and whether it is filled or outlined. */
+  trendVariant: 'success' | 'neutral';
 }) {
   return (
     <Card id={`stat-${label}`} style={{ flex: 1 }}>
       <CardBody>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
-          <span
-            style={{
-              flex: 1,
-              fontSize: 'var(--text-xs)',
-              color: 'var(--muted-foreground)',
-            }}
-          >
-            {label}
-          </span>
-          <Badge id={`trend-${label}`} label={trend} variant={trendVariant} />
-        </div>
-        <div
-          style={{
-            marginTop: 'var(--p-2)',
-            fontSize: 'var(--text-xl)',
-            fontWeight: 'var(--font-semibold)',
-            color: 'var(--foreground)',
-          }}
-        >
+        {/* Inverted ranking — small label, big value — so this composes the
+            parts rather than CardHeader. `as="p"` keeps a number out of the
+            document outline. */}
+        <CardOverline>
+          <span style={{ flex: 1 }}>{label}</span>
+          <Badge
+            id={`trend-${label}`}
+            label={trend}
+            color={trendVariant === 'success' ? 'success' : 'default'}
+            appearance={trendVariant === 'success' ? 'solid' : 'outline'}
+          />
+        </CardOverline>
+        <CardTitle as="p" scale="xl">
           {value}
-        </div>
+        </CardTitle>
       </CardBody>
     </Card>
   );
@@ -259,11 +255,11 @@ function Dashboard() {
           <div style={{ display: 'flex', gap: 'var(--p-5)' }}>
             <Stat label="Revenue" value="$48.2k" trend="+12%" trendVariant="success" />
             <Stat label="Active users" value="2,340" trend="+4.1%" trendVariant="success" />
-            <Stat label="Churn" value="1.2%" trend="−0.3%" trendVariant="outline" />
+            <Stat label="Churn" value="1.2%" trend="−0.3%" trendVariant="neutral" />
           </div>
 
           <Card id="activity">
-            <CardHeader id="activity" title="Recent activity" />
+            <CardHeader id="activity-header" title="Recent activity" />
             <CardBody style={{ padding: 0 }}>
               {activity.map((a, i) => (
                 <div key={a.name + i}>

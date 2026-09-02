@@ -98,6 +98,11 @@ const ToggleGroup = forwardRef<HTMLDivElement, ToggleGroupProps>((props, ref) =>
         id={id}
         role="group"
         data-orientation={orientation}
+        // variant drives presentation from the ROOT via data-variant, the same
+        // mechanism Tabs uses. Not a modifier class: `ui-toggle-group--default`
+        // would be a class nothing selects, which is the dead-BEM noise the repo
+        // scans for.
+        data-variant={variant}
         className={`ui-toggle-group ui-toggle-group--${orientation}${className ? ' ' + className : ''}`}
       >
         {children}
@@ -118,6 +123,7 @@ const ToggleGroupItem = forwardRef<HTMLButtonElement, ToggleGroupItemProps>(
       value,
       label,
       IconLeft,
+      IconRight,
       IconCenter,
       disabled: itemDisabled,
       'aria-label': ariaLabel,
@@ -148,6 +154,7 @@ const ToggleGroupItem = forwardRef<HTMLButtonElement, ToggleGroupItemProps>(
         {IconLeft && <IconLeft />}
         {IconCenter && <IconCenter />}
         {label}
+        {IconRight && <IconRight />}
       </button>
     );
   },

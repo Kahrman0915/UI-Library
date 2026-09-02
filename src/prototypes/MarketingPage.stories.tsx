@@ -22,6 +22,10 @@ import {
   Chip,
   Card,
   CardBody,
+  CardDescription,
+  CardTitle,
+  CardVisual,
+  FeaturedIcon,
   Avatar,
   AvatarGroup,
   StatusDot,
@@ -161,7 +165,7 @@ function MarketingPage() {
       {/* Hero */}
       <header style={{ ...section, textAlign: 'center', padding: 'var(--p-16) var(--p-6) var(--p-12)' }}>
         <div style={{ display: 'inline-flex', marginBottom: 'var(--p-5)' }}>
-          <Badge id="hero-badge" variant="info-outline" label="New · Edge functions in every region" IconLeft={Sparkles} />
+          <Badge id="hero-badge" color="info" appearance="outline" label="New · Edge functions in every region" IconLeft={Sparkles} />
         </div>
         <h1 style={{ margin: 0, fontSize: 'var(--text-6xl)', lineHeight: 'var(--leading-none)', fontWeight: 'var(--font-bold)', letterSpacing: 'var(--tracking-tight)' }}>
           Ship your product
@@ -216,11 +220,11 @@ function MarketingPage() {
             {features.map(({ id, Icon, title, desc }) => (
               <Card key={id} id={id} interactive>
                 <CardBody>
-                  <div style={{ width: 44, height: 44, borderRadius: 'var(--rounded-xl)', background: 'var(--background)', border: 'var(--border-w-100) solid var(--border)', display: 'flex', alignItems: 'center', justifyContent: 'center', marginBottom: 'var(--p-4)' }}>
-                    <Icon width={20} height={20} />
-                  </div>
-                  <h3 style={{ margin: 0, fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)' }}>{title}</h3>
-                  <p style={{ margin: 'var(--p-1-5) 0 0', fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-5)', color: 'var(--muted-foreground)' }}>{desc}</p>
+                  <CardVisual>
+                    <FeaturedIcon Icon={Icon} size="lg" />
+                  </CardVisual>
+                  <CardTitle scale="lg">{title}</CardTitle>
+                  <CardDescription>{desc}</CardDescription>
                 </CardBody>
               </Card>
             ))}
@@ -303,7 +307,7 @@ function MarketingPage() {
                   <CardBody>
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <h3 style={{ margin: 0, fontSize: 'var(--text-xl)', fontWeight: 'var(--font-semibold)' }}>{p.name}</h3>
-                      {p.popular && <Badge id={`${p.id}-pop`} variant="default" label="Most popular" />}
+                      {p.popular && <Badge id={`${p.id}-pop`} color="default" label="Most popular" />}
                     </div>
                     <p style={{ margin: 'var(--p-2) 0 var(--p-4)', fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{p.blurb}</p>
                     <div style={{ display: 'flex', alignItems: 'baseline', gap: 'var(--p-1)' }}>
@@ -405,7 +409,7 @@ function MarketingPage() {
               The platform for teams who ship. Built for developers, trusted by enterprises.
             </p>
             <div style={{ marginTop: 'var(--p-3)' }}>
-              <Badge id="status" variant="success-outline" label="All systems operational" IconLeft={() => <StatusDot status="online" />} />
+              <Badge id="status" color="success" appearance="outline" label="All systems operational" IconLeft={() => <StatusDot status="online" />} />
             </div>
           </div>
           {[

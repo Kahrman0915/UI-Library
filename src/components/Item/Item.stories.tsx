@@ -36,6 +36,22 @@ const meta: Meta<typeof Item> = {
       tags: ['compound', '10 parts', '3 sizes'],
       changelog: [
         {
+          date: '2026-08-27',
+          summary:
+            'Grouped rows are a real list again, the entrance animation is now opt-in, ' +
+            'and ItemMedia gained a bullet variant for prose lists.',
+          detail:
+            'ItemGroup renders <ul role="list"> instead of <div role="list"> and wraps ' +
+            'each row in an <li class="ui-item-group__row">; ItemSeparator renders <li> ' +
+            'inside a group. Previously the group claimed role="list" while owning no ' +
+            'listitem, so it announced as a list with zero items. ItemGroupProps now ' +
+            'extends HTMLAttributes<HTMLUListElement> — check any ref or selector that ' +
+            'assumed a div. The .ui-stagger entrance is no longer applied for you: pass ' +
+            'className="ui-stagger" to keep it, matching what the prop docs always said. ' +
+            'ItemMediaVariant adds "bullet", a 6px disc (4px at xs) that aligns to the ' +
+            'first text line.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -205,11 +221,37 @@ export const List: Story = {
                 <ItemDescription>{p.email}</ItemDescription>
               </ItemContent>
               <ItemActions>
-                <Badge id={`b-${p.email}`} variant="outline" label={p.role} />
+                <Badge id={`b-${p.email}`} color="default" appearance="outline" label={p.role} />
               </ItemActions>
             </Item>
             {idx < 2 && <ItemSeparator />}
           </Fragment>
+        ))}
+      </ItemGroup>
+    </div>
+  ),
+};
+
+/**
+ * Prose bullets. The text goes straight into `ItemContent` — `ItemTitle` is
+ * `white-space: nowrap` with an ellipsis, so a bullet long enough to wrap would
+ * be truncated to one line instead.
+ *
+ * No separators and no `ui-stagger`: this is a list you read, not one you scan.
+ */
+export const BulletedList: Story = {
+  render: () => (
+    <div style={{ maxWidth: 'var(--max-w-md)' }}>
+      <ItemGroup>
+        {[
+          'Every value comes from a token — grep tokens.scss before writing a literal.',
+          'Class names use BEM under a ui- prefix.',
+          'Each component gets forwardRef, a displayName and a className passthrough.',
+        ].map((line) => (
+          <Item key={line} size="sm">
+            <ItemMedia variant="bullet" />
+            <ItemContent>{line}</ItemContent>
+          </Item>
         ))}
       </ItemGroup>
     </div>

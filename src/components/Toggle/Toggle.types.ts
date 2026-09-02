@@ -1,5 +1,18 @@
-/** `outline` adds a border, for a toggle that stands alone rather than in a group. */
-export type ToggleVariant = 'default' | 'outline';
+/**
+ * - `default` — no border; pressed fills with the neutral `--accent`.
+ * - `outline` — adds a border, for a toggle that stands alone rather than in a group.
+ * - `line` — no box at all; the pressed item is marked by a `--primary` bar on its
+ *   bottom edge, the same treatment `Tabs` uses for its own `line` variant. For a
+ *   quiet filter bar where a segmented control would shout.
+ * - `plain` — no box and no bar; pressed is `--foreground` at `--font-semibold`
+ *   against `--muted-foreground` elsewhere. The quietest rung.
+ *
+ * `line` and `plain` are presentation only — identical semantics, keyboard
+ * behaviour and aria to the other two. In a `ToggleGroup` they also drop the
+ * segmented border-collapse and sit apart on a gap, since they have no borders
+ * to share.
+ */
+export type ToggleVariant = 'default' | 'outline' | 'line' | 'plain';
 /** Control height. */
 export type ToggleSize = 'sm' | 'default' | 'lg';
 
@@ -21,6 +34,8 @@ type ToggleBase = Omit<
   disabled?: boolean;
   /** Icon before the label. Must be a zero-prop component (`() => JSX`). */
   IconLeft?: React.FC;
+  /** Icon after the label. Must be a zero-prop component. */
+  IconRight?: React.FC;
   /** Icon-only toggle — renders a single centred glyph. Requires an `aria-label`. */
   IconCenter?: React.FC;
   className?: string;

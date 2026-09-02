@@ -143,8 +143,9 @@
       <div>
         <h2>Grouped list</h2>
         <p><code>ItemGroup</code> wraps siblings; <code>ItemSeparator</code> lays a hairline between them. Common shape for settings sections and notification lists.</p>
-        <div role="list" class="ui-item-group">
-          <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
+        <ul role="list" class="ui-item-group">
+          <li class="ui-item-group__row">
+            <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
             <div data-variant="icon" class="ui-item__media ui-item__media--icon">
               <svg class="icon" viewBox="0 0 24 24"><path d="M20 7L9 18l-5-5"/></svg>
             </div>
@@ -152,9 +153,11 @@
               <div class="ui-item__title">Deployment succeeded</div>
               <div class="ui-item__description">2 minutes ago · web-app · main</div>
             </div>
-          </a>
-          <div role="separator" aria-orientation="horizontal" class="ui-item-separator"></div>
-          <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
+            </a>
+          </li>
+          <li role="separator" aria-orientation="horizontal" class="ui-item-separator"></li>
+          <li class="ui-item-group__row">
+            <a href="#" data-variant="default" data-size="default" class="ui-item ui-item--default ui-item--sz-default ui-item--interactive">
             <div data-variant="icon" class="ui-item__media ui-item__media--icon">
               <svg class="icon" viewBox="0 0 24 24" style="color: var(--warning)"><path d="M12 9v4"/><path d="M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg>
             </div>
@@ -165,9 +168,11 @@
             <div class="ui-item__actions">
               <button type="button" class="ui-button ui-button--warning ui-button--warning-secondary ui-button--sz-sm">Upgrade</button>
             </div>
-          </a>
-          <div role="separator" aria-orientation="horizontal" class="ui-item-separator"></div>
-          <div data-variant="default" data-size="default" data-disabled="" class="ui-item ui-item--default ui-item--sz-default ui-item--disabled" aria-disabled="true">
+            </a>
+          </li>
+          <li role="separator" aria-orientation="horizontal" class="ui-item-separator"></li>
+          <li class="ui-item-group__row">
+            <div data-variant="default" data-size="default" data-disabled="" class="ui-item ui-item--default ui-item--sz-default ui-item--disabled" aria-disabled="true">
             <div data-variant="icon" class="ui-item__media ui-item__media--icon">
               <svg class="icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
             </div>
@@ -175,8 +180,34 @@
               <div class="ui-item__title">Legacy setting</div>
               <div class="ui-item__description">Available on Team plans only.</div>
             </div>
-          </div>
-        </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+
+      <div>
+        <h2>Bulleted list</h2>
+        <p><code>ItemMedia variant="bullet"</code> draws a small disc that sits on the first text line, so a wrapping bullet stays hung. Put the text straight into <code>ItemContent</code> — <code>ItemTitle</code> truncates to one line. This is the prose list; use <code>Item</code> with a title and description for settings rows instead.</p>
+        <ul role="list" class="ui-item-group">
+          <li class="ui-item-group__row">
+            <div data-variant="default" data-size="sm" class="ui-item ui-item--default ui-item--sz-sm">
+              <div data-variant="bullet" class="ui-item__media ui-item__media--bullet"></div>
+              <div class="ui-item__content">Every value comes from a token — grep tokens.scss before writing a literal.</div>
+            </div>
+          </li>
+          <li class="ui-item-group__row">
+            <div data-variant="default" data-size="sm" class="ui-item ui-item--default ui-item--sz-sm">
+              <div data-variant="bullet" class="ui-item__media ui-item__media--bullet"></div>
+              <div class="ui-item__content">Class names use BEM under a ui- prefix.</div>
+            </div>
+          </li>
+          <li class="ui-item-group__row">
+            <div data-variant="default" data-size="sm" class="ui-item ui-item--default ui-item--sz-sm">
+              <div data-variant="bullet" class="ui-item__media ui-item__media--bullet"></div>
+              <div class="ui-item__content">Each component gets forwardRef, a displayName and a className passthrough.</div>
+            </div>
+          </li>
+        </ul>
       </div>
     </div>
   </body>

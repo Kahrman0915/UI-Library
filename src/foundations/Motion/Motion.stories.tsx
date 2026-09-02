@@ -184,11 +184,13 @@ export const Motion: Story = {
 
       <H2>Staggered lists</H2>
       <P>
-        List-row families — <strong>ItemGroup and AttachmentGroup</strong> — carry <M>.ui-stagger</M>, so their rows rise +
-        fade in one after another (<code style={{ fontFamily: mono }}>--stagger-step</code>, 25ms apart) and read as one orchestrated
-        motion. Pure CSS via <M>:nth-child</M> — the first 12 rows stagger, the rest just appear (a long list shouldn't cascade for
-        seconds), and it plays once on mount. Reload an Item or Attachment list story to watch it. The utility is reusable — add{' '}
-        <M>.ui-stagger</M> to any container.
+        Rows rise + fade in one after another (<code style={{ fontFamily: mono }}>--stagger-step</code>, 25ms apart) so a list reads
+        as one orchestrated motion. <strong>AttachmentGroup</strong> carries <M>.ui-stagger</M> by default;{' '}
+        <strong>ItemGroup</strong> takes it as an <strong>opt-in</strong> — pass <M>className="ui-stagger"</M> — because a settings
+        list or a bulleted list is read rather than watched, and an entrance it cannot refuse is wrong there. Pure CSS via{' '}
+        <M>:nth-child</M> — the first 12 rows stagger, the rest just appear (a long list shouldn't cascade for seconds), and it plays
+        once on mount. Reload an Attachment list story to watch it. The utility is reusable — add <M>.ui-stagger</M> to any
+        container.
       </P>
       <P>
         <strong>Deliberately not staggered:</strong> menu items (the surface already scales + fades in from{' '}

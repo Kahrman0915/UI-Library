@@ -54,7 +54,7 @@ const ChatModelPicker = forwardRef<HTMLButtonElement, ChatModelPickerProps>(
                     {m.badge && (
                       <Badge
                         id={`${id}-${m.value}-badge`}
-                        variant="outline"
+                        color="default" appearance="outline"
                         label={m.badge}
                       />
                     )}

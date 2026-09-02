@@ -1,4 +1,4 @@
-import { forwardRef } from 'react';
+import { createContext, forwardRef, useContext } from 'react';
 import type {
   ItemActionsProps,
   ItemContentProps,
@@ -14,8 +14,18 @@ import type {
 import './Item.scss';
 import '../../styles/stagger.scss';
 
+// Set by ItemGroup so a row knows to render its own <li> wrapper. An <li> is
+// only valid inside a list, so a standalone Item must stay bare — hence a flag
+// rather than an unconditional wrapper.
+const ItemGroupContext = createContext(false);
+
 // ═════════════════════════════════════════════════════════════════════════════
 // Root — dispatches to <a>, <button>, or <div> based on props.
+//
+// role="listitem" deliberately does NOT go on the root: with href or onClick the
+// root IS the <a>/<button>, and an explicit role replaces the native one, so the
+// row would stop being announced as a link. The <li> wraps it instead — the same
+// shape Sidebar and Pagination already use.
 // ═════════════════════════════════════════════════════════════════════════════
 
 const Item = forwardRef<HTMLElement, ItemProps>(
@@ -34,6 +44,11 @@ const Item = forwardRef<HTMLElement, ItemProps>(
     },
     ref,
   ) => {
+    const inGroup = useContext(ItemGroupContext);
+
+    const wrap = (row: React.ReactElement) =>
+      inGroup ? <li className="ui-item-group__row">{row}</li> : row;
+
     const commonProps = {
       'data-variant': variant,
       'data-size': size,
@@ -42,7 +57,7 @@ const Item = forwardRef<HTMLElement, ItemProps>(
     };
 
     if (href) {
-      return (
+      return wrap(
         <a
           {...(rest as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
           ref={ref as React.Ref<HTMLAnchorElement>}
@@ -57,12 +72,12 @@ const Item = forwardRef<HTMLElement, ItemProps>(
           {...commonProps}
         >
           {children}
-        </a>
+        </a>,
       );
     }
 
     if (onClick) {
-      return (
+      return wrap(
         <button
           {...(rest as React.ButtonHTMLAttributes<HTMLButtonElement>)}
           ref={ref as React.Ref<HTMLButtonElement>}
@@ -72,18 +87,18 @@ const Item = forwardRef<HTMLElement, ItemProps>(
           {...commonProps}
         >
           {children}
-        </button>
+        </button>,
       );
     }
 
-    return (
+    return wrap(
       <div
         {...(rest as React.HTMLAttributes<HTMLDivElement>)}
         ref={ref as React.Ref<HTMLDivElement>}
         {...commonProps}
       >
         {children}
-      </div>
+      </div>,
     );
   },
 );
@@ -94,16 +109,19 @@ Item.displayName = 'Item';
 // Group — vertical stack of items with dividers between siblings.
 // ═════════════════════════════════════════════════════════════════════════════
 
-const ItemGroup = forwardRef<HTMLDivElement, ItemGroupProps>(
+const ItemGroup = forwardRef<HTMLUListElement, ItemGroupProps>(
   ({ className, children, ...rest }, ref) => (
-    <div
+    <ul
       {...rest}
       ref={ref}
+      // Explicit role="list" on a <ul> looks redundant but is not: `list-style:
+      // none` strips list semantics in Safari. Sidebar and Pagination both carry
+      // it for the same reason.
       role="list"
-      className={`ui-item-group ui-stagger${className ? ' ' + className : ''}`}
+      className={`ui-item-group${className ? ' ' + className : ''}`}
     >
-      {children}
-    </div>
+      <ItemGroupContext.Provider value>{children}</ItemGroupContext.Provider>
+    </ul>
   ),
 );
 
@@ -113,16 +131,23 @@ ItemGroup.displayName = 'ItemGroup';
 // Separator — hairline between grouped items.
 // ═════════════════════════════════════════════════════════════════════════════
 
-const ItemSeparator = forwardRef<HTMLDivElement, ItemSeparatorProps>(
-  ({ className, ...rest }, ref) => (
-    <div
-      {...rest}
-      ref={ref}
-      role="separator"
-      aria-orientation="horizontal"
-      className={`ui-item-separator${className ? ' ' + className : ''}`}
-    />
-  ),
+const ItemSeparator = forwardRef<HTMLElement, ItemSeparatorProps>(
+  ({ className, ...rest }, ref) => {
+    const inGroup = useContext(ItemGroupContext);
+    const props = {
+      ...rest,
+      role: 'separator',
+      'aria-orientation': 'horizontal' as const,
+      className: `ui-item-separator${className ? ' ' + className : ''}`,
+    };
+
+    // Inside a group the parent is a <ul>, where a bare <div> is invalid.
+    return inGroup ? (
+      <li {...props} ref={ref as React.Ref<HTMLLIElement>} />
+    ) : (
+      <div {...props} ref={ref as React.Ref<HTMLDivElement>} />
+    );
+  },
 );
 
 ItemSeparator.displayName = 'ItemSeparator';

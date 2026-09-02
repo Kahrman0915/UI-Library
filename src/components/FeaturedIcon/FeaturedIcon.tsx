@@ -12,7 +12,8 @@ const FeaturedIcon = forwardRef<HTMLSpanElement, FeaturedIconProps>(
       Icon,
       size = 'default',
       shape = 'square',
-      variant = 'default',
+      color = 'default',
+      appearance = 'soft',
       label,
       className,
       ...rest
@@ -26,7 +27,7 @@ const FeaturedIcon = forwardRef<HTMLSpanElement, FeaturedIconProps>(
         role={label ? 'img' : undefined}
         aria-label={label}
         aria-hidden={label ? undefined : true}
-        className={`ui-featured-icon ui-featured-icon--sz-${size} ui-featured-icon--shape-${shape} ui-featured-icon--${variant}${className ? ' ' + className : ''}`}
+        className={`ui-featured-icon ui-featured-icon--sz-${size} ui-featured-icon--shape-${shape} ui-featured-icon--${color} ui-featured-icon--${appearance}${className ? ' ' + className : ''}`}
       >
         <Icon />
       </span>

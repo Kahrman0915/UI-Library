@@ -7,9 +7,8 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
     {
       id,
       label,
-      variant = 'default',
-      category,
-      categoryStyle = 'soft',
+      color = 'default',
+      appearance = 'solid',
       IconLeft,
       IconRight,
       IconCenter,
@@ -18,17 +17,15 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
     },
     ref,
   ) => {
-    // A category hue renders the tag (soft tint or solid fill) and overrides the
-    // variant styling.
-    const styleClass = category
-      ? `ui-badge--cat-${category}${categoryStyle === 'solid' ? '-solid' : ''}`
-      : `ui-badge--${variant}`;
+    // Two independent axes: the colour class sets a local palette, the
+    // appearance class consumes it. Every colour therefore works with every
+    // appearance, which the old flat variant list could not express.
     return (
       <div
         {...rest}
         ref={ref}
         id={id}
-        className={`ui-badge ${styleClass}${className ? ' ' + className : ''}`}
+        className={`ui-badge ui-badge--${color} ui-badge--${appearance}${className ? ' ' + className : ''}`}
       >
         {IconLeft && <IconLeft />}
         {IconCenter && <IconCenter />}

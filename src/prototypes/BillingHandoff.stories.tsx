@@ -176,7 +176,7 @@ function Billing() {
               <Card id="plan">
                 <CardBody>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
-                    <FeaturedIcon Icon={Sparkles} variant="brand" shape="square" />
+                    <FeaturedIcon Icon={Sparkles} shape="square" />
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: 'var(--text-lg)', fontWeight: 'var(--font-semibold)' }}>
                         Pro plan · $29 / month
@@ -185,7 +185,7 @@ function Billing() {
                         Billed monthly · renews Aug 3, 2026
                       </div>
                     </div>
-                    <Badge id="plan-current" label="Current" variant="success" />
+                    <Badge id="plan-current" label="Current" color="success" />
                   </div>
                   <ButtonGroup id="plan-actions" style={{ marginTop: 'var(--p-4)' }}>
                     <Button id="change-plan" label="Change plan" />
@@ -259,7 +259,7 @@ function Billing() {
                         <div style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{inv.date}</div>
                       </div>
                       <span style={{ fontSize: 'var(--text-sm)' }}>{inv.amount}</span>
-                      <Badge id={`paid-${inv.id}`} label="Paid" variant="success" />
+                      <Badge id={`paid-${inv.id}`} label="Paid" color="success" />
                       <DropdownMenu id={`inv-menu-${inv.id}`}>
                         <DropdownMenuTrigger>
                           <Button

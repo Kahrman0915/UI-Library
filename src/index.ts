@@ -19,7 +19,7 @@ export type {
 } from './components/Avatar';
 
 export { default as Badge } from './components/Badge';
-export type { BadgeProps, BadgeVariant } from './components/Badge';
+export type { BadgeProps, BadgeColor, BadgeAppearance } from './components/Badge';
 
 export { default as AidenFullScreen } from './components/AidenFullScreen';
 export type { AidenFullScreenProps } from './components/AidenFullScreen';
@@ -69,13 +69,25 @@ export {
   CardMedia,
   CardBody,
   CardFooter,
+  CardTitle,
+  CardDescription,
+  CardOverline,
+  CardVisual,
+  CardActions,
 } from './components/Card';
 export type {
   CardProps,
   CardHeaderProps,
+  CardHeaderMediaPlacement,
   CardMediaProps,
   CardBodyProps,
   CardFooterProps,
+  CardTitleProps,
+  CardTitleAs,
+  CardDescriptionProps,
+  CardOverlineProps,
+  CardVisualProps,
+  CardActionsProps,
 } from './components/Card';
 
 export { default as Checkbox } from './components/Checkbox';
@@ -622,7 +634,8 @@ export type {
   FeaturedIconProps,
   FeaturedIconSize,
   FeaturedIconShape,
-  FeaturedIconVariant,
+  FeaturedIconColor,
+  FeaturedIconAppearance,
 } from './components/FeaturedIcon';
 
 export { default as Fab } from './components/Fab';

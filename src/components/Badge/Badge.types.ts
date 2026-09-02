@@ -1,40 +1,42 @@
 import type { CategoryColor } from '../../types/GlobalTypes';
 
 /**
- * Every colour comes as a `{solid, transparent outline}` pair. `default` and
- * `outline` follow the active `data-theme`; the semantic ones keep their own
- * colour under every theme.
+ * The colour axis. Each value sets a local palette — solid pair, tint pair and
+ * outline pair — which the `appearance` axis then consumes, so **every colour
+ * works with every appearance**.
+ *
+ * `default` follows the active `data-theme` (and adopts Aiden's palette under
+ * `data-surface="aiden"`); the semantic colours keep their own hue under every
+ * theme. The 15 category hues are the tag palette, for topics that need to be
+ * told apart rather than ranked.
  */
-export type BadgeVariant =
+export type BadgeColor =
   | 'default'
-  | 'outline'
   | 'error'
-  | 'error-outline'
   | 'success'
-  | 'success-outline'
   | 'warning'
-  | 'warning-outline'
   | 'info'
-  | 'info-outline'
   | 'aiden'
-  | 'aiden-outline';
+  | CategoryColor;
+
+/**
+ * The fill axis, independent of colour.
+ *
+ * - `solid` — the vivid fill with its on-fill ink.
+ * - `soft` — the tint surface with on-tint ink. Reach for this beside another
+ *   soft badge: both are a tint plus ink and no border, so they read as siblings.
+ * - `outline` — transparent with a coloured border and text.
+ */
+export type BadgeAppearance = 'solid' | 'soft' | 'outline';
 
 export type BadgeProps = React.HTMLAttributes<HTMLDivElement> & {
   id: string;
   /** The badge text. Alternatively pass children. */
   label?: string;
-  /** Default `default`. See {@link BadgeVariant}. Ignored when `category` is set. */
-  variant?: BadgeVariant;
-  /**
-   * Render as a category tag in one of the 15 palette hues. When set, takes
-   * precedence over `variant`. Pair with `categoryStyle`.
-   */
-  category?: CategoryColor;
-  /**
-   * How a `category` tag is filled: `soft` (default) = tinted `-bg` + `-text`;
-   * `solid` = the vivid `--category` fill + its AA-safe `-foreground`.
-   */
-  categoryStyle?: 'soft' | 'solid';
+  /** Default `default`. See {@link BadgeColor}. */
+  color?: BadgeColor;
+  /** Default `solid`. See {@link BadgeAppearance}. */
+  appearance?: BadgeAppearance;
   /** Icon before the label. Must be a zero-prop component (`() => JSX`). */
   IconLeft?: React.FC;
   /** Icon after the label. Must be a zero-prop component. */

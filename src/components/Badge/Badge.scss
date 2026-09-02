@@ -11,7 +11,6 @@
   font-weight: var(--font-medium);
   font-size: var(--text-xs);
   line-height: var(--leading-4);
-  color: var(--primary-text);
   gap: var(--p-1);
   border-radius: var(--rounded-md);
 
@@ -19,101 +18,112 @@
     width: var(--w-3);
     height: var(--h-3);
   }
-
-  &--default {
-    background: var(--primary);
-    color: var(--primary-foreground);
-  }
-
-  &--outline {
-    background: transparent;
-    color: var(--primary-text);
-    border: var(--border-w-100) solid var(--primary-border);
-  }
-
-  // No "brand" variant — the default/outline variants read --primary,
-  // which a data-theme scope remaps to the sub-brand's color.
-
-  &--error {
-    background: var(--error);
-    color: var(--error-foreground);
-  }
-
-  &--error-outline {
-    background: transparent;
-    color: var(--error);
-    border: var(--border-w-100) solid var(--error-border);
-  }
-
-  &--success {
-    background: var(--success);
-    color: var(--success-foreground);
-  }
-
-  &--success-outline {
-    background: transparent;
-    color: var(--success);
-    border: var(--border-w-100) solid var(--success-border);
-  }
-
-  &--warning {
-    background: var(--warning);
-    color: var(--warning-foreground);
-  }
-
-  &--warning-outline {
-    background: transparent;
-    color: var(--warning);
-    border: var(--border-w-100) solid var(--warning-border);
-  }
-
-  &--info {
-    background: var(--info);
-    color: var(--info-foreground);
-  }
-
-  &--info-outline {
-    background: transparent;
-    color: var(--info);
-    border: var(--border-w-100) solid var(--info-border);
-  }
-
-  &--aiden {
-    background: var(--aiden-primary);
-    color: var(--aiden-primary-foreground);
-  }
-
-  &--aiden-outline {
-    background: transparent;
-    color: var(--aiden-outline-border);
-    border: var(--border-w-100) solid var(--aiden-outline-border);
-  }
 }
 
-// Aiden AI surface: the default badge takes the gradient fill (outline stays the
-// solid violet --primary-border/-text driven by the surface scope).
-[data-surface='aiden'] .ui-badge--default {
-  background: var(--aiden-primary);
-  color: var(--aiden-primary-foreground);
+// Color axis — each color sets its fill palette as local custom properties; the
+// appearance rules below consume them, so every color works with every fill.
+// `--_fill` / `--_on-fill` = solid pair; `--_soft` / `--_soft-ink` = tint pair;
+// `--_line` / `--_line-ink` = outline border + text.
+.ui-badge--default {
+  --_fill: var(--primary);
+  --_on-fill: var(--primary-foreground);
+  --_soft: var(--primary-soft);
+  --_soft-ink: var(--primary-text);
+  --_line: var(--primary-border);
+  --_line-ink: var(--primary-text);
 }
 
-// Category tags — one soft-tint style per palette hue: the `-bg` tint surface
-// with its AA-safe `-text` colour (see --category-*-text). Generated from the
-// shared palette so adding a hue is a one-line change.
-// Quote the names — bare `red`/`cyan`/etc. are Sass colour VALUES (cyan even
-// serialises to `aqua`), which would emit wrong class names in interpolation.
-$ui-badge-categories: 'red', 'orange', 'amber', 'green', 'emerald', 'teal',
-  'cyan', 'sky', 'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
+.ui-badge--error {
+  --_fill: var(--error);
+  --_on-fill: var(--error-foreground);
+  --_soft: var(--error-soft);
+  --_soft-ink: var(--error);
+  --_line: var(--error-border);
+  --_line-ink: var(--error);
+}
+
+.ui-badge--success {
+  --_fill: var(--success);
+  --_on-fill: var(--success-foreground);
+  --_soft: var(--success-soft);
+  --_soft-ink: var(--success);
+  --_line: var(--success-border);
+  --_line-ink: var(--success);
+}
+
+.ui-badge--warning {
+  --_fill: var(--warning);
+  --_on-fill: var(--warning-foreground);
+  --_soft: var(--warning-soft);
+  --_soft-ink: var(--warning);
+  --_line: var(--warning-border);
+  --_line-ink: var(--warning);
+}
+
+.ui-badge--info {
+  --_fill: var(--info);
+  --_on-fill: var(--info-foreground);
+  --_soft: var(--info-soft);
+  --_soft-ink: var(--info);
+  --_line: var(--info-border);
+  --_line-ink: var(--info);
+}
+
+// Aiden: solid = violet->blue gradient; soft = the soft gradient tint; outline
+// = the surface's solid violet.
+.ui-badge--aiden {
+  --_fill: var(--aiden-primary);
+  --_on-fill: var(--aiden-primary-foreground);
+  --_soft: var(--aiden-secondary);
+  --_soft-ink: var(--aiden-outline-border);
+  --_line: var(--aiden-outline-border);
+  --_line-ink: var(--aiden-outline-border);
+}
+
+// Category hues — one local palette per palette color, generated from the
+// shared list. Quote the names — bare `red`/`cyan`/etc. are Sass color VALUES
+// (cyan even serializes to `aqua`), which would emit wrong class names.
+$ui-badge-categories:
+  'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue',
+  'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
 
 @each $c in $ui-badge-categories {
-  // Soft: tint surface + AA-safe on-tint text.
-  .ui-badge--cat-#{$c} {
-    background: var(--category-#{$c}-bg);
-    color: var(--category-#{$c}-text);
+  .ui-badge--#{$c} {
+    --_fill: var(--category-#{$c});
+    --_on-fill: var(--category-foreground);
+    --_soft: var(--category-#{$c}-bg);
+    --_soft-ink: var(--category-#{$c}-text);
+    --_line: var(--category-#{$c});
+    --_line-ink: var(--category-#{$c}-text);
   }
-  // Solid: the fully vivid fill + dark ink (the readable option on a bright palette).
-  .ui-badge--cat-#{$c}-solid {
-    background: var(--category-#{$c});
-    color: var(--category-foreground);
-  }
+}
+
+// Appearance axis — consumes the local props set by the color above.
+.ui-badge--solid {
+  background: var(--_fill);
+  color: var(--_on-fill);
+}
+
+.ui-badge--soft {
+  background: var(--_soft);
+  color: var(--_soft-ink);
+}
+
+.ui-badge--outline {
+  background: transparent;
+  color: var(--_line-ink);
+  border: var(--border-w-100) solid var(--_line);
+}
+
+// Aiden AI surface: the default badge adopts Aiden's palette (gradient solid,
+// soft gradient tint, violet outline) by re-pointing the same local props — the
+// same carve-out as the brand themes. Authored last so the context selector's
+// higher specificity wins for the prop values.
+[data-surface='aiden'] .ui-badge--default {
+  --_fill: var(--aiden-primary);
+  --_on-fill: var(--aiden-primary-foreground);
+  --_soft: var(--aiden-secondary);
+  --_soft-ink: var(--aiden-outline-border);
+  --_line: var(--aiden-outline-border);
+  --_line-ink: var(--aiden-outline-border);
 }

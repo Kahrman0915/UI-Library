@@ -88,12 +88,12 @@ const NAV = [
 ];
 
 const QUICK = [
-  { label: 'Create Space', Icon: LayoutGrid, variant: 'brand' },
+  { label: 'Create Space', Icon: LayoutGrid, variant: 'default' },
   { label: 'New IRM Request', Icon: Box, variant: 'info' },
   { label: 'Open Phoenix', Icon: Flame, variant: 'warning' },
-  { label: 'Eclipse Queue', Icon: Layers, variant: 'brand' },
+  { label: 'Eclipse Queue', Icon: Layers, variant: 'default' },
   { label: 'New Note', Icon: FileText, variant: 'success' },
-  { label: 'Chat with Aiden', Icon: Sparkles, variant: 'brand' },
+  { label: 'Chat with Aiden', Icon: Sparkles, variant: 'default' },
 ] as const;
 
 const RECENT = [
@@ -178,7 +178,7 @@ function Shell() {
                 <Mark id={`dc-rail-${code}`} Icon={Icon} size="default" motion="none" label={name} />
                 {count && (
                   <span className="dc-rail__badge">
-                    <Badge id={`dc-rail-${code}-count`} variant="error" label={String(count)} />
+                    <Badge id={`dc-rail-${code}-count`} color="error" label={String(count)} />
                   </span>
                 )}
               </span>
@@ -197,7 +197,7 @@ function Shell() {
                 aria-label="Notifications"
               />
               <span className="dc-rail__badge">
-                <Badge id="dc-notifications-count" variant="error" label="3" />
+                <Badge id="dc-notifications-count" color="error" label="3" />
               </span>
             </span>
             <ModeToggler id="dc-mode" variant="ghost" size="sm" />
@@ -312,7 +312,7 @@ function Shell() {
                       <Card id={`dc-q-${label}`} key={label} interactive>
                         <Item size="sm">
                           <ItemMedia variant="icon">
-                            <FeaturedIcon Icon={Icon} size="sm" variant={variant} />
+                            <FeaturedIcon Icon={Icon} size="sm" color={variant} />
                           </ItemMedia>
                           <ItemContent>
                             <ItemTitle>{label}</ItemTitle>
@@ -366,7 +366,7 @@ function Shell() {
                       <Card id={`dc-p-${title}`} key={title} interactive>
                         <Item size="sm">
                           <ItemMedia variant="icon">
-                            <FeaturedIcon Icon={Icon} size="sm" variant="brand" />
+                            <FeaturedIcon Icon={Icon} size="sm" />
                           </ItemMedia>
                           <ItemContent>
                             <ItemTitle>{title}</ItemTitle>

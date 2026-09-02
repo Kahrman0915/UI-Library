@@ -28,7 +28,7 @@
   display: inline-flex;
   align-items: center;
   border-radius: var(--rounded-full);
-  background: var(--muted);
+  background: var(--switch-track);
   border: var(--border-w-100) solid transparent;
   transition:
     background var(--duration-fast) var(--ease-premium),
@@ -62,11 +62,14 @@
   cursor: not-allowed;
 }
 
-// Hover — subtle track darken when off.
+// Hover — the off track gains contrast. In light that means darkening, in dark
+// lightening; --switch-track-hover carries the direction so this rule doesn't
+// have to know which mode it is in. It used --accent, which is LIGHTER than the
+// old --muted resting track, so in light mode hovering made the switch fainter.
 .ui-switch-wrap:not(.ui-switch-wrap--disabled):hover
   .ui-switch__input:not(:checked)
   ~ .ui-switch {
-  background: var(--accent);
+  background: var(--switch-track-hover);
 }
 
 // ---- Sizes: default (h20 w36 thumb16), sm (h16 w28 thumb12), lg (h24 w44 thumb20) ----

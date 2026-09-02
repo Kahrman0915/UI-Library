@@ -508,6 +508,7 @@
   // action rows) without inflating them. Same type ramp as `small`, tighter box.
   &--sz-xs {
     padding: var(--p-1) var(--p-2-5);
+    --ui-button-pad-x: var(--p-2-5);
     font-size: var(--text-xs);
     line-height: var(--leading-4);
     gap: var(--p-1-5);
@@ -520,6 +521,7 @@
 
   &--sz-sm {
     padding: var(--p-2) var(--p-3);
+    --ui-button-pad-x: var(--p-3);
     font-size: var(--text-xs);
     line-height: var(--leading-4);
     gap: var(--p-2);
@@ -532,6 +534,7 @@
 
   &--sz-default {
     padding: var(--p-2) var(--p-4);
+    --ui-button-pad-x: var(--p-4);
     font-size: var(--text-sm);
     gap: var(--p-2);
 
@@ -543,6 +546,7 @@
 
   &--sz-lg {
     padding: var(--p-2) var(--p-6);
+    --ui-button-pad-x: var(--p-6);
     font-size: var(--text-base);
     line-height: var(--leading-6);
     gap: var(--p-2);
@@ -550,6 +554,40 @@
     svg {
       width: var(--w-5);
       height: var(--h-5);
+    }
+  }
+
+  // ---- Link: the one style with no box ----
+  //
+  // `link` is inline TEXT, not a control box — it has to align flush with the
+  // copy it sits under, and a padded one reads as indented by its own size. So
+  // it is the single style that drops the horizontal padding every other rung
+  // keeps. (Polaris's `plain` is the same call; shadcn keeps the padding and
+  // every consumer overrides it to 0, which is the tell.)
+  //
+  // Authored AFTER the size blocks deliberately: `&--{variant}-link` and
+  // `&--sz-{size}` are both (0,1,0), so this only wins on source order. Moving
+  // it above them silently restores the padding.
+  //
+  // The HIT TARGET is not dropped with it. WCAG 2.5.8 wants 24x24, and a short
+  // label ("Edit") is under that on width alone once the padding goes, so an
+  // ::after re-expands the target by exactly the padding removed — the same
+  // trick `.ui-icon-button` uses for sub-24px boxes. `--ui-button-pad-x` is set
+  // by each size block above, so one rule covers all four rungs.
+  @each $v in default, error, info, success, warning, aiden {
+    &--#{$v}-link {
+      position: relative;
+      padding-left: var(--p-0);
+      padding-right: var(--p-0);
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: calc(-1 * var(--ui-button-pad-x));
+        right: calc(-1 * var(--ui-button-pad-x));
+      }
     }
   }
 

@@ -12,8 +12,11 @@ export type ItemSize = 'xs' | 'sm' | 'default';
  * - `default` — unboxed; the child sits inline.
  * - `icon` — boxed muted tile sized for a lucide icon.
  * - `image` — boxed tile that clips a thumbnail to the corner radius.
+ * - `bullet` — a small disc marker for a prose bulleted list. Draws itself and
+ *   takes no children; the other variants all size a child you provide, and the
+ *   smallest of those is a 20px tile — far too big to read as a bullet.
  */
-export type ItemMediaVariant = 'default' | 'icon' | 'image';
+export type ItemMediaVariant = 'default' | 'icon' | 'image' | 'bullet';
 
 /**
  * A generic list row: media, a title and description, actions on the trailing
@@ -47,16 +50,20 @@ export type ItemProps = Omit<
 };
 
 /**
- * Wraps a set of rows as a `role="list"`. Add `className="ui-stagger"` to have
- * the rows rise in on mount.
+ * Wraps a set of rows as a `<ul role="list">`, giving each row its own `<li>`.
+ * Add `className="ui-stagger"` to have the rows rise in on mount — it is opt-in,
+ * so a list you read rather than scan stays still.
  */
-export type ItemGroupProps = React.HTMLAttributes<HTMLDivElement> & {
+export type ItemGroupProps = React.HTMLAttributes<HTMLUListElement> & {
   className?: string;
   children?: React.ReactNode;
 };
 
-/** Hairline between rows inside an `ItemGroup`. */
-export type ItemSeparatorProps = React.HTMLAttributes<HTMLDivElement> & {
+/**
+ * Hairline between rows inside an `ItemGroup`, where it renders as an `<li>`
+ * because a `<ul>` may not hold a bare `<div>`. Standalone it stays a `<div>`.
+ */
+export type ItemSeparatorProps = React.HTMLAttributes<HTMLElement> & {
   className?: string;
 };
 

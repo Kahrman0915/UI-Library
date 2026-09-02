@@ -43,6 +43,69 @@
     }
   }
 
+  // ---- Variants: line + plain ----
+  // The quiet rungs, for a filter bar where a segmented control would outshout
+  // the content. No box in either state — the pressed item is marked by colour
+  // plus one extra signal, never by a fill.
+  &--line,
+  &--plain {
+    background: transparent;
+    border-color: transparent;
+    border-radius: 0;
+    color: var(--muted-foreground);
+    padding-inline: var(--p-0-5);
+
+    &:hover:not(:disabled) {
+      background: transparent;
+      color: var(--foreground);
+    }
+
+    // Beat the base `&--pressed` fill, which is (0,2,0) like this selector but
+    // declared earlier — relying on source order alone would break if the block
+    // ever moves.
+    &.ui-toggle--pressed {
+      background: transparent;
+      color: var(--foreground);
+    }
+
+    // The box has no radius, but the focus ring needs one or it reads as a
+    // rectangle bolted to the text. Same carve-out Tabs' line trigger makes.
+    &:focus-visible {
+      border-radius: var(--rounded-sm);
+    }
+  }
+
+  // line: a --primary bar on the bottom edge. Same geometry as the Tabs
+  // indicator (--border-w-300 on --rounded-full) so the two read as one idea.
+  // Drawn on the item's own ::after because a ToggleGroup has no sliding
+  // indicator to borrow — and because weight is left alone here, switching
+  // selection reflows nothing.
+  &--line {
+    position: relative;
+
+    &.ui-toggle--pressed::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: var(--border-w-300);
+      background: var(--primary);
+      border-radius: var(--rounded-full);
+    }
+  }
+
+  // plain: weight is the only structural signal, so it steps 500 -> 600 rather
+  // than 400 -> 600. Bold text is wider than regular and a filter bar reflows
+  // every time the selection moves; one step keeps that shift near-invisible
+  // while still reading as bolder. Colour does the rest of the work.
+  &--plain {
+    font-weight: var(--font-medium);
+
+    &.ui-toggle--pressed {
+      font-weight: var(--font-semibold);
+    }
+  }
+
   // ---- Focus ----
   &:focus-visible {
     outline: none;

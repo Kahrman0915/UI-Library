@@ -224,7 +224,7 @@ const MiniBuild = () => (
       id={`mbh-${Math.random()}`}
       title="Q4 report"
       description="Weekly digest for the design team"
-      action={<Badge id={`mbb-${Math.random()}`} variant="default" label="Live" />}
+      action={<Badge id={`mbb-${Math.random()}`} color="default" label="Live" />}
     />
     <CardBody>
       <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
@@ -235,8 +235,8 @@ const MiniBuild = () => (
           size="sm"
         />
         <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-          <Badge id={`mbb1-${Math.random()}`} variant="default" label="Primary" />
-          <Badge id={`mbb3-${Math.random()}`} variant="outline" label="Outline" />
+          <Badge id={`mbb1-${Math.random()}`} color="default" label="Primary" />
+          <Badge id={`mbb3-${Math.random()}`} color="default" appearance="outline" label="Outline" />
         </div>
       </div>
     </CardBody>
@@ -365,7 +365,7 @@ const AidenSampler = () => (
     <Button id={`as-${Math.random()}`} variant="default" style="secondary" label="Secondary" />
     <Button id={`ao-${Math.random()}`} variant="default" style="outline" label="Outline" />
     <Button id={`ag-${Math.random()}`} style="ghost" label="Ghost" />
-    <Badge id={`ab-${Math.random()}`} variant="default" label="Badge" />
+    <Badge id={`ab-${Math.random()}`} color="default" label="Badge" />
     <Chip id={`ac-${Math.random()}`} label="Active" active />
     <Checkbox id={`acb-${Math.random()}`} defaultChecked label="Checked" />
     <Switch id={`asw-${Math.random()}`} defaultChecked label="On" />

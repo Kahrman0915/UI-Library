@@ -243,13 +243,13 @@ export function DocsPage() {
             <div className="ui-docs__pills">
               <Badge
                 id="docs-pill-status"
-                variant={STATUS_VARIANT[ui.status ?? 'stable']}
+                color={STATUS_VARIANT[ui.status ?? 'stable']}
                 label={ui.status ?? 'stable'}
               />
               {subcomponentNames.length > 0 ? (
                 <Badge
                   id="docs-pill-compound"
-                  variant="outline"
+                  color="default" appearance="outline"
                   label={`${subcomponentNames.length + 1} parts`}
                 />
               ) : null}
@@ -257,7 +257,7 @@ export function DocsPage() {
                 <Badge
                   key={tag}
                   id={`docs-pill-${tag}`}
-                  variant="outline"
+                  color="default" appearance="outline"
                   label={tag}
                 />
               ))}
@@ -342,7 +342,7 @@ export function DocsPage() {
                         {part.required ? (
                           <Badge
                             id={`docs-part-${part.name}`}
-                            variant="outline"
+                            color="default" appearance="outline"
                             label="required"
                           />
                         ) : null}
@@ -428,7 +428,7 @@ export function DocsPage() {
                   {ui.motion.moments.map((m) => (
                     <div key={m.trigger} className="ui-docs-keys__row">
                       <div className="ui-docs-keys__combo">
-                        <Badge id={`motion-${m.trigger}`} variant="outline" label={m.trigger} />
+                        <Badge id={`motion-${m.trigger}`} color="default" appearance="outline" label={m.trigger} />
                       </div>
                       <div className="ui-docs-keys__desc">{prose(m.description)}</div>
                     </div>

@@ -17,6 +17,13 @@ const meta: Meta<typeof Switch> = {
       tags: ['form control', '3 sizes'],
       changelog: [
         {
+          date: '2026-09-01',
+          summary:
+            'The off (unchecked) track is a solid slate chip now, and hovering it darkens rather than lightens.',
+          detail:
+            'New `--switch-track` / `--switch-track-hover` tokens replace `--muted` / `--accent`. The resting track was 1.48:1 against both the page and the white thumb, and the old hover used `--accent`, which is lighter than `--muted` — so hovering an off switch in light mode made it fainter (1.10:1). The pair inverts by mode exactly like `--avatar-background`: slate-400 to slate-500 in light, slate-500 to slate-400 in dark, so hover always gains contrast. Thumb boundary now 2.56 light / 3.75 dark at rest.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

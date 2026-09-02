@@ -51,7 +51,7 @@
   width: 0;
   height: 0;
   opacity: 0;
-  background: var(--background);
+  background: var(--tabs-indicator);
   border-radius: var(--rounded-sm);
   box-shadow: var(--shadow-sm);
   transition:
@@ -108,7 +108,9 @@
   }
 
   // The pill (background + shadow) is now the shared .ui-tabs__indicator; the
-  // active trigger only owns its text colour.
+  // active trigger only owns its text colour. `line` and `browser` keep this
+  // value — they have no light pill under the label. `default` overrides it
+  // below, because there the label sits ON the indicator.
   &[data-state='active'] {
     color: var(--foreground);
   }
@@ -146,6 +148,22 @@
 // leaves the box alone and paints through a pseudo-element instead, which means
 // the slide animation is inherited rather than reimplemented.
 // ─────────────────────────────────────────────────────────────────────────────
+
+// ── default ─────────────────────────────────────────────────────────────────
+// Targeted by ATTRIBUTE, not by a class: `default` deliberately emits no
+// `.ui-tabs--default` modifier (a class nothing else selects is dead BEM), so
+// `data-variant` is the hook — see Tabs.tsx.
+//
+// The active label sits ON the indicator pill, which is light in BOTH modes, so
+// it takes the pill's own ink rather than --foreground. Without this, dark mode
+// puts a near-white label on a slate-400 pill at 2.45:1. `line` and `browser`
+// have no pill under the label and are untouched.
+//
+// (0,4,0) against the base rule's (0,2,0), so it wins on specificity rather than
+// source order.
+.ui-tabs[data-variant='default'] .ui-tabs__trigger[data-state='active'] {
+  color: var(--tabs-indicator-foreground);
+}
 
 // ── line ────────────────────────────────────────────────────────────────────
 .ui-tabs--line {

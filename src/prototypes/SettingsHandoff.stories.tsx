@@ -90,7 +90,7 @@ function SettingsScreen() {
         {/* ── Profile ─────────────────────────────────────────────── */}
         <Card id="profile">
           <CardHeader
-            id="profile"
+            id="profile-header"
             title="Profile"
             description="Update your personal information and how others see you."
           />
@@ -158,7 +158,7 @@ function SettingsScreen() {
         {/* ── Preferences ─────────────────────────────────────────── */}
         <Card id="prefs">
           <CardHeader
-            id="prefs"
+            id="prefs-header"
             title="Preferences"
             description="Choose your language, timezone and what we email you about."
           />
@@ -189,7 +189,7 @@ function SettingsScreen() {
         {/* ── Appearance ──────────────────────────────────────────── */}
         <Card id="appearance">
           <CardHeader
-            id="appearance"
+            id="appearance-header"
             title="Appearance"
             description="Personalise how the app looks and feels."
           />

@@ -47,7 +47,7 @@ const ChatArtifact = forwardRef<HTMLDivElement, ChatArtifactProps>(
           <h3 id={`${id}-title`} className="ui-chat-artifact__title">
             {title}
           </h3>
-          {badge && <Badge id={`${id}-badge`} variant="outline" label={badge} />}
+          {badge && <Badge id={`${id}-badge`} color="default" appearance="outline" label={badge} />}
           <div className="ui-chat-artifact__actions">
             {copyValue !== undefined && (
               <ChatMessageAction icon={Copy} label="Copy contents" copyValue={copyValue} />

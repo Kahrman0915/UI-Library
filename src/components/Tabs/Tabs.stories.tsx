@@ -49,6 +49,31 @@ const meta: Meta<typeof Tabs> = {
       },
       changelog: [
         {
+          date: '2026-09-01',
+          summary:
+            'The active tab now reads as selected in dark mode. The `default` variant’s indicator pill takes the new ' +
+            '`--tabs-indicator` token instead of `--background`. Light is unchanged.',
+          detail:
+            'The pill painted `--background`, which inverts with the mode: in dark that put a near-black pill on a ' +
+            'slate-700 strip, so the selected tab read as a hole punched in the strip rather than a raised tab, and the ' +
+            '`--shadow-sm` that sells "raised" in light is invisible on a dark surface. Measured, the dark state carried ' +
+            'no signal at all — pill 1.72:1 against the strip, and active-vs-inactive label 1.18:1, because dark ' +
+            '`--muted-foreground` is slate-200 and sits almost on top of `--foreground`. Light was never in trouble: its ' +
+            'pill is only 1.10:1 against the strip, but the direction is right and the shadow does the work.\n\n' +
+            'A selected pill is LIGHT in both modes — "raised" is signalled by lightness, and that does not flip just ' +
+            'because the page did (the same argument `--mark-lift` records). Dark takes slate-400: 4.04:1 against the ' +
+            'strip, clearing the 3:1 WCAG 1.4.11 asks of state indication, with the label at 6.96:1 on it. ' +
+            '`--tabs-indicator-foreground` is declared once and NOT split by mode, because the pill is light in both.\n\n' +
+            'Scoped to `default` by `[data-variant=\'default\']` rather than a class, since `default` deliberately emits ' +
+            'no modifier. `line` (a `--primary` bar) and `browser` (a `--card` tab joined to its panel) have no pill ' +
+            'under the label and keep `--foreground`.\n\n' +
+            '`browser` does NOT share this problem. Its tablist is `background: none`, so its active tab never sits on ' +
+            'the `--accent` strip — it sits on whatever surface the Tabs is placed on, and its 1px `--border` is the ' +
+            'boundary rather than the fill. Measured, that border is 3.75:1 against the page in dark (passing) and ' +
+            '1.48:1 in light (failing), so `browser` is weak in the opposite mode. That is `--border` being slate-300 ' +
+            'on white, which Input, Checkbox, RadioGroup and Card all share — not something to patch inside Tabs.',
+        },
+        {
           date: '2026-08-26',
           summary:
             'Added a `variant` prop with `line` and `browser` treatments, and moved the tablist background off `--muted`.',

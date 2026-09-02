@@ -12,27 +12,48 @@
 
   // Segmented look: items sit flush and share edges. The middle radii flatten
   // and touching borders collapse onto one another (same idea as ButtonGroup).
-  &--horizontal > .ui-toggle {
-    &:not(:first-child) {
-      border-top-left-radius: 0;
-      border-bottom-left-radius: 0;
-      margin-left: calc(-1 * var(--border-w-100));
+  //
+  // EXCLUDED for line/plain rather than overridden later: those variants have no
+  // borders to collapse, and a negative margin would pull their labels together.
+  // Guarding at the source beats fighting specificity — the rules below are
+  // (0,3,0) once :not(:first-child) is counted, which a [data-variant] override
+  // would have to match.
+  &:not([data-variant='line']):not([data-variant='plain']) {
+    &.ui-toggle-group--horizontal > .ui-toggle {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-bottom-left-radius: 0;
+        margin-left: calc(-1 * var(--border-w-100));
+      }
+      &:not(:last-child) {
+        border-top-right-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
-    &:not(:last-child) {
-      border-top-right-radius: 0;
-      border-bottom-right-radius: 0;
+
+    &.ui-toggle-group--vertical > .ui-toggle {
+      &:not(:first-child) {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        margin-top: calc(-1 * var(--border-w-100));
+      }
+      &:not(:last-child) {
+        border-bottom-left-radius: 0;
+        border-bottom-right-radius: 0;
+      }
     }
   }
 
-  &--vertical > .ui-toggle {
-    &:not(:first-child) {
-      border-top-left-radius: 0;
-      border-top-right-radius: 0;
-      margin-top: calc(-1 * var(--border-w-100));
-    }
-    &:not(:last-child) {
-      border-bottom-left-radius: 0;
-      border-bottom-right-radius: 0;
+  // The quiet variants read as a row of labels, not a control, so they sit on a
+  // gap instead of sharing edges. --p-4 matches the Tabs line list, so a filter
+  // bar built from either lines up the same.
+  &[data-variant='line'],
+  &[data-variant='plain'] {
+    gap: var(--p-4);
+
+    &.ui-toggle-group--vertical {
+      align-items: flex-start;
+      gap: var(--p-1);
     }
   }
 

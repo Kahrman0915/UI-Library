@@ -15,6 +15,23 @@ const meta: Meta<typeof Toggle> = {
       tags: ['aria-pressed'],
       changelog: [
         {
+          date: '2026-08-27',
+          summary: 'Gained a trailing icon.',
+          detail:
+            'Adds `IconRight`, rendered after the label. Toggle was the only pill in the library without a trailing icon — Chip, Badge and Button all had one. Purely additive.',
+        },
+        {
+          date: '2026-08-27',
+          summary: 'Two quiet variants, `line` and `plain`, for filter bars where a segmented control shouts.',
+          detail:
+            'ToggleVariant goes from default|outline to default|outline|line|plain. Both new rungs are ' +
+            'transparent with no border: `line` marks the pressed item with a --primary bar on its bottom ' +
+            'edge, reusing the Tabs indicator geometry (--border-w-300 on --rounded-full); `plain` uses ' +
+            '--foreground at --font-semibold against --muted-foreground. Presentation only — identical ' +
+            'semantics, keyboard behaviour and aria. `plain` steps weight 500->600 rather than 400->600 ' +
+            'because bold text is wider and a filter bar reflows on every selection change.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -24,7 +41,7 @@ const meta: Meta<typeof Toggle> = {
     } satisfies UiDocsParameters,
   },
   argTypes: {
-    variant: { control: 'select', options: ['default', 'outline'] },
+    variant: { control: 'select', options: ['default', 'outline', 'line', 'plain'] },
     size: { control: 'select', options: ['sm', 'default', 'lg'] },
     disabled: { control: 'boolean' },
     defaultPressed: { control: 'boolean' },
@@ -52,6 +69,8 @@ export const Variants: Story = {
     <div style={{ display: 'flex', gap: 12 }}>
       <Toggle id="v-default" variant="default" label="Default" defaultPressed />
       <Toggle id="v-outline" variant="outline" label="Outline" defaultPressed />
+      <Toggle id="v-line" variant="line" label="Line" defaultPressed />
+      <Toggle id="v-plain" variant="plain" label="Plain" defaultPressed />
     </div>
   ),
 };

@@ -145,7 +145,7 @@ function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
 function Head({ pill, title, lede }: { pill: string; title: string; lede?: string }) {
   return (
     <div style={{ display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center', marginBottom: 'var(--p-12)' }}>
-      <Badge id={`head-${pill}`} variant="outline" label={pill} />
+      <Badge id={`head-${pill}`} color="default" appearance="outline" label={pill} />
       <h2 style={H2}>{title}</h2>
       {lede && <p style={{ ...LEDE, textAlign: 'center' }}>{lede}</p>}
     </div>
@@ -260,8 +260,8 @@ export default function SuitePage({ mode }: { mode: Mode }) {
                 <Surface style={{ padding: 'var(--p-4)', display: 'flex', alignItems: 'center', gap: 'var(--p-4)' }}>
                   <div style={{ display: 'grid', gap: 'var(--p-2)', flex: 1 }}>
                     <div style={{ display: 'flex', gap: 'var(--p-2)', alignItems: 'center' }}>
-                      <Badge id={`u-${u.brand}-a`} variant="outline" label="Dartboards" />
-                      <Badge id={`u-${u.brand}-b`} variant="default" label={u.tag} />
+                      <Badge id={`u-${u.brand}-a`} color="default" appearance="outline" label="Dartboards" />
+                      <Badge id={`u-${u.brand}-b`} color="default" label={u.tag} />
                     </div>
                     <strong style={{ fontSize: 'var(--text-sm)' }}>{u.t}</strong>
                     <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>{u.d}</span>

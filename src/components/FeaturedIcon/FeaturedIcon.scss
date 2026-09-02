@@ -1,12 +1,27 @@
+// Category hues — the tag palette, for tiles that only have to be told apart.
+// Quote the names: bare `red`/`cyan`/etc. are Sass color VALUES (`cyan` even
+// serializes to `aqua`), which would emit the wrong class names. Same list and
+// same reason as Badge's `$ui-badge-categories`.
+$ui-featured-icon-categories:
+  'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue',
+  'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
+
 // A boxed icon tile. The tile owns the size and the colour; the glyph fills a
-// fixed fraction of it. Reuses the same -light tint tokens Alert and Badge use
-// — no tile-specific colours.
+// fixed fraction of it.
+//
+// TWO INDEPENDENT AXES, the same mechanism Badge uses: the COLOR class sets a
+// local palette as custom properties, and the APPEARANCE class consumes it. So
+// every colour works with every appearance — before this, `default` was the
+// only filled tile in the set and no other colour could be filled at all.
 
 .ui-featured-icon {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  // Always present, even on `solid` where it is transparent — the box has to
+  // measure the same at both appearances or swapping one shifts its neighbours.
   border: var(--border-w-100) solid transparent;
 
   svg {
@@ -62,43 +77,91 @@
   &--shape-circle {
     border-radius: var(--rounded-full);
   }
+}
 
-  // ---- Variants: tile fill + icon colour + border ----
+// ---------------------------------------------------------------------------
+// COLOR AXIS — each colour publishes one palette; the appearance rules consume
+// it. `--_fill` / `--_on-fill` is the solid pair; `--_soft` / `--_soft-ink` /
+// `--_soft-line` is the tint, its ink and its edge.
+// ---------------------------------------------------------------------------
 
-  &--default {
-    background: var(--muted);
-    color: var(--muted-foreground);
-    border-color: var(--border);
+// `default` IS the theme's primary — there is no separate `brand`, exactly as
+// Badge models it. On the main brand `--primary` is neutral slate, so an
+// unthemed tile still reads as chrome; inside a `data-theme` the whole family
+// moves with the brand. Do not reintroduce a `brand` colour: it would be a
+// second way to say the same thing, and the two would drift.
+.ui-featured-icon--default {
+  --_fill: var(--primary);
+  --_on-fill: var(--primary-foreground);
+  --_soft: var(--primary-light);
+  --_soft-ink: var(--primary-text);
+  --_soft-line: var(--primary-border);
+}
+
+.ui-featured-icon--success {
+  --_fill: var(--success);
+  --_on-fill: var(--success-foreground);
+  --_soft: var(--success-light);
+  --_soft-ink: var(--success);
+  --_soft-line: var(--success-border);
+}
+
+.ui-featured-icon--warning {
+  --_fill: var(--warning);
+  --_on-fill: var(--warning-foreground);
+  --_soft: var(--warning-light);
+  --_soft-ink: var(--warning);
+  --_soft-line: var(--warning-border);
+}
+
+.ui-featured-icon--error {
+  --_fill: var(--error);
+  --_on-fill: var(--error-foreground);
+  --_soft: var(--error-light);
+  --_soft-ink: var(--error);
+  --_soft-line: var(--error-border);
+}
+
+.ui-featured-icon--info {
+  --_fill: var(--info);
+  --_on-fill: var(--info-foreground);
+  --_soft: var(--info-light);
+  --_soft-ink: var(--info);
+  --_soft-line: var(--info-border);
+}
+
+// Category hues take the SAME three-part soft shape as the semantic colours —
+// tint, ink, soft border — so a category tile and a semantic one read as the
+// same object. The tint is `-bg` rather than `-light` because that is what the
+// category palette ships (10% light / 15% dark, against the semantics' 6%),
+// and the ink is `-text`, the AA-safe step ON that tint; the vivid base would
+// fail as a glyph on its own tint.
+@each $c in $ui-featured-icon-categories {
+  .ui-featured-icon--#{$c} {
+    --_fill: var(--category-#{$c});
+    --_on-fill: var(--category-foreground);
+    --_soft: var(--category-#{$c}-bg);
+    --_soft-ink: var(--category-#{$c}-text);
+    --_soft-line: var(--category-#{$c}-border);
   }
+}
 
-  // Brand — reads --primary, so it follows data-theme.
-  &--brand {
-    background: var(--primary-light);
-    color: var(--primary-text);
-    border-color: var(--primary-border);
-  }
+// ---------------------------------------------------------------------------
+// APPEARANCE AXIS — consumes the local props set by the colour above.
+// ---------------------------------------------------------------------------
 
-  &--success {
-    background: var(--success-light);
-    color: var(--success);
-    border-color: var(--success-border);
-  }
+.ui-featured-icon--soft {
+  background: var(--_soft);
+  color: var(--_soft-ink);
+  border-color: var(--_soft-line);
+}
 
-  &--warning {
-    background: var(--warning-light);
-    color: var(--warning);
-    border-color: var(--warning-border);
-  }
-
-  &--error {
-    background: var(--error-light);
-    color: var(--error);
-    border-color: var(--error-border);
-  }
-
-  &--info {
-    background: var(--info-light);
-    color: var(--info);
-    border-color: var(--info-border);
-  }
+// The vivid fill carries its own inverted ink, so it needs no ring — an edge in
+// the same hue as the fill is invisible, and one in a different hue reads as a
+// second object. `transparent`, not `none`: the border-width has to stay so the
+// box measures the same as its `soft` twin.
+.ui-featured-icon--solid {
+  background: var(--_fill);
+  color: var(--_on-fill);
+  border-color: transparent;
 }
