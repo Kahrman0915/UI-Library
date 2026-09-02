@@ -9,7 +9,8 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** **64 component pages**, all built to template v4, plus a full **Foundations** section. `Table` (2026-08-26) is the most recent — and is the file's **first and only PROPOSAL page**: it documents a component that does **not** exist in `src/`, and says so on itself in two places. Before it: `TabBar` (#62), `Mark` (#61), `FullScreenDialog` (#60). Ledger holds per-component IDs + ~174 lessons.
+- **Status:** **66 component pages**, all built to template v4, plus a full **Foundations** section. `Calendar` and `DatePicker` (2026-09-02) are the most recent, built alongside the code in one pass. Before them `Table` (2026-08-26) — the file's **first and only PROPOSAL page**: it documents a component that does **not** exist in `src/`, and says so on itself in two places. Then `TabBar` (#62), `Mark` (#61), `FullScreenDialog` (#60). Ledger holds per-component IDs + ~177 lessons.
+- **A single Figma TEXT property cannot hold two strings.** `DatePicker/Field` has a `Value=Empty|Filled` axis; binding one `Value text` property to the value layer in all 30 variants made every Empty variant render the *filled* default instead of its own placeholder. The axis was right and the render was wrong, which reads as a broken component. Two properties (`Value text` + `Placeholder`), each referenced only from the variants it belongs to, is the fix — a property that applies to no layer in the current variant simply does nothing, which is fine; a property that silently overwrites the variant's own content is not.
 - **A supplied frame may be bound to a FOREIGN variable library.** `TabBar` was built from an owner-supplied frame whose fills pointed at another file's variables — reported under names like `--muted-foreground`, resolving to values that were not ours. It rendered correctly, so nothing flagged it. Tell them apart by the id shape: local is `VariableID:N:N`, foreign is `VariableID:<40-hex>/N:N`. **Check what a fill is bound to, not what it looks like.**
 - **FILE REORGANISED 2026-08-08 — the Phase 1–5 grouping is GONE.** It was build-order scaffolding; the build finished, so it had stopped describing anything, and the index board built on it had drifted twice. Four sections now:
 
@@ -389,6 +390,20 @@ description too — it's part of the lint.
   2:47` · `primary-soft 2:48` · `primary-border 2:49` · `primary-ring 2:50` ·
   `primary-focus 2:51` · `primary-text 35:65`. Ghost/quiet text stays
   `Mode → text/secondary-foreground` (the neutral carve-out).
+- **Component-scoped colours get their OWN top-level namespace, not `surface/*`.** The Mode
+  collection already had `avatar/*`, `tooltip/*`, `sidebar/*` and `chat/*`; `switch/*` joined
+  them 2026-09-01. Scopes copy `avatar/background`: `['FRAME_FILL','SHAPE_FILL']`.
+  `switch/track 1916:38637` (Light `#94a3b8` / Dark `#64748b`) ·
+  `switch/track-hover 1916:38638` (Light `#64748b` / Dark `#94a3b8`) — the pair **inverts by
+  mode**, like `avatar/background`, so hover always gains contrast in both modes.
+  > **Rebinding a token on a doc page is two jobs, not one.** The Switch swap rebound 12 fills
+  > (6 `State=Off` masters + 6 local hover overrides; the other 30 instances inherited). But
+  > **five TEXT nodes still spelled the old token name** — two TokenPills and three prose blurbs
+  > — and a page that paints `switch/track` while printing `--muted` is worse than one that was
+  > never touched. Grep the page's text for the old name as well as its fills.
+  > Also: on a spec table the **state lives in the columns, the size in the rows** — read the
+  > header row before inferring which cell is which from its colour.
+
 - **`flag/is-dark`** boolean, Mode collection, `175:26` (Light=false, Dark=true) —
   powers the Aiden dark-gradient overlays.
 - **`color/shadow`** `145:122` — all 8 `Shadow/*` effect styles bind their color to it
