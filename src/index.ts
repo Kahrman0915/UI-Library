@@ -310,6 +310,21 @@ export type {
   CommandItemVariant,
 } from './components/Command';
 
+export { default as Calendar } from './components/Calendar';
+export type {
+  CalendarProps,
+  CalendarSize,
+  WeekDay,
+} from './components/Calendar';
+
+export { default as DatePicker } from './components/DatePicker';
+export type {
+  DatePickerProps,
+  DatePickerSize,
+  DatePickerSide,
+  DatePickerAlign,
+} from './components/DatePicker';
+
 export { default as Combobox } from './components/Combobox';
 export type {
   ComboboxProps,

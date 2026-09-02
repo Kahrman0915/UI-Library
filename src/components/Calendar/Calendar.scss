@@ -1,0 +1,211 @@
+// The month grid. Surfaceless on purpose — Calendar paints no background and
+// no border, so it sits correctly both inside DatePicker's --popover panel and
+// directly on a Card. Whatever holds it owns the surface.
+//
+// One custom property, `--ui-calendar-cell`, carries the square day box; the
+// three size modifiers set it and the type scale, and everything else is
+// derived. That is the same one-root-class cascade RadioGroup's `size` uses —
+// no part needs a size prop of its own.
+
+.ui-calendar {
+  --ui-calendar-cell: var(--w-9);
+
+  display: inline-flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  font-family: var(--font-family);
+  color: var(--foreground);
+
+  &--disabled {
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+}
+
+// ── Sizes ────────────────────────────────────────────────────────────────────
+
+.ui-calendar--sz-sm {
+  --ui-calendar-cell: var(--w-8);
+
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ui-calendar--sz-default {
+  --ui-calendar-cell: var(--w-9);
+
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.ui-calendar--sz-lg {
+  --ui-calendar-cell: var(--w-10);
+
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+}
+
+// ── Header ───────────────────────────────────────────────────────────────────
+
+.ui-calendar__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-2);
+  padding: 0 var(--p-1);
+}
+
+.ui-calendar__caption {
+  flex: 1;
+  min-width: 0;
+  text-align: center;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+  // The caption is a live region: a month name that reflows to two lines as it
+  // updates would move the arrows out from under the pointer mid-page.
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+// Takes the shared `.ui-icon-button` shell; only the box and glyph are ours.
+// 32px clears WCAG 2.5.8 on its own, so no `--ui-icon-button-hit` inset.
+.ui-calendar__nav {
+  width: var(--w-8);
+  height: var(--h-8);
+  flex-shrink: 0;
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+// ── Grid ─────────────────────────────────────────────────────────────────────
+
+.ui-calendar__grid {
+  border-collapse: collapse;
+  // Fixed layout keeps all seven columns square regardless of how wide the
+  // localised weekday abbreviations are — `Пн` and `月` differ enough to skew
+  // an auto-layout table into a lopsided grid.
+  table-layout: fixed;
+}
+
+.ui-calendar__weekday {
+  width: var(--ui-calendar-cell);
+  height: var(--ui-calendar-cell);
+  padding: 0;
+  font-size: var(--text-xs);
+  font-weight: var(--font-medium);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  text-align: center;
+  user-select: none;
+}
+
+.ui-calendar__cell {
+  width: var(--ui-calendar-cell);
+  height: var(--ui-calendar-cell);
+  padding: 0;
+  text-align: center;
+}
+
+// ── Day ──────────────────────────────────────────────────────────────────────
+
+.ui-calendar__day {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--ui-calendar-cell);
+  height: var(--ui-calendar-cell);
+  padding: 0;
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--font-normal);
+  line-height: inherit;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background var(--duration-fast) var(--ease-premium),
+    color var(--duration-fast) var(--ease-premium);
+
+  &:hover:not([data-disabled]):not([data-selected]) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    // Above its neighbours so the outset ring is not clipped by the next cell.
+    z-index: var(--z-10);
+  }
+
+  // Leading / trailing days of the neighbouring months. Still selectable —
+  // clicking one pages the grid — just visibly not part of this month.
+  &[data-outside] {
+    color: var(--muted-foreground);
+  }
+
+  // `aria-disabled`, not `:disabled`, so the day keeps its place in the arrow
+  // walk (see Calendar.tsx). That means every state below has to exclude it
+  // explicitly — there is no native pseudo-class doing it for us.
+  &[data-disabled] {
+    color: var(--muted-foreground);
+    opacity: var(--o-50);
+    cursor: not-allowed;
+  }
+
+  &[data-selected] {
+    background: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: var(--font-medium);
+  }
+
+  &[data-selected]:hover:not([data-disabled]) {
+    background: var(--primary-hover);
+  }
+}
+
+// Today's marker is a dot under the numeral, not a ring: a ring would be
+// replaced by the focus ring the moment the day is focused, and would read as
+// a second selection next to the filled one. `currentColor` means it inverts
+// for free on the selected day.
+.ui-calendar__day[data-today]::before {
+  content: '';
+  position: absolute;
+  bottom: var(--p-1);
+  left: 50%;
+  transform: translateX(-50%);
+  width: var(--w-1);
+  height: var(--h-1);
+  border-radius: var(--rounded-full);
+  background: currentColor;
+}
+
+// A hidden outside day still holds its cell, so the six-row grid keeps its
+// height when `showOutsideDays` is off.
+.ui-calendar__day-placeholder {
+  display: block;
+  width: var(--ui-calendar-cell);
+  height: var(--ui-calendar-cell);
+}
+
+// ── Aiden surface ────────────────────────────────────────────────────────────
+// The standing rule: anywhere `--primary` is a background FILL it becomes the
+// gradient inside `data-surface='aiden'`. The selected day is such a fill; the
+// focus ring and today dot are not, and stay on the remapped solid.
+[data-surface='aiden'] .ui-calendar__day[data-selected] {
+  background: var(--aiden-primary);
+}
+
+[data-surface='aiden'] .ui-calendar__day[data-selected]:hover:not([data-disabled]) {
+  background: var(--aiden-hover);
+}

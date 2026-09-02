@@ -1,0 +1,95 @@
+// DatePicker reuses Input's `.ui-input-field` / `.ui-input-wrap` / `.ui-input__*`
+// classes (imported from Input.scss) so a date field is the same object as every
+// other field in the form — same height, border, hover, focus ring and error
+// state, at all three sizes, with no second copy of any of it.
+//
+// These are the picker-only bits: the button inside the wrap, the trailing
+// glyph, and the floating panel that holds the Calendar.
+
+.ui-date-picker__trigger-wrap {
+  cursor: pointer;
+
+  // Mirrors `:focus-within` on the wrap. Focus moves into the portalled panel
+  // while the picker is open, so the field would otherwise go quiet at exactly
+  // the moment it is the thing being edited.
+  &--open {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+    border-color: var(--ring);
+  }
+}
+
+// A `--error` field keeps its error ring while open rather than reverting to
+// the neutral one. Two classes on the wrap, so this needs to out-specify the
+// rule above on more than source order.
+.ui-input-wrap--error.ui-date-picker__trigger-wrap--open {
+  box-shadow: 0 0 0 var(--focus-ring-width) var(--error-focus);
+  border-color: var(--error);
+}
+
+.ui-date-picker__trigger {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: var(--font-normal);
+  line-height: inherit;
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  cursor: pointer;
+
+  &:disabled {
+    cursor: not-allowed;
+  }
+}
+
+.ui-date-picker__value {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
+  &--placeholder {
+    color: var(--muted-foreground);
+  }
+}
+
+// Non-interactive: a click on the glyph falls through to the wrap, which opens
+// the panel. Making it its own button would put a second control in the tab
+// order that does exactly what the field already does.
+.ui-date-picker__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted-foreground);
+  flex-shrink: 0;
+  pointer-events: none;
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+    display: block;
+  }
+}
+
+// ── Panel ────────────────────────────────────────────────────────────────────
+// A floating surface, so `--popover` per the library's surface rule.
+
+.ui-date-picker__panel {
+  position: fixed;
+  z-index: var(--z-50);
+  padding: var(--p-2);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-md);
+  outline: none;
+}
