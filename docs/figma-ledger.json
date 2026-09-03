@@ -2966,9 +2966,9 @@
         "verification": "Eight-check lint + deep clip sweep: all zeros. Six cards, four lifecycle states, three request back-links.",
         "stillOpen": [
           "No banner detail/EDIT screen — the pencil has no destination, same gap as the Dashboards table's pencil.",
-          "'New banner' has no destination either; the admin-authored creation path still bypasses the request flow and is unmodelled.",
-          "Delete has no confirm dialog. Destructive and irreversible, so it needs one before this is buildable."
-        ]
+          "'New banner' has no destination either; the admin-authored creation path still bypasses the request flow and is unmodelled."
+        ],
+        "deleteConfirm2026_09_03": "Added as a fourth case on ADMIN — ACTION DIALOGS, cloned from the deny case so the shape matches: AlertDialog, Cancel as a ghost, confirm as Variant=error. Copy does four things a generic 'Are you sure?' cannot: it NAMES the banner, says the deletion is permanent, says it is CURRENTLY DISPLAYING so it vanishes from Dartboards immediately, and offers the non-destructive alternative — switch it off instead, which keeps the banner and its dates. It also states that request #0402 survives either way, because deleting an asset must not read as deleting the record of the work. The switch/delete distinction only became sayable once the Switch and the state chip were separated; a combined status would have left 'turn it off' and 'destroy it' looking like the same action."
       }
     }
   },
