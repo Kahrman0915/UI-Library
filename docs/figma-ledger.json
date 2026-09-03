@@ -3069,7 +3069,11 @@
           "No empty state for an overview with every widget removed.",
           "Drag is implied by the grips but there is no drag/drop-target frame.",
           "'+ Add widget' is the weakest control on the screen while being the only route into the picker."
-        ]
+        ],
+        "editModeRebuilt2026_09_03": "Owner: 'the edit modes look really weird … dotted outlines that touch the edges. Are those really needed?' Two faults, one mine and one conceptual. MINE: the outlines hugged the content because I had zeroed their horizontal padding earlier to fix an overflow, so they read as a rendering fault. CONCEPTUAL: a dashed border is a WIREFRAME convention — it says placeholder, not editable — and putting one around every widget doubled the borders on screen, since the cards inside already have their own.",
+        "whatReplacedIt": "No boxes at all. Each widget keeps a borderless handle row above it (grip · name · remove) and the page carries a BANNER at the top: 'Editing your layout — drag a card to reorder it, or remove what you do not use. Only you see this arrangement.' The page now looks like itself in edit mode, which is the point — you are arranging the real thing, not a wireframe of it. Banner is the component built for a page-level mode announcement, so this is reuse rather than a bespoke bar.",
+        "constraintBannerHasNoActionSlotInFigma": "The owner's sketch put Done inside the banner. Banner's Figma component exposes Variant, Title and Show icon only — action, icon and onClose are code-only, and an instance cannot take extra children. So Done stays in the heading row where Customize sits on 1.1, which turns out better anyway: the button does not move when you switch modes, which also closes the 20px heading jump the critique flagged. The mode explanation moved from the subtitle into the banner, so 1.1–1.4 now share one subtitle.",
+        "gotchaGroupNodesHaveNoDashPattern": "The assertion sweeping for surviving dashed strokes crashed on a GROUP node, which has no dashPattern property. Guard with an 'in' check before reading a property in a findAll predicate — the callback runs against every node type in the subtree, not only the ones you had in mind."
       }
     }
   },
