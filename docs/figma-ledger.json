@@ -2954,6 +2954,21 @@
           "Deferred by owner: Banners full lifecycle + toggle, Feature Flags, URL Redirects, Usage Analytics, Access Control, Changelog.",
           "Named but unbuilt, and implied by the owner's own designs: artifact detail/EDIT screens (the pencil and eye icons have no destination) and the admin-authored creation path ('Add Dashboard' / 'New Banner') which bypasses the request flow entirely."
         ]
+      },
+      "bannersFullLifecycle2026_09_03": {
+        "what": "'Banners — active' became 'Banners': a flat list of every banner in every lifecycle state, with a Switch per card. Six cards cover active (3), scheduled, draft and expired.",
+        "flatToMatchTheNav": "The three product GROUP frames are gone. Product is a filter, exactly as on the queue — the same rule the flat-nav decision set, applied to the estate rather than to work.",
+        "twoAxesAgainAndTheSecondOneCouldNotBeAToggleGroup": "Filters are product (All / DART Central / Dartboards / Aiden) and lifecycle (All / Draft / Scheduled / Active / Expired). The lifecycle group has FIVE values and ToggleGroup has NO item-count axis — only Orientation x Variant x Size — so its four children are fixed and cannot be extended. Built as a plain FRAME of Toggle atoms instead, which is this file's documented convention for a list whose length must vary (same move as the sidebar proofs). The two groups are separated by a vertical Separator: at 880 a 24px gap alone left them reading as one nine-item row.",
+        "theSwitchSaysDISPLAYING_theChipSaysWHATITIS": "The state chip and the Switch are deliberately different questions. The chip is the banner's lifecycle (draft / scheduled / active / expired, derived from dates and publication); the Switch is whether it is actually on screen right now. Keeping them apart is what makes the fifth card legible: state EXPIRED, switch ON, meta reading 'Ended Aug 16, 2026 · switch still on, so it is still displaying'. That is a real failure mode, and a single combined status could not express it.",
+        "theApproveToDraftSeamIsNowVISIBLE": "Card 4 is the banner that approving request #0421 produced: state DRAFT, switch OFF, meta 'Created by approving request #0421 · Priya Raman'. Two more cards carry 'From request #0402' and '#0398'. The flow map asserted this hand-off in prose; the screen now shows it, and the back-link closes the seam from the ARTIFACT side — previously only the request side pointed forward.",
+        "gotchaTwoFramesNamedPageHeading": "The subtitle rendered clipped to one line. Cause: page-heading contained a SECOND frame also called page-heading — an inner VERTICAL stack hugging at 831px inside a 751px parent, so the text set its own width and overflowed. Neither the outer frame's FILL nor the text's own FILL fixed it, because the hugging link in the middle absorbed both. The fix is to walk the whole path and make every link FILL. Diagnosing cost four calls; reading the child CHAIN rather than the leaf would have found it in one.",
+        "gotchaSwitchShipsWithADefaultLabel": "Every Switch instance rendered 'Enable two-factor auth' — the master's own demo copy. A component with a TEXT property has a default that WILL show unless set, and it is easy to miss because it is plausible text rather than a placeholder token.",
+        "verification": "Eight-check lint + deep clip sweep: all zeros. Six cards, four lifecycle states, three request back-links.",
+        "stillOpen": [
+          "No banner detail/EDIT screen — the pencil has no destination, same gap as the Dashboards table's pencil.",
+          "'New banner' has no destination either; the admin-authored creation path still bypasses the request flow and is unmodelled.",
+          "Delete has no confirm dialog. Destructive and irreversible, so it needs one before this is buildable."
+        ]
       }
     }
   },
