@@ -3017,6 +3017,20 @@
           "Chart has no code counterpart. Usage Analytics cannot be built as drawn without one.",
           "Approving a Remove Dashboard request should offer to create the redirect in the same step; it does not."
         ]
+      },
+      "twoEditPaths2026_09_03": {
+        "ownerQuestion": "'A user submits a request to edit the dashboard with all the information inside the request — how can we link these so the admin doesn't have to put in all this information manually?' Plus: the admin also needs to edit without a request.",
+        "theShapeIWasBuildingWasWrongForOnePath": "The edit drawer alone treats every change as AUTHORING. When the change came from a request the admin's job is REVIEWING a proposal — a different task. So the Edit-request review screen is now a DIFF (field · current · proposed) rather than a flat field list, and approving carries the values forward. Retyping is not just tedious, it is how a proposal quietly becomes a different change.",
+        "fromARequest": "New 'Request review — Dashboard (edit)': three columns, changed rows in semibold foreground, unchanged rows reading 'no change' in muted. The action is 'Approve & apply'. It opens 'Dashboards — edit drawer (from request #0431)' already filled with the PROPOSED values, with 'was …' under each changed field so a bad proposal is still catchable at the last step. The admin may adjust before applying; if they do, the thread records that what shipped differs from what was asked.",
+        "directly": "The same drawer opened from the row, current values, no request behind it — and it SAYS so: 'Direct edit — no request. Recorded in Activity under your name.' plus a note that Activity is the only record. The path exists because a typo in a title should not need an approval round trip, but it has no requester, no thread and no approval, so it must not look identical to the request path.",
+        "theRuleWorthKeeping": "A request-driven edit is REVIEWED; a manual edit is AUTHORED. Same component, different job — different header, different provenance line, different verb (Apply & approve vs Save changes). If the two ever look the same, an admin cannot tell whether anyone asked for the change they are making.",
+        "gotchaSettingFontNameDetachesTheTextStyle": "Emphasising the changed values with node.fontName = Semi Bold produced three unstyled text nodes in the lint. A weight change has to come from a text STYLE (sm/leading-normal/Semibold), not a direct font assignment — otherwise the node silently leaves the type system while looking correct.",
+        "verification": "Eight-check lint + deep clip sweep: zero across the edit review, both drawers and the flow map. The flow map gained a 'TWO WAYS TO CHANGE SOMETHING' section stating both paths and why they must look different.",
+        "stillOpen": [
+          "The diff exists only for Dashboard edits. A Banner edit request needs the same treatment, and banners have a message body where a diff matters more.",
+          "No 'what changed' entry is drawn in the dashboard's own Activity after either path — the record is asserted, not shown.",
+          "If the admin edits the proposal before applying, the thread should show both what was asked and what shipped. Stated, not drawn."
+        ]
       }
     }
   },
