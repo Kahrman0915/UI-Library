@@ -3173,7 +3173,28 @@
         "plan": "docs/superpowers/plans/2026-09-03-manage-pages-admin-affordances.md",
         "bannerCount": "1.1's 'Active banners' tile said 4; 5.2's six cards show 3 active (banners 1, 2, 6; banner 4 is draft with its switch off, 3 scheduled, 5 expired). Set to 3 on 1.1 (2130:710) and on the KPI widgets cloned from it on 1.2 (2273:3434), 1.3 (2274:3608), 1.6 (2310:5254). A page's totals follow its rows.",
         "aMisnamedTileTheAssertionCaught": "The write was planned by layer name and would have hit FIVE tiles: 1.1's Live promotions tile (2192:7967, value 12) was named 'ui-card [stat — active banners]'. The failing-assertion step returned count 5, not 4, before anything was written. Renamed it 'ui-card [stat — live promotions]' to match its siblings and targeted the write by the tile's 'stat title' text instead of its layer name. A layer name is a claim; the text on the tile is the fact.",
-        "lintSnippet": "scripts/figma-design-check.js — paste into use_figma; skips instance internals and ABSOLUTE children. Baseline on 5.1, 5.2, 5.3, 5.4, 6.1, 1.1 before this work: all zeros."
+        "lintSnippet": "scripts/figma-design-check.js — paste into use_figma; skips instance internals and ABSOLUTE children. Baseline on 5.1, 5.2, 5.3, 5.4, 6.1, 1.1 before this work: all zeros.",
+        "5.1": {
+          "headingRow": "page-heading row [page-heading, kpi, actions] at 32 (spacing/8), MIN/MIN; KPI = clone of 1.1's stat tile at Card Size=sm reading 201 / Published / across 3 products; actions (gap 16, spacing/4) holds ui-button [New dashboard] cloned from 5.2's New banner.",
+          "ids": {
+            "rowId": "2349:5411",
+            "kpiId": "2349:5412",
+            "actionsId": "2349:5507",
+            "newDashboardButtonId": "2349:5508",
+            "aFrameId": "2349:6107",
+            "menuId": "2349:6252",
+            "separatorId": "2349:6285",
+            "bFrameId": "2349:50842",
+            "drawerId": "2349:50927",
+            "scrimId": "2349:50926"
+          },
+          "theTileHugsButItsSlotContentDidNot": "Cloned at Size=sm the tile measured 488x108 — half the row — with the page-heading squeezed to 662. The instance was HUG/HUG but its ui-card__body SLOT was FILL with counterAxisSizingMode FIXED and the 'stat' frame inside it FILL at 464, so 'hug' resolved to the slot content's fixed width. Slot content is editable: 'stat' and the body set to HUG, the three texts to auto-width. Now 144x108. The spec's 'width hugs' has to reach the slot, not just the instance.",
+          "kpiMeasuredHeight": "108px — the Size=sm cascade does not reach the nested stat instance; accepted, not restyled.",
+          "5.1a": "clone of 5.1; 2.4's row menu cloned and anchored under row 2 (Collateral Health Dashboard): Edit · Promote · View usage · — · Decommission. DropdownMenu/Item has NO Variant axis (its only axis is State), so 'plain' is the default — Decommission is plain by construction. Items live in the menu's Body SLOT and their layer names were set to ui-dropdown-menu__item [label].",
+          "indexOfIsNotIdentityAcrossLookups": "insertChild(parent.children.indexOf(last)) threw 'negative index' twice: findAll() and .children hand back different wrapper objects for the same node in this harness, so === never matches. Locate a child by id — parent.children.findIndex(c => c.id === node.id). The first retry blamed stale references from setProperties; the error text of the second (the item was visibly in the parent's child list) is what pinned it.",
+          "5.1b": "clone of 5.1 placed right of 5.1a + 4.5's scrim (2267:2670) sized to the frame and its Edit dashboard drawer (2267:2671) verbatim, flush right at full height — its values are already row 2's; footer ghost Cancel / default Save changes at sm. 5.1's frame is 572 tall, so the drawer is 572, not 4.5's 720.",
+          "addRule": "New dashboard opens this drawer empty, titled New dashboard, primary Create dashboard — stated on the doc panel in Task 7, not drawn."
+        }
       }
     }
   },
