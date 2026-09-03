@@ -223,6 +223,13 @@ const resolveValue = (raw, map, ctx, depth = 0) => {
   const v = String(raw).trim();
   if (!v) return null;
 
+  // `transparent` is CSS's rgba(0,0,0,0). Without this, every brand tint —
+  // --primary-light/-soft/-ring/-focus are all color-mix(<colour> n%, transparent) —
+  // fails to resolve and the pairing can never be gated. The semantic tints are
+  // literal rgba() and were checked all along, so the gap was brand-only and silent
+  // until a pairing was actually added for one.
+  if (v === 'transparent') return { r: 0, g: 0, b: 0, a: 0 };
+
   const direct = parseHexOrRgb(v);
   if (direct) return direct;
 
@@ -314,15 +321,25 @@ const PAIRINGS = [
   ['foreground', 'card'],
   ['muted-foreground', 'card'],
   ['foreground', 'muted'],
-  ['muted-foreground', 'muted'], // guard only — no component puts muted text on --muted now (fills/tiles have no small text)
+  // Guard only — no component puts muted text on --muted now (fills/tiles carry
+  // no small text). That claim was NOT true when it was written: Tabs' tablist
+  // was --muted with --muted-foreground triggers on it, at 5.1:1, and was simply
+  // missed by the 2026-07-21 sweep. Fixed 2026-08-26 by moving the list to
+  // --accent. Keep the guard so the next such surface trips it.
+  ['muted-foreground', 'muted'],
   ['secondary-foreground', 'secondary'],
   ['muted-foreground', 'secondary'], // Alert desc, Banner desc, Item muted, Avatar initials, Kbd — moved here off --muted for headroom
   ['popover-foreground', 'popover'],
   ['muted-foreground', 'popover'],
   ['accent-foreground', 'accent'],
+  ['muted-foreground', 'accent'], // Tabs tablist triggers (default variant) — moved here off --muted 2026-08-26
   ['sidebar-foreground', 'sidebar'],
   ['muted-foreground', 'sidebar'],
   ['tooltip-foreground', 'tooltip-background'],
+  // Tabs' active label sits ON the sliding indicator pill, not on the tablist.
+  // The pill is light in both modes, so this pairing does not flip — which is
+  // exactly why --tabs-indicator-foreground is declared once rather than split.
+  ['tabs-indicator-foreground', 'tabs-indicator'],
   // Avatar fallback initials on their own disc. Added 2026-08-05 with the token:
   // the disc used to be --secondary, which is 1.23:1 against --card in light and
   // 1.00:1 in dark — invisible on a Card or a HoverCard. Its VISIBILITY against
@@ -335,11 +352,29 @@ const PAIRINGS = [
   ['success-foreground', 'success'],
   ['warning-foreground', 'warning'],
   ['info-foreground', 'info'],
-  // Coloured text on the -light tint (Alert informational variants), tint over --background
+  // Coloured text on the -light tint (Alert) and the -soft tint (Badge
+  // appearance="soft"). Both read the RAW hue — the semantic families have no
+  // on-tint `-text` token, unlike --primary and the 15 category hues, which do.
+  // Gated on card as well as background: an Alert sits on a card as often as on
+  // the page, and a soft Badge almost always does.
   ['error', 'error-light', 'background'],
+  ['error', 'error-light', 'card'],
   ['success', 'success-light', 'background'],
+  ['success', 'success-light', 'card'],
   ['warning', 'warning-light', 'background'],
+  ['warning', 'warning-light', 'card'],
   ['info', 'info-light', 'background'],
+  ['info', 'info-light', 'card'],
+  ['primary-text', 'primary-soft', 'background'],
+  ['primary-text', 'primary-soft', 'card'],
+  ['error', 'error-soft', 'background'],
+  ['error', 'error-soft', 'card'],
+  ['success', 'success-soft', 'background'],
+  ['success', 'success-soft', 'card'],
+  ['warning', 'warning-soft', 'background'],
+  ['warning', 'warning-soft', 'card'],
+  ['info', 'info-soft', 'background'],
+  ['info', 'info-soft', 'card'],
   // Category `-text` on its own `-bg` tint (tags / labels / table cells), tint over --background
   ...['amber','blue','cyan','emerald','fuchsia','green','indigo','orange','pink','purple','red','rose','sky','teal','violet'].map(
     (c) => [`category-${c}-text`, `category-${c}-bg`, 'background'],

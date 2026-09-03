@@ -39,6 +39,18 @@ const meta: Meta<typeof Fab> = {
       },
       changelog: [
         {
+          date: '2026-09-02',
+          summary:
+            'The `error` fill is a touch lighter in dark mode.',
+          detail:
+            'Dark `--error` moved `#f87171` to `#fa8585`, with `-light`, `-soft`, `-border`, `-ring` and ' +
+            '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
+            'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
+            'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'the binding constraint, not the tint. Light mode is unchanged.',
+        },
+        {
           date: '2026-07-30',
           summary:
             'Fixed the pulse washing a solid disc across the button on every cycle, and the previews that showed an empty card instead of the button.',

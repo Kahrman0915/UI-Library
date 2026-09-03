@@ -292,7 +292,7 @@ export const FallbackOnSurfaces: Story = {
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-md)' }}>
       <Card id="av-card">
-        <CardHeader id="av-card" title="On a Card" description="--card is the surface the disc used to disappear into." />
+        <CardHeader id="av-card-header" title="On a Card" description="--card is the surface the disc used to disappear into." />
         <CardBody>
           <div style={{ display: 'flex', gap: 'var(--p-3)', alignItems: 'center' }}>
             <Avatar id="av-c1" fallback="AL" />

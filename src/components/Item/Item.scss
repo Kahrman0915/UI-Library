@@ -6,6 +6,20 @@
   display: flex;
   flex-direction: column;
   font-family: var(--font-family);
+  // The group renders a <ul>; strip the browser's list chrome. The explicit
+  // role="list" in Item.tsx is what keeps the semantics Safari drops here.
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+// The <li> each row is wrapped in. It carries no look of its own — it exists so
+// the list has real list items — but it IS the group's flex child, so the
+// end-cap radii, the border collapse and the stacking below all key off it
+// rather than off .ui-item directly.
+.ui-item-group__row {
+  display: block;
+  min-width: 0;
 }
 
 .ui-item-separator {
@@ -124,14 +138,14 @@
 
 // ItemGroup with variant="muted" or "outline" is common for list containers;
 // items inside inherit clean rounded corners only at the ends.
-.ui-item-group > .ui-item {
+.ui-item-group > .ui-item-group__row > .ui-item {
   border-radius: 0;
 }
-.ui-item-group > .ui-item:first-child {
+.ui-item-group > .ui-item-group__row:first-child > .ui-item {
   border-top-left-radius: var(--rounded-md);
   border-top-right-radius: var(--rounded-md);
 }
-.ui-item-group > .ui-item:last-child {
+.ui-item-group > .ui-item-group__row:last-child > .ui-item {
   border-bottom-left-radius: var(--rounded-md);
   border-bottom-right-radius: var(--rounded-md);
 }
@@ -139,9 +153,12 @@
 // Collapse the touching borders of two items that sit directly against each
 // other, so a seam reads the same weight as the group's outer edge instead of
 // doubling to 2px. The adjacent-sibling selector does the carve-out for free:
-// where an ItemSeparator sits between two items they are not adjacent, the
-// rule never fires, and the hairline keeps its full height.
-.ui-item-group > .ui-item + .ui-item {
+// where an ItemSeparator sits between two rows they are not adjacent, the rule
+// never fires, and the hairline keeps its full height. The separator is an <li>
+// too, but it is not a __row, so it still breaks the adjacency exactly as
+// before. The margin has to sit on the row — it is the flex child, and pulling
+// .ui-item up inside a row that kept its own height would collapse nothing.
+.ui-item-group > .ui-item-group__row + .ui-item-group__row {
   margin-top: calc(-1 * var(--border-w-100));
 }
 
@@ -150,13 +167,18 @@
 // follows paints over it and a middle item is ringed on only three sides. The
 // same lift keeps a hover background from being clipped by the 1px overlap
 // above. Matches ToggleGroup and ButtonGroup.
-.ui-item-group > .ui-item {
+//
+// This stays on .ui-item rather than moving to the row: .ui-item-group__row is
+// deliberately left unpositioned, so it never opens a stacking context and the
+// lifted row still competes with its neighbours instead of being trapped inside
+// its own <li>.
+.ui-item-group > .ui-item-group__row > .ui-item {
   position: relative;
 }
 
-.ui-item-group > .ui-item--interactive:hover:not(.ui-item--disabled),
-.ui-item-group > .ui-item:focus-visible,
-.ui-item-group > .ui-item:focus-within {
+.ui-item-group > .ui-item-group__row > .ui-item--interactive:hover:not(.ui-item--disabled),
+.ui-item-group > .ui-item-group__row > .ui-item:focus-visible,
+.ui-item-group > .ui-item-group__row > .ui-item:focus-within {
   z-index: 1;
 }
 
@@ -198,6 +220,31 @@
       width: var(--w-5);
       height: var(--h-5);
       display: block;
+    }
+  }
+
+  // The prose bullet. Unlike every other variant it draws the marker itself
+  // instead of sizing a child, because the smallest child any of them produces
+  // is a 20px tile and a bullet needs 6.
+  //
+  // The box is as tall as the row's LINE BOX, not as tall as the disc, and the
+  // disc centres inside it — so on a bullet that wraps to three lines the marker
+  // sits on the first line. .ui-item centres its media, which is what an avatar
+  // wants and the opposite of what a bullet wants. Height tracks --leading-*
+  // rather than an equivalent --h-* on purpose: if the row's line-height moves,
+  // this has to move with it.
+  &--bullet {
+    width: var(--w-1-5);
+    height: var(--leading-5);
+    align-self: start;
+
+    &::before {
+      content: '';
+      width: var(--w-1-5);
+      height: var(--h-1-5);
+      border-radius: var(--rounded-full);
+      background: currentColor;
+      flex-shrink: 0;
     }
   }
 
@@ -257,6 +304,16 @@
 .ui-item--sz-xs .ui-item__media--icon svg {
   width: var(--w-3);
   height: var(--h-3);
+}
+
+// sz-sm and sz-default share --leading-5, so only xs restates the bullet.
+.ui-item--sz-xs .ui-item__media--bullet {
+  width: var(--w-1);
+  height: var(--leading-4);
+}
+.ui-item--sz-xs .ui-item__media--bullet::before {
+  width: var(--w-1);
+  height: var(--h-1);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────

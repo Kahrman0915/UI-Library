@@ -22,6 +22,24 @@ const meta: Meta<typeof ToggleGroup> = {
       tags: ['compound', 'segmented'],
       changelog: [
         {
+          date: '2026-08-27',
+          summary: 'Gained a trailing icon.',
+          detail:
+            'ToggleGroupItem gains `IconRight` alongside `IconLeft`, matching Toggle. Purely additive.',
+        },
+        {
+          date: '2026-08-27',
+          summary:
+            'Supports the new `line` and `plain` Toggle variants, which drop the segmented look ' +
+            'and sit on a gap instead.',
+          detail:
+            'The root now carries data-variant (not a modifier class — `ui-toggle-group--default` ' +
+            'would select nothing). The border-collapse and radius-flattening rules are scoped OFF ' +
+            'for line/plain, which have no borders to share and would otherwise have their labels ' +
+            'pulled together by the negative margin. Those two sit on a --p-4 gap, matching the Tabs ' +
+            'line list so a filter bar built from either lines up identically.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -35,6 +53,45 @@ const meta: Meta<typeof ToggleGroup> = {
 export default meta;
 
 type Story = StoryObj<typeof ToggleGroup>;
+
+/**
+ * The quiet rungs, for a filter bar. `line` marks the selection with a `--primary`
+ * bar; `plain` uses weight and colour alone. Both drop the segmented borders and
+ * sit on a gap, so they read as a row of labels rather than a control.
+ *
+ * Re-clicking the active item clears it — for a filter that means "no filter", so
+ * a second group needs no explicit "All".
+ */
+export const QuietVariants: Story = {
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          variant=&quot;line&quot;
+        </span>
+        <ToggleGroup id="apps-line" type="single" variant="line" defaultValue="all">
+          <ToggleGroupItem value="all" label="All" />
+          <ToggleGroupItem value="dc" label="DART Central" />
+          <ToggleGroupItem value="db" label="Dartboards" />
+          <ToggleGroupItem value="aiden" label="Aiden" />
+        </ToggleGroup>
+      </div>
+
+      <div style={{ display: 'grid', gap: 'var(--p-2)' }}>
+        <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
+          variant=&quot;plain&quot;
+        </span>
+        <ToggleGroup id="apps-plain" type="single" variant="plain" defaultValue="all">
+          <ToggleGroupItem value="all" label="All" />
+          <ToggleGroupItem value="dc" label="DART Central" />
+          <ToggleGroupItem value="db" label="Dartboards" />
+          <ToggleGroupItem value="aiden" label="Aiden" />
+        </ToggleGroup>
+      </div>
+    </div>
+  ),
+};
 
 export const Single: Story = {
   render: () => (

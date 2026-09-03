@@ -25,8 +25,8 @@ function Sampler({ p }: { p: string }) {
         <Button id={`${p}-ghost`} label="Ghost" style="ghost" />
       </div>
       <div style={{ display: 'flex', gap: 'var(--p-3)', flexWrap: 'wrap', alignItems: 'center' }}>
-        <Badge id={`${p}-badge`} variant="default" label="Default" />
-        <Badge id={`${p}-badge-o`} variant="outline" label="Outline" />
+        <Badge id={`${p}-badge`} color="default" label="Default" />
+        <Badge id={`${p}-badge-o`} color="default" appearance="outline" label="Outline" />
         <Chip id={`${p}-chip`} label="Active" active />
         <Checkbox id={`${p}-cb`} label="Checked" defaultChecked />
         <Switch id={`${p}-sw`} checked={on} onCheckedChange={setOn} aria-label="Toggle" />

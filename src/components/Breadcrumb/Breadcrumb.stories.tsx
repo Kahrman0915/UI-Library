@@ -29,6 +29,22 @@ const meta: Meta<typeof Breadcrumb> = {
         'except the current page, which is marked `aria-current` and deliberately is ' +
         'not clickable.',
       tags: ['compound', '7 parts', 'navigation'],
+      usage: {
+        when: [
+          'A screen sits **below** a navigation item — a detail view under a list, a task under a section. The trail names where you are and gives one click back up.',
+          'The app has persistent chrome (a sidebar, an app rail, a tab strip). There the breadcrumb is the only thing expressing depth *below* the level that chrome already shows.',
+          'Depth is 2–4. Past that, collapse the middle with `BreadcrumbEllipsis` rather than letting the trail wrap.',
+        ],
+        avoid: [
+          'A top-level page that IS a navigation item. A one-level crumb repeats the sidebar and says nothing.',
+          'Terminal outcome screens — a confirmation or a success page is a result, not a location. Give it explicit forward actions instead.',
+          'Modal surfaces. Inside a `Dialog` or `FullScreenDialog` you are in a task, not a place; the exit is the close control.',
+          'Pairing it with a back **button** that goes to the same place. Pick one — two affordances doing one job is the ambiguity the trail was meant to remove.',
+        ],
+        notes:
+          'A breadcrumb is NAVIGATION, not cancellation. It answers "where am I and how do I go up"; a `Cancel` button answers "throw this away". If a screen holds unsaved work, the guard belongs to the navigation event, not to a button — otherwise the sidebar, the app rail and the tab strip are all unguarded doors, and adding a Cancel button next to a breadcrumb just duplicates a route that is already covered.\n\n' +
+          'Do not repeat the application name in the trail when the chrome already states it. Root at the section the user would recognise from the nav.',
+      },
       changelog: [
         {
           date: '2026-07-29',

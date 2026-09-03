@@ -358,7 +358,7 @@ export const HelpAndSupport: Story = {
               <Card id="fsd-help-terms" style={{ display: 'flex', flexDirection: 'column' }}>
                 <CardHeader
                   style={{ flex: 1 }}
-                  id="fsd-help-terms"
+                  id="fsd-help-terms-header"
                   title="Terms of use"
                   description="What you agree to when you use the product, in plain language, plus our privacy and data-retention policies."
                 />
@@ -370,7 +370,7 @@ export const HelpAndSupport: Story = {
               <Card id="fsd-help-contact" style={{ display: 'flex', flexDirection: 'column' }}>
                 <CardHeader
                   style={{ flex: 1 }}
-                  id="fsd-help-contact"
+                  id="fsd-help-contact-header"
                   title="Still need more assistance?"
                   description="Our support team replies within one business day, and sooner on Business and Enterprise plans."
                 />

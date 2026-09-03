@@ -470,6 +470,38 @@ html {
      dissolving into the page again. */
   --avatar-background: #64748b;
   --avatar-foreground: #ffffff;
+
+  /* Switch track (off) — the SAME argument as --avatar-background above, and the
+     same answer: a solid slate chip, not a tint. It used --muted (slate-300),
+     which is 1.48:1 against the page AND against the white thumb — the control
+     read as a faint smudge with no visible thumb boundary. Worse, the hover went
+     to --accent (slate-50), which is LIGHTER than the resting track, so hovering
+     an off switch made it fainter (1.10:1) instead of stronger.
+     slate-400 resting / slate-500 on hover: the thumb boundary goes 1.48 -> 2.56,
+     hover gains contrast instead of losing it (4.76), and the track still reads
+     as clearly "off" against the filled --primary track. */
+  --switch-track: #94a3b8;
+  --switch-track-hover: #64748b;
+
+  /* Tabs — the sliding indicator pill under the active trigger (`default`
+     variant only; `line` draws a bar and `browser` uses --card).
+
+     It used to paint --background, which INVERTS with the mode: in dark that put
+     a near-black pill on a slate-700 strip, so the selected tab read as a hole
+     punched in the strip rather than a raised tab, and the --shadow-sm that sells
+     "raised" in light is invisible on a dark surface. Measured, the dark state had
+     no signal at all: pill 1.72:1 against the strip, and active-vs-inactive label
+     1.18:1 (dark --muted-foreground is slate-200, nearly --foreground).
+
+     A selected pill is LIGHT in both modes — "raised" is signalled by lightness,
+     and that does not flip just because the page did. Same lighting-model argument
+     as --mark-lift. Dark takes slate-400: 4.04:1 against the strip, clearing the
+     3:1 WCAG 1.4.11 asks of state indication. Light is unchanged.
+
+     --tabs-indicator-foreground is deliberately NOT redefined in the dark block:
+     the pill is light in both modes, so its ink never flips. */
+  --tabs-indicator: #ffffff;
+  --tabs-indicator-foreground: #0f172a;
   --secondary: var(--base-secondary);
   --secondary-foreground: #1e293b;
   --muted: var(--base-muted);
@@ -737,62 +769,77 @@ html {
   --category-red-bg: rgba(239, 68, 68, 0.1);
   --category-red-hover: #dc2626;
   --category-red-text: #d41212;
+  --category-red-border: rgba(239, 68, 68, 0.3);
   --category-orange: #f97316;
   --category-orange-bg: rgba(249, 115, 22, 0.1);
   --category-orange-hover: #ea580c;
   --category-orange-text: #b94e05;
+  --category-orange-border: rgba(249, 115, 22, 0.3);
   --category-amber: #f59e0b;
   --category-amber-bg: rgba(245, 158, 11, 0.1);
   --category-amber-hover: #d97706;
   --category-amber-text: #996206;
+  --category-amber-border: rgba(245, 158, 11, 0.3);
   --category-green: #22c55e;
   --category-green-bg: rgba(34, 197, 94, 0.1);
   --category-green-hover: #16a34a;
   --category-green-text: #167f3d;
+  --category-green-border: rgba(34, 197, 94, 0.3);
   --category-emerald: #10b981;
   --category-emerald-bg: rgba(16, 185, 129, 0.1);
   --category-emerald-hover: #059669;
   --category-emerald-text: #0b7c56;
+  --category-emerald-border: rgba(16, 185, 129, 0.3);
   --category-teal: #14b8a6;
   --category-teal-bg: rgba(20, 184, 166, 0.1);
   --category-teal-hover: #0d9488;
   --category-teal-text: #0e7c70;
+  --category-teal-border: rgba(20, 184, 166, 0.3);
   --category-cyan: #06b6d4;
   --category-cyan-bg: rgba(6, 182, 212, 0.1);
   --category-cyan-hover: #0891b2;
   --category-cyan-text: #047a8f;
+  --category-cyan-border: rgba(6, 182, 212, 0.3);
   --category-sky: #0ea5e9;
   --category-sky-bg: rgba(14, 165, 233, 0.1);
   --category-sky-hover: #0284c7;
   --category-sky-text: #0a75a6;
+  --category-sky-border: rgba(14, 165, 233, 0.3);
   --category-blue: #3b82f6;
   --category-blue-bg: rgba(59, 130, 246, 0.1);
   --category-blue-hover: #2563eb;
   --category-blue-text: #0b63f3;
+  --category-blue-border: rgba(59, 130, 246, 0.3);
   --category-indigo: #6366f1;
   --category-indigo-bg: rgba(99, 102, 241, 0.1);
   --category-indigo-hover: #4f46e5;
   --category-indigo-text: #5558f0;
+  --category-indigo-border: rgba(99, 102, 241, 0.3);
   --category-violet: #8b5cf6;
   --category-violet-bg: rgba(139, 92, 246, 0.1);
   --category-violet-hover: #7c3aed;
   --category-violet-text: #7a44f5;
+  --category-violet-border: rgba(139, 92, 246, 0.3);
   --category-purple: #a855f7;
   --category-purple-bg: rgba(168, 85, 247, 0.1);
   --category-purple-hover: #9333ea;
   --category-purple-text: #942ef5;
+  --category-purple-border: rgba(168, 85, 247, 0.3);
   --category-fuchsia: #d946ef;
   --category-fuchsia-bg: rgba(217, 70, 239, 0.1);
   --category-fuchsia-hover: #c026d3;
   --category-fuchsia-text: #b812d1;
+  --category-fuchsia-border: rgba(217, 70, 239, 0.3);
   --category-pink: #ec4899;
   --category-pink-bg: rgba(236, 72, 153, 0.1);
   --category-pink-hover: #db2777;
   --category-pink-text: #cd1570;
+  --category-pink-border: rgba(236, 72, 153, 0.3);
   --category-rose: #f43f5e;
   --category-rose-bg: rgba(244, 63, 94, 0.1);
   --category-rose-hover: #e11d48;
   --category-rose-text: #d50c2f;
+  --category-rose-border: rgba(244, 63, 94, 0.3);
   /* Solid-badge text — white on the vivid fill, mirroring the semantic badges'
      inverted `-foreground` (white in light, dark in dark below). Owner accepts
      that white dips under AA on the lighter hues (amber/green); the soft
@@ -935,6 +982,20 @@ html {
   --avatar-background: #cbd5e1;
   --avatar-foreground: #0f172a;
 
+  /* Switch track (off), dark. INVERTS exactly like --avatar-background does, and
+     for the same reason: the resting value has to sit clear of the dark surfaces
+     under it, and the hover has to move AWAY from them, not toward them. So the
+     pair swaps ends — slate-500 resting, slate-400 on hover — which keeps "hover
+     gains contrast" true in both modes (thumb boundary 3.75 -> 6.96) while light
+     darkens and dark lightens. */
+  --switch-track: #64748b;
+  --switch-track-hover: #94a3b8;
+
+  /* Tabs — see the light block. The pill goes LIGHTER than the --accent strip
+     here, not darker: 4.04:1 vs the 1.72:1 --background gave, and the label on it
+     stays dark, so --tabs-indicator-foreground is not redeclared. */
+  --tabs-indicator: #94a3b8;
+
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
@@ -1018,13 +1079,13 @@ html {
   --code-tag: #fb7185;
 
   /* Error */
-  --error: #f87171;
+  --error: #fa8585;
   --error-foreground: #0f172a;
-  --error-light: rgba(248, 113, 113, 0.06);
-  --error-soft: rgba(248, 113, 113, 0.1);
-  --error-border: rgba(248, 113, 113, 0.4);
+  --error-light: rgba(250, 133, 133, 0.06);
+  --error-soft: rgba(250, 133, 133, 0.1);
+  --error-border: rgba(250, 133, 133, 0.4);
   --error-hover: #fca5a5;
-  --error-ring: rgba(248, 113, 113, 0.5);
+  --error-ring: rgba(250, 133, 133, 0.5);
 
   /* Success */
   --success: #34d399;
@@ -1096,38 +1157,47 @@ html {
   --category-red-bg: rgba(248, 113, 113, 0.15);
   --category-red-hover: #fca5a5;
   --category-red-text: #f87171;
+  --category-red-border: rgba(248, 113, 113, 0.4);
   --category-orange: #fb923c;
   --category-orange-bg: rgba(251, 146, 60, 0.15);
   --category-orange-hover: #fdba74;
   --category-orange-text: #fb923c;
+  --category-orange-border: rgba(251, 146, 60, 0.4);
   --category-amber: #fbbf24;
   --category-amber-bg: rgba(251, 191, 36, 0.15);
   --category-amber-hover: #fcd34d;
   --category-amber-text: #fbbf24;
+  --category-amber-border: rgba(251, 191, 36, 0.4);
   --category-green: #4ade80;
   --category-green-bg: rgba(74, 222, 128, 0.15);
   --category-green-hover: #86efac;
   --category-green-text: #4ade80;
+  --category-green-border: rgba(74, 222, 128, 0.4);
   --category-emerald: #34d399;
   --category-emerald-bg: rgba(52, 211, 153, 0.15);
   --category-emerald-hover: #6ee7b7;
   --category-emerald-text: #34d399;
+  --category-emerald-border: rgba(52, 211, 153, 0.4);
   --category-teal: #2dd4bf;
   --category-teal-bg: rgba(45, 212, 191, 0.15);
   --category-teal-hover: #5eead4;
   --category-teal-text: #2dd4bf;
+  --category-teal-border: rgba(45, 212, 191, 0.4);
   --category-cyan: #22d3ee;
   --category-cyan-bg: rgba(34, 211, 238, 0.15);
   --category-cyan-hover: #67e8f9;
   --category-cyan-text: #22d3ee;
+  --category-cyan-border: rgba(34, 211, 238, 0.4);
   --category-sky: #38bdf8;
   --category-sky-bg: rgba(56, 189, 248, 0.15);
   --category-sky-hover: #7dd3fc;
   --category-sky-text: #38bdf8;
+  --category-sky-border: rgba(56, 189, 248, 0.4);
   --category-blue: #60a5fa;
   --category-blue-bg: rgba(96, 165, 250, 0.15);
   --category-blue-hover: #93c5fd;
   --category-blue-text: #60a5fa;
+  --category-blue-border: rgba(96, 165, 250, 0.4);
   /* INDIGO AND VIOLET ARE THE TWO EXCEPTIONS to "dark -text reuses the base
      hue", and the page tint is why. Reusing the base gave indigo 4.79 and
      violet 5.19 against the untinted dark page — passing, but on 0.29 and 0.69
@@ -1142,33 +1212,39 @@ html {
   --category-indigo-bg: rgba(129, 140, 248, 0.15);
   --category-indigo-hover: #a5b4fc;
   --category-indigo-text: #a5b4fc;
+  --category-indigo-border: rgba(129, 140, 248, 0.4);
   --category-violet: #a78bfa;
   --category-violet-bg: rgba(167, 139, 250, 0.15);
   --category-violet-hover: #c4b5fd;
   --category-violet-text: #c4b5fd;
+  --category-violet-border: rgba(167, 139, 250, 0.4);
   --category-purple: #c084fc;
   --category-purple-bg: rgba(192, 132, 252, 0.15);
   --category-purple-hover: #d8b4fe;
   --category-purple-text: #c084fc;
+  --category-purple-border: rgba(192, 132, 252, 0.4);
   --category-fuchsia: #e879f9;
   --category-fuchsia-bg: rgba(232, 121, 249, 0.15);
   --category-fuchsia-hover: #f0abfc;
   --category-fuchsia-text: #e879f9;
+  --category-fuchsia-border: rgba(232, 121, 249, 0.4);
   --category-pink: #f472b6;
   --category-pink-bg: rgba(244, 114, 182, 0.15);
   --category-pink-hover: #f9a8d4;
   --category-pink-text: #f472b6;
+  --category-pink-border: rgba(244, 114, 182, 0.4);
   --category-rose: #fb7185;
   --category-rose-bg: rgba(251, 113, 133, 0.15);
   --category-rose-hover: #fda4af;
   --category-rose-text: #fb7185;
+  --category-rose-border: rgba(251, 113, 133, 0.4);
   /* Solid-badge text — dark ink here (dark-mode fills are the light 400-level);
      the inverted counterpart of the light white value. */
   --category-foreground: #0f172a;
 
   /* Focus ring colours (semantic + neutral) */
   --focus: rgba(147, 197, 253, 0.45);
-  --error-focus: rgba(248, 113, 113, 0.4);
+  --error-focus: rgba(250, 133, 133, 0.4);
   --warning-focus: rgba(251, 191, 36, 0.4);
   --info-focus: rgba(124, 212, 253, 0.4);
   --success-focus: rgba(52, 211, 153, 0.4);

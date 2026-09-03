@@ -13,3 +13,8 @@ vite.config.ts.timestamp-*.mjs
 .agents/
 .claude/skills/
 skills-lock.json
+
+# Engine-resolved token snapshots — generated from a live Storybook subtree,
+# dated, and stale the moment tokens.scss changes. Useful while measuring
+# contrast; not a source of truth, so not carried in the repo.
+docs/token-dump-*.json

@@ -24,7 +24,14 @@
   align-items: center;
   gap: var(--p-1);
   padding: var(--p-1);
-  background: var(--muted);
+  // --accent, NOT --muted. Triggers are --muted-foreground, and
+  // --muted-foreground on --muted is 5.1:1 — the tightest pairing in the
+  // system, and the one the 2026-07-21 sweep moved five other surfaces off.
+  // Tabs was missed then. On --accent it is 6.92:1 in light, and in dark the
+  // two tokens resolve to the SAME slate-700, so nothing moves there.
+  // (No hex in this comment on purpose — the repo's hex guardrail is a plain
+  //  grep over src/components and cannot tell prose from a declaration.)
+  background: var(--accent);
   border-radius: var(--rounded-md);
 
   &[data-orientation='vertical'] {
@@ -44,7 +51,7 @@
   width: 0;
   height: 0;
   opacity: 0;
-  background: var(--background);
+  background: var(--tabs-indicator);
   border-radius: var(--rounded-sm);
   box-shadow: var(--shadow-sm);
   transition:
@@ -101,7 +108,9 @@
   }
 
   // The pill (background + shadow) is now the shared .ui-tabs__indicator; the
-  // active trigger only owns its text colour.
+  // active trigger only owns its text colour. `line` and `browser` keep this
+  // value — they have no light pill under the label. `default` overrides it
+  // below, because there the label sits ON the indicator.
   &[data-state='active'] {
     color: var(--foreground);
   }
@@ -123,5 +132,161 @@
   &:focus-visible {
     box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
     border-radius: var(--rounded-sm);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Variants — presentation only. Identical semantics, keyboard and aria.
+//
+// Everything below hangs off ONE root class (`.ui-tabs--{variant}`) and reaches
+// the parts by descendant selector, the way RadioGroup's size axis does. No
+// context, no props threaded to TabsList/Trigger/Content.
+//
+// The shared sliding indicator is NOT rebuilt per variant. Tabs.tsx writes its
+// `width`, `height` and `transform` as INLINE styles from the active trigger's
+// offset box, so CSS cannot reshape it — inline wins. Each variant therefore
+// leaves the box alone and paints through a pseudo-element instead, which means
+// the slide animation is inherited rather than reimplemented.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── default ─────────────────────────────────────────────────────────────────
+// Targeted by ATTRIBUTE, not by a class: `default` deliberately emits no
+// `.ui-tabs--default` modifier (a class nothing else selects is dead BEM), so
+// `data-variant` is the hook — see Tabs.tsx.
+//
+// The active label sits ON the indicator pill, which is light in BOTH modes, so
+// it takes the pill's own ink rather than --foreground. Without this, dark mode
+// puts a near-white label on a slate-400 pill at 2.45:1. `line` and `browser`
+// have no pill under the label and are untouched.
+//
+// (0,4,0) against the base rule's (0,2,0), so it wins on specificity rather than
+// source order.
+.ui-tabs[data-variant='default'] .ui-tabs__trigger[data-state='active'] {
+  color: var(--tabs-indicator-foreground);
+}
+
+// ── line ────────────────────────────────────────────────────────────────────
+.ui-tabs--line {
+  .ui-tabs__list {
+    padding: 0;
+    gap: var(--p-4);
+    background: none;
+    border-radius: 0;
+  }
+
+  // The indicator keeps its inline box but draws nothing itself; the bar is the
+  // pseudo-element, pinned to the box's edge.
+  .ui-tabs__indicator {
+    background: none;
+    border-radius: 0;
+    box-shadow: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: 0;
+      height: var(--border-w-300);
+      background: var(--primary);
+      border-radius: var(--rounded-full);
+    }
+  }
+
+  .ui-tabs__trigger {
+    padding: var(--p-1-5) var(--p-0-5) var(--p-2-5);
+    border-radius: 0;
+
+    &:focus-visible {
+      border-radius: var(--rounded-sm);
+    }
+  }
+
+  // Horizontal: the list carries the rule the bar sits on.
+  &.ui-tabs--horizontal .ui-tabs__list {
+    align-self: stretch;
+    box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 0 var(--border);
+  }
+
+  // Vertical: the bar moves to the inline-start edge, and so does the rule.
+  &.ui-tabs--vertical {
+    .ui-tabs__list {
+      gap: var(--p-1);
+      box-shadow: inset var(--border-w-100) 0 0 0 var(--border);
+    }
+
+    .ui-tabs__indicator::after {
+      inset-block: 0;
+      inset-inline: 0 auto;
+      width: var(--border-w-300);
+      height: auto;
+    }
+
+    .ui-tabs__trigger {
+      padding: var(--p-1-5) var(--p-3);
+    }
+  }
+}
+
+// ── browser ─────────────────────────────────────────────────────────────────
+// Horizontal only — Tabs.tsx resolves `browser` + vertical to `line`, so these
+// rules never have to cope with a column list.
+.ui-tabs--browser {
+  &.ui-tabs--horizontal {
+    gap: 0; // the active tab has to touch the panel to read as joined
+  }
+
+  .ui-tabs__list {
+    align-self: stretch;
+    gap: var(--p-0-5);
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    // Deliberately NO hairline of its own, unlike `line`. The panel's own
+    // border-top already spans the full width and sits flush against the list
+    // (the root gap is 0 here), so adding one would stack two 1px rules into a
+    // 2px line under the inactive tabs. Measured: it did, before this comment.
+    // The panel's top border IS the strip's rule, and the active tab's seam
+    // masks exactly that pixel.
+  }
+
+  // The indicator IS the tab shape here: a card with the bottom edge opened up
+  // so it runs into the panel.
+  .ui-tabs__indicator {
+    background: var(--card);
+    border: var(--border-w-100) solid var(--border);
+    border-bottom: none;
+    border-radius: var(--rounded-md) var(--rounded-md) 0 0;
+    box-shadow: none;
+
+    // Masks the list's hairline under the active tab, which is what joins the
+    // tab to the panel. Sits 1px BELOW the box, on top of the rule.
+    &::after {
+      content: '';
+      position: absolute;
+      inset-inline: 0;
+      bottom: calc(-1 * var(--border-w-100));
+      height: var(--border-w-100);
+      background: var(--card);
+    }
+  }
+
+  .ui-tabs__trigger {
+    padding: var(--p-2) var(--p-4);
+    border-radius: var(--rounded-md) var(--rounded-md) 0 0;
+
+    &:focus-visible {
+      // The ring would be clipped along the bottom by the panel seam, so inset
+      // it — the same reason TabBar's focus ring is inset rather than outset.
+      outline: none;
+      box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+    }
+  }
+
+  // The panel becomes a real surface; without it the tab merges into nothing.
+  .ui-tabs__content {
+    padding: var(--p-4);
+    background: var(--card);
+    border: var(--border-w-100) solid var(--border);
+    border-radius: 0 var(--rounded-md) var(--rounded-md) var(--rounded-md);
   }
 }

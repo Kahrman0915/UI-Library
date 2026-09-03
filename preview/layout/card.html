@@ -61,10 +61,15 @@
         <h1>Card</h1>
         <p>
           Neutral surface container for grouped content. Composed of <code>Card</code> +
-          optional <code>CardHeader</code> (title, description, action slot),
+          optional <code>CardHeader</code> (overline, title, description, action slot),
           <code>CardBody</code>, and <code>CardFooter</code>. The header is prop-driven
-          (<code>title</code>, <code>description</code>, <code>action</code>) rather than
-          slot-based, so common usages are a single JSX line.
+          (<code>overline</code>, <code>title</code>, <code>description</code>,
+          <code>media</code>, <code>action</code>, <code>showDivider</code>) rather than
+          slot-based, so common usages are a single JSX line. <code>size</code> lives on
+          <code>Card</code> and cascades padding and type to every region
+          (<code>sm</code> · <code>default</code> · <code>lg</code> · <code>xl</code> ·
+          <code>2xl</code>) — the parts have to move together or their left edges
+          misalign.
         </p>
       </div>
 
@@ -75,6 +80,7 @@
           <div class="ui-card">
             <div class="ui-card__header">
               <div class="ui-card__header-content">
+                <div class="ui-card__overline">July 7, 2026 · Analytics</div>
                 <h3 class="ui-card__title">Q4 report</h3>
                 <p class="ui-card__description">Weekly digest for the design team.</p>
               </div>

@@ -33,6 +33,8 @@ import {
   Card,
   CardHeader,
   CardBody,
+  CardTitle,
+  CardOverline,
   Progress,
   Item,
   ItemMedia,
@@ -69,7 +71,7 @@ import {
   HoverCardTrigger,
   HoverCardContent,
 } from '../index';
-import type { BadgeVariant } from '../index';
+import type { BadgeColor } from '../index';
 import { ThemeHarness, srOnly } from './ThemeHarness';
 
 const meta: Meta = {
@@ -125,7 +127,7 @@ function Dashboard() {
         <div style={{ width: 240 }}>
           <Input id="search" IconLeft={Search} placeholder="Search…" aria-label="Search" />
         </div>
-        <Badge id="plan" variant="success-outline" label="Pro plan" />
+        <Badge id="plan" color="success" appearance="outline" label="Pro plan" />
         <DropdownMenu id="acct">
           <DropdownMenuTrigger>
             <Button id="acct-btn" label="Kahrman" IconRight={ChevronDown} style="outline" size="sm" />
@@ -177,11 +179,15 @@ function Dashboard() {
               {stats.map((s) => (
                 <Card key={s.id} id={s.id} interactive>
                   <CardBody>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{s.label}</span>
-                      <Badge id={`${s.id}-d`} variant={`${s.variant}-outline` as BadgeVariant} label={s.delta} />
-                    </div>
-                    <div style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)', marginTop: 'var(--p-2)' }}>{s.value}</div>
+                    {/* The stat card inverts CardHeader's ranking — the small
+                        thing is the label and the big thing is the value — so
+                        it composes the parts instead. `as="p"` keeps a number
+                        out of the document outline. */}
+                    <CardOverline>
+                      <span style={{ flex: 1 }}>{s.label}</span>
+                      <Badge id={`${s.id}-d`} color={s.variant as BadgeColor} appearance="outline" label={s.delta} />
+                    </CardOverline>
+                    <CardTitle as="p" scale="2xl">{s.value}</CardTitle>
                   </CardBody>
                 </Card>
               ))}
@@ -189,7 +195,7 @@ function Dashboard() {
 
             {/* Usage + filters */}
             <Card id="usage" style={{ marginTop: 'var(--p-4)' }}>
-              <CardHeader id="usage" title="Monthly usage" description="Build minutes across all projects" action={<TrendingUp width={16} height={16} />} />
+              <CardHeader id="usage-header" title="Monthly usage" description="Build minutes across all projects" action={<TrendingUp width={16} height={16} />} />
               <CardBody>
                 <Progress value={72} label="Build minutes" showValue />
                 <div style={{ display: 'flex', gap: 'var(--p-2)', marginTop: 'var(--p-4)', flexWrap: 'wrap' }}>
@@ -217,7 +223,7 @@ function Dashboard() {
                     <ItemDescription>{a.what}</ItemDescription>
                   </ItemContent>
                   <ItemActions>
-                    <Badge id={`${a.id}-b`} variant={a.v} label={a.tag} />
+                    <Badge id={`${a.id}-b`} color={a.v} label={a.tag} />
                   </ItemActions>
                 </Item>
               ))}
@@ -243,7 +249,7 @@ function Dashboard() {
 
         {/* Overlays sampler */}
         <Card id="overlays">
-          <CardHeader id="overlays" title="Overlays & actions" description="Every floating surface, plus the primary / neutral / destructive button ladder." />
+          <CardHeader id="overlays-header" title="Overlays & actions" description="Every floating surface, plus the primary / neutral / destructive button ladder." />
           <CardBody>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--p-3)', alignItems: 'center' }}>
               <Button id="ov-dialog" label="Open dialog" onClick={() => setDialogOpen(true)} />

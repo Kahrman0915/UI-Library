@@ -19,7 +19,7 @@ export type {
 } from './components/Avatar';
 
 export { default as Badge } from './components/Badge';
-export type { BadgeProps, BadgeVariant } from './components/Badge';
+export type { BadgeProps, BadgeColor, BadgeAppearance } from './components/Badge';
 
 export { default as AidenFullScreen } from './components/AidenFullScreen';
 export type { AidenFullScreenProps } from './components/AidenFullScreen';
@@ -69,13 +69,25 @@ export {
   CardMedia,
   CardBody,
   CardFooter,
+  CardTitle,
+  CardDescription,
+  CardOverline,
+  CardVisual,
+  CardActions,
 } from './components/Card';
 export type {
   CardProps,
   CardHeaderProps,
+  CardHeaderMediaPlacement,
   CardMediaProps,
   CardBodyProps,
   CardFooterProps,
+  CardTitleProps,
+  CardTitleAs,
+  CardDescriptionProps,
+  CardOverlineProps,
+  CardVisualProps,
+  CardActionsProps,
 } from './components/Card';
 
 export { default as Checkbox } from './components/Checkbox';
@@ -297,6 +309,21 @@ export type {
   CommandShortcutProps,
   CommandItemVariant,
 } from './components/Command';
+
+export { default as Calendar } from './components/Calendar';
+export type {
+  CalendarProps,
+  CalendarSize,
+  WeekDay,
+} from './components/Calendar';
+
+export { default as DatePicker } from './components/DatePicker';
+export type {
+  DatePickerProps,
+  DatePickerSize,
+  DatePickerSide,
+  DatePickerAlign,
+} from './components/DatePicker';
 
 export { default as Combobox } from './components/Combobox';
 export type {
@@ -622,7 +649,8 @@ export type {
   FeaturedIconProps,
   FeaturedIconSize,
   FeaturedIconShape,
-  FeaturedIconVariant,
+  FeaturedIconColor,
+  FeaturedIconAppearance,
 } from './components/FeaturedIcon';
 
 export { default as Fab } from './components/Fab';

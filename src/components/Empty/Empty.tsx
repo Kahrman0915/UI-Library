@@ -50,7 +50,7 @@ const EmptyMedia = forwardRef<HTMLDivElement, EmptyMediaProps>(
     // back-compat and takes an icon element as children.)
     const iconTile =
       variant === 'icon'
-        ? ' ui-featured-icon ui-featured-icon--sz-lg ui-featured-icon--default ui-featured-icon--shape-square'
+        ? ' ui-featured-icon ui-featured-icon--sz-lg ui-featured-icon--default ui-featured-icon--soft ui-featured-icon--shape-square'
         : '';
     return (
       <div

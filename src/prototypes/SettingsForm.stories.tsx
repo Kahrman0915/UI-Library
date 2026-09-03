@@ -68,7 +68,7 @@ function SettingsPage() {
 
         <h2 style={srOnly}>Profile and preferences</h2>
         <Card id="profile">
-          <CardHeader id="profile" title="Profile" description="This information is visible to your team." />
+          <CardHeader id="profile-header" title="Profile" description="This information is visible to your team." />
           <CardBody>
             <div style={{ display: 'grid', gap: 'var(--p-5)' }}>
               <Input id="name" label="Full name" value={name} onValueChange={setName} />
@@ -98,7 +98,7 @@ function SettingsPage() {
         </Card>
 
         <Card id="prefs">
-          <CardHeader id="prefs" title="Preferences" description="Controls that read --primary when active — watch them recolor with the theme." />
+          <CardHeader id="prefs-header" title="Preferences" description="Controls that read --primary when active — watch them recolor with the theme." />
           <CardBody>
             <div style={{ display: 'grid', gap: 'var(--p-5)' }}>
               <div style={{ display: 'grid', gap: 'var(--p-2-5)' }}>

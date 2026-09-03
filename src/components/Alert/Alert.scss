@@ -74,7 +74,18 @@
     --primary-hover: color-mix(in srgb, var(--primary) 85%, var(--foreground));
     --primary-light: color-mix(in srgb, var(--primary) 6%, transparent);
     --primary-soft: color-mix(in srgb, var(--primary) 8%, transparent);
-    --primary-border: color-mix(in srgb, var(--primary) 40%, transparent);
+    // 60%, not the 40% every other --primary-border uses. The action is an
+    // OUTLINE button, so its border is the only thing that delineates it — its
+    // fill measures 1.09:1 (light) / 1.13:1 (dark) against the alert's tint, i.e.
+    // nothing. At 40% the border came to 2.07:1 light / 2.70:1 dark, under the
+    // 3:1 WCAG 1.4.11 asks of a component boundary, so the control had no
+    // perceivable edge in either mode — it read as a link, not a button. 60%
+    // gives 3.24:1 light / 4.21:1 dark. Measured across warning/error/info on
+    // --card; the tightest case is light, at 3.23:1 on error.
+    //
+    // Scoped to the action slot like the rest of this block, so no other
+    // consumer of --primary-border moves.
+    --primary-border: color-mix(in srgb, var(--primary) 60%, transparent);
     --primary-ring: color-mix(in srgb, var(--primary) 50%, transparent);
     --primary-focus: color-mix(in srgb, var(--primary) 40%, transparent);
     --primary-text: color-mix(in srgb, var(--primary) 85%, var(--foreground));

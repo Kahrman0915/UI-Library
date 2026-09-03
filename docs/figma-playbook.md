@@ -9,7 +9,8 @@
 - **File:** `jzc2ME8xVmfX1V8OCt2HC2` (owner may rename it "@ui/lib — Design System" —
   the API cannot; `figma.root.name` is read-only).
 - **Tooling:** the `use_figma` MCP tool (load the `figma-use` skill first, every session).
-- **Status:** **63 component pages**, all built to template v4, plus a full **Foundations** section. `TabBar` (#62) is the most recent, then `Mark` (#61) and `FullScreenDialog` (#60). Ledger holds per-component IDs + ~167 lessons.
+- **Status:** **66 component pages**, all built to template v4, plus a full **Foundations** section. `Calendar` and `DatePicker` (2026-09-02) are the most recent, built alongside the code in one pass. Before them `Table` (2026-08-26) — the file's **first and only PROPOSAL page**: it documents a component that does **not** exist in `src/`, and says so on itself in two places. Then `TabBar` (#62), `Mark` (#61), `FullScreenDialog` (#60). Ledger holds per-component IDs + ~177 lessons.
+- **A single Figma TEXT property cannot hold two strings.** `DatePicker/Field` has a `Value=Empty|Filled` axis; binding one `Value text` property to the value layer in all 30 variants made every Empty variant render the *filled* default instead of its own placeholder. The axis was right and the render was wrong, which reads as a broken component. Two properties (`Value text` + `Placeholder`), each referenced only from the variants it belongs to, is the fix — a property that applies to no layer in the current variant simply does nothing, which is fine; a property that silently overwrites the variant's own content is not.
 - **A supplied frame may be bound to a FOREIGN variable library.** `TabBar` was built from an owner-supplied frame whose fills pointed at another file's variables — reported under names like `--muted-foreground`, resolving to values that were not ours. It rendered correctly, so nothing flagged it. Tell them apart by the id shape: local is `VariableID:N:N`, foreign is `VariableID:<40-hex>/N:N`. **Check what a fill is bound to, not what it looks like.**
 - **FILE REORGANISED 2026-08-08 — the Phase 1–5 grouping is GONE.** It was build-order scaffolding; the build finished, so it had stopped describing anything, and the index board built on it had drifted twice. Four sections now:
 
@@ -17,7 +18,7 @@
   |---|---|
   | *(top)* | Start Here · Choosing components · **Component index** |
   | `Foundations` | Overview · Colour & tokens · Typography · Spacing & sizing · Motion · Themes & brands · Aiden surface · Chart palettes · Icons |
-  | `Components` | **62 pages, ALPHABETICAL, no numeric prefix** — a new one slots in by name |
+  | `Components` | **63 pages, ALPHABETICAL, no numeric prefix** — a new one slots in by name. One (`Table`) is a proposal, not a mirror of code |
   | `Examples` | 11 composed screens (handoff specs, component builds, brand-palette pages) |
   | `Internal` | `_Template` · `Patterns` |
 
@@ -163,10 +164,10 @@ Frames **left → right**, top-aligned at `y=80`, gap `80`, width 1280 (Spec is 
 Frame names carry **no prefix** — exactly: `Overview`, `Spec — matrix × states`,
 `Theming`, `Examples · Docs · History`.
 
-Cards are **plain auto-layout frames** styled like `_Doc/Card` (fill `color/card`,
-stroke `color/border`, radius `radius/xl`, padding `spacing/8`, gap `spacing/6`,
-`clipsContent=false`). **Never instance `_Doc/Card`** — instances can't take children.
-`_Doc/Separator` instances (`layoutSizingHorizontal='FILL'`) divide sub-sections.
+Cards are **plain auto-layout frames** styled like `_Doc/Panel` (fill `surface/card`,
+stroke `surface/border`, radius `radius/xl`, padding `spacing/8`, gap `spacing/6`,
+`clipsContent=false`). **Never instance `_Doc/Panel`** — instances can't take children.
+`_Doc/Rule` instances (`layoutSizingHorizontal='FILL'`) divide sub-sections.
 
 ### 1 · Overview
 `_Doc/PageHeader` (Title, Description, 4 chips: `Phase N · role` / `primitive|compound`
@@ -185,7 +186,7 @@ sep → a horizontal `Light + Dark` wrapper holding **two tables side by side**:
 `setExplicitVariableModeForCollection(Mode, Dark)` and its label-caption explains the
 override). Table anatomy:
 - Header row: `variant · style` + columns `Enabled · Hover · Focus · Disabled`
-- Variant groups delimited by **`_Doc/SeparatorLabeled`** (label = variant, uppercase)
+- Variant groups delimited by **`_Doc/Rule labelled`** (label = variant, uppercase)
 - Rows = styles; every cell = a 132×44 frame (`clipsContent=false`) holding one instance
 - Painted states: Hover = fill the variant's `-hover` variable (solid style) or
   `-light`/`accent` (ghost); Focus = apply the `Focus/{Variant}` effect style
@@ -195,7 +196,7 @@ override). Table anatomy:
 ### 3 · Theming  *(only for theme-aware components — see CLAUDE.md's routing table)*
 Section + "Try it: select any frame → Appearance panel → set Theme or Mode" caption →
 header row of theme codes → **Light row + Dark row** of cells; each cell is a small
-`color/background` frame with `setExplicitVariableModeForCollection(Theme, mode)`
+`surface/background` frame with `setExplicitVariableModeForCollection(Theme, mode)`
 (+ Mode=Dark on row 2) containing one instance labeled with the theme code.
 
 **When you omit this frame** because the component is neutral chrome (Label, Input,
@@ -316,26 +317,53 @@ the split: its 8 labelled variants keep `Label` as TEXT, and only the 8 icon-onl
 `glyph`. The two coexist happily — a slot keeps its default content, so a TEXT-bound node *inside* a slot
 still works, which is how Card keeps an editable `Body` inside `ui-card__body`.
 
+> **RENAMED 2026-08-26 — three of these collided with real components in the Assets
+> panel.** A designer searching "chip" got `Chip` *and* `_Doc/Chip`; "separator" returned
+> `_Doc/Separator` alongside nine real ones; "card" returned `_Doc/Card` beside `Card` and
+> `Toast/Card`. The `_` prefix does **not** keep them out of the Assets panel of the file
+> they live in. Node IDs are unchanged and every instance survived the rename — a master's
+> name is display only, instances track by id.
+>
+> `_Doc/Chip` → **`_Doc/Meta pill`** · `_Doc/Separator` → **`_Doc/Rule`** ·
+> `_Doc/SeparatorLabeled` → **`_Doc/Rule labelled`** · `_Doc/Card` → **`_Doc/Panel`**
+>
+> Rule for any new `_Doc/*` master: **its leaf name must not match a component name.**
+
 ## `_Doc/*` masters (page `146:122`)
 
 | Master | ID | Notes |
 |---|---|---|
 | `_Doc/PageHeader` | `146:134` | Title/Description props; 4 chip slots (hide extras via `visible=false`) |
 | `_Doc/Section` | `146:139` | Overline / Title / Description props |
-| `_Doc/Chip` | `146:125` | neutral metadata pill |
+| `_Doc/Meta pill` | `146:125` | neutral metadata pill |
 | `_Doc/TokenPill` | `146:142` | mono pill (tokens, classes, prop values) |
 | `_Doc/Annotation` | `146:163` | small muted label (grid axes, captions) |
-| `_Doc/Separator` | `157:278` | plain hairline |
-| `_Doc/SeparatorLabeled` | `175:594` | line — LABEL — line; table group headings |
+| `_Doc/Rule` | `157:278` | plain hairline |
+| `_Doc/Rule labelled` | `175:594` | line — LABEL — line; table group headings |
 | `_Doc/DoDont` | `146:154` | Do/Dont props; fixed width, hugs height |
 | `_Doc/ChangelogRow` | `146:160` | Version/Date/Author/Change props |
 | `_Doc/PropRow` | `164:451` | kept but unused in v4 (props table was cut) |
-| `_Doc/Card` | `157:276` | **style reference only — never instance** |
+| `_Doc/Panel` | `157:276` | **style reference only — never instance** |
 
 All masters have descriptions (Assets-panel hover). Give every new component set a
 description too — it's part of the lint.
 
 ## Variables & styles (verified IDs)
+
+> **THE COLOUR VARIABLES ARE NOT NAMED `color/*`.** They are **`surface/*`** and **`text/*`**
+> — verified 2026-08-26 while building `Table`. This section said `color/…` for months; the
+> **IDs were right, the names were wrong**, so a lookup by name silently returns nothing while
+> a lookup by ID works. Resolve by ID, or list the collection before guessing.
+>
+> | Role | Real name | ID |  | Role | Real name | ID |
+> |---|---|---|---|---|---|---|
+> | background | `surface/background` | `2:3` | | accent | `surface/accent` | `2:9` |
+> | foreground | `text/foreground` | `2:4` | | card | `surface/card` | `2:11` |
+> | secondary | `surface/secondary` | `2:5` | | border | `surface/border` | `2:15` |
+> | muted | `surface/muted` | `2:7` | | ring | `surface/ring` | `2:17` |
+> | muted-foreground | `text/muted-foreground` | `2:8` | | focus | `surface/focus` | `2:18` |
+>
+> Semantic families follow `status/{error,success,warning,info}/{base,foreground,hover,light,soft,border,ring,focus}`.
 
 - **Collections:** `Primitives` (Value) · `Mode` (Light/Dark) · **`Brand`**
   (Slate/Indigo/Teal/Cobalt/Fern/Amber/Magenta) · `Icon` (24/20/16/14/12) ·
@@ -361,7 +389,21 @@ description too — it's part of the lint.
   `primary 2:44` · `primary-foreground 2:45` · `primary-hover 2:46` · `primary-light
   2:47` · `primary-soft 2:48` · `primary-border 2:49` · `primary-ring 2:50` ·
   `primary-focus 2:51` · `primary-text 35:65`. Ghost/quiet text stays
-  `Mode → color/secondary-foreground` (the neutral carve-out).
+  `Mode → text/secondary-foreground` (the neutral carve-out).
+- **Component-scoped colours get their OWN top-level namespace, not `surface/*`.** The Mode
+  collection already had `avatar/*`, `tooltip/*`, `sidebar/*` and `chat/*`; `switch/*` joined
+  them 2026-09-01. Scopes copy `avatar/background`: `['FRAME_FILL','SHAPE_FILL']`.
+  `switch/track 1916:38637` (Light `#94a3b8` / Dark `#64748b`) ·
+  `switch/track-hover 1916:38638` (Light `#64748b` / Dark `#94a3b8`) — the pair **inverts by
+  mode**, like `avatar/background`, so hover always gains contrast in both modes.
+  > **Rebinding a token on a doc page is two jobs, not one.** The Switch swap rebound 12 fills
+  > (6 `State=Off` masters + 6 local hover overrides; the other 30 instances inherited). But
+  > **five TEXT nodes still spelled the old token name** — two TokenPills and three prose blurbs
+  > — and a page that paints `switch/track` while printing `--muted` is worse than one that was
+  > never touched. Grep the page's text for the old name as well as its fills.
+  > Also: on a spec table the **state lives in the columns, the size in the rows** — read the
+  > header row before inferring which cell is which from its colour.
+
 - **`flag/is-dark`** boolean, Mode collection, `175:26` (Light=false, Dark=true) —
   powers the Aiden dark-gradient overlays.
 - **`color/shadow`** `145:122` — all 8 `Shadow/*` effect styles bind their color to it
@@ -520,7 +562,7 @@ Sweep the new page + set (skip nodes inside instances):
 - **Don't use `_Doc/Annotation` for prose.** Its inner text hugs, so even with the
   instance set to `FILL` a long note renders as one overflowing line. Annotations are for
   short captions and grid axes only. For anything paragraph-length, create a plain TEXT
-  node with the `xs/leading-normal/Medium` style + `color/muted-foreground` and set
+  node with the `xs/leading-normal/Medium` style + `text/muted-foreground` and set
   `layoutSizingHorizontal='FILL'` — that wraps correctly.
 - **Measure overflow against the TABLE's inner padding, not just the card.** The
   card-level lint only catches content escaping the card bounds, so a spec row can sit

@@ -83,22 +83,41 @@
     gap: var(--p-4);
     padding: var(--p-4);
     border-bottom: var(--border-w-100) solid var(--border);
+
+    // Opted out via `showDivider={false}` — for a card whose header and body
+    // read as one block rather than two regions. The spacing that goes with it
+    // is in the SIZE section at the bottom: it has to be per-size, because the
+    // size blocks set `padding` as a shorthand and would otherwise win.
+    &--no-divider {
+      border-bottom: none;
+    }
+
+    // A header with nothing under it has nothing to divide. Without this the
+    // rule still paints, one pixel inside `.ui-card`'s own border, doubling it.
+    // Invisible only because the two are flush — but it is still a stray edge,
+    // and it shows the moment the card's radius or border colour changes.
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
-  // Leading visual, before the title. The header aligns to flex-start, so the
-  // media stays with the first line of the title instead of drifting to the
-  // middle of a two-line block. Mirrors __header-action and ItemMedia.
-  &__header-media {
+  // The small visual that introduces a title — a FeaturedIcon, an Avatar, a
+  // StatusDot, a Mark. NOT `__media`, which is the full-bleed cover.
+  //
+  // This is the generic tile, so a card composed from parts gets it wherever
+  // the visual sits. Anything that is true only of the HEADER ROW lives on
+  // `__header-media` below, and `CardHeader` puts both classes on the element.
+  &__visual {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
     justify-content: center;
 
-    // Floor the box at one line of title. Without it a small mark — a 10px
-    // StatusDot — pins to the top of the line box and reads as floating above
-    // the heading. Anything taller than a line, an Avatar say, sets its own
-    // height and is untouched by this.
-    min-height: var(--leading-5);
+    // `__body` is a flex column with the default `align-items: stretch`, so
+    // without this the box spans the card and its `justify-content: center`
+    // parks the glyph in the middle. A no-op in the header row, which already
+    // aligns its children to flex-start.
+    align-self: flex-start;
 
     // Size a bare icon the way ItemMedia does, so consumers don't each pick
     // their own. Non-SVG media (Avatar, StatusDot) brings its own dimensions.
@@ -106,6 +125,18 @@
       width: var(--w-5);
       height: var(--h-5);
     }
+  }
+
+  // Header-row only. The header aligns to flex-start so the media stays with
+  // the first line of the title instead of drifting to the middle of a two-line
+  // block — which needs the box floored at one line of title, or a small mark
+  // (a 10px StatusDot) pins to the top of the line box and reads as floating
+  // above the heading. Anything taller than a line sets its own height.
+  //
+  // Deliberately NOT on `__visual`: stacked above the title there is no line
+  // box to pin to, so the floor would only pad the tile.
+  &__header-media {
+    min-height: var(--leading-5);
   }
 
   &__header-content {
@@ -116,10 +147,78 @@
     min-width: 0;
   }
 
+  &__header {
+    // `mediaPlacement="above"` — the media takes its own line over the title,
+    // the option / chooser-card shape. The header itself stays a ROW of
+    // [stack, action], so a header action still pins top-right and the two
+    // props compose; only the media moves.
+    //
+    // NESTED UNDER `&__header`, not under `.ui-card`. Authored at the wrong
+    // level this compiles to `.ui-card--media-above`, which no element ever
+    // carries — the class is `ui-card__header--media-above`. It shipped that
+    // way once and the block-layout fallback looked close enough to right to
+    // pass a screenshot. Check the compiled selector, not the render.
+    &--media-above {
+      .ui-card__header-stack {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        // Without this the tile stretches to the stack's full width — it is
+        // the only child of a column that fills the header.
+        align-items: flex-start;
+
+        // Constant, NOT proportional to CardSize, for the same reason the
+        // no-divider gap at the bottom of this file is: what it has to
+        // out-rank is `__header-content`'s own overline → title → description
+        // rhythm, and that is `--p-1-5` at every rung. Scaling one against a
+        // fixed reference is what made the small sizes collapse there.
+        gap: var(--p-4);
+      }
+
+      .ui-card__header-media {
+        min-height: 0;
+      }
+    }
+  }
+
   &__header-action {
     flex-shrink: 0;
     display: inline-flex;
     align-items: center;
+    // Without a gap two buttons in the action slot touch. Matches `__footer`.
+    gap: var(--p-2);
+  }
+
+  // A row of controls that belongs to the CONTENT rather than closing the card.
+  // Hugs and aligns to the leading edge: `__body` is a flex column with the
+  // default `align-items: stretch`, so a Button dropped straight in fills the
+  // card and centres its label — `align-self` is what stops that.
+  //
+  // `__footer` is the other kind: the dialog-shaped bar, right-aligned with its
+  // own rule above it.
+  &__actions {
+    display: inline-flex;
+    align-items: center;
+    flex-wrap: wrap;
+    align-self: flex-start;
+    gap: var(--p-2);
+  }
+
+  // The metadata line above the title. Flex rather than a plain block so a date
+  // and a Code chip sit on one line without the consumer wrapping them, which
+  // is the case the prop exists for. `--text-xs` on `--muted-foreground` is the
+  // rung `.ui-item__description` and `.ui-attachment__description` already use.
+  //
+  // Deliberately NOT uppercased: the motivating content is sentence case
+  // ("July 7, 2026 · Dartboards"), and a kicker that wants caps sets them here.
+  &__overline {
+    display: flex;
+    align-items: center;
+    gap: var(--p-2);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
   }
 
   &__title {
@@ -160,5 +259,197 @@
     gap: var(--p-2);
     padding: var(--p-4);
     border-top: var(--border-w-100) solid var(--border);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// SIZE — one class on the root, descendant selectors from there.
+//
+// Same mechanism RadioGroup and Tabs use: no part takes a `size` prop, because
+// the parts have to move TOGETHER. A large header over a default-padded body
+// misaligns their left edges, which is exactly the bug this replaces.
+//
+// `--sz-default` gets no block: the base `.ui-card` rules above already ARE the
+// default, and an empty rule is dead BEM the repo scans for.
+//
+// `xl` and `2xl` are Card-local rungs, not the library-wide `xs|sm|default|lg`
+// scale — see the CardSize doc comment for why they stop here.
+// ---------------------------------------------------------------------------
+
+.ui-card--sz-sm {
+  .ui-card__header,
+  .ui-card__body,
+  .ui-card__footer {
+    padding: var(--p-3);
+  }
+  .ui-card__title {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+  .ui-card__description,
+  .ui-card__body {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+.ui-card--sz-lg {
+  .ui-card__header,
+  .ui-card__body,
+  .ui-card__footer {
+    padding: var(--p-5);
+  }
+  .ui-card__title {
+    font-size: var(--text-lg);
+    line-height: var(--leading-6);
+  }
+}
+
+.ui-card--sz-xl {
+  .ui-card__header,
+  .ui-card__body,
+  .ui-card__footer {
+    padding: var(--p-6);
+  }
+  .ui-card__title {
+    font-size: var(--text-xl);
+    line-height: var(--leading-7);
+  }
+  .ui-card__description,
+  .ui-card__body {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
+.ui-card--sz-2xl {
+  .ui-card__header,
+  .ui-card__body,
+  .ui-card__footer {
+    padding: var(--p-8);
+  }
+  // The overline steps up only at this rung. Below it the metadata line stays
+  // at --text-xs; on a full-bleed hero a 12px date under a 30px heading reads
+  // as a typo rather than as a tier.
+  .ui-card__overline {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+  .ui-card__title {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-9);
+  }
+  .ui-card__description,
+  .ui-card__body {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// NO-DIVIDER SPACING
+//
+// Header padding-bottom + body padding-top is 2×P, which is correct when a rule
+// separates them — it reads as two regions. With `showDivider={false}` there is
+// no rule, so the same 2×P is just a hole.
+//
+// The replacement gap is CONSTANT, not proportional, and that is the whole
+// subtlety. It was proportional first (half of P) and read fine on the largest
+// card and far too tight on the default one. The reason: what this gap has to
+// out-rank is the header stack's OWN internal rhythm — the overline → title →
+// description spacing — and that is `--p-1-5` at every size, because
+// `__header-content` has one gap and the size blocks never touch it. Scaling
+// the separation while its reference point stays fixed makes the small sizes
+// collapse: half of P is 8 at `default`, only 1.3× the 6px it must beat, so the
+// body read as one more line of the header.
+//
+// 16 is ~2.7× that internal gap, which is the ratio the largest card was
+// already judged right at. `sm` clamps to 12 — its own padding — since a gap
+// wider than the card's edge inset looks like a mistake.
+//
+// Per-size, and after the size blocks, deliberately. Those blocks set `padding`
+// as a shorthand at (0,2,0), so a single base rule here would be overridden on
+// every size but `default`.
+//
+// `:not(:last-child)` is load-bearing. A header with nothing after it keeps its
+// own bottom padding — zeroing it would sit the description on the card's edge.
+// ---------------------------------------------------------------------------
+
+$ui-card-no-divider-gaps: (
+  'sm': var(--p-3),
+  'default': var(--p-4),
+  'lg': var(--p-4),
+  'xl': var(--p-4),
+  '2xl': var(--p-4),
+);
+
+@each $size, $gap in $ui-card-no-divider-gaps {
+  // The HEADER owns the gap: its trailing space belongs to it rather than to
+  // whichever sibling happens to follow. The following region then drops its
+  // top padding, or the two would add up to `$gap + P` and reopen the hole
+  // this rule exists to close.
+  //
+  // `+` is ADJACENT-SIBLING, and that is load-bearing rather than incidental.
+  // Only the region DIRECTLY after the header collapses, so a header/body/
+  // footer stack collapses the body and leaves the footer its padding and its
+  // rule — the footer is still dividing something. Drop the body and the
+  // footer becomes the adjacent one and collapses instead. Measured, both
+  // ways: with a body the footer keeps 16px and a 1px rule; without one it
+  // goes to 0 and none.
+  //
+  // Figma cannot express an adjacent sibling, so its `Divider=off` variants
+  // bake the body collapse in unconditionally and leave the footer alone —
+  // right for the common shape, wrong for header+footer with no body, and
+  // wrong for a headerless card. See the ledger under
+  // `components.Card.dividerAxisOnHeaderlessCards`.
+  .ui-card--sz-#{$size} .ui-card__header--no-divider:not(:last-child) {
+    padding-bottom: $gap;
+
+    + .ui-card__body,
+    + .ui-card__footer {
+      padding-top: 0;
+    }
+
+    // The footer draws its OWN rule, so zeroing its padding alone left the
+    // hairline flush against the first line of the footer and reinstated
+    // exactly the separation `showDivider={false}` was asked to remove. Only
+    // the footer directly after the header is affected — a header, body and
+    // footer stack keeps the footer's rule, which is still dividing something.
+    + .ui-card__footer {
+      border-top: none;
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// TITLE SCALE — `<CardTitle scale="2xl">`
+//
+// Renders the title at the type a given CardSize would give it, WITHOUT moving
+// padding. That is not a contradiction of "size lives on Card": padding has to
+// move together across regions or the header and body misalign their left
+// edges, and type has no such dependency. Two real shapes need it — a stat
+// card's value wants 2xl's 30px inside a default-padded card, and a pricing
+// title wants one rung up.
+//
+// Doubled class on purpose. The size cascade is `.ui-card--sz-xl
+// .ui-card__title` at (0,2,0); a single modifier class is (0,1,0) and would
+// lose to it. `.ui-card__title.ui-card__title--scale-*` ties at (0,2,0) and is
+// authored last, so it wins on source order. Every rung is here including
+// `default` — pinning the default ramp inside a 2xl card is a real request, so
+// none of these is a dead modifier.
+// ---------------------------------------------------------------------------
+
+$ui-card-title-scales: (
+  'sm': (var(--text-sm), var(--leading-5)),
+  'default': (var(--text-base), var(--leading-5)),
+  'lg': (var(--text-lg), var(--leading-6)),
+  'xl': (var(--text-xl), var(--leading-7)),
+  '2xl': (var(--text-3xl), var(--leading-9)),
+);
+
+@each $rung, $type in $ui-card-title-scales {
+  .ui-card__title.ui-card__title--scale-#{$rung} {
+    font-size: nth($type, 1);
+    line-height: nth($type, 2);
   }
 }

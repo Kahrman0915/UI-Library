@@ -24,6 +24,53 @@ const meta: Meta<typeof Alert> = {
       tags: ['5 variants', 'dismissible'],
       changelog: [
         {
+          date: '2026-09-02',
+          summary:
+            'The `error` variant is a touch lighter in dark mode.',
+          detail:
+            'Dark `--error` moved `#f87171` to `#fa8585`, with `-light`, `-soft`, `-border`, `-ring` and ' +
+            '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
+            'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
+            'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'the binding constraint, not the tint. Light mode is unchanged.',
+        },
+        {
+          date: '2026-09-01',
+          summary:
+            'The action button’s border is stronger, so it reads as a button. Its `--primary-border` step goes ' +
+            'from 40% to 60% — colour, weight and fill are unchanged.',
+          detail:
+            'The action is an outline button, so its border is the only thing delineating it: the fill measures ' +
+            '1.09:1 in light and 1.13:1 in dark against the alert’s tint, which is nothing. At 40% the border came ' +
+            'to 2.07:1 light / 2.70:1 dark — under the 3:1 WCAG 1.4.11 asks of a component boundary — so the ' +
+            'control had no perceivable edge in either mode and read as a link rather than a button. Light was the ' +
+            'worse of the two, which is easy to miss because light also has the HIGHEST label contrast of any ' +
+            'option (11.32:1): crisp text is exactly what an invisible button looks like.\n\n' +
+            'At 60% the border is 3.24:1 light / 4.21:1 dark, measured across warning, error and info on `--card`; ' +
+            'the tightest case is light error at 3.23:1. Scoped to the action slot with the rest of the ' +
+            '`--primary-main` rebuild, so no other consumer of `--primary-border` moves.\n\n' +
+            'Three louder alternatives were measured and rejected. A semantic OUTLINE button (matching the alert’s ' +
+            'hue) is the worst option in both modes — 1.55:1 light / 1.89:1 dark — because border and tint share a ' +
+            'hue, so matching the alert is what erases the button. A semantic SOLID button passes everywhere ' +
+            '(4.72–7.76:1) and remains the right choice if an alert action ever needs to be unmissable, but it ' +
+            'reads as loud, and a solid red chip on an error alert can be mistaken for a destructive action.',
+        },
+        {
+          date: '2026-08-27',
+          summary:
+            'The info / success / warning / error variants now use a dedicated on-tint ' +
+            'text colour, fixing a contrast failure on a tinted card in dark mode.',
+          detail:
+            'Text, icon and title move from the raw --{family} hue to new --{family}-text ' +
+            'tokens (color-mix of the hue 85% with --foreground, mirroring --primary-text, ' +
+            'which the brand variant already used). On a tinted card in dark mode the raw ' +
+            'hue measured 4.30:1 — below WCAG AA — and had never been gated, because only ' +
+            'the over-background case was in the contrast script. Both surfaces are gated ' +
+            'now; the worst case is 4.94:1. Backgrounds and borders are unchanged, so the ' +
+            'alert reads the same weight, with slightly deeper text.',
+        },
+        {
           date: '2026-08-05',
           summary:
             'The `action` button now keeps the main brand’s neutral slate inside every ' +

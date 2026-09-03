@@ -14,6 +14,7 @@ const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
       disabled = false,
       label,
       IconLeft,
+      IconRight,
       IconCenter,
       'aria-label': ariaLabel,
       className,
@@ -48,6 +49,7 @@ const Toggle = forwardRef<HTMLButtonElement, ToggleProps>(
         {IconLeft && <IconLeft />}
         {IconCenter && <IconCenter />}
         {label}
+        {IconRight && <IconRight />}
       </button>
     );
   },

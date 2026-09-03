@@ -52,17 +52,17 @@ type Member = {
   email: string;
   initials: string;
   role: string;
-  roleVariant: 'default' | 'outline';
+  roleVariant: 'admin' | 'member';
   status: 'online' | 'away' | 'offline';
   statusLabel: string;
 };
 
 const members: Member[] = [
-  { name: 'Ada Lovelace', email: 'ada@example.com', initials: 'AL', role: 'Admin', roleVariant: 'default', status: 'online', statusLabel: 'Online' },
-  { name: 'Alan Turing', email: 'alan@example.com', initials: 'AT', role: 'Member', roleVariant: 'outline', status: 'online', statusLabel: 'Online' },
-  { name: 'Grace Hopper', email: 'grace@example.com', initials: 'GH', role: 'Member', roleVariant: 'outline', status: 'away', statusLabel: 'Away' },
-  { name: 'Katherine Johnson', email: 'katherine@example.com', initials: 'KJ', role: 'Viewer', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
-  { name: 'Linus Torvalds', email: 'linus@example.com', initials: 'LT', role: 'Member', roleVariant: 'outline', status: 'offline', statusLabel: 'Offline' },
+  { name: 'Ada Lovelace', email: 'ada@example.com', initials: 'AL', role: 'Admin', roleVariant: 'admin', status: 'online', statusLabel: 'Online' },
+  { name: 'Alan Turing', email: 'alan@example.com', initials: 'AT', role: 'Member', roleVariant: 'member', status: 'online', statusLabel: 'Online' },
+  { name: 'Grace Hopper', email: 'grace@example.com', initials: 'GH', role: 'Member', roleVariant: 'member', status: 'away', statusLabel: 'Away' },
+  { name: 'Katherine Johnson', email: 'katherine@example.com', initials: 'KJ', role: 'Viewer', roleVariant: 'member', status: 'offline', statusLabel: 'Offline' },
+  { name: 'Linus Torvalds', email: 'linus@example.com', initials: 'LT', role: 'Member', roleVariant: 'member', status: 'offline', statusLabel: 'Offline' },
 ];
 
 const STATUSES = ['All', 'Active', 'Invited'] as const;
@@ -149,7 +149,12 @@ function TeamList() {
                   <ItemDescription>{m.email}</ItemDescription>
                 </ItemContent>
                 <ItemActions>
-                  <Badge id={`role-${m.initials}`} label={m.role} variant={m.roleVariant} />
+                  <Badge
+                    id={`role-${m.initials}`}
+                    label={m.role}
+                    color="default"
+                    appearance={m.roleVariant === 'admin' ? 'solid' : 'outline'}
+                  />
                   <StatusDot id={`dot-${m.initials}`} status={m.status} label={m.statusLabel} />
                   <Button
                     id={`more-${m.initials}`}

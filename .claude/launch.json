@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "storybook-6007",
+      "name": "storybook-6011",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "storybook", "--", "-p", "6007", "--no-open"],
-      "port": 6007
+      "runtimeArgs": ["run", "storybook", "--", "-p", "6011", "--no-open", "--ci"],
+      "port": 6011
     }
   ]
 }

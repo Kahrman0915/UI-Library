@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import {
-  Alert, Avatar, AvatarGroup, Badge, Banner, BarChart, Button, Card, CardBody, CardHeader,
+  Alert, Avatar, AvatarGroup, Badge, Banner, BarChart, Button, Card, CardBody, CardDescription, CardHeader, CardTitle, CardVisual,
   Chip, Fab, LineChart,
   Input, Item, ItemContent, ItemDescription, ItemGroup, ItemTitle, Progress,
   Separator, Sidebar, SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader,
@@ -391,14 +391,14 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
           <Alert id={`${brand}-al`} variant="info" title="Two sources are still syncing" description="Numbers may move until the last import finishes." />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px,1fr))', gap: 'var(--p-4)' }}>
             <Card id={`${brand}-c1`}>
-              <CardHeader id={`${brand}-c1`} title="Active accounts" description="Last 7 days" />
+              <CardHeader id={`${brand}-c1-header`} title="Active accounts" description="Last 7 days" />
               <CardBody>
                 <div className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>12,480</div>
                 <Progress id={`${brand}-pr`} value={68} />
               </CardBody>
             </Card>
             <Card id={`${brand}-c2`}>
-              <CardHeader id={`${brand}-c2`} title="Team" description="Owners of this space" />
+              <CardHeader id={`${brand}-c2-header`} title="Team" description="Owners of this space" />
               <CardBody>
                 <AvatarGroup id={`${brand}-ag`} max={3}>
                   <Avatar id={`${brand}-a1`} fallback="KM" />
@@ -407,8 +407,8 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
                   <Avatar id={`${brand}-a4`} fallback="TS" />
                 </AvatarGroup>
                 <div style={{ display: 'flex', gap: 'var(--p-2)', marginTop: 'var(--p-3)', flexWrap: 'wrap' }}>
-                  <Badge id={`${brand}-b1`} variant="default" label="Pro" />
-                  <Badge id={`${brand}-b2`} variant="outline" label="Beta" />
+                  <Badge id={`${brand}-b1`} color="default" label="Pro" />
+                  <Badge id={`${brand}-b2`} color="default" appearance="outline" label="Beta" />
                 </div>
               </CardBody>
             </Card>
@@ -504,11 +504,11 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
           {feats.map((f) => (
             <Card id={`${brand}-f-${f.t}`} key={f.t}>
               <CardBody>
-                <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
+                <CardVisual>
                   <Mark brand={brand} size={36} />
-                  <strong style={{ fontSize: 'var(--text-base)' }}>{f.t}</strong>
-                  <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>{f.b}</span>
-                </div>
+                </CardVisual>
+                <CardTitle>{f.t}</CardTitle>
+                <CardDescription>{f.b}</CardDescription>
               </CardBody>
             </Card>
           ))}
@@ -528,7 +528,7 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
           ))}
         </div>
         <div style={{ display: 'flex', gap: 'var(--p-2)', justifyContent: 'center', flexWrap: 'wrap' }}>
-          {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} variant="outline" label={t} />)}
+          {['SOC 2', 'SSO', 'Audit log'].map((t) => <Badge id={`${brand}-t-${t}`} key={t} color="default" appearance="outline" label={t} />)}
         </div>
         {/* A chart ON THE BAND, not on a card. The harder contrast case: marks
             are measured against --poc-band here rather than --card, and the band
@@ -563,7 +563,7 @@ function MarketingPage({ brand }: { brand: BrandKey }) {
                 <div style={{ display: 'grid', gap: 'var(--p-3)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-2)' }}>
                     <strong style={{ flex: 1 }}>{pl.n}</strong>
-                    {pl.hi && <Badge id={`${brand}-pb-${pl.n}`} variant="default" label="Popular" />}
+                    {pl.hi && <Badge id={`${brand}-pb-${pl.n}`} color="default" label="Popular" />}
                   </div>
                   <span className="poc-stat" style={{ fontSize: 'var(--text-3xl)', fontWeight: 'var(--font-semibold)' }}>{pl.p}</span>
                   {pl.f.map((x) => (
@@ -1077,7 +1077,7 @@ export const AidenSurface: Story = {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--p-3)' }}>
                     <Mark brand="aiden" size={30} />
                     <strong style={{ ...MONO, fontSize: 'var(--text-sm)', flex: 1 }}>aiden</strong>
-                    <Badge id="as-b" variant="default" label="Beta" />
+                    <Badge id="as-b" color="default" label="Beta" />
                   </div>
                   <p style={{ margin: 0, fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)' }}>
                     Neutral page, neutral cards. The chrome gets out of the way and the gradient does
