@@ -1988,7 +1988,7 @@
       "notes": " | [1.2 — 2026-08-26] Added a Disabled axis (2 -> 4). Spec documented hover / focus / disabled; the set had only Size. IMPORTANT DIFFERENCE FROM THE OTHERS: the code does more than fade a disabled Fab — `&:disabled &__rings { display: none }` hides the pulse, because a disabled FAB must not keep advertising itself. This set does not model the pulse AT ALL (no rings node, no Pulse property), so there was nothing to suppress. If pulse is ever added to the Figma component, its rings must be hidden in every Disabled=true variant or the mock will contradict the code."
     },
     "Mark": {
-      "status": "done — set reconciled to the shipped API 2026-08-08, aiden surface included; template-v4 doc frames still outstanding",
+      "status": "done-v4 — full template-v4 page (4 frames), set reconciled to the shipped API, aiden surface included.",
       "pageId": "1192:580",
       "setIds": [
         "1200:24948"
@@ -2006,12 +2006,16 @@
         "keptBecause": "the Mark anatomy frame instances it; deleting would break that frame."
       },
       "frames": {
+        "overview": "1206:432",
+        "spec": "1206:433",
+        "theming": "1206:434",
+        "examplesDocsHistory": "1206:435",
         "masters": "1132:44",
         "anatomy": "955:44",
         "motionSpecimen": "1164:304"
       },
       "themed": true,
-      "themingFrame": "IMPLICIT — the component IS the theming demo. The tile ramp binds to Brand/decorative-hi, Brand/primary and Brand/decorative-deep, so it carries a brand's FULL three-anchor identity rather than just --primary. Set Brand in the Appearance panel.",
+      "themingFrame": "PRESENT (1206:434) — and it is the richest one in the file. Seven brand columns plus an aiden column, in light and dark rows. Aiden gets no Brand pin, because it is a surface that composes INSIDE any brand; its column sets the \"Aiden surface\" boolean instead.",
       "props": "VARIANT Size (sm|default|lg|xl = 24/32/48/64) x Lockup (false|true) = 8. TEXT Title, Description. On the nested (exposed) tile: INSTANCE_SWAP Glyph, BOOLEAN \"Aiden surface\". Matches src/components/Mark/Mark.types.ts.",
       "codeOnly": "motion (none|ambient|tilt) and label. motion is deliberately NOT a variant axis: all three render IDENTICALLY at rest, so a grid would teach that motion changes appearance — the one thing it does not do. Same treatment as Fab's pulse.",
       "lessons": [
@@ -2019,14 +2023,17 @@
         "Three mode-dependent layers were FRAME FILLS, not children, so they had to be extracted into rectangles before they could be gated. A paint cannot have its visibility bound; only a node can.",
         "A TRUNCATED STYLE ID FAILS SILENTLY. The first build passed 26-char slices of the text style ids (sliced for display in an earlier read) to setTextStyleIdAsync. Nothing threw, the text rendered in a plausible default, and only the design-check lint caught it — 8 TEXT nodes with no textStyleId. Real ids are 40+ chars WITH a trailing comma.",
         "Blend (hard|soft) on the POC set was never a prop: hard is the six brands' 3-stop ramp, soft is aiden's 4-stop plateau — the data-surface scope expressed as a variant.",
-        "AN AMBIENT SCOPE THAT FIGMA CANNOT MODEL AS A COLLECTION BECOMES AN OPAQUE GATED OVERLAY, not a variant. Mode and the aiden surface are the same shape of problem — something the code reads from context rather than from a prop — and they now have the same shape of answer: a layer that covers, gated on a boolean. Variants are for props."
+        "AN AMBIENT SCOPE THAT FIGMA CANNOT MODEL AS A COLLECTION BECOMES AN OPAQUE GATED OVERLAY, not a variant. Mode and the aiden surface are the same shape of problem — something the code reads from context rather than from a prop — and they now have the same shape of answer: a layer that covers, gated on a boolean. Variants are for props.",
+        "NEVER CONSTRUCT A STYLE ID — fetch it. This page cost two failures to the same root cause: a 26-char slice kept for display was passed to setTextStyleIdAsync (silent, text rendered in a plausible default) and later a full id was GUESSED by extending a truncated one (loud, \"Cannot find style\", script failed atomically). Real ids are 40+ chars and end in a comma. The loud failure was the cheap one.",
+        "A COMPONENT PROPERTY PREFIX CAN BE AMBIGUOUS. _Doc/DoDont exposes \"Do#146:7\" and \"Dont#146:8\"; matching with startsWith(\"Do\") hits BOTH, so setting Do and then Dont wrote twice to the same key and the Do side silently kept its default copy. Match on the part before \"#\". Caught by reading the rendered characters back rather than trusting the write.",
+        "resize() RESETS SIZING MODES. The four doc frames were created with primaryAxisSizingMode \"AUTO\" and then resized to set their width, which silently flipped them back to FIXED — every frame sat at its placeholder 400px height with content overflowing invisibly. Set the mode AFTER the resize."
       ],
       "openWork": [
-        "Template-v4 doc frames (Overview / Spec / Examples·Docs·History) not built. The page holds the set, the four artwork masters, and the POC anatomy + motion specimen frames.",
+        "Index row on \"✅ Rebuild Order\" not added. That page is still titled for 59 components and now understates by two (FullScreenDialog #60, Mark #61). Renumbering it is its own pass, not a side effect of this one.",
         "Motion inside a component is still truncated at 2.0s (POC finding, unchanged). Full-length loops live on the \"Mark · motion (specimen)\" frame as plain-frame copies."
       ],
       "lintStatus": "unboundSolid 0 · textNoStyle 0 · genericNames 0 · unboundSpacing 0 · noDescription 0. unboundRadius is a STANDING EXCEPTION: the tile radius is 22.5% of its own size in CSS — a percentage, not a token — so the rescaled values (5.4/7.2/10.8/14.4) have nothing to bind to and must not get a token. Same class as the documented literals in CLAUDE.md.",
-      "version": "1.1 · 2026-08-26",
+      "version": "1.3 · 2026-09-03 — reconciled with the unmerged mark-doc-page branch",
       "newComponent": "YES — 61st component. Shipped in code 2026-08-08 (src/components/Mark/).",
       "aidenSurface": "DONE 2026-08-08. An opaque \"ramp-aiden\" rectangle at child index 0 of each artwork master — above the frame's own brand-ramp fill, below the glass — filled with the Mark/Aiden PAINT STYLE and gated on a BOOLEAN property (default false). Turning it on replaces the brand ramp and leaves the glass, glyph and sizing untouched.\n\nIt is a boolean, not a variant, because it is not a prop: aiden is a data-surface that composes INSIDE any brand, the same class of ambient scope as Mode.\n\nTHE STYLE IS THE POINT — do not inline the gradient. Mark/Aiden's four stops are bound to _brand/aiden/decorative-hi / primary / decorative-deep, so the overlay is mode-aware for free AND stays inside scripts/figma-variable-audit.js's coverage. A copied gradient would be a second literal that can drift — which is exactly how the Aiden family once sat on the pre-blurple #5f61ef mid stop.\n\nWhy a whole overlay rather than swapping the fill: stop POSITIONS cannot bind to a variable. The six brands share 9.7/51.6/90.3; aiden needs 9.7/44/62/90.3, because naming --primary twice is the only way to give the blurple a band rather than a point.\n\nVerified on the Amber brand in both modes: overlay off shows Amber, on shows the blurple ramp, and dark correctly uses the paler aiden anchors.",
       "componentIds": {
@@ -2036,7 +2043,9 @@
         "artworkXl": "1199:656"
       },
       "artworkShelf": "1617:33338",
-      "notes": " — UPDATED 2026-08-26 (v1.1): the four artwork masters (sm/default/lg/xl) moved off the page canvas into a new artwork masters shelf (1617:33338) beside glyph masters. They already carried Glyph + Aiden surface properties and 55 instances between them — only their filing was wrong. MARK IS STILL THE LARGEST TIER-4 DEBT: 237 unbound fills, 96 unbound strokes, 171 unstyled text nodes, 142 generic layer names and 708 unbound geometry values on 1192:580. Much of that is glass/gradient artwork that may legitimately resist tokenisation; it needs a judgement pass, not a binding sweep."
+      "notes": " — UPDATED 2026-08-26 (v1.1): the four artwork masters (sm/default/lg/xl) moved off the page canvas into a new artwork masters shelf (1617:33338) beside glyph masters. They already carried Glyph + Aiden surface properties and 55 instances between them — only their filing was wrong. MARK IS STILL THE LARGEST TIER-4 DEBT: 237 unbound fills, 96 unbound strokes, 171 unstyled text nodes, 142 generic layer names and 708 unbound geometry values on 1192:580. Much of that is glass/gradient artwork that may legitimately resist tokenisation; it needs a judgement pass, not a binding sweep.",
+      "specFrameNote": "Named \"Spec — sizes × lockup\", NOT \"matrix × states\". The Mark has no hover, focus or disabled state — it is artwork, not a control, and it is not focusable — so the matrix is the two axes that actually vary. Spinner set this precedent. The frame says so in its own description rather than leaving the missing states to read as an oversight.",
+      "reconciliation2026_09_03": "Main's entry said 'template-v4 doc frames still outstanding' and listed only 3 frames, while the PLAYBOOK counted Mark among the 66 v4 pages — the file contradicted itself. Cause: the docs/figma-mark-doc-page branch (2026-08-08) was never merged, so main kept the pre-build claim, and the 2026-08-26 v1.1 update was written on top of that stale line without re-checking. Settled by reading Figma: 1206:432/433/434/435 all exist, and the Spec frame carries the exact name the branch describes. Frames, status, themingFrame, specFrameNote, openWork and three lessons were taken from the branch; main's newer componentIds / artworkShelf / notes were kept. The branch's PLAYBOOK edit was deliberately NOT taken — it would have reverted the status line from 66 pages and ~177 lessons back to 59 and ~90. LESSON: an unmerged branch does not just go stale, it lets the trunk assert the opposite of the truth, and later edits inherit the error."
     },
     "FullScreenDialog": {
       "status": "page exists in Figma; ledger entry was never written",
