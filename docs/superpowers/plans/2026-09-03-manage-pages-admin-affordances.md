@@ -15,8 +15,8 @@
 - Figma only. **No code changes, no Storybook changelog entry.** The only repo files touched are `scripts/figma-design-check.js` (Task 1), `docs/figma-ledger.json`, and this plan's checkboxes.
 - Components and tokens only — every fill, stroke, gap, padding and radius bound; no hand-drawn geometry where a master exists. **The design-check lint is all zeros on every touched frame before a page counts as done.**
 - Reuse over rebuild: menus are clones of 2.4's `ui-dropdown-menu [row actions]` (`2228:1827`); drawers are clones of 4.5's drawer; the KPI is a clone of 1.1's `ui-card [stat — pending approvals]`; 6.1's section headers reuse the LAND `section header` shape (`2190:1036`).
-- Heading row: `page-heading row` HORIZONTAL · gap 32 (`spacing/8`) · MIN/MIN · FILL/HUG → `[page-heading (FILL), kpi (HUG), actions (HUG, gap 16 spacing/4, MIN/CENTER)]`. 6.1's row is `[page-heading, kpi]`.
-- Add buttons: `Variant=default, Style=default, Size=default`, labels exactly `New dashboard` · `New banner` · `Promote a dashboard` · `New redirect`; 6.1's `Add admin` · `Grant request access` at `Size=sm` on the section headers.
+- **Heading row (amended — see the Amendment section below): `page-heading row` HORIZONTAL · gap 64 (`spacing/16`) · MIN/MIN · FILL/HUG → `[page-heading (FILL), kpi (HUG)]`.** No `actions` in the heading row on any page.
+- **Add buttons live in the filter row's `actions` cluster** at `Variant=default, Style=default, Size=sm` with a leading `+` glyph; labels exactly `New dashboard` · `New banner` · `Promote a dashboard` · `New redirect`. 6.1 has no filter row — its `Add admin` · `Grant request access` stay at `Size=sm` on the section headers.
 - Menu items verb-first, in the spec's order; **only** `Remove redirect`, `Revoke admin`, `Revoke access` are destructive. `Decommission` and `End promotion early` are plain items after a separator.
 - Drawer: `Side=right`, `Show footer` on, description **verbatim** "Direct edit — no request. Recorded in Activity under your name.", footer `[ghost Cancel sm, default primary sm]`, primary reads `Save changes`.
 - Frame names use a letter for sub-states: `5.1a  Dashboards — row menu open` (two spaces after the number, en dash, as the file does). New frames sit 80px to the right of their base, same y.
@@ -49,6 +49,101 @@
 | Tokens | `spacing/2`=8 · `spacing/4`=16 · `spacing/6`=24 · `spacing/8`=32 |
 
 ---
+
+## Amendment 2026-09-03 — supersedes Step 2 of Tasks 3, 4, 5 and 6
+
+The owner built Task 2's heading row, rejected it, and iterated to a settled shape on 5.1. **Tasks 3–6 keep every other step; only their "build the heading row" step changes.** The KPI moves out of a cloned stat tile and into Card's own header props, and the Add moves out of the heading row into the filter row.
+
+Reference: 5.1 as built — `page-heading row` `2349:5411`, `filter-search` `2154:896`, `filter-bar` `2346:16918`, `actions` `2346:17032`.
+
+**Heading row** (all five pages): `[page-heading (FILL), kpi (HUG)]`, HORIZONTAL, gap 64 bound to `spacing/16`, `MIN/MIN`, FILL/HUG.
+
+**Filter row** (5.1, 5.2 — and 5.3/5.4 once the open question below is answered): `filter-search` VERTICAL gap 4 (`spacing/1`) pad 0/8/0/8 (`spacing/2`) → `filter-bar` HORIZONTAL gap 24 (`spacing/6`) `SPACE_BETWEEN/CENTER` → `[<axes>, actions]`, `actions` HUG gap 8 (`spacing/2`) `MAX/CENTER` holding one labelled Add. No icon-only buttons in the cluster — the sort was drawn and removed because the table header already sorts.
+
+### Replacement recipe
+
+Substitute the per-page values from the table beneath it. `KPI` uses Card's header props; do **not** clone 1.1's stat tile.
+
+```js
+const PAGE = { colId: '<content column id>', frameId: '<frame id>',
+  title: '<KPI number>', desc: '<KPI label>', badge: '<KPI badge>',
+  addLabel: '<New …>', hasFilterRow: true, filterSearchId: '<filter-search id or null>' };
+
+const page = await figma.getNodeByIdAsync('2106:4324'); await figma.setCurrentPageAsync(page);
+const vars = await figma.variables.getLocalVariablesAsync();
+const V = n => { const v = vars.find(x => x.name === n); if (!v) throw new Error('token ' + n); return v; };
+const setChars = async (t, v) => { const f = t.fontName === figma.mixed ? t.getRangeFontName(0, 1) : t.fontName; await figma.loadFontAsync(f); t.characters = v; };
+
+// 1. heading row [page-heading, kpi]
+const col = await figma.getNodeByIdAsync(PAGE.colId);
+let row = col.children.find(c => c.name === 'page-heading row');
+const ph = col.children.find(c => c.name === 'page-heading') || (row && row.children.find(c => c.name === 'page-heading'));
+if (!ph) throw new Error('no page-heading');
+if (!row) {
+  row = figma.createAutoLayout('HORIZONTAL', { name: 'page-heading row', itemSpacing: 64 });
+  row.fills = []; row.clipsContent = false; row.primaryAxisAlignItems = 'MIN'; row.counterAxisAlignItems = 'MIN';
+  col.insertChild(col.children.indexOf(ph), row);
+  row.layoutSizingHorizontal = 'FILL'; row.layoutSizingVertical = 'HUG';
+  row.appendChild(ph); ph.layoutSizingHorizontal = 'FILL';
+}
+row.itemSpacing = 64; row.setBoundVariable('itemSpacing', V('spacing/16'));
+row.primaryAxisAlignItems = 'MIN'; row.counterAxisAlignItems = 'MIN';
+
+// 2. KPI from 5.1's built tile — clone it, then set the three slots
+const src = await figma.getNodeByIdAsync('2349:5412');   // 5.1's kpi, the reference build
+let kpi = row.children.find(c => c.name === 'kpi');
+if (!kpi) { kpi = src.clone(); kpi.name = 'kpi'; row.appendChild(kpi); kpi.layoutSizingHorizontal = 'HUG'; kpi.layoutSizingVertical = 'HUG'; }
+const titleKey = Object.keys(kpi.componentProperties).find(k => /^Title/i.test(k));
+const descKey  = Object.keys(kpi.componentProperties).find(k => /^Description/i.test(k));
+if (!titleKey || !descKey) throw new Error('Card props: ' + Object.keys(kpi.componentProperties).join(','));
+kpi.setProperties({ [titleKey]: PAGE.title, [descKey]: PAGE.desc });
+const badge = kpi.findAll(n => n.type === 'INSTANCE' && /badge/i.test(n.name))[0];
+if (badge) { const t = badge.findAll(n => n.type === 'TEXT')[0]; if (t) await setChars(t, PAGE.badge); }
+
+// 3. the Add, in the filter row's actions cluster (skip where hasFilterRow is false)
+let addId = null;
+if (PAGE.hasFilterRow) {
+  const stack = await figma.getNodeByIdAsync(PAGE.filterSearchId);
+  if (!stack) throw new Error('no filter-search on this page');
+  stack.name = 'filter-search';
+  stack.paddingLeft = 8; stack.paddingRight = 8;
+  stack.setBoundVariable('paddingLeft', V('spacing/2')); stack.setBoundVariable('paddingRight', V('spacing/2'));
+  const bar = stack.children.find(c => c.layoutMode === 'HORIZONTAL') || stack;
+  bar.name = 'filter-bar'; bar.primaryAxisAlignItems = 'SPACE_BETWEEN'; bar.counterAxisAlignItems = 'CENTER';
+  bar.itemSpacing = 24; bar.setBoundVariable('itemSpacing', V('spacing/6'));
+  let actions = bar.children.find(c => c.name === 'actions');
+  if (!actions) {
+    actions = figma.createAutoLayout('HORIZONTAL', { name: 'actions', itemSpacing: 8 });
+    actions.fills = []; actions.clipsContent = false; actions.primaryAxisAlignItems = 'MAX'; actions.counterAxisAlignItems = 'CENTER';
+    bar.appendChild(actions); actions.layoutSizingHorizontal = 'HUG'; actions.layoutSizingVertical = 'HUG';
+    actions.setBoundVariable('itemSpacing', V('spacing/2'));
+  }
+  const srcAdd = await figma.getNodeByIdAsync('2353:17363');   // 5.1's New dashboard
+  const add = srcAdd.clone(); actions.appendChild(add);
+  const lk = Object.keys(add.componentProperties).find(k => /^Label/i.test(k));
+  add.setProperties({ [lk]: PAGE.addLabel, Size: 'sm', Style: 'default' });
+  add.name = `ui-button [${PAGE.addLabel}]`;
+  addId = add.id;
+}
+const f = await figma.getNodeByIdAsync(PAGE.frameId); await f.screenshot();
+return { rowId: row.id, kpiId: kpi.id, addId, rowKids: row.children.map(c => c.name) };
+```
+
+| Task | Page | colId | frameId | Title | Description | Badge | Add label | filter-search |
+|---|---|---|---|---|---|---|---|---|
+| 3 | 5.2 | parent of `2248:2172` | `2154:41830` | `3` | `Active banners` | `of 6` | `New banner` (move the existing button into `actions`) | `2334:12319` |
+| 4 | 5.3 | `2269:2989` | `2269:2988` | `2` | `Live promotions` | `ending soon` | `Promote a dashboard` | **none — see open question** |
+| 5 | 5.4 | `2270:3090` | `2270:3089` | `3` | `Active redirects` | `2,306 hits` | `New redirect` | **none — see open question** |
+| 6 | 6.1 | `2268:2857` | `2268:2856` | `4` | `Admins` | `5 requesters` | — (`hasFilterRow: false`; adds go on the section headers, Task 6 Step 2 unchanged for that part) | n/a |
+
+### Open question blocking Tasks 4 and 5
+
+**5.3 Promotions and 5.4 URL Redirects have no filter row at all** — their content columns are `[page-heading, ui-table, body]`. The amended pattern puts the Add in a filter row they do not have. Two ways out, owner's call before those tasks run:
+
+- **(a) Give them one**, with axes taken from their own `Status` column — 5.3: `All · Live · Scheduled · Ended`; 5.4: `All · Active · Inactive`. Consistent with 5.1, 5.2, 5.6 and 2.1–2.5, and the axes already exist as data. Adds a filter control to two pages that did not ask for one.
+- **(b) A bare actions row** above the table: `filter-bar` holding only `[spacer, actions]`. Minimal, no invented filters, but a row that exists solely to hold one button.
+
+Until this is answered, Tasks 4 and 5 stop after their heading row.
 
 ## File Structure
 

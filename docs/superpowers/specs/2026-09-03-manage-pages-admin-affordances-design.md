@@ -27,36 +27,62 @@ Only 5.2 has a heading row at all; 5.1, 5.3, 5.4 and 6.1 have a bare `page-headi
 7. **6.1's two adds live on their section headings** (`Add admin`, `Grant request access`), each beside the table it feeds; the page heading carries the KPI only.
 8. **Add drawers are not drawn.** An add is the page's edit drawer with empty fields and a different title and verb — the recorded "same drawer, different header/verb" principle. Each page's doc panel states this.
 
-## 1 · Heading row
+## 1 · Heading row — the KPI only
 
-Every in-scope page gets the LAND shape. Reference: `1.1`'s `page-heading row` (`2293:5143`).
+**Revised 2026-09-03 after the owner built and rejected the first shape.** The heading row originally held the title, the KPI *and* the Add. The owner's objection: it read badly. The diagnosis that stuck — a KPI is a **surface** (fill, border, radius, 82px) and a button is a **control** (36px); side by side at the same altitude they read as two unrelated widgets bolted to the title, and the heaviest element on the row was the least actionable one. **The Add moved to the filter row (§2); the heading row holds one object.**
+
+Reference implementation: **5.1 as built** (`page-heading row` `2349:5411`).
 
 ```
-page-heading row   HORIZONTAL · gap 32 (spacing/8) · MIN/MIN · FILL/HUG
+page-heading row   HORIZONTAL · gap 64 (spacing/16) · MIN/MIN · FILL/HUG
 ├─ page-heading    FILL            (existing frame, unchanged)
-├─ kpi             HUG             ui-card [stat — …], Card Size=sm
-└─ actions         HUG · gap 16 (spacing/4) · MIN/CENTER
-   └─ ui-button [New …]            Variant=default, Style=default, Size=default
+└─ kpi             HUG             Card · Size=sm
 ```
 
-- On 5.1, 5.3, 5.4 and 6.1 the row is **created** and the existing `page-heading` moved into it at the same column index. On 5.2 the existing `page-heading row` (`2248:2172`) gains `kpi` and its loose `ui-button [New banner]` moves into a new `actions` frame — the same fix the LAND rows got.
-- 6.1's row is `[page-heading, kpi]` — no `actions` (decision 7).
-- The KPI is a clone of 1.1's `ui-card [stat — pending approvals]` (`Card` set `1812:800`) with `Size=sm`. Its three text nodes are named `stat value`, `stat title` and `stat caption` and live inside a nested stat instance (`…;1811:810;…`) — set them by name, never by index (the recorded findAll-order lesson). Width hugs; no fixed width.
-- Top-aligned (`MIN`) so the title, the tile and the button share the row's top edge. The tile's bottom edge will sit below the description; that is accepted — centring would float the button mid-tile.
+- On 5.1, 5.3, 5.4 and 6.1 the row is **created** and the existing `page-heading` moved into it at the same column index. On 5.2 the existing `page-heading row` (`2248:2172`) gains `kpi`, and its loose `ui-button [New banner]` moves into the filter row's `actions` (§2) rather than into a heading-row `actions`.
+- **Gap is 64 (`spacing/16`), not the LAND rows' 32.** Different content: a LAND row is `[heading, actions]` — a title and a control — while a MANAGE row is `[heading, kpi]`, a title and a surface, which needs the wider channel to stop reading as crowded. The two shapes are deliberately not unified.
+- **The KPI uses Card's own header API, not a cloned stat tile.** `Show header = true`, `Title` = the number, `Description` = the label, `Show header action = true` carrying a `ui-badge` for the qualifier; `Show body`, `Show media`, `Show cover`, `Show footer`, `Show overline` all off. The first attempt cloned 1.1's `ui-card [stat — …]` and hugged its slot content by hand — that produced a 488px tile whose "hug" resolved to a FILL slot's fixed width, and it would drift on any Card update. **Build it from the props; do not clone the LAND stat tile.**
+- Top-aligned (`MIN`) so the title block and the tile share the row's top edge.
 
 ### KPI content
 
-| Page | Value | Label | Qualifier | Derivation |
+Three slots, matching the Card props: **`Title`** (the number), **`Description`** (what it counts), **header action** (a `ui-badge` qualifier, kept to two or three words).
+
+| Page | Title | Description | Badge | Derivation |
 |---|---|---|---|---|
-| 5.1 | 201 | Published | across 3 products | page copy ("201 published") and 1.1's tile agree |
-| 5.2 | 3 | Active | of 6 · 1 scheduled | count of cards whose switch is on and status is `active` |
-| 5.3 | 2 | Live | ending within 30 days | rows whose `Status` reads Live — Originations Daily Vol and Portfolio Risk Summary (1 Scheduled and 2 Ended rows are not counted) |
-| 5.4 | 3 | Active redirects | 2,306 hits this month | rows whose `Status` reads Active (the `/reports/q2-forecast` row is Inactive); qualifier is the sum of the `Hits` column over **all four** rows — 847 + 213 + 1,204 + 42 — because a hit on a now-inactive redirect still happened |
-| 6.1 | 4 | Admins | 5 with request access | row counts of the two tables |
+| 5.1 | 201 | Published dashboards | `Live` | page copy ("201 published") and 1.1's tile agree — **as built, and the reference for the other four** |
+| 5.2 | 3 | Active banners | `of 6` | count of cards whose switch is on and status is `active` |
+| 5.3 | 2 | Live promotions | `ending soon` | rows whose `Status` reads Live — Originations Daily Vol and Portfolio Risk Summary (1 Scheduled and 2 Ended rows are not counted) |
+| 5.4 | 3 | Active redirects | `2,306 hits` | rows whose `Status` reads Active (the `/reports/q2-forecast` row is Inactive); the badge is the sum of the `Hits` column over **all four** rows — 847 + 213 + 1,204 + 42 — because a hit on a now-inactive redirect still happened |
+| 6.1 | 4 | Admins | `5 requesters` | row counts of the two tables |
 
 The implementation records each derived value in the ledger beside the rows it was read from.
 
-## 2 · Add
+**Open, owner's call:** 5.1's tile says `201 · Published dashboards · Live` while the description directly above it reads *"201 published across the products you administer."* The number, the word "published" and the liveness are each stated twice. Recorded as built rather than redesigned; making the badge carry something the prose does not (`3 unreachable`) would fix it, and the same question applies to every page whose description already quotes its count.
+
+## 2 · Add — right-aligned in the filter row
+
+**Revised 2026-09-03.** The Add sits in the filter row's right-hand `actions` cluster, not in the heading row. Reference implementation: **5.1 as built** (`filter-search` `2154:896`).
+
+```
+filter-search   VERTICAL · gap 4 (spacing/1) · pad 0/8/0/8 (spacing/2) · FILL/HUG
+├─ filter-bar   HORIZONTAL · gap 24 (spacing/6) · SPACE_BETWEEN/CENTER · FILL/HUG
+│  ├─ <axes>    HUG    one toggle group, or an `axes` frame when there are two
+│  └─ actions   HUG · gap 8 (spacing/2) · MAX/CENTER
+│     └─ ui-button [New …]   Variant=default, Style=default, Size=sm, leading + glyph
+└─ ui-input [search …]   FILL   (where search stacks — see below)
+```
+
+Four rules this settles:
+
+- **The Add is labelled and `Style=default`.** A bare ghost `+` was tried and rejected: it has no accessible name, and beside a filter control a `+` reads as "add a filter", not "create a dashboard". This is the same finding the critique already recorded against `+ Add widget` on 1.2.
+- **`Size=sm`, matching the row.** The toggle group and the search input are both `sm`; an `xs` Add was the only `xs` control on the page and rendered the primary action smaller than the tools beside it.
+- **No sort control.** One was drawn and removed — the table header already sorts every column, and a second sort affordance in the filter row is a competing route to the same thing.
+- **The cluster hugs.** It was briefly `FIXED` at 385px for ~205px of content; a fixed width there drifts the moment the row changes.
+
+**Naming follows 5.2/4.4**, which already had the two-level shape: the vertical stack is `filter-search`, the horizontal row inside it is `filter-bar`, the right group is `actions` (the same name the LAND heading rows use for their button cluster). 5.1 had these inverted — its vertical stack was called `filter-bar` and the row inside it `Frame 1` — and was corrected.
+
+**Where search goes is decided by fit, not by symmetry.** At 1008 wide with one axis (5.1, 5.6) or two (2.1–2.5) the row has room for search; at 880 wide with two axes (5.2, 4.4) it does not, and search stacks full-width below. Both are the same `filter-search` shape — search is simply the stack's second child or the row's middle child. **Existing screens keep whichever they have**; this spec does not move search.
 
 | Page | Button | Opens |
 |---|---|---|
@@ -135,7 +161,8 @@ Nine new frames. Pages 5.1–5.6 are pages, not states, so sub-states take a let
 
 ## Verification (the plan's exit criteria)
 
-1. Every in-scope page's heading row is `[page-heading, kpi, actions]` (6.1: `[page-heading, kpi]`), gaps bound, `actions` at 16.
+1. Every in-scope page's heading row is `[page-heading, kpi]` at gap 64 bound, `MIN/MIN`, with the KPI built from Card's header props (`Show header` on, `Show body`/`media`/`cover`/`footer`/`overline` off).
+1b. On 5.1–5.4 the filter block is `filter-search` (gap 4 bound, pad 0/8/0/8 bound) → `filter-bar` (gap 24 bound, `SPACE_BETWEEN`) → `[<axes>, actions]`, with `actions` hugging and holding exactly one `Style=default, Size=sm` labelled Add and no icon-only buttons. 6.1 has no filter row; its two adds sit on the section headers.
 2. Each KPI value equals its derivation in §1 when recomputed from the page's rows.
 3. Every "a" frame's menu items match §3 in order; exactly the listed removals are destructive.
 4. Every "b" frame's footer is `[ghost Cancel sm, default primary sm]`; fields match §4 in order and component.
