@@ -41,7 +41,7 @@ page-heading row   HORIZONTAL · gap 32 (spacing/8) · MIN/MIN · FILL/HUG
 
 - On 5.1, 5.3, 5.4 and 6.1 the row is **created** and the existing `page-heading` moved into it at the same column index. On 5.2 the existing `page-heading row` (`2248:2172`) gains `kpi` and its loose `ui-button [New banner]` moves into a new `actions` frame — the same fix the LAND rows got.
 - 6.1's row is `[page-heading, kpi]` — no `actions` (decision 7).
-- The KPI is a clone of 1.1's `ui-card [stat — pending approvals]` (`Card` set `1812:800`) with `Size=sm`. It carries three text lines — value, label, qualifier — exactly as the source tile does. Width hugs; no fixed width.
+- The KPI is a clone of 1.1's `ui-card [stat — pending approvals]` (`Card` set `1812:800`) with `Size=sm`. Its three text nodes are named `stat value`, `stat title` and `stat caption` and live inside a nested stat instance (`…;1811:810;…`) — set them by name, never by index (the recorded findAll-order lesson). Width hugs; no fixed width.
 - Top-aligned (`MIN`) so the title, the tile and the button share the row's top edge. The tile's bottom edge will sit below the description; that is accepted — centring would float the button mid-tile.
 
 ### KPI content
@@ -50,8 +50,8 @@ page-heading row   HORIZONTAL · gap 32 (spacing/8) · MIN/MIN · FILL/HUG
 |---|---|---|---|---|
 | 5.1 | 201 | Published | across 3 products | page copy ("201 published") and 1.1's tile agree |
 | 5.2 | 3 | Active | of 6 · 1 scheduled | count of cards whose switch is on and status is `active` |
-| 5.3 | *count* | Live | ending within 30 days | number of table rows whose `Status` cell reads live/active; the implementation reads the rows and writes the number |
-| 5.4 | 4 | Active redirects | *sum* hits this month | rows with `Status` active; qualifier is the sum of the `Hits` column, formatted with a thousands separator |
+| 5.3 | 2 | Live | ending within 30 days | rows whose `Status` reads Live — Originations Daily Vol and Portfolio Risk Summary (1 Scheduled and 2 Ended rows are not counted) |
+| 5.4 | 3 | Active redirects | 2,306 hits this month | rows whose `Status` reads Active (the `/reports/q2-forecast` row is Inactive); qualifier is the sum of the `Hits` column over **all four** rows — 847 + 213 + 1,204 + 42 — because a hit on a now-inactive redirect still happened |
 | 6.1 | 4 | Admins | 5 with request access | row counts of the two tables |
 
 The implementation records each derived value in the ledger beside the rows it was read from.
@@ -70,7 +70,7 @@ None of these add states is drawn (decision 8); each page's doc `body` panel gai
 
 **5.3 copy change** — the description currently reads: *"Every promotion comes from an approved Promote request and ends on its own date without anyone doing anything."* It becomes: *"Most promotions come from an approved Promote request; a platform admin can also promote a dashboard directly. Every promotion ends on its own date without anyone doing anything."*
 
-**6.1 section headings** become `[section heading text, spacer (FILL), ui-button]` — the existing section-header shape from the LAND frames (`section header` = heading · spacer · action), button `Style=default, Size=sm`.
+**6.1 section headings** are today two bare `section heading` TEXT nodes sitting directly in the content column, above each table. Each is wrapped into a `section header` frame — the LAND shape (`2190:1036`): `[section heading TEXT, spacer (FILL), ui-button (HUG)]`, HORIZONTAL, gap 8 (`spacing/2`), cross-axis CENTER — with the button `Style=default, Size=sm`. The `[section header, table]` pair then sits in a `section — admins` / `section — request access` frame at gap 8, so 6.1's sections match the model asserted on the LAND frames.
 
 ## 3 · Row menu (`⋯`) — frame "a" per page
 
