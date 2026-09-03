@@ -3217,6 +3217,27 @@
           "fiveThreeCopyChanged": "'Every promotion comes from an approved Promote request…' -> 'Most promotions come from an approved Promote request; a platform admin can also promote a dashboard directly. Every promotion ends on its own date without anyone doing anything.' The page can no longer claim promotions are request-only now that it has a Promote a dashboard action.",
           "readOnlyPagesUnchanged": "5.5 Usage Analytics and 5.6 Activity keep no KPI and no Add — nothing to add on an analytics page or a log. 5.6 already had the right filter-bar geometry (axes left, search right, gap and padding bound) so it needed no change. The 2.x queue frames and 4.3/4.5 likewise already match: axes left, search right, no Add.",
           "verification": "Assertion over 5.1, 5.1a, 5.1b, 5.2, 5.3, 5.4, 6.1: heading row [page-heading, kpi] at 64 bound MIN/MIN; each KPI reads its own page’s numbers; filter-bar 24 bound, SPACE_BETWEEN, pad 0/8/0/8 bound, actions last; every Add Style=default Size=sm with the right label. 0 violations. designCheck over all seven: 0/0/0/0/0. 5.1a still holds its row menu (Edit · Promote · View usage · Decommission) and 5.1b its Edit dashboard drawer."
+        },
+        "editPaths2026_09_03": {
+          "what": "Every MANAGE/CONFIGURE page now has its edit path drawn. Nine frames: 5.1a/5.1b (built earlier), 5.2a, 5.3a/5.3b, 5.4a/5.4b, 6.1a/6.1b. Each 'a' opens the row menu on its table's SECOND row so row 1 stays a clean reference; each 'b' puts that same row's values in a drawer, so a reader can walk a to b and see one item.",
+          "ids": {
+            "5.3a": "2366:6025",
+            "5.3b": "2367:6188",
+            "5.4a": "2367:6578",
+            "5.4b": "2367:51258",
+            "6.1a": "2368:6741",
+            "6.1b": "2368:51488",
+            "5.2a": "2369:7116"
+          },
+          "menus": "5.1a Edit · Promote · View usage · — · Decommission | 5.3a Edit dates · Open dashboard · — · End promotion early | 5.4a Edit · Test link · — · Remove redirect | 6.1a Edit scope · — · Revoke admin. All cloned from 2.4 and anchored under row 2. 5.2 has no menu — its cards already carry Switch · Edit · Delete.",
+          "destructiveIsATokenNotAVariant": "DropdownMenu/Item has NO destructive variant — its only axis is State (default/hover/disabled), which CLAUDE.md already records. Rather than add an axis to a shipped component mid-pass, the two true removals (Remove redirect, Revoke admin) have their label fill bound to status/error/text; every other item stays on text/foreground. Decommission and End promotion early are deliberately NOT red — a reversible lifecycle move dressed as a deletion tells the admin something untrue. Adding a real destructive variant to the set remains the better long-term fix.",
+          "assertOnTheRESOLVEDVariableNotOnItsPresence": "The first destructive assertion tested 'does this label have a bound fill' and reported all four items red on every menu — because a PLAIN item's label is also bound, to text/foreground. Resolving each binding to its variable NAME and matching /error/ gave the real answer: [], [], [2], [1]. A binding check that does not read what it is bound to proves nothing.",
+          "drawers": "5.1b Edit dashboard (4.5's, verbatim) | 5.2a Edit banner (4.4's, diff rows stripped) | 5.3b Edit promotion: Dashboard disabled · Starts · Ends · Reason | 5.4b Edit redirect: From · To · Reason · Status | 6.1b Edit admin: Person disabled · Administers as three Checkbox rows. All carry the recorded direct-edit description and a ghost Cancel / default Save changes footer at sm.",
+          "theValueIsThePlaceholderProp": "An Input in these drawers shows its value through Placeholder#192:52 with variant Filled=True — not through a text node — and NativeSelect uses Value#205:26. Setting values by property rather than by poking text nodes is what makes the drawers survive a component update. The label, by contrast, IS a plain TEXT node named 'label' inside the instance.",
+          "stripTheDiffRowsWhenAnApplyBecomesAnEdit": "4.4's drawer is a request-driven APPLY: every field carries a 'previous value' TEXT reading 'was …'. Cloning it for a manual edit means removing those three — an authored edit has no prior proposal to diff against. Same drawer, different header and verb; the diff rows are the part that does not survive the change of path.",
+          "aClonedOverlayKeepsTheOldFrameHeight": "5.1b's drawer and scrim were still 572 tall inside a 546 frame after the owner rebuilt 5.1 — the base got shorter and the absolutely-positioned children did not follow. Any a/b frame re-cloned after its base changes height needs its scrim and drawer resized; the assertion now checks drawer height equals frame height.",
+          "notDrawn": "Add states (each Add opens its page drawer with empty fields, a different title and a Create verb) and 6.1’s request-access menu and drawer — both stated on the doc panels rather than drawn, per the spec.",
+          "verification": "Assertion over all nine: menu items in order, exactly one separator, menu absolutely positioned, error colouring only on Remove redirect and Revoke admin; every drawer titled correctly with the verbatim description, flush right at full height over a full-frame scrim, footer ghost Cancel sm + default Save changes sm, and no surviving diff rows. 0 violations. designCheck over all fourteen frames: 0/0/0/0/0."
         }
       }
     }
