@@ -16,21 +16,24 @@ const meta: Meta<typeof Toggle> = {
       changelog: [
         {
           date: '2026-09-04',
-          summary: 'Documented (not fixed): the pressed `plain` toggle is hard to pick out in dark. --primary-text is NOT the answer.',
+          summary: 'The unpressed `plain` label drops to regular weight, so you can tell which filter is active in dark mode.',
           detail:
-            'No code change — recording a measured dead end so it is not retried. `plain` marks its pressed item ' +
-            'with --foreground against --muted-foreground plus a 500->600 weight step. That pairing is 2.36:1 in ' +
-            'light but 1.18:1 in dark (#f8fafc vs #e2e8f0), so in dark the weight step at 14px is carrying the ' +
-            'entire state and the bar reads as having no selection. The obvious fix — move the pressed label to ' +
-            '--primary-text — was implemented and measured, and it is WORSE in the untethered theme: 1.49:1 light ' +
-            'and 1.14:1 dark, because base --primary is slate (#cbd5e1 dark) and offers no hue. It only helps under ' +
-            'the six brand themes that remap --primary to a real hue, and in Figma not even those, where the ' +
-            'variable resolves the same under all seven brands. test:contrast did not catch it because it gates ' +
-            'text against SURFACES, and both labels clear AA against the background — the failure is between two ' +
-            'foregrounds, which nothing currently gates. Root cause is --muted-foreground in dark sitting one step ' +
-            'from --foreground, which is a token decision affecting every muted/normal text pair in the library ' +
-            '(same origin as the Tabs indicator finding). Options on the table: retheme dark --muted-foreground, ' +
-            'or use the `line` variant in filter bars so a --primary bar carries the state instead of colour.',
+            '`.ui-toggle--plain` goes from `--font-medium` to `--font-normal`; pressed stays `--font-semibold`, so ' +
+            'the step is now 400->600 instead of 500->600. The variant leaned on colour plus one weight step, and ' +
+            'the colour half does not exist in dark: --foreground against --muted-foreground is 2.36:1 in light but ' +
+            '1.18:1 in dark (#f8fafc vs #e2e8f0), leaving one weight step at 14px to carry the whole state. Weight ' +
+            'is the right lever precisely because it is not a hue, so no theme or mode can collapse it.\n\n' +
+            'The 500 floor existed on the theory that 400 would reflow the bar as the selection moved. Measured ' +
+            'against the real variable Inter at 14px, an item changes width by 0.53-1.05px on 500->600 and ' +
+            '1.06-2.11px on 400->600 — the entire cost is about one pixel, so the argument does not survive being ' +
+            'measured. `line` is untouched; its --primary bar is already a non-chromatic marker.\n\n' +
+            'Recorded so it is not retried: moving the pressed label to `--primary-text` was built and measured the ' +
+            'same day and is WORSE (1.49:1 light, 1.14:1 dark), because the untethered brand’s --primary is slate ' +
+            '(#cbd5e1 dark) and offers no hue; in Figma that variable resolves identically under all seven brands. ' +
+            'It was reverted. Note test:contrast cannot catch any of this — it gates text against SURFACES, and ' +
+            'both labels clear AA against the background. The failure is between two foregrounds, which nothing ' +
+            'gates. The deeper cause, still open, is dark --muted-foreground sitting one step from --foreground, ' +
+            'which flattens every muted/normal text pair in the library (same origin as the Tabs indicator finding).',
         },
         {
           date: '2026-08-27',

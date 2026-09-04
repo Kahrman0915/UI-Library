@@ -3372,6 +3372,17 @@
           "tokens": "Matches the ROUTES panel exactly: VERTICAL, itemSpacing spacing/6, padding spacing/8, radius/xl, fill surface/background, stroke surface/border at border-width/100 bound per side. Text styles base/leading-5/Semibold, sm/leading-normal/Normal, xs/leading-normal/Medium Wide, sm/leading-normal/Semibold.",
           "lint": "design-check all-zero across all five checks; stroke weight bound on every non-zero side."
         }
+      },
+      "togglePlainWeightFix2026_09_04": {
+        "note": "Supersedes the reverted colour attempt recorded in blockersPanelAndToggleFinding2026_09_04. This one shipped.",
+        "decision": "Owner's original instinct - drop the unpressed plain toggle to normal weight - was never tested; the colour option was built instead and failed. Tested it properly and it works.",
+        "change": "src/components/Toggle/Toggle.scss: .ui-toggle--plain font-weight --font-medium -> --font-normal. Pressed stays --font-semibold, so the step is 400->600 instead of 500->600. One declaration; everything else in the diff is comments.",
+        "whyWeightAndNotColour": "Weight is not a hue, so no mode or brand can collapse it. The colour half of this variant's signal does not exist in dark: --foreground vs --muted-foreground is 2.36:1 light but 1.18:1 dark.",
+        "reflowObjectionDisproved": "The 500 floor existed because a comment claimed 400 would reflow the filter bar as the selection moved. Measured in a browser against the repo's real variable Inter at 14px, on the actual labels: an item's width changes 0.53-1.05px on 500->600 and 1.06-2.11px on 400->600. Worst case is 2.11px on 'Archived'. The whole cost of the extra step is about one pixel. Numbers per label - All 16.45/16.98/17.52, Published 64.98/65.97/66.95, Under review 88.19/89.08/89.95, Archived 58.70/59.77/60.81 at 400/500/600.",
+        "figma": "Six unpressed plain variants moved from {size}/leading-normal/Medium to {size}/leading-normal/Normal - nodes 1736:390, 1736:393, 1736:402, 1736:405, 1736:414, 1736:417. Asserted: 6 unpressed = Normal, 6 pressed = Semibold, all 12 line variants untouched at Medium.",
+        "lineUntouched": "line keeps 500/500 - its --primary underline is already a non-chromatic marker, so it never had this problem.",
+        "blockersPanelUpdated": "Blocker 5 (node 2428:9321) rewritten: the toggle is fixed, what stays open is dark --muted-foreground sitting 1.18:1 from --foreground, which flattens every muted-versus-normal text pair in the library. Layer name updated to match.",
+        "stillOpen": "Two owner calls. (1) Retheme dark --muted-foreground, which touches the whole library. (2) Add foreground-versus-foreground pairings to scripts/contrast-check.mjs - it currently gates text against SURFACES only, which is exactly why this shipped invisible: both labels clear AA against the background."
       }
     }
   },

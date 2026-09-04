@@ -94,21 +94,22 @@
     }
   }
 
-  // plain: weight is the only structural signal, so it steps 500 -> 600 rather
-  // than 400 -> 600. Bold text is wider than regular and a filter bar reflows
-  // every time the selection moves; one step keeps that shift near-invisible
-  // while still reading as bolder. Colour does the rest of the work.
+  // plain: weight steps 400 -> 600. Weight is doing nearly all the work here,
+  // because the colour pair cannot — pressed/unpressed is --foreground vs
+  // --muted-foreground, 2.36:1 in light but only 1.18:1 in dark (#f8fafc vs
+  // #e2e8f0). A signal that survives both modes has to be non-chromatic.
   //
-  // KNOWN WEAK IN DARK — do not "fix" this with --primary-text. Measured
-  // 2026-09-04: pressed/unpressed is --foreground vs --muted-foreground, which
-  // is 2.36:1 in light but 1.18:1 in dark (#f8fafc vs #e2e8f0), so in dark the
-  // one weight step is carrying the whole state. Swapping the pressed label to
-  // --primary-text makes it WORSE in the base theme (1.49 light / 1.14 dark),
-  // because base --primary is slate #cbd5e1 and has no hue to offer. The root
-  // cause is --muted-foreground in dark sitting too close to --foreground; it
-  // is a token-level question, not a Toggle one. See the Toggle changelog.
+  // This was 500 -> 600, on the theory that 400 would reflow the bar as the
+  // selection moved. Measured 2026-09-04 against the real variable Inter at
+  // 14px: an item changes width by 0.53-1.05px on 500 -> 600 and 1.06-2.11px
+  // on 400 -> 600. The whole cost of the extra step is about ONE PIXEL, so the
+  // reflow argument does not survive being measured. Don't reinstate 500.
+  //
+  // Do NOT reach for --primary-text instead. It was built and measured the
+  // same day and is worse (1.49 light / 1.14 dark) because the untethered
+  // brand's --primary is slate and offers no hue. See the Toggle changelog.
   &--plain {
-    font-weight: var(--font-medium);
+    font-weight: var(--font-normal);
 
     &.ui-toggle--pressed {
       font-weight: var(--font-semibold);
