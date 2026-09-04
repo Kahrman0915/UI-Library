@@ -3238,6 +3238,20 @@
           "aClonedOverlayKeepsTheOldFrameHeight": "5.1b's drawer and scrim were still 572 tall inside a 546 frame after the owner rebuilt 5.1 — the base got shorter and the absolutely-positioned children did not follow. Any a/b frame re-cloned after its base changes height needs its scrim and drawer resized; the assertion now checks drawer height equals frame height.",
           "notDrawn": "Add states (each Add opens its page drawer with empty fields, a different title and a Create verb) and 6.1’s request-access menu and drawer — both stated on the doc panels rather than drawn, per the spec.",
           "verification": "Assertion over all nine: menu items in order, exactly one separator, menu absolutely positioned, error colouring only on Remove redirect and Revoke admin; every drawer titled correctly with the verbatim description, flush right at full height over a full-frame scrim, footer ghost Cancel sm + default Save changes sm, and no surviving diff rows. 0 violations. designCheck over all fourteen frames: 0/0/0/0/0."
+        },
+        "records2026_09_03": {
+          "what": "Task 7: the flow map, the READ FIRST panel and the per-page doc bodies now record the edit paths, and the spec’s five exit criteria are asserted green.",
+          "theFlowMapIsNotOneBoxPerFrame": "The plan assumed the map lists frames one per line. It does not — it is a laid-out diagram of six auto-layout stage columns whose boxes are one per IDEA, with ranges where states belong together: '1.2–1.4 Customize it', '4.1–4.2 Approved, not applied', '4.3–4.4 Drawer, prefilled'. Adding nine boxes, one per new frame, would have contradicted its own convention. Five went in instead, each covering a page's edit path and inserted directly after that page's box so the column still reads 5.1, 5.1a–5.1b, 5.2, 5.2a … The columns are VERTICAL auto-layout at gap 8, so insertChild reflowed everything; the map has 232px of slack left.",
+          "newBoxes": {
+            "5.1a–5.1b Edit a dashboard": "2373:7506",
+            "5.2a Edit a banner": "2373:7509",
+            "5.3a–5.3b Edit a promotion": "2373:7512",
+            "5.4a–5.4b Edit a redirect": "2373:7515",
+            "6.1a–6.1b Edit an admin": "2373:7518"
+          },
+          "docPanels": "READ FIRST's status body carries the page-wide rule (KPI + Add + a/b edit path on 5.1–5.4 and 6.1; an Add is the same drawer empty with a Create verb; state changes stay plain, only true removals are red; 5.5 and 5.6 stay read-only). The per-page menu and drawer wording went on the three pages that HAVE a doc body — 5.3, 5.4 and 6.1 (both of its bodies). 5.1 and 5.2 have no body panel, so the rule is stated once centrally rather than inventing panels for them.",
+          "theFlowMapsRadiiWereNeverBound": "The final lint returned 124 unbound-geometry findings, every one a corner radius on the flow map: 25 boxes at 8 and the panel at 12, none bound — 104 of them pre-existing, 20 inherited by the five boxes cloned from them. Swept all 124 onto radius/lg and radius/xl by matching the literal to the token's value; 0 unmapped, 0 remaining. This is the file-wide rule already recorded for component-set radii — when the same unbound literal shows up across a page, sweep it rather than patch locally. Cloning a node inherits its debt: the clone was correct and still added 20 findings.",
+          "verification": "Exit criteria 1–5 asserted in one script — heading rows [page-heading, kpi] at 64 bound MIN/MIN with each page’s own KPI; filter-bars 24 bound, SPACE_BETWEEN, pad 0/8/0/8 bound, Add Style=default Size=sm with the right label; menu items in order with exactly one separator, absolutely positioned, error colouring resolved by variable NAME and present only on Remove redirect and Revoke admin; every drawer titled correctly with the verbatim description, flush right at full height over a full-frame scrim, footer ghost Cancel sm + default Save changes sm; the map contains all five new box labels; all four banner tiles read 3. 0 violations across 20 frames, and after the radius sweep designCheck is 0/0/0/0/0."
         }
       }
     }
