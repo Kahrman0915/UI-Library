@@ -3444,6 +3444,14 @@
         "bug_renameThenDelete": "A rewrite loop renamed 'row - message source' to 'row - message', and the following delete loop - which removed the banner-specific rows by name - then deleted the row that had just been written, leaving the ORIGINAL 'row - message' with the banner's copy. It rendered as a General request whose Message read '8:00 AM - 12:00 PM ET'. Caught in the screenshot, not the assertions, because the assertion only counted rows. Never rename into a namespace a later delete pass will sweep.",
         "bug_glyphIsNotAVariant": "Copying a FeaturedIcon's componentProperties (Color/Shape/Size/Appearance) does NOT move the icon - the glyph is a nested INSTANCE_SWAP, so the frame kept Icon/bell on a General request. Fixed with swapComponent against the source's mainComponent.",
         "lesson_cloneSubtree": "A freshly cloned frame's instance subtree is not queryable in the SAME script - findOne returns null. Clone in one call, mutate in the next. Hit twice now."
+      },
+      "separatorOrientationBug2026_09_04": {
+        "note": "Owner spotted it in the render: a stray vertical tick above the reply composer where a hairline should be.",
+        "bug": "All ten composer separators on the Admin Flow page were the VERTICAL variant - a 1x20 tick sitting above the field instead of a full-width rule. Cloning an instance copies its variant, and the source I cloned was 'ui-separator [filter axes]' from 2.1, which separates two toggle groups side by side and is therefore vertical by design.",
+        "whyItSurvived": "Three checks passed over it. design-check lint has nothing to say - a vertical separator is valid geometry with bound tokens and a real style. layoutSizingHorizontal = 'FILL' silently does nothing useful to a vertical separator. And 3.3a, the ONE admin frame built from a different clone source, happened to pick up a horizontal separator - so the only frame whose separator I had reason to trust was the only correct one.",
+        "fix": "Every 'ui-separator [composer]' on the page set to Variant=horizontal and FILL: 832x1 on all eleven frames. Section 3 relaid out afterwards because each frame lost ~19px of height; 3664x4116, no overlaps.",
+        "emphasisLadderChecked": "While in there, verified the button ladder reads correctly rather than trusting the render: Reply = default/outline, Deny = error/outline, Approve = default/default, Send reply = default/default (primary inside the composer, where it is the action), Send & close = default/outline, Close = default/ghost.",
+        "lesson": "Cloning an instance to reuse its tokens also inherits its VARIANT, and a variant can be semantically wrong while being structurally perfect. Clone from a source that plays the same role, not merely one that is the same component - and screenshot the first frame after adding a cloned component, which is the step I skipped here."
       }
     },
     "requestFlow2026_09_04": {
