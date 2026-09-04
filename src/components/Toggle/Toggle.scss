@@ -98,6 +98,15 @@
   // than 400 -> 600. Bold text is wider than regular and a filter bar reflows
   // every time the selection moves; one step keeps that shift near-invisible
   // while still reading as bolder. Colour does the rest of the work.
+  //
+  // KNOWN WEAK IN DARK — do not "fix" this with --primary-text. Measured
+  // 2026-09-04: pressed/unpressed is --foreground vs --muted-foreground, which
+  // is 2.36:1 in light but 1.18:1 in dark (#f8fafc vs #e2e8f0), so in dark the
+  // one weight step is carrying the whole state. Swapping the pressed label to
+  // --primary-text makes it WORSE in the base theme (1.49 light / 1.14 dark),
+  // because base --primary is slate #cbd5e1 and has no hue to offer. The root
+  // cause is --muted-foreground in dark sitting too close to --foreground; it
+  // is a token-level question, not a Toggle one. See the Toggle changelog.
   &--plain {
     font-weight: var(--font-medium);
 

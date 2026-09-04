@@ -3345,6 +3345,33 @@
         "dialogsAndToastsAreNotRoutes": "A confirm dialog opens over the screen you are on and returns you to it, so those rows say 'dialog' in Goes to rather than naming a frame. Same for toasts. Listing them as destinations would have made the queue look like it navigates away on every decision, which is the opposite of what 2.4 is for.",
         "theShellIsStatedAtTheTop": "The panel’s caption carries the thing a screen frame cannot show: every frame is its content column only, the sidebar exists as two reference frames, and so every route beginning “Sidebar” is real but invisible in the screens.",
         "verification": "Panel lint: unbound paint 0, unstyled text 0, generic names 0, unbound geometry 0, unbound stroke weight 0. READ FIRST relaid out to eight frames in a grid with the new panel in place; 0 overlaps, 0 out-of-bounds across the page."
+      },
+      "blockersPanelAndToggleFinding2026_09_04": {
+        "note": "Two owner decisions from 4 Sep. The toggle one was chosen, built, measured, disproved and reverted; the scheduling one was recorded rather than built, at the owner's instruction.",
+        "togglePressedColour_REVERTED": {
+          "decision": "Owner chose 'colour the active label' to fix not being able to tell which filter toggle is active.",
+          "built": "Toggle plain + Pressed=true label moved from text/foreground to text/primary-main-text, on all six variants (sm/default/lg x Disabled false/true), node ids 1736:396, 1736:399, 1736:408, 1736:411, 1736:420, 1736:423. Mirrored in src/components/Toggle/Toggle.scss.",
+          "disproved": "Measured worse in every case. Pressed-vs-unpressed contrast went 2.36:1 -> 1.49:1 in light and 1.18:1 -> 1.14:1 in dark. In Figma text/primary-main-text resolves to the SAME hex under all seven Brand modes (#2e3b4f light, #d2dbe5 dark) because it aliases primary-main, which no brand remaps. In code the base theme's --primary-main is slate (#cbd5e1 dark), so --primary-text has no hue to offer; only the six themed subtrees that remap --primary would benefit, and the Admin Flow screen frames pin no Brand mode, so they inherit Slate.",
+          "reverted": "All six variants restored to text/foreground and asserted (12 pressed = text/foreground, 12 unpressed = text/muted-foreground, zero primary-main-text left in the set). The SCSS diff is now comment-only; tsc and test:contrast pass.",
+          "whyTheContrastTestMissedIt": "test:contrast gates text against SURFACES. Both labels clear AA against the background (12.76:1 for the pressed one). The failure is between two FOREGROUNDS, which nothing in the suite currently gates.",
+          "rootCause": "--muted-foreground in dark (#e2e8f0) sits one step from --foreground (#f8fafc). Every muted-versus-normal text pair in the library collapses in dark, not just this control. Same origin as the recorded Tabs indicator finding.",
+          "openOptions": "Owner call, neither taken: (a) retheme dark --muted-foreground, which touches the whole library, or (b) use the line toggle variant in filter bars so a --primary bar carries the state instead of colour, which is a zero-code instance swap and is what Tabs already does.",
+          "recordedIn": "Toggle.stories.tsx changelog 2026-09-04 (a no-code-change entry, so the dead end is not retried) and a comment block in Toggle.scss."
+        },
+        "schedulingRecordedNotBuilt": {
+          "decision": "Owner: 'for now just list it as a blocker in the documentation.' Not built.",
+          "gap": "Approve and Apply both act immediately. Nothing in the flow can answer 'when'.",
+          "whatExists": "4.2's banner drawer already carries Starts and Ends, and 5.2's stated rule is that a banner displays only when its switch is on and today falls inside its dates - so banners already schedule themselves, but 4.2's copy reads as immediate and never says so. 4.1's dashboard form has no dates at all (Name, Project, Inventory, Lifecycle, Tableau link). 'Approved - not applied' is already a manual hold, but the queue's statuses do not separate applied from waiting, so nothing surfaces it.",
+          "whyNotDesigned": "A timed apply is a backend capability - a job that fires at a future time - not a screen. The capability has to be decided before a date picker goes onto 4.1 or 4.2."
+        },
+        "blockersPanel": {
+          "nodeId": "2428:9305",
+          "name": "5 BLOCKERS - what is not built",
+          "where": "Inside section '0 - READ FIRST' (2125:41604), placed right of the ROUTES panel at x 2976, y 1892. 1400x928. Asserted no overlap with any sibling.",
+          "rows": "Five, ordered by what stops a developer soonest: 1 scheduling, 2 Table not in code, 3 Table selected+hover token, 4 the app shell is drawn in no screen, 5 dark mode cannot distinguish an active filter.",
+          "tokens": "Matches the ROUTES panel exactly: VERTICAL, itemSpacing spacing/6, padding spacing/8, radius/xl, fill surface/background, stroke surface/border at border-width/100 bound per side. Text styles base/leading-5/Semibold, sm/leading-normal/Normal, xs/leading-normal/Medium Wide, sm/leading-normal/Semibold.",
+          "lint": "design-check all-zero across all five checks; stroke weight bound on every non-zero side."
+        }
       }
     }
   },

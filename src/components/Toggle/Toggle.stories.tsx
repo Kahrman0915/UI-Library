@@ -15,6 +15,24 @@ const meta: Meta<typeof Toggle> = {
       tags: ['aria-pressed'],
       changelog: [
         {
+          date: '2026-09-04',
+          summary: 'Documented (not fixed): the pressed `plain` toggle is hard to pick out in dark. --primary-text is NOT the answer.',
+          detail:
+            'No code change — recording a measured dead end so it is not retried. `plain` marks its pressed item ' +
+            'with --foreground against --muted-foreground plus a 500->600 weight step. That pairing is 2.36:1 in ' +
+            'light but 1.18:1 in dark (#f8fafc vs #e2e8f0), so in dark the weight step at 14px is carrying the ' +
+            'entire state and the bar reads as having no selection. The obvious fix — move the pressed label to ' +
+            '--primary-text — was implemented and measured, and it is WORSE in the untethered theme: 1.49:1 light ' +
+            'and 1.14:1 dark, because base --primary is slate (#cbd5e1 dark) and offers no hue. It only helps under ' +
+            'the six brand themes that remap --primary to a real hue, and in Figma not even those, where the ' +
+            'variable resolves the same under all seven brands. test:contrast did not catch it because it gates ' +
+            'text against SURFACES, and both labels clear AA against the background — the failure is between two ' +
+            'foregrounds, which nothing currently gates. Root cause is --muted-foreground in dark sitting one step ' +
+            'from --foreground, which is a token decision affecting every muted/normal text pair in the library ' +
+            '(same origin as the Tabs indicator finding). Options on the table: retheme dark --muted-foreground, ' +
+            'or use the `line` variant in filter bars so a --primary bar carries the state instead of colour.',
+        },
+        {
           date: '2026-08-27',
           summary: 'Gained a trailing icon.',
           detail:
