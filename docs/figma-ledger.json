@@ -3492,6 +3492,21 @@
         "survivingMentionsChecked": "Every remaining 'Request more information' on the page was classified rather than swept: three are text explaining the deletion, two are the ROUTES rows for the queue menu and bulk bar, and one is the menu item drawn on 2.4. All correct - the phrase is right in those places and wrong nowhere else.",
         "lesson": "Prose that describes layout or inventory goes stale the moment either changes, and nothing catches it - design-check lint reads tokens and geometry, never whether a sentence is still true. Both pages have now been read back once; a panel that COUNTS things or LISTS what is built should be re-read after any pass that adds a frame.",
         "lint": "Both panels at all zeros; section 0 re-fitted and the page re-spaced after the copy changed their heights."
+      },
+      "uxCopyPass2026_09_05": {
+        "note": "Content review of the product copy on both pages: em dashes removed and the voice levelled. Documentation panels were deliberately left alone - see scope.",
+        "scope": "Product copy only: every text node inside a screen frame on Admin Flow and Request Flow. 197 em dashes across 72 distinct strings, now zero. The documentation panels still hold 238 (154 admin, 84 request); they are dense reference prose for developers, not UX copy, so they were not touched.",
+        "notAFindAndReplace": "The em dashes were four different things and each needed a different answer. 62 were a bare dash used as an empty table cell, 12 were '- Select -' placeholders, roughly 20 were label separators, and the rest was real prose.",
+        "bestFinding_healthColumn": "28 of the bare dashes sat in the HEALTH column, where the data contract defines the values as ok / decommissioning / unreachable. The dash was hiding a real value: those rows are healthy and should say so. They now read OK, beside the existing unreachable and decommissioning badges. This is the one change that makes the screen say more than it did, rather than the same thing with different punctuation.",
+        "otherCells": "Trend -> 'No data'. Scope, Starts, Ends, Inventory and Link on the reference sheet -> 'None'. 'Granted by' read '-  founding admin' and '-  default', now 'Founding admin' and 'Default'.",
+        "selectPlaceholder": "'- Select -' became 'Select…' in 12 places, which is both dash-free and the better placeholder.",
+        "vocabularyUnified": "'Dashboard - Add', '- Promote' and '- Remove' became 'Add Dashboard', 'Promote Dashboard', 'Remove Dashboard'. That resolves a divergence the data contract had already flagged as open: the admin said 'Add Dashboard' and the requester said 'Dashboard - Add' for the same canonical value. Removing the dash forced the choice, and the admin wording won.",
+        "prose": "46 substring rewrites across 70 nodes. The dashes became full stops, commas, colons or semicolons depending on the join, and contractions were levelled - the copy had been mixing 'you won't' with 'it does not' in the same flow.",
+        "deliberatelyNotContracted": "The delay banner still reads 'Do not use these dashboards for reporting until this notice is removed.' It is a safety instruction; the full form is stronger and 'Don't' would soften it. Humanising is not the same as contracting everything.",
+        "annotationLeftDense": "ALL-CAPS designer notes on the screens (HITS IS THE ONLY COLUMN…, A promotion is a WINDOW…, THE BOTTOM OF THIS TABLE…) lost their em dashes but kept their density. They are notes to a developer, not UI copy - which is itself worth knowing, because annotation and product copy sit in the same frames and are easy to confuse.",
+        "menuDividers": "'Edit scope · — · Revoke admin' used a dash to mean a menu divider. Now written in words: 'Edit scope, a divider, then Revoke admin'.",
+        "openFinding": "The Health column now mixes a plain-text OK with badge-rendered unreachable and decommissioning. That inconsistency predates this pass (the dash was plain text too) but is more visible now that the cell carries a word. Making OK a success badge would settle it - not done, it is a component decision rather than a copy one.",
+        "verified": "Zero em dashes in product copy on both pages, asserted. No text overflows its container after the edits."
       }
     },
     "requestFlow2026_09_04": {
