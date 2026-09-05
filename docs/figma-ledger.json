@@ -3507,6 +3507,16 @@
         "menuDividers": "'Edit scope · — · Revoke admin' used a dash to mean a menu divider. Now written in words: 'Edit scope, a divider, then Revoke admin'.",
         "openFinding": "The Health column now mixes a plain-text OK with badge-rendered unreachable and decommissioning. That inconsistency predates this pass (the dash was plain text too) but is more visible now that the cell carries a word. Making OK a success badge would settle it - not done, it is a component decision rather than a copy one.",
         "verified": "Zero em dashes in product copy on both pages, asserted. No text overflows its container after the edits."
+      },
+      "uxCopyPassDocs2026_09_05": {
+        "note": "Second half of the copy pass: the 238 em dashes in the documentation panels, plus every layer and section name. Both pages are now completely free of them.",
+        "text": "238 dashes across 155 strings. 117 short ones were rewritten from an exact map, then 100 substring rewrites cleared the long-form panels - the behaviour spec alone held 54. Dashes became full stops, colons, semicolons, commas or parentheses depending on what the clause was doing; a blanket substitution would have made the prose choppy in about half of them.",
+        "names": "529 layer and section names carried one, from '① ADMIN — READ FIRST' down to 'case — tab switch — dirty form'. All now use the middle dot the file already uses as its separator. Library COMPONENT and COMPONENT_SET nodes were excluded so nothing in the shared library was renamed.",
+        "contentBugsFound": "Two references had gone stale against edits made earlier the same day. The flow-map rules panel still described the dashboard Health axis as '(—, decommissioning, unreachable)' when the screens now read OK, and the behaviour spec still quoted the select placeholder as '“— Select —”' after it became 'Select…'. Both were only visible because removing the dash forced a read of the sentence around it.",
+        "staleCountsFixed": "'PROTOTYPE WIRED 4 SEP 2026 — 125 CONNECTIONS, 9 FLOWS, 38 OF 43 FRAMES REACHABLE' was two passes out of date; now 150 connections and 44 of 49. The Table blocker said 'Eight of the ten screens need it', a count from before the requester half was included; now twenty.",
+        "fourMissedByPattern": "Four flow-map column labels used a DOUBLE-spaced dash ('ADD  —  no dashboard picker') and sat in a screen section rather than a documentation one, so both the section filter and the single-space patterns missed them. Caught by a final whole-page walk that checked names and text together rather than trusting the section filter.",
+        "alsoBound": "22 unbound gaps found while verifying - 20 ui-breadcrumb instances on the Request Flow page and one filter-bar on 2.1. Pre-existing and unrelated to the copy, but one line to fix. Both pages are now at zero unbound padding and gap.",
+        "verified": "Zero em dashes in any text or any layer name on either page. No text overflows its container, no section overlaps, every frame inside its own section. Documentation sections re-fitted and both pages re-spaced after the copy changed panel heights."
       }
     },
     "requestFlow2026_09_04": {
