@@ -3496,6 +3496,15 @@
         "columns": "0 documentation in numbered order. 1: My Requests + empty | Request detail + replying + closed. 3: four dashboard modes. 4: banner, no type -> standard -> custom -> scope menu. 5, 6: form + ready. 7: submitting -> submitted -> submitted-feature -> failed. 8: the three 1920 proofs.",
         "assertion": "The spec was checked against the section's actual children: every frame placed exactly once, zero missing, zero duplicated, zero unplaced. Then no section overlaps, no frame overlaps, every frame inside its own section.",
         "notRenamed": "The descriptive names were kept. They carry information a number would lose, and unlike 3.6 none of them misrepresents a state as a screen. If the two pages should share one numbering scheme that is a separate decision."
+      },
+      "numbered2026_09_05": {
+        "note": "All 31 Request Flow screen frames numbered, so both pages share one grammar.",
+        "scheme": "R + section + screen + optional letter for a state: R1.1, R1.1a, R3.3b. Same grammar as the admin page; the R says which half. The five documentation panels keep their circled marks and were deliberately skipped.",
+        "whyPrefixed": "Bare numbers would have collided - both pages would own a 3.3 and a 5.1a. That is survivable on a page by itself but not in section 8's user flows, which cite BOTH pages in one diagram: a step reading 4.1 beside a step reading 3.2 gives the reader no way to tell which page either is on. Owner chose the prefix over renumbering the admin side, which would have meant a second sweep across 48 ROUTES rows, the data contract, the flow map, the build list and the prototype layer names.",
+        "map": "R1.1/R1.1a My Requests + empty · R1.2/a/b Request detail, replying, closed · R2.1 chooser · R3.1-R3.4 with states, one column per dashboard mode · R4.1 + a/b/c banner · R5.1 + a general · R6.1 + a feature · R7.1 + a/b/c outcome · R8.1-R8.3 the 1920 proofs.",
+        "outcomeRenumbered": "First pass numbered the outcome screens R7.1/R7.2/R7.3 as three screens, and the layout verifier caught the disagreement: they sat in one column. They ARE one screen - section 7's build list already counted Outcome as one - so they became R7.1 with a/b/c, exactly as 5.1 treats its loading and failed states. The check was worth having; the numbering and the layout are now asserted to agree column by column.",
+        "adminDocsUpdated": "The build list's requester column and every requester step in the five user flows now cite R numbers, and the build panel's caption states the convention: bare numbers are the Admin Flow page, R numbers are the Request Flow page. One slip caught on readback - a generic replacement renamed the feature-request flow's final step to R1.2 before the specific rule could point it at R1.2b, the closed state.",
+        "notDone": "The Request Flow page's own behaviour spec and flow map still describe screens in prose without citing numbers. Nothing there is now false - the prose never used frame names as identifiers - but citing R numbers would make them navigable."
       }
     }
   },
