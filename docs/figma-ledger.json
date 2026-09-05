@@ -3525,6 +3525,13 @@
         "whySmallIsRight": "Reply is the quiet affordance at the foot of a thread, and on the four asset screens it sits above Deny and Approve. At default it competed with the decision bar; at sm it reads as subordinate, which matches the rule that the bar decides and the thread talks.",
         "notChanged": "Send reply and Send & close inside the expanded composer are still Size=default (3.1a, 3.2a, 3.3a, 3.4a, 3.5a, R1.2a), as is 'Send question' in the action-dialogs panel. Inside the composer Send reply IS the primary action, so default is defensible - but if the pair should match, that is one more sweep.",
         "layout": "Both pages relaid out after the 4px height change; no section overlaps, no frame overlaps, every frame inside its own section."
+      },
+      "replyFamilySize2026_09_05": {
+        "note": "The whole reply family is now Size=sm: 15 buttons across both pages.",
+        "changed": "Seven more set to sm - Send reply on 3.1a, 3.2a, 3.3a, 3.4a, 3.5a and R1.2a, plus Send & close on 3.3a. With the eight Reply buttons done earlier that is 15, asserted to be one size.",
+        "sendQuestionLeftAlone": "'Send question' in the ACTION DIALOGS panel stayed default, deliberately. Its four dialog siblings - Cancel, Approve request, Deny request, Delete banner - are all default, so matching it to the composer would have fixed one inconsistency by creating another inside the dialog footer. A button belongs to the surface it sits on, not to the family its label suggests.",
+        "hierarchyItProduces": "Composer actions are now lighter than the decision bar on every review screen: Reply and Send reply at sm, Approve, Deny, Close and Open a feature request at default. That reads the right way round - the bar decides, the thread talks.",
+        "layout": "Both pages relaid out again after the second 4px change; no section overlaps, no frame overlaps, every frame inside its own section."
       }
     },
     "requestFlow2026_09_04": {
