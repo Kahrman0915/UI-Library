@@ -3475,6 +3475,12 @@
         "readFirst": "Section 0 is not screen-numbered so the rule does not apply; it was laid out in its documentation order (① ② ②b ③ ④ ⑤, dialogs, then the two sidebar references) and resized, because the ROUTES panel had grown to 48 rows and was overflowing its own section.",
         "sectionSpacing": "All nine sections re-spaced left to right in numeric order at a 320 gap, y=0. Page is now 53366 wide. Asserted: no section overlaps, no frame overlaps inside any section, and every frame inside its own section's bounds.",
         "notDone": "The Request Flow page was left alone - its frames are named descriptively rather than N.Ma, so this rule has nothing to key on there. It would need either a renaming pass or a hand-made order."
+      },
+      "renameThreeSix2026_09_05": {
+        "note": "3.6 renamed to 3.3b, closing the one place where the numbering disagreed with the layout and with the build list.",
+        "why": "It was never a sixth review screen - it is the General review screen with the feature-request drawer over it. Section 7 already said 3.1-3.6 were ONE screen, and the reorganisation had to special-case it to stack under 3.3. The name was the thing that was wrong.",
+        "referencesUpdated": "Six, found by searching the page for the string rather than from memory: the frame itself, the flow-map box and its label, three ROUTES rows plus their three code cells, the SCREENS TO BUILD note ('3.1-3.6 + a' -> '3.1-3.5 + a/b'), and the user-flow step and its label. Asserted zero occurrences of 3.6 left in any layer name or text on the page.",
+        "layoutFollows": "Section 3 now sorts naturally with no override: 3.3 -> 3.3a -> 3.3b."
       }
     },
     "requestFlow2026_09_04": {
@@ -3483,7 +3489,14 @@
       "framesChanged": "'Request detail - needs your reply' and its @1920 proof both collapsed to a Reply button. Two new frames: 'Request detail - replying' (the expanded composer, plus the consequence line it never had) and 'Request detail - closed, became a feature request'.",
       "specUpdated": "The behaviour spec's line 'an Activity thread ending in a reply composer' now reads 'ending in a Reply button that expands the composer in place - collapsed by default... and the same interaction on both sides of the flow'.",
       "prototype": "The page had ZERO reactions before this - it was a static documentation page. Three were added: Reply on both detail frames to the replying state, and Send reply back to My Requests.",
-      "lint": "Zero findings on all four touched frames after binding four pre-existing unbound breadcrumb gaps to spacing/2."
+      "lint": "Zero findings on all four touched frames after binding four pre-existing unbound breadcrumb gaps to spacing/2.",
+      "reorganised2026_09_05": {
+        "note": "Same layout rule as the Admin Flow page: base screen at the top of a column, its states beneath, columns left to right.",
+        "howItWasGrouped": "The frames here are named descriptively, not N.Ma, so there is nothing for a numeric rule to key on. Grouped by base screen from an explicit spec instead - Add / Edit / Promote / Remove each own a column in section 3, and within a column the order is the progression: no selection, selected, ready to submit.",
+        "columns": "0 documentation in numbered order. 1: My Requests + empty | Request detail + replying + closed. 3: four dashboard modes. 4: banner, no type -> standard -> custom -> scope menu. 5, 6: form + ready. 7: submitting -> submitted -> submitted-feature -> failed. 8: the three 1920 proofs.",
+        "assertion": "The spec was checked against the section's actual children: every frame placed exactly once, zero missing, zero duplicated, zero unplaced. Then no section overlaps, no frame overlaps, every frame inside its own section.",
+        "notRenamed": "The descriptive names were kept. They carry information a number would lose, and unlike 3.6 none of them misrepresents a state as a screen. If the two pages should share one numbering scheme that is a separate decision."
+      }
     }
   },
   "aiComponents": {
