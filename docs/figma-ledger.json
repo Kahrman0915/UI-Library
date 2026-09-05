@@ -3604,6 +3604,14 @@
         "layout": "R1.1 grew 1619 → 1767 and sat on R1.1a. Column restacked at the 64 gap, section 1 now 2464x2636. This page's sections sit SIDE BY SIDE on one row (x re-spaced at 320), not stacked down the page like a first attempt assumed; that attempt was undone in the same session and every section is back at y=0. R6.1a, R7.1b and R7.1c moved to the same 64 state gap while every column was restacked. Asserted after: noSectionOverlaps, noFrameOverlaps, allInside all true; R1.1 lint all zeros.",
         "lesson": "Before re-spacing a page's sections, read their positions: Admin Flow stacks sections vertically, Request Flow lays them out horizontally. And a hand-written overlap test needs its own sanity check: a typo (a.y+b.height) reported two overlaps that did not exist.",
         "docs": "Flow map paragraph 2024:2502 said My Requests was the destination for three of the four branches; with feature requests tracked it is all four, and the sentence now says so. The behaviour spec and the status lifecycle paragraph already carried the reviewed-feature-request model from the earlier rewrite and needed nothing."
+      },
+      "r21ChooserFix2026_09_05": {
+        "note": "Owner: fix R2.1 (1820:44, the New Request chooser). The second row of option cards had collapsed to 1px, so the screen showed Banner / Notice and Dashboard and two hairlines where General Request and Feature Request should be.",
+        "cause": "Row 1's cards were FIXED at 242; row 2's were FILL vertically inside a row that HUGs its content. FILL inside HUG has nothing to fill, so the row hugged to 1px and the cards with it. The API reported every layer present and visible; only the render showed the loss.",
+        "fix": "Row 2 cards set FIXED at 242 to match row 1 (option · General Request 1820:37347, option · Feature Request 1820:37375). Frame 473 → 714, section 2 refitted to 1264x842, no overlaps, everything inside, lint all zeros.",
+        "copy": "Feature Request card description was 'Tracked in the public feature backlog', written when feature requests bypassed review. Now 'Reviewed by the admin team, then published to the public feature backlog.'",
+        "openNotFixed": "The Request Flow page has 3 reactions and 1 flow start across 31 screens (only R1.2, R1.2a and R8.2 carry any), so its prototype is essentially unwired, unlike Admin Flow's 165. R2.1's Select buttons route nowhere. Flagged to the owner as a separate job rather than folded into this fix.",
+        "lesson": "A FILL child inside a HUG parent on the same axis collapses silently. Render, don't just read: the tree looked complete."
       }
     }
   },
