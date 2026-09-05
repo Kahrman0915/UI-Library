@@ -3557,6 +3557,13 @@
         "bannersCorrection": "The BLOCKERS/rules text said Banners only lists active ones with no draft, scheduled or expired and no show/hide toggle. The owner flagged it and it was stale: 5.2 already carries draft / scheduled / active / expired badges, a Displaying switch per row and a state filter. Sentence on 2232:46655 rewritten to describe what 5.2 actually shows.",
         "layout": "3.6 and 3.6a form a new column at the end of section 3 (6064,64 and 6064,1025); section 3 now 7264x2377; noSectionOverlaps, noFrameOverlaps and allInside all true. Lint all zeros on 3.6, 3.6a, 2.1, ROUTES, READ FIRST and the sixth flow.",
         "lesson": "A frame cloned from a review screen inherits that screen's reactions. Clear them explicitly and assert the negative (nothing points at the old destinations) rather than only wiring the new ones."
+      },
+      "threeThreeBFix2026_09_05": {
+        "note": "Owner: fix 3.3b (2452:9336, the General → feature request drawer). Three defects, all visual, none in the copy or wiring.",
+        "fix_frameHeight": "The frame was 661 tall while the drawer and scrim were 764, so the frame clipped the drawer's outcome note and its Cancel / Open request footer. Then, at 764, the drawer Body (FILL) was still shorter than its content and cut the outcome note mid-sentence; in code the body scrolls, in a static mockup the sentence is simply lost. Drawer, scrim and frame are now 816, measured from header + body content + footer rather than picked. Section 3 refitted to 7264x2532; no overlaps, everything inside.",
+        "fix_textareaRender": "The Business impact textarea (instance I2452:9382;514:61;2476:9589, Filled=False) rendered its border 320 wide with the placeholder spilling to 364 and the grip at 384, while every API width read 388 and the master variants are identical layer for layer. Flipping Filled to True and back and re-setting FILL made the renderer relayout and the border now spans the full width. 3.1a's composer textarea, same master and variant, rendered correctly, so this was one stuck instance rather than a master defect.",
+        "lesson": "When a render disagrees with the geometry the API reports, render the node in isolation first: a fresh node render cannot come from the stale export cache, so a defect that survives it is real. Then nudge the instance (a property round-trip) before touching the master.",
+        "correction": "The featureRequestTracked2026_09_05 lesson on the Request Flow entry says Admin Flow stacks its sections vertically. It does not: both pages lay sections out side by side at y=0, re-spaced along x at 320. Measured this session from every section's position."
       }
     },
     "requestFlow2026_09_04": {
