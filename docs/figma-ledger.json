@@ -3517,6 +3517,14 @@
         "fourMissedByPattern": "Four flow-map column labels used a DOUBLE-spaced dash ('ADD  —  no dashboard picker') and sat in a screen section rather than a documentation one, so both the section filter and the single-space patterns missed them. Caught by a final whole-page walk that checked names and text together rather than trusting the section filter.",
         "alsoBound": "22 unbound gaps found while verifying - 20 ui-breadcrumb instances on the Request Flow page and one filter-bar on 2.1. Pre-existing and unrelated to the copy, but one line to fix. Both pages are now at zero unbound padding and gap.",
         "verified": "Zero em dashes in any text or any layer name on either page. No text overflows its container, no section overlaps, every frame inside its own section. Documentation sections re-fitted and both pages re-spaced after the copy changed panel heights."
+      },
+      "replyButtonSize2026_09_05": {
+        "note": "All eight Reply buttons set to Size=sm.",
+        "where": "Admin 3.1, 3.2, 3.3, 3.4, 3.5 and 3.3b; Request Flow R1.2 and R8.2. Height 36 to 32.",
+        "inconsistencyFound": "Seven were default and 3.2 was ALREADY sm, so the set had never been uniform. That is most likely what made it visible - a row of screens where one button is a different size reads as a mistake even when you cannot name which one is wrong.",
+        "whySmallIsRight": "Reply is the quiet affordance at the foot of a thread, and on the four asset screens it sits above Deny and Approve. At default it competed with the decision bar; at sm it reads as subordinate, which matches the rule that the bar decides and the thread talks.",
+        "notChanged": "Send reply and Send & close inside the expanded composer are still Size=default (3.1a, 3.2a, 3.3a, 3.4a, 3.5a, R1.2a), as is 'Send question' in the action-dialogs panel. Inside the composer Send reply IS the primary action, so default is defensible - but if the pair should match, that is one more sweep.",
+        "layout": "Both pages relaid out after the 4px height change; no section overlaps, no frame overlaps, every frame inside its own section."
       }
     },
     "requestFlow2026_09_04": {
