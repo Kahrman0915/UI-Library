@@ -76,12 +76,18 @@
     }
   }
 
+  // PADDING reads the semantic `inset` role — the inside edge of a surface — so a
+  // default-size card follows data-density (compact 12 / balanced 16 / spacious 20).
+  // The GAPS below stay on primitive rungs: they are this component's own rhythm,
+  // and the SIZE blocks at the bottom set `padding` per rung, so an explicit size
+  // pins geometry and density applies to the default size only. Card is the worked
+  // example of that boundary — see docs/spacing.md.
   &__header {
     display: flex;
     align-items: flex-start;
     justify-content: space-between;
     gap: var(--p-4);
-    padding: var(--p-4);
+    padding: var(--space-inset);
     border-bottom: var(--border-w-100) solid var(--border);
 
     // Opted out via `showDivider={false}` — for a card whose header and body
@@ -241,7 +247,7 @@
     display: flex;
     flex-direction: column;
     gap: var(--p-3);
-    padding: var(--p-4);
+    padding: var(--space-inset);
     font-size: var(--text-sm);
     line-height: var(--leading-5);
     color: var(--foreground);
@@ -257,7 +263,7 @@
     align-items: center;
     justify-content: flex-end;
     gap: var(--p-2);
-    padding: var(--p-4);
+    padding: var(--space-inset);
     border-top: var(--border-w-100) solid var(--border);
   }
 }

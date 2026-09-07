@@ -1523,6 +1523,65 @@ html {
 [data-tint~='page'] { --tint-page: 1; }
 [data-tint~='rail'] { --tint-rail: 1; }
 
+/* @generated spacing-semantic — do not hand-edit; run scripts/generate-spacing-tokens.mjs */
+
+/* Semantic spacing: roles over the primitive ramp. Three families — inline (side by
+   side), stack (one above another), inset (inside a container). Absence of
+   data-density is balanced. Six layout-level roles are fluid: they slide between
+   two rungs from 1024px to 1920px of viewport (vw) or container (cqi)
+   width; the rem term keeps zoom working. Rules: docs/spacing.md. */
+:root {
+  /* The widths every fluid role is solved against — for reading, not arithmetic. */
+  --fluid-min-width: 1024px;
+  --fluid-max-width: 1920px;
+  /* an icon and its label; keycap glyphs */
+  --space-inline-xs: var(--p-1);
+  /* items in a row: chips, badges, breadcrumb, button group */
+  --space-inline-sm: var(--p-2);
+  /* controls in a toolbar or a form row */
+  --space-inline: var(--p-3);
+  /* siblings that are separate objects: cards in a grid, columns */
+  --space-inline-lg: clamp(var(--p-4), 0.4286rem + 0.8929cqi, var(--p-6));
+  /* a label and its control; a title and its description */
+  --space-stack-xs: var(--p-1);
+  /* rows in a list or a menu; sections inside a screen */
+  --space-stack-sm: var(--p-2);
+  /* fields in a form; paragraphs */
+  --space-stack: var(--p-4);
+  /* blocks inside a card or a panel */
+  --space-stack-lg: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  /* sections of a page */
+  --space-stack-xl: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
+  /* tight surfaces: menu items, toasts, tooltips, chips */
+  --space-inset-sm: var(--p-3);
+  /* the default surface: card, dialog body, popover */
+  --space-inset: var(--p-4);
+  /* roomy surfaces: page containers, feature cards, empty states */
+  --space-inset-lg: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  /* the page edge */
+  --space-page-x: clamp(var(--p-6), -0.2143rem + 2.6786vw, var(--p-12));
+  /* the grid gutter */
+  --space-gutter: clamp(var(--p-4), 0.4286rem + 0.8929cqi, var(--p-6));
+}
+
+/* Density retargets inset and inline one rung; stack never moves (rule 5). */
+[data-density='compact'] {
+  --space-inline: var(--p-2);
+  --space-inline-lg: clamp(var(--p-3), 0.4643rem + 0.4464cqi, var(--p-4));
+  --space-inset-sm: var(--p-2);
+  --space-inset: var(--p-3);
+  --space-inset-lg: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
+}
+[data-density='spacious'] {
+  --space-inline: var(--p-4);
+  --space-inline-lg: clamp(var(--p-6), 0.9286rem + 0.8929cqi, var(--p-8));
+  --space-inset-sm: var(--p-4);
+  --space-inset: var(--p-5);
+  --space-inset-lg: clamp(var(--p-8), 1.4286rem + 0.8929vw, var(--p-10));
+}
+
+/* @end spacing-semantic */
+
 /* @generated deeper-theming-v2 — do not hand-edit; run scripts/generate-brand-tokens.mjs */
 
 /* Per-brand identity + categorical chart slots, generated from
