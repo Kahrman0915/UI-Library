@@ -4628,5 +4628,19 @@
     },
     "lint": "With the Marks gone the doc page's 12 fractional-radius findings went with them.",
     "lesson": "When a plan document and a later owner-drawn proof disagree, build the proof and say so; ask only if the two are the same age."
+  },
+  "appRailSplit_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "AppRail split out of AppShell as its own component at the owner's question — like Sidebar and TabBar, a chrome region with its own behaviour that the shell composes. 76th component.",
+    "code": "src/components/AppRail/ (AppRail, AppRailItem; same API, classes and tokens as before). AppShell imports it; its own folder no longer exports rail parts. Stories: Components/AppRail (Playground, ItemsOnly); AppShell's RailOnly story removed.",
+    "figma": {
+      "pageId": "2675:44 (page AppRail, before AppShell)",
+      "root": "2675:45 (1240 wide)",
+      "holder": "2675:161",
+      "moved": "AppRail master 2668:226 and AppRail/Item set 2668:224 moved from the AppShell page's parts holder (removed, with its PARTS section and rule); ids unchanged, so the AppShell master's AppRail instance still resolves to the same main component.",
+      "changelog": "1.0 initial (on the AppShell page) · 1.1 split out"
+    },
+    "lint": "AppRail page and AppShell page both at all zeros.",
+    "lesson": "Moving a COMPONENT / COMPONENT_SET to another page with page.appendChild keeps its id and every instance's link — a split costs nothing in the file."
   }
 }
