@@ -66,11 +66,13 @@
     color: var(--sidebar-accent-foreground);
   }
 
-  // Overhangs the tile corner the way a notification badge does.
+  // The unread dot, tucked into the tile's corner. A StatusDot, not a Badge: a 24px pill
+  // swamps a 36px tile.
   &__count {
     position: absolute;
-    top: calc(var(--p-1) * -1);
-    inset-inline-end: calc(var(--p-1) * -1);
+    top: var(--p-1);
+    inset-inline-end: var(--p-1);
+    display: inline-flex;
     pointer-events: none;
   }
 }

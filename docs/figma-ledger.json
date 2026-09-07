@@ -4642,5 +4642,12 @@
     },
     "lint": "AppRail page and AppShell page both at all zeros.",
     "lesson": "Moving a COMPONENT / COMPONENT_SET to another page with page.appendChild keeps its id and every instance's link — a split costs nothing in the file."
+  },
+  "appRailIndicator_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "Owner: the rail's count Badge was huge on a 36px tile. Swapped for the library's StatusDot — a 10px busy (error-red) dot tucked in the tile corner — in code and Figma.",
+    "code": "AppRailItem count → <StatusDot status=busy label=`${count} unread`> in .ui-app-rail__count at top/inset-end --p-1 (inside the tile, no overhang). The number is announced, not printed; a visible number belongs in SidebarMenuBadge.",
+    "figma": "AppRail/Item (2668:224): Badge removed from both variants; StatusDot Status=busy, Size=default instance named 'indicator', absolute at 22,4 (MAX/MIN constraints), exposed; property Show count#2668:0 renamed Show indicator via editComponentProperty (same id, so the IRM item's true value survived). Set description updated.",
+    "lesson": "editComponentProperty keeps the property id, so renaming a boolean does not disturb the instances that set it."
   }
 }

@@ -27,7 +27,10 @@ export type AppRailItemProps = Omit<React.HTMLAttributes<HTMLElement>, 'children
   Icon: LucideIcon;
   /** The application the user is in. Sets `aria-current="page"` and the accent fill. */
   active?: boolean;
-  /** A count badge on the tile's corner — unread, pending. */
+  /**
+   * Unread or pending count. Shown as a small dot on the tile's corner (a numbered pill
+   * swamps a 36px tile); the number is announced to screen readers as `${count} unread`.
+   */
   count?: number;
   /** The application's URL. Omit to render a `<button>` for a router-driven switch. */
   href?: string;
