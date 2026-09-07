@@ -103,10 +103,21 @@ three declarations, and that is the point: it shows where the tiers meet on one 
 ## 7 · Layout components carry the levels
 
 The way a team applies this consistently is not by everyone remembering the table. It is
-by the layout components deciding: **PageContainer** is L1, **PageHeader** puts title →
-description at L5 and header → toolbar at L4, **Section** puts heading → content at L2,
-**Grid** and **Stack** take a level, **Toolbar** is L4. A screen built from them makes one
-decision per container — which level — and none about pixels. These are the next build.
+by the layout components deciding. All five exist, in code and in Figma (each Figma master
+has real Slots for its content):
+
+| Component | Levels it carries | In Figma |
+|---|---|---|
+| `PageContainer` | L1: page margin, and page header → content | `Width` variants; `Page header` + `Content` slots |
+| `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
+| `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
+| `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
+| `Toolbar` + `ToolbarGroup` | L3 between groups · L4 inside a group | `Justify` variants; `Leading group` + `Trailing group` slots, plus a `Toolbar/Group` part |
+
+A page is `PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
+A screen built from them makes one decision per container — which level — and none
+about pixels. The page's search field goes in `PageHeader`'s `toolbar`, never as a
+sibling in the section stack: that sibling gap is the one that read wrong at 1920.
 
 ## 8 · In Figma
 
@@ -120,7 +131,7 @@ decision per container — which level — and none about pixels. These are the 
 
 ## 9 · Not covered here
 
-A responsive layout system — named window sizes, the layout components in §7,
-per-component behaviour at small widths — is separate and larger, and it is where the
+A responsive layout system — named window sizes, how the layout components in §7
+behave at small widths — is separate and larger, and it is where the
 width gets *used* rather than padded. The `768` mobile breakpoint (`useIsMobile`,
 `SIDEBAR_MOBILE_BREAKPOINT`, two `767px` literals) is a layout swap, not spacing.

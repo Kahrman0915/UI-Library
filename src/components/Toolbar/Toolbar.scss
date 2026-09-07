@@ -1,0 +1,19 @@
+// Toolbar — two rungs of the ladder: level 3 between groups, level 4 inside a group.
+
+.ui-toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  min-width: 0;
+
+  &--justify-between { justify-content: space-between; }
+  &--justify-end { justify-content: flex-end; }
+
+  &__group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+}

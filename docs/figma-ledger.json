@@ -4407,5 +4407,103 @@
     "PageContainer": "Two SLOT properties on set 2638:487, 'Page header' (Page header#2644:11) and 'Content' (Content#2644:16); both placeholders in all four variants converted in place. Fresh read: SLOT,SLOT on every variant.",
     "docsUpdated": "Both doc pages' COMPONENT section copy, set descriptions and changelog rows now describe the slots instead of telling designers to convert placeholders. No clicks are owed by the owner.",
     "lesson": "Before declaring an API limit, grep the playbook and the ledger for the capability by name. They are the record of what has actually worked in this file and they outrank a remembered summary — including one I wrote myself. Also: the ledger's append-only guard rejects a change that touches three existing objects; a correction that spans several entries goes in as ONE new entry that points at them."
+  },
+  "layoutComponents_step2_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "PageHeader, Section and Toolbar shipped in code and Figma the same day, each Figma master with REAL Slots via the slotContentId recipe. With Stack and PageContainer this completes the five layout components that carry the spacing ladder's levels (docs/spacing.md §7). Component index now reads 74 components + 1 proposal.",
+    "components": {
+      "PageHeader": {
+        "status": "done-v4 (lean)",
+        "pageId": "2646:44",
+        "frames": {
+          "root": "2646:45",
+          "examples": [
+            "2649:338",
+            "2649:349"
+          ]
+        },
+        "setIds": [
+          "2649:331"
+        ],
+        "variants": {
+          "With toolbar=false": "2649:268",
+          "With toolbar=true": "2649:289"
+        },
+        "props": "VARIANT With toolbar (false|true); TEXT Title#2649:0, Description#2649:3; BOOLEAN Show description#2649:6 (description visible); SLOT Actions#2649:9 (row › Actions, gap space/4-element), SLOT Toolbar#2649:12 (true variant only, FILL). Root gap space/2-section, row gap space/3-block, text gap space/5-micro. Title 2xl/leading-normal/Semibold on text/foreground; description sm/leading-normal/Normal on text/muted-foreground.",
+        "slots": [
+          "2649:273",
+          "2649:294",
+          "2649:305"
+        ],
+        "newComponent": "YES — 72nd component (src/components/PageHeader: id, title, description, actions, toolbar, headingLevel)."
+      },
+      "Section": {
+        "status": "done-v4 (lean)",
+        "pageId": "2646:126",
+        "frames": {
+          "root": "2646:127",
+          "examples": [
+            "2650:312",
+            "2650:328"
+          ]
+        },
+        "setIds": [
+          "2650:305"
+        ],
+        "variants": {
+          "Variant=default": "2650:268",
+          "Variant=group": "2650:289"
+        },
+        "props": "VARIANT Variant (default|group); TEXT Heading#2650:0; BOOLEAN Show actions#2650:3; SLOT Actions#2650:6 (header › Actions, gap space/4), SLOT Content#2650:9 (FILL, one placeholder). Root gap space/2-section (default) or space/4-element (group); header gap space/3-block. default heading base/leading-normal/Semibold on text/foreground; group heading xs/leading-normal/Medium Wide on text/muted-foreground, typed in capitals (a text style cannot carry textCase without detaching).",
+        "slots": [
+          "2650:271",
+          "2650:287",
+          "2650:292",
+          "2650:303"
+        ],
+        "newComponent": "YES — 73rd component (src/components/Section: id, heading, actions, variant, headingLevel)."
+      },
+      "Toolbar": {
+        "status": "done-v4 (lean)",
+        "pageId": "2646:208",
+        "frames": {
+          "root": "2646:209",
+          "examples": [
+            "2651:475",
+            "2651:503"
+          ]
+        },
+        "setIds": [
+          "2651:436"
+        ],
+        "partIds": {
+          "Toolbar/Group": "2651:437"
+        },
+        "variants": {
+          "Justify=start": "2651:268",
+          "Justify=between": "2651:336",
+          "Justify=end": "2651:386"
+        },
+        "props": "VARIANT Justify (start|between|end); SLOT Leading group#2651:0, SLOT Trailing group#2651:4 (each gap space/4-element); set gap space/3-block. Toolbar/Group is a standalone COMPONENT with SLOT Children#2651:8 (gap space/4). Variants are 1120 wide FIXED (primary axis) so the set fits the 1160 doc column; instances are set to FILL.",
+        "slots": [
+          "2651:269",
+          "2651:310",
+          "2651:337",
+          "2651:368",
+          "2651:387",
+          "2651:418",
+          "2651:438"
+        ],
+        "newComponent": "YES — 74th component (src/components/Toolbar: id, label, justify + ToolbarGroup)."
+      }
+    },
+    "componentIndex": "Three name cells cloned from the Stack cell into grid 1220:62 at alphabetical positions (50, 56, 73); counts I1220:45;146:128 and I1220:45;146:130;146:124 now read 74 components.",
+    "storyRebuilt": "PageContainer › MyRequestsFromPrimitives now composes PageHeader (with the search in its toolbar slot) and Section variant=group, so the recipe is PageContainer › PageHeader › Stack L2 › Section group › Stack L3 › Card.",
+    "lessons": [
+      "A slot property and a variant axis cannot share a name: the axis is 'With toolbar' so the slot can be 'Toolbar'.",
+      "Reference a variant's parts structurally (v.children[0].children[1]) rather than by findOne(name): Button and Input instances inside the master carry their own 'title'/'description'-like layer names.",
+      "Text is styled with setTextStyleIdAsync after characters; setting textCase after a style detaches it, so an uppercase label is typed in capitals.",
+      "Doc-column arithmetic: 1160 inner − 2×16 set padding = 1128, so full-width variants are drawn at 1120 FIXED and instances go FILL."
+    ]
   }
 }

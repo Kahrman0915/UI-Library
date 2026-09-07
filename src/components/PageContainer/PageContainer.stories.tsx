@@ -3,6 +3,8 @@ import { Bell, LayoutGrid, Plus, Search } from 'lucide-react';
 import PageContainer from './PageContainer';
 import Stack from '../Stack';
 import Card, { CardHeader } from '../Card';
+import PageHeader from '../PageHeader';
+import Section from '../Section';
 import Button from '../Button';
 import Input from '../Input';
 import Badge from '../Badge';
@@ -77,18 +79,17 @@ export const Widths: Story = {
 };
 
 /**
- * The My Requests screen rebuilt from nothing but the ladder: PageContainer (L1), a Stack of
- * sections (L2), each section a Stack (L4) of a heading over a Stack of cards (L3). Not one
+ * The My Requests screen rebuilt from nothing but the ladder: PageContainer (L1) › PageHeader
+ * (its own L5 / L4 / L2 inside) › Stack (L2) of Section group (L4) › Stack (L3) of Card. Not one
  * number was chosen. Resize the window; switch `data-density` in the toolbar of the page.
  */
 export const MyRequestsFromPrimitives: Story = {
   name: 'My Requests, from primitives',
   render: () => {
-    const Group = ({ heading, children }: { heading: string; children: React.ReactNode }) => (
-      <Stack level={4} as="section">
-        <span style={{ fontSize: 'var(--text-xs)', fontWeight: 'var(--font-semibold)', letterSpacing: 'var(--tracking-wide)', color: 'var(--muted-foreground)' }}>{heading}</span>
+    const Group = ({ heading, id, children }: { heading: string; id: string; children: React.ReactNode }) => (
+      <Section id={id} heading={heading} variant="group">
         <Stack level={3}>{children}</Stack>
-      </Stack>
+      </Section>
     );
     const Request = ({ id, type, title, body, status, Icon }: { id: string; type: string; title: string; body: string; status: string; Icon: typeof Bell }) => (
       <Card id={`req-${id}`}>
@@ -105,21 +106,18 @@ export const MyRequestsFromPrimitives: Story = {
     return (
       <div style={{ background: 'var(--background)', minHeight: '100vh' }}>
         <PageContainer>
+          <PageHeader
+            id="my-requests"
+            title="My Requests"
+            description="Submit requests to the DART Central admin team and track their status."
+            actions={<Button id="new-request" label="New request" IconLeft={Plus} />}
+            toolbar={<Input id="search-requests" placeholder="Search requests by name or reference number…" aria-label="Search requests" IconLeft={Search} />}
+          />
           <Stack level={2}>
-            <Stack level={3} direction="horizontal" justify="between" align="start">
-              <Stack level={5}>
-                <h1 style={{ margin: 0, fontSize: 'var(--text-2xl)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' }}>My Requests</h1>
-                <span style={{ fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>Submit requests to the DART Central admin team and track their status.</span>
-              </Stack>
-              <Button id="new-request" label="New request" IconLeft={Plus} />
-            </Stack>
-            <Input id="search-requests" placeholder="Search requests by name or reference number…" aria-label="Search requests" IconLeft={Search} />
-          </Stack>
-          <Stack level={2}>
-            <Group heading="NEEDS YOUR REPLY">
+            <Group id="g-reply" heading="Needs your reply">
               <Request id="0416" type="Banner / Notice" title="Scheduled maintenance this Saturday" body="Warning banner, 09/06/2026 – 09/07/2026." status="Needs your reply" Icon={Bell} />
             </Group>
-            <Group heading="IN REVIEW">
+            <Group id="g-review" heading="In review">
               <Request id="0417" type="Add Dashboard" title="Add Originations Daily Volume to the library" body="Request to add the Originations Daily Volume dashboard to the Dartboards library." status="Pending review" Icon={LayoutGrid} />
               <Request id="0425" type="Feature Request" title="Let me pin a dashboard to the top of Browse" body="A pin control on each dashboard card that keeps my most-used boards at the top of the Browse page." status="Pending review" Icon={LayoutGrid} />
             </Group>
