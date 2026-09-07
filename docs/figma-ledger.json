@@ -4649,5 +4649,15 @@
     "code": "AppRailItem count → <StatusDot status=busy label=`${count} unread`> in .ui-app-rail__count at top/inset-end --p-1 (inside the tile, no overhang). The number is announced, not printed; a visible number belongs in SidebarMenuBadge.",
     "figma": "AppRail/Item (2668:224): Badge removed from both variants; StatusDot Status=busy, Size=default instance named 'indicator', absolute at 22,4 (MAX/MIN constraints), exposed; property Show count#2668:0 renamed Show indicator via editComponentProperty (same id, so the IRM item's true value survived). Set description updated.",
     "lesson": "editComponentProperty keeps the property id, so renaming a boolean does not disturb the instances that set it."
+  },
+  "appShellStripFix_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "Owner: the AppShell master's strip painted dark on the light doc page (Logo and Actions cells read as dark blocks). Root cause: the TabStrip was CLONED from the dark-pinned proof frame, and the clone's fill kept the dark resolved value with a stale binding — bound to surface/background by id, rendering #0f172a regardless of the page's Light mode. Fixed by re-setting the strip's fill and the strip/Logo/Actions side strokes through setBoundVariableForPaint.",
+    "incident": "The first fix attempt blanket-cleared every explicit variable mode inside the master. There were no Mode pins to clear — but thirteen ICON-collection pins were, and those are the icon SIZES the masters carry (20 on default icon buttons, 14 on sm, 16/14 inside TabBar). Clearing them on the instance side wrote overrides down to the page default 16. Restored by copying each node's master-side explicit mode back (ids resolve by dropping the outer instance prefix; two nested nodes had to be found by walking), verified every rail icon resolves 20.",
+    "lessons": [
+      "A clone from a mode-pinned frame can carry a fill whose stored colour is the pinned mode's value while the binding no longer re-resolves; check the rendered colour against the mode, and rebind by recreating the paint rather than trusting boundVariables.",
+      "Never clear explicit variable modes wholesale. The Icon collection's modes ARE the icon sizes; they are supposed to be pinned. Filter to the collection you mean (Mode / Brand / Tint) and record what you clear before you clear it.",
+      "Clearing an inherited pin on an instance sublayer creates an override to 'none' — the master keeps its pin and the instance diverges silently."
+    ]
   }
 }
