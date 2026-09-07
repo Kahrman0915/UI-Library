@@ -1525,59 +1525,50 @@ html {
 
 /* @generated spacing-semantic — do not hand-edit; run scripts/generate-spacing-tokens.mjs */
 
-/* Semantic spacing: roles over the primitive ramp. Three families — inline (side by
-   side), stack (one above another), inset (inside a container). Absence of
-   data-density is balanced. Six layout-level roles are fluid: they slide between
-   two rungs from 1024px to 1920px of viewport (vw) or container (cqi)
-   width; the rem term keeps zoom working. Rules: docs/spacing.md. */
+/* The spacing LADDER. Five levels assigned by hierarchy — a container's gap or padding
+   is a level, each level down is one step down. The whole ladder slides with viewport
+   width from 1024px to 1920px and reshapes per data-density; absence is
+   balanced. In Figma: space/N-name with the Space (density) and Space · width modes.
+   Rules: docs/spacing.md. */
 :root {
-  /* The widths every fluid role is solved against — for reading, not arithmetic. */
   --fluid-min-width: 1024px;
   --fluid-max-width: 1920px;
-  /* an icon and its label; keycap glyphs */
-  --space-inline-xs: var(--p-1);
-  /* items in a row: chips, badges, breadcrumb, button group */
-  --space-inline-sm: var(--p-2);
-  /* controls in a toolbar or a form row */
-  --space-inline: var(--p-3);
-  /* siblings that are separate objects: cards in a grid, columns */
-  --space-inline-lg: clamp(var(--p-4), 0.4286rem + 0.8929cqi, var(--p-6));
-  /* a label and its control; a title and its description */
-  --space-stack-xs: var(--p-1);
-  /* rows in a list or a menu; sections inside a screen */
-  --space-stack-sm: var(--p-2);
-  /* fields in a form; paragraphs */
-  --space-stack: var(--p-4);
-  /* blocks inside a card or a panel */
-  --space-stack-lg: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
-  /* sections of a page */
-  --space-stack-xl: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
-  /* tight surfaces: menu items, toasts, tooltips, chips */
-  --space-inset-sm: var(--p-3);
-  /* the default surface: card, dialog body, popover */
-  --space-inset: var(--p-4);
-  /* roomy surfaces: page containers, feature cards, empty states */
-  --space-inset-lg: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
-  /* the page edge */
-  --space-page-x: clamp(var(--p-6), -0.2143rem + 2.6786vw, var(--p-12));
-  /* the grid gutter */
-  --space-gutter: clamp(var(--p-4), 0.4286rem + 0.8929cqi, var(--p-6));
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-8), -0.2857rem + 3.5714vw, var(--p-16));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: var(--p-1);
 }
 
-/* Density retargets inset and inline one rung; stack never moves (rule 5). */
+/* Density reshapes the whole ladder (owner's tables). */
 [data-density='compact'] {
-  --space-inline: var(--p-2);
-  --space-inline-lg: clamp(var(--p-3), 0.4643rem + 0.4464cqi, var(--p-4));
-  --space-inset-sm: var(--p-2);
-  --space-inset: var(--p-3);
-  --space-inset-lg: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-3), -0.1071rem + 1.3393vw, var(--p-6));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-1-5), 0.2321rem + 0.2232vw, var(--p-2));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: var(--p-0-5);
 }
 [data-density='spacious'] {
-  --space-inline: var(--p-4);
-  --space-inline-lg: clamp(var(--p-6), 0.9286rem + 0.8929cqi, var(--p-8));
-  --space-inset-sm: var(--p-4);
-  --space-inset: var(--p-5);
-  --space-inset-lg: clamp(var(--p-8), 1.4286rem + 0.8929vw, var(--p-10));
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-8), 1.4286rem + 0.8929vw, var(--p-10));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-3), 0.4643rem + 0.4464vw, var(--p-4));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: var(--p-1-5);
 }
 
 /* @end spacing-semantic */

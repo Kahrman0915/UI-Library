@@ -1,141 +1,123 @@
 # Spacing
 
-How space is defined in `@ui/lib`, and the rules for where each value goes. Two tiers:
-a **primitive ramp** of numbers, and a **semantic layer** of named roles on top of it.
-Components ask for roles; the ramp is where roles get their numbers.
+How space is defined in `@ui/lib`, and the rule for where each value goes. Two tiers: a
+**primitive ramp** of numbers, and a **ladder** of five levels on top of it. Containers
+ask for a level; the ramp is where levels get their numbers.
 
-The recipe that produces the tokens is `src/styles/spacingRecipe.ts`. The Storybook page
-`Foundations / Semantic Spacing` renders it live; the Figma collections `Space` and
-`Space · width` mirror it.
+The recipe is `src/styles/spacingRecipe.ts`. The Storybook page `Foundations / Spacing
+Ladder` renders it live; the Figma collections `Space` and `Space · width` mirror it, and
+the 📐 Spacing guide page in the Figma file explains it for designers.
 
 ## 1 · The ramp
 
 A 4px base with half-steps at the bottom: 0, 2, 4, 6, 8, 10, 12, 14, 16, 20, 24, 28, 32,
 40, 48, 56, 64 … 384. In code it is `--p-N` (Tailwind's numbering: `--p-4` is 16px); in
 Figma it is `spacing/N` in the Primitives collection. `--w-*` and `--h-*` carry the same
-numbers for width and height — those are *sizing*, not spacing, and this document does
-not govern them.
+numbers for width and height — those are *sizing*, and this document does not govern them.
 
-## 2 · The roles
+## 2 · The ladder
 
-A role names what the space is **between**. Three families, a few sizes each.
+A container's gap or padding is a **level**, assigned by where the container sits in the
+hierarchy. Each level down is one step down the ladder.
 
-| Role | balanced | compact | spacious | Between |
-|---|---|---|---|---|
-| `--space-inline-xs` | 4 | 4 | 4 | an icon and its label; keycap glyphs |
-| `--space-inline-sm` | 8 | 8 | 8 | items in a row: chips, badges, breadcrumb, button group |
-| `--space-inline` | 12 | 8 | 16 | controls in a toolbar or a form row |
-| `--space-inline-lg` | 16 → 24 | 12 → 16 | 24 → 32 | siblings that are separate objects: cards in a grid, columns |
-| `--space-stack-xs` | 4 | 4 | 4 | a label and its control; a title and its description |
-| `--space-stack-sm` | 8 | 8 | 8 | rows in a list or a menu; sections inside a screen |
-| `--space-stack` | 16 | 16 | 16 | fields in a form; paragraphs |
-| `--space-stack-lg` | 24 → 32 | same | same | blocks inside a card or a panel |
-| `--space-stack-xl` | 32 → 48 | same | same | sections of a page |
-| `--space-inset-sm` | 12 | 8 | 16 | tight surfaces: menu items, toasts, tooltips, chips |
-| `--space-inset` | 16 | 12 | 20 | the default surface: card, dialog body, popover |
-| `--space-inset-lg` | 24 → 32 | 16 → 24 | 32 → 40 | roomy surfaces: page containers, feature cards, empty states |
-| `--space-page-x` | 24 → 48 | same | same | the page edge |
-| `--space-gutter` | 16 → 24 | same | same | the grid gutter |
+| Level | Code | Figma | balanced | compact | spacious | What sits at it |
+|---|---|---|---|---|---|---|
+| **1 · page** | `--space-1` | `space/1-page` | 32 → 64 | 24 → 32 | 40 → 64 | page margin; between the page header and the content |
+| **2 · section** | `--space-2` | `space/2-section` | 24 → 32 | 12 → 24 | 32 → 40 | between sections; between a section heading and its grid |
+| **3 · block** | `--space-3` | `space/3-block` | 16 → 24 | 8 → 12 | 24 → 32 | grid gap; card padding |
+| **4 · element** | `--space-4` | `space/4-element` | 8 → 12 | 6 → 8 | 12 → 16 | inside a card: header → item, row → row; toolbar gaps |
+| **5 · micro** | `--space-5` | `space/5-micro` | 4 | 2 | 6 | icon → label; title → subtitle |
 
-An arrow means the role is **fluid** (§4). Every number is a rung on the ramp.
+Each cell reads *value at 1024 → value at 1920*. Every number is a rung on the ramp.
+These are the owner's tables (2026-09-07), not derived numbers; change them in the recipe.
 
-Deliberately absent: `--space-card-padding`, `--space-button-x`. Component-specific
-tokens are how a scale turns back into a hundred magic numbers with better names. A
-component reads a role; if nothing expresses what it needs, question the design before
-minting a token.
+There are deliberately no named tokens like `--space-card-padding`. A card's padding *is*
+level 3; naming it separately is how a scale turns back into magic numbers.
 
-## 3 · Density
+## 3 · Width: the whole ladder slides
 
-One switch, three settings: `compact · balanced · spacious`. Set `data-density` on
-`<html>` or any subtree; **absence is balanced**, so nothing changes until a page opts
-in. The same words the Chat family already uses for its `density` prop.
-
-Density moves **inset and inline** one rung and **never moves stack** (rule 5). A compact
-table tightens its cells; it does not push its rows together. That is what keeps compact
-readable instead of cramped.
-
-```html
-<section data-density="compact">…</section>
-```
-
-## 4 · Fluid
-
-Six layout-level roles breathe with available width: they slide smoothly between a
-floor and a ceiling as the width grows from **1024px to 1920px**, and sit pinned outside
-that range. No breakpoint, no jump.
+Every level is a `clamp()` between its two ends, solved so the value equals the small
+ladder at 1024px and the large ladder at 1920px of viewport width, and pinned outside
+that range. Because every level slides on the same width, **the ladder stays in
+proportion at every size** — no gap ever moves alone. A user pulling a window in from a
+big monitor sees the grid gap ease from 24 to 16 with no jump.
 
 ```css
---space-stack-xl: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
+--space-3: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
 ```
 
-- Page-level roles (`stack-lg`, `stack-xl`, `inset-lg`, `page-x`) follow the
-  **viewport** (`vw`).
-- Grid roles (`inline-lg`, `gutter`) follow the nearest **container** (`cqi`), so a card
-  grid beside a sidebar on a big monitor gets the gap for the room it actually has. The
-  grid's wrapper declares `container-type: inline-size`; without one, `cqi` falls back to
-  the viewport.
-- The `rem` term is not decoration: a pure `vw` expression ignores browser zoom and fails
-  WCAG 1.4.4.
-- Everything at 16 and below is fixed. An icon-to-label gap that drifts a pixel as the
-  window resizes looks like a bug.
+The `rem` term is not decoration: a pure `vw` expression ignores browser zoom and fails
+WCAG 1.4.4. The arithmetic is generated (`npm run tokens:gen`) and drift-checked
+(`npm run test:tokens`); never hand-edit the block in `tokens.scss`.
 
-`--fluid-min-width` and `--fluid-max-width` publish the two widths for reading. The
-clamp arithmetic is generated (`npm run tokens:gen`) and checked (`npm run test:tokens`);
-do not hand-edit the block in `tokens.scss`.
+Fluid spacing smooths the *space around things*. It does not reflow *layout*: a grid going
+from seven cards per row to four still happens where the cards stop fitting. Using the
+width — wider columns, more cards per row, side-by-side panels — is the job of the layout
+components, not of the ladder.
+
+## 4 · Density: the ladder reshapes
+
+One switch, three settings: `compact · balanced · spacious`. Set `data-density` on
+`<html>` or any subtree; **absence is balanced**. The whole ladder takes the matching
+column of the table, so a compact user gets a compact page everywhere, and a compact
+user on a big monitor still slides smoothly — between compact's two ends.
+
+```html
+<html data-density="compact">
+```
+
+Density is a user preference in the product, one attribute in code, and one mode on the
+frame in Figma. The three columns are authored, not derived: compact is a manager who
+wants more on screen; spacious is for people who already zoom.
 
 ## 5 · The rules
 
-1. **The base unit is 4px; the working unit is 8px.** The half-steps (2, 6, 10, 14) are
-   primitive-only: legal inside a component's own geometry, never for space between
-   components.
-2. **inline < stack < inset** at the same size name. A layout that violates the ordering
-   has the wrong role, not the wrong number.
-3. **Space belongs to the container, never to the child.** A surface sets its inset and
-   its stack gap; children carry no margin.
-4. **Stack steps one role per level of hierarchy.** Label → control `xs`, field → field
-   `stack`, group → group `lg`, section → section `xl`. Needing to skip two levels is the
-   tell that a heading is missing.
-5. **Density scales inset and inline, never stack.**
+1. **Assign a level, never a number.** Ask where the container sits: page, section,
+   block, element, micro. If two things at the same depth want different gaps, one of them
+   is at the wrong depth.
+2. **Each level down is one step down.** Needing to skip a level is the tell that a
+   heading or a grouping is missing.
+3. **Space belongs to the container, never to the child.** A surface sets its padding and
+   its gap; children carry no margin.
+4. **The ladder moves as one.** Nothing is fluid on its own and nothing is dense on its
+   own; a gap that must not move with width or density is component geometry (rule 5).
+5. **A component's own geometry stays on the ramp.** Button's padding at each size, a
+   checkbox's 2px offset, Card's 6px title rhythm, its 12px body gap: the component being
+   itself, expressed as `--p-N`. Only the space a *layout composes* takes a level.
 6. **Negative space is geometry, not spacing.** ButtonGroup's and ToggleGroup's `-1`
    overlap and AvatarGroup's stack stay raw.
 7. **Off-scale is a decision, not a rounding error.** Mark's 0.225 artwork ratio is the
-   recorded exception. Anything new that cannot take a role gets a comment saying why; a
-   bare number without one is a lint finding.
-8. **Doc pages follow the same roles.** Specimen bands at `stack-lg`, component-set
-   grids at `inline-lg`.
+   recorded exception; anything new that cannot take a level gets a comment saying why.
 
 ## 6 · Where the boundary is — Card, the worked example
 
-A component's **own geometry** stays on the ramp: Button's padding at each size, a
-checkbox's 2px offset, Card's title → description rhythm of 6px, its 12px body gap. That
-is the component being itself.
+Card's header, body and footer read `--space-3` (block), so a default-size card follows
+density and slides with width. Its `sm / lg / xl / 2xl` size blocks set `padding` per rung
+as before — **an explicit size pins geometry; the ladder applies to the default size** —
+and its gaps stay primitive because they are the card's own rhythm. Card migrates exactly
+three declarations, and that is the point: it shows where the tiers meet on one component.
 
-The **inside edge of a surface** is a role. Card's header, body and footer read
-`--space-inset`, so a default-size card follows density. Its `sm / lg / xl / 2xl` size
-blocks set `padding` per rung as before: **an explicit size pins geometry; density applies
-to the default size.** Card migrates exactly three declarations, and that is the point —
-it shows where the tiers meet on one component.
+## 7 · Layout components carry the levels
 
-Migration of other components and of the screen pages happens one at a time. A primitive
-binding is still a correct binding while a page waits its turn; the lint reports a
-primitive bound on a *screen* as advisory until the tier check is made strict.
+The way a team applies this consistently is not by everyone remembering the table. It is
+by the layout components deciding: **PageContainer** is L1, **PageHeader** puts title →
+description at L5 and header → toolbar at L4, **Section** puts heading → content at L2,
+**Grid** and **Stack** take a level, **Toolbar** is L4. A screen built from them makes one
+decision per container — which level — and none about pixels. These are the next build.
 
-## 7 · In Figma
+## 8 · In Figma
 
-- **`Space`** — modes `compact · balanced · spacious`, default balanced. Fourteen
-  `space/*` variables, scoped to gap and padding. Fixed roles alias `spacing/N`; fluid
-  roles alias into the width collection.
-- **`Space · width`** — modes `1024 · 1920`, default 1024. One variable per fluid role
-  per density, each mode aliasing the floor or the ceiling rung.
-- Figma cannot render the in-between; the two modes show the two ends, and each fluid
-  variable's description states the clamp.
-- Handing off: bind a gap to a role and Dev Mode reports the role's name, which is also
-  the CSS token. Pin a frame's modes to what it was designed at. Where a value cannot take
-  a role (rules 6 and 7), leave a note on the layer.
+- **`Space`** — modes `balanced · compact · spacious`, default balanced. `space/1-page` …
+  `space/5-micro`, scoped to gap and padding. Bind a container's gap or padding to its level.
+- **`Space · width`** — modes `1024 · 1920`, default 1024. Holds each level's two ends per
+  density (`fluid/N-name/density`); the target of `Space`, not for direct use.
+- Figma shows the two ends; the browser slides between them. Pin a frame's modes only when
+  the frame is meant to show that state; a working screen stays on Auto.
+- Handing off: Dev Mode reports `space/3-block`, and the developer types `--space-3`.
 
-## 8 · Not covered here
+## 9 · Not covered here
 
-A responsive layout system — named window sizes, Grid / Stack / Container primitives,
-per-component responsive behaviour — is separate and larger. The `768` mobile breakpoint
-(`useIsMobile`, `SIDEBAR_MOBILE_BREAKPOINT`, two `767px` literals) is a *layout* swap, not
-spacing, and is unchanged by this document.
+A responsive layout system — named window sizes, the layout components in §7,
+per-component behaviour at small widths — is separate and larger, and it is where the
+width gets *used* rather than padded. The `768` mobile breakpoint (`useIsMobile`,
+`SIDEBAR_MOBILE_BREAKPOINT`, two `767px` literals) is a layout swap, not spacing.

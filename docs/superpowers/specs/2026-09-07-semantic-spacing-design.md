@@ -98,3 +98,32 @@ density should scale a component's size ramp rather than pin at explicit sizes.
 balanced/1024. Computed values measured in a browser at 1024 / 1440 / 1920 and under each
 density match the recipe. Figma: both collections exist with the stated modes, every
 variable resolves to a primitive rung, the Spacing & sizing page lints at all zeros.
+
+---
+
+## Revision, later the same day: the ladder replaces the roles
+
+The owner tried the fluid roles on the Request Flow @1920 proofs and rejected the result:
+one gap grew while its neighbours stood still. Their own example (Figma Page 109) showed
+the intent — a **ladder of five hierarchy levels** where the *whole* ladder steps with
+width and reshapes per density, and where at 1920 the width is *used* (more cards per
+row), not padded.
+
+**Model.** Five levels (`--space-1` page … `--space-5` micro; Figma `space/N-name`). A
+container's gap or padding is the level it sits at; each level down is one step down.
+Owner's tables, per density, as `1024 → 1920`: balanced 32→64 / 24→32 / 16→24 / 8→12 / 4;
+compact 24→32 / 12→24 / 8→12 / 6→8 / 2; spacious 40→64 / 32→40 / 24→32 / 12→16 / 6.
+Every level is a `clamp()` between its two ends, all on `vw`, so the ladder stays in
+proportion at every width. The fourteen relationship roles and their `cqi` grid roles are
+withdrawn.
+
+**What changed.** Recipe, generator and generated block; Card's padding → `--space-3`;
+the Storybook page (`Foundations / Spacing Ladder`); `docs/spacing.md`. In Figma: the
+level variables, the 534 flow-page bindings remapped (zero-delta at balanced · 1024),
+Card's master, the Spacing & sizing section, the guide page; the 32 role variables deleted
+after a file-wide check found zero references.
+
+**Still open.** The layout components that carry levels (PageContainer, PageHeader,
+Section, Grid, Stack, Toolbar); the header → search relationship on the flow screens,
+which the ladder puts at L1 with the section gaps until a PageHeader exists; the strict
+lint tier.

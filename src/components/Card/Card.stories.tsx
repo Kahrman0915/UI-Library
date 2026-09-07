@@ -73,6 +73,16 @@ const meta: Meta<typeof Card> = {
         {
           date: '2026-09-07',
           summary:
+            'Padding moved from the `--space-inset` role to level 3 of the spacing ladder, `--space-3`, the same day; the roles were withdrawn.',
+          detail:
+            'The relationship-named roles were replaced by a five-level ladder assigned by hierarchy. ' +
+            'Card padding is level 3 (block): 16 at balanced, 8 compact, 24 spacious, and it slides from 16 to ' +
+            '24 between 1024 and 1920px of viewport width together with every other level. Byte-identical at ' +
+            'balanced on a laptop. Gaps and the size ramp unchanged. See docs/spacing.md.',
+        },
+        {
+          date: '2026-09-07',
+          summary:
             'Header, body and footer padding now read the semantic `--space-inset` role, so a default-size card follows `data-density` (compact 12 / balanced 16 / spacious 20). Nothing changes until a page opts in.',
           detail:
             'Card is the worked example of the boundary between the two spacing tiers. The inside edge of a ' +
