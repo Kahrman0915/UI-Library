@@ -1,6 +1,5 @@
 import { createElement, forwardRef } from 'react';
 import Badge from '../Badge';
-import Mark from '../Mark';
 import type {
   AppShellProps,
   AppShellTabStripProps,
@@ -9,6 +8,7 @@ import type {
   AppRailProps,
   AppRailItemProps,
 } from './AppShell.types';
+import '../../styles/icon-button.scss';
 import './AppShell.scss';
 
 // The application shell: the chrome every sub-application shares, as structure rather
@@ -16,7 +16,8 @@ import './AppShell.scss';
 // Sidebar · Main. The geometry is the owner's proof frame — strip 48, rail 48, sidebar
 // 256 — so Main Content is 1136 wide at the 1440 design viewport and 1616 at 1920, which
 // is exactly the width every flow screen is drawn at. A page fills Main with a
-// PageContainer and never re-derives any of this.
+// PageContainer and never re-derives any of this. Rail items are icon-only links on the
+// shared .ui-icon-button shell (owner's call: the rail reads as icons, not brand tiles).
 //
 // Two things it owns because they were hard-won: the workspace's `contain: layout`
 // (Sidebar's panel is position: fixed and would otherwise pin to the viewport, covering
@@ -76,8 +77,8 @@ export const AppRail = forwardRef<HTMLElement, AppRailProps>(
 AppRail.displayName = 'AppRail';
 
 export const AppRailItem = forwardRef<HTMLElement, AppRailItemProps>(
-  ({ id, label, Icon, theme, active = false, count, href, className, ...rest }, ref) => {
-    const cls = cx(`ui-app-rail__item${active ? ' ui-app-rail__item--active' : ''}`, className);
+  ({ id, label, Icon, active = false, count, href, className, ...rest }, ref) => {
+    const cls = cx(`ui-icon-button ui-app-rail__item${active ? ' ui-app-rail__item--active' : ''}`, className);
     return createElement(
       href ? 'a' : 'button',
       {
@@ -88,12 +89,9 @@ export const AppRailItem = forwardRef<HTMLElement, AppRailItemProps>(
         type: href ? undefined : 'button',
         'aria-label': label,
         'aria-current': active ? 'page' : undefined,
-        'data-theme': theme,
         className: cls,
       },
-      <span className="ui-app-rail__tile">
-        <Mark id={`${id}-mark`} Icon={Icon} size="default" motion="none" />
-      </span>,
+      <Icon size={20} aria-hidden="true" />,
       count ? (
         <span className="ui-app-rail__count">
           <Badge id={`${id}-count`} color="error" label={String(count)} />

@@ -127,30 +127,28 @@
     border-top: var(--border-w-100) solid var(--sidebar-border);
   }
 
-  // The item is the hit target; the Mark inside is its brand's, whatever the page is.
-  &__item {
+  // An icon-only link on the shared .ui-icon-button shell (the box is ours; the shell owns
+  // hover, press, focus and the hit target). Doubled class so the rail's surface colours
+  // beat the shell's neutral defaults on specificity, not source order.
+  &__item.ui-icon-button {
     position: relative;
-    display: inline-flex;
-    padding: var(--p-1);
-    border: 0;
-    border-radius: var(--rounded-md);
-    background: none;
-    color: inherit;
+    width: var(--w-9);
+    height: var(--h-9);
+    color: var(--sidebar-foreground);
     text-decoration: none;
-    cursor: pointer;
-    transition: background var(--duration-fast) var(--ease-out);
 
-    &:hover { background: var(--sidebar-accent); }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
+    &:hover:not(:disabled) {
+      color: var(--sidebar-foreground);
+      background: var(--sidebar-accent);
     }
 
-    &--active { background: var(--sidebar-accent); }
+    &:focus-visible { box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring); }
   }
 
-  &__tile { display: inline-flex; }
+  &__item--active.ui-icon-button {
+    background: var(--sidebar-accent);
+    color: var(--sidebar-accent-foreground);
+  }
 
   // Overhangs the tile corner the way a notification badge does.
   &__count {

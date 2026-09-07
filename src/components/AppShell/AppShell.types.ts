@@ -47,24 +47,22 @@ export type AppRailProps = Omit<React.HTMLAttributes<HTMLElement>, 'children'> &
 };
 
 /**
- * One application on the rail: a themed `Mark`. The item carries its own `data-theme`,
- * which is why the rail reads as a set of applications rather than a menu — every tile
- * is its brand's, whatever the page around it is themed.
+ * One application on the rail: an icon-only link. The rail is an application switcher,
+ * so an item is a place to go — an `<a>` by default — and it reads as an icon, not a
+ * brand tile; the destination application paints its own colour once you are in it.
  */
 export type AppRailItemProps = Omit<React.HTMLAttributes<HTMLElement>, 'children'> & {
-  /** Seeds `${id}-mark` and `${id}-count`. */
+  /** Seeds `${id}-count`. */
   id: string;
-  /** The application's name — the item's accessible name. */
+  /** The application's name — the item's accessible name (there is no visible text). */
   label: string;
-  /** The application's glyph, rendered by the `Mark`. */
+  /** The application's glyph, drawn at 20px. */
   Icon: LucideIcon;
-  /** The application's brand code (`db`, `dc`, …). Omit for the main brand. */
-  theme?: string;
-  /** The application the user is in. Sets `aria-current="page"`. */
+  /** The application the user is in. Sets `aria-current="page"` and the accent fill. */
   active?: boolean;
   /** A count badge on the tile's corner — unread, pending. */
   count?: number;
-  /** Renders an `<a>` instead of a `<button>`. */
+  /** The application's URL. Omit to render a `<button>` for a router-driven switch. */
   href?: string;
   className?: string;
 };

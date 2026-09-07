@@ -27,15 +27,15 @@ const meta: Meta<typeof AppShell> = {
         'The chrome every sub-application shares, as structure rather than advice: a tab strip (logo · `TabBar` · actions), ' +
         'then `AppRail` · `Sidebar` · `AppShellMain`. Strip 48, rail 48, sidebar 256, so Main Content is 1136 wide at the 1440 ' +
         'design viewport and 1616 at 1920 — the width every flow screen is drawn at. A page fills Main with a `PageContainer` and ' +
-        'never re-derives the geometry. Each `AppRailItem` is a themed `Mark` carrying its own `data-theme`, so the rail reads as ' +
-        'a set of applications; the shell itself has no brand prop and reads the scope it stands in.',
+        'never re-derives the geometry. Each `AppRailItem` is an icon-only link on the shared icon-button shell — the rail reads as ' +
+        'icons, not brand tiles; the shell has no brand prop and reads the scope it stands in.',
       tags: ['layout', 'chrome', 'shell'],
       usage: {
         when: ['Every application in the suite. One `AppShell` at the root, in a `100dvh` box; `AppShellWorkspace` holds the `SidebarProvider`.'],
         avoid: ['Hand-rolling the strip, the rail or the workspace — the workspace\'s `contain: layout` and the SidebarProvider height override are the parts that took a phase to get right.'],
         notes: 'The Aiden mounting contract (`Fab` at `--z-80`, `AidenPanel` at `--z-40`, Fab hidden while a surface is open) is composed by the app for now; see the DART Central prototype.',
       },
-      changelog: [{ date: '2026-09-07', summary: 'Initial build. The shared application chrome as a component.', detail: 'AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace · AppShellMain · AppRail · AppRailItem. Geometry from the Figma App Shell proof; `--app-rail-width` and `--app-strip-height` tokens. docs/skill-and-shell-plan.md Phase 1.' }],
+      changelog: [{ date: '2026-09-07', summary: 'Initial build. The shared application chrome as a component.', detail: 'AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace · AppShellMain · AppRail · AppRailItem (icon-only links on `.ui-icon-button`). Geometry from the Figma App Shell proof; `--app-rail-width` and `--app-strip-height` tokens. docs/skill-and-shell-plan.md Phase 1.' }],
     } satisfies UiDocsParameters,
   },
 };
@@ -67,7 +67,7 @@ function Shell({ width }: { width: 'narrow' | 'default' | 'full' }) {
   return (
     <AppShell id="shell">
       <AppShellTabStrip
-        logo={<Mark id="shell-mark" Icon={LayoutGrid} size="sm" motion="none" label="DART Central" />}
+        logo={<Button id="shell-home" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central" />}
         actions={
           <>
             <Button id="shell-apps" style="ghost" size="sm" iconOnly IconCenter={() => <Grid2x2 size={16} aria-hidden="true" />} aria-label="All apps" />
@@ -98,7 +98,7 @@ function Shell({ width }: { width: 'narrow' | 'default' | 'full' }) {
             }
           >
             {APPS.map(({ code, name, Icon, active, count }) => (
-              <AppRailItem key={code} id={`shell-app-${code}`} theme={code} label={name} Icon={Icon} active={active} count={count} />
+              <AppRailItem key={code} id={`shell-app-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
             ))}
           </AppRail>
 
@@ -175,13 +175,13 @@ export const FullWidthPage: Story = {
   ),
 };
 
-/** The rail alone: six applications, each its own brand, one active, one with a count. */
+/** The rail alone: six applications as icon-only links, one active, one with a count. */
 export const RailOnly: Story = {
   render: () => (
     <div style={{ height: 480, display: 'flex' }}>
       <AppRail footer={<Avatar id="rail-me" fallback="KM" alt="Kahrman McKenzie" size="sm" />}>
         {APPS.map(({ code, name, Icon, active, count }) => (
-          <AppRailItem key={code} id={`rail-${code}`} theme={code} label={name} Icon={Icon} active={active} count={count} />
+          <AppRailItem key={code} id={`rail-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
         ))}
       </AppRail>
     </div>

@@ -4616,5 +4616,17 @@
       "resize() after layoutSizingHorizontal='FILL' resets the child to FIXED; set FILL last (the Main content placeholder rendered 100 wide until fixed).",
       "A cross-page clone (proof page → doc page) carries its bound fills and per-side strokes, which is why the TabStrip linted clean without rebinding."
     ]
+  },
+  "appShellRailCorrection_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "Owner correction on shipping AppShell: rail items are links to applications with an icon-only look, not themed Marks. The August plan doc had said Mark-per-app; the owner's later Figma proof drew ghost icon buttons, and the proof is the newer decision.",
+    "code": "AppRailItem is now an <a> (or <button> without href) on the shared .ui-icon-button shell, 36×36 (--w-9/--h-9), 20px glyph, sidebar/accent when active or hovered; the theme prop is gone and nothing in the shell takes a brand. Story logo cell is an icon-only ghost Button, matching the proof.",
+    "figma": {
+      "AppRail/Item (2668:224)": "Mark removed; each variant is a 36×36 tile (padding unbound → 0) holding an exposed icon-only ghost Button (from 260:956) plus the count Badge; swap Icon#271:0 for the application.",
+      "AppRail (2668:226)": "Six items keep their ids; Brand modes cleared; icons set from the old proof: DART Central 312:19548 · IRM 312:18236 · Phoenix 312:19114 · Eclipse 312:19538 · NoteGen 312:19070 · DARTBoards 312:19312.",
+      "AppShell (2669:605)": "Logo slot content is an icon-only ghost Button (DART Central glyph), as the proof had it."
+    },
+    "lint": "With the Marks gone the doc page's 12 fractional-radius findings went with them.",
+    "lesson": "When a plan document and a later owner-drawn proof disagree, build the proof and say so; ask only if the two are the same age."
   }
 }
