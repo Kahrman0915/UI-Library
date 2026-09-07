@@ -4659,5 +4659,12 @@
       "Never clear explicit variable modes wholesale. The Icon collection's modes ARE the icon sizes; they are supposed to be pinned. Filter to the collection you mean (Mode / Brand / Tint) and record what you clear before you clear it.",
       "Clearing an inherited pin on an instance sublayer creates an override to 'none' — the master keeps its pin and the instance diverges silently."
     ]
+  },
+  "appShellStripHairline_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "Owner: no separator between the tab strip and the body. The strip's bottom stroke existed, bound to surface/border with weight bound to border-width/100 — and rendered WHITE, because the paint's stored colour was the white base passed to setBoundVariableForPaint. On these nodes (a strip cloned out of a mode-pinned proof) the stored colour is what draws; the TabBar's identical binding stores the resolved grey and shows.",
+    "fix": "Re-set the strip / Logo / Actions stroke paints with the variable's resolved Light value as the stored colour, alias kept (walk valuesByMode through aliases to the raw colour). 2x screenshot shows the hairline across the full strip and both cell borders.",
+    "lesson": "When you build a bound paint with setBoundVariableForPaint, pass the variable's resolved value as the base colour, not white — some nodes draw the stored colour, and a white base on a white surface is an invisible border that lints clean. The design-check lint cannot see this; only a close screenshot can.",
+    "code": "No change — .ui-app-shell__strip already carries border-bottom: var(--border-w-100) solid var(--border), measured 1px in the browser."
   }
 }
