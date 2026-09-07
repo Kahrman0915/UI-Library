@@ -27,9 +27,17 @@ export const LEVELS: readonly Level[] = [
   { n: 5, name: 'micro', job: 'icon → label; title → subtitle' },
 ];
 
-/** [value at FLUID.min, value at FLUID.max] per level, per density. Every number is a rung. */
+/**
+ * [value at FLUID.min, value at FLUID.max] per level, per density. Every number is a rung.
+ *
+ * THE WIDTH RULE IS ONE MULTIPLIER: the 1920 ladder is the 1024 ladder × 1.5, so the
+ * hierarchy keeps exactly the same shape at every width (owner decision 2026-09-07, after
+ * a hand-tuned 1920 column was caught changing the ladder's shape). Balanced is exact.
+ * Compact and spacious snap to the nearest rung where × 1.5 lands off the ramp:
+ * compact 36 / 18→20 / 12 / 9→8 / 3→4, spacious 60→64 / 48 / 36 / 18→20 / 9→8.
+ */
 export const LADDER: Record<Density, Record<LevelN, readonly [number, number]>> = {
-  balanced: { 1: [32, 64], 2: [24, 32], 3: [16, 24], 4: [8, 12], 5: [4, 4] },
-  compact:  { 1: [24, 32], 2: [12, 24], 3: [8, 12],  4: [6, 8],  5: [2, 2] },
-  spacious: { 1: [40, 64], 2: [32, 40], 3: [24, 32], 4: [12, 16], 5: [6, 6] },
+  balanced: { 1: [32, 48], 2: [24, 36], 3: [16, 24], 4: [8, 12],  5: [4, 6] },
+  compact:  { 1: [24, 36], 2: [12, 20], 3: [8, 12],  4: [6, 8],   5: [2, 4] },
+  spacious: { 1: [40, 64], 2: [32, 48], 3: [24, 36], 4: [12, 20], 5: [6, 8] },
 };

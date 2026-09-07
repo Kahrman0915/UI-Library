@@ -1534,41 +1534,41 @@ html {
   --fluid-min-width: 1024px;
   --fluid-max-width: 1920px;
   /* L1 page: page margin; between the page header and the content */
-  --space-1: clamp(var(--p-8), -0.2857rem + 3.5714vw, var(--p-16));
+  --space-1: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  --space-2: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
   /* L3 block: grid gap; card padding */
   --space-3: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
   --space-4: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: var(--p-1);
+  --space-5: clamp(var(--p-1), 0.1071rem + 0.2232vw, var(--p-1-5));
 }
 
 /* Density reshapes the whole ladder (owner's tables). */
 [data-density='compact'] {
   /* L1 page: page margin; between the page header and the content */
-  --space-1: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  --space-1: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-3), -0.1071rem + 1.3393vw, var(--p-6));
+  --space-2: clamp(var(--p-3), 0.1786rem + 0.8929vw, var(--p-5));
   /* L3 block: grid gap; card padding */
   --space-3: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
   --space-4: clamp(var(--p-1-5), 0.2321rem + 0.2232vw, var(--p-2));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: var(--p-0-5);
+  --space-5: clamp(var(--p-0-5), -0.0179rem + 0.2232vw, var(--p-1));
 }
 [data-density='spacious'] {
   /* L1 page: page margin; between the page header and the content */
   --space-1: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-8), 1.4286rem + 0.8929vw, var(--p-10));
+  --space-2: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
   /* L3 block: grid gap; card padding */
-  --space-3: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
+  --space-3: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
-  --space-4: clamp(var(--p-3), 0.4643rem + 0.4464vw, var(--p-4));
+  --space-4: clamp(var(--p-3), 0.1786rem + 0.8929vw, var(--p-5));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: var(--p-1-5);
+  --space-5: clamp(var(--p-1-5), 0.2321rem + 0.2232vw, var(--p-2));
 }
 
 /* @end spacing-semantic */

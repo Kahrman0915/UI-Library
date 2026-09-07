@@ -19,7 +19,7 @@ const BEGIN = '/* @generated spacing-semantic — do not hand-edit; run scripts/
 const END = '/* @end spacing-semantic */';
 
 // px → primitive rung. Every ladder value MUST be on this ramp.
-const RUNG = { 2: '--p-0-5', 4: '--p-1', 6: '--p-1-5', 8: '--p-2', 12: '--p-3', 16: '--p-4', 20: '--p-5', 24: '--p-6', 32: '--p-8', 40: '--p-10', 48: '--p-12', 64: '--p-16' };
+const RUNG = { 2: '--p-0-5', 4: '--p-1', 6: '--p-1-5', 8: '--p-2', 12: '--p-3', 16: '--p-4', 20: '--p-5', 24: '--p-6', 32: '--p-8', 36: '--p-9', 40: '--p-10', 48: '--p-12', 64: '--p-16' };
 const rung = (px) => { if (!(px in RUNG)) { console.error(`✖ ${px}px is not a primitive rung`); process.exit(2); } return `var(${RUNG[px]})`; };
 const trim = (n) => Number(n.toFixed(4)).toString();
 

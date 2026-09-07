@@ -70,7 +70,7 @@ const Ladder = () => {
       <P>
         The second column is the recipe at this density, small → large end; the third is what the browser
         resolved right now. Every level slides on the same width from {FLUID.min} to {FLUID.max}px, so the
-        ladder stays in proportion at every size. Micro never moves.
+        ladder stays in proportion at every size: the large end is the small end × 1.5.
       </P>
       <DensitySwitch density={density} onChange={setDensity} />
       <div style={{ display: 'grid', gap: 3 }}>

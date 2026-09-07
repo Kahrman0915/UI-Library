@@ -22,14 +22,17 @@ hierarchy. Each level down is one step down the ladder.
 
 | Level | Code | Figma | balanced | compact | spacious | What sits at it |
 |---|---|---|---|---|---|---|
-| **1 · page** | `--space-1` | `space/1-page` | 32 → 64 | 24 → 32 | 40 → 64 | page margin; between the page header and the content |
-| **2 · section** | `--space-2` | `space/2-section` | 24 → 32 | 12 → 24 | 32 → 40 | between sections; between a section heading and its grid |
-| **3 · block** | `--space-3` | `space/3-block` | 16 → 24 | 8 → 12 | 24 → 32 | grid gap; card padding |
-| **4 · element** | `--space-4` | `space/4-element` | 8 → 12 | 6 → 8 | 12 → 16 | inside a card: header → item, row → row; toolbar gaps |
-| **5 · micro** | `--space-5` | `space/5-micro` | 4 | 2 | 6 | icon → label; title → subtitle |
+| **1 · page** | `--space-1` | `space/1-page` | 32 → 48 | 24 → 36 | 40 → 64 | page margin; between the page header and the content |
+| **2 · section** | `--space-2` | `space/2-section` | 24 → 36 | 12 → 20 | 32 → 48 | between sections; between a section heading and its grid |
+| **3 · block** | `--space-3` | `space/3-block` | 16 → 24 | 8 → 12 | 24 → 36 | grid gap; card padding |
+| **4 · element** | `--space-4` | `space/4-element` | 8 → 12 | 6 → 8 | 12 → 20 | inside a card: header → item, row → row; toolbar gaps |
+| **5 · micro** | `--space-5` | `space/5-micro` | 4 → 6 | 2 → 4 | 6 → 8 | icon → label; title → subtitle |
 
-Each cell reads *value at 1024 → value at 1920*. Every number is a rung on the ramp.
-These are the owner's tables (2026-09-07), not derived numbers; change them in the recipe.
+Each cell reads *value at 1024 → value at 1920*. Every number is a rung on the ramp. The
+1024 columns are the owner's tables (2026-09-07). **The 1920 column is the 1024 column
+× 1.5** — one multiplier, so the ladder keeps exactly the same shape at every width;
+balanced is exact, compact and spacious snap to the nearest rung (36 / 20 / 12 / 8 / 4 and
+64 / 48 / 36 / 20 / 8). Change them in the recipe.
 
 There are deliberately no named tokens like `--space-card-padding`. A card's padding *is*
 level 3; naming it separately is how a scale turns back into magic numbers.

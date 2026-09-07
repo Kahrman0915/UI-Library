@@ -127,3 +127,5 @@ after a file-wide check found zero references.
 Section, Grid, Stack, Toolbar); the header → search relationship on the flow screens,
 which the ladder puts at L1 with the section gaps until a PageHeader exists; the strict
 lint tier.
+
+**Revision 2 — the width rule is × 1.5.** The first 1920 column (64 / 32 / 24 / 12 / 4) was hand-tuned around two anchors and changed the ladder's shape; the owner chose one multiplier instead. 1920 = 1024 × 1.5: balanced 48 / 36 / 24 / 12 / 6 exactly; compact and spacious snapped to the ramp, 36 / 20 / 12 / 8 / 4 and 64 / 48 / 36 / 20 / 8. Micro moves with the rest.
