@@ -4399,5 +4399,13 @@
       ]
     },
     "layoutComponents_step1": "Stack and PageContainer shipped (see components.Stack and components.PageContainer). Both added to the 📇 Component index (count 69 → 71) and the CLAUDE.md roster. Next: PageHeader, Section, Toolbar (and Grid as Stack wrap), then the flow screens rebuilt from them and the lint's tier check made strict."
+  },
+  "slotCorrection2026_09_07": {
+    "date": "2026-09-07",
+    "correction": "I told the owner twice that the plugin cannot create Figma slots. Wrong. The playbook has carried the working recipe since 2026-07-26 (docs/figma-playbook.md § Slots): set.addComponentProperty(name, 'SLOT', '') then frame.componentPropertyReferences = { slotContentId: key } converts the frame IN PLACE into a real SLOT node. figma.createSlot does not exist, which is the half-truth that misled me; two later CLAUDE.md bullets (tier2AssemblySweep, the Card parts entry) repeated the wrong claim and are now corrected in CLAUDE.md with the originals kept visible.",
+    "Stack": "A SLOT property 'Children' (Children#2644:0) on set 2638:298. In each of the 10 variants the two placeholder items were moved into a new auto-layout content frame whose gap is bound to space/N, and that frame was converted in place. The slot IS the auto-layout container, so children dropped into it take the Stack's gap; the variant root has a single child. Fresh read: all 10 report SLOT; findAllWithCriteria({types:['SLOT']}) = 10. A scratch instance's slot accepted three appended children at gap 16 and grew to 148.",
+    "PageContainer": "Two SLOT properties on set 2638:487, 'Page header' (Page header#2644:11) and 'Content' (Content#2644:16); both placeholders in all four variants converted in place. Fresh read: SLOT,SLOT on every variant.",
+    "docsUpdated": "Both doc pages' COMPONENT section copy, set descriptions and changelog rows now describe the slots instead of telling designers to convert placeholders. No clicks are owed by the owner.",
+    "lesson": "Before declaring an API limit, grep the playbook and the ledger for the capability by name. They are the record of what has actually worked in this file and they outrank a remembered summary — including one I wrote myself. Also: the ledger's append-only guard rejects a change that touches three existing objects; a correction that spans several entries goes in as ONE new entry that points at them."
   }
 }
