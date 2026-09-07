@@ -1,8 +1,11 @@
-import { forwardRef, useCallback, useContext, useMemo, useRef, useState } from 'react';
-import { Plus, X } from 'lucide-react';
+import { forwardRef, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
+import { ChevronDown, Plus, X } from 'lucide-react';
+import Popover, { PopoverContent, PopoverTrigger } from '../Popover';
+import Command, { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '../Command';
 import { TabBarContext } from './TabBar.context';
 import type {
   TabBarListProps,
+  TabBarMenuProps,
   TabBarNewTabProps,
   TabBarProps,
   TabBarTabProps,
@@ -268,5 +271,128 @@ const TabBarNewTab = forwardRef<HTMLButtonElement, TabBarNewTabProps>(
 
 TabBarNewTab.displayName = 'TabBarNewTab';
 
+// ═════════════════════════════════════════════════════════════════════════════
+// Menu — tab search + recently closed, pinned to the far end of the bar.
+// ═════════════════════════════════════════════════════════════════════════════
+
+/**
+ * The control every browser puts at the end of its tab strip: a chevron that
+ * opens a search over the open tabs and the recently closed list. Built on
+ * `Popover` + `Command`, so typing filters and the arrow keys move the
+ * highlight without leaving the search field. Pinned to the far end with
+ * `margin-inline-start: auto`, outside the tablist like the "+".
+ */
+const TabBarMenu = forwardRef<HTMLButtonElement, TabBarMenuProps>(
+  (
+    {
+      tabs,
+      recentlyClosed = [],
+      onReopen,
+      label = 'Search tabs',
+      placeholder = 'Search tabs…',
+      emptyText = 'No tabs match',
+      openHeading = 'Open tabs',
+      closedHeading = 'Recently closed',
+      className,
+      ...rest
+    },
+    ref,
+  ) => {
+    const ctx = useTabBar();
+    const [open, setOpen] = useState(false);
+    const menuId = `${ctx.id}-menu`;
+    const inputRef = useRef<HTMLInputElement | null>(null);
+
+    // PopoverContent focuses its own surface on open (right for a generic
+    // popover); a search menu wants the field. Child effects run first, so this
+    // rAF is queued after the popover's and lands last in the same frame.
+    // Both a frame and a zero-delay timer: a background or occluded tab never
+    // fires a frame, and whichever runs last wins the field either way.
+    useEffect(() => {
+      if (!open) return;
+      const focus = () => inputRef.current?.focus();
+      const raf = requestAnimationFrame(focus);
+      const timer = setTimeout(focus, 0);
+      return () => {
+        cancelAnimationFrame(raf);
+        clearTimeout(timer);
+      };
+    }, [open]);
+
+    return (
+      <Popover id={menuId} open={open} onOpenChange={setOpen}>
+        <PopoverTrigger>
+          <button
+            aria-label={label}
+            {...rest}
+            ref={ref}
+            type="button"
+            className={`ui-icon-button ui-icon-button--fill ui-tab-bar__menu${className ? ' ' + className : ''}`}
+          >
+            <ChevronDown aria-hidden="true" />
+          </button>
+        </PopoverTrigger>
+        <PopoverContent
+          side="bottom"
+          align="end"
+          className="ui-tab-bar__menu-surface"
+          // Whenever the surface itself takes focus (the popover does this on
+          // open), hand it to the search field. Deterministic, unlike the rAF.
+          onFocus={(e) => {
+            if (e.target === e.currentTarget) inputRef.current?.focus();
+          }}
+        >
+          <Command id={`${menuId}-command`}>
+            <CommandInput ref={inputRef} placeholder={placeholder} aria-label={placeholder} />
+            <CommandList>
+              <CommandEmpty>{emptyText}</CommandEmpty>
+              <CommandGroup heading={openHeading}>
+                {tabs.map((t) => (
+                  <CommandItem
+                    key={`open-${t.value}`}
+                    value={t.label}
+                    className="ui-tab-bar__menu-item"
+                    onSelect={() => {
+                      ctx.setValue(t.value);
+                      setOpen(false);
+                    }}
+                  >
+                    {t.Icon && <t.Icon aria-hidden="true" />}
+                    <span className="ui-tab-bar__menu-label">{t.label}</span>
+                    {ctx.value === t.value && <CommandShortcut>Current</CommandShortcut>}
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+              {recentlyClosed.length > 0 && (
+                <>
+                  <CommandSeparator />
+                  <CommandGroup heading={closedHeading}>
+                    {recentlyClosed.map((t) => (
+                      <CommandItem
+                        key={`closed-${t.value}`}
+                        value={t.label}
+                        className="ui-tab-bar__menu-item"
+                        onSelect={() => {
+                          onReopen?.(t);
+                          setOpen(false);
+                        }}
+                      >
+                        {t.Icon && <t.Icon aria-hidden="true" />}
+                        <span className="ui-tab-bar__menu-label">{t.label}</span>
+                      </CommandItem>
+                    ))}
+                  </CommandGroup>
+                </>
+              )}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
+    );
+  },
+);
+
+TabBarMenu.displayName = 'TabBarMenu';
+
 export default TabBar;
-export { TabBarList, TabBarTab, TabBarNewTab };
+export { TabBarList, TabBarTab, TabBarNewTab, TabBarMenu };

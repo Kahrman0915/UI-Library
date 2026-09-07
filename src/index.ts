@@ -266,12 +266,15 @@ export {
   TabBarList,
   TabBarTab,
   TabBarNewTab,
+  TabBarMenu,
 } from './components/TabBar';
 export type {
   TabBarProps,
   TabBarListProps,
   TabBarTabProps,
   TabBarNewTabProps,
+  TabBarMenuProps,
+  TabBarMenuItem,
   TabBarActivationMode,
 } from './components/TabBar';
 

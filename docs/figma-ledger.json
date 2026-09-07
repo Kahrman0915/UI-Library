@@ -4666,5 +4666,20 @@
     "fix": "Re-set the strip / Logo / Actions stroke paints with the variable's resolved Light value as the stored colour, alias kept (walk valuesByMode through aliases to the raw colour). 2x screenshot shows the hairline across the full strip and both cell borders.",
     "lesson": "When you build a bound paint with setBoundVariableForPaint, pass the variable's resolved value as the base colour, not white — some nodes draw the stored colour, and a white base on a white surface is an invisible border that lints clean. The design-check lint cannot see this; only a close screenshot can.",
     "code": "No change — .ui-app-shell__strip already carries border-bottom: var(--border-w-100) solid var(--border), measured 1px in the browser."
+  },
+  "tabBarMenu_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "Owner: the icon beside Ask Aiden in the shell strip is the TAB BAR's control — tab search and recently closed tabs for quick reopening, like the button at the far end of Figma's own tab bar — and Ask Aiden is separate, Aiden's place in every application. Built TabBarMenu in code and TabBar/Tab menu in Figma; the shell's Actions cell now holds Ask Aiden alone.",
+    "code": "TabBarMenu (src/components/TabBar): a chevron-down icon-only trigger on the icon-button shell, margin-inline-start auto with a leading hairline, opening a Popover (bottom / end) holding a Command palette: search input, 'Open tabs' group (select → ctx.setValue), separator, 'Recently closed' group (select → onReopen). Props tabs, recentlyClosed, onReopen, label, placeholder, emptyText, openHeading, closedHeading. Exported from TabBar and the main entry; WithMenu story; AppShell story uses it and dropped the all-apps button.",
+    "figma": {
+      "TabBar/Tab menu": "2688:662 — cloned from TabBar/New tab State=Resting, glyph swapped to Icon/chevron-down 312:18458 (swapComponent), left stroke surface/border (resolved value as base) with weight border-width/100. Sits in the TabBar page's Sets frame.",
+      "TabBar set 1557:688": "every variant gained a FILL 'spacer' frame then a TabBar/Tab menu instance (FILL height), so the menu pins to the far end; BOOLEAN Show tab menu#2688:0 default true → its visibility. Changelog row 1.2 appended (the page lists oldest first).",
+      "AppShell 2669:605": "Actions slot: 'Button/Icon-only — All apps' removed; Ask Aiden alone. Component-section copy and a 1.1 changelog row on the doc page."
+    },
+    "lessons": [
+      "A FILL spacer frame is the auto-layout way to pin one child to the far end without SPACE_BETWEEN spreading everything.",
+      "Doc-page history frames list oldest first — append, and number from the max existing version."
+    ],
+    "focus": "PopoverContent focuses its own surface on open (in a rAF). The menu wants the search field, so TabBarMenu focuses the input three ways: a rAF (queued after the popover's, so it lands last in the frame), a setTimeout(0) (a background or occluded tab never fires a frame — the Browser pane used for verification is one), and an onFocus on the surface that forwards to the field whenever the surface itself takes focus. Any one of them is enough; together they hold in every environment tried."
   }
 }

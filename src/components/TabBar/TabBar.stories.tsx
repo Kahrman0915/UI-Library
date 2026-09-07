@@ -10,7 +10,7 @@ import {
   Layers,
   Phone,
 } from 'lucide-react';
-import TabBar, { TabBarList, TabBarNewTab, TabBarTab } from './TabBar';
+import TabBar, { TabBarList, TabBarMenu, TabBarNewTab, TabBarTab } from './TabBar';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof TabBar> = {
@@ -96,6 +96,11 @@ const meta: Meta<typeof TabBar> = {
       },
       changelog: [
         {
+          date: '2026-09-07',
+          summary: 'A tab menu at the far end of the bar: search the open tabs, reopen recently closed ones.',
+          detail: '`TabBarMenu` (`tabs`, `recentlyClosed`, `onReopen`) on `Popover` + `Command`; pinned with `margin-inline-start: auto` outside the tablist like the "+". Figma: `TabBar/Tab menu` behind `Show tab menu`.',
+        },
+        {
           date: '2026-08-11',
           summary: 'Initial build complete.',
           detail:
@@ -139,6 +144,52 @@ export const Playground: Story = {
           ))}
         </TabBarList>
         <TabBarNewTab />
+      </TabBar>
+    );
+  },
+};
+
+/**
+ * The tab menu at the far end: search the open tabs, reopen a recently closed
+ * one. Selecting an open tab switches the bar; selecting a closed one reports
+ * it through `onReopen`, and this story puts it back in the list.
+ */
+export const WithMenu: Story = {
+  render: () => {
+    const [tabs, setTabs] = useState<Doc[]>(DOCS);
+    const [closed, setClosed] = useState<Doc[]>([
+      { value: 'tab-4', label: 'Phone Analytics', Icon: Phone },
+      { value: 'tab-5', label: 'Call Center', Icon: ChartColumn },
+    ]);
+    const [open, setOpen] = useState('tab-1');
+    return (
+      <TabBar id="tab-bar-menu" value={open} onValueChange={setOpen}>
+        <TabBarList aria-label="Open documents">
+          {tabs.map(({ value, label, Icon, closable }) => (
+            <TabBarTab
+              key={value}
+              value={value}
+              label={label}
+              Icon={Icon}
+              closable={closable}
+              onClose={() => {
+                setTabs((t) => t.filter((d) => d.value !== value));
+                setClosed((c) => [tabs.find((d) => d.value === value)!, ...c]);
+                if (open === value) setOpen('tab-1');
+              }}
+            />
+          ))}
+        </TabBarList>
+        <TabBarNewTab />
+        <TabBarMenu
+          tabs={tabs}
+          recentlyClosed={closed}
+          onReopen={(item) => {
+            setClosed((c) => c.filter((d) => d.value !== item.value));
+            setTabs((t) => [...t, { value: item.value, label: item.label, Icon: item.Icon ?? Home }]);
+            setOpen(item.value);
+          }}
+        />
       </TabBar>
     );
   },

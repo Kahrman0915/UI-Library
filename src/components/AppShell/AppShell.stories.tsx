@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 import { Bell, Box, FileText, Flame, Grid2x2, Home, Inbox, Layers, LayoutGrid, Plus, Search, Settings, Sparkles } from 'lucide-react';
 import AppShell, { AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './AppShell';
 import AppRail, { AppRailItem } from '../AppRail';
-import TabBar, { TabBarList, TabBarTab, TabBarNewTab } from '../TabBar';
+import TabBar, { TabBarList, TabBarTab, TabBarNewTab, TabBarMenu } from '../TabBar';
 import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
 import Mark from '../Mark';
 import Button from '../Button';
@@ -26,7 +26,8 @@ const meta: Meta<typeof AppShell> = {
     ui: {
       description:
         'The chrome every sub-application shares, as structure rather than advice: a tab strip (logo · `TabBar` · actions), ' +
-        'then `AppRail` · `Sidebar` · `AppShellMain`. Strip 48, rail 48, sidebar 256, so Main Content is 1136 wide at the 1440 ' +
+        'then `AppRail` · `Sidebar` · `AppShellMain`. The strip\'s `actions` hold Ask Aiden alone — the assistant\'s place in every ' +
+        'application; tab search lives in the `TabBar` itself (`TabBarMenu`). Strip 48, rail 48, sidebar 256, so Main Content is 1136 wide at the 1440 ' +
         'design viewport and 1616 at 1920 — the width every flow screen is drawn at. A page fills Main with a `PageContainer` and ' +
         'never re-derives the geometry. `AppRail` is its own component, composed here like `Sidebar` and `TabBar`; the shell has no ' +
         'brand prop and reads the scope it stands in.',
@@ -70,12 +71,9 @@ function Shell({ width }: { width: 'narrow' | 'default' | 'full' }) {
       <AppShellTabStrip
         logo={<Button id="shell-home" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central" />}
         actions={
-          <>
-            <Button id="shell-apps" style="ghost" size="sm" iconOnly IconCenter={() => <Grid2x2 size={16} aria-hidden="true" />} aria-label="All apps" />
-            <span data-surface="aiden">
-              <Button id="shell-aiden" variant="aiden" style="secondary" size="sm" label="Ask Aiden" IconLeft={() => <Sparkles size={14} aria-hidden="true" />} />
-            </span>
-          </>
+          <span data-surface="aiden">
+            <Button id="shell-aiden" variant="aiden" style="secondary" size="sm" label="Ask Aiden" IconLeft={() => <Sparkles size={14} aria-hidden="true" />} />
+          </span>
         }
       >
         <TabBar id="shell-tabs" defaultValue="requests">
@@ -84,6 +82,10 @@ function Shell({ width }: { width: 'narrow' | 'default' | 'full' }) {
             <TabBarTab value="requests" label="My Requests" Icon={Inbox} />
           </TabBarList>
           <TabBarNewTab />
+          <TabBarMenu
+            tabs={[{ value: 'home', label: 'Home', Icon: Home }, { value: 'requests', label: 'My Requests', Icon: Inbox }]}
+            recentlyClosed={[{ value: 'whats-new', label: "What's New", Icon: Bell }, { value: 'settings', label: 'Settings', Icon: Settings }]}
+          />
         </TabBar>
       </AppShellTabStrip>
 
