@@ -37,6 +37,11 @@ const meta: Meta<typeof PageContainer> = {
       changelog: [
         {
           date: '2026-09-07',
+          summary: 'The width cap now grows with the screen: × 1.5 at 1920, fluid in between, like the ladder.',
+          detail: '`max-width` reads `--container-narrow|default|wide` (896→1344, 1152→1728, 1280→1920), generated from `CONTAINERS` in the spacing recipe. A fixed cap plus the growing level-1 margin had made a narrow page narrower on a wide screen.',
+        },
+        {
+          date: '2026-09-07',
           summary: 'Initial build. Level 1 of the spacing ladder as a component.',
           detail:
             'Padding and gap read `--space-1`; `width` = narrow (896) · default (1152) · wide (1280) · full, via the `--max-w-*` tokens; centred with `margin-inline: auto`. ' +

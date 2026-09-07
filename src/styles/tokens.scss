@@ -1543,6 +1543,10 @@ html {
   --space-4: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
   /* L5 micro: icon → label; title → subtitle */
   --space-5: clamp(var(--p-1), 0.1071rem + 0.2232vw, var(--p-1-5));
+  /* Container caps (PageContainer width): the same rule, × 1.5 at the large end. */
+  --container-narrow: clamp(56rem, 24rem + 50vw, 84rem);
+  --container-default: clamp(72rem, 30.8571rem + 64.2857vw, 108rem);
+  --container-wide: clamp(80rem, 34.2857rem + 71.4286vw, 120rem);
 }
 
 /* Density reshapes the whole ladder (owner's tables). */

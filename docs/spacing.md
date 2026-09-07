@@ -108,7 +108,7 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content | `Width` variants (each with a matching max-width, so a FILL instance caps and centres like the CSS); `Page header` + `Content` slots |
+| `PageContainer` | L1: page margin, and page header → content; its width cap follows the ladder's width rule (`--container-*`: narrow 896→1344 · default 1152→1728 · wide 1280→1920) | `Width` variants whose width and max-width are bound to `container/*` in `Space · width`, so a FILL instance caps, centres and widens with the mode; `Page header` + `Content` slots |
 | `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |

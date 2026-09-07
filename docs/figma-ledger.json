@@ -4532,5 +4532,24 @@
       "Hiding a slot via a boolean before looking it up is fine — findAllWithCriteria still returns hidden SLOT nodes — but guard the lookup anyway.",
       "Doc-page root frames have no page padding of their own once PageContainer is inside them; leaving the root's L1 padding doubles the margin (2.1 measured 1008 instead of 1072)."
     ]
+  },
+  "containerCaps_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "PageContainer's width caps now follow the ladder's width rule (× 1.5 at 1920, fluid between) in code and Figma. Owner caught the fixed caps on the applied-screens test: R1.1 narrow at 1920 came out 800 wide, narrower than at 1024.",
+    "figma": {
+      "variables": {
+        "container/narrow": "VariableID:2662:72 (896 · 1344)",
+        "container/default": "VariableID:2662:73 (1152 · 1728)",
+        "container/wide": "VariableID:2662:74 (1280 · 1920)"
+      },
+      "collection": "Space · width (modes 1024 · 1920), scope WIDTH_HEIGHT",
+      "binding": "PageContainer set 2638:487: Width=narrow/default/wide variants have both width and maxWidth bound to their container/* variable; Width=full stays unbound. An instance set to FILL therefore caps at the mode's value and centres."
+    },
+    "code": {
+      "recipe": "CONTAINERS in src/styles/spacingRecipe.ts",
+      "generated": "--container-narrow: clamp(56rem, 24rem + 50vw, 84rem) · --container-default: clamp(72rem, 30.8571rem + 64.2857vw, 108rem) · --container-wide: clamp(80rem, 34.2857rem + 71.4286vw, 120rem), emitted into the @generated spacing-semantic block by scripts/generate-spacing-tokens.mjs",
+      "consumer": "PageContainer.scss max-width per width; --max-w-* untouched for everyone else"
+    },
+    "lesson": "A fixed max-width plus a fluid margin inverts the intent of the margin — the column shrinks as the screen grows. Anything that composes with the ladder has to move with it, caps included."
   }
 }

@@ -41,3 +41,16 @@ export const LADDER: Record<Density, Record<LevelN, readonly [number, number]>> 
   compact:  { 1: [24, 36], 2: [12, 20], 3: [8, 12],  4: [6, 8],   5: [2, 4] },
   spacious: { 1: [40, 64], 2: [32, 48], 3: [24, 36], 4: [12, 20], 5: [6, 8] },
 };
+
+/**
+ * Container caps — how wide a page may be, per PageContainer width. [at FLUID.min, at
+ * FLUID.max], the SAME width rule as the ladder: × 1.5 at 1920, fluid in between. A fixed
+ * cap plus a growing level-1 margin made a narrow page NARROWER on a big monitor (832 →
+ * 800), which is the opposite of what the width is for (owner, 2026-09-07). `full` has no cap.
+ */
+export type ContainerWidth = 'narrow' | 'default' | 'wide';
+export const CONTAINERS: Record<ContainerWidth, readonly [number, number]> = {
+  narrow:  [896, 1344],
+  default: [1152, 1728],
+  wide:    [1280, 1920],
+};

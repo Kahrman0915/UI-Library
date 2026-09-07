@@ -12,7 +12,7 @@
 // load-bearing: a pure vw expression ignores browser zoom and fails WCAG 1.4.4.
 
 import { readFileSync, writeFileSync } from 'node:fs';
-import { LEVELS, LADDER, FLUID } from '../src/styles/spacingRecipe.ts';
+import { LEVELS, LADDER, FLUID, CONTAINERS } from '../src/styles/spacingRecipe.ts';
 
 const TOKENS_PATH = new URL('../src/styles/tokens.scss', import.meta.url);
 const BEGIN = '/* @generated spacing-semantic — do not hand-edit; run scripts/generate-spacing-tokens.mjs */';
@@ -29,6 +29,9 @@ export const value = ([small, large]) => {
   return `clamp(${rung(small)}, ${trim((small - slope * FLUID.min) / 16)}rem + ${trim(slope * 100)}vw, ${rung(large)})`;
 };
 
+// A cap is not a rung: emitted as rem, same clamp() shape, same width rule.
+const cap = ([small, large]) => { const slope = (large - small) / (FLUID.max - FLUID.min); return `clamp(${trim(small / 16)}rem, ${trim((small - slope * FLUID.min) / 16)}rem + ${trim(slope * 100)}vw, ${trim(large / 16)}rem)`; };
+
 function emit() {
   const block = (density, indent = '  ') => LEVELS.map((l) => `${indent}/* L${l.n} ${l.name}: ${l.job} */\n${indent}--space-${l.n}: ${value(LADDER[density][l.n])};`);
   return [
@@ -42,6 +45,8 @@ function emit() {
     `  --fluid-min-width: ${FLUID.min}px;`,
     `  --fluid-max-width: ${FLUID.max}px;`,
     ...block('balanced'),
+    '  /* Container caps (PageContainer width): the same rule, × 1.5 at the large end. */',
+    ...Object.entries(CONTAINERS).map(([k, v]) => `  --container-${k}: ${cap(v)};`),
     '}', '',
     '/* Density reshapes the whole ladder (owner\'s tables). */',
     `[data-density='compact'] {`, ...block('compact'), '}',
