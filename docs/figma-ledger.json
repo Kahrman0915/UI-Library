@@ -4303,6 +4303,7 @@
       "Whether density should scale a component's size ramp rather than pin at explicit sizes.",
       "Unify the 768 mobile breakpoint's three expressions (layout, not spacing).",
       "No preview/ card for the Foundations page yet (Claude Design push)."
-    ]
+    ],
+    "specimenFillFix": "The specimen cards were first painted with the same primary variable as the blocks inside them (cloned from the scale bar), which hid the very inset and gaps the grid exists to show; rebound to surface/accent and re-rendered. A demo of spacing needs a surface and an object in contrasting paints, or the space between them is invisible."
   }
 }
