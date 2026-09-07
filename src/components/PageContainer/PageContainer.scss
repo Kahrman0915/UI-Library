@@ -1,0 +1,20 @@
+// PageContainer — level 1 of the spacing ladder: the page margin, and the space between
+// the page header and the content. Both read --space-1. See PageContainer.tsx.
+
+.ui-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  box-sizing: border-box;
+  width: 100%;
+  max-width: var(--max-w-6xl);
+  margin-inline: auto;
+  min-width: 0;
+
+  // `default` emits no modifier — same call as Tabs' default variant: a class nothing
+  // selects is dead BEM.
+  &--narrow { max-width: var(--max-w-4xl); }
+  &--wide { max-width: var(--max-w-7xl); }
+  &--full { max-width: none; }
+}

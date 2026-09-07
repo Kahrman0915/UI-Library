@@ -815,6 +815,10 @@ export { default as Slider } from './components/Slider';
 export type { SliderProps, SliderSize } from './components/Slider';
 
 export { default as Spinner } from './components/Spinner';
+export { default as Stack } from './components/Stack';
+export type { StackProps, StackLevel, StackDirection, StackAlign, StackJustify } from './components/Stack';
+export { default as PageContainer } from './components/PageContainer';
+export type { PageContainerProps, PageContainerWidth } from './components/PageContainer';
 export type { SpinnerProps } from './components/Spinner';
 
 export { Toaster, toast } from './components/Toast';

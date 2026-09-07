@@ -2203,6 +2203,35 @@
       "notes": "There is deliberately NO Focus state on DatePicker/Field. Focus moves into the portalled panel the moment the picker opens, so :focus-within stops matching exactly when the field is the thing being edited; the code mirrors the ring with an --open class. Open IS the focused look, and a Focus variant would be a duplicate that could drift. There is also no range mode anywhere — a range is two fields, and the Do/Don't says so, because a single field reading \"12 Mar – 24 Mar\" would be an unbuildable mockup.",
       "lessonTwoTextProps": "ONE TEXT PROPERTY CANNOT CARRY TWO STRINGS. Binding a single `Value text` property to the value layer in all 30 variants made every `Value=Empty` variant render the Filled default ('Sep 17, 2026') instead of its own placeholder — the variant axis was correct and the rendering was wrong, which reads as a broken component. Fixed by adding a second TEXT property, `Placeholder`, and referencing each only from the variants it belongs to. A property referenced by no layer in the current variant simply has no effect, which is acceptable; a property that silently overwrites the variant's own content is not.",
       "lint": "All zeros on 2026-09-02."
+    },
+    "Stack": {
+      "status": "done-v4 (lean)",
+      "date": "2026-09-07",
+      "pageId": "(page named Stack, inserted alphabetically)",
+      "setIds": [
+        "2638:298"
+      ],
+      "frames": {
+        "root": "2637:45"
+      },
+      "props": "VARIANT Level (1–5) × Direction (vertical | horizontal) = 10 variants. Gap bound to space/N-name in every variant, so an instance follows the frame's Space (density) and Space · width modes. No padding, no paint, by design.",
+      "newComponent": "YES — 70th component. The first layout primitive on the spacing ladder, in code and Figma the same day (src/components/Stack: level, direction, wrap, align, justify, as; no id, a layout primitive like AspectRatio).",
+      "slot": "Each variant holds two 'item · placeholder, convert to Slot' frames. figma.createSlot does not exist, so the OWNER converts one placeholder per variant to a Slot in the UI (10 clicks); until then an instance is used by detaching, as the assembled-template precedent records.",
+      "lessons": "combineAsVariants leaves the set's counter axis FIXED at the first variant's width; wider variants overflow until counterAxisSizingMode is set to AUTO. A strip of five hugging instances overflows a 1160 doc column; wrap it."
+    },
+    "PageContainer": {
+      "status": "done-v4 (lean)",
+      "date": "2026-09-07",
+      "pageId": "(page named PageContainer, inserted alphabetically)",
+      "setIds": [
+        "2638:487"
+      ],
+      "frames": {
+        "root": "2637:56931"
+      },
+      "props": "VARIANT Width (narrow 896 | default 1152 | wide 1280 | full, drawn at 1440). Padding and gap bound to space/1-page. Placeholders for page header and content, to be converted to Slots by the owner (4 clicks).",
+      "newComponent": "YES — 71st component. Level 1 of the ladder as a component (src/components/PageContainer: width, as; no id). Its doc frame is 1560 wide, wider than the 1240 convention, because the full variant is 1440.",
+      "proof": "Storybook 'My Requests, from primitives': the R1.1 screen rebuilt from PageContainer, Stack and Card with no number chosen. Measured in the browser: at 1024 padding 32 · L2 24 · L3 16 · L4 8 · L5 4 · card padding 16; at 1920 48 · 36 · 24 · 12 · 6 · 24; compact at 1920 L3 12. The ladder holds end to end on real components."
     }
   },
   "queue": {
@@ -4368,6 +4397,7 @@
         "Frame padding was mockup chrome on the flow pages (raw 40 / 64) and is L1 here; when the app shell is drawn the shell owns it and the screens' padding goes away.",
         "This page is the pattern for the layout components: 'page header' is PageHeader, 'sections' is what Section and Stack give a screen, 'cards' is a Stack at L3. Building them makes the regrouping automatic instead of manual."
       ]
-    }
+    },
+    "layoutComponents_step1": "Stack and PageContainer shipped (see components.Stack and components.PageContainer). Both added to the 📇 Component index (count 69 → 71) and the CLAUDE.md roster. Next: PageHeader, Section, Toolbar (and Grid as Stack wrap), then the flow screens rebuilt from them and the lint's tier check made strict."
   }
 }
