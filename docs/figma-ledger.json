@@ -4277,5 +4277,32 @@
       "theRealDefect": "Semantic, not visual: the intent 'fully rounded' is spelled as a magic number instead of radius/full, so it is invisible to the token system and to any lint that asks what a value means.",
       "padding1": "Separately, 13 padding values of exactly 1 on Chat - showcase ReleaseCard and Container frames. 1 is not on the spacing scale (which starts 0, 2, 4). It reads as a hairline-border emulation, so changing it would shift pixels for no gain."
     }
+  },
+  "semanticSpacing2026_09_07": {
+    "date": "2026-09-07",
+    "what": "Semantic spacing roles, density modes and fluid spacing, in code and in Figma, with Card as the one migrated exemplar. Design record: docs/superpowers/specs/2026-09-07-semantic-spacing-design.md. Rules: docs/spacing.md. Code commit 00c952c.",
+    "ownerDecisions": "Fluid range 1024 → 1920. Container units (cqi) for the two grid roles, viewport (vw) for page roles. Density words compact · balanced · spacious, reused from Chat. Scope: the layer, the rules, Figma, the lint, plus Card; other components and the screen pages migrate later, one at a time.",
+    "figmaCollections": {
+      "Space": "VariableCollectionId:2602:63 · modes balanced (default) · compact · spacious · 14 variables space/{inline-xs,inline-sm,inline,inline-lg,stack-xs,stack-sm,stack,stack-lg,stack-xl,inset-sm,inset,inset-lg,page-x,gutter}, ids VariableID:2602:64 … 2602:77 in that order, scoped GAP. Fixed roles alias spacing/N in Primitives; fluid roles alias into Space · width. Every description states the job and the values; fluid ones state the clamp.",
+      "SpaceWidth": "VariableCollectionId:2602:44 'Space · width' · modes 1024 (default) · 1920 · 18 variables fluid/{role}/{density} for the six fluid roles × three densities, each mode aliasing the floor or ceiling rung. Not for direct use; the target of the Space collection's fluid roles.",
+      "verifiedChains": "space/inset → spacing/4 → 16 (balanced), → spacing/3 → 12 (compact), → spacing/5 → 20 (spacious); space/stack-xl → fluid/stack-xl/balanced → spacing/10 → 40 at 1024 and → spacing/16 → 64 at 1920; space/inline-lg compact at 1920 → 16; space/stack compact → 16 (stack never moves)."
+    },
+    "docPage": "Spacing & sizing (1215:46, frame 1217:44) gained a SEMANTIC section: rule 2605:54777, _Doc/Section 2605:54778, a 'semantic roles' list 2605:54782 of 14 rows whose demo GAP is bound to the role itself, and a 'specimen — density × width' grid 2606:68: six cells, each with explicit modes pinned on both collections (setExplicitVariableModeForCollection), holding two cards whose padding is space/inset, block gap space/stack-lg and between-card gap space/inline-lg. Read back per cell: padding 16 / 12 / 20 by density, block gap 24 → 32 by width, cards gap 16 / 12 / 24 → 24 / 16 / 32. Page lint all zeros. Frame 1427 → 2276 tall.",
+    "cardMaster": "Card set 1812:800, the two Size=default variants: header, body and footer padding rebound from spacing/4 (VariableID:1:11) to space/inset on 23 sides (the Divider=off body's top edge is 0 and unbound, and stays so). Other sizes keep spacing/N: an explicit size pins geometry. Gaps stay primitive. 257 instances render unchanged at the default mode because space/inset resolves to the same 16. Set description records it.",
+    "codeVerified": "Browser at 1024: every value at its floor, densities retarget as the recipe says. At 1440: stack-xl 51.14, stack-lg 27.71, inset-lg 27.71, page-x 35.14, inline-lg 19.71 — to the decimal. At 1920: 64 / 32 / 32 / 48 / 24 / 24. Card default body padding 16, sizes pinned 12 / 20 / 24 / 32, data-density on the card gives 20 spacious and 12 compact and 16 back. tsc, build, test:tokens (now checking this block too) and test:contrast green.",
+    "lint": "scripts/figma-design-check.js gained opts { screen, strictTiers } and a primitiveBinding bucket: gap/padding on a screen frame bound to spacing/N rather than space/*. Advisory (outside allZero) until strictTiers is set, so nothing green today turns red before the screens migrate.",
+    "apiLessons": {
+      "modesOrder": "A collection's default mode is its FIRST mode and there is no setter, so create the default first (balanced, 1024) and add the others after; the panel order follows.",
+      "explicitModes": "setExplicitVariableModeForCollection on a frame pins one collection independently of another, which is exactly how data-density and the viewport compose in code; node properties then READ BACK the resolved number, so a specimen grid can be verified without rendering.",
+      "scope": "GAP is the FLOAT scope that covers both auto-layout gap and padding; the API binds regardless of scope, scope only shapes the picker.",
+      "hiddenTab": "requestAnimationFrame never fires in a hidden Browser-pane tab, so a verification script that awaits a frame hangs to the 45s timeout; use setTimeout, or keep the pane visible."
+    },
+    "openFollowUps": [
+      "Migrate the screen pages and the ~15 components with composition-level gaps, one at a time, then set strictTiers.",
+      "Whether Chat's density PROP should default from the data-density attribute.",
+      "Whether density should scale a component's size ramp rather than pin at explicit sizes.",
+      "Unify the 768 mobile breakpoint's three expressions (layout, not spacing).",
+      "No preview/ card for the Foundations page yet (Claude Design push)."
+    ]
   }
 }
