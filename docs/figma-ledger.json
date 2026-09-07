@@ -4259,5 +4259,23 @@
       "alsoFixed": "Loading the hidden pages surfaced two more gap-18 specimen bands, FRAME:light and FRAME:dark on Aiden surface, moved to 20 and bound under the owner's standing decision for that class.",
       "verifiedRemaining": "170 unbound gaps file-wide, every one unmappable by design: 66 negative overlap gaps (ButtonGroup 25, ToggleGroup 26, Avatar 11, Table 2, Dashboard-built 2), 100 Mark glass artwork values (56 on Mark, 42 replicated on Themes & brands, 2 on Aiden surface — the 3 / 5 / 10.8 ratio family), and the 4 gap-625 page-headers on Whats New."
     }
+  },
+  "paddingRadiusSweep2026_09_07": {
+    "date": "2026-09-07",
+    "context": "Owner reviewed tier4GeometrySweep's open item (padding/radius on non-doc pages) and split it: bind the real design values, leave the brand-palette swatches, and explain the import artifacts before deciding on them.",
+    "trueTotal": "5,643 unbound padding/radius file-wide, measured with every page force-loaded via PageNode.loadAsync(). tier4's figures were right all along; the earlier session under-counted because unloaded pages read as empty.",
+    "classA_done": "1,574 bound across 14 pages: Chart palettes 728, Themes & brands 460, Spacing & sizing 136, Motion 60, Sidebar 39 padding, Marketing-built 40, Suite 34, Dashboard-built 24, Color & tokens 12, Aiden surface 12, App Shell 7, Patterns 4, and 9 radius nodes each on Admin Flow and Request Flow. Verified: zero mappable padding or radius remains on any page outside the exclusions.",
+    "classB_left": "The three brand-palette pages keep 2,928 radius values (2,152 of them mappable) on RECTANGLE:box / RECTANGLE:bg swatches that are 100% absolutely positioned. tier4's reasoning stands and the owner agreed: those pages are about COLOUR, a swatch's corner radius is incidental decoration, and binding 2,900 values would be volume without truth while making every future diff noisy. Mark's 368 artwork values excluded for the reason already recorded.",
+    "tier4ClaimCorrected": "tier4 recorded '533 values bound across 22 doc pages, zero unmapped', which reads as though doc pages were finished. They were not: Sidebar carried 39 unbound padding, and Admin Flow and Request Flow each carried unbound radius. Class A cleaned those up.",
+    "radiusBindingGranularity": "A node whose four corners share one value binds all four with a single setBoundVariable call, so corner-level finding counts do not equal call counts: Admin Flow's 36 corner findings resolved in 9 calls. Do not read a lower 'bound' number as a partial result without checking.",
+    "verificationDiscipline": "The final pass asserts VISIBILITY before cleanliness: any page that has top-level children but walks to zero nodes is reported as unverified rather than counted as clean. 107 pages checked, zero unverified, zero dirty, zero late fixes. This is the guard that the itemSpacing sweep lacked.",
+    "concurrentEditWarning": "Node counts drifted between passes in the same session: App Shell measured 334 nodes with 8 sentinel radius corners in one pass and 24 nodes with none a few calls later, identical under loadAsync, setCurrentPageAsync and a plain read. The file appears to change under a long-running sweep, so the AUTHORITATIVE state is always the final verification pass, never an earlier measurement.",
+    "classC_investigated_notActioned": {
+      "finding": "NOT corruption, which an earlier note in this session wrongly implied. The sentinels are a different spelling of 'fully rounded'.",
+      "census": "21 nodes, 84 corners, two values: 16777200 on 20 nodes and 20707426 on 1. Pages: Chat - showcase 68, Page 107 8, TEST 8. App Shell showed 8 in an early pass and none in the final census; see concurrentEditWarning.",
+      "whyItIsNotBroken": "Every one of the 21 already renders fully rounded, because the value exceeds half the node's smaller dimension, and every one would render IDENTICALLY at 9999 (radius/full) - checked node by node, zero exceptions. They are avatars, status dots, badge pills and a 56x56 FAB, and they look correct today.",
+      "theRealDefect": "Semantic, not visual: the intent 'fully rounded' is spelled as a magic number instead of radius/full, so it is invisible to the token system and to any lint that asks what a value means.",
+      "padding1": "Separately, 13 padding values of exactly 1 on Chat - showcase ReleaseCard and Container frames. 1 is not on the spacing scale (which starts 0, 2, 4). It reads as a hairline-border emulation, so changing it would shift pixels for no gain."
+    }
   }
 }
