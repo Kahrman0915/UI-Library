@@ -28,7 +28,7 @@ Three families, named by what the space is *between*:
 | `inline-lg` | 16 → 24 | 12 → 16 | 24 → 32 | cqi |
 | `stack` | 16 | 16 | 16 | — |
 | `stack-lg` | 24 → 32 | same | same | vw |
-| `stack-xl` | 40 → 64 | same | same | vw |
+| `stack-xl` | 32 → 48 | same | same | vw |
 | `inset-sm` | 12 | 8 | 16 | — |
 | `inset` | 16 | 12 | 20 | — |
 | `inset-lg` | 24 → 32 | 16 → 24 | 32 → 40 | vw |

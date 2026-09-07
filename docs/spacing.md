@@ -30,7 +30,7 @@ A role names what the space is **between**. Three families, a few sizes each.
 | `--space-stack-sm` | 8 | 8 | 8 | rows in a list or a menu; sections inside a screen |
 | `--space-stack` | 16 | 16 | 16 | fields in a form; paragraphs |
 | `--space-stack-lg` | 24 → 32 | same | same | blocks inside a card or a panel |
-| `--space-stack-xl` | 40 → 64 | same | same | sections of a page |
+| `--space-stack-xl` | 32 → 48 | same | same | sections of a page |
 | `--space-inset-sm` | 12 | 8 | 16 | tight surfaces: menu items, toasts, tooltips, chips |
 | `--space-inset` | 16 | 12 | 20 | the default surface: card, dialog body, popover |
 | `--space-inset-lg` | 24 → 32 | 16 → 24 | 32 → 40 | roomy surfaces: page containers, feature cards, empty states |
@@ -65,7 +65,7 @@ floor and a ceiling as the width grows from **1024px to 1920px**, and sit pinned
 that range. No breakpoint, no jump.
 
 ```css
---space-stack-xl: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
+--space-stack-xl: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
 ```
 
 - Page-level roles (`stack-lg`, `stack-xl`, `inset-lg`, `page-x`) follow the

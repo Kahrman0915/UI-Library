@@ -37,7 +37,10 @@ export const ROLES: readonly Role[] = [
   { name: 'stack-sm', family: 'stack', job: 'rows in a list or a menu; sections inside a screen', all: 8 },
   { name: 'stack', family: 'stack', job: 'fields in a form; paragraphs', all: 16 },
   { name: 'stack-lg', family: 'stack', job: 'blocks inside a card or a panel', unit: 'vw', all: [24, 32] },
-  { name: 'stack-xl', family: 'stack', job: 'sections of a page', unit: 'vw', all: [40, 64] },
+  // 32→48, not 40→64: measured, not chosen. The 79 content columns on the Admin Flow and
+  // Request Flow screens all stack their page blocks at 32, so 32 is this product's laptop
+  // value and 48 its wide-monitor one. Owner decision 2026-09-07.
+  { name: 'stack-xl', family: 'stack', job: 'sections of a page', unit: 'vw', all: [32, 48] },
   { name: 'inset-sm', family: 'inset', job: 'tight surfaces: menu items, toasts, tooltips, chips', compact: 8, balanced: 12, spacious: 16 },
   { name: 'inset', family: 'inset', job: 'the default surface: card, dialog body, popover', compact: 12, balanced: 16, spacious: 20 },
   { name: 'inset-lg', family: 'inset', job: 'roomy surfaces: page containers, feature cards, empty states', unit: 'vw', compact: [16, 24], balanced: [24, 32], spacious: [32, 40] },

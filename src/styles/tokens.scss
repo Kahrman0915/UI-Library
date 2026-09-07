@@ -1551,7 +1551,7 @@ html {
   /* blocks inside a card or a panel */
   --space-stack-lg: clamp(var(--p-6), 0.9286rem + 0.8929vw, var(--p-8));
   /* sections of a page */
-  --space-stack-xl: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
+  --space-stack-xl: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
   /* tight surfaces: menu items, toasts, tooltips, chips */
   --space-inset-sm: var(--p-3);
   /* the default surface: card, dialog body, popover */
