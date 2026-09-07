@@ -4505,5 +4505,32 @@
       "Text is styled with setTextStyleIdAsync after characters; setting textCase after a style detaches it, so an uppercase label is typed in capitals.",
       "Doc-column arithmetic: 1160 inner − 2×16 set padding = 1128, so full-width variants are drawn at 1120 FIXED and instances go FILL."
     ]
+  },
+  "layoutComponents_appliedTest_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "TEST of the five layout components on 📐 Spacing · applied to built screens (2635:44): the four duplicated screens (R1.1 1024 2635:145, R1.1 1920 2635:56692, 2.1 1024 2635:415, 2.1 1920 2635:56801) are now instances of PageContainer › PageHeader › Stack › Section / Toolbar with the original Card, Button, Input, ToggleGroup and table nodes moved (cloned) into the slots. Screen roots lost their own L1 padding (PageContainer carries it). Three master fixes fell out of the test.",
+    "masterFixes": {
+      "PageContainer (2638:487)": "(1) narrow/default/wide variants got maxWidth = 896/1152/1280 so an instance set to FILL caps and centres like max-width + margin auto; (2) the Page header and Content slots were plain painted frames (no auto-layout) so slot content could not FILL — converted to transparent VERTICAL auto-layout, FILL × HUG, each holding one accent placeholder frame. Variant sizes unchanged (352 tall).",
+      "Stack (2638:298)": "Vertical variants counterAxisSizingMode FIXED, horizontal variants primaryAxisSizingMode FIXED (widths unchanged), and every Children slot set to FILL — a FILL instance now passes its width to slot content. Before, the L2 stack in the 2.1 1920 copy resolved to 760 wide inside a 1424 container.",
+      "Toolbar (2651:436)": "Third slot Middle group#2655:0 inserted between Leading and Trailing in all three variants, hidden by BOOLEAN Show middle group#2655:4 (default false; the slot carries both visible and slotContentId references). Needed because 2.1's filter bar is product axis · state axis · search, and two slots could only hold that at the wrong rung. Example 2651:503 shows it on. The vertical Separator that sat between the two axes on the screens was dropped — the L3 gap does the separating."
+    },
+    "composition": {
+      "R1.1": "PageContainer narrow (FILL, caps 896) › PageHeader With toolbar=true (Title/Description; Actions ← ui-button [New request]; Toolbar ← ui-input search, FILL) › Stack L2 › Section group ×4 (Show actions off) › Stack L3 › ui-card ×n; the live/past divider frame sits in the L2 stack as before.",
+      "2.1": "PageContainer full (FILL) › PageHeader With toolbar=false (Actions cleared) › Stack L2 › [Stack L3 horizontal › 4 stat cards FILL · Stack L4 › Toolbar between (Show middle group on; Leading ← product ToggleGroup, Middle ← state ToggleGroup, Trailing ← search 320 FIXED) + ui-table frame FILL]."
+    },
+    "readBack": {
+      "R1.1 1024": "container 896 @x120, column 832, header gap 24, sections 24, group 8, cards 16",
+      "R1.1 1920": "container 896 @x360, column 800, 36/36/12/24",
+      "2.1 1024": "container 1136, column 1072, stats 256 ×4, toolbar/table 1072, L2 24 · L3 16 · L4 8",
+      "2.1 1920": "container 1616, column 1520, stats 362 ×4, toolbar/table 1520, 36 · 24 · 12"
+    },
+    "finding": "A narrow page gets narrower at 1920 (832 → 800) because the cap is fixed while L1 padding grows 32 → 48; the approved 1920 proof had a hand-widened 1200 column. 2.1 on `full` reproduces its approved 1072 / 1520 exactly. Owner call: accept fixed caps (CSS behaviour), pick `default` for R1.1, or make the caps width-aware.",
+    "lessons": [
+      "A failed use_figma script is NOT reliably atomic: after two failed attempts the R1.1 1024 copy had lost its Button and Input instances (the same node types the script had removed from slot placeholders). Build by cloning into the new structure and remove the originals in the final step; recover lost nodes by cloning from a sibling copy.",
+      "A slot created from figma.createFrame() with no layoutMode is a plain frame: nothing dropped into it can be FILL. Make every slot an auto-layout container.",
+      "A master whose variants HUG cannot pass FILL through to a slot; give the variant a FIXED width axis and set the slot FILL, then instances set to FILL stretch their content.",
+      "Hiding a slot via a boolean before looking it up is fine — findAllWithCriteria still returns hidden SLOT nodes — but guard the lookup anyway.",
+      "Doc-page root frames have no page padding of their own once PageContainer is inside them; leaving the root's L1 padding doubles the margin (2.1 measured 1008 instead of 1072)."
+    ]
   }
 }

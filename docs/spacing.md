@@ -108,13 +108,15 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content | `Width` variants; `Page header` + `Content` slots |
+| `PageContainer` | L1: page margin, and page header → content | `Width` variants (each with a matching max-width, so a FILL instance caps and centres like the CSS); `Page header` + `Content` slots |
 | `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
-| `Toolbar` + `ToolbarGroup` | L3 between groups · L4 inside a group | `Justify` variants; `Leading group` + `Trailing group` slots, plus a `Toolbar/Group` part |
+| `Toolbar` + `ToolbarGroup` | L3 between groups · L4 inside a group | `Justify` variants; `Leading group` + `Trailing group` slots, a `Middle group` slot behind `Show middle group` for a second filter axis, plus a `Toolbar/Group` part |
 
 A page is `PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
+Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
+screens are now composed from these five at 1024 and 1920, nothing hand-spaced.
 A screen built from them makes one decision per container — which level — and none
 about pixels. The page's search field goes in `PageHeader`'s `toolbar`, never as a
 sibling in the section stack: that sibling gap is the one that read wrong at 1920.
