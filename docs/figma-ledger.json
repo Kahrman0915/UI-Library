@@ -4551,5 +4551,70 @@
       "consumer": "PageContainer.scss max-width per width; --max-w-* untouched for everyone else"
     },
     "lesson": "A fixed max-width plus a fluid margin inverts the intent of the margin — the column shrinks as the screen grows. Anything that composes with the ladder has to move with it, caps included."
+  },
+  "appShell_2026_09_07": {
+    "date": "2026-09-07",
+    "summary": "AppShell shipped in code and Figma — the shared chrome as a component (docs/skill-and-shell-plan.md Phase 1). Strip 48 · rail 48 · sidebar 256, so Main Content is 1136 at 1440 and 1616 at 1920: the content window every flow screen is drawn in is now structural. 75th component.",
+    "pageId": "2668:44 (page AppShell, after AlertDialog)",
+    "frames": {
+      "root": "2668:45 (1560 wide)",
+      "holderShell": "2668:161",
+      "holderParts": "2668:167"
+    },
+    "components": {
+      "AppShell": {
+        "id": "2669:605",
+        "size": "1440×900",
+        "props": "SLOT Logo#2669:0 (TabStrip › Logo, holds a Mark artwork/sm with Brand mode Indigo), SLOT Actions#2669:1 (TabStrip › Actions: all-apps button + Ask Aiden), SLOT Main content#2669:2 (body › main content, 1136×852, VERTICAL, FILL×FILL, counter axis CENTER so a capped PageContainer centres); exposed nested instances: TabBar (Tabs=2), Sidebar (Rows=4, cloned from the proof with its overrides), AppRail. Built by cloning the proof's TabStrip 1837:45 and Sidebar 1861:259 into a frame and createComponentFromNode.",
+        "slotIds": {
+          "Logo": "2669:206",
+          "Actions": "2669:209",
+          "Main content": "2669:603"
+        }
+      },
+      "AppRail": {
+        "id": "2668:226",
+        "size": "48×900",
+        "props": "SLOT Header#2668:3 (SidebarTrigger clone of 1838:106), SLOT Applications#2668:4 (six AppRail/Item instances, FILL height, gap spacing/0-5, pad-top spacing/1), SLOT Footer#2668:5 (ModeToggler ghost sm + Avatar sm circle). Fill sidebar/background, right stroke sidebar/border (per-side weight bound to border-width/100).",
+        "itemInstances": [
+          "2668:240 DART Central (Indigo, Active=true)",
+          "2668:259 IRM (Teal, Show count)",
+          "2668:280 Phoenix (Amber)",
+          "2668:298 Eclipse (Cobalt)",
+          "2668:316 NoteGen (Fern)",
+          "2668:334 DARTBoards (Magenta)"
+        ]
+      },
+      "AppRail/Item": {
+        "setId": "2668:224",
+        "variants": {
+          "Active=false": "2668:168",
+          "Active=true": "2668:200"
+        },
+        "props": "VARIANT Active; BOOLEAN Show count#2668:0 (the absolutely positioned Badge Variant=error, exposed); the Mark artwork/default instance is exposed — set its Brand MODE for the application's colour and swap Glyph#1200:1 for its icon. 40×40: padding spacing/1 around the 32 Mark, radius/md, sidebar/accent fill when active."
+      }
+    },
+    "brandModes": {
+      "db": "Indigo 2:3",
+      "dc": "Teal 2:4",
+      "ec": "Cobalt 51:1",
+      "nb": "Fern 51:3",
+      "ph": "Amber 51:4",
+      "rm": "Magenta 51:5"
+    },
+    "proofPage": "App Shell (1837:44 hand-built frame REMOVED, replaced): 2670:668 = AppShell instance 1440×900 (Mode Dark, Brand Indigo, Space · width 1024) with PageContainer narrow (896 @x120) + PageHeader (832) in Main content (1136 @x304); 2670:1095 = 1920×1080 instance (width mode 1920) with PageContainer narrow 1344 @x136, PageHeader 1248, Main content 1616 @x304. Captions 2670:1094 / 2670:1393.",
+    "lint": "Doc page: unbound paint 0, unstyled text 0, generic names 0, overflow 0; 12 unboundGeometry findings, all the Mark artwork instances' own fractional radii (5.4 on sm, 7.2 on default = 0.225 × tile), which is Mark's recorded clean end state, not a finding on this page.",
+    "code": "src/components/AppShell (AppShell, AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain, AppRail, AppRailItem); tokens --app-rail-width / --app-strip-height (3rem). Verified in Storybook at 1440 (strip 48; rail 48 @0; sidebar 256 @48; main 1136 @304; container 896) and 1920 (main 1616, container 1344). Sidebar stays inside the shell (contain: layout on the workspace; SidebarProvider 100svh overridden).",
+    "decisions": [
+      "No brand prop on the shell; AppRailItem takes theme (data-theme on the item, the Mark inside themes from it). In Figma the same thing is the Brand mode on the item's exposed Mark.",
+      "Rail does not hide below 1024 in the component — the prototype's raw 1023px media query is a responsive-system concern.",
+      "Aiden mounting contract (Fab z-80 / AidenPanel z-40 / hide rule) deferred; the story says so."
+    ],
+    "lessons": [
+      "figma.createComponentFromNode keeps the frame in place, so a master can be assembled inside its doc holder and converted there.",
+      "isExposedInstance works on TabBar, Sidebar and a nested AppRail instance once the frame is a component — set it after conversion.",
+      "resize() after layoutSizingHorizontal='FILL' resets the child to FIXED; set FILL last (the Main content placeholder rendered 100 wide until fixed).",
+      "A cross-page clone (proof page → doc page) carries its bound fills and per-side strokes, which is why the TabStrip linted clean without rebinding."
+    ]
   }
 }

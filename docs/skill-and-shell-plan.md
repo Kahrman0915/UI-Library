@@ -61,6 +61,11 @@ the build — and we apply that here.
 
 ## Phase 1 — `AppRail` and `AppShell`
 
+> **Shipped 2026-09-07** — `src/components/AppShell/` (AppShell · AppShellTabStrip · AppShellBody ·
+> AppShellWorkspace · AppShellMain · AppRail · AppRailItem) and the Figma `AppShell` page. The
+> brand question below is resolved: the shell reads its scope, `AppRailItem` takes `theme`. The
+> Aiden mounting contract is the open remainder of this phase.
+
 The prototype at `src/prototypes/DartCentralHome.stories.tsx` is the evidence for what the
 shell actually is, because it was built from the owner's real screen. Everything in it is a
 library component **except one thing**, and its own comment says so: the **app rail** — the

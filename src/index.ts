@@ -32,6 +32,8 @@ export type { AidenPanelProps, AidenPanelHeaderProps } from './components/AidenP
 
 export { default as AspectRatio } from './components/AspectRatio';
 export type { AspectRatioProps } from './components/AspectRatio';
+export { default as AppShell, AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain, AppRail, AppRailItem } from './components/AppShell';
+export type { AppShellProps, AppShellTabStripProps, AppShellRegionProps, AppShellMainProps, AppRailProps, AppRailItemProps } from './components/AppShell';
 
 export { default as Kbd } from './components/Kbd';
 export type { KbdProps, KbdSize } from './components/Kbd';

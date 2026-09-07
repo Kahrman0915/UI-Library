@@ -1,0 +1,162 @@
+// AppShell — the shared chrome as structure. See AppShell.tsx.
+//
+// strip 48 · rail 48 · sidebar 256 → Main Content 1136 at 1440, 1616 at 1920.
+
+.ui-app-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+
+  // ── the tab strip ──
+  &__strip {
+    display: flex;
+    align-items: stretch;
+    flex: none;
+    height: var(--app-strip-height);
+    background: var(--background);
+    border-bottom: var(--border-w-100) solid var(--border);
+  }
+
+  &__logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: none;
+    width: var(--app-rail-width);
+    border-inline-end: var(--border-w-100) solid var(--border);
+  }
+
+  &__tabs {
+    display: flex;
+    align-items: stretch;
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--p-1);
+    flex: none;
+    padding-inline: var(--p-2);
+    border-inline-start: var(--border-w-100) solid var(--border);
+  }
+
+  // ── the row under the strip ──
+  &__body {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+  }
+
+  // ── sidebar + main ──
+  // `contain: layout` is load-bearing: `position: relative` does NOT create a containing
+  // block for a `position: fixed` child — only transform, filter, perspective and contain
+  // do. Sidebar's panel is fixed by design, so without this it pins to the viewport and
+  // covers the rail and the strip (measured on the DART Central prototype).
+  &__workspace {
+    display: flex;
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    contain: layout;
+
+    // SidebarProvider is `min-height: 100svh` — right for a bare page, wrong under a
+    // strip, where it would push the workspace 48px past the viewport.
+    > .ui-sidebar-provider {
+      flex: 1;
+      min-width: 0;
+      min-height: 0;
+      height: 100%;
+    }
+  }
+
+  // ── the Main Content region: the scroll container a PageContainer fills ──
+  &__main {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    overflow-y: auto;
+    background: var(--background);
+  }
+}
+
+// ── the application rail ──
+.ui-app-rail {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: none;
+  width: var(--app-rail-width);
+  background: var(--sidebar);
+  color: var(--sidebar-foreground);
+  border-inline-end: var(--border-w-100) solid var(--sidebar-border);
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-block: var(--p-1);
+    border-bottom: var(--border-w-100) solid var(--sidebar-border);
+  }
+
+  &__apps {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--p-0-5);
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    padding-top: var(--p-1);
+    overflow-y: auto;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--p-0-5);
+    width: 100%;
+    padding-block: var(--p-2);
+    border-top: var(--border-w-100) solid var(--sidebar-border);
+  }
+
+  // The item is the hit target; the Mark inside is its brand's, whatever the page is.
+  &__item {
+    position: relative;
+    display: inline-flex;
+    padding: var(--p-1);
+    border: 0;
+    border-radius: var(--rounded-md);
+    background: none;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background var(--duration-fast) var(--ease-out);
+
+    &:hover { background: var(--sidebar-accent); }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
+    }
+
+    &--active { background: var(--sidebar-accent); }
+  }
+
+  &__tile { display: inline-flex; }
+
+  // Overhangs the tile corner the way a notification badge does.
+  &__count {
+    position: absolute;
+    top: calc(var(--p-1) * -1);
+    inset-inline-end: calc(var(--p-1) * -1);
+    pointer-events: none;
+  }
+}

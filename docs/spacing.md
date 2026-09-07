@@ -114,7 +114,8 @@ has real Slots for its content):
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
 | `Toolbar` + `ToolbarGroup` | L3 between groups · L4 inside a group | `Justify` variants; `Leading group` + `Trailing group` slots, a `Middle group` slot behind `Show middle group` for a second filter axis, plus a `Toolbar/Group` part |
 
-A page is `PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
+A page is `AppShell › AppShellMain › PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
+The content window `AppShellMain` gives a page is 1136 wide at 1440 and 1616 at 1920 (strip 48, rail 48, sidebar 256).
 Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
 screens are now composed from these five at 1024 and 1920, nothing hand-spaced.
 A screen built from them makes one decision per container — which level — and none

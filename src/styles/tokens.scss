@@ -523,6 +523,11 @@ html {
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
 
+  /* App shell chrome — the geometry every sub-application shares. Rail 48 + sidebar 256
+     leaves Main Content 1136 at 1440 and 1616 at 1920, the width the flow screens are drawn at. */
+  --app-rail-width: 3rem;
+  --app-strip-height: 3rem;
+
   /* The Aiden assistant panel (AidenPanel) — wider than a sidebar because it
      holds a conversation, narrower than the 768px transcript column because it
      is a companion to the page, not the page. Mode-independent, like the
