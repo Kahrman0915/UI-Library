@@ -4783,5 +4783,11 @@
     "staleIds": "Earlier ledger entries that cite section-3 frame ids (1889:243, 1941:481, 1941:38215, 1941:38351, 1964:882, 1964:1163, 1964:1297, 1965:1069, 1965:1250, 2016:2148) are now historical; use the ids above.",
     "lesson": "A version-history restore of a section re-keys its nodes. Afterwards, scan the file for reactions with a null destination (links out of the restored region) and for regions that used to be linked into it (links in are silently dropped), and repair both by name.",
     "apiLesson": "A reaction carries BOTH a legacy `action` and an `actions` array, and Figma honours `actions`. The first repair set destinationId on `action` only: the 24 blanks stayed blank, and the Dashboard card — given a copy of the Banner card's reaction with only `action` retargeted — pointed at the Banner form. Set the destination on `action` AND every `actions[i]`, and never verify in the same call that wrote."
+  },
+  "requestFlowSection3_R31_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "R3.1 Add Dashboard · empty form (2712:30999) regrouped onto the layout components the safe way, in four calls: (1) a PageContainer narrow appended BESIDE the existing column and filled with CLONES — header slot = Stack L3 [breadcrumb, page-heading], Content = Stack L2 [form Card, submit bar]; (2) read-only compare of the original column's reaction set against the clone's — identical, six reactions, both action and actions fields; (3) remove the original column, zero the frame's padding, centre; (4) read-only verify: six reactions as expected, lint all zeros, zero blank / dead destinations on the page. Frame id unchanged, 1136 wide, column 832.",
+    "procedure": "This is the procedure for every remaining frame: clone in, verify in a separate call, remove in a separate call, verify again. Never move the only copy; never end a write on an untested call.",
+    "note": "The heading's subtitle text was already clipped in the original (a 24-tall heading-text frame holding a 24 title and a 20 subtitle); carried over as-is, not a regression."
   }
 }
