@@ -4825,5 +4825,16 @@
     "verification": "Reaction counts equal the baseline (4 / 4 / 3, and R4.1c's 1 untouched); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros on the four frames.",
     "archetype": "Same header gap as sections 1 and 3 — FeaturedIcon + title/subtitle is a hand frame in a Stack L3 with the breadcrumb. Sixteen frames now carry it.",
     "widthNote": "Built directly on form (672 → 1008), so the column is the one the screens were designed at; no 832 detour."
+  },
+  "requestFlowSection5_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 5 (GENERAL REQUEST, 2025:2572) regrouped onto the layout components with the clone-in procedure, on the form width. Both frames rebuilt: R5.1 1968:1279 · R5.1a 2016:39864. Each is PageContainer form (672, column 608) › Page header slot = Stack L3 [Breadcrumb, page-heading (FeaturedIcon lg + title)] › Content = Stack L2 [form Card, submit bar]. Frame ids and 1136 width unchanged; frame padding (40 / 64) removed, root centres, PageContainer carries L1.",
+    "instances": {
+      "R5.1": "PageContainer 2746:4169 (Stack L3 2746:4176, Stack L2 2746:4209)",
+      "R5.1a": "PageContainer 2746:60766 (Stack L3 2746:60773, Stack L2 2746:60806)"
+    },
+    "procedure": "Same four steps as section 4: two parallel one-frame clone-in scripts; separate reaction-signature compare (equal, zero blank); two parallel one-frame removals guarded on the PageContainer sibling; separate verify.",
+    "verification": "Reaction counts equal the baseline (3 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
+    "archetype": "Same header gap — eighteen frames now carry the hand heading beside the breadcrumb."
   }
 }
