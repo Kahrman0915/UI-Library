@@ -4836,5 +4836,16 @@
     "procedure": "Same four steps as section 4: two parallel one-frame clone-in scripts; separate reaction-signature compare (equal, zero blank); two parallel one-frame removals guarded on the PageContainer sibling; separate verify.",
     "verification": "Reaction counts equal the baseline (3 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
     "archetype": "Same header gap — eighteen frames now carry the hand heading beside the breadcrumb."
+  },
+  "requestFlowSection6_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 6 (FEATURE REQUEST, 2025:2573) regrouped onto the layout components with the clone-in procedure, on the form width. Both frames rebuilt: R6.1 1968:1490 · R6.1a 2016:39973. Each is PageContainer form (672, column 608) › Page header slot = Stack L3 [Breadcrumb, page-heading (FeaturedIcon lg violet + title)] › Content = Stack L2 [form Card, submit bar]. Frame ids and 1136 width unchanged; frame padding (40 / 64) removed, root centres, PageContainer carries L1. With this, every form in the Request Flow (sections 3–6, seventeen frames) sits on form.",
+    "instances": {
+      "R6.1": "PageContainer 2747:4203 (Stack L3 2747:4210, Stack L2 2747:4243)",
+      "R6.1a": "PageContainer 2747:60824 (Stack L3 2747:60831, Stack L2 2747:60864)"
+    },
+    "procedure": "Same four steps as sections 4 and 5: two parallel one-frame clone-in scripts; separate reaction-signature compare (equal, zero blank); two parallel one-frame removals guarded on the PageContainer sibling; separate verify.",
+    "verification": "Reaction counts equal the baseline (3 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
+    "archetype": "Same header gap — twenty frames now carry the hand heading beside the breadcrumb. Remaining on the Request Flow: section 7 (outcomes) and section 8 (the 1920 proofs, still the old hand-built copies)."
   }
 }
