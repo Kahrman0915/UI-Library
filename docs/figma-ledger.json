@@ -4763,5 +4763,17 @@
     "widthNote": "The chooser's column was a hand-set 672 (max-w-2xl); on narrow it is 832, so the option cards went 328 → 408. Two widths only, by decision; if a chooser wants a tighter column it is a cap on the grid, not a third width.",
     "reactions": "Nine before the move; the read immediately after reported eight (the Feature Request card's nested Button). A direct probe found the button still carried its reaction — the post-move findAll undercounts while the tree is re-keying, the same artefact as section 1. Nothing was lost and nothing was re-added. Rule: after moving nodes into slots, verify reactions in a SEPARATE call, by (name, destination).",
     "lint": "All zeros."
+  },
+  "requestFlowSection3_dataLoss_2026_09_08": {
+    "date": "2026-09-08",
+    "severity": "DATA LOSS — awaiting owner recovery",
+    "summary": "Rebuilding Request Flow section 3 (ten Dashboard-request frames, 2025:2570) in one script: the content of every frame (breadcrumb, heading, form Card with the Tabs and fields, submit bar) was MOVED into a new PageContainer instance, the old column removed, and the script then threw on its last statement (figma.setPluginData is not supported in this host; only setSharedPluginData is). The host's rollback removed the PageContainer instances I had created — WITH the moved content inside them — and left the original 'content column' frames empty (0 children) in all ten frames. Sections 1 and 2 are intact (15 and 9 reactions). Nothing is orphaned on the page; the section-8 copy R8.3 (2099:3219) still holds R3.1's content at 1920.",
+    "whatIWasToldAndIgnored": "The ledger already said a failed script is not reliably atomic and to build by CLONING into the new structure and removing originals last. Sections 1–3 moved nodes instead, to keep prototype reactions on the same node ids. That trade was wrong: a clone keeps reactions too, and a move puts the only copy inside a node that a rollback deletes.",
+    "rules": [
+      "Never move the only copy of content into a node created in the same script. Clone into the new structure, verify, then remove the original in a LATER call.",
+      "No write script may end with an untested API call. A throw anywhere in a write script triggers a partial rollback that can delete created nodes and everything moved into them.",
+      "One frame per script for destructive rebuilds; verify before the next."
+    ],
+    "recovery": "Owner options: (1) Cmd+Z in the open editor — plugin writes are on the editor's undo stack; (2) File › Show version history, restore or copy section 3 from the autosave before this script; (3) rebuild R3.1 from R8.3 and the other nine by hand from their specs. Nothing further will be written to section 3 until the owner chooses."
   }
 }
