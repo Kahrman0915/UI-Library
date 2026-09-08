@@ -149,7 +149,9 @@ The four caps became two (`full` · `narrow`) once it was clear that, inside the
 Then the Request Flow forms were regrouped onto `narrow` and the owner found 832 too wide
 for a stack of fields — 672 is the column the forms and the chooser were designed at, and it
 still leaves 304 of page beside it at 1920. So a third width came back from the other
-direction: `form`, 672 → 1008 on the same × 1.5 rule. Owner's naming: **`full` · `narrow` ·
+direction: `form`, a 672 → 1008 column on the same × 1.5 rule — which makes the cap on
+the padded box 736 → 1104, the same arithmetic that gives narrow's 896 cap an 832 column
+(a first cut capped form at 672 and shipped a 608 column). Owner's naming: **`full` · `narrow` ·
 `form`**, picked by what the page holds — scans across, read down, fill in. `full` stays the
 prop default. The test a cap has to pass is that it sits inside the content window with page
 surface beside it; both remaining caps do.

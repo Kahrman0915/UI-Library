@@ -37,8 +37,8 @@ const meta: Meta<typeof PageContainer> = {
       changelog: [
         {
           date: '2026-09-08',
-          summary: 'A third width, `form`: a tighter centred column for a stack of fields (672 → 1008).',
-          detail: '`narrow` was tried on the request forms first and read too wide for a field stack, so the column they were designed at is back as its own width. `PageContainerWidth` is `full | narrow | form`; the new cap is `--container-form`, on the same width rule as `--container-narrow`.',
+          summary: 'A third width, `form`: a tighter centred column for a stack of fields (a 672 → 1008 column inside the page margin).',
+          detail: '`narrow` was tried on the request forms first and read too wide for a field stack, so the column they were designed at is back as its own width. `PageContainerWidth` is `full | narrow | form`; the new cap is `--container-form` (736 → 1104 on the padded box), on the same width rule as `--container-narrow`.',
         },
         {
           date: '2026-09-08',

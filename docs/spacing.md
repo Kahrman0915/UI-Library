@@ -108,7 +108,7 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content. Three widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule; `form` is a tighter centred column capped at `--container-form`, 672→1008, for a stack of fields | `Width` = full · narrow · form; variants are FILL with only max-width bound to `container/narrow` or `container/form` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
+| `PageContainer` | L1: page margin, and page header → content. Three widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule (an 832→1248 column inside the margin); `form` is a tighter centred column capped at `--container-form`, 736→1104 (a 672→1008 column), for a stack of fields | `Width` = full · narrow · form; variants are FILL with only max-width bound to `container/narrow` or `container/form` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
 | `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
@@ -120,7 +120,9 @@ Why these three: inside the app shell the content window is 1136 at 1440 and 161
 so any cap wider than that behaves like `full`; a `default` (1152) and a `wide` (1280) existed
 for a day and did exactly that. Both remaining caps sit well inside the window with page surface
 beside them. `form` exists because `narrow` was tried on the request forms first and read too
-wide for a field stack; 672 is the column they were designed at. Pick by what the page holds:
+wide for a field stack; 672 is the column they were designed at. The cap is the padded box,
+so a cap is the column plus twice the L1 margin: 736 for a 672 column at 1440, 1104 for 1008
+at 1920. Pick by what the page holds:
 scans across → `full`, read down → `narrow`, fill in → `form`.
 Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
 screens are now composed from these five at 1440 and 1920, nothing hand-spaced.

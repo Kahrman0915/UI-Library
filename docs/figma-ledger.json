@@ -4859,5 +4859,12 @@
     },
     "verification": "Reaction signatures equal before removal; counts equal the baseline after (2 / 2 / 2 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros, primitive-binding advisory zero.",
     "found": "R7.1's height dropped less than the structure predicts because the summary card's info copy wrapped to a third line — the container's cap is the PADDED box, so form's 672 cap gives a 608 column, 64 narrower than the 672 the screens were designed at. Same arithmetic narrow already records (896 cap, 832 column). Corrected in the next entry."
+  },
+  "pageContainerFormCapFix_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "The form cap corrected from 672 → 1008 to 736 → 1104. The cap is the PADDED box (max-width on a border-box that carries the L1 margin), so the column a page gets is the cap minus twice L1: 64 less at 1440, 96 less at 1920. Set at 672 the column was 608, not the 672 the screens were designed at; caught when R7.1's summary copy wrapped to a third line after the rebuild. narrow already followed this arithmetic (896 cap, 832 column) and was recorded that way — the same rule was not applied when form was added.",
+    "code": "CONTAINERS.form = [736, 1104]; tokens regenerate to --container-form: clamp(46rem, -23rem + 76.6667vw, 69rem). Verified in the browser: form box 736 / column 672 at 1440, 1104 / 1008 at 1920; narrow 896 / 832 and 1344 / 1248. Recipe comment, types JSDoc, stories changelog, docs/spacing.md, CLAUDE.md and the spec revision now state a cap and its column together.",
+    "figma": "container/form VariableID:2743:72 → 736 · 1104; Width=form 2743:73 maxWidth 736; variable, variant, set, doc-page section and changelog-row copy updated. All 22 form instances on Request Flow (R2.1, sections 3–7) now measure 736 with a 672 Content slot, zero overflow; the 5 narrow ones 896 / 832.",
+    "lesson": "State a cap and its column together, every time. A cap is not the column; the difference is twice the level-1 margin and it changes with width."
   }
 }

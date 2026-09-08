@@ -1550,7 +1550,7 @@ html {
   --space-5: clamp(var(--p-1), -0.125rem + 0.4167vw, var(--p-1-5));
   /* Container caps (PageContainer width="narrow" | "form"): the same rule, × 1.5 at the large end. */
   --container-narrow: clamp(56rem, -28rem + 93.3333vw, 84rem);
-  --container-form: clamp(42rem, -21rem + 70vw, 63rem);
+  --container-form: clamp(46rem, -23rem + 76.6667vw, 69rem);
 }
 
 /* Density reshapes the whole ladder (owner's tables). */
