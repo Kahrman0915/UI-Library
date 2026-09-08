@@ -4797,5 +4797,19 @@
     "verification": "Reaction counts per frame equal the post-restore baseline (6/6 or 7/7 on all ten); zero blank and zero dead destinations on the page; design-check lint all zeros across the ten frames.",
     "widthNote": "Forms went from a hand-set 672 column to narrow's 832. Column-level cap (a 2xl form column inside narrow) is not modelled; if forms should stay tighter than lists it is a cap on the Card, not a third width.",
     "archetype": "Same header gap as the detail pages: FeaturedIcon + title/subtitle is not a PageHeader shape (no visual). Thirteen frames now carry a hand heading frame in a Stack L3 with the breadcrumb — the case for PageHeader gaining `visual` (and `breadcrumb`) is made; decision pending with the owner."
+  },
+  "pageContainerFormWidth_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "PageContainer gained a third width, form (672 at 1440 → 1008 at 1920), in code and Figma. Section 3 had been regrouped onto narrow and the owner found 832 too wide for a stack of fields; 672 is the column the forms and the chooser were designed at. Owner's naming: full · narrow · form — full stays the default, narrow keeps its cap.",
+    "code": "CONTAINERS gains form: [672, 1008]; tokens regenerate to --container-form: clamp(42rem, -21rem + 70vw, 63rem); PageContainerWidth = 'full' | 'narrow' | 'form'; .ui-page-container--form { max-width: var(--container-form) }; stories, docs/spacing.md §7 and CLAUDE.md updated; AppShell story types its width from PageContainerWidth.",
+    "figma": {
+      "variable": "container/form VariableID:2743:72 in Space · width (1440 → 672, 1920 → 1008, scope WIDTH_HEIGHT). container/narrow's description corrected (it still said 'at 1024').",
+      "set 2638:487": "Width=form 2743:73 cloned from Width=narrow, maxWidth re-bound to container/form, FILL; variant order stays full · narrow · form so full remains the default. Set and both existing variant descriptions rewritten around 'scans across · read down · fill in'.",
+      "docPage": "COMPONENT section retitled 'Width: full, narrow or form'; USAGE and header copy updated; changelog row 2743:60569 added newest-first.",
+      "instances": "Eleven switched narrow → form with setProperties: R2.1 chooser 2715:3899 and section 3's ten (2726:3948 · 2728:3965 · 2728:60882 · 2728:61132 · 2728:61354 · 2728:61502 · 2728:61666 · 2728:61830 · 2728:62080 · 2728:62302). All FILL at 672; the chooser's option cards went 408 → 304 (their designed width was 328)."
+    },
+    "verification": "Separate read: reaction counts equal the baseline on all eleven (9 on R2.1, 6/7 on section 3); 125 node destinations on the Request Flow page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
+    "lesson": "variant.clone() DID drop both slots to plain frames (CLAUDE.md was right, the playbook's 'clone() preserves slots' is wrong for variants inside a set). The slotContentId recipe re-keys them in place with the set's existing property keys — but the node type still reads FRAME in the same script; only a separate read shows SLOT. Verify slot-ness in a second call.",
+    "supersedes": "The widthNote in requestFlowSection2_2026_09_08 and requestFlowSection3_2026_09_08 ('a third width is not the answer, cap the Card/grid') — the owner chose the third width."
   }
 }

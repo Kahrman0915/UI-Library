@@ -11,6 +11,7 @@ import ModeToggler from '../ModeToggler';
 import Badge from '../Badge';
 import Input from '../Input';
 import PageContainer from '../PageContainer';
+import type { PageContainerWidth } from '../PageContainer';
 import PageHeader from '../PageHeader';
 import Section from '../Section';
 import Stack from '../Stack';
@@ -65,7 +66,7 @@ const Row = ({ id, title, description }: { id: string; title: string; descriptio
   </Card>
 );
 
-function Shell({ width }: { width: 'narrow' | 'full' }) {
+function Shell({ width }: { width: PageContainerWidth }) {
   return (
     <AppShell id="shell">
       <AppShellTabStrip
