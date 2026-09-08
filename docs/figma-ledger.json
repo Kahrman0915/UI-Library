@@ -4751,5 +4751,10 @@
     "archetypeGap": "The request-detail heading — visual + overline + title on the left, status badge + date on the right, breadcrumb above — is not a PageHeader shape (PageHeader has title / description / actions / toolbar). It stays a hand frame inside a Stack L3 with the breadcrumb. Candidate PageHeader additions if this shape recurs on the Admin Flow: an `overline`, a `visual` and a `meta` region, and a `breadcrumb` slot above the row.",
     "widthNote": "Column went 880 → 832 at 1440 (narrow's 896 minus the L1 margin). The 1920 proofs in section 8 are still the old hand-built copies.",
     "lint": "Five frames at all zeros; primitive-binding advisory zero."
+  },
+  "pageContainerChrome_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Owner: drop the dashed edge on PageContainer and stop putting the width in instance layer names. The dashed stroke was mock-up chrome on the master (visible on every placed instance); removed from both variants. All 15 instances in the file renamed to plain 'PageContainer' — a layer name that carries the variant goes stale the moment someone switches it, which the owner did.",
+    "rule": "Instance layer names carry the component name only; the variant lives in the inspector. Masters carry no presentational chrome of their own beyond what the code renders."
   }
 }
