@@ -28,8 +28,8 @@ hierarchy. Each level down is one step down the ladder.
 | **4 · element** | `--space-4` | `space/4-element` | 8 → 12 | 6 → 8 | 12 → 20 | inside a card: header → item, row → row; toolbar gaps |
 | **5 · micro** | `--space-5` | `space/5-micro` | 4 → 6 | 2 → 4 | 6 → 8 | icon → label; title → subtitle |
 
-Each cell reads *value at 1024 → value at 1920*. Every number is a rung on the ramp. The
-1024 columns are the owner's tables (2026-09-07). **The 1920 column is the 1024 column
+Each cell reads *value at 1440 → value at 1920*. Every number is a rung on the ramp. The
+1440 columns are the owner's tables (2026-09-07). **The 1920 column is the 1440 column
 × 1.5** — one multiplier, so the ladder keeps exactly the same shape at every width;
 balanced is exact, compact and spacious snap to the nearest rung (36 / 20 / 12 / 8 / 4 and
 64 / 48 / 36 / 20 / 8). Change them in the recipe.
@@ -40,7 +40,7 @@ level 3; naming it separately is how a scale turns back into magic numbers.
 ## 3 · Width: the whole ladder slides
 
 Every level is a `clamp()` between its two ends, solved so the value equals the small
-ladder at 1024px and the large ladder at 1920px of viewport width, and pinned outside
+ladder at 1440px and the large ladder at 1920px of viewport width, and pinned outside
 that range. Because every level slides on the same width, **the ladder stays in
 proportion at every size** — no gap ever moves alone. A user pulling a window in from a
 big monitor sees the grid gap ease from 24 to 16 with no jump.
@@ -117,7 +117,7 @@ has real Slots for its content):
 A page is `AppShell › AppShellMain › PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
 The content window `AppShellMain` gives a page is 1136 wide at 1440 and 1616 at 1920 (strip 48, rail 48, sidebar 256).
 Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
-screens are now composed from these five at 1024 and 1920, nothing hand-spaced.
+screens are now composed from these five at 1440 and 1920, nothing hand-spaced.
 A screen built from them makes one decision per container — which level — and none
 about pixels. The page's search field goes in `PageHeader`'s `toolbar`, never as a
 sibling in the section stack: that sibling gap is the one that read wrong at 1920.
@@ -126,7 +126,7 @@ sibling in the section stack: that sibling gap is the one that read wrong at 192
 
 - **`Space`** — modes `balanced · compact · spacious`, default balanced. `space/1-page` …
   `space/5-micro`, scoped to gap and padding. Bind a container's gap or padding to its level.
-- **`Space · width`** — modes `1024 · 1920`, default 1024. Holds each level's two ends per
+- **`Space · width`** — modes `1440 · 1920`, default 1440. Holds each level's two ends per
   density (`fluid/N-name/density`); the target of `Space`, not for direct use.
 - Figma shows the two ends; the browser slides between them. Pin a frame's modes only when
   the frame is meant to show that state; a working screen stays on Auto.

@@ -12,7 +12,7 @@ const meta: Meta = {
       description:
         'Five spacing LEVELS assigned by hierarchy — `--space-1` (page) down to `--space-5` (micro). ' +
         'A container\'s gap or padding is a level; each level down is one step down. The whole ladder ' +
-        'slides with viewport width from 1024 to 1920px and reshapes per `data-density`. Resize the ' +
+        'slides with viewport width from 1440 to 1920px and reshapes per `data-density`. Resize the ' +
         'window and every bar moves together; switch density and the ladder changes shape.',
       tags: ['tokens', 'data-density', 'fluid'],
     } satisfies UiDocsParameters,

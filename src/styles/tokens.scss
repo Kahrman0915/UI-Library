@@ -1532,52 +1532,52 @@ html {
 
 /* The spacing LADDER. Five levels assigned by hierarchy — a container's gap or padding
    is a level, each level down is one step down. The whole ladder slides with viewport
-   width from 1024px to 1920px and reshapes per data-density; absence is
+   width from 1440px to 1920px and reshapes per data-density; absence is
    balanced. In Figma: space/N-name with the Space (density) and Space · width modes.
    Rules: docs/spacing.md. */
 :root {
-  --fluid-min-width: 1024px;
+  --fluid-min-width: 1440px;
   --fluid-max-width: 1920px;
   /* L1 page: page margin; between the page header and the content */
-  --space-1: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
+  --space-1: clamp(var(--p-8), -1rem + 3.3333vw, var(--p-12));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
+  --space-2: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
   /* L3 block: grid gap; card padding */
-  --space-3: clamp(var(--p-4), 0.4286rem + 0.8929vw, var(--p-6));
+  --space-3: clamp(var(--p-4), -0.5rem + 1.6667vw, var(--p-6));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
-  --space-4: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
+  --space-4: clamp(var(--p-2), -0.25rem + 0.8333vw, var(--p-3));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: clamp(var(--p-1), 0.1071rem + 0.2232vw, var(--p-1-5));
+  --space-5: clamp(var(--p-1), -0.125rem + 0.4167vw, var(--p-1-5));
   /* Container caps (PageContainer width): the same rule, × 1.5 at the large end. */
-  --container-narrow: clamp(56rem, 24rem + 50vw, 84rem);
-  --container-default: clamp(72rem, 30.8571rem + 64.2857vw, 108rem);
-  --container-wide: clamp(80rem, 34.2857rem + 71.4286vw, 120rem);
+  --container-narrow: clamp(56rem, -28rem + 93.3333vw, 84rem);
+  --container-default: clamp(72rem, -36rem + 120vw, 108rem);
+  --container-wide: clamp(80rem, -40rem + 133.3333vw, 120rem);
 }
 
 /* Density reshapes the whole ladder (owner's tables). */
 [data-density='compact'] {
   /* L1 page: page margin; between the page header and the content */
-  --space-1: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
+  --space-1: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-3), 0.1786rem + 0.8929vw, var(--p-5));
+  --space-2: clamp(var(--p-3), -0.75rem + 1.6667vw, var(--p-5));
   /* L3 block: grid gap; card padding */
-  --space-3: clamp(var(--p-2), 0.2143rem + 0.4464vw, var(--p-3));
+  --space-3: clamp(var(--p-2), -0.25rem + 0.8333vw, var(--p-3));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
-  --space-4: clamp(var(--p-1-5), 0.2321rem + 0.2232vw, var(--p-2));
+  --space-4: clamp(var(--p-1-5), 0rem + 0.4167vw, var(--p-2));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: clamp(var(--p-0-5), -0.0179rem + 0.2232vw, var(--p-1));
+  --space-5: clamp(var(--p-0-5), -0.25rem + 0.4167vw, var(--p-1));
 }
 [data-density='spacious'] {
   /* L1 page: page margin; between the page header and the content */
-  --space-1: clamp(var(--p-10), 0.7857rem + 2.6786vw, var(--p-16));
+  --space-1: clamp(var(--p-10), -2rem + 5vw, var(--p-16));
   /* L2 section: between sections; between a section heading and its grid */
-  --space-2: clamp(var(--p-8), 0.8571rem + 1.7857vw, var(--p-12));
+  --space-2: clamp(var(--p-8), -1rem + 3.3333vw, var(--p-12));
   /* L3 block: grid gap; card padding */
-  --space-3: clamp(var(--p-6), 0.6429rem + 1.3393vw, var(--p-9));
+  --space-3: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
   /* L4 element: inside a card: header → item, row → row; toolbar gaps */
-  --space-4: clamp(var(--p-3), 0.1786rem + 0.8929vw, var(--p-5));
+  --space-4: clamp(var(--p-3), -0.75rem + 1.6667vw, var(--p-5));
   /* L5 micro: icon → label; title → subtitle */
-  --space-5: clamp(var(--p-1-5), 0.2321rem + 0.2232vw, var(--p-2));
+  --space-5: clamp(var(--p-1-5), 0rem + 0.4167vw, var(--p-2));
 }
 
 /* @end spacing-semantic */

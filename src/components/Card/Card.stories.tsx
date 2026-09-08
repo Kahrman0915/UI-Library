@@ -77,7 +77,7 @@ const meta: Meta<typeof Card> = {
           detail:
             'The relationship-named roles were replaced by a five-level ladder assigned by hierarchy. ' +
             'Card padding is level 3 (block): 16 at balanced, 8 compact, 24 spacious, and it slides from 16 to ' +
-            '24 between 1024 and 1920px of viewport width together with every other level. Byte-identical at ' +
+            '24 between 1440 and 1920px of viewport width together with every other level. Byte-identical at ' +
             'balanced on a laptop. Gaps and the size ramp unchanged. See docs/spacing.md.',
         },
         {

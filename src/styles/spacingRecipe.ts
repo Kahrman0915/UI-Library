@@ -8,13 +8,19 @@
 // reshapes per density (compact · balanced · spacious). A level never moves alone,
 // which is what keeps every gap in proportion to its neighbours at every width.
 //
-// Owner's tables, 2026-09-07. Rules and rationale: docs/spacing.md.
+// Owner's tables, 2026-09-07; small end moved to 1440 on 2026-09-08. Rules and rationale: docs/spacing.md.
 
 export type Density = 'compact' | 'balanced' | 'spacious';
 export const DENSITIES: Density[] = ['compact', 'balanced', 'spacious'];
 
-/** The two widths the ladder is solved against. Below min the small ladder, above max the large. */
-export const FLUID = { min: 1024, max: 1920 } as const;
+/**
+ * The two viewports the ladder is solved against. Below min the small ladder holds, above
+ * max the large. min is 1440 — the DESIGN viewport every flow screen is drawn at — so the
+ * small end of the ladder is exactly what a 1440 browser shows and what a 1440 Figma frame
+ * shows (owner, 2026-09-08; it was 1024, a viewport nobody designs at, which put 1440 in
+ * the middle of the range and made the Figma frames overstate the small end).
+ */
+export const FLUID = { min: 1440, max: 1920 } as const;
 
 export type LevelN = 1 | 2 | 3 | 4 | 5;
 export type Level = { n: LevelN; name: 'page' | 'section' | 'block' | 'element' | 'micro'; job: string };
@@ -30,7 +36,7 @@ export const LEVELS: readonly Level[] = [
 /**
  * [value at FLUID.min, value at FLUID.max] per level, per density. Every number is a rung.
  *
- * THE WIDTH RULE IS ONE MULTIPLIER: the 1920 ladder is the 1024 ladder × 1.5, so the
+ * THE WIDTH RULE IS ONE MULTIPLIER: the 1920 ladder is the 1440 ladder × 1.5, so the
  * hierarchy keeps exactly the same shape at every width (owner decision 2026-09-07, after
  * a hand-tuned 1920 column was caught changing the ladder's shape). Balanced is exact.
  * Compact and spacious snap to the nearest rung where × 1.5 lands off the ramp:

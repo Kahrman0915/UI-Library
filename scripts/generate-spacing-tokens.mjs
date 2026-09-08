@@ -6,7 +6,7 @@
 //   node --experimental-strip-types scripts/generate-spacing-tokens.mjs --check  # diff only, exit 1 on drift
 //
 // Each level is clamp(small, A rem + B vw, large), solved so the middle term equals the
-// small-ladder value at FLUID.min and the large-ladder value at FLUID.max. Every level
+// small-ladder value at FLUID.min (1440, the design viewport) and the large-ladder value at FLUID.max. Every level
 // slides on the same width, so the ladder stays in proportion at every size. A level
 // whose two values are equal (micro) is emitted as a plain rung. The rem term is
 // load-bearing: a pure vw expression ignores browser zoom and fails WCAG 1.4.4.

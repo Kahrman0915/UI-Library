@@ -4704,5 +4704,22 @@
       "Sidebar (256) and rail (48) are the same at both widths, so a 1920 screen gives ALL its extra 480 to Main. Whether the sidebar should widen on a big monitor is a design call not taken here."
     ],
     "lint": "Four frames: unbound paint 0, unstyled text 0, generic names 0, geometry 0, overflow 0; primitive-binding advisory 0 outside instances."
+  },
+  "fluidMin1440_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "The fluid range's small end moved from 1024 to 1440, the design viewport every flow screen is drawn at (owner). Ladder values, caps and the × 1.5 rule are unchanged; only the viewport the small end is pinned to moved, so a 1440 frame in Figma now shows exactly what a 1440 browser shows.",
+    "why": "With min at 1024 the 1440 design viewport sat 46% along the range: a 1440 browser rendered 39 / 30 / 20 / 10 / 5 and a narrow container of 1104, while the Figma frame labelled 1440 could only show the 1024 end — 32 / 24 / 16 / 8 / 4 and 896 — so it overstated the empty page beside a narrow column (120 per side in Figma vs 16 in the browser). And a 1024 viewport minus the shell's 304 leaves a 720 Main, where the 896 narrow cap does not even fit.",
+    "code": "FLUID.min = 1440 in src/styles/spacingRecipe.ts; regenerated: --fluid-min-width 1440px, --space-1 clamp(var(--p-8), -1rem + 3.3333vw, var(--p-12)), --container-narrow clamp(56rem, -28rem + 93.3333vw, 84rem), and so on. Below 1440 the small ladder holds (clamp).",
+    "figma": {
+      "mode": "Space · width mode '1024' renamed '1440' (renameMode; ids unchanged, so every pinned frame kept its state).",
+      "textsRenamed": [
+        "📐 Spacing guide: five texts (the width card now reads '1440 · the design viewport, the default')",
+        "📐 Spacing · applied to built screens: frames 2635:145 / 2635:415 → '· 1440' and their captions",
+        "Page 109 caption 2624:260",
+        "Spacing & sizing: ladder grid row 'width 1440', row label, three density cells"
+      ],
+      "kept": "Request Flow's sizing note ('designed at 1440, supported 1024 and up') — that 1024 is a supported viewport, not the mode."
+    },
+    "lesson": "Name a fluid range's ends after the viewports they are solved for, and solve them for the viewports people actually design at; a mode called '1024' on a frame drawn at 1440 was a contradiction a designer spotted in one look."
   }
 }

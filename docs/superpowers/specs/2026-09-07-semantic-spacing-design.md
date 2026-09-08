@@ -129,3 +129,15 @@ which the ladder puts at L1 with the section gaps until a PageHeader exists; the
 lint tier.
 
 **Revision 2 — the width rule is × 1.5.** The first 1920 column (64 / 32 / 24 / 12 / 4) was hand-tuned around two anchors and changed the ladder's shape; the owner chose one multiplier instead. 1920 = 1024 × 1.5: balanced 48 / 36 / 24 / 12 / 6 exactly; compact and spacious snapped to the ramp, 36 / 20 / 12 / 8 / 4 and 64 / 48 / 36 / 20 / 8. Micro moves with the rest.
+
+
+## Revision 3 (2026-09-08) — the small end is 1440
+
+The range was solved 1024 → 1920. 1024 is a viewport nobody designs at, and it put the
+1440 design viewport 46% of the way along the range: a browser at 1440 rendered 39 / 30 /
+20 / 10 / 5, while the Figma frame labelled 1440 could only show the 1024 end (32 / 24 / 16 /
+8 / 4) and a narrow page there overstated the empty page beside its column (120 per side
+in Figma, 16 in the browser). Owner's call: `FLUID.min` is now 1440. The ladder values, the
+caps and the × 1.5 rule are unchanged; only the viewport the small end is pinned to moved,
+so a 1440 frame in Figma now shows exactly what a 1440 browser shows. Below 1440 the small
+ladder holds, as a clamp does. The Figma mode is renamed 1024 → 1440.
