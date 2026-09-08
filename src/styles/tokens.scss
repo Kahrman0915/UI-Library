@@ -523,6 +523,11 @@ html {
   --sidebar-width-icon: 3rem;
   --sidebar-width-mobile: 18rem;
 
+  /* App shell chrome — the geometry every sub-application shares. Rail 48 + sidebar 256
+     leaves Main Content 1136 at 1440 and 1616 at 1920, the width the flow screens are drawn at. */
+  --app-rail-width: 3rem;
+  --app-strip-height: 3rem;
+
   /* The Aiden assistant panel (AidenPanel) — wider than a sidebar because it
      holds a conversation, narrower than the 768px transcript column because it
      is a companion to the page, not the page. Mode-independent, like the
@@ -1522,6 +1527,58 @@ html {
    turns on both and either alone works. */
 [data-tint~='page'] { --tint-page: 1; }
 [data-tint~='rail'] { --tint-rail: 1; }
+
+/* @generated spacing-semantic — do not hand-edit; run scripts/generate-spacing-tokens.mjs */
+
+/* The spacing LADDER. Five levels assigned by hierarchy — a container's gap or padding
+   is a level, each level down is one step down. The whole ladder slides with viewport
+   width from 1440px to 1920px and reshapes per data-density; absence is
+   balanced. In Figma: space/N-name with the Space (density) and Space · width modes.
+   Rules: docs/spacing.md. */
+:root {
+  --fluid-min-width: 1440px;
+  --fluid-max-width: 1920px;
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-8), -1rem + 3.3333vw, var(--p-12));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-4), -0.5rem + 1.6667vw, var(--p-6));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-2), -0.25rem + 0.8333vw, var(--p-3));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: clamp(var(--p-1), -0.125rem + 0.4167vw, var(--p-1-5));
+  /* Container cap (PageContainer width="narrow"): the same rule, × 1.5 at the large end. */
+  --container-narrow: clamp(56rem, -28rem + 93.3333vw, 84rem);
+}
+
+/* Density reshapes the whole ladder (owner's tables). */
+[data-density='compact'] {
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-3), -0.75rem + 1.6667vw, var(--p-5));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-2), -0.25rem + 0.8333vw, var(--p-3));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-1-5), 0rem + 0.4167vw, var(--p-2));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: clamp(var(--p-0-5), -0.25rem + 0.4167vw, var(--p-1));
+}
+[data-density='spacious'] {
+  /* L1 page: page margin; between the page header and the content */
+  --space-1: clamp(var(--p-10), -2rem + 5vw, var(--p-16));
+  /* L2 section: between sections; between a section heading and its grid */
+  --space-2: clamp(var(--p-8), -1rem + 3.3333vw, var(--p-12));
+  /* L3 block: grid gap; card padding */
+  --space-3: clamp(var(--p-6), -0.75rem + 2.5vw, var(--p-9));
+  /* L4 element: inside a card: header → item, row → row; toolbar gaps */
+  --space-4: clamp(var(--p-3), -0.75rem + 1.6667vw, var(--p-5));
+  /* L5 micro: icon → label; title → subtitle */
+  --space-5: clamp(var(--p-1-5), 0rem + 0.4167vw, var(--p-2));
+}
+
+/* @end spacing-semantic */
 
 /* @generated deeper-theming-v2 — do not hand-edit; run scripts/generate-brand-tokens.mjs */
 

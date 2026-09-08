@@ -15,6 +15,27 @@ const meta: Meta<typeof Toggle> = {
       tags: ['aria-pressed'],
       changelog: [
         {
+          date: '2026-09-04',
+          summary: 'The unpressed `plain` label drops to regular weight, so you can tell which filter is active in dark mode.',
+          detail:
+            '`.ui-toggle--plain` goes from `--font-medium` to `--font-normal`; pressed stays `--font-semibold`, so ' +
+            'the step is now 400->600 instead of 500->600. The variant leaned on colour plus one weight step, and ' +
+            'the colour half does not exist in dark: --foreground against --muted-foreground is 2.36:1 in light but ' +
+            '1.18:1 in dark (#f8fafc vs #e2e8f0), leaving one weight step at 14px to carry the whole state. Weight ' +
+            'is the right lever precisely because it is not a hue, so no theme or mode can collapse it.\n\n' +
+            'The 500 floor existed on the theory that 400 would reflow the bar as the selection moved. Measured ' +
+            'against the real variable Inter at 14px, an item changes width by 0.53-1.05px on 500->600 and ' +
+            '1.06-2.11px on 400->600 — the entire cost is about one pixel, so the argument does not survive being ' +
+            'measured. `line` is untouched; its --primary bar is already a non-chromatic marker.\n\n' +
+            'Recorded so it is not retried: moving the pressed label to `--primary-text` was built and measured the ' +
+            'same day and is WORSE (1.49:1 light, 1.14:1 dark), because the untethered brand’s --primary is slate ' +
+            '(#cbd5e1 dark) and offers no hue; in Figma that variable resolves identically under all seven brands. ' +
+            'It was reverted. Note test:contrast cannot catch any of this — it gates text against SURFACES, and ' +
+            'both labels clear AA against the background. The failure is between two foregrounds, which nothing ' +
+            'gates. The deeper cause, still open, is dark --muted-foreground sitting one step from --foreground, ' +
+            'which flattens every muted/normal text pair in the library (same origin as the Tabs indicator finding).',
+        },
+        {
           date: '2026-08-27',
           summary: 'Gained a trailing icon.',
           detail:

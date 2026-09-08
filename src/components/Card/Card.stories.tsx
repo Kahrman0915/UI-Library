@@ -71,6 +71,28 @@ const meta: Meta<typeof Card> = {
       ],
       changelog: [
         {
+          date: '2026-09-07',
+          summary:
+            'Padding moved from the `--space-inset` role to level 3 of the spacing ladder, `--space-3`, the same day; the roles were withdrawn.',
+          detail:
+            'The relationship-named roles were replaced by a five-level ladder assigned by hierarchy. ' +
+            'Card padding is level 3 (block): 16 at balanced, 8 compact, 24 spacious, and it slides from 16 to ' +
+            '24 between 1440 and 1920px of viewport width together with every other level. Byte-identical at ' +
+            'balanced on a laptop. Gaps and the size ramp unchanged. See docs/spacing.md.',
+        },
+        {
+          date: '2026-09-07',
+          summary:
+            'Header, body and footer padding now read the semantic `--space-inset` role, so a default-size card follows `data-density` (compact 12 / balanced 16 / spacious 20). Nothing changes until a page opts in.',
+          detail:
+            'Card is the worked example of the boundary between the two spacing tiers. The inside edge of a ' +
+            'surface is a ROLE, so the three `padding: var(--p-4)` declarations became `var(--space-inset)`. ' +
+            'The gaps stay on primitive rungs (body 12, footer 8, header 16, title→description 6) because they ' +
+            'are the component’s own rhythm, and the `sm / lg / xl / 2xl` size blocks keep setting `padding` per ' +
+            'rung: an explicit size pins geometry, density applies to the default size. Renders byte-identically ' +
+            'at balanced. Rules and the full role table: docs/spacing.md and Foundations / Semantic Spacing.',
+        },
+        {
           date: '2026-08-31',
           summary:
             'The header\u2019s pieces are now exported as parts \u2014 `CardTitle`, `CardDescription`, `CardOverline`, `CardVisual`, `CardActions` \u2014 so any layout composes from the system. Also fixes `mediaPlacement`, which never worked.',

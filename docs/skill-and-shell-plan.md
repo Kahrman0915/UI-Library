@@ -61,6 +61,13 @@ the build — and we apply that here.
 
 ## Phase 1 — `AppRail` and `AppShell`
 
+> **Shipped 2026-09-07** — `src/components/AppRail/` (AppRail · AppRailItem) and
+> `src/components/AppShell/` (AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace ·
+> AppShellMain), with Figma pages `AppRail` and `AppShell`. The
+> brand question below is resolved: nothing in the shell takes a brand; it reads its scope. Rail
+> items are icon-only links, not Marks (owner's correction on shipping). The Aiden mounting
+> contract is the open remainder of this phase.
+
 The prototype at `src/prototypes/DartCentralHome.stories.tsx` is the evidence for what the
 shell actually is, because it was built from the owner's real screen. Everything in it is a
 library component **except one thing**, and its own comment says so: the **app rail** — the

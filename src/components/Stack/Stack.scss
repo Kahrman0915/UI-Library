@@ -1,0 +1,45 @@
+// Stack — a flex run whose gap is a level on the spacing ladder.
+//
+// The five `--level-N` modifiers are the whole point: `gap` reads `--space-N`, which the
+// ladder resolves per viewport width and per data-density. Nothing here is a number.
+// A Stack has no padding and no paint, deliberately — see Stack.tsx.
+
+.ui-stack {
+  display: flex;
+  flex-direction: column;
+  // A flex item defaults to min-width:auto and refuses to shrink below its content,
+  // which is how long titles push a card wider than its column. Same fix the docs
+  // stage needed.
+  min-width: 0;
+  // ul / ol as a Stack: the list is the layout, not a bulleted list.
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &--horizontal {
+    flex-direction: row;
+  }
+
+  // A Grid is a Stack that wraps. The cross-axis gap is the same level, so a wrapped
+  // run keeps one rhythm in both directions.
+  &--wrap {
+    flex-wrap: wrap;
+  }
+
+  // ---- The ladder ----
+  &--level-1 { gap: var(--space-1); }
+  &--level-2 { gap: var(--space-2); }
+  &--level-3 { gap: var(--space-3); }
+  &--level-4 { gap: var(--space-4); }
+  &--level-5 { gap: var(--space-5); }
+
+  // ---- Alignment ----
+  // Default `stretch` is the flex default and emits no class.
+  &--align-start { align-items: flex-start; }
+  &--align-center { align-items: center; }
+  &--align-end { align-items: flex-end; }
+
+  &--justify-center { justify-content: center; }
+  &--justify-end { justify-content: flex-end; }
+  &--justify-between { justify-content: space-between; }
+}

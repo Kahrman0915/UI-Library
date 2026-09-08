@@ -1,0 +1,20 @@
+// PageContainer — level 1 of the spacing ladder: the page margin, and the space between
+// the page header and the content. Both read --space-1. The narrow cap is --container-narrow,
+// which follows the ladder's width rule (× 1.5 at 1920, fluid between): a fixed cap plus a
+// growing margin made a narrow page narrower on a big monitor. See PageContainer.tsx.
+
+.ui-page-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1);
+  box-sizing: border-box;
+  width: 100%;
+  margin-inline: auto;
+  min-width: 0;
+
+  // `full` is the default and emits no modifier — a class nothing selects is dead BEM.
+  // The only cap is narrow; anything wider than the shell's content window (1136 / 1616)
+  // would behave like full anyway, which is why default and wide were removed.
+  &--narrow { max-width: var(--container-narrow); }
+}

@@ -61,3 +61,40 @@ export type TabBarNewTabProps = Omit<
   label?: string;
   className?: string;
 };
+
+/** One entry in the tab menu — an open tab, or a recently closed one. */
+export type TabBarMenuItem = {
+  /** The tab's `value` (for open tabs, the same value the bar switches to). */
+  value: string;
+  label: string;
+  Icon?: LucideIcon;
+};
+
+/**
+ * The menu at the far end of the bar: tab search over the open tabs, and the
+ * recently closed list for quick reopening — the control every browser puts at
+ * the end of its tab strip. Selecting an open tab switches the bar; selecting a
+ * closed one calls `onReopen`, and the consumer reopens it (the bar closes and
+ * reopens nothing itself, as with `onClose`).
+ */
+export type TabBarMenuProps = Omit<
+  React.ButtonHTMLAttributes<HTMLButtonElement>,
+  'children'
+> & {
+  /** The open tabs, in bar order. */
+  tabs: TabBarMenuItem[];
+  /** Tabs closed earlier in the session, newest first. */
+  recentlyClosed?: TabBarMenuItem[];
+  /** Fires with the closed tab to reopen. */
+  onReopen?: (item: TabBarMenuItem) => void;
+  /** Accessible name for the icon-only trigger. Defaults to `Search tabs`. */
+  label?: string;
+  /** Search field placeholder. Defaults to `Search tabs…`. */
+  placeholder?: string;
+  /** Shown when nothing matches. Defaults to `No tabs match`. */
+  emptyText?: string;
+  /** Group headings. Default `Open tabs` / `Recently closed`. */
+  openHeading?: string;
+  closedHeading?: string;
+  className?: string;
+};

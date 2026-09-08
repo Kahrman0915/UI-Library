@@ -32,6 +32,10 @@ export type { AidenPanelProps, AidenPanelHeaderProps } from './components/AidenP
 
 export { default as AspectRatio } from './components/AspectRatio';
 export type { AspectRatioProps } from './components/AspectRatio';
+export { default as AppRail, AppRailItem } from './components/AppRail';
+export type { AppRailProps, AppRailItemProps } from './components/AppRail';
+export { default as AppShell, AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './components/AppShell';
+export type { AppShellProps, AppShellTabStripProps, AppShellRegionProps, AppShellMainProps } from './components/AppShell';
 
 export { default as Kbd } from './components/Kbd';
 export type { KbdProps, KbdSize } from './components/Kbd';
@@ -262,12 +266,15 @@ export {
   TabBarList,
   TabBarTab,
   TabBarNewTab,
+  TabBarMenu,
 } from './components/TabBar';
 export type {
   TabBarProps,
   TabBarListProps,
   TabBarTabProps,
   TabBarNewTabProps,
+  TabBarMenuProps,
+  TabBarMenuItem,
   TabBarActivationMode,
 } from './components/TabBar';
 
@@ -815,6 +822,16 @@ export { default as Slider } from './components/Slider';
 export type { SliderProps, SliderSize } from './components/Slider';
 
 export { default as Spinner } from './components/Spinner';
+export { default as Stack } from './components/Stack';
+export type { StackProps, StackLevel, StackDirection, StackAlign, StackJustify } from './components/Stack';
+export { default as PageContainer } from './components/PageContainer';
+export type { PageContainerProps, PageContainerWidth } from './components/PageContainer';
+export { default as PageHeader } from './components/PageHeader';
+export type { PageHeaderProps } from './components/PageHeader';
+export { default as Section } from './components/Section';
+export type { SectionProps, SectionVariant } from './components/Section';
+export { default as Toolbar, ToolbarGroup } from './components/Toolbar';
+export type { ToolbarProps, ToolbarGroupProps, ToolbarJustify } from './components/Toolbar';
 export type { SpinnerProps } from './components/Spinner';
 
 export { Toaster, toast } from './components/Toast';
