@@ -4847,5 +4847,17 @@
     "procedure": "Same four steps as sections 4 and 5: two parallel one-frame clone-in scripts; separate reaction-signature compare (equal, zero blank); two parallel one-frame removals guarded on the PageContainer sibling; separate verify.",
     "verification": "Reaction counts equal the baseline (3 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
     "archetype": "Same header gap — twenty frames now carry the hand heading beside the breadcrumb. Remaining on the Request Flow: section 7 (outcomes) and section 8 (the 1920 proofs, still the old hand-built copies)."
+  },
+  "requestFlowSection7_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 7 (OUTCOME, 2025:2574) regrouped onto the layout components with the clone-in procedure, on the form width. Four frames: R7.1 2008:1859 · R7.1a 2072:40315 (request submitted — terminal, NO breadcrumb, per the place/task/outcome rule) · R7.1b 2015:2029 (submitting) · R7.1c 2011:1906 (failed). The two terminal outcomes put the page-heading (FeaturedIcon success + title/reference) straight into the Page header slot and their Content is Stack L2 [summary Card, actions bar]; the two in-flight states keep the breadcrumb in a Stack L3 like the forms. Frame ids and 1136 width unchanged; frame padding removed, root centres.",
+    "instances": {
+      "R7.1": "PageContainer 2748:4237 (Stack L2 2748:4254)",
+      "R7.1a": "PageContainer 2748:60795 (Stack L2 2748:60812)",
+      "R7.1b": "PageContainer 2748:60904 (Stack L3 2748:60911, Stack L2 2748:60944)",
+      "R7.1c": "PageContainer 2748:61155 (Stack L3 2748:61162, Stack L2 2748:61195)"
+    },
+    "verification": "Reaction signatures equal before removal; counts equal the baseline after (2 / 2 / 2 / 3); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros, primitive-binding advisory zero.",
+    "found": "R7.1's height dropped less than the structure predicts because the summary card's info copy wrapped to a third line — the container's cap is the PADDED box, so form's 672 cap gives a 608 column, 64 narrower than the 672 the screens were designed at. Same arithmetic narrow already records (896 cap, 832 column). Corrected in the next entry."
   }
 }
