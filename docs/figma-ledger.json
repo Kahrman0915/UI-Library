@@ -4681,5 +4681,28 @@
       "Doc-page history frames list oldest first — append, and number from the max existing version."
     ],
     "focus": "PopoverContent focuses its own surface on open (in a rAF). The menu wants the search field, so TabBarMenu focuses the input three ways: a rAF (queued after the popover's, so it lands last in the frame), a setTimeout(0) (a background or occluded tab never fires a frame — the Browser pane used for verification is one), and an onFocus on the surface that forwards to the field whenever the surface itself takes focus. Any one of them is enough; together they hold in every environment tried."
+  },
+  "appShellAppliedTest_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Test of the spacing ladder inside the real chrome: four AppShell instances on 📐 Spacing · applied to built screens (row at y 4800 and y 7000), each holding a clone of a rebuilt screen's PageContainer in the Main content slot. Dark, Indigo, balanced; width mode 1024 on the 1440 frames and 1920 on the 1920 frames.",
+    "frames": {
+      "R1.1 · 1440": "2696:2208 (1440×1762) — Main 1136 @304; PageContainer narrow 896 @120, column 832",
+      "R1.1 · 1920": "2696:3322 (1920×1908) — Main 1616; narrow 1344 @136, column 1248",
+      "2.1 · 1440": "2696:4122 (1440×1021) — Main 1136; full, column 1072",
+      "2.1 · 1920": "2696:5479 (1920×1107) — Main 1616; full, column 1520"
+    },
+    "readBack": "Every gap resolves to its space/N role: L1 32/48 (margin and header → content), L2 24/36 (row → toolbar, sections), L3 16/24 (text ↔ actions, cards, stat row), L4 8/12 (group heading → cards), L5 4/6 (title → description). Nothing inside the shell chrome changes with the width mode — rail 48, sidebar 256, strip 48 are fixed; only Main grows (1136 → 1616) and the ladder and caps inside it scale × 1.5.",
+    "arithmetic": {
+      "narrow @1440": "Main 1136 − container 896 = 240 → 120 of page surface beside the column each side, PLUS the container's own 32 margin: the column sits 152 from the sidebar edge.",
+      "narrow @1920": "1616 − 1344 = 272 → 136 beside, plus 48 margin: 184 from the sidebar.",
+      "full @1440": "the column is Main − 2 × L1: 1072, 32 from the sidebar edge (the L1 margin IS the gutter between chrome and content).",
+      "full @1920": "1520, 48 from the sidebar."
+    },
+    "observations": [
+      "The fixed chrome does not share the ladder — the rail's 4/2/8 paddings, the sidebar's row rhythm and the strip's 48 are component geometry on primitives, which is the rule (a component's own geometry stays on --p-*). So at 1920 the chrome stays exactly as tight as at 1440 while the page loosens; that reads correctly: the frame is chrome, the page is content.",
+      "For narrow pages the visible gutter is centring space + L1 margin, so the page surface shows 120/136 beside the column; for full pages the L1 margin alone separates content from the sidebar (32/48). Both derive from one rule, no hand values.",
+      "Sidebar (256) and rail (48) are the same at both widths, so a 1920 screen gives ALL its extra 480 to Main. Whether the sidebar should widen on a big monitor is a design call not taken here."
+    ],
+    "lint": "Four frames: unbound paint 0, unstyled text 0, generic names 0, geometry 0, overflow 0; primitive-binding advisory 0 outside instances."
   }
 }
