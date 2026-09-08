@@ -4756,5 +4756,12 @@
     "date": "2026-09-08",
     "summary": "Owner: drop the dashed edge on PageContainer and stop putting the width in instance layer names. The dashed stroke was mock-up chrome on the master (visible on every placed instance); removed from both variants. All 15 instances in the file renamed to plain 'PageContainer' — a layer name that carries the variant goes stale the moment someone switches it, which the owner did.",
     "rule": "Instance layer names carry the component name only; the variant lives in the inspector. Masters carry no presentational chrome of their own beyond what the code renders."
+  },
+  "requestFlowSection2_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 2 (R2.1 New Request · chooser, 1820:44) regrouped in place: PageContainer narrow › Page header slot = Stack L3 [Breadcrumb, PageHeader (title + description, no actions)] › Content = Stack L3 vertical of two Stack L3 horizontal rows holding the four option Cards (FILL, 408 each). Root padding removed; frame id and 1136 width unchanged.",
+    "widthNote": "The chooser's column was a hand-set 672 (max-w-2xl); on narrow it is 832, so the option cards went 328 → 408. Two widths only, by decision; if a chooser wants a tighter column it is a cap on the grid, not a third width.",
+    "reactions": "Nine before the move; the read immediately after reported eight (the Feature Request card's nested Button). A direct probe found the button still carried its reaction — the post-move findAll undercounts while the tree is re-keying, the same artefact as section 1. Nothing was lost and nothing was re-added. Rule: after moving nodes into slots, verify reactions in a SEPARATE call, by (name, destination).",
+    "lint": "All zeros."
   }
 }
