@@ -4721,5 +4721,11 @@
       "kept": "Request Flow's sizing note ('designed at 1440, supported 1024 and up') — that 1024 is a supported viewport, not the mode."
     },
     "lesson": "Name a fluid range's ends after the viewports they are solved for, and solve them for the viewports people actually design at; a mode called '1024' on a frame drawn at 1440 was a contradiction a designer spotted in one look."
+  },
+  "pageContainerFillFix_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Owner switched a placed PageContainer from narrow to default in the R1.1 · 1920 shell and it ran off the page (1728 wide in a 1616 window, x −56). Root cause in the master: each variant's WIDTH was bound to container/* as well as its max-width. A bound width is a fixed width, so the variant swap discarded the instance's FILL override and took the variable's value outright.",
+    "fix": "PageContainer set 2638:487: width binding removed on every variant, the set's counter axis made FIXED at 1472 so the variants can be FILL (they were FIXED, and a FILL child in a hugging set is the collapse trap), and only max-width stays bound to container/*. That is the Figma spelling of width: 100%; max-width: cap. Verified by switching the owner's instance through narrow → wide → full → default: it stays FILL, never overflows, and reads 1344 / 1616 / 1616 / 1616 in the 1616 window — default at 1920 caps at 1728, wider than the window, so it fills it, exactly as the CSS does.",
+    "lesson": "Bind a cap to max-width only. Binding width as well turns a fluid container into a fixed one, and the failure only shows on a variant switch inside a narrower parent — which is how a designer will use it."
   }
 }
