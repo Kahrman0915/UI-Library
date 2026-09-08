@@ -26,7 +26,7 @@ const meta: Meta<typeof PageContainer> = {
       usage: {
         when: [
           'Wrap every page\'s content in one. Then `PageHeader`, then a `Stack level={2}` of sections.',
-          'Pick `width` by the page\'s kind: `narrow` for a reading page or a form, `default` for lists, `wide` for tables and dashboards, `full` when the shell owns the margin.',
+          'Pick `width` by the page\'s kind: `full` (the default) for anything that scans across — a table, a queue, a dashboard; `narrow` for anything you read down — a form, a detail page, a list of cards.',
         ],
         avoid: [
           'Nesting one inside another. One page, one container; sections are Stacks.',
@@ -36,6 +36,11 @@ const meta: Meta<typeof PageContainer> = {
       },
       changelog: [
         {
+          date: '2026-09-08',
+          summary: 'Two widths, not four: `full` (now the default) and `narrow`.',
+          detail: '`default` (1152) and `wide` (1280) were removed — inside the app shell the content window is 1136 at 1440 and 1616 at 1920, so both behaved exactly like `full`. `PageContainerWidth` is now `full | narrow`; the only cap is `--container-narrow`.',
+        },
+        {
           date: '2026-09-07',
           summary: 'The width cap now grows with the screen: × 1.5 at 1920, fluid in between, like the ladder.',
           detail: '`max-width` reads `--container-narrow|default|wide` (896→1344, 1152→1728, 1280→1920), generated from `CONTAINERS` in the spacing recipe. A fixed cap plus the growing level-1 margin had made a narrow page narrower on a wide screen.',
@@ -44,14 +49,14 @@ const meta: Meta<typeof PageContainer> = {
           date: '2026-09-07',
           summary: 'Initial build. Level 1 of the spacing ladder as a component.',
           detail:
-            'Padding and gap read `--space-1`; `width` = narrow (896) · default (1152) · wide (1280) · full, via the `--max-w-*` tokens; centred with `margin-inline: auto`. ' +
+            'Padding and gap read `--space-1`; `width` = full (the whole content window) or narrow (capped at `--container-narrow`, 896 → 1344); centred with `margin-inline: auto`. ' +
             'Together with `Stack` it rebuilds the My Requests screen from nothing but levels — see the story of that name. docs/spacing.md.',
         },
       ],
     } satisfies UiDocsParameters,
   },
-  argTypes: { width: { control: 'select', options: ['narrow', 'default', 'wide', 'full'] } },
-  args: { width: 'default' },
+  argTypes: { width: { control: 'select', options: ['full', 'narrow'] } },
+  args: { width: 'full' },
 };
 export default meta;
 type Story = StoryObj<typeof PageContainer>;
@@ -74,7 +79,7 @@ export const Playground: Story = {
 export const Widths: Story = {
   render: () => (
     <Stack level={2} style={{ background: 'var(--muted)', padding: 'var(--space-2)' }}>
-      {(['narrow', 'default', 'wide', 'full'] as const).map((w) => (
+      {(['full', 'narrow'] as const).map((w) => (
         <PageContainer key={w} width={w} style={{ background: 'var(--background)', outline: 'var(--border-w-100) dashed var(--border)' }}>
           <Slab h={40} label={`width="${w}"`} />
         </PageContainer>

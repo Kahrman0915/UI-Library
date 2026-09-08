@@ -108,7 +108,7 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content; its width cap follows the ladder's width rule (`--container-*`: narrow 896→1344 · default 1152→1728 · wide 1280→1920) | `Width` variants whose width and max-width are bound to `container/*` in `Space · width`, so a FILL instance caps, centres and widens with the mode; `Page header` + `Content` slots |
+| `PageContainer` | L1: page margin, and page header → content. Two widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule | `Width` = full · narrow; variants are FILL with only max-width bound to `container/narrow` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
 | `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
@@ -116,7 +116,9 @@ has real Slots for its content):
 
 A page is `AppShell › AppShellMain › PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
 The content window `AppShellMain` gives a page is 1136 wide at 1440 and 1616 at 1920 (strip 48, rail 48, sidebar 256).
-Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
+Why only two widths: inside the app shell the content window is 1136 at 1440 and 1616 at 1920,
+so any cap wider than that behaves like `full`; a `default` (1152) and a `wide` (1280) existed
+for a day and did exactly that. Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
 screens are now composed from these five at 1440 and 1920, nothing hand-spaced.
 A screen built from them makes one decision per container — which level — and none
 about pixels. The page's search field goes in `PageHeader`'s `toolbar`, never as a

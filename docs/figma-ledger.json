@@ -4727,5 +4727,16 @@
     "summary": "Owner switched a placed PageContainer from narrow to default in the R1.1 · 1920 shell and it ran off the page (1728 wide in a 1616 window, x −56). Root cause in the master: each variant's WIDTH was bound to container/* as well as its max-width. A bound width is a fixed width, so the variant swap discarded the instance's FILL override and took the variable's value outright.",
     "fix": "PageContainer set 2638:487: width binding removed on every variant, the set's counter axis made FIXED at 1472 so the variants can be FILL (they were FIXED, and a FILL child in a hugging set is the collapse trap), and only max-width stays bound to container/*. That is the Figma spelling of width: 100%; max-width: cap. Verified by switching the owner's instance through narrow → wide → full → default: it stays FILL, never overflows, and reads 1344 / 1616 / 1616 / 1616 in the 1616 window — default at 1920 caps at 1728, wider than the window, so it fills it, exactly as the CSS does.",
     "lesson": "Bind a cap to max-width only. Binding width as well turns a fluid container into a fixed one, and the failure only shows on a variant switch inside a narrower parent — which is how a designer will use it."
+  },
+  "pageContainerTwoWidths_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "PageContainer went from four widths to two — full (the default) and narrow — in code and Figma (owner). Inside the app shell the content window is 1136 at 1440 and 1616 at 1920; the default (1152 → 1728) and wide (1280 → 1920) caps were wider than the window at both sizes, so both behaved exactly like full.",
+    "code": "PageContainerWidth = 'full' | 'narrow', default full (no modifier); CONTAINERS in the recipe holds narrow only; tokens regenerate to a single --container-narrow; stories and docs updated. AppShell story's width union narrowed.",
+    "figma": {
+      "set 2638:487": "Width=default and Width=wide removed (no instances were on them after the owner's test instance went back to narrow); Width=full moved first so it is the default variant; both variant descriptions and the set description rewritten.",
+      "variables": "container/default and container/wide removed from Space · width; container/narrow remains (896 · 1344).",
+      "docPage": "COMPONENT section retitled 'Width: full or narrow' with the reasoning; USAGE copy says when to pick which; header description updated."
+    },
+    "lesson": "Solve caps against the window a page actually gets, not the viewport. Three caps that all exceed the content window are three names for one thing, and a designer will find that out by switching variants."
   }
 }

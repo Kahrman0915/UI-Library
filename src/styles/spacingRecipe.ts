@@ -49,14 +49,13 @@ export const LADDER: Record<Density, Record<LevelN, readonly [number, number]>> 
 };
 
 /**
- * Container caps — how wide a page may be, per PageContainer width. [at FLUID.min, at
- * FLUID.max], the SAME width rule as the ladder: × 1.5 at 1920, fluid in between. A fixed
- * cap plus a growing level-1 margin made a narrow page NARROWER on a big monitor (832 →
- * 800), which is the opposite of what the width is for (owner, 2026-09-07). `full` has no cap.
+ * The one container cap — `narrow`, for reading pages, forms and single-column lists —
+ * [at FLUID.min, at FLUID.max], on the SAME width rule as the ladder: × 1.5 at 1920, fluid
+ * in between. `full` has no cap. There used to be `default` and `wide` caps too; inside the
+ * app shell the content window is 1136 at 1440 and 1616 at 1920, narrower than either cap,
+ * so both behaved exactly like `full` and were removed (owner, 2026-09-08).
  */
-export type ContainerWidth = 'narrow' | 'default' | 'wide';
+export type ContainerWidth = 'narrow';
 export const CONTAINERS: Record<ContainerWidth, readonly [number, number]> = {
-  narrow:  [896, 1344],
-  default: [1152, 1728],
-  wide:    [1280, 1920],
+  narrow: [896, 1344],
 };

@@ -65,7 +65,7 @@ const Row = ({ id, title, description }: { id: string; title: string; descriptio
   </Card>
 );
 
-function Shell({ width }: { width: 'narrow' | 'default' | 'full' }) {
+function Shell({ width }: { width: 'narrow' | 'full' }) {
   return (
     <AppShell id="shell">
       <AppShellTabStrip

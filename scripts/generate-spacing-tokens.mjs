@@ -45,7 +45,7 @@ function emit() {
     `  --fluid-min-width: ${FLUID.min}px;`,
     `  --fluid-max-width: ${FLUID.max}px;`,
     ...block('balanced'),
-    '  /* Container caps (PageContainer width): the same rule, × 1.5 at the large end. */',
+    '  /* Container cap (PageContainer width="narrow"): the same rule, × 1.5 at the large end. */',
     ...Object.entries(CONTAINERS).map(([k, v]) => `  --container-${k}: ${cap(v)};`),
     '}', '',
     '/* Density reshapes the whole ladder (owner\'s tables). */',

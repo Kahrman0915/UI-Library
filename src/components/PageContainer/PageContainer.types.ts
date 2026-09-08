@@ -1,16 +1,19 @@
 /**
- * How wide the page's content column may grow. Reads the `--max-w-*` tokens:
- * `narrow` 896 · `default` 1152 · `wide` 1280 · `full` no cap. The column is centred and
- * fills the viewport below its cap, so "using the width" on a big monitor is a matter of
- * picking the cap, not of adding space.
+ * `full` (default) — the page uses the whole content window: tables, dashboards, queues.
+ * `narrow` — a reading column capped at `--container-narrow` (896 → 1344 with the ladder's
+ * width rule), centred: forms, detail pages, single-column lists.
+ *
+ * Two, deliberately. Inside the app shell the content window is 1136 at 1440 and 1616 at
+ * 1920, so any cap wider than that behaves like `full`; the old `default` (1152) and `wide`
+ * (1280) did exactly that and were removed.
  */
-export type PageContainerWidth = 'narrow' | 'default' | 'wide' | 'full';
+export type PageContainerWidth = 'full' | 'narrow';
 
-export type PageContainerProps = Omit<React.HTMLAttributes<HTMLElement>, 'children'> & {
-  /** Default `default` (1152px). See {@link PageContainerWidth}. */
+export type PageContainerProps = React.HTMLAttributes<HTMLDivElement> & {
+  /** Default `full`. See {@link PageContainerWidth}. */
   width?: PageContainerWidth;
-  /** The element to render. Default `div`; pass `main` when this is the page's main landmark and the shell does not already provide one. */
-  as?: 'div' | 'main' | 'section';
+  /** Element to render. Default `div`; use `main` when the container IS the page's main landmark. */
+  as?: 'div' | 'main' | 'section' | 'article';
   children?: React.ReactNode;
   className?: string;
 };
