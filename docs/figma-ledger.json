@@ -4811,5 +4811,19 @@
     "verification": "Separate read: reaction counts equal the baseline on all eleven (9 on R2.1, 6/7 on section 3); 125 node destinations on the Request Flow page, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
     "lesson": "variant.clone() DID drop both slots to plain frames (CLAUDE.md was right, the playbook's 'clone() preserves slots' is wrong for variants inside a set). The slotContentId recipe re-keys them in place with the set's existing property keys — but the node type still reads FRAME in the same script; only a separate read shows SLOT. Verify slot-ness in a second call.",
     "supersedes": "The widthNote in requestFlowSection2_2026_09_08 and requestFlowSection3_2026_09_08 ('a third width is not the answer, cap the Card/grid') — the owner chose the third width."
+  },
+  "requestFlowSection4_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 4 (BANNER / NOTICE, 2025:2571) regrouped onto the layout components with the clone-in procedure, straight onto the new form width. Three page frames rebuilt: R4.1 1978:1983 · R4.1a 1970:1411 · R4.1b 1978:1561. Each is PageContainer form (672, column 608) › Page header slot = Stack L3 [Breadcrumb, page-heading (FeaturedIcon lg amber + title/subtitle)] › Content = Stack L2 [form Card, submit bar]. Frame ids and 1136 width unchanged; frame padding (40 / 64) removed, root centres, PageContainer carries L1.",
+    "notRebuilt": "R4.1c 1997:1803 (scope menu · searchable multi-select) is a spec panel — 816 wide, HUG, two staged Select+Combobox states with a note — not a page, so it keeps its hand layout. Its 16 primitive-binding advisories (spacing/8 · spacing/4) are that panel's own chrome.",
+    "instances": {
+      "R4.1a": "PageContainer 2745:4118 (Stack L3 2745:4125, Stack L2 2745:4158)",
+      "R4.1b": "PageContainer 2745:60895 (Stack L3 2745:60902, Stack L2 2745:60935)",
+      "R4.1": "PageContainer 2745:61305 (Stack L3 2745:61312, Stack L2 2745:61345)"
+    },
+    "procedure": "Step 1 three parallel one-frame clone-in scripts (PageContainer form instance appended beside the original column; slot placeholders removed; Stack L3 / L2 instances in the slots; breadcrumb, heading, card and submit bar CLONED in, FILL set last). Step 2 separate read: reaction signatures (name → destination) equal on all three, zero blank. Step 3 three parallel one-frame removals guarded on the PageContainer sibling existing. Step 4 separate verify.",
+    "verification": "Reaction counts equal the baseline (4 / 4 / 3, and R4.1c's 1 untouched); 125 node destinations on the page, zero blank, zero dead; design-check lint all zeros on the four frames.",
+    "archetype": "Same header gap as sections 1 and 3 — FeaturedIcon + title/subtitle is a hand frame in a Stack L3 with the breadcrumb. Sixteen frames now carry it.",
+    "widthNote": "Built directly on form (672 → 1008), so the column is the one the screens were designed at; no 832 detour."
   }
 }
