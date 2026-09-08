@@ -4738,5 +4738,18 @@
       "docPage": "COMPONENT section retitled 'Width: full or narrow' with the reasoning; USAGE copy says when to pick which; header description updated."
     },
     "lesson": "Solve caps against the window a page actually gets, not the viewport. Three caps that all exceed the content window are three names for one thing, and a designer will find that out by switching variants."
+  },
+  "requestFlowSection1_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 1 (MY REQUESTS · entry point) regrouped in place onto the layout components. The five frames keep their ids and their 1136 Main Content width (the shell wraps them 1:1 by convention; owner chose not to wrap them), so every incoming prototype link still resolves.",
+    "frames": {
+      "R1.1 2052:2597": "PageContainer narrow (896 @120, column 832) › PageHeader With toolbar=true — New request button in Actions, search Input in Toolbar › Stack L2 › Section group × 4 (NEEDS YOUR REPLY · IN REVIEW · ACTIVE · DONE) › Stack L3 › the existing Card instances; the live/past divider frame sits in the L2 stack. Root padding (40 spacing/10) removed; root centres.",
+      "R1.1a 2057:2743": "PageContainer narrow › PageHeader With toolbar=false (button in Actions) › Content holds the existing Empty instance, FILL.",
+      "R1.2 / R1.2a / R1.2b 2079:2845 · 2479:3642 · 2479:3697": "PageContainer narrow › Page header slot holds a Stack L3 of [Breadcrumb, the existing request-heading frame (FeaturedIcon · overline/title · badge/date)] › Content holds a Stack L2 of the two Cards (they were L1 apart as column children; as sections of a page they are L2)."
+    },
+    "reactions": "All fifteen prototype reactions survived by node name and destination: 8 on R1.1 (New request → 1820:44, seven cards → detail frames), 2 on R1.1a, 2 on R1.2 (crumb → R1.1, Reply → R1.2a), 2 on R1.2a (crumb, Send reply → R1.2), 1 on R1.2b. Their IDS changed: content moved into an instance's slot is re-keyed with the instance prefix (2052:2644 became I2711:3785;2638:476;…;2711:3861), so a by-id diff reports every one as missing. Compare reactions by (name, destination), never by id, after moving nodes into slots.",
+    "archetypeGap": "The request-detail heading — visual + overline + title on the left, status badge + date on the right, breadcrumb above — is not a PageHeader shape (PageHeader has title / description / actions / toolbar). It stays a hand frame inside a Stack L3 with the breadcrumb. Candidate PageHeader additions if this shape recurs on the Admin Flow: an `overline`, a `visual` and a `meta` region, and a `breadcrumb` slot above the row.",
+    "widthNote": "Column went 880 → 832 at 1440 (narrow's 896 minus the L1 margin). The 1920 proofs in section 8 are still the old hand-built copies.",
+    "lint": "Five frames at all zeros; primitive-binding advisory zero."
   }
 }
