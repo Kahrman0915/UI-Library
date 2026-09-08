@@ -4866,5 +4866,12 @@
     "code": "CONTAINERS.form = [736, 1104]; tokens regenerate to --container-form: clamp(46rem, -23rem + 76.6667vw, 69rem). Verified in the browser: form box 736 / column 672 at 1440, 1104 / 1008 at 1920; narrow 896 / 832 and 1344 / 1248. Recipe comment, types JSDoc, stories changelog, docs/spacing.md, CLAUDE.md and the spec revision now state a cap and its column together.",
     "figma": "container/form VariableID:2743:72 → 736 · 1104; Width=form 2743:73 maxWidth 736; variable, variant, set, doc-page section and changelog-row copy updated. All 22 form instances on Request Flow (R2.1, sections 3–7) now measure 736 with a 672 Content slot, zero overflow; the 5 narrow ones 896 / 832.",
     "lesson": "State a cap and its column together, every time. A cap is not the column; the difference is twice the level-1 margin and it changes with width."
+  },
+  "requestFlowSection8_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Request Flow section 8 (WIDE · 1920 proof, 2101:3642): the three hand-built 1920 copies replaced by the real thing. Each proof frame kept its id and 1616 width (Main Content at 1920) and now holds a CLONE of its rebuilt 1440 source's PageContainer with the frame's Space · width mode pinned to 1920 and the dark pin kept: R8.1 2099:3130 ← R1.1 (narrow, PageContainer 2751:4301) · R8.2 2099:3270 ← R1.2 (narrow, 2751:61126) · R8.3 2099:3219 ← R3.1 (form, 2751:61276). Hand columns removed, frame padding zeroed, root centres. R8.1's stale 1440 width pin (the old '1024' mode) was replaced.",
+    "measured": "At the 1920 mode the ladder reads L1 48 (margin and header→content), L2 36; narrow caps at 1344 for a 1248 column, form at 1104 for a 1008 column — the × 1.5 rule end to end on real screens, nothing hand-set.",
+    "verification": "Reaction signatures equal the sources before removal (8 / 2 / 6, versus 0 / 1 / 0 on the hand copies); page destinations 125 → 140, all valid, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
+    "lesson": "A width proof is a MODE on a frame, not a second drawing. With the screens on the layout components the 1920 proof is a clone plus one explicit mode; a hand copy drifts the day its source changes, and these three already had."
   }
 }
