@@ -4873,5 +4873,20 @@
     "measured": "At the 1920 mode the ladder reads L1 48 (margin and header→content), L2 36; narrow caps at 1344 for a 1248 column, form at 1104 for a 1008 column — the × 1.5 rule end to end on real screens, nothing hand-set.",
     "verification": "Reaction signatures equal the sources before removal (8 / 2 / 6, versus 0 / 1 / 0 on the hand copies); page destinations 125 → 140, all valid, zero blank, zero dead; design-check lint all zeros with the primitive-binding advisory at zero.",
     "lesson": "A width proof is a MODE on a frame, not a second drawing. With the screens on the layout components the 1920 proof is a clone plus one explicit mode; a hand copy drifts the day its source changes, and these three already had."
+  },
+  "adminFlowSection1_2026_09_08": {
+    "date": "2026-09-08",
+    "summary": "Admin Flow (page 2106:4324) section 1 (LAND · Admin Overview, 2125:41605) regrouped onto the layout components with the clone-in procedure — the first FULL-width pages. Six frames: 1.1 2130:455 · 1.2 2273:3426 · 1.3 2274:3592 · 1.4 2275:3943 · 1.5 2310:50116 · 1.6 2310:5232. Each is PageContainer full (1136, column 1072) › Page header slot = a REAL PageHeader (Title + Description from the hand title/subtitle, the action buttons cloned into Actions) › Content = Stack L2 [Stack L3 horizontal of the stat cards or KPI widgets · Section group per hand section (heading text → Heading, badge + View-all link → Actions, cards → Stack L3 vertical, charts → Stack L3 horizontal, a table cloned in) · alerts, widgets, the empty state and Add-widget button cloned straight in]. Overlays (scrim + drawer on 1.3, toast on 1.6) untouched and re-ordered ABOVE the container.",
+    "instances": {
+      "1.1": "2754:10208",
+      "1.2": "2754:61304",
+      "1.3": "2754:61798",
+      "1.4": "2754:62287",
+      "1.5": "2754:63196",
+      "1.6": "2754:62864"
+    },
+    "mapping": "Admin page-headings are plain title + subtitle (no FeaturedIcon), so the real PageHeader fits — unlike the Request Flow's heading archetype gap. Column 1008 in a 40/64 frame → full's 1072 column at L1 32. The hand section header (xs uppercase heading + count badge + spacer + 'View all' link, L4 8 to content) IS Section group; its count badge now sits in Actions beside the link rather than beside the heading, because Section has no count/meta — a candidate Section addition if the shape recurs.",
+    "verification": "Reaction signatures equal before removal; counts equal the baseline after (6 / 9 / 1 / 1 / 1 / 6); 165 node destinations on the page, zero blank, zero dead; design-check lint all zeros on the six frames (the only advisory is the toast instance's own primitive padding). Overlays inside their frames; 1.6's toast re-pinned to its 26px bottom inset with MAX/MAX constraints after the frame hugged 32px shorter.",
+    "lesson": "An absolutely positioned overlay in a HUG frame does not follow the frame when the content shrinks — its y is a number, not a constraint, until constraints are set. Check ABS children's bounds after every removal step on frames that carry them (drawers, scrims, toasts, menus)."
   }
 }
