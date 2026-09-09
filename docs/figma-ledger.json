@@ -2232,6 +2232,21 @@
       "props": "VARIANT Width (narrow 896 | default 1152 | wide 1280 | full, drawn at 1440). Padding and gap bound to space/1-page. Placeholders for page header and content, to be converted to Slots by the owner (4 clicks).",
       "newComponent": "YES — 71st component. Level 1 of the ladder as a component (src/components/PageContainer: width, as; no id). Its doc frame is 1560 wide, wider than the 1240 convention, because the full variant is 1440.",
       "proof": "Storybook 'My Requests, from primitives': the R1.1 screen rebuilt from PageContainer, Stack and Card with no number chosen. Measured in the browser: at 1024 padding 32 · L2 24 · L3 16 · L4 8 · L5 4 · card padding 16; at 1920 48 · 36 · 24 · 12 · 6 · 24; compact at 1920 L3 12. The ladder holds end to end on real components."
+    },
+    "Announcement": {
+      "status": "done-v4 (lean) — Overview only; Spec and Examples·Docs·History frames not built",
+      "date": "2026-09-09",
+      "pageId": "2806:44",
+      "frames": {
+        "overview": "2806:45"
+      },
+      "setIds": [],
+      "reusesMaster": "Dialog (503:150) — NO separate Announcement master, exactly as AlertDialog has none",
+      "themed": false,
+      "props": "PRESET of Dialog. Every instance is a Dialog instance with Show media=true, widened to 576. Announcement's own code props are title / media / mediaRatio / description / secondaryAction / primaryAction plus every DialogProp; the visual signature in Figma is the media region plus the width.",
+      "instance": "2806:118 — Dialog/Alignment=left at 576, Show media on, media box 324 (16:9), footer buttons overridden to Learn more (outline) + Got it (default, NOT the master's error red).",
+      "lint": "Overview all zeros after binding 19 hand-set padding/gap/radius values to spacing/* and radius/*; the two new Media regions on the Dialog master lint all zeros.",
+      "open": "Spec (a Dialog vs Announcement comparison, like AlertDialog's) and Examples · Docs · History are not built. The motion announcement card on Request Flow section 9 is still a hand-built frame and could be rebuilt on this preset — its keyframes live on the stage internals, so that is a real migration rather than a swap."
     }
   },
   "queue": {
@@ -4953,5 +4968,16 @@
     "verification": "Two low-res export_video renders (540 wide, 5 fps) sampled every 0.6 s with an AVFoundation frame extractor (no ffmpeg on this machine): first pass showed the empty placeholder text through the filled overlays and the disabled submit button; fixed by wrapping each overlay in an opaque frame on its surface and animating the wrapper. Second pass clean at every phase. Final render 2× / 30 fps / high.",
     "lessons": "(1) Motion is gated per user; check figma.motion.figmaAnimationStyles() first. (2) SCALE_XY keyframes take a VECTOR value, not a FLOAT. (3) The API refuses to animate an INSTANCE's sublayers ('Cannot write animations to instance sublayers') — to hide part of a cloned screen, cover it with an opaque frame that carries the track instead. (4) Transform tracks are additive to the resting transform: compute cursor keyframes as deltas from the node's resting x/y. (5) A scene built from a screen clone must be a plain FRAME (rescale + clipsContent) — the timeline belongs to the top-level card, and the scenes, wrappers and cursor are the nodes that carry tracks. (6) get_screenshot shows only the resting state; export_video small + sample frames is the only way to see motion, and the AVAssetImageGenerator script in the scratchpad does the sampling without ffmpeg.",
     "open": "A reusable 'Announcement' component (title / stage slot / caption / actions) would let the team make more of these; the stage-clip technique (clone a flow frame, rescale, pan/fade/cursor) is the recipe to write into the playbook if the owner wants more clips."
+  },
+  "dialogMediaPart_2026_09_09": {
+    "date": "2026-09-09",
+    "summary": "Dialog gained a Media region in code and Figma — the part the Announcement preset needed, and the one Dialog was missing for any panel that shows something. Code: DialogMedia, a part composing AspectRatio (default 16/9), placed by the caller between header and body (or above the header, or last). Figma: a Media SLOT behind a Show media BOOLEAN on the Dialog set 503:150, added to BOTH variants (Alignment=left 503:45, Alignment=center 503:107) and hidden by default.",
+    "code": "src/components/Dialog: DialogMedia in Dialog.tsx, DialogMediaProps in Dialog.types.ts, .ui-dialog__media in Dialog.scss (flex: none; a hairline on a following body/footer; no radius of its own), exported from Dialog/index.ts and src/index.ts. Contract copied verbatim from CardMedia.",
+    "figma": {
+      "properties": "Media#2805:0 (SLOT) + Show media#2805:3 (BOOLEAN, default false) on the set; one key shared by both variants, the way Body#503:15 already is.",
+      "nodes": "Media slots 2805:616 (left) and 2805:618 (center). Each holds a media-placeholder-box frame, FILL width / FIXED 252 (16:9 of the 448 default), on surface/muted with a 1px surface/border bottom stroke; the slot itself HUGS so real content drives the height.",
+      "safety": "All 49 existing Dialog instances read Show media=false and their heights are unchanged — verified by reading componentProperties across both variants' instances before and after."
+    },
+    "lessons": "(1) A frame's stroke binds PER SIDE — strokeTopWeight/BottomWeight etc; a strokeWeight binding reports success and binds nothing (this file had already recorded it, and it held). (2) A slot's content does NOT re-inherit once an instance has overridden it: editing the placeholder text on an instance pinned the old structure, so wrapping that text in a sized box on the master never reached the instance and its slot collapsed to 20px. Replace the instance's slot content outright. (3) Adding a slot to an existing set is safe for live instances as long as the new region is hidden by default."
   }
 }

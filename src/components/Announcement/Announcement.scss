@@ -1,0 +1,14 @@
+// Announcement — a Dialog preset. The ONLY thing it restyles is the panel's
+// width: everything else is Dialog's chrome, and `DialogMedia` carries the
+// full-bleed rules.
+//
+// TWO classes, not one. `.ui-dialog` sets `max-width: var(--max-w-md)` at
+// (0,1,0); a single `.ui-announcement` ties it and resolves on source order,
+// which is whichever stylesheet the bundler happened to emit last. Same rule
+// FullScreenDialog records.
+.ui-dialog.ui-announcement {
+  // 448px (a dialog's width) leaves a 16:9 clip 252px tall — too small to read
+  // a UI in. 576 gives it 324, which is the size the Figma announcement proved
+  // legible at. Wider starts to read as a page rather than a card.
+  max-width: var(--max-w-xl);
+}

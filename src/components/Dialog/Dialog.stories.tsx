@@ -17,6 +17,13 @@ const meta: Meta<typeof Dialog> = {
       tags: ['compound', 'modal', 'portal'],
       changelog: [
         {
+          date: '2026-09-09',
+          summary:
+            'New part: `DialogMedia`, the full-bleed media region for a clip or image.',
+          detail:
+            'Composes `AspectRatio` (default `16 / 9`) and is placed by the caller, so media can sit above the header, between header and body, or last. It touches the panel edges and inherits the panel rounding from `.ui-dialog`\'s `overflow: hidden`; media followed by a body or footer draws the same hairline a header carries downward. Same contract as `CardMedia`. `Announcement` is the first consumer.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

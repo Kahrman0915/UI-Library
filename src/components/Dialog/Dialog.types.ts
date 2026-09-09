@@ -98,6 +98,35 @@ export type DialogBodyProps = Omit<
 };
 
 /**
+ * The full-bleed media region — a clip, an image, an illustration. Placed by the
+ * caller so it can sit above the header, between header and body, or last; a
+ * prop would have to pick an order, and the whole point is that the caller does.
+ *
+ * It is NOT a body child. `DialogBody` is padded prose, so media dropped in
+ * there floats with a margin on every side; this touches the panel edges and
+ * inherits the panel's rounding from `.ui-dialog`'s `overflow: hidden`. Same
+ * contract, and the same reasoning, as {@link CardMediaProps}.
+ */
+export type DialogMediaProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'children'
+> & {
+  /**
+   * Width-to-height ratio, as a division expression — `16 / 9`, `4 / 3`, `1`
+   * for a square. Default `16 / 9`.
+   *
+   * The box reserves its height before the media arrives, so the panel does not
+   * resize under the pointer as an image or a video loads — which in a modal
+   * would move the footer buttons out from under a click. Composes
+   * {@link AspectRatioProps} rather than re-deriving it.
+   */
+  ratio?: number;
+  /** The media itself — an `<img>`, a `<video>`, an illustration, a chart. */
+  children: React.ReactNode;
+  className?: string;
+};
+
+/**
  * The action row, pinned to the bottom. Order matters for keyboard users —
  * whichever button comes first is what `Dialog` focuses unless you set
  * `initialFocusRef`.
