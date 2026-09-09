@@ -4908,5 +4908,41 @@
     },
     "verification": "Reaction signatures equal before removal (39 / 0 / 0 / 0 / 1 on the columns); counts equal the baseline after; page destinations 165, zero blank, zero dead; design-check lint all zeros (advisory: the dropdown instance's own padding). 2.4's dropdown menu inside its frame above the container.",
     "lesson": "A slot hidden by a BOOLEAN (Toolbar's Middle group behind Show middle group) is NOT enumerated by findOne/findAll on a fresh instance — set the boolean true first, then look the slot up. The first five scripts threw on the null and rolled back cleanly (clone-in only, nothing original touched)."
+  },
+  "adminFlowSections4to6_2026_09_09": {
+    "date": "2026-09-09",
+    "summary": "Admin Flow sections 4 (APPLY, 2289:5144), 5 (MANAGE, 2155:1024) and 6 (CONFIGURE, 2289:5145) regrouped onto the layout components with the clone-in procedure — 26 frames, which completes the Admin Flow. Width by column: 880 → narrow (4.1 · 4.2 · 4.4 · 4.6 · 5.2 · 5.2a), 1008 → full (the other twenty). Detail pages (4.1 · 4.2 · 4.6) use the R1.2 shape; everything else went through ONE merged builder that maps by layer name: page-heading (row) → PageHeader (title, description, buttons and the KPI stat into Actions); stat row / charts → Stack L3 horizontal; section · … → Section group (heading text, button → Actions, table or Stack L3 of cards/charts as Content); filtered table → Stack L4 [Toolbar, table]; filtered list → Stack L3 [Stack L4 [Toolbar, search], Stack L3 cards]; row with a section heading → Section group, other rows → a Stack by gap; body text and Separator cloned straight in. Overlays (scrim + drawer, dropdown, toast) kept and re-ordered above the container.",
+    "toolbars": "Two filter-bar shapes on this page: with an `axes` wrapper (2.x, 5.2) and without (5.1 / 5.3 / 5.4 / 5.6 / 4.3 / 4.5: ToggleGroup + search, or ToggleGroup + actions[search, New … button]). A first builder only looked inside `axes` and pushed everything else into Trailing on 16 frames; caught from the build log (groups=0), those 16 clones were deleted (originals untouched) and rebuilt with a builder that takes toggle-groups from either place, drops the hand Separator, and throws if it finds no groups.",
+    "instances": {
+      "4.1": "2767:11487",
+      "4.2": "2767:62292",
+      "4.3": "2769:67082",
+      "4.4": "2769:67460",
+      "4.5": "2769:68138",
+      "4.6": "2767:62454",
+      "5.1": "2769:68511",
+      "5.2": "2768:64279",
+      "5.3": "2769:68971",
+      "5.4": "2769:69351",
+      "5.5": "2768:65727",
+      "5.6": "2769:69683",
+      "5.1a": "2769:70073",
+      "5.1b": "2769:70510",
+      "5.3a": "2769:70947",
+      "5.3b": "2769:71327",
+      "5.4a": "2769:71707",
+      "5.4b": "2769:72039",
+      "5.2a": "2768:68850",
+      "5.1c": "2769:72371",
+      "5.1d": "2769:72808",
+      "5.1e": "2769:73188",
+      "5.1f": "2769:73434",
+      "6.1": "2769:73871",
+      "6.1a": "2769:74280",
+      "6.1b": "2770:16978"
+    },
+    "verification": "Reaction signatures equal on all 26 before removal; counts equal the baseline after; page destinations 165, zero blank, zero dead; design-check lint all zeros on the 26 (advisories are the toast / dropdown instances' own primitive padding). Overlays: toasts on 4.6 and 5.1c re-pinned bottom-right at their 24px inset; scrims and drawers on the five edit-drawer frames resized to the frame's new height with STRETCH constraints.",
+    "archetypes": "The KPI stat beside a page title (5.1–5.4, 5.2, 6.1) went into PageHeader's Actions slot — right position, wrong name; with the section count badge from section 1 that is the second 'meta' region PageHeader/Section lack. The Section count/meta and PageHeader visual/meta/breadcrumb questions are the two API decisions left for the owner.",
+    "lessons": "(1) Measure an overlay's inset AFTER the original column is removed — while column and clone are stacked the frame is twice as tall and every inset is wrong; two toasts were mis-pinned that way and corrected. (2) A full-height scrim/drawer is a FIXED size, not a constraint — when the frame hugs to a new height it overhangs; resize to the frame and set STRETCH. (3) Read the builder's log for a zero where a count was expected (groups=0): a script that succeeds with an empty match is the same failure as a loop over nothing."
   }
 }
