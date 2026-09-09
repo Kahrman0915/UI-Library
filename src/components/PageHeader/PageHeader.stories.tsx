@@ -38,6 +38,12 @@ const meta: Meta<typeof PageHeader> = {
       changelog: [
         {
           date: '2026-09-09',
+          summary: 'The Figma master can now put an icon inside the overline, which `overline` already allowed in code.',
+          detail:
+            'No code change — `overline` takes a node, so `overline={<><Megaphone />What\'s new</>}` has worked since the region shipped. The Figma property was TEXT-only, so a designer could not build the shape a developer could. The master\'s overline is now a row with an optional leading glyph (`Overline icon` + `Show overline icon`). Pick by what the icon introduces: inside the overline the title stays flush with the page edge, while `visual` sits beside the whole text block and indents the title past it.',
+        },
+        {
+          date: '2026-09-09',
           summary: 'Two new regions: `overline` above the title, and `visual` at the start of the title row.',
           detail:
             '`overline` is a level-4 flex row at `--text-xs` in muted text, sitting L5 above the title — the `CardOverline` treatment, a `div` for the same reason. `visual` is a sibling of the text block inside the row, so the existing L3 row gap separates them and the row\'s `flex-start` alignment keeps it level with the first line — the `CardHeader` `leading` shape. Both are optional and render nothing when unset, so every existing header is unchanged.',
@@ -82,6 +88,31 @@ export const WithOverlineAndVisual: Story = {
       overline="What's new"
       title="Recent releases"
       description="Everything shipped across DART Central, newest first. Filter by application or by the kind of change."
+    />
+  ),
+};
+
+/**
+ * The other icon shape, and usually the one a "what's new" page wants: the glyph
+ * sits INSIDE the overline, beside the eyebrow, so the title stays flush with
+ * the page's left edge instead of indenting past a visual.
+ *
+ * Use `visual` when the object introduces the whole block and the title should
+ * sit beside it. Use an icon in `overline` when it belongs to the eyebrow line.
+ * They are different compositions, not two ways to do one thing.
+ */
+export const OverlineWithIcon: Story = {
+  render: () => (
+    <PageHeader
+      id="ph-eyebrow-icon"
+      overline={
+        <>
+          <Megaphone aria-hidden />
+          <span>What's new</span>
+        </>
+      }
+      title="Catch up on DART Central"
+      description="Everything shipped across the portal, newest first."
     />
   ),
 };

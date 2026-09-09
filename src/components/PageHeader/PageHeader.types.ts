@@ -10,6 +10,12 @@ export type PageHeaderProps = Omit<React.HTMLAttributes<HTMLElement>, 'title' | 
    * It renders as a `div`, not a `p`, deliberately — a `Badge` renders a div,
    * and a div inside a `p` is invalid HTML that the browser silently un-nests.
    *
+   * **An icon here is not the same as `visual`.** A glyph inside the overline
+   * belongs to the eyebrow line, and the title stays flush with the page's left
+   * edge: `overline={<><Megaphone />What's new</>}`. A {@link visual} sits
+   * beside the whole text block, so the title indents past it. Pick by what the
+   * icon introduces — the line, or the page.
+   *
    * Deliberately NOT uppercased by the component. Pass the string you want.
    */
   overline?: React.ReactNode;
