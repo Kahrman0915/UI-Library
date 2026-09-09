@@ -25,14 +25,23 @@ const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
       description,
       actions,
       toolbar,
+      size = 'default',
       headingLevel = 'h1',
       className,
       ...rest
     },
     ref,
   ) => {
+    // `default` emits no modifier — a class nothing selects is dead BEM. The type
+    // ramp hangs off this one root class through descendant selectors, the way
+    // Card's size and RadioGroup's do, so no region needs a prop of its own.
+    const cls =
+      'ui-page-header' +
+      (size === 'default' ? '' : ` ui-page-header--sz-${size}`) +
+      (className ? ' ' + className : '');
+
     return (
-      <header {...rest} ref={ref} id={id} className={`ui-page-header${className ? ' ' + className : ''}`}>
+      <header {...rest} ref={ref} id={id} className={cls} data-size={size}>
         <div className="ui-page-header__row">
           {visual !== undefined && <div className="ui-page-header__visual">{visual}</div>}
           <div className="ui-page-header__text">

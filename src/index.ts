@@ -832,7 +832,7 @@ export type { StackProps, StackLevel, StackDirection, StackAlign, StackJustify }
 export { default as PageContainer } from './components/PageContainer';
 export type { PageContainerProps, PageContainerWidth } from './components/PageContainer';
 export { default as PageHeader } from './components/PageHeader';
-export type { PageHeaderProps } from './components/PageHeader';
+export type { PageHeaderProps, PageHeaderSize } from './components/PageHeader';
 export { default as Section } from './components/Section';
 export type { SectionProps, SectionVariant } from './components/Section';
 export { default as Toolbar, ToolbarGroup } from './components/Toolbar';

@@ -109,4 +109,47 @@
     flex-direction: column;
     min-width: 0;
   }
+
+  // The hero rung. Two rungs exist because the design file has exactly two
+  // clusters of page heading — 24px on every working screen, 36px on What's New,
+  // and nothing between them.
+  //
+  // TYPE ONLY. Every gap stays on its level: the hierarchy of overline → title →
+  // description does not change because the type got bigger, and a level that
+  // moved on its own is the thing the spacing ladder exists to prevent. This is
+  // the same split `CardTitle.scale` records — padding has to move together
+  // across regions, type has no such dependency.
+  //
+  // Descendant selectors off the one root class, so no region gained a prop.
+  // (0,2,0) here beats each base rule's (0,1,0).
+  &--sz-lg {
+    .ui-page-header__overline {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+
+      // The glyph deliberately does NOT step with the words. The one hero header
+      // in the file pairs a 16px icon with 16px text, and a 20px glyph beside a
+      // 16px eyebrow starts competing with the title underneath it.
+    }
+
+    .ui-page-header__title {
+      font-size: var(--text-4xl);
+      line-height: var(--leading-10);
+    }
+
+    // Steps up with the overline, not for looks: at this rung the overline is
+    // 16px, so a description left at 14px would be SMALLER than the eyebrow
+    // above it, which inverts the ranking the header exists to state.
+    .ui-page-header__description {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+    }
+
+    // Only the bare-glyph default moves. A FeaturedIcon, Avatar or mark brings
+    // its own dimensions and is untouched — same contract CardVisual documents.
+    .ui-page-header__visual svg {
+      width: var(--w-8);
+      height: var(--h-8);
+    }
+  }
 }

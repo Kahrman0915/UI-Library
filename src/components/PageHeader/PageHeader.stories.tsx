@@ -38,6 +38,12 @@ const meta: Meta<typeof PageHeader> = {
       changelog: [
         {
           date: '2026-09-09',
+          summary: 'New `size` prop: `default` (24px title) or `lg` (36px), for a page that is a destination rather than a working screen.',
+          detail:
+            'Two rungs, not a ramp — a census of every page heading in the design file found exactly two clusters, 24px on all 13 working screens and 36px on What\'s New. `size` moves TYPE only: every gap stays on its level, because the ranking of overline, title and description is identical at both rungs. At `lg` the description steps up with the overline so it is not left smaller than the eyebrow above it, and only the bare-glyph default in `visual` moves. `default` emits no modifier class; `data-size` is the hook. Independent of `headingLevel`, which is the document outline.',
+        },
+        {
+          date: '2026-09-09',
           summary: 'The Figma master can now put an icon inside the overline, which `overline` already allowed in code.',
           detail:
             'No code change — `overline` takes a node, so `overline={<><Megaphone />What\'s new</>}` has worked since the region shipped. The Figma property was TEXT-only, so a designer could not build the shape a developer could. The master\'s overline is now a row with an optional leading glyph (`Overline icon` + `Show overline icon`). Pick by what the icon introduces: inside the overline the title stays flush with the page edge, while `visual` sits beside the whole text block and indents the title past it.',
@@ -89,6 +95,44 @@ export const WithOverlineAndVisual: Story = {
       title="Recent releases"
       description="Everything shipped across DART Central, newest first. Filter by application or by the kind of change."
     />
+  ),
+};
+
+/**
+ * The two rungs, and there are only two because the design file has only two:
+ * 24px on every working screen, 36px on What's New. Nothing in between appeared,
+ * so nothing in between was invented.
+ *
+ * `size` moves type and nothing else. Every gap stays on its level — the ranking
+ * of overline, title and description is the same at both rungs.
+ */
+export const Sizes: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--space-1)' }}>
+      <PageHeader
+        id="ph-sz-default"
+        overline={
+          <>
+            <Megaphone aria-hidden />
+            <span>What's new</span>
+          </>
+        }
+        title="Catch up on DART Central"
+        description="Everything shipped across the portal, newest first."
+      />
+      <PageHeader
+        id="ph-sz-lg"
+        size="lg"
+        overline={
+          <>
+            <Megaphone aria-hidden />
+            <span>What's new</span>
+          </>
+        }
+        title="Catch up on DART Central"
+        description="Everything shipped across the portal, newest first."
+      />
+    </div>
   ),
 };
 

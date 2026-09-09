@@ -1,3 +1,19 @@
+import type { Size } from '../../types/GlobalTypes';
+
+/**
+ * Two rungs, and only two, because that is what the file actually contains.
+ *
+ * A census of every page heading in the design file found two clusters and
+ * nothing between them: **24px on every working screen** (My Requests, Approval
+ * Queue, the dashboard greeting — 13 of them) and **36px on What's New**, the
+ * one page that is a destination rather than a place you do work. No 20px panel
+ * heading and no 30px anything appeared, so neither was invented here.
+ *
+ * Drawn from the shared {@link Size} vocabulary rather than a private list, so
+ * an `sm` rung can be added later without renaming anything.
+ */
+export type PageHeaderSize = Extract<Size, 'default' | 'lg'>;
+
 export type PageHeaderProps = Omit<React.HTMLAttributes<HTMLElement>, 'title' | 'children'> & {
   /** Seeds `${id}-title` and `${id}-description`, so a page can point `aria-labelledby` at its own heading. */
   id: string;
@@ -40,6 +56,19 @@ export type PageHeaderProps = Omit<React.HTMLAttributes<HTMLElement>, 'title' | 
   actions?: React.ReactNode;
   /** A search field or a `Toolbar` under the title row, still part of the header: level 2 below the row. */
   toolbar?: React.ReactNode;
+  /**
+   * The type ramp. `default` is the working-screen header; `lg` is the hero a
+   * destination page wants — a 36px title over a 16px overline.
+   *
+   * **It moves type and nothing else.** Every gap stays on its level, because
+   * the hierarchy of overline → title → description is identical at both rungs
+   * and a level is a relationship, not a measurement. Same reasoning
+   * `CardTitle.scale` records for moving type without moving padding.
+   *
+   * Independent of {@link headingLevel}, which is the document outline. A `lg`
+   * header can still be an `h2`, and an `h1` can be `default`.
+   */
+  size?: PageHeaderSize;
   /** Default `h1`. `h2` when the page is a panel inside a page that already has an h1. */
   headingLevel?: 'h1' | 'h2';
   className?: string;

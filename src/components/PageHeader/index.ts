@@ -1,2 +1,2 @@
 export { default } from './PageHeader';
-export type { PageHeaderProps } from './PageHeader.types';
+export type { PageHeaderProps, PageHeaderSize } from './PageHeader.types';
