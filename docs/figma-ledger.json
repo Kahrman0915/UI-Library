@@ -4894,5 +4894,19 @@
     "summary": "Admin Flow section 3 (DECIDE · Request review, 2125:41606) regrouped onto the layout components with the clone-in procedure — thirteen frames, all on narrow (896, column 832): 3.1 2122:3230 · 3.2 2226:1633 · 3.3 2125:41404 · 3.4 2277:4226 · 3.5 2284:4615 · 3.3b 2452:9336 · 3.3a 2477:9691 · 3.1a 2478:9650 · 3.2a 2478:9706 · 3.4a 2478:9756 · 3.5a 2478:9815 · 3.6 2533:9958 · 3.6a 2536:13779. Same archetype as Request Flow R1.2: Page header slot = Stack L3 [Breadcrumb, request-heading (identity + meta)] › Content = Stack L2 [submitted-details Card, (similar-on-the-backlog Card), activity Card, decision bar]. Frame ids and 1136 width unchanged; 3.3b's scrim + drawer re-ordered above the container.",
     "verification": "Reaction signatures equal on all thirteen before removal; counts equal the baseline after (3/3/4/3/3/3/5/3/3/3/3/6/7); page destinations zero blank, zero dead; design-check lint all zeros, primitive-binding advisory zero.",
     "archetype": "The request-heading (FeaturedIcon identity + overline/title, status badge + date on the right) is the same hand frame the Request Flow detail pages carry — PageHeader still has no visual / meta / breadcrumb. Thirty-three frames across both flows now carry a hand heading beside a breadcrumb."
+  },
+  "adminFlowSection2_2026_09_09": {
+    "date": "2026-09-09",
+    "summary": "Admin Flow section 2 (TRIAGE · Approval Queue, 2289:5143) regrouped onto the layout components — the first TOOLBAR pages. Five frames on full (1136, column 1072): 2.1 2122:3042 · 2.2 2229:1969 · 2.3 2122:3220 · 2.4 2228:1697 · 2.6 2394:8721. Each is PageContainer full › PageHeader (title + description, no actions) › Stack L2 [Stack L3 horizontal of the four stat cards · Stack L4 [(selection bar on 2.6) · Toolbar · table]] — 2.3 has the Toolbar and the empty state directly in the L2 stack. 2.5 (the 2534-wide full-column-set reference) is a reference, not a page, and stays as drawn.",
+    "toolbar": "The hand filter-bar (axes [ToggleGroup product · vertical Separator · ToggleGroup state] + search Input, gap 16) is a real Toolbar Justify=between: product in Leading group, state in Middle group (Show middle group on), search in Trailing group. The hand Separator between the axes is dropped — the Toolbar's L3 group gap is that boundary. The filter bar sits in a Stack L4 with the table (the hand 'filtered table' gap was already space/4) rather than in PageHeader's toolbar slot, because the stat cards sit between the heading and the filters: it belongs to the table, not the page.",
+    "instances": {
+      "2.1": "2764:62658",
+      "2.2": "2764:63432",
+      "2.3": "2764:63776",
+      "2.4": "2764:64021",
+      "2.6": "2764:64741"
+    },
+    "verification": "Reaction signatures equal before removal (39 / 0 / 0 / 0 / 1 on the columns); counts equal the baseline after; page destinations 165, zero blank, zero dead; design-check lint all zeros (advisory: the dropdown instance's own padding). 2.4's dropdown menu inside its frame above the container.",
+    "lesson": "A slot hidden by a BOOLEAN (Toolbar's Middle group behind Show middle group) is NOT enumerated by findOne/findAll on a fresh instance — set the boolean true first, then look the slot up. The first five scripts threw on the null and rolled back cleanly (clone-in only, nothing original touched)."
   }
 }
