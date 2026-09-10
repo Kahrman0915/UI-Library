@@ -148,6 +148,42 @@ draw, at a 16px gap bound to the same variable Stack level 3 uses.
   density (`fluid/N-name/density`); the target of `Space`, not for direct use.
 - Figma shows the two ends; the browser slides between them. Pin a frame's modes only when
   the frame is meant to show that state; a working screen stays on Auto.
+
+### Building a screen frame — the recipe, and it is not optional
+
+Measured across the 86 `PageContainer` instances in the file, the convention is already
+unanimous. Follow it and a page is consistent with every other page by construction.
+
+1. **The frame IS the content window: 1136 wide at 1440, 1616 at 1920.** Not the viewport,
+   and not some rounder number — the viewport minus the rail (48) and the sidebar (256).
+   Every Admin Flow screen is exactly 1136. A frame drawn at 1200 quietly makes its page
+   64px wider than the rest of the system, and nothing warns you.
+2. **One `PageContainer`, filling the frame.** It supplies the page margin, so the frame's
+   own padding is zero. `full` gives a 1072 column at 1440, `narrow` 832, `form` 672.
+3. **`PageHeader` in the Page header slot, a `Stack level={2}` in Content**, one `Section`
+   per band inside it.
+4. **Pin `Mode` freely; leave the two space collections alone.** See below.
+
+To show the page inside the chrome, drop that same `PageContainer` into an `AppShell`
+instance's `Main content` slot. It fills 1136 and the column resolves to 1072 — the same
+number the standalone frame gives, which is the check that the frame was built right.
+
+### When to touch `Space` and `Space · width` — almost never
+
+**A pin does not make the spacing work.** Every gap already reads the ladder through the
+components, and both collections resolve to their defaults with no pin at all: `Space · width`
+to 1440 and `Space` to balanced. Pinning only *overrides which end resolves*.
+
+- **A working screen pins neither.** All 84 flow-screen containers sit on frames with no
+  space pin. They inherit 1440 / balanced, which is what they are drawn at. Pinning 1440
+  by hand is redundant with the default and reads as a decision when it is an accident.
+- **Pin `Space · width` only on a frame whose job is to state a width** — the 1920 proofs,
+  and the two `AppShell` instances that exist to show 1440 against 1920. That pin is what
+  lets a 1920 frame show the 1920 ladder instead of being redrawn.
+- **Pin `Space` only on a frame demonstrating density.** Today that is the four frames on
+  `📐 Spacing · applied to built screens` and nothing else.
+- **`Mode` and `Brand` are not this.** Pin those wherever you like — every Admin Flow screen
+  pins `Mode=Dark`. The rule above is about the two space collections only.
 - Handing off: Dev Mode reports `space/3-block`, and the developer types `--space-3`.
 
 ## 9 · Not covered here

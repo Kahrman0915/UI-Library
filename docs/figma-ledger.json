@@ -5052,5 +5052,18 @@
       "Zero the host frame's padding BEFORE judging the container's width. With both applied the container read 1136 instead of 1200 and the inner column 1072 - double padding that looks like a broken cap."
     ],
     "openNotBuilt": "The older duplicate pair (1716:9163, 1860:4780) still carries hand-drawn headers and hand-set spacing. Whether it should be converted or deleted is an owner call. The meta region for PageHeader and Section also remains open."
+  },
+  "screenFrameConsistencyAudit_2026_09_10": {
+    "date": "2026-09-10",
+    "summary": "The owner asked whether pages are being built consistently. Measuring said no: What's New is 64px wider than every other screen in the file. A shell proof was built on the Whats New page to make the discrepancy visible, and the screen-frame recipe plus the space-pin rule were written into docs/spacing.md section 8 rather than left as something you learn by reading other pages.",
+    "census": "All 86 PageContainer instances measured, with host frame width, container width, Width variant, resulting column and mode pins. The convention is unanimous outside What's New: the screen frame IS the content window - 1136 at 1440 (viewport minus rail 48 and sidebar 256), 1616 at 1920 - and a full container fills it for a 1072 column, narrow 896/832, form 736/672. At 1920: full 1616/1520, narrow 1344/1248, form 1104/1008. Every Admin Flow screen frame is exactly 1136. What's New sits on a 1200 frame, so its column renders 1136.",
+    "spacePinRule": "A pin does not make spacing work. Both collections resolve to their defaults with no pin at all (Space · width to 1440, Space to balanced); a pin only overrides which end resolves. All 84 flow-screen containers pin NEITHER. Pin Space · width only on a frame whose job is to state a width - the 1920 proofs and the two AppShell instances on the App Shell page (1440 and 1920). Pin Space only on a frame demonstrating density, today just the four on the Spacing page. Mode and Brand are NOT covered by this rule and are pinned freely; every sampled Admin Flow screen pins Mode=Dark.",
+    "built": "AppShell instance 2844:2347 on the Whats New page, named 'whats-new · in the app shell · 1440 · Main 1136', pinned Mode=Dark and Space · width=1440 the way the other shell proofs are. Its Main content slot (1136 wide, clipsContent true, so it behaves as a viewport) holds 2844:2510, a clone of the dark frame's PageContainer. Inside the shell the column resolves to 1072 - the correct number - against 1136 on the standalone frame, which is the whole finding in one comparison.",
+    "lessons": [
+      "A shell proof is the cheapest consistency check there is. Drop the page's own PageContainer into an AppShell Main content slot; if the column differs from what the standalone frame shows, the standalone frame is the wrong width.",
+      "The screen frame is the CONTENT WINDOW, not the viewport and not a round number. 1136 at 1440. A frame drawn at 1200 makes its page 64px wider than the system and nothing warns you.",
+      "Redundantly pinning a collection to its own default is worse than leaving it on Auto - it reads as a decision when it is an accident, and it diverges silently if the default ever moves."
+    ],
+    "openNotBuilt": "The two current What's New frames are still 1200 wide and want to be 1136, and the dark one still carries a stray Space · width = 1440 pin its light twin does not have. Both are small fixes but they visibly narrow the page, so they are the owner's call. The older duplicate pair remains unconverted."
   }
 }
