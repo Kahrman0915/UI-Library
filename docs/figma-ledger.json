@@ -5080,5 +5080,18 @@
       "A single gap doing several jobs is the tell that containers are missing. Changing the number would have moved the symptom around rather than fixing it."
     ],
     "openNotBuilt": "The Figma MenuButton label carries a 20px line height where the code uses 16, so every Figma sidebar row is 36 against the build's 32. The template, the spec page and the set all inherit it. Fixing it would make Figma match the build but would tighten the template the owner likes, so it needs an owner call. Separately, the code's 4px menu gap lets an active row and a hovered row touch, since the two fills sit only 4 points of lightness apart; an 8px gap was tested and reverted at the owner's request."
+  },
+  "appRailGapMatchedToSidebar_2026_09_11": {
+    "date": "2026-09-11",
+    "summary": "AppRail compared against the code after the owner set its Applications frame to 4 in Figma to match the sidebar. The code was still at --p-0-5 (2), so this time FIGMA was ahead and the code followed. __apps and __footer now sit at --p-1.",
+    "directionOfDrift": "Worth recording next to the Sidebar entry from the same day: on the assembled Sidebar set the FIGMA side had drifted and the code was right; on the AppRail the code had drifted and Figma was right. The direction is not a constant, so measure both against each other every time rather than assuming the build always wins.",
+    "comparison": "Code before: __apps gap --p-0-5 (2), __footer gap --p-0-5 (2), __apps padding-top --p-1 (4), __header padding-block --p-1 (4), __footer padding-block --p-2 (8), item 36x36 (--w-9/--h-9), rail 48 (--app-rail-width). Figma: Applications gap 4 (bound), Footer gap 4 (bound), Applications padding-top 4, Header padding 4/4, Footer padding 8/8, item 36x36, rail 48. Everything matched except the two gaps. After the change all seven values agree, verified in the browser at gap 4 on both.",
+    "foundNotFixed": "AppRail's hover and active paint the identical colour - both a flat var(--sidebar-accent) - so a hovered tile and the selected tile are indistinguishable. Sidebar hit this exact collision and fixed it on 2026-08-08 by making hover color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar)), a partial pass that is mode-correct for free because a light rail sits above the accent and a dark rail below it. The rail never got that change. Noted in AppRail.scss and in both changelogs; left for an owner call rather than changed unasked.",
+    "figma": "Changelog row 2866:144 added to the AppRail page's history frame 2675:168 as v1.2.",
+    "lessons": [
+      "insertChild(index, node) does NOT reorder a node that is already a child of that parent - it left the row at index 0 across two attempts. appendChild DOES move an existing child to the end, so appending every child in the intended order is the reliable reorder. Verify in a SEPARATE call; the same script reports the stale order.",
+      "Changelog ordering is not consistent across pages in this file: AppRail runs newest-first under the heading, Sidebar runs oldest-first and its dates are not even monotonic. Read the existing order before appending rather than assuming a convention.",
+      "A changelog row inserted at index 0 lands ABOVE the VERSION HISTORY section heading. The heading is a sibling in the same auto-layout frame, not a separate header."
+    ]
   }
 }

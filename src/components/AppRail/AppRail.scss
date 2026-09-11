@@ -21,11 +21,16 @@
     border-bottom: var(--border-w-100) solid var(--sidebar-border);
   }
 
+  // 4, matching the Sidebar's menu gap, because these two stand side by side and
+  // are read as one piece of chrome. At 2 an active tile and the tile hovered
+  // under it left a 2px seam between two 36px fills, which is not a separation
+  // anyone perceives — see the note on `&__item` below, where the same two states
+  // also paint the identical colour.
   &__apps {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--p-0-5);
+    gap: var(--p-1);
     flex: 1;
     width: 100%;
     min-height: 0;
@@ -37,7 +42,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--p-0-5);
+    gap: var(--p-1);
     width: 100%;
     padding-block: var(--p-2);
     border-top: var(--border-w-100) solid var(--sidebar-border);
@@ -53,6 +58,12 @@
     color: var(--sidebar-foreground);
     text-decoration: none;
 
+    // KNOWN, NOT YET FIXED: this is the same paint `&__item--active` uses below,
+    // so a hovered tile and the selected tile are indistinguishable. `Sidebar`
+    // hit this exact collision and fixed it on 2026-08-08 by making hover a
+    // partial pass — `color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))`
+    // — which is mode-correct for free. The rail never got that change. Flagged
+    // with the owner rather than changed here.
     &:hover:not(:disabled) {
       color: var(--sidebar-foreground);
       background: var(--sidebar-accent);
