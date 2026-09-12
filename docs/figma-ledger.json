@@ -5386,5 +5386,34 @@
    "Fab 1.4",
    "InputGroup 1.4"
   ]
+ },
+ "overviewSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Fourth pass, after the Spec, Button/Card and Examples sweeps.",
+  "censused": 78,
+  "structure": "Overviews come in two shapes and BOTH are fine. About 48 pages carry several overlined sections (THE HIDDEN INPUT, THE ICON CROSS-FADE, THE TRAVEL) above the masters; about 29 carry a single `composition` frame plus `the component`. A first read called the second shape thin and was WRONG — those frames hold Parts, Composes, Uses, Props and a prose paragraph, just packed into one frame instead of several. Do not 'upgrade' them.",
+  "realDefect": "STALE PROSE — specifically the `⚠ code-only: …` pills, which name props Figma supposedly cannot express. Five of them named things the file had since gained, and nothing catches this: the pill is free text and the property it contradicts lives on another node.",
+  "theCheck": "Mechanical and worth re-running after any master gains a property: for each Overview, parse every `code-only` pill, and flag any named prop that now exists as a componentProperty on that page's masters. 6 pages flagged, 5 real, 1 false positive (Item matched the word 'actions' inside a paragraph that was describing its slots correctly).",
+  "corrections": {
+   "Button": "WORST CASE — ALL THREE items in `⚠ code-only: isLoading · icon slots · iconOnly` were wrong. isLoading is a real BOOLEAN, the icon slots are Leading/Trailing glyph INSTANCE_SWAPs, and Button/Icon-only is a 240-variant set the SAME Overview documents two sections further down. Separately the size pill read `size ×4 — xs|sm|lg aliases too`, advertising the alias vocabulary deleted on 2026-07-30.",
+   "Alert": "`action` is an Action SLOT behind Show action; the pill and paragraph both called it code-only.",
+   "Banner": "Same as Alert. Icon, onClose and centered are still genuinely code-only.",
+   "FeaturedIcon": "SELF-CONTRADICTORY: the pill listed Icon as code-only and the paragraph directly beneath it explained that Icon is an instance-swap property on every variant.",
+   "Progress": "`value` and `indeterminate` became Value-axis options on 2026-09-11, and label/showValue became Label/Value text/Show header earlier today. The pill still called all of them code-only."
+  },
+  "alsoFixed": "Two stray INSTANCE nodes sitting directly on a page canvas in empty space, overlapping nothing — a Collapsible on the Collapsible page and an Icon/layout-dashboard on Mark. Leftover debris; the file's Tier 3 rule is zero loose nodes on a canvas.",
+  "notFindings": [
+   "Mark keeps 12 masters on a `Mark · masters` shelf outside the Overview rather than inside it. Deliberate: 7 glyph masters must stay bare as INSTANCE_SWAP targets, and 12 masters would swamp the Overview. Clearly named, not loose.",
+   "Mark's page lint is still 237 unbound fills / 171 unstyled text / 138 generic names — the recorded glass-artwork debt from the Tier 3 sweep, unchanged by this pass and still awaiting a judgement call about which artwork should be tokenised at all. Its fractional radii (5.4 etc.) are the 0.225 proportional ratio and are not bindable.",
+   "There is NO `src/components/{Name}` chip on component Overviews. CLAUDE.md's Table entry implies one exists; only Table carries a chip, reading `PROPOSAL — NOT BUILT IN CODE`. Nothing to fix — the note just overstated a convention that was never there."
+  ],
+  "lint": "Alert, Banner, Button, FeaturedIcon, Progress and Collapsible all at zero. Mark unchanged, as above.",
+  "changelogRows": [
+   "Alert 1.5",
+   "Banner 1.5",
+   "Button 1.5",
+   "FeaturedIcon 1.6",
+   "Progress 1.6"
+  ]
  }
 }
