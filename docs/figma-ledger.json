@@ -5717,5 +5717,27 @@
    "andHidingTheLabelMakesItWorse": "Hiding the Label text node does remove the label, but the node then stops being enumerable — the same 'a hidden node is not enumerated' trap the PageHeader overline hit on 2026-09-09 — so it cannot be turned back on from the instance. Recovery is resetOverrides() and re-applying the properties, which is what was done here.",
    "whatItWouldTake": "A pinned tab wants its own variant rather than a Show label boolean, because minWidth 140 exists to stop a short label producing a stubby tab and removing it globally would reintroduce that. A TabBar/Tab pinned variant at 48 wide, icon only, not closable, is the clean shape. Owner's call."
   }
+ },
+ "systemBuildGapAudit_2026_09_12": {
+  "what": "Rebuilt the agreed chrome using ONLY component properties and the existing variable modes — no fill overrides, no structural edits, no changes to any component or variable — to find out what the design system can and cannot express today. Frame: 'SYSTEM BUILD · what the components can do today' on the App Shell page, pinned Mode=Dark, Brand=Indigo, Tint rail=On, Tint page=Off.",
+  "whatTheSystemBuildsFine": [
+   "The whole shell structure, rail with six applications, tab strip, sidebar and content window at 48 + 256 + 1136.",
+   "All five navigation rows with label, icon, badge and active state, set purely through Sidebar properties.",
+   "Both group labels — the nested GroupLabel instances DO expose a Label property, so NAVIGATION and ADMIN are settable from the instance.",
+   "The sidebar header's Name and Meta.",
+   "Tab labels and icons.",
+   "The real My Requests page dropped into the Main content slot as a clone, which is what slots are for."
+  ],
+  "sixGapsFound": [
+   "ADMIN NEEDS 8 ROWS, THE SET GIVES 3. The assembled Sidebar's group 2 exposes g2 row 1-3, so Feature Flags, URL Redirects, Usage Analytics, Access Control and Changelog cannot be shown. Its submenu is also wired to group 1's third row, so it cannot express an indented Admin section either.",
+   "TINT RAIL = ON DOES NOT REACH THE APPSHELL. Its rail and sidebar paint sidebar/background, not the rail/* tinted tokens, so the brand tint that the Tint rail collection exists to deliver cannot be switched on for this chrome at all. This is the single biggest gap, because the whole 'chrome follows the application' idea depends on it.",
+   "THE TAB STRIP CANNOT BE TINTED. It paints surface/background and lives inside the AppShell master rather than in a slot, so even if the rail tint worked the horizontal chrome would stay untinted and the tint would stop at a seam.",
+   "THE ACTIVE TAB'S FILL CANNOT BE SUPPRESSED. State=Open paints surface/accent from the variant and there is no property for it, so 'let the indicator carry the active tab' needs a component change.",
+   "THE TWO HEADER RULES CANNOT BE ALIGNED. The rail header rule sits at y=92 and the sidebar header rule at y=100; both paddings live in their masters with no property exposed.",
+   "NO WORDMARK COMPONENT. The Logo slot accepts content, but a 'DART Central' lockup would be a raw text node, which the components-only rule forbids."
+  ],
+  "alreadyKnownAndConfirmedAgain": "TabBar/Tab carries minWidth 140 with no Show label property, so the icon-only pinned Home tab remains unbuildable. Sidebar/Header still draws its bottom rule from an unbound hardcoded colour while the rail header uses sidebar/border, so the two rules cannot match under any mode.",
+  "theShapeOfIt": "Everything about CONTENT the system builds well. Everything about CHROME IDENTITY — tinting it, aligning its rules, marking the active tab without a fill, naming the product — is either missing or locked inside a master. That is a coherent finding rather than six unrelated ones: the chrome was modelled as fixed furniture, and the direction the owner is going treats it as the thing that tells you where you are.",
+  "nothingWasChanged": "No component, variable, mode or master was edited for this audit."
  }
 }
