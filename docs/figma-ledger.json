@@ -5124,5 +5124,33 @@
   ],
   "changelogRows": "A row was appended on all 13 touched pages (DropdownMenu, Command, ContextMenu, Item, AspectRatio, ScrollArea, Collapsible, Tabs, FullScreenDialog, Progress, Slider, Calendar, ButtonGroup), dated 2026-09-11.",
   "stillOpen": "The other 53 findings from the audit — most notably: no max-width/height anywhere in the file against eleven clamped in code, eight layout/shell pages with no template-v4 structure and no dark specimen, CSS-class slot property names on Item/Attachment/Card/Empty, the duplicate `ui-item__content` property, 39 stale 'Phase N' chips, and zero documentationLinks."
+ },
+ "designerAuditFixes_2026_09_11": {
+  "date": "2026-09-11",
+  "scope": "The 37 'fix'-severity findings from the designer's-chair audit, after the 12 blockers. Figma-only; no src/ change, so no Storybook changelog entry. 33 done, 4 not — see notDone.",
+  "icons": "Fab and Attachment/Media gained an `Icon` INSTANCE_SWAP (Attachment binds 4 of 8 — the image variants have no glyph, which is correct).",
+  "slots": "Alert and Banner's action, Toast/Card's action row, Command/Palette's list, AidenPanel's and AidenFullScreen's transcript and AidenLauncher's suggestion row all became SLOTs. Command/Palette was the only menu family without a Body slot.",
+  "completeness": "Card gained a hover State (border-hover + Shadow/md) for the interactive prop, 10 -> 20 variants. Progress gained Value=indeterminate, 75 -> 90. Pagination/Prev and /Next became sets with a disabled state via combineAsVariants. AvatarGroup gained an Avatars 2-5 axis + Show count, 3 -> 12. Menubar gained Show menu 3/4. Sidebar gained a Collapsed 48px icon rail, 5 -> 10, enabled by a new `Show label` on Sidebar/MenuButton. Table/Row shipped as a real component (default/hover/selected, 6 exposed cells) and Table/Cell gained Content=custom backed by a `Cell content` slot, 18 -> 21, added ALONGSIDE the enum so the page's 438 instances were untouched. Chart/Bar, /Line and /Area gained series toggles. InputGroup's missing wrap master shipped with three slots.",
+  "naming": "Item's duplicate orphaned `ui-item__content` property deleted. Every CSS-class slot property renamed to a role name on Item, Attachment, Card (+ its four part components), Empty and InputGroup/Button; Dialog's `footer`/`footer2` became Footer / Footer secondary. editComponentProperty({name}) KEEPS the key stem, so instance bindings survive a rename. Two collisions the renames created were resolved: Card's body TEXT became `Body text` (the slot is `Body`), Empty's media SLOT became `Media content` (the axis is `Media`).",
+  "constraints": "maxWidth/maxHeight set on Tooltip, Popover, HoverCard, Select/Content, Combobox/Content, ContextMenu/Content, Dialog, Drawer (side panels only) and Empty's header — the values the code already clamps. Toolbar's vertical sizing went FIXED -> HUG (40 -> 32), so a taller control no longer clips.",
+  "docPages": "All eight layout/shell pages — AppShell, AppRail, PageContainer, PageHeader, Section, Stack, Toolbar, Announcement — were rebuilt to template v4: Overview (page header, composition, mechanism, props, masters), Spec with pinned light AND dark specimens, and Examples · Docs · History (examples, tokens, three Do/Don'ts, a11y contract, changelog). Each had been a single frame with no dark specimen. Announcement keeps NO master — its Spec demonstrates the Dialog preset, per the AlertDialog precedent.",
+  "hygiene": "39 stale `Phase N` chips hidden (they are _Doc/Meta pill instances nested inside the _Doc/PageHeader instance, so they cannot be removed — set visible=false). Announcement added to the component index. documentationLinks set on every master across 76 pages, pointing at the local Storybook docs route; Charts and Table skipped because neither exists in src/. The five loose masters (Card, three Charts, FullScreenDialog) were filed into their Overview frames. The superseded Mark POC was renamed `_Archive/Mark (POC — superseded)`.",
+  "pageRebuilds": "Progress's spec and theme cells rebuilt from instances (21 replaced), which fixed six tracks 61-90px wide holding 320px indicators — they had all rendered full. The Tabs focus cells' two plain drawn triggers became real instances.",
+  "correctionsToTheAudit": [
+   "The 'raw shadows on the Aiden surfaces, Chat and Sidebar' finding was WRONG. All 20 raw effects belong to nested Mark artwork instances — the deliberate bespoke glass the audit itself exempts elsewhere. Those components carry no raw shadow of their own. No change needed.",
+   "AppRail/Item's icon IS reachable: the nested Button/Icon-only is an exposed instance, so its Icon swap shows in the item's own panel. That is the file's standard pattern. No change needed.",
+   "DatePicker/Panel having zero properties is true but harmless — it is a thin wrapper around a single EXPOSED Calendar instance, so the 42 day cells exposed on Calendar reach it. No change needed.",
+   "RadioGroup's six 'hand-drawn' groups and eight of the ten Tabs `ui-tabs__list` frames are CONTAINERS holding real instances, which the Command-page rule explicitly says is not a finding. Only two genuinely drawn Tabs triggers were replaced."
+  ],
+  "notDone": [
+   "Card's and PageHeader's property ORDER. There is no reorder API — editComponentProperty rejects sortPosition, and order is creation order. Reordering means delete + re-add, which drops the property from every instance: ~192 Card instances and ~101 PageHeader instances would lose their overrides. Not worth it for panel tidiness; needs an owner call.",
+   "Sidebar/MenuButton's 20px label line-height (row 36 vs the build's 32). CLAUDE.md records the owner preferring the looser template, and the change would reflow every sidebar across AppShell and the flow screens. Left for an explicit yes."
+  ],
+  "traps": [
+   "A hidden node throws on `.characters` — hiding a chip and then logging its text fails AFTER the write succeeded. The write is fine; the log is what breaks.",
+   "combineAsVariants RE-KEYS the component properties. Pagination/Prev's `Show label` went from #483:3 to #2895:241; the assembly's instances survived and kept their values, but do not assume a key is stable across it.",
+   "setBoundVariable('fills', …) throws — fills and strokes bind through setBoundVariableForPaint on the paint itself. A cloned paint already carries its source binding, so assigning the cloned array is enough.",
+   "Renaming a component property keeps its key stem, so instances keep their overrides. That is what made the ten slot renames safe."
+  ]
  }
 }
