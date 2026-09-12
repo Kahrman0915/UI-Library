@@ -5270,5 +5270,49 @@
    "assembledSet": "1858:783",
    "history": "632:622"
   }
+ },
+ "specCoverageSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Follow-on from sidebarHoverStateAndSpecRebuild_2026_09_12.",
+  "question": "After the Sidebar Spec rebuild: do the other component Spec pages have the same defect?",
+  "structuralResult": "No. All 78 component Spec frames already carry a dark specimen, are built from real instances, and use a matrix. Hand-drawn geometry survives on only five pages (ButtonGroup 4, InputGroup 1, InputOTP 5, Progress 6, Tabs 12) and every one is a recorded deliberate exception. The Sidebar's structural damage was unique to that page.",
+  "actualDefect": "COVERAGE — a variant axis the component carries that its own Spec never draws.",
+  "methodCorrection": "The first audit counted VARIANTS USED and produced false positives: Chip, Button, CloseButton and Fab all appeared to be missing their disabled state, but they PAINT it (opacity 0.5) rather than switching variant, which is the file's recorded convention for form controls. Re-run discounting any axis value the frame already names in a label or paints. Measure what a Spec SHOWS, not which variants it instantiates.",
+  "countAxesNotFindings": "Rows / Levels / Pages / Tabs / Buttons / Avatars count axes were excluded deliberately. A Spec states the shape of a thing; how many rows an assembly can hold belongs in Examples.",
+  "pagesFixed": 23,
+  "worstFinding": "Input and Textarea each had a column LABELLED 'Filled' in which every cell held an empty placeholder — the column asserted a state and showed its opposite. Same shape as the Sidebar collapse section that claimed three modes and drew one.",
+  "changes": [
+   "DropdownMenu + ContextMenu — unchecked CheckboxItem and unselected RadioItem; only the ticked halves were drawn",
+   "Combobox — disabled option, and sm/lg trigger sizes",
+   "Menubar — disabled trigger",
+   "Pagination — disabled Previous and Next, plus the two missing component descriptions",
+   "ModeToggler — a disabled row at all three sizes",
+   "Alert — the default and brand variants in both styles; brand is the one that follows data-theme",
+   "Banner — the brand variant",
+   "Toggle + ToggleGroup — the line and plain variants (shipped 2026-08-27, never drawn), plus ToggleGroup's sm/lg",
+   "Badge — a soft column on the status table, and all 15 category hues instead of 7",
+   "Select — sm/lg trigger sizes",
+   "Input + Textarea — the Filled column now holds a filled field",
+   "Progress — values 0 and 75, the four semantic variants, and indeterminate",
+   "Slider — a value row at 0/25/75/100; every cell had been pinned at 50",
+   "FeaturedIcon — the solid appearance and all 15 category hues",
+   "Card — a Divider=off card",
+   "Tabs — the vertical orientation",
+   "Item / Attachment / Field — the media and legend parts, which appeared in the anatomy diagram and in no table",
+   "Table — Content=custom, the cell slot"
+  ],
+  "lint": "All 23 pages at zero on fills, strokes, text styles, layer names and descriptions. 203 geometry values bound. The only unbindable values left are ToggleGroup's twelve itemSpacing = -1, the deliberate border-collapse margin the page's own pills document; no token is negative.",
+  "traps": [
+   "Cloning a 'host cell' by searching for any frame containing the target component can grab a whole row. On Table it swapped 15 cells to Content=custom and produced a nonsense row. Removed and rebuilt against the narrower gallery strip. Check what the clone CONTAINS before setting properties across it.",
+   "A caption is sometimes a _Doc/Annotation instance and sometimes a bare TEXT node. A handler that assumes one silently leaves the old caption in place — the FeaturedIcon solid cells all read 'success' until fixed.",
+   "findAll for TEXT inside a cloned cell reaches INTO a nested component instance. On the Tabs vertical cell it rewrote the Tabs panel's own copy and left the caption untouched. Set only DIRECT children.",
+   "Enabling layoutWrap does nothing while the frame still hugs horizontally. ToggleGroup overflowed to 1313 inside an 1180 frame until the row was set to FILL.",
+   "Writes do NOT require setCurrentPageAsync. PageNode.loadAsync() is enough, so a single script can edit several pages — which is what made a 23-page sweep affordable."
+  ],
+  "stillOpen": [
+   "Button/Icon-only — a 240-variant set with zero instances in the Button Spec. Needs an icon-only section, not a cell.",
+   "Card Size xl/2xl and the Card part Scale xl/2xl rungs.",
+   "The four property reorders Figma's API cannot do, and the layer-naming convention."
+  ]
  }
 }
