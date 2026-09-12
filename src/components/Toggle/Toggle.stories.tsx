@@ -15,6 +15,17 @@ const meta: Meta<typeof Toggle> = {
       tags: ['aria-pressed'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The base takes a line height, so every size is specified rather than left ' +
+            'to the browser.',
+          detail:
+            '`.ui-toggle` set `font-family` and `font-weight` but no `line-height`, so ' +
+            'all three sizes fell back to `normal`. The base now sets `--leading-5` and ' +
+            'the size modifiers override to `--leading-4` at 12px and `--leading-6` at ' +
+            '16px — the same ladder `.ui-button` already uses.',
+        },
+        {
           date: '2026-09-04',
           summary: 'The unpressed `plain` label drops to regular weight, so you can tell which filter is active in dark mode.',
           detail:

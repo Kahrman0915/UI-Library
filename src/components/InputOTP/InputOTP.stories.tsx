@@ -15,6 +15,16 @@ const meta: Meta<typeof InputOTP> = {
       tags: ['form control', '3 sizes'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'Each slot gets an explicit line height so the digit never drives the box.',
+          detail:
+            '`.ui-otp__slot` set `--text-base`, `--text-lg` or `--text-xl` with no ' +
+            '`line-height`, falling back to `normal`. Now `--leading-4` / `--leading-5` ' +
+            '/ `--leading-5` — the smallest rung at or above the font size, since the ' +
+            'digit is centred in a fixed-height box.',
+        },
+        {
           date: '2026-09-02',
           summary:
             'The error border and focus ring are a touch lighter in dark mode.',

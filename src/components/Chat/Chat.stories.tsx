@@ -71,6 +71,21 @@ const meta: Meta<typeof Chat> = {
       tags: ['compound', 'aiden', '26 parts'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'Seven parts get an explicit line height, and the artifact card gets a type ' +
+            'size at all.',
+          detail:
+            '`ui-chat-tool__trigger`, `__name` and `__status`, `ui-chat-versions`, `ui- ' +
+            'chat-reasoning__trigger` and `ui-chat-greeting__title` set a font-size ' +
+            'with no `line-height` and fell back to `normal`. They now take the house ' +
+            'pair for their size — `--leading-4` at 12–13px, `--leading-5` at 14px, ' +
+            '`--leading-8` at 24px. Separately `.ui-chat-artifact-card` is a `<button>` ' +
+            'that set neither, so it rendered at the browser’s own 13.333px; it now ' +
+            'sets `--text-sm` / `--leading-5`, which is what its own title already ' +
+            'used.',
+        },
+        {
           date: '2026-09-02',
           summary:
             'A failed tool call’s status colour is a touch lighter in dark mode.',

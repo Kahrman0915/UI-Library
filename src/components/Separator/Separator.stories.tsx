@@ -13,6 +13,14 @@ const meta: Meta<typeof Separator> = {
       tags: ['layout'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The label gets an explicit line height.',
+          detail:
+            '`.ui-separator__label` set `--text-xs` with no `line-height` and fell back ' +
+            'to `normal`. Now `--leading-4`.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

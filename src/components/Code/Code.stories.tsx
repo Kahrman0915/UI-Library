@@ -16,6 +16,14 @@ const meta: Meta<typeof Code> = {
       tags: ['typography', '2 exports'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The code-block filename gets an explicit line height.',
+          detail:
+            '`.ui-code-block__filename` set `--text-xs` with no `line-height` and fell ' +
+            'back to `normal`. Now `--leading-4`, the house pair for 12px.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

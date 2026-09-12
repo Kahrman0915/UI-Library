@@ -5,6 +5,7 @@
   gap: var(--p-2);
   font-family: var(--font-family);
   font-weight: var(--font-medium);
+  line-height: var(--leading-5);
   color: var(--foreground);
   background: transparent;
   border: var(--border-w-100) solid transparent;
@@ -133,6 +134,7 @@
     height: var(--h-8);
     padding: 0 var(--p-2-5);
     font-size: var(--text-xs);
+    line-height: var(--leading-4);
 
     svg {
       width: var(--w-3-5);
@@ -155,6 +157,7 @@
     height: var(--h-10);
     padding: 0 var(--p-4);
     font-size: var(--text-base);
+    line-height: var(--leading-6);
 
     svg {
       width: var(--w-5);

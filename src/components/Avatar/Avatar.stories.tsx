@@ -17,6 +17,18 @@ const meta: Meta<typeof Avatar> = {
       tags: ['3 sizes', 'fallback'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The fallback initials get an explicit line height instead of the browser ' +
+            'default.',
+          detail:
+            '`.ui-avatar--sz-sm|default|lg` set a font-size with no `line-height`, so ' +
+            'the initials fell back to `normal` — a value that varies by font and ' +
+            'platform. Now `--leading-3` / `--leading-4` / `--leading-4`: the smallest ' +
+            'rung at or above the font size, because a single centred initial should ' +
+            'never drive the disc’s box.',
+        },
+        {
           date: '2026-08-05',
           summary:
             'The fallback disc is now a solid slate chip instead of a pale tint, so an '+
