@@ -5693,5 +5693,23 @@
    "whyItLookedLikeFour": "The Today frame measures 48 because its sidebar meta line ('Workspace') is HIDDEN — an edit made in the file during the owner's own experiment. So the two specimen frames were not comparing like with like, and the divider gap reads as 4px on one and 8px on the other. Worth knowing before trusting a before/after: check the two sides are structurally identical first.",
    "stillInstanceOverrides": "Both of these are applied to the proposed specimen instance only. The tab tint is a fill binding and the rail padding is structural, so neither can live in a variable mode — shipping them means editing the TabBar/Tab master's State=Open fill and the AppRail master's Header slot padding."
   }
+ },
+ "chromeRecommendedBuild_2026_09_12": {
+  "what": "Built the recommended chrome on the App Shell page as 'recommended · one plane, flat admin, aligned rules', beneath the owner's own 'my edits' frame so the two can be compared directly. Figma-only, still a proposal.",
+  "colourAnswer": "The owner asked whether everything staying on background helps, or whether the rail and sidebar should take an indigo tint. Rendered both. ONE PLANE WINS. The indigo tint is not viable in dark: composited over the page it measures 1.04 at 4%, 1.08 at 8% and 1.13 at 12% — all below the point where a surface reads as a deliberate plane, so it lands as 'slightly off' rather than tinted. Pushing the alpha until it reads makes it a coloured panel that competes with the active row, the primary button and the status pills, which is spending the brand colour on a background instead of on the objects people are hunting for.",
+  "whatTheBuildDoes": [
+   "Chrome and content both #0f172a with cards #1e293b, so there is one plane for navigation, one for content, and a single hairline between them.",
+   "No divider between rail and sidebar — they are one continuous surface. They are already distinguished by width and content (48px of icons versus 256px of labelled rows), so a third signal was noise.",
+   "Rail 52 -> 48 so it matches the tab strip it meets at the corner, and the sidebar back to 256, which restores the system's 1136 content window (48 + 256 + 1136 = 1440).",
+   "The rail header and sidebar header rules now both land on y=92.",
+   "ADMIN FLATTENED. The owner's version nested admin pages under per-application headings, so 'Banners' appeared three times differentiated only by a dot. The rail already owns application scope, so the sidebar now lists one application's admin pages once: Overview, Banners, Dashboards, Feature Flags, URL Redirects, Usage Analytics, Access Control, Changelog.",
+   "Group labels corrected — the owner's frame said ADMIN above both groups. Now NAVIGATION and ADMIN.",
+   "Icons restored on every row; the owner's version had dropped them from admin, and an icon is the fastest scan target in a list read dozens of times a day.",
+   "Home tab relabelled Home, tinted at primary-soft 25%. Two logo lockups reduced to one."
+  ],
+  "tabsRule": "Sidebar navigation replaces the current tab, like a browser following a link. A new tab is for opening a THING worth returning to — a specific dashboard or request — not for every nav destination. Otherwise twenty-four admin pages each spawn a tab.",
+  "builtFromComponents": "83 component instances against 22 container frames, and the sidebar list is composed from Sidebar/MenuButton and Sidebar/GroupLabel atoms — the file's recorded escape hatch for a list the assembled Sidebar cannot express, since its second group caps at three rows and this needs eight.",
+  "verified": "Nothing renders outside the frame and no text is clipped.",
+  "stillAProposal": "Everything lives in the 'Dark · chrome proposal' mode and on this one frame. Light and Dark are untouched; deleting the mode reverts the colour half entirely."
  }
 }
