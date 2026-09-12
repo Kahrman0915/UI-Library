@@ -5558,5 +5558,31 @@
   },
   "lint": "Sidebar, Chat and Drawer all at zero; 23 more geometry values bound in passing.",
   "verdict": "Every component page is in shape to build from. After this session's seven passes the file has no clipped content outside two deliberate cases, no light/dark asymmetry, no starved text, no wasted frames, and every touched page lints at zero."
+ },
+ "visualReviewAllPages_2026_09_12": {
+  "what": "A frame-by-frame visual review of every page in the file — all 79 pages, 273 top-level frames, screenshotted and read rather than sampled. Figma-only; no src/ change.",
+  "why": "The owner asked for a designer's-eye pass after the Card spec page turned out to have a real layout defect: is every page actually in shape to build from.",
+  "method": "Screenshots in batches of five (the tool's per-call image cap), plus two programmatic scans the earlier layout sweep could not see: (1) component sets whose own children spill past the set's frame, (2) any visible descendant of a page-level frame that extends beyond that frame, clipping or not.",
+  "whyTheEarlierSweepMissedThese": "The 2026-09-12 layout sweep required the PARENT TO CLIP before it would report an overflow, because that was the only way to cut its noise down from 25 pages. Every defect found here overflows a frame that does NOT clip, so it rendered as content spilling onto the canvas and the sweep stayed silent. Requiring a clip is a filter on the symptom, not on the fault.",
+  "findingsFixed": [
+   "EIGHT component sets were one tall narrow column in a ~1200-wide frame, which is what made four pages absurdly long. Card 392x5520, Sidebar 288x5036, Textarea 352x3648, Input 292x1984, InputOTP 404x1856, Accordion 472x1828, DatePicker/Field 272x1696, plus Slider. All are now HORIZONTAL + WRAP at the page's own content width. Card Overview 8391 -> 5153, Sidebar Overview 7739 -> 3955, Input 3096 -> 1692, DatePicker 2750 -> 1902, InputOTP 2888 -> 1736, Accordion 3178 -> 2350.",
+   "THE SLIDER SET WAS BROKEN, not merely tall: 1708x960 FIXED on both axes while its 60 variants ran to y=4676. The variants spilled out of the set, out of the Overview frame and onto the page canvas. A set whose reported height is smaller than its own content is the tell.",
+   "Progress's set carried layoutMode NONE — a hand-placed 2008-wide grid in a 1216 column, overhanging the page by 792.",
+   "Attachment (1240 in 1216), ButtonGroup (1320 in 1216) and Avatar's 'sets' row (1500 in 1216) all overhung their frames by a fixed width nobody had re-measured.",
+   "Item's Spec anatomy row was 2161 wide because ONE note — the __media region — is a single 1753px unwrapped line. The region notes now FILL an 848 column and wrap.",
+   "Label's Spec rows are 1235 wide inside a 1216 column. Widened the frame to 1300 rather than retune a bound gap on eight rows.",
+   "TabBar's Examples carried a 1424-wide annotation hugging its own text. Set to FILL, and its inner label to textAutoResize HEIGHT — FILL on the instance alone leaves the TEXT still hugging.",
+   "NINE Chart instances had been resized 480 -> 380/340 while their inner ui-chart__plot stayed FIXED at 440, so every chart's gridlines ran past the card edge and were clipped on the Spec frame. Restored to the master's 480 and wrapped their rows two-across. The MASTER was correct all along.",
+   "Table's Overview drew its three sets as three skinny columns 1336 tall. Now three full-width labelled rows of wrapped variants, 864.",
+   "Guide pages: four _Doc instances on Choosing components were FIXED 16px wider than the content box; Start Here's 'brand examples' row was 660 in a 576 column; both What's New frames had a Card FIXED at 1136 inside a 1072 container; the Dashboard example frames clipped their last Switch."
+  ],
+  "notFindings": [
+   "A set that is narrow beside a wide frame is the file's own convention and is fine when it is short — Mark (232x580), Checkbox, Separator. The problem is length, not width.",
+   "AppRail's Spec and Examples are mostly vertical emptiness because the component is a 48px full-height rail.",
+   "The TabBar demo on Choosing components clips a 1120-wide strip inside a 331 card. That is a deliberate crop and renders exactly like a browser tab strip that has overflowed."
+  ],
+  "hygiene": "Every counterAxisSpacing introduced by a wrap is bound to the same variable as its itemSpacing. ButtonGroup's set had an UNBOUND gap of 40 before this pass; both its gaps now bind to spacing/10, clearing pre-existing geometry debt.",
+  "remaining": "Page 107's 'email' frame overhangs by 5px, and the two TEST-page frames by 389 and 428. Internal pages, left alone.",
+  "lesson": "A layout check must compare a node's bounds against its CHILDREN, not against whether something looks cut off. Clipping decides whether a fault is visible; it does not decide whether there is one."
  }
 }
