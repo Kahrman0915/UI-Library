@@ -5621,6 +5621,16 @@
    "notFixed_announcementClip": "Request Flow section 9, the animated announcement: the two remaining clips are WIDTH losses, not height, and they share one root cause I had mis-described. The stage is named 'stage · the clip (576)' and is 448 wide. Every scene is still 576, and each screen inside sits at x=67 — which is exactly (576-442)/2, so the screens were centred for a 576 stage. The cursor sits at x=536, entirely outside the 448 window. So the whole clip is framed 128px too wide and loses 61px off the right of every screen, which is what cuts those two strings.",
    "whyItWasLeft": "Fixing it means re-framing an animation: shifting the screens and the cursor together, or scaling the clip from 576 to 448. The text is already at 8.4px (14 x 0.6), so a further 0.78 scale would land it near 6.5px and be unreadable. The cursor's choreography is keyframed and getManualKeyframeTracks is not exposed on these nodes, so any shift I made to it would be a guess at the animation's timing. Owner's call.",
    "lesson": "A reported clip tells you a number, not a cause. Two of these four were what they looked like; the other two were one framing error wearing two disguises, and the tell was that the loss was on the WIDTH while I had assumed height."
+  },
+  "notFixed_announcementClip": "RESOLVED — owner chose to scale. The clip was authored at 576 and shown in a 448 window, losing 61px off the right of every screen and putting the cursor at x=536, entirely outside the frame.",
+  "announcementClipScaled": {
+   "what": "Scaled the Request Flow announcement clip from 576 to 448 (x0.77778) so the authored composition fits the window it is shown in.",
+   "how": "rescale() on each of the four stage children — the three scenes and the cursor — then their x/y multiplied by the same factor, so every relative position is preserved and the keyframed choreography still lines up. rescale keeps a node's x/y, so scaling position by hand is the step that is easy to miss.",
+   "result": "Scenes 576x324 -> 448x252, cursor 22px at (536,300) -> 17px at (417,233), now inside the frame. The stage was then closed from 324 to 252 so there is no letterbox, which lands the media region on 448x252 — exactly 16:9, the Announcement component's own documented default ratio, where it had been an off-ramp 1.38. The dialog is 540 -> 468.",
+   "verified": "All three scenes intact with their text (16, 31 and 14 nodes); scenes 2 and 3 keep opacity 0, the animation's initial state, so the cross-fade is untouched. Request Flow now has zero nodes rendering outside their container.",
+   "costStatedUpFront": "Body type in the clip is now 6.53px, down from 8.4 (it was already 14 x 0.6 before this). Raised with the owner before scaling and accepted.",
+   "renamed": "The stage was called 'stage · the clip (576)' while being 448 wide — that name is what diagnosed the whole problem. Renamed to (448) so the next person is not misled by a stale one.",
+   "remaining": "One text still loses 8px vertically, 'How would this improve your team's workflow' in scene 2. It lost exactly 8 before the scale too: the screens are taller than the scene window on purpose and the clip pans down them, so that is the authored framing, not damage."
   }
  }
 }
