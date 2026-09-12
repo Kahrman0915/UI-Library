@@ -5507,5 +5507,17 @@
   "lint": "Card page at all zeros, and the overline overflow is gone — the only overflow the page reported.",
   "notChanged": "“Enterprise plan” still wraps to two lines in a 240 card. That is honest behaviour for a header holding a media glyph, a title and a badge at that width, not a layout defect; widening the cells to stop it would misrepresent what a 240 card does.",
   "changelogRow": "Card 1.9"
+ },
+ "stackLevelAxisRenamed_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Owner asked whether `level 1-5` is a sensible designer-facing name.",
+  "answer": "Partly standard, and the file had already answered it. Most design systems name spacing by SIZE (space-100, sm/md/lg). The relationship taxonomy (inset/stack/inline, the Nathan Curtis model) is the other industry pattern and was TRIED HERE AND REJECTED on 2026-09-07 — see semanticSpacing2026_09_07 — so renaming toward pure role names would relitigate that. Numeric hierarchy levels are this system's own model and the number is load-bearing: a level is a depth, depths are ordered, and 'each level down is one step down' is the entire rule.",
+  "theRealInconsistency": "The Space VARIABLES were already named with both — space/1-page, space/2-section, space/3-block, space/4-element, space/5-micro. Stack's Level axis was the ONE place that vocabulary was hidden behind a bare number. So nothing needed inventing; the axis just had to adopt the names the variables already carry.",
+  "change": "Level options 1..5 -> '1 · page', '2 · section', '3 · block', '4 · element', '5 · micro'. Number first so the ordering stays visible and the link to --space-N survives.",
+  "safety": "All 243 Stack instances across the file kept their level — verified by comparing the per-variant distribution before and after (92/80/25/29/5/2/2/2/4/2, unchanged), with zero instances failing to resolve a variant.",
+  "codeUnchanged": "The React prop is still `level={3}`, a number. A pill was added to the Props row saying so explicitly, because the Figma label and the code value now differ in spelling and that is exactly the kind of gap that produces `level=\"3 · block\"` in someone's JSX.",
+  "alsoUpdated": "The 10 spec labels and the 5 level pills now use the same vocabulary, so the page does not teach two names for one thing.",
+  "foundNotFixed": "Stack, Toolbar, Section and PageContainer — the four layout components built together on 2026-09-07 — ALL share the same lint shape: 4 prose nodes at 13/Regular with an unbound fill, and their spec labels at 11/Medium with no text style. 13 and 11 are off the type ramp, which starts at 12. This is a consistent house convention across that batch rather than a Stack defect, and forcing them onto the ramp would change four doc pages to satisfy a lint rule. Flagged for an owner call, deliberately not swept. 104 geometry values on Stack WERE bound, since that is unambiguous.",
+  "changelogRow": "Stack 1.2"
  }
 }
