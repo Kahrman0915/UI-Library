@@ -5710,6 +5710,12 @@
   "tabsRule": "Sidebar navigation replaces the current tab, like a browser following a link. A new tab is for opening a THING worth returning to — a specific dashboard or request — not for every nav destination. Otherwise twenty-four admin pages each spawn a tab.",
   "builtFromComponents": "83 component instances against 22 container frames, and the sidebar list is composed from Sidebar/MenuButton and Sidebar/GroupLabel atoms — the file's recorded escape hatch for a list the assembled Sidebar cannot express, since its second group caps at three rows and this needs eight.",
   "verified": "Nothing renders outside the frame and no text is clipped.",
-  "stillAProposal": "Everything lives in the 'Dark · chrome proposal' mode and on this one frame. Light and Dark are untouched; deleting the mode reverts the colour half entirely."
+  "stillAProposal": "Everything lives in the 'Dark · chrome proposal' mode and on this one frame. Light and Dark are untouched; deleting the mode reverts the colour half entirely.",
+  "twoFollowUps": {
+   "railRuleWasARealDefect": "The owner said the rail was missing its border. It was not my removal of the rail/sidebar divider — SIDEBAR/HEADER'S BOTTOM STROKE IS UNBOUND, a hardcoded #334155, while the rail header's is bound to sidebar/border. The two rules that are supposed to read as one continuous line were therefore painted from different sources and could never match under any mode. Bound to sidebar/border on the specimen; the MASTER still carries the hardcoded stroke and should be fixed.",
+   "iconOnlyHomeTabIsBlocked": "The owner suggested the Home tab be icon-only to signal it never closes — a good convention, and it is what their own prototypes show. IT CANNOT BE BUILT TODAY: TabBar/Tab carries minWidth 140 on the master, and Figma refuses to override minWidth on an instance ('This property cannot be overridden'). Setting the tab to HUG, to FIXED, and resizing to 48 all return 140.",
+   "andHidingTheLabelMakesItWorse": "Hiding the Label text node does remove the label, but the node then stops being enumerable — the same 'a hidden node is not enumerated' trap the PageHeader overline hit on 2026-09-09 — so it cannot be turned back on from the instance. Recovery is resetOverrides() and re-applying the properties, which is what was done here.",
+   "whatItWouldTake": "A pinned tab wants its own variant rather than a Show label boolean, because minWidth 140 exists to stop a short label producing a stubby tab and removing it globally would reintroduce that. A TabBar/Tab pinned variant at 48 wide, icon only, not closable, is the clean shape. Owner's call."
+  }
  }
 }
