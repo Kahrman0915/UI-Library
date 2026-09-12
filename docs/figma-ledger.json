@@ -5452,5 +5452,26 @@
   "lint": "All touched pages clean. Mark unchanged at its recorded glass-artwork debt.",
   "changelogRows": 17,
   "notChecked": "Behavioural claims that are not identifiers — 'hover-to-switch once a menu is open', 'Enter sends and Shift+Enter newlines', the measured contrast ratios quoted on TabBar. Those need a reader who knows the component, or a browser."
+ },
+ "behaviouralClaimsSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Seventh pass; the class the docs-prose sweep explicitly deferred.",
+  "split": "Behavioural prose has two checkable halves and one that is not. KEYBOARD claims check against the component's key handlers. QUOTED CONTRAST RATIOS recompute from tokens.scss. Everything else — intent, ordering, why a decision was made — still needs a reader.",
+  "keyboardMethodFailedFirst": "A naive check — 'does the component's tsx handle this key?' — produced ~30 findings and nearly all were WRONG. A native <button> fires click on Enter and Space with no JS at all, so prose saying 'Enter activates' is correct for Button, Chip, Toggle, Fab, Item and a dozen more even though the string 'Enter' never appears in their source. A second false-positive class: the extractor looked for the word ArrowLeft and the pills write it as the glyph, so Slider's documented arrows read as undocumented. Compare BOTH directions and only on components that actually register a key handler.",
+  "keyboardFindings": [
+   "Slider — the real gap. Its keyboard row listed Tab and left/right arrows only. The component implements the full APG slider model: up/down arrows as a second axis, PageUp/PageDown for ten steps at once (step * 10), and Home/End for min/max. Three pills added.",
+   "Combobox — handles Home/End (highlight to first/last option) and never said so. One pill.",
+   "Command — same. One pill."
+  ],
+  "keyboardClean": "Accordion, TabBar, Menubar, Select and ContextMenu all document their model correctly and completely; Select's and ContextMenu's a11y paragraphs are exemplary. Command's pills live in a frame named `keys` rather than `keyboard`, which is why a name-based scan first reported it as having none.",
+  "contrastResult": "NINE quoted ratios recomputed from tokens.scss and ALL NINE are exact to two decimals: TabBar's four (muted-foreground on background 7.58/14.48, foreground on accent 16.30/9.90), Tabs' 6.92 and 5.1, Table's 6.15 and 11.87, and Switch's 1.48 for --border on --card. The numbers in the prose were measured, and no token has drifted since.",
+  "contrastTrap": "A tenth check reported avatar-background on --card as 4.76 against a claimed 3.21 — that was MY error, not the page's: the documented figure is against --muted, the worst surface, and on --muted it recomputes to 3.21 exactly. Read which surface a claim names before calling the number wrong. One pairing stays unverifiable by this method: --error on --error-light, because -light is an rgba tint that needs compositing rather than a flat hex.",
+  "lint": "Slider, Combobox and Command all clean.",
+  "changelogRows": [
+   "Slider 1.4",
+   "Combobox 1.5",
+   "Command 1.6"
+  ],
+  "stillNotChecked": "Claims with no identifier and no number — 'hover-to-switch once a menu is open', 'activation is manual so arrowing does not mount five dashboards', ordering and rationale. These need a reader who knows the component or a driven browser, and no script will settle them."
  }
 }
