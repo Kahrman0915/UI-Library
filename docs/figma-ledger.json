@@ -5314,5 +5314,38 @@
    "Card Size xl/2xl and the Card part Scale xl/2xl rungs.",
    "The four property reorders Figma's API cannot do, and the layer-naming convention."
   ]
+ },
+ "buttonIconOnlyAndCardRamps_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Closes the two items left open by specCoverageSweep_2026_09_12.",
+  "button": {
+   "gap": "Button/Icon-only is a 240-variant set with ZERO instances on the Button page — the reference implementation of the whole file documented the labelled button and not the icon-only one.",
+   "built": "An ICON-ONLY section at the END of the Spec frame, after the main matrix so the primary table keeps its prominence. Light and Dark side by side, the dark table pinned via explicitVariableModes to Mode=Dark and filled with surface/background, matching the recipe the existing Spec — Dark table uses.",
+   "sections": [
+    "SIZES — xs/sm/default/lg",
+    "STYLES — default/secondary/outline/ghost/link",
+    "VARIANTS — default/error/info/success/warning/aiden",
+    "DISABLED — default, outline and aiden"
+   ],
+   "notReplicated": "The full Variant x Style x Size matrix was NOT duplicated for icon-only. It would have doubled a 2799px page to document a shape that differs from the labelled set only in padding. Four compact strips state the difference; the set carries the other 232 combinations."
+  },
+  "card": {
+   "gap": "Size showed only `default`, and Card/Title, Card/Description and Card/Overline had ZERO instances anywhere in the file — the reason recorded on 2026-08-31 was that a designer composing in a body slot had no typography atoms to drop in and hand-drew text instead.",
+   "sizeRamp": "sm through 2xl at a CONSTANT 280px width. Width is held constant on purpose: the ramp exists to show padding and type stepping together, and letting each cell hug turned the comparison into a width comparison. The first cut cloned a 150px cell and the title wrapped to one character per line at xl and 2xl — unreadable, and it looked like a broken card rather than a narrow one.",
+   "partScaleRamp": "Overline + Title + Description at all five Scale values, captioned scale=N. This is the page stating the distinction CardTitle.scale exists for: type moves, padding does not, and scale is deliberately not named size so it cannot be read as Card's prop.",
+   "bugFixed": "The `cell — divider off` added earlier the same day had put its explanatory sentence into the CARD'S TITLE rather than the cell caption, because the handler took the first TEXT it found. The card rendered a paragraph as its heading. Title restored to 'Enterprise plan'; the sentence moved to a real caption node."
+  },
+  "lint": "Button and Card both at all zeros across fills, strokes, text styles, layer names, geometry and descriptions. The only overflow on the Card page is the pre-existing `anatomy row`.",
+  "changelogRows": [
+   "Button 1.4",
+   "Card 1.7"
+  ],
+  "nodeIds": {
+   "buttonSpec": "159:21",
+   "buttonIconOnlySection": "see spec children 'Icon-only — Light + Dark'",
+   "cardSpec": "365:83",
+   "cardLightTable": "366:95",
+   "cardDarkTable": "366:241"
+  }
  }
 }
