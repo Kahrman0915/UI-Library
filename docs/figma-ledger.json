@@ -5660,5 +5660,18 @@
    "verified": "Zero Input date fields remain; all 14 resolve to DatePicker/Field. The 14 other date strings on the page are list-row metadata inside Card, correctly untouched. Page-wide the only remaining issue is the pre-existing 8px vertical crop in the announcement motion clip."
   },
   "stillNeverOnAnyScreen": "26 families, the notable ones being the whole Aiden surface set (Fab, AidenLauncher, AidenPanel, AidenFullScreen), the floating surfaces (Tooltip, Popover, HoverCard, ContextMenu, Command, Menubar), Field, InputGroup, InputOTP, ButtonGroup, Collapsible, ScrollArea, AspectRatio, AvatarGroup, Blockquote, FullScreenDialog, Mark and ChatMarkdown. Calendar is still unused as a standalone; DatePicker now embeds it."
+ },
+ "appShellConnectedToFlows_2026_09_12": {
+  "what": "The App Shell page now carries the real DART Central navigation, and the Request and Admin flows each gained one shelled landing screen so the flows are reachable from the chrome without every screen needing a shell. Figma-only, built entirely from components.",
+  "theModelBeingExpressed": "The RAIL is applications — DART Central is the home application and holds Requests, Admin, What's New and more; the other five (IRM, Phoenix, Eclipse, NoteGen, DARTBoards) are siblings. The SIDEBAR changes per application. The TAB BAR behaves like a browser: every page opened inside an application becomes a tab.",
+  "sidebarForDartCentral": "Notifications (badge 3), My Requests, What's New, Community, Settings, then an ADMIN group. Configured through the assembled Sidebar's own properties — Rows=5, Show group 2, and per-row Label, Icon, Badge and State — so nothing was drawn.",
+  "whatWasBuilt": [
+   "App Shell page, both proofs (1440 and 1920): sidebar set to the real nav, My Requests active, rail marking DART Central as the active application.",
+   "Request Flow: 'R1.0 My Requests · in the app shell · 1440' — a real AppShell instance whose Main content slot holds a clone of R1.1's PageContainer, sidebar with My Requests active, tabs Home + My Requests.",
+   "Admin Flow: '1.0 Admin Overview · in the app shell · 1440' — same shape, Main content from 1.1's PageContainer, ADMIN group listing Overview (active), Dashboards, Banners, and the second tab relabelled 'Admin · Overview'."
+  ],
+  "techniqueWorthKeeping": "The shell's Main content is a SLOT on a directly placed instance, so a page's PageContainer can be CLONED out of its standalone screen and dropped straight in. That keeps one source of truth for the page and means the shelled view is a view of the real screen, not a second copy to maintain. The page is taller than the 852 viewport and is cropped, which is correct — a viewport crops.",
+  "limitHitAndNotWorkedAround": "The assembled Sidebar's second group caps at THREE rows, so the ADMIN section shows Overview, Dashboards and Banners and cannot yet list Promotions, Redirects, Analytics, Activity or Access Control. Its submenu is also wired to group 1's third row, so it cannot express 'Admin expands into its pages' as a nested list. Left as-is and reported rather than hand-drawn, per the standing components-only rule; closing it means extending the Sidebar component.",
+  "verified": "All four shelled frames render with nothing outside their bounds, and the rail marks DART Central active on every one."
  }
 }
