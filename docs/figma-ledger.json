@@ -5207,5 +5207,19 @@
   "theRemaining1px": "Content lands at 24 where the browser puts it at 25. That is the border: CSS adds the 1px to the box, Figma draws an INSIDE stroke and measures padding from the frame edge. This is not a Sidebar defect — `.ui-input-wrap` (padding 12, 1px inside stroke) and Card are modelled exactly the same way, so the whole file carries the same 1px convention. Left consistent rather than special-cased.",
   "scope": "Applied to the 5 expanded variants of the Sidebar set and the template frame. The 5 collapsed variants have no submenu — it is hidden and unbound there, which is correct for an icon rail.",
   "trap": "Same one as the collapsed-rail build: a hidden node ignores auto-layout, so every sizing call has to happen while the node is visible and the hide comes last. The wrapper is created visible, sized, then restored to the submenu's original visibility."
+ },
+ "assembliesRepointedOntoOwnPages_2026_09_12": {
+  "date": "2026-09-12",
+  "why": "The owner noticed the Sidebar page did not seem to use its own component. A census showed the page DOES use real atoms — 36 MenuButton instances plus GroupLabel, MenuSubButton, Input, Separator, MenuAction and MenuSkeleton — but zero instances of the assembled Sidebar set. Sidebar was not alone: Accordion and RadioGroup assemblies had ZERO instances anywhere in the file, and Breadcrumb (43) and TabBar (2) had none on their own pages.",
+  "cause": "These pages were built from atoms first; the assemblies came later as an Assets-panel convenience so a whole sidebar or accordion could be dragged rather than stacked. Nobody re-pointed the pages. The file's 'unbounded and heterogeneous list gets a template frame' rule also applied when each set's only axis was a row count — but that stopped being true for Sidebar once it gained Rows, Collapsed, search, group label, footer, second group, submenu and group action.",
+  "repointed": "Sidebar: both app-shell examples. Accordion: all six examples, each row an exposed item carrying its own label, state, divider and body text. RadioGroup: the two spec orientation demos and all four examples. TabBar: the assembled demo and both examples. Breadcrumb: the full-path and slash-separator cells, light and dark. Every assembly now appears on its own page; the count was zero for five of them.",
+  "keptAsEscapeHatches": "Every template frame stays beside its assembly. Breadcrumb's two collapsed-with-an-ellipsis cells stay hand-composed — the ellipsis sits between crumbs at a position a Levels count cannot express. Breadcrumb's Spec anatomy trail and RadioGroup's Theming brand swatches stay atom-level, which is what they are for.",
+  "sidebarSeparator": "The Sidebar set gained `Show separator` — a Sidebar/Separator instance between the two groups in all 10 variants, default off so the single existing instance is untouched. It was the one thing the assembly could not express that the template showed.",
+  "twoRealBugsFoundOnTheWay": [
+   "RadioGroup's horizontal variant put the group label INLINE with the items. The code's .ui-radio-group is a column — header above, items below — and only __items turns to a row. The assembly was wrong and the hand-composed demo it was replacing was right; re-pointing without checking would have propagated the error to the spec. Fixed: 431x20 -> 279x52.",
+   "The RadioGroup assembly had no group description, so two of the four examples could not be expressed. Added `Description` + `Show description`, default off, mirroring the header the code already renders."
+  ],
+  "trap": "Replacing a frame that carries an explicit variable mode LOSES the pin — the TabBar dark example rendered light until it was re-applied. Capture `explicitVariableModes` off the old node and re-apply to the replacement, every time.",
+  "stillOpen": "The four property reorders Figma's API cannot do, and the layer-naming convention."
  }
 }
