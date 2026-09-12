@@ -5632,5 +5632,14 @@
    "renamed": "The stage was called 'stage · the clip (576)' while being 448 wide — that name is what diagnosed the whole problem. Renamed to (448) so the next person is not misled by a stale one.",
    "remaining": "One text still loses 8px vertically, 'How would this improve your team's workflow' in scene 2. It lost exactly 8 before the scale too: the screens are taller than the scene window on purpose and the clip pans down them, so that is the authored framing, not damage."
   }
+ },
+ "whatsNewPageReviewed_2026_09_12": {
+  "what": "Reviewed the What's New page. The current pair is clean; the page's only problem was that the superseded pair shared their exact names. Figma-only.",
+  "currentPairIsClean": "whats-new light and dark at 1136x2463 both return zero on every check: nothing renders outside the frame, no clipped text, zero unbound fills, zero unstyled text nodes, and the two are structurally identical to depth 4 — the only difference between them is the frame's own name.",
+  "theRealProblem": "FOUR frames sat on the page and two of them were named EXACTLY the same as the other two — 'whats-new — light mode' twice, 'whats-new — dark mode' twice — with nothing saying which was current. A designer opening the page had no way to tell.",
+  "provedSuperseded": "Compared rather than assumed: the old 1200-wide pair and the current 1136 pair carry IDENTICAL text — 73 strings each, zero unique to either side. The new pair has 3 more instances, consistent with being rebuilt on the layout components. So nothing is lost by retiring the old pair.",
+  "actionTaken": "Renamed the old pair to '_Archive/whats-new — {mode} mode (superseded — 1200 wide, pre layout components)', following the file's own precedent from _Archive/Mark (POC — superseded) and the archived Sidebar orphans. Reversible, removes the ambiguity immediately, and leaves deletion where it belongs — with the owner.",
+  "twoOpenItemsNowClosed": "CLAUDE.md carried two open notes on this page: that the frames were 1200 and wanted 1136, and that a stray 'Space · width = 1440' pin sat on the dark frame without a twin on the light one. Both are resolved — the current pair is 1136, and neither current frame pins a width. Only the archived copies are still 1200, which is now stated in their names.",
+  "shellProof": "'whats-new · in the app shell · 1440 · Main 1136' crops the page below the fold. That is correct: it is a 900-tall viewport proof, and cropping is what a viewport does."
  }
 }
