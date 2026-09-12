@@ -5347,5 +5347,44 @@
    "cardLightTable": "366:95",
    "cardDarkTable": "366:241"
   }
+ },
+ "examplesSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Third pass after specCoverageSweep and buttonIconOnlyAndCardRamps.",
+  "censused": 77,
+  "result": "Examples are in far better shape than Spec was. 74 of 77 pages need nothing. Three real findings, all the SAME shape: an example drawn by hand because the Figma master could not express what the code's API offers.",
+  "theDetectorWasWrongFirst": "The first hand-drawn detector keyed on frames named `ui-*`, the repo's BEM convention. It reported 6 pages. It MISSED Fab entirely, whose example draws the component as `aiden-fab > fab`. A second detector — a non-instance frame named after the page's own component, that paints something, and that contains no instance of that component — found the real set: Table, InputGroup, Progress. Naming conventions are not a reliable signal; ask whether the component is INSIDE the thing instead.",
+  "findings": {
+   "Progress": {
+    "gap": "The master carried Variant/Size/Value and NO header. The code's primary API is `label` + `showValue`, which render a header row above the track, so a designer could not build the commonest progress bar — a labelled upload — and the examples drew it by hand in both modes.",
+    "fix": "Label TEXT + Value text TEXT + Show header BOOLEAN across all 90 variants, cloning the header from the hand-drawn example so bindings and text styles came across. Show header defaults false. Both example cells are now instances.",
+    "verified": "Probe instance: header off 8px, header on 34px — exactly the hand-drawn example's height. File-wide, 44 Progress instances still sit at 4/8/12px and only the 2 new ones are 34."
+   },
+   "Fab": {
+    "gap": "ZERO Fab instances in the Fab page's examples — the page for the component did not contain the component. The FAB was drawn as a 56px frame plus two gradient ellipses, because the master had no `pulse`, which is a real prop.",
+    "fix": "Show pulse BOOLEAN (default false) carrying a 96x96 `rings` frame, layoutPositioning ABSOLUTE and clipsContent off so the halo overflows the button the way it does in CSS. The example is now one real instance.",
+    "trap": "Appending the instance to an auto-layout host put it in the flow and discarded its coordinates — it jumped from the bottom-right corner to the left edge. layoutPositioning must be set to ABSOLUTE before the coordinates mean anything."
+   },
+   "InputGroup": {
+    "gap": "All 10 wraps in the examples were hand-drawn `ui-input-group__wrap` frames, even though the wrap master had been added on 2026-09-11. The Spec was fixed then and the Examples were not.",
+    "fix": "All 10 are now InputGroup instances. The master stacks Leading addon / Field row / Trailing addon VERTICALLY, so an inline prefix-and-suffix belongs INSIDE the Field row slot, and a block-end toolbar is the Trailing addon slot. Nothing about the rendering changed.",
+    "note": "Slot content inside an instance is writable: remove the slot's default children, append your own."
+   }
+  },
+  "notFindings": [
+   "CloseButton `ui-dialog (excerpt)` / `ui-alert (excerpt)` — labelled excerpts, recorded as deliberate on 2026-08-26",
+   "Item `ui-item-group`, Attachment `ui-attachment-group` — containers holding real instances",
+   "ButtonGroup's 6 wrapper frames — split button, separator clusters, leading Text cell; every child is already a real instance and a count axis cannot express these",
+   "Progress's Aiden gradient tracks — the set has no aiden variant because aiden is a SURFACE, not a variant; the cell says so in its name",
+   "Table's 8 `row (skeleton)` frames — they hold real Skeleton instances, and Table/Row has no skeleton state",
+   "TabBar's Examples report no dark pin because its Example — Light / Example — Dark are themselves INSTANCES carrying the pin internally"
+  ],
+  "stillOpen": "AidenFullScreen, ChatMarkdown and Charts have a single example specimen and no dark pin in Examples, where 72 of 77 pages carry one. Their Spec frames do cover dark. Flagged, not forced — it is a judgement call about single-specimen surface pages.",
+  "lint": "Progress, Fab and InputGroup all at zero across fills, strokes, text styles, layer names, geometry and descriptions.",
+  "changelogRows": [
+   "Progress 1.5",
+   "Fab 1.4",
+   "InputGroup 1.4"
+  ]
  }
 }
