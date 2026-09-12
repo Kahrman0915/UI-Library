@@ -5197,5 +5197,15 @@
    "Reading document.body.innerText on a Storybook docs page reads the MANAGER frame, not the docs. The content is in an iframe — read contentDocument, or a correct change looks like it did not apply.",
    "A single instance screenshotted outside its dark-mode parent renders light text on no background and looks blank. Screenshot the containing frame."
   ]
+ },
+ "sidebarSubmenuIndent_2026_09_11": {
+  "date": "2026-09-11",
+  "why": "The last open item from the sidebar work. Figma-only; no src/ change.",
+  "theDefect": "`.ui-sidebar__menu-sub` sets margin-left: var(--p-3-5) (14), padding-left: var(--p-2-5) (10) and a 1px left border. Figma had the 10 and the rule but not the 14, so the submenu sat flush with the menu's left edge in both the template and the assembled set.",
+  "theConstraint": "Figma auto-layout has NO per-child margin — only container padding and gap. Adding 14 to the submenu's own padding would have put the rule at x=0 instead of x=14, which is the wrong half of the box. The faithful expression is a wrapper: a `submenu indent` frame with paddingLeft bound to spacing/3-5, holding the submenu at FILL.",
+  "visibilityMoved": "The `Show submenu` boolean was on the submenu frame. Left there, hiding it would collapse the submenu but leave the wrapper contributing the menu's gap. The `visible` reference now lives on the wrapper and was cleared from the inner frame, so one toggle governs the whole indented block. Proven on a throwaway instance: off 512 tall, on 576, rule at 14.",
+  "theRemaining1px": "Content lands at 24 where the browser puts it at 25. That is the border: CSS adds the 1px to the box, Figma draws an INSIDE stroke and measures padding from the frame edge. This is not a Sidebar defect — `.ui-input-wrap` (padding 12, 1px inside stroke) and Card are modelled exactly the same way, so the whole file carries the same 1px convention. Left consistent rather than special-cased.",
+  "scope": "Applied to the 5 expanded variants of the Sidebar set and the template frame. The 5 collapsed variants have no submenu — it is hidden and unbound there, which is correct for an icon rail.",
+  "trap": "Same one as the collapsed-rail build: a hidden node ignores auto-layout, so every sizing call has to happen while the node is visible and the hide comes last. The wrapper is created visible, sized, then restored to the submenu's original visibility."
  }
 }
