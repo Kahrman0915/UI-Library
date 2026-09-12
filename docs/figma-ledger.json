@@ -5437,5 +5437,20 @@
    "DatePicker 1.1"
   ],
   "frameTypesNowSwept": "Spec, Examples, Overview and Theming have all been censused across every component page. Docs prose inside the Examples frame (keyboard tables, a11y notes) has NOT been checked against the code."
+ },
+ "docsProseSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Sixth and last pass: the Docs prose inside the Examples frames.",
+  "problem": "Prose cannot be linted, so the only way to check it is to extract the IDENTIFIERS it cites and test each against the code. Three classes are checkable: CSS custom properties, BEM class names, and ARIA roles/attributes.",
+  "method": "Pulled every `--token`, `.ui-class`, `role=` and `aria-*` string out of the doc frames on 76 pages, then matched them against 582 custom properties declared in src, every class in every .scss, and each component's own .tsx.",
+  "results": {
+   "tokensAndClasses": "~580 citations, 3 wrong. Charts named `--chart-line-1..3`, a scheme that has never existed — line series read var(--chart-N) like every other mark. Combobox called a divider `--border-bottom`, which is a CSS property rather than a token. AidenLauncher wrote the input shell as `--input-wrap` when it is the class `.ui-input-wrap`. All three corrected.",
+   "aria": "THE REAL FIND: `aria-labeledby` — one L — on 14 pages, 16 occurrences. That attribute does not exist; the code uses `aria-labelledby` in all 41 places and never the misspelling. A developer copying it out of the doc page would have got silently nothing. Corrected file-wide.",
+   "roles": "45 pages assert a role. ZERO are wrong. Three flagged and all three survived reading: Button cites role=status for the Spinner it composes, AidenFullScreen cites role=dialog and says explicitly that it is inherited from Dialog, and Card's sentence reads 'Card is a plain <div> with no role — if a card is genuinely a landmark, add role=\"region\" yourself', which is guidance and is accurate."
+  },
+  "lesson": "An identifier is checkable even when the sentence around it is not. Token names, class names and ARIA attributes are exact strings that either exist in the repo or do not, and extracting them turns unlintable prose into a diff. The misspelling had survived every previous sweep because every previous sweep looked at STRUCTURE — bindings, instances, variants, pins — and never at the words.",
+  "lint": "All touched pages clean. Mark unchanged at its recorded glass-artwork debt.",
+  "changelogRows": 17,
+  "notChecked": "Behavioural claims that are not identifiers — 'hover-to-switch once a menu is open', 'Enter sends and Shift+Enter newlines', the measured contrast ratios quoted on TabBar. Those need a reader who knows the component, or a browser."
  }
 }
