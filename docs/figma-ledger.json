@@ -5538,5 +5538,25 @@
    "Section 1.2",
    "PageContainer 1.3"
   ]
+ },
+ "layoutSweepAllPages_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Owner asked whether every component page is in shape to build from, and to look for layout problems of the kind found on Card.",
+  "method": "Mechanised the four defects the Card page actually had, rather than eyeballing 78 pages: (1) content visually clipped by a clipping parent, (2) light/dark structural asymmetry compared RECURSIVELY on container widths, since Card's mismatch was a grandchild, (3) starved text boxes narrow enough to break a word per character, (4) collapsed or zero-size nodes, plus (5) frames whose widest child leaves most of the width empty, which is what the old Sidebar Spec looked like.",
+  "detectorWasWrongFirst": "The first pass reported 25 pages and was mostly noise because it did not skip HIDDEN subtrees. A hidden node keeps its width and height but takes no part in layout, so every gated region — Progress's new header, every ui-label__description, every optional slot — read as an overflow. Skip invisible nodes and their descendants, and require the parent to actually clip. That cut 25 pages to 5.",
+  "realFindings": [
+   "Sidebar — the Overview caption was a WIDTH_AND_HEIGHT text 1411px wide inside a 1280 frame, cut 171px.",
+   "Chat — the same shape, 2126px inside 1280, cut 886px. Both now wrap at the frame's 1200 content width.",
+   "Sidebar — the `panel` inside the inset example shell was FIXED at 10px inside a 624 body, narrower than its own 64px of padding, so both of its text children were clipped to nothing. In BOTH the light and dark shells. Now FILL at 544 with the text filling.",
+   "Drawer — the variant set is 2192 wide inside a 1152 `parts` frame that clips, so Side=top and Side=bottom were entirely invisible on the page. Every sibling set fits (Dialog 992, Tooltip 384); Drawer was the outlier. Set to WRAP at 1152, all four sides visible."
+  ],
+  "cleanResults": {
+   "lightDarkAsymmetry": "ZERO across the file once compared recursively on container widths. Card's was the only one, and it is fixed. The top-level differences the first pass flagged are all by design — the dark label carries the 'explicit Mode = Dark' explanation, and most dark tables carry one extra closing note.",
+   "sparseFrames": "ZERO. No doc frame leaves more than 38% of its width unused, so nothing else looks like the Sidebar Spec did before its rebuild.",
+   "starvedText": "ZERO after the Card title fix. Calendar's two 'next' labels are 26px at 12px type, which is a short word in a nav button, not a break.",
+   "intentionalClipsLeft": "Mark's glass `sheen` (6, four of them inside _Archive) is the specular highlight clipped by its own tile — the anchored-edge geometry the Mark entry documents. ScrollArea's `line-6` (3) overflows on purpose, since a scroll demo that fits proves nothing."
+  },
+  "lint": "Sidebar, Chat and Drawer all at zero; 23 more geometry values bound in passing.",
+  "verdict": "Every component page is in shape to build from. After this session's seven passes the file has no clipped content outside two deliberate cases, no light/dark asymmetry, no starved text, no wasted frames, and every touched page lints at zero."
  }
 }
