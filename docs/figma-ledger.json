@@ -5492,5 +5492,20 @@
   ],
   "result": "Zero component defects. Zero Figma edits. Six components' behavioural prose confirmed against the running build.",
   "stillUnverifiable": "Claims about intent and rationale — why manual activation was chosen, why a tab is a div rather than a button. Those are design decisions recorded in prose and are not testable at all; they are only reviewable against this file's own history."
+ },
+ "cardSpecLayoutFixed_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Owner reported layout problems on the Card Spec page from a side-by-side screenshot.",
+  "findings": {
+   "focusCellAsymmetry": "The `cell — focus` in the states row and the divider-off row was 246 wide and HUGGING in light, but 382 wide and FIXED in dark. The same card therefore rendered at two different widths depending on the mode, which is exactly what the owner's screenshot showed. Both are now 240, matching the default and hover cells beside them.",
+   "focusCardClipped": "Worse than the width: in light the card inside the focus stage hugged to 170 (and 174 in the divider-off row) inside a stage FIXED at 156, so the card overflowed and its body text was cut off. The stage is now sized to the card — card height plus the 3px focus-ring inset on each side — and the drawn focus-ring rectangle was resized to match, since it had been pinned at 150.",
+   "titleOnlyCard": "`cell — title only` held a 240-wide cell but a 150-wide CARD. The header is a row of media + title + badge, so at 150 the title box was left 26px and “Reports” broke to three lines, one syllable each. Now 240, and the title measures 116x20 on one line.",
+   "regionsRowInconsistent": "The regions row mixed 240 / 190 / 210 wide cards, so it did not read as a comparison of the three optional regions. All three are 240 now."
+  },
+  "masterDefectFoundWhileThere": "The Card master's `ui-card__overline` row is a FIXED 236 inside `ui-card__header-content`, which SHRINKS as the size ramp's padding grows — 228 at lg, 220 at xl, 204 at 2xl. So the overline overflowed its own card at the three largest sizes, in all 20 variants. Set to FILL. The overline is hidden by default (only 5 of 378 Card instances file-wide turn it on), so nothing moved; the fix only shows when someone enables it.",
+  "techniqueNote": "The overline is hidden in every variant, and a hidden node ignores auto-layout, so `layoutSizingHorizontal = 'FILL'` silently no-ops on it. Each one had to be unhidden, set to FILL, then re-hidden — the hide-LAST rule, now the fourth time it has come up in this file.",
+  "lint": "Card page at all zeros, and the overline overflow is gone — the only overflow the page reported.",
+  "notChanged": "“Enterprise plan” still wraps to two lines in a 240 card. That is honest behaviour for a header holding a media glyph, a title and a badge at that width, not a layout defect; widening the cells to stop it would misrepresent what a 240 card does.",
+  "changelogRow": "Card 1.9"
  }
 }
