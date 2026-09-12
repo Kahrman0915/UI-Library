@@ -28,7 +28,7 @@
   user-select: none;
   transition: background var(--duration-fast) var(--ease-premium);
 
-  &:hover,
+  &:hover:not(:disabled),
   &--open {
     background: var(--accent);
     color: var(--accent-foreground);
@@ -37,5 +37,14 @@
   &:focus-visible {
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  // A disabled trigger stays focusable — the APG menubar pattern keeps it in the
+  // arrow walk so a keyboard user discovers it — so it needs the system's own
+  // dimming rather than the browser's default, which is what it was falling back
+  // to. Matches Button, Chip, ModeToggler. `cursor` stays `default` because the
+  // whole bar is `cursor: default`, not `pointer`.
+  &:disabled {
+    opacity: var(--o-50);
   }
 }
