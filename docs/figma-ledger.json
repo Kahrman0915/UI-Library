@@ -5473,5 +5473,24 @@
    "Command 1.6"
   ],
   "stillNotChecked": "Claims with no identifier and no number — 'hover-to-switch once a menu is open', 'activation is manual so arrowing does not mount five dashboards', ordering and rationale. These need a reader who knows the component or a driven browser, and no script will settle them."
+ },
+ "behaviourVerifiedInBrowser_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Verification only. NOTHING was changed — in Figma or in src. Every documented behavioural claim that was driven in a real browser turned out to be accurate.",
+  "why": "The docs-prose passes could check identifiers and numbers but not behaviour. These are the claims with no identifier and no number, driven in Storybook on port 6011 with real key and pointer events.",
+  "verified": {
+   "Slider": "The four behaviours documented earlier the same day, confirmed with real key presses: Home -> 0 (min), End -> 100 (max), PageUp from 0 -> 10 (step x 10), ArrowUp -> +1 step. The pills now match the component.",
+   "Menubar": "BOTH halves of hover-to-switch. Hovering a trigger with no menu open opens nothing; with File open, hovering Edit opens Edit and hovering View opens View.",
+   "TabBar": "Manual activation: ArrowRight moved focus to Tab 2 while aria-selected stayed on Tab 1, and Enter then committed it. End moved focus to the last tab. The close button computes opacity 0 with display flex — hidden by opacity, never display:none, exactly as documented. Clicking a background tab's close button fired the button handler, bubbled to the tab, and did NOT change the selection.",
+   "Chat": "Enter sends — the textarea cleared. Shift+Enter is not intercepted: defaultPrevented is false on the component's handler.",
+   "Dialog": "Full chain end to end: opens, focus moves inside, body overflow goes hidden, focus stays trapped through six Tabs, Escape closes, focus is restored to the exact trigger element, and body overflow returns to visible.",
+   "Sidebar": "Cmd+B toggles expanded <-> collapsed in both directions and persists as ui-sidebar:state in localStorage."
+  },
+  "harnessTrapsThatFakedBUGS": [
+   "COORDINATE SCALING ~x1.285. Asking the browser tool to hover (89,35) delivered a pointer at (114,45). Menubar therefore looked like it had an off-by-one in hover-to-switch — hovering Edit opened View — for three rounds of testing. It is not a component bug; the pointer was simply landing on the next trigger. Calibrate by recording e.clientX/clientY from a driven event and dividing target page coordinates by the measured factor. The ref-based hover is scaled the same way, so refs are not an escape.",
+   "A SYNTHESISED KEY DELIVERS THE EVENT BUT NOT THE BROWSER'S DEFAULT TEXT INSERTION. Shift+Enter in the Chat composer produced no newline, which reads as a broken claim. The keydown arrived (key Enter, shiftKey true) and the component left it alone (defaultPrevented false), and document.execCommand('insertText') put a newline in happily. The missing newline was the automation, not the component. Check defaultPrevented before believing that a key 'did nothing'."
+  ],
+  "result": "Zero component defects. Zero Figma edits. Six components' behavioural prose confirmed against the running build.",
+  "stillUnverifiable": "Claims about intent and rationale — why manual activation was chosen, why a tab is a div rather than a button. Those are design decisions recorded in prose and are not testable at all; they are only reviewable against this file's own history."
  }
 }
