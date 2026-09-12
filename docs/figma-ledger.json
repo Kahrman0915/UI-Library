@@ -5221,5 +5221,54 @@
   ],
   "trap": "Replacing a frame that carries an explicit variable mode LOSES the pin — the TabBar dark example rendered light until it was re-applied. Capture `explicitVariableModes` off the old node and re-apply to the replacement, every time.",
   "stillOpen": "The four property reorders Figma's API cannot do, and the layer-naming convention."
+ },
+ "sidebarHoverStateAndSpecRebuild_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed.",
+  "what": "Sidebar/MenuButton 9 -> 12 variants (State=hover at sm/default/lg), Sidebar/MenuSubButton 2 -> 3, and the page's Spec frame rebuilt from scratch as 'Spec — states, parts & collapse' (2929:1294, 1280x2622).",
+  "newVariable": {
+   "name": "sidebar/accent-hover",
+   "id": "VariableID:2928:1288",
+   "scopes": [
+    "FRAME_FILL",
+    "SHAPE_FILL"
+   ],
+   "light": "#ecf0f5",
+   "dark": "#2a3649",
+   "why": "The code paints hover with color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar)). Figma has no color-mix and no CSS token holds the resolved value, so the variable carries the computed result per mode. If --sidebar-accent or --sidebar moves, this variable has to move with it — nothing links them."
+  },
+  "newTextStyles": [
+   "sm/leading-4/Medium (14/16 Medium)"
+  ],
+  "driftFound": "The Figma active rows were Regular where the code sets font-weight: var(--font-medium). Corrected on both sets: active takes sm/leading-4/Medium at default and lg, xs/leading-normal/Medium at sm. Hover stays Normal, because only --active is medium in code.",
+  "specFrameContents": [
+   "Section + metrics pills (row heights, padding, gaps, radius)",
+   "Size (sm/default/lg) x State (default/hover/active/outline) matrix of real MenuButton instances, once on a light sidebar surface and once on a frame pinned to Mode=Dark",
+   "Anatomy: one active MenuButton at default size with icon and badge on, annotations set against it",
+   "Parts strip in both modes: MenuSubButton (default/hover/active), GroupLabel, MenuAction, Input, Separator, MenuSkeleton",
+   "Collapse: the assembly's own Collapsed=false (256) and Collapsed=true (48) variants, plus a pills column stating that offcanvas and none have no second static render"
+  ],
+  "problemsFixed": [
+   "Anatomy annotations pointed at no diagram",
+   "States were incomplete — no hover anywhere in the file",
+   "The collapse section claimed three modes and drew one",
+   "The collapsed rail was a hand-drawn frame, not the assembly variant",
+   "A 'cell — loading' fragment dangled with no heading and no dark twin",
+   "Half the 1280 frame was empty — the light/dark pair was a 608-wide stacked column, not a matrix",
+   "Only MenuButton was specced; every other part was absent"
+  ],
+  "lint": "Page at all zeros. 90 geometry bindings and 36 text styles applied inside the new frame; 13 pre-existing unbound values elsewhere on the page (Overview parts, the set's five submenu frames, Examples tokens/keys) bound in the same pass.",
+  "changelogRows": [
+   "1.12 hover state + active weight",
+   "1.13 spec frame rebuild"
+  ],
+  "nodeIds": {
+   "page": "627:44",
+   "specFrame": "2929:1294",
+   "menuButtonSet": "627:99",
+   "menuSubButtonSet": "627:104",
+   "assembledSet": "1858:783",
+   "history": "632:622"
+  }
  }
 }
