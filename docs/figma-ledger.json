@@ -5415,5 +5415,27 @@
    "FeaturedIcon 1.6",
    "Progress 1.6"
   ]
+ },
+ "themingSweep_2026_09_12": {
+  "date": "2026-09-12",
+  "scope": "Figma only — no code changed. Fifth and final frame-type pass.",
+  "censused": "21 component Theming frames (not every page has one; a Theming frame exists only where the component actually consumes --primary).",
+  "cleanResult": "The thing most likely to be stale was NOT. `dr` and `ir` were retired on 2026-08-08 and appear NOWHERE — no brand code, no swatch, no label. The Brand collection is Slate + the six shipping brands. Every component Theming frame also has ZERO unbound fills, so no page is painting a brand colour as a literal that could drift from the token.",
+  "findings": {
+   "Pagination": "THE REAL DEFECT. Its Theming frame had four cells labelled `Default (main)`, `db`, `rm` and `ph` — naming three of six brands — and NOT ONE of them pinned a Brand mode. All four rendered identically in the main brand. A theming demo that demonstrated nothing, and the same shape as the Sidebar collapse section that claimed three modes and drew one. Rebuilt from Button's brand rows: seven brand modes, light and dark.",
+   "lightOnly": "Alert, Banner, FeaturedIcon, Progress and DatePicker showed all seven brands in LIGHT only, where the other sixteen frames carry both modes. Each gained a dark grid."
+  },
+  "technique": "PIN THE MODE ON A WRAPPER, NOT ON EACH CELL. Alert/Banner/FeaturedIcon/Progress cells carry no fill of their own, so cloning them with a Mode=Dark pin would have rendered dark-mode components on the page's white ground. The dark grid sits inside a `dark surface` frame that owns the padding, radius and a fill bound to surface/background, and carries the Mode pin; each cell keeps its own Brand pin. Mode and Brand are different collections, so both cascade independently — which is the whole reason this works.",
+  "trap": "Cloning Button's brand rows into Pagination carried the pins and fills across correctly but NOT the sizing: the cells were built for a 77px Button and a pager is ~333px, so the specimens overlapped into unreadable mush. Then, with labels moved inside the cells, the dark cells clipped their label against the tinted edge. Final shape is a per-brand wrapper holding [label, themed cell] so the label sits OUTSIDE the tinted box in both modes, with the row wrapping.",
+  "lint": "All six touched pages at zero.",
+  "changelogRows": [
+   "Pagination 1.4",
+   "Alert 1.6",
+   "Banner 1.6",
+   "FeaturedIcon 1.7",
+   "Progress 1.7",
+   "DatePicker 1.1"
+  ],
+  "frameTypesNowSwept": "Spec, Examples, Overview and Theming have all been censused across every component page. Docs prose inside the Examples frame (keyboard tables, a11y notes) has NOT been checked against the code."
  }
 }
