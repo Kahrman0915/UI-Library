@@ -68,7 +68,7 @@ export const DashboardLibrary: Story = {
   render: () => <Single id="pd-library-toggle">{(playing) => <LibraryDemo playing={playing} />}</Single>,
 };
 
-/** Edit, rename, drag a card, resize a card, Done. 11s loop. */
+/** Edit, rename, drag a card, switch a card to Thumbnail from its ••• menu, Done. 11s loop. */
 export const EditMode: Story = {
   name: 'Edit Mode',
   render: () => <Single id="pd-edit-toggle">{(playing) => <EditModeDemo playing={playing} />}</Single>,
