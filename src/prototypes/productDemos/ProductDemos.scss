@@ -1,0 +1,263 @@
+/* ── Product demos ────────────────────────────────────────────────────────────
+   Animated UI mockups for the Dartboards release article: a hand-drawn product
+   window, not the real components, so a change to a real screen never breaks a
+   demo. Every colour is a token. The geometry is the Figma Motion frames'
+   coordinates, applied inline in the TSX, because it is illustration geometry
+   (where a skeleton bar sits in a drawing) rather than a spacing decision. */
+
+.pd-stage {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-family);
+  isolation: isolate;
+}
+
+.pd-stage__scene {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-start: 0;
+  transform-origin: 0 0;
+  overflow: hidden;
+}
+
+.pd-abs {
+  position: absolute;
+  transform-origin: center;
+  box-sizing: border-box;
+}
+
+/* ── window chrome ── */
+.pd-window { background: var(--background); }
+
+.pd-titlebar {
+  background: var(--sidebar);
+  border-bottom: var(--border-w-100) solid var(--sidebar-border);
+}
+
+.pd-dot {
+  border-radius: var(--rounded-full);
+  background: var(--border);
+}
+
+.pd-address {
+  border-radius: var(--rounded-md);
+  background: var(--muted);
+  overflow: hidden;
+}
+
+.pd-mono {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.pd-sidebar {
+  background: var(--sidebar);
+  border-right: var(--border-w-100) solid var(--sidebar-border);
+  overflow: hidden;
+}
+
+.pd-highlight {
+  border-radius: var(--rounded-md);
+  background: var(--sidebar-accent);
+}
+
+.pd-pane { background: var(--background); overflow: hidden; }
+
+/* ── skeleton bars ── */
+.pd-bar { border-radius: var(--rounded-full); }
+.pd-bar--fg { background: var(--foreground); }
+.pd-bar--muted-fg { background: var(--muted-foreground); }
+.pd-bar--muted { background: var(--muted); }
+.pd-bar--primary { background: var(--primary); }
+.pd-bar--primary-fg { background: var(--primary-foreground); }
+.pd-bar--sidebar-fg { background: var(--sidebar-foreground); }
+.pd-bar--accent-fg { background: var(--sidebar-accent-foreground); }
+.pd-rule { background: var(--border); }
+
+/* ── surfaces ── */
+.pd-card {
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  overflow: hidden;
+}
+
+.pd-control {
+  background: var(--background);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+}
+
+.pd-popover {
+  background: var(--popover);
+  color: var(--popover-foreground);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+
+.pd-fill-primary { background: var(--primary); color: var(--primary-foreground); }
+.pd-fill-success { background: var(--success); color: var(--success-foreground); }
+.pd-fill-muted { background: var(--muted); color: var(--muted-foreground); }
+.pd-fill-accent { background: var(--accent); }
+.pd-fill-sidebar { background: var(--sidebar); }
+.pd-fill-background { background: var(--background); }
+
+.pd-ring { border: var(--border-w-200) solid var(--primary); border-radius: var(--rounded-lg); }
+
+.pd-dashed {
+  border: var(--border-w-100) dashed var(--border);
+  border-radius: var(--rounded-lg);
+}
+
+.pd-dashed--primary { border-color: var(--primary); }
+
+/* ── category hue, set per card with --pd-hue / --pd-hue-bg ── */
+.pd-hue { background: var(--pd-hue); }
+.pd-hue-bg { background: var(--pd-hue-bg); }
+.pd-hue-stroke { stroke: var(--pd-hue); }
+.pd-hue-fill { fill: var(--pd-hue); }
+
+/* ── text ── */
+.pd-t {
+  white-space: nowrap;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.pd-t--sm { font-size: var(--text-sm); line-height: var(--leading-5); font-weight: var(--font-normal); }
+.pd-t--sm-medium { font-size: var(--text-sm); line-height: var(--leading-5); }
+.pd-t--sm-semibold { font-size: var(--text-sm); line-height: var(--leading-5); font-weight: var(--font-semibold); }
+.pd-t--lg { font-size: var(--text-lg); line-height: var(--leading-7); font-weight: var(--font-semibold); }
+.pd-t--regular { font-weight: var(--font-normal); }
+.pd-t--muted { color: var(--muted-foreground); }
+.pd-t--sidebar { color: var(--sidebar-foreground); }
+.pd-t--sidebar-muted { color: var(--muted-foreground); font-weight: var(--font-normal); }
+.pd-t--on-primary { color: var(--primary-foreground); }
+.pd-t--primary { color: var(--primary-text); }
+.pd-t--success { color: var(--success); }
+.pd-t--upper {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wider);
+  font-weight: var(--font-semibold);
+  color: var(--muted-foreground);
+}
+
+.pd-center { display: flex; align-items: center; justify-content: center; }
+
+.pd-clip { overflow: hidden; }
+
+/* ── cursor ── */
+.pd-cursor {
+  transform-origin: 0 0;
+  fill: var(--foreground);
+  stroke: var(--background);
+  stroke-width: 1.5;
+  stroke-linejoin: round;
+}
+
+/* ── beacon ── */
+.pd-beacon-core {
+  border-radius: var(--rounded-full);
+  background: color-mix(in srgb, var(--primary) 25%, transparent);
+  border: var(--border-w-200) solid var(--primary);
+}
+
+.pd-beacon-ring {
+  border-radius: var(--rounded-full);
+  border: var(--border-w-200) solid var(--primary);
+}
+
+/* ── walkthrough card (story wrapper) ── */
+.pd-walkthrough {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  padding: var(--p-4);
+
+  &__bar {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--p-4);
+  }
+
+  &__step {
+    flex: 1;
+    min-width: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    text-align: start;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    border-radius: var(--rounded-md);
+
+    &:focus-visible { box-shadow: 0 0 0 var(--focus-ring-width) var(--focus); outline: none; }
+  }
+
+  &__content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--p-4);
+    align-items: start;
+  }
+
+  &__text { display: flex; flex-direction: column; gap: var(--p-4); min-width: 0; }
+
+  &__heading { display: flex; flex-direction: column; gap: var(--p-1); }
+
+  &__tips {
+    border: var(--border-w-100) solid var(--border);
+    border-radius: var(--rounded-lg);
+    padding: var(--p-2) var(--p-4);
+
+    // A tip is a sentence, not a list label: let it wrap instead of truncating.
+    .ui-item__title { white-space: normal; }
+  }
+
+  &__video {
+    border-radius: var(--rounded-lg);
+    overflow: hidden;
+    border: var(--border-w-100) solid var(--border);
+  }
+
+  &__emph { font-weight: var(--font-semibold); color: var(--primary-text); }
+
+  @media (max-width: 720px) {
+    &__content { grid-template-columns: 1fr; }
+  }
+}
+
+.pd-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--p-4);
+  padding: var(--p-4);
+
+  &__item {
+    border-radius: var(--rounded-lg);
+    overflow: hidden;
+    border: var(--border-w-100) solid var(--border);
+  }
+}
+
+.pd-single {
+  padding: var(--p-4);
+  max-width: var(--max-w-5xl);
+
+  &__frame {
+    border-radius: var(--rounded-lg);
+    overflow: hidden;
+    border: var(--border-w-100) solid var(--border);
+  }
+}
