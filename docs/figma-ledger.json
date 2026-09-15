@@ -2285,6 +2285,21 @@
    "codeOnly": "onTabDrop, startDropLabel, endDropLabel. Fixed 50/50 by owner decision — no width axis, no divider.",
    "theming": "Seven Brand modes × light/dark on Panes=2, Drop=end: only the active marker and the hovered zone move.",
    "lint": "all zeros"
+  },
+  "AppShell": {
+   "customTabs_2026_09_15": {
+    "what": "AppShell (2669:605) gains BOOLEAN \"Show tab bar\" (default true, drives the existing exposed assembled TabBar instance 2669:208), BOOLEAN \"Custom tabs\" (default false) and SLOT \"Tabs\" (3322:1488) holding a bar built from TabBar/Tab (Home Icon only=true), TabBar/Group (Requests, blue), TabBar/Split (Originations volume / Pipeline health), What's New, TabBar/New tab, a FILL spacer and TabBar/Tab menu.",
+    "whyAdditive": "Converting the existing TabBar into a slot would wrap it in a new frame and reset the tab overrides on 31 instances across 7 pages. Two booleans plus a sibling slot leave every instance rendering exactly as before; verified all 31: 27 unchanged (Show tab bar on, Custom tabs off), 4 switched.",
+    "switched": [
+     "3069:4352 App Shell · 1440 · Light",
+     "3069:4553 App Shell · 1920 · Light",
+     "2670:668 App Shell · 1440 · Dark",
+     "2670:1095 App Shell · 1920 · Dark"
+    ],
+    "tabMenuGlyph": "TabBar/Tab menu (2688:662) glyph swapped chevron-down → Icon/gallery-vertical-end (312:19236) on the master; its 41 instances follow. Size 16 and the text/muted-foreground stroke binding held.",
+    "lintNote": "The AppShell doc page still carries pre-existing lint findings on its own frames (unbound fills/geometry on Overview, Spec, Examples; unstyled prose) — none from this change.",
+    "changelog": "AppShell doc page row 1.3."
+   }
   }
  },
  "queue": {
