@@ -1166,7 +1166,7 @@ failure and was correct: in a 52-wide collapsed sidebar, 52 minus two lots of 16
 
 ---
 
-## Landed in code — 2026-09-15 (branch `code-fixes`, not yet committed)
+## Landed in code — 2026-09-15 (branch `code-fixes`)
 
 Every item on the Figma "✅ Code changes to make" page is implemented. `tsc`, `npm run build`,
 the guardrail greps and `npm run test:contrast` all pass, and the App Shell story was checked in
@@ -1179,8 +1179,8 @@ the browser in light and dark mode.
 - **One value differs from Figma: light `--sidebar-muted-foreground` is `#5b687c`, not slate-500
   `#64748b`.** The contrast gate runs every brand × tint. On the `rm` rail with `data-tint="rail"`,
   slate-500 measured **3.79:1**, below AA. `#5b687c` is the lightest value that clears AA in every
-  context (worst 4.51:1, `nb` tinted rail). Dark stays slate-400. **The Figma variable still holds
-  slate-500 and should move to match — owner's call.**
+  context (worst 4.51:1, `nb` tinted rail). Dark stays slate-400. **The Figma variable
+  `sidebar/muted-foreground` (Light) was moved to `#5b687c` to match, with the reason in its description.**
 - **Active-item toggle:** clicking the active `AppRailItem` collapses and reopens the sidebar
   without navigating, and the trigger's label and `aria-expanded` follow. Inactive items are
   unaffected.
