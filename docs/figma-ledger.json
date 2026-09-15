@@ -2092,13 +2092,13 @@
    },
    "themed": true,
    "themingFrame": "1283:268 — seven Brand modes (main + db dc ec nb ph rm) x light/dark. ONLY --primary themes: the open tab underline. Everything else is neutral chrome by design.",
-   "props": "ATOMS: TabBar/Tab — VARIANT State (Resting|Hover|Open|Disabled) + TEXT Label + INSTANCE_SWAP Icon + BOOLEAN Closable; TabBar/New tab — VARIANT State (Resting|Hover). ASSEMBLED: TabBar — VARIANT Tabs (2|3|4|5|6) + BOOLEAN \"Show new tab\", built from exposed atom instances with the first tab already Open. Tabs and Show new tab are Figma-only.",
+   "props": "ATOMS: TabBar/Tab — VARIANT State (Resting|Hover|Open|Disabled|Split partner) × Icon only (false|true) + TEXT Label + INSTANCE_SWAP Icon + BOOLEAN Closable; TabBar/New tab — VARIANT State (Resting|Hover). ASSEMBLED: TabBar — VARIANT Tabs (2|3|4|5|6) + BOOLEAN \"Show new tab\", built from exposed atom instances with the first tab already Open. Tabs and Show new tab are Figma-only.",
    "codeOnly": "value / defaultValue / onValueChange / activationMode / onClose / closeLabel / disabled. activationMode defaults to manual, INVERTING Tabs.",
    "builtFrom": "The TabBar frame at 1275:2003 on the TEST-adjacent page, supplied by the owner.",
    "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset. | [1.1 — 2026-08-26] Same gap as Breadcrumb and Accordion: the atoms and every composition were healthy, but only components appear in the Assets panel, so there was nothing to drag. Added an assembled TabBar set (Tabs 2–6 + Show new tab), 25 exposed instances. Verified on a placed instance: tabs retitled, Open moved from tab 1 to tab 3, the + toggled, and a Tabs 4->5 switch KEPT all four renames while adding \"Tab 5\". ONE THING NOTHING ENFORCES: exactly one tab should be State=Open. The exposed instances let a designer set two, which is invalid. Stated in the set description; not expressible as a constraint. The editable \"TabBar — assembled\" frame (1280:26323) stays for strips longer than six and for the overflow-scroll behaviour.",
    "labels": "Generic Tab 1..N throughout, in both Figma and Storybook (owner call 2026-08-11). The set default Label is \"Tab 1\". Short labels sit at the 140px floor, so the assembled bar is 140/140/140 x47 — byte-for-byte the widths the code measures.",
    "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match.",
-   "version": "1.4 · 2026-09-15",
+   "version": "1.5 · 2026-09-15",
    "geometryFix": "Binding the atoms fixed more than the new set cost. TabBar/Tab carried RAW 12px horizontal padding and both atom sets had Figma's default radius-5 wrapper, all unbound — so every tab instance on the page inherited the finding. The new set added 40 (20 tabs x 2 sides); binding the atom cleared those AND 72 pre-existing, taking the page from 226 unbound-geometry findings to 76. What remains is the 80px page-frame padding on Spec/Theming/Examples, part of the file-wide unboundGeometryFinding.",
    "groupsSplit_2026_09_15": {
     "sets": {
@@ -2110,7 +2110,8 @@
     "examples": "Groups and split — Light/Dark (3317:1564 / 3317:1687): the workspace bar plus a ContextMenu/Content tab menu (Body slot filled with Item/SubTrigger/Separator). Keyboard pills for Shift+F10 and chip Enter; two a11y paragraphs (chip is role=tab + aria-expanded; drag has a menu route); changelog 1.4.",
     "layout": "Spec frame widened 2408 → 3060, so Theming moved to x 4580 and Examples to x 6120.",
     "lint": "all zeros"
-   }
+   },
+   "iconOnly_2026_09_15": "Unblocks iconOnlyHomeTabIsBlocked (2026-09-12) with the shape recorded then: a separate axis, not a hidden label. Icon only=true twins (3319:89578…89610) are cloned from each State, refs restored, minWidth/maxWidth cleared, width 48 FIXED, padding 0, primary axis centred, Label hidden but still bound (it is the accessible name and tooltip), Close hidden with its Closable ref removed. Spec gains an ICON ONLY row in light and dark; the Home tab in both workspace examples (TabBar and SplitView pages) uses it. Code: iconOnly on TabBarTab. Lint all zeros."
   },
   "AidenPanel": {
    "status": "done-v4",
