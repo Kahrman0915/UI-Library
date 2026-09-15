@@ -10,7 +10,21 @@ import {
   Layers,
   Phone,
 } from 'lucide-react';
-import TabBar, { TabBarList, TabBarMenu, TabBarNewTab, TabBarTab } from './TabBar';
+import TabBar, { TabBarGroup, TabBarList, TabBarMenu, TabBarNewTab, TabBarSplit, TabBarTab } from './TabBar';
+import SplitView, { SplitViewPane } from '../SplitView';
+import Button from '../Button';
+import {
+  ContextMenuItem,
+  ContextMenuRadioGroup,
+  ContextMenuRadioItem,
+  ContextMenuSeparator,
+  ContextMenuSub,
+  ContextMenuSubContent,
+  ContextMenuSubTrigger,
+} from '../ContextMenu';
+import { useTabLayout } from '../../hooks/useTabLayout';
+import type { TabLayoutItem } from '../../hooks/useTabLayout';
+import type { CategoryColor } from '../../types/GlobalTypes';
 import type { UiDocsParameters } from '../../types/DocsTypes';
 
 const meta: Meta<typeof TabBar> = {
@@ -72,6 +86,19 @@ const meta: Meta<typeof TabBar> = {
             'and a close button unless `closable={false}`.',
         },
         {
+          name: 'TabBarGroup',
+          description:
+            'A tab group: a chip in one of the 15 category colours, then its tabs, each with a line in the ' +
+            'same colour along the top. `collapsed` folds the tabs behind the chip (the open tab stays). ' +
+            'The chip is a `role="tab"` with `aria-expanded`, so the arrow keys reach it; Enter collapses it.',
+        },
+        {
+          name: 'TabBarSplit',
+          description:
+            'Two `TabBarTab`s drawn as one joined tab, for documents open side by side. Both halves keep ' +
+            'the open-tab surface while the split is on screen. The page half is `SplitView`.',
+        },
+        {
           name: 'TabBarNewTab',
           description: 'The trailing `+`. A plain button — it opens a tab, it is not one.',
         },
@@ -82,6 +109,7 @@ const meta: Meta<typeof TabBar> = {
           { keys: ['Home', 'End'], description: 'Move focus to the first or last tab.' },
           { keys: ['Enter', 'Space'], description: 'Open the focused tab. Under `activationMode="automatic"` the arrow keys already did it.' },
           { keys: ['Tab'], description: 'Enters the bar at the open tab, then reaches that tab\'s close button.' },
+          { keys: ['Shift', 'F10'], description: 'Opens the tab\'s or group chip\'s menu (the Menu key does too). Every drag has a menu equivalent: move left or right, add to a group, open in split view.' },
         ],
         notes:
           'A tab is a `div[role="tab"]`, not a `<button>`, and that is ' +
@@ -95,6 +123,14 @@ const meta: Meta<typeof TabBar> = {
           'target still clears 24×24.',
       },
       changelog: [
+        {
+          date: '2026-09-15',
+          summary: 'Tab groups, split tabs, drag and drop, and a right-click menu on every tab.',
+          detail:
+            '`TabBarGroup` (`value`, `label`, `color`, `collapsed`, `menu`) draws a category-coloured chip and a matching top line on its tabs; collapsing hides every tab but the open one. `TabBarSplit` joins two tabs into one for a side-by-side view, with `SplitView` as the page half.\n\n' +
+            '`onTabMove` on the root makes tabs draggable (native drag and drop, no library) and reports `{ value, before, group }`; the bar reorders nothing. Tabs carry `TAB_BAR_DRAG_TYPE`, so a drop target outside the bar can accept them. `menu` on `TabBarTab` and `TabBarGroup` wraps them in a `ContextMenu`, which is also the keyboard route to everything dragging does.\n\n' +
+            '`useTabLayout` holds the order, groups, open tab and split in one object and saves it to localStorage.',
+        },
         {
           date: '2026-09-15',
           summary: 'The bar moves onto the sidebar surface, and the open tab now paints the page with a soft brand tint.',
@@ -339,4 +375,212 @@ export const AllStates: Story = {
       <TabBarNewTab />
     </TabBar>
   ),
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Groups, split view, drag and drop — the whole workspace, saved.
+// ─────────────────────────────────────────────────────────────────────────────
+
+const WORKSPACE_DOCS: Record<string, Doc> = {
+  home: { value: 'home', label: 'Home', Icon: Home, closable: false },
+  volume: { value: 'volume', label: 'Originations volume', Icon: BarChart3 },
+  pipeline: { value: 'pipeline', label: 'Pipeline health', Icon: ChartColumn },
+  servicing: { value: 'servicing', label: 'Servicing queue', Icon: Layers },
+  calls: { value: 'calls', label: 'Call centre', Icon: Phone },
+  notes: { value: 'notes', label: 'Release notes', Icon: FileText },
+  collateral: { value: 'collateral', label: 'Collateral', Icon: Box },
+};
+
+const GROUP_COLORS: CategoryColor[] = ['blue', 'emerald', 'amber', 'rose', 'violet', 'cyan'];
+
+function Workspace() {
+  const layout = useTabLayout({
+    storageKey: 'ui-lib-stories-tab-layout',
+    initial: {
+      tabs: ['home', 'volume', 'pipeline', 'servicing', 'calls', 'notes'],
+      active: 'volume',
+      groups: [{ id: 'reporting', label: 'Reporting', color: 'blue', collapsed: false }],
+      groupOf: { volume: 'reporting', pipeline: 'reporting' },
+      split: ['servicing', 'calls'],
+    },
+  });
+  const { state } = layout;
+  const doc = (v: string) => WORKSPACE_DOCS[v] ?? { value: v, label: v, Icon: FileText };
+
+  const tabMenu = (value: string) => {
+    const inGroup = state.groupOf[value];
+    const inSplit = state.split?.includes(value);
+    const others = state.tabs.filter((t) => t !== value);
+    return (
+      <>
+        <ContextMenuItem onClick={() => layout.shift(value, -1)}>Move left</ContextMenuItem>
+        <ContextMenuItem onClick={() => layout.shift(value, 1)}>Move right</ContextMenuItem>
+        <ContextMenuSeparator />
+        {inSplit ? (
+          <ContextMenuItem onClick={layout.unsplit}>Close split view</ContextMenuItem>
+        ) : (
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>Open in split view</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              {others.map((o) => (
+                <ContextMenuItem key={o} onClick={() => layout.split(value, 'start', o)}>
+                  Beside {doc(o).label}
+                </ContextMenuItem>
+              ))}
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        )}
+        <ContextMenuItem
+          onClick={() =>
+            layout.createGroup([value], {
+              label: 'New group',
+              color: GROUP_COLORS[state.groups.length % GROUP_COLORS.length],
+            })
+          }
+        >
+          Add to new group
+        </ContextMenuItem>
+        {state.groups.some((g) => g.id !== inGroup) && (
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>Add to group</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              {state.groups
+                .filter((g) => g.id !== inGroup)
+                .map((g) => (
+                  <ContextMenuItem key={g.id} onClick={() => layout.addToGroup(value, g.id)}>
+                    {g.label}
+                  </ContextMenuItem>
+                ))}
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+        )}
+        {inGroup && <ContextMenuItem onClick={() => layout.removeFromGroup(value)}>Remove from group</ContextMenuItem>}
+        <ContextMenuSeparator />
+        {doc(value).closable !== false && (
+          <ContextMenuItem onClick={() => layout.close(value)}>Close tab</ContextMenuItem>
+        )}
+        <ContextMenuItem onClick={() => layout.closeOthers(value)}>Close other tabs</ContextMenuItem>
+      </>
+    );
+  };
+
+  const renderTab = (value: string) => {
+    const d = doc(value);
+    return (
+      <TabBarTab
+        key={value}
+        value={value}
+        label={d.label}
+        Icon={d.Icon}
+        closable={d.closable !== false}
+        onClose={() => layout.close(value)}
+        menu={tabMenu(value)}
+      />
+    );
+  };
+
+  const renderItem = (item: TabLayoutItem) =>
+    item.type === 'tab' ? (
+      renderTab(item.value)
+    ) : (
+      <TabBarSplit key={item.values.join('+')}>
+        {renderTab(item.values[0])}
+        {renderTab(item.values[1])}
+      </TabBarSplit>
+    );
+
+  const closed = Object.keys(WORKSPACE_DOCS).filter((v) => !state.tabs.includes(v));
+  const panes = state.split && state.active && state.split.includes(state.active) ? state.split : state.active ? [state.active] : [];
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '640px', background: 'var(--background)' }}>
+      <TabBar id="workspace-tabs" value={state.active ?? undefined} onValueChange={layout.select} onTabMove={layout.move}>
+        <TabBarList aria-label="Open dashboards">
+          {layout.segments.map((seg) =>
+            seg.type === 'group' ? (
+              <TabBarGroup
+                key={seg.group.id}
+                value={seg.group.id}
+                label={seg.group.label}
+                color={seg.group.color}
+                collapsed={seg.group.collapsed}
+                onCollapsedChange={(collapsed) => layout.updateGroup(seg.group.id, { collapsed })}
+                menu={
+                  <>
+                    <ContextMenuItem onClick={() => layout.updateGroup(seg.group.id, { collapsed: !seg.group.collapsed })}>
+                      {seg.group.collapsed ? 'Expand group' : 'Collapse group'}
+                    </ContextMenuItem>
+                    <ContextMenuSub>
+                      <ContextMenuSubTrigger>Colour</ContextMenuSubTrigger>
+                      <ContextMenuSubContent>
+                        <ContextMenuRadioGroup
+                          value={seg.group.color}
+                          onValueChange={(c) => layout.updateGroup(seg.group.id, { color: c as CategoryColor })}
+                        >
+                          {GROUP_COLORS.map((c) => (
+                            <ContextMenuRadioItem key={c} value={c}>
+                              {c[0].toUpperCase() + c.slice(1)}
+                            </ContextMenuRadioItem>
+                          ))}
+                        </ContextMenuRadioGroup>
+                      </ContextMenuSubContent>
+                    </ContextMenuSub>
+                    <ContextMenuItem onClick={() => layout.ungroup(seg.group.id)}>Ungroup</ContextMenuItem>
+                    <ContextMenuSeparator />
+                    <ContextMenuItem variant="destructive" onClick={() => layout.closeGroup(seg.group.id)}>
+                      Close group
+                    </ContextMenuItem>
+                  </>
+                }
+              >
+                {seg.items.map(renderItem)}
+              </TabBarGroup>
+            ) : (
+              renderItem(seg)
+            ),
+          )}
+        </TabBarList>
+        <TabBarNewTab onClick={() => closed[0] && layout.open(closed[0])} disabled={closed.length === 0} />
+        <TabBarMenu
+          tabs={state.tabs.map((v) => ({ value: v, label: doc(v).label, Icon: doc(v).Icon }))}
+          recentlyClosed={closed.map((v) => ({ value: v, label: doc(v).label, Icon: doc(v).Icon }))}
+          onReopen={(item) => layout.open(item.value)}
+        />
+      </TabBar>
+
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <SplitView id="workspace-split" onTabDrop={({ value, side }) => layout.split(value, side)}>
+          {panes.map((v) => (
+            <SplitViewPane
+              key={v}
+              aria-label={doc(v).label}
+              active={v === state.active}
+              onPointerDown={() => v !== state.active && layout.select(v)}
+            >
+              <div style={{ padding: 'var(--p-8)', display: 'flex', flexDirection: 'column', gap: 'var(--p-3)' }}>
+                <h2 style={{ margin: 0, fontSize: 'var(--text-2xl)', lineHeight: 'var(--leading-8)', fontWeight: 'var(--font-semibold)', color: 'var(--foreground)' }}>
+                  {doc(v).label}
+                </h2>
+                <p style={{ margin: 0, fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-5)', color: 'var(--muted-foreground)', maxWidth: 'var(--max-w-md)' }}>
+                  Drag a tab onto this page to open it beside this one. Right-click a tab for the same actions from the keyboard.
+                </p>
+                <div>
+                  <Button id={`reset-${v}`} style="outline" size="sm" label="Reset layout" onClick={layout.reset} />
+                </div>
+              </div>
+            </SplitViewPane>
+          ))}
+        </SplitView>
+      </div>
+    </div>
+  );
+}
+
+/**
+ * The full workspace: a group, a split pair, and a page that splits when a tab is
+ * dropped on it. Drag tabs to reorder them, drop one on a group chip to add it,
+ * right-click for everything else. The layout is saved — reload and it comes back.
+ */
+export const GroupsAndSplitView: Story = {
+  render: () => <Workspace />,
 };

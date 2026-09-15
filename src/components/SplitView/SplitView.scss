@@ -1,0 +1,78 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// SplitView — one pane, or two at exactly 50/50. Auto columns rather than a fixed
+// template, so the one-pane view needs no modifier: a single child simply takes the row.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-split-view {
+  position: relative;
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(0, 1fr);
+  height: 100%;
+  min-height: 0;
+}
+
+.ui-split-view__pane {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+
+  & + & {
+    border-inline-start: var(--border-w-100) solid var(--border);
+  }
+}
+
+// The focused half, marked only when there are two to tell apart: the same primary
+// rule the selected tab carries, along the pane's top edge.
+.ui-split-view[data-panes='2'] .ui-split-view__pane[data-active]::before {
+  content: '';
+  position: sticky;
+  z-index: 1;
+  inset-block-start: 0;
+  display: block;
+  height: var(--border-w-300);
+  margin-block-end: calc(-1 * var(--border-w-300));
+  background: var(--primary);
+}
+
+// ── drop zones, shown only while a tab is dragged over the view ──
+.ui-split-view__drop {
+  position: absolute;
+  z-index: var(--z-10);
+  inset: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--p-2);
+  padding: var(--p-2);
+  pointer-events: none;
+}
+
+.ui-split-view__zone {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: var(--border-w-300) dashed var(--border);
+  border-radius: var(--rounded-lg);
+  background: color-mix(in srgb, var(--background) 70%, transparent);
+  transition:
+    background var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out);
+
+  &[data-hover] {
+    border-color: var(--primary);
+    background: var(--primary-light);
+  }
+}
+
+.ui-split-view__zone-label {
+  padding: var(--p-1-5) var(--p-3);
+  border-radius: var(--rounded-md);
+  background: var(--popover);
+  color: var(--popover-foreground);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  box-shadow: var(--shadow-sm);
+}

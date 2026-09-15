@@ -63,7 +63,7 @@
     color var(--duration-fast) var(--ease-premium);
 
   // A transient highlight on the bar, so it stays on the bar's palette.
-  &:hover:not([aria-disabled='true']):not([data-state='active']) {
+  &:hover:not([aria-disabled='true']):not([data-state='active']):not([data-split='active']) {
     background: var(--sidebar-accent);
     color: var(--foreground);
   }
@@ -101,6 +101,158 @@
     opacity: var(--o-50);
     cursor: not-allowed;
   }
+
+  // `hidden` is set on the tabs a collapsed group folds away. The tab's own
+  // `display: flex` would otherwise beat the browser's `[hidden]` rule.
+  &[hidden] {
+    display: none;
+  }
+
+  // ── drag and drop ──
+  &[data-dragging] {
+    opacity: var(--o-50);
+  }
+
+  // The insertion marker: a primary rule on the edge the tab will land against. An
+  // inset shadow rather than a pseudo-element, because ::before carries the group line
+  // and ::after the open-tab underline, and either can be present while dropping.
+  &[data-drop='before'] {
+    box-shadow: inset var(--border-w-300) 0 0 0 var(--primary);
+  }
+  &[data-drop='after'] {
+    box-shadow: inset calc(-1 * var(--border-w-300)) 0 0 0 var(--primary);
+  }
+  &:dir(rtl)[data-drop='before'] {
+    box-shadow: inset calc(-1 * var(--border-w-300)) 0 0 0 var(--primary);
+  }
+  &:dir(rtl)[data-drop='after'] {
+    box-shadow: inset var(--border-w-300) 0 0 0 var(--primary);
+  }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Groups — a chip in the group's colour, then its tabs, each with a line in the same
+// colour along the top so the run reads as one set.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-tab-bar__group {
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+}
+
+// Names quoted: a bare `cyan` is a Sass colour and would serialise to `aqua`.
+$ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky',
+  'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
+
+@each $c in $ui-tab-bar-group-colors {
+  .ui-tab-bar__group--#{$c} {
+    --_group: var(--category-#{$c});
+    --_group-bg: var(--category-#{$c}-bg);
+    --_group-text: var(--category-#{$c}-text);
+    --_group-border: var(--category-#{$c}-border);
+  }
+}
+
+.ui-tab-bar__group .ui-tab-bar__tab::before,
+.ui-tab-bar__group-chip::before {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-start: 0;
+  height: var(--border-w-300);
+  background: var(--_group);
+}
+
+.ui-tab-bar__group-chip {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  padding-inline: var(--p-2);
+  border-inline-end: var(--border-w-100) solid var(--sidebar-border);
+  font-family: var(--font-family);
+  cursor: pointer;
+  user-select: none;
+  transition: background var(--duration-fast) var(--ease-premium);
+
+  &:hover {
+    background: var(--sidebar-accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// The soft category tag: -text on -bg is the AA-gated pairing.
+.ui-tab-bar__group-label {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  height: var(--h-6);
+  padding-inline: var(--p-2);
+  border-radius: var(--rounded-md);
+  background: var(--_group-bg);
+  color: var(--_group-text);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+}
+
+.ui-tab-bar__group-chip[data-drop] .ui-tab-bar__group-label {
+  box-shadow: 0 0 0 var(--border-w-300) var(--_group);
+}
+
+// How many tabs a collapsed group is hiding.
+.ui-tab-bar__group-count {
+  padding-inline: var(--p-1-5);
+  border: var(--border-w-100) solid var(--_group-border);
+  border-radius: var(--rounded-full);
+  font-weight: var(--font-medium);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Split — two tabs drawn as one. The halves share the width equally so the join sits
+// in the middle, and a short rule marks it instead of the full-height tab edge.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-tab-bar__split {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  flex-shrink: 0;
+
+  // Painted after the halves, so an open half's background cannot cover it.
+  &::after {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    inset-inline-start: 50%;
+    inset-block: var(--p-3);
+    width: var(--border-w-100);
+    background: var(--sidebar-border);
+    pointer-events: none;
+  }
+}
+
+.ui-tab-bar__tab[data-split] {
+  flex: 1 1 0;
+}
+
+.ui-tab-bar__split > .ui-tab-bar__tab:first-child,
+.ui-tab-bar__split > .ui-context-menu__trigger:first-child > .ui-tab-bar__tab {
+  border-inline-end: none;
+}
+
+// Both halves sit on the open-tab surface while the split is on screen; the underline
+// stays on the half that is selected.
+.ui-tab-bar__tab[data-split='active'] {
+  background-color: var(--background);
+  background-image: linear-gradient(var(--primary-soft), var(--primary-soft));
+  color: var(--foreground);
 }
 
 .ui-tab-bar__tab-icon {

@@ -1,4 +1,5 @@
 import type { LucideIcon } from 'lucide-react';
+import type { CategoryColor } from '../../types/GlobalTypes';
 
 /**
  * Whether moving focus with the arrow keys also switches the tab.
@@ -22,7 +23,24 @@ export type TabBarProps = React.HTMLAttributes<HTMLDivElement> & {
   onValueChange?: (value: string) => void;
   /** Arrow keys move focus only (`manual`, the default) or also switch tabs. */
   activationMode?: TabBarActivationMode;
+  /**
+   * Makes tabs draggable and fires when one is dropped somewhere new in the bar.
+   * The bar reorders nothing itself — apply the move to your list (or let
+   * `useTabLayout` do it). Omit it and tabs are not draggable.
+   */
+  onTabMove?: (move: TabBarMove) => void;
   className?: string;
+};
+
+/**
+ * Where a dragged tab was dropped. `before` is the tab it now sits in front of
+ * (`null` = the end of the bar); `group` is the group it now belongs to (`null` =
+ * ungrouped). Dropping on a group's chip puts the tab first in that group.
+ */
+export type TabBarMove = {
+  value: string;
+  before: string | null;
+  group: string | null;
 };
 
 export type TabBarListProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -50,6 +68,52 @@ export type TabBarTabProps = Omit<
   closeLabel?: string;
   /** Greys the tab and takes it out of the arrow-key order. */
   disabled?: boolean;
+  /**
+   * The tab's right-click menu: `ContextMenuItem`s and friends, rendered inside a
+   * `ContextMenuContent`. Opens on right-click, Shift+F10 or the Menu key, which is
+   * also the keyboard route to everything drag and drop does ("Move right",
+   * "Add to group", "Open in split view"). The actions are yours; the bar adds none.
+   */
+  menu?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * A tab group: a coloured chip followed by the tabs it holds. Collapsing hides the
+ * group's tabs behind the chip, except any whose document is on screen (the open
+ * tab, or both halves of a showing split), so what is on screen always has a tab.
+ *
+ * The chip is a `role="tab"` with `aria-expanded` rather than a button, because a
+ * tablist may only own tabs. It never becomes the selected tab — Enter and Space
+ * collapse or expand it.
+ */
+export type TabBarGroupProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'color'> & {
+  /** Identifies the group. Reported as `group` in `onTabMove`. */
+  value: string;
+  /** The chip's text. */
+  label: string;
+  /** One of the 15 category hues. Defaults to `blue`. */
+  color?: CategoryColor;
+  /** Controlled collapsed state. Pair with `onCollapsedChange`. */
+  collapsed?: boolean;
+  /** Uncontrolled initial collapsed state. */
+  defaultCollapsed?: boolean;
+  onCollapsedChange?: (collapsed: boolean) => void;
+  /** The chip's right-click menu (rename, recolour, ungroup, close group). */
+  menu?: React.ReactNode;
+  /** `TabBarTab`s and `TabBarSplit`s. */
+  children?: React.ReactNode;
+  className?: string;
+};
+
+/**
+ * Two tabs shown side by side in the page, drawn as one joined tab. Both halves
+ * carry the open-tab surface while either is selected; the underline marks the
+ * half that has focus. Pass exactly two `TabBarTab`s. The page layout is
+ * `SplitView`'s job, not the bar's.
+ */
+export type TabBarSplitProps = React.HTMLAttributes<HTMLDivElement> & {
+  children?: React.ReactNode;
   className?: string;
 };
 

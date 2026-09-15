@@ -268,18 +268,31 @@ export {
   default as TabBar,
   TabBarList,
   TabBarTab,
+  TabBarGroup,
+  TabBarSplit,
   TabBarNewTab,
   TabBarMenu,
+  TAB_BAR_DRAG_TYPE,
 } from './components/TabBar';
 export type {
   TabBarProps,
   TabBarListProps,
   TabBarTabProps,
+  TabBarGroupProps,
+  TabBarSplitProps,
+  TabBarMove,
   TabBarNewTabProps,
   TabBarMenuProps,
   TabBarMenuItem,
   TabBarActivationMode,
 } from './components/TabBar';
+export { default as SplitView, SplitViewPane } from './components/SplitView';
+export type {
+  SplitViewProps,
+  SplitViewPaneProps,
+  SplitViewDrop,
+  SplitViewSide,
+} from './components/SplitView';
 
 export {
   default as Tabs,
@@ -880,4 +893,13 @@ export { useStickToBottom } from './hooks/useStickToBottom';
 export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
 export { usePointerTilt } from './hooks/usePointerTilt';
 export { useStreamingText } from './hooks/useStreamingText';
+export { useTabLayout } from './hooks/useTabLayout';
+export type {
+  UseTabLayoutOptions,
+  UseTabLayoutResult,
+  TabLayoutState,
+  TabLayoutGroup,
+  TabLayoutItem,
+  TabLayoutSegment,
+} from './hooks/useTabLayout';
 export type { UseStreamingTextOptions } from './hooks/useStreamingText';
