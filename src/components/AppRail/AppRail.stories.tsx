@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { Bell, Box, FileText, Flame, Grid2x2, Layers, LayoutGrid, Settings } from 'lucide-react';
 import AppRail, { AppRailItem } from './AppRail';
+import { SidebarProvider, SidebarTrigger } from '../Sidebar';
 import Avatar from '../Avatar';
 import Button from '../Button';
 import ModeToggler from '../ModeToggler';
@@ -14,7 +15,7 @@ const meta: Meta<typeof AppRail> = {
     layout: 'padded',
     ui: {
       description:
-        'The application switcher: a 48px rail of icon-only links on the sidebar surface, with a `header` (the sidebar ' +
+        'The application switcher: a 52px rail of icon-only links on the sidebar surface, with a `header` (the sidebar ' +
         'trigger) above and a `footer` (mode, account, settings) below. Each `AppRailItem` is an `<a>` on the shared ' +
         'icon-button shell — the rail reads as icons, not brand tiles, and nothing here takes a brand. `AppShell` composes ' +
         'it beside `Sidebar`, the way it composes `TabBar` in the strip.',
@@ -25,6 +26,14 @@ const meta: Meta<typeof AppRail> = {
         notes: '`href` renders an `<a>`; omit it for a `<button>` when a router does the switch. `count` shows as a corner dot (the number is announced, not printed) — a visible number belongs in the sidebar row\'s `SidebarMenuBadge`.',
       },
       changelog: [
+        {
+          date: '2026-09-15',
+          summary: 'A quieter rail: muted icons, a hover that differs from the selected tile, more room between tiles, and the active application toggles the sidebar.',
+          detail:
+            'Resting tiles are `--sidebar-muted-foreground` and brighten to `--sidebar-accent-foreground` on hover and when active. Hover is a 35% pass of `--sidebar-accent` over `--sidebar` and active a 70% pass, so the two are never one paint (the collision recorded on 2026-09-11 is fixed). The sidebar trigger in the header is muted the same way.\n\n' +
+            'Tiles are 8 apart (`--p-2`) and start 16 below the header (`--p-4`); the rail no longer matches the sidebar menu\'s 4px gap. Width 48 → 52 through `--app-rail-width`. The header takes a `--h-11` minimum, the same as `.ui-sidebar__header`, so both bottom rules sit at y 92 in the shell.\n\n' +
+            'Clicking the active `AppRailItem` inside a `SidebarProvider` calls `preventDefault` and toggles the sidebar; your `onClick` runs first and can opt out with `preventDefault`. Outside a provider it is a plain link.',
+        },
         {
           date: '2026-09-11',
           summary: 'The tiles sit 4px apart instead of 2, matching the gap between `Sidebar` menu rows.',
@@ -62,9 +71,10 @@ const Items = () => (
 /** Six applications, one active, one with a count; the sidebar trigger above, account below. */
 export const Playground: Story = {
   render: () => (
+    <SidebarProvider style={{ minHeight: 0 }}>
     <div style={{ height: 520, display: 'flex' }}>
       <AppRail
-        header={<Button id="rail-collapse" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="Collapse sidebar" />}
+        header={<SidebarTrigger />}
         footer={
           <>
             <Button id="rail-notifications" style="ghost" size="sm" iconOnly IconCenter={() => <Bell size={16} aria-hidden="true" />} aria-label="Notifications" />
@@ -77,6 +87,7 @@ export const Playground: Story = {
         <Items />
       </AppRail>
     </div>
+    </SidebarProvider>
   ),
 };
 

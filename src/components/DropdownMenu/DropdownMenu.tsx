@@ -314,7 +314,7 @@ DropdownMenuContent.displayName = 'DropdownMenuContent';
 // ═════════════════════════════════════════════════════════════════════════════
 
 const DropdownMenuItem = forwardRef<HTMLDivElement, DropdownMenuItemProps>(
-  ({ children, onClick, disabled, className, ...rest }, ref) => {
+  ({ children, onClick, disabled, variant = 'default', className, ...rest }, ref) => {
     const ctx = useDropdownMenu();
     return (
       <div
@@ -324,7 +324,9 @@ const DropdownMenuItem = forwardRef<HTMLDivElement, DropdownMenuItemProps>(
         tabIndex={-1}
         aria-disabled={disabled || undefined}
         data-disabled={disabled ? '' : undefined}
-        className={`ui-dropdown-menu__item${className ? ' ' + className : ''}`}
+        data-variant={variant}
+        // `default` emits no modifier: a class nothing selects is dead BEM.
+        className={`ui-dropdown-menu__item${variant === 'destructive' ? ' ui-dropdown-menu__item--destructive' : ''}${className ? ' ' + className : ''}`}
         onClick={(e) => {
           if (disabled) return;
           onClick?.(e);

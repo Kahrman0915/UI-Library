@@ -1,4 +1,4 @@
-// AppRail — the application switcher. 48 wide (--app-rail-width) on the sidebar surface.
+// AppRail — the application switcher. 52 wide (--app-rail-width) on the sidebar surface.
 // See AppRail.tsx.
 
 .ui-app-rail {
@@ -16,25 +16,38 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     width: 100%;
+    // Level with `.ui-sidebar__header`, which carries the same minimum: the two bottom rules
+    // read as one line across the rail and the sidebar. Nothing links them, so change both.
+    min-height: var(--h-11);
     padding-block: var(--p-1);
     border-bottom: var(--border-w-100) solid var(--sidebar-border);
+
+    // The collapse button reads as a control, not as the first application: muted until
+    // hovered, like the resting tiles below it.
+    .ui-sidebar__trigger {
+      color: var(--sidebar-muted-foreground);
+
+      &:hover {
+        background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
+        color: var(--sidebar-accent-foreground);
+      }
+    }
   }
 
-  // 4, matching the Sidebar's menu gap, because these two stand side by side and
-  // are read as one piece of chrome. At 2 an active tile and the tile hovered
-  // under it left a 2px seam between two 36px fills, which is not a separation
-  // anyone perceives — see the note on `&__item` below, where the same two states
-  // also paint the identical colour.
+  // Tiles 8 apart, starting 16 below the header (owner, 2026-09-13/15). The rail no longer
+  // matches the Sidebar's 4px menu gap: the rail's 36px icon tiles need more air than 32px
+  // text rows, and the 16 keeps the collapse button from reading as the first application.
   &__apps {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: var(--p-1);
+    gap: var(--p-2);
     flex: 1;
     width: 100%;
     min-height: 0;
-    padding-top: var(--p-1);
+    padding-top: var(--p-4);
     overflow-y: auto;
   }
 
@@ -55,25 +68,24 @@
     position: relative;
     width: var(--w-9);
     height: var(--h-9);
-    color: var(--sidebar-foreground);
+    // Resting tiles are muted so hover and the active tile lead, matching the sidebar rows.
+    color: var(--sidebar-muted-foreground);
     text-decoration: none;
 
-    // KNOWN, NOT YET FIXED: this is the same paint `&__item--active` uses below,
-    // so a hovered tile and the selected tile are indistinguishable. `Sidebar`
-    // hit this exact collision and fixed it on 2026-08-08 by making hover a
-    // partial pass — `color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))`
-    // — which is mode-correct for free. The rail never got that change. Flagged
-    // with the owner rather than changed here.
+    // The same two passes of the accent the sidebar rows use, so a hovered tile (35%) and
+    // the selected tile (70%) are never one paint. Colours, not gradients, so the shared
+    // shell's background transition still fades.
     &:hover:not(:disabled) {
-      color: var(--sidebar-foreground);
-      background: var(--sidebar-accent);
+      color: var(--sidebar-accent-foreground);
+      background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
     }
 
     &:focus-visible { box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring); }
   }
 
-  &__item--active.ui-icon-button {
-    background: var(--sidebar-accent);
+  &__item--active.ui-icon-button,
+  &__item--active.ui-icon-button:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--sidebar-accent) 70%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
   }
 

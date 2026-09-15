@@ -52,6 +52,15 @@ const meta: Meta<typeof Sidebar> = {
       tags: ['compound', '23 parts', 'navigation'],
       changelog: [
         {
+          date: '2026-09-15',
+          summary: 'A quieter sidebar: muted resting links, softer selected and hover states, uppercase group labels, a red count badge, and a collapse button that says what it does.',
+          detail:
+            'Menu and sub-menu buttons rest on the new `--sidebar-muted-foreground` (slate-500 light, slate-400 dark) and brighten to `--sidebar-accent-foreground` on hover and when active. Active is a 70% pass of `--sidebar-accent` over `--sidebar`, hover 35% (was 100% and 55%).\n\n' +
+            '`SidebarGroupLabel` is semibold, uppercase, `--tracking-wider`, on `--sidebar-muted-foreground`. `SidebarMenuBadge` is an `--error` pill with `--error-foreground` text.\n\n' +
+            'Spacing: the header pads `--p-1-5` / `--p-3` with a `--h-11` minimum, so it sits level with `AppRail`\'s header even when it holds only a title; content pads `--p-1`, so rows start at 12; the footer pads 12 at the sides. Widths: `--sidebar-width` 16rem → 15.75rem (252) and `--sidebar-width-icon` 3rem → 3.25rem (52), matching the rail. Dark `--base-sidebar` is slate-850 `#172033`, between the page and cards; the unused `--sidebar-background` token is gone.\n\n' +
+            '`SidebarTrigger` shows `PanelLeftClose` while the sidebar is open and `PanelLeftOpen` while it is closed, labels itself "Collapse sidebar" / "Expand sidebar", sets `aria-expanded`, and shows a tooltip with the ⌘B / Ctrl+B shortcut.',
+        },
+        {
           date: '2026-09-11',
           summary:
             'The search input, the menu badge and the sub-button get explicit line ' +

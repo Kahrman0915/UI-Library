@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { ChevronDown, LogOut, Settings, User } from 'lucide-react';
+import { ChevronDown, LogOut, Settings, Trash2, User } from 'lucide-react';
 import DropdownMenu, {
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -27,6 +27,12 @@ const meta: Meta<typeof DropdownMenu> = {
         'the user is choosing a value, use `Select` instead.',
       tags: ['compound', '11 parts', 'portal'],
       changelog: [
+        {
+          date: '2026-09-15',
+          summary: 'Items gain a destructive variant for actions that remove or delete.',
+          detail:
+            '`variant="destructive"` on `DropdownMenuItem` paints the item in `--error` with an `--error-light` hover, the same treatment `ContextMenuItem` already had. It adds `ui-dropdown-menu__item--destructive` and `data-variant`; the default emits no modifier. First used by the space page card menu ("Remove from space"). This is the fifth copy of menu-item styling, so a shared menu-item base is the next consolidation candidate.',
+        },
         {
           date: '2026-07-29',
           summary: 'Initial build complete.',
@@ -85,6 +91,28 @@ export const WithIconsAndShortcuts: Story = {
           <LogOut />
           Sign out
           <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  ),
+};
+
+/** A destructive item at the end, separated from the everyday actions. */
+export const DestructiveItem: Story = {
+  render: () => (
+    <DropdownMenu id="destructive">
+      <DropdownMenuTrigger>
+        <Button id="destructive-btn" label="Card options" IconRight={ChevronDown} style="outline" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent>
+        <DropdownMenuItem>
+          <Settings />
+          Dashboard info
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem variant="destructive">
+          <Trash2 />
+          Remove from space
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
