@@ -43,7 +43,7 @@ const meta: Meta<typeof AppShell> = {
           date: '2026-09-15',
           summary: 'The strip joins the rail and sidebar on one surface, the logo carries the application name, and Ask Aiden is a quiet icon button.',
           detail:
-            'The strip paints `--sidebar` with a `--sidebar-border` rule, so the strip, rail and sidebar read as one frame around the page. `__logo` no longer takes the rail\'s width: it hugs the logo and the wordmark (`padding-inline: --p-2 --p-5`). Rail 48 → 52 and sidebar 256 → 252 via the tokens, so Main Content stays 1136 / 1616.\n\n' +
+            'The strip paints `--sidebar` with a `--sidebar-border` rule, so the strip, rail and sidebar read as one frame around the page. `__logo` no longer takes the rail\'s width: it hugs the logo and the wordmark (`padding-inline: --p-2 --p-5`). Rail 48 → 52 and sidebar 256 → 252 via the tokens, so Main Content stays 1136 / 1616. `AppShellWorkspace` now sets `overflow: clip`: an offcanvas collapse parks the panel at minus the sidebar width from the workspace, so without the clip it slid out over the rail and past the window edge.\n\n' +
             'Story: the wordmark sits beside the logo; Ask Aiden is a ghost icon-only `Button` with a tooltip; the sidebar hides when collapsed (offcanvas — the rail is the collapsed view); the sidebar header is a plain "Home" title.',
         },
         { date: '2026-09-07', summary: 'Initial build. The shared application chrome as a component.', detail: 'AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace · AppShellMain; composes `AppRail`, `TabBar` and `Sidebar`. Geometry from the Figma App Shell proof; `--app-rail-width` and `--app-strip-height` tokens. docs/skill-and-shell-plan.md Phase 1.' }],
