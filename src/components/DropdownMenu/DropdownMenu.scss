@@ -55,6 +55,19 @@
     }
   }
 
+  // Destructive variant — red foreground with a red-tinted hover. The same rule as
+  // ContextMenu's; this is the fifth copy of menu-item styling, which the roster says is the
+  // moment to extract a shared base (not done here).
+  &__item--destructive {
+    color: var(--error);
+
+    &:hover:not([data-disabled]),
+    &:focus-visible:not([data-disabled]) {
+      background: var(--error-light);
+      color: var(--error);
+    }
+  }
+
   // Items that reserve space for a check / dot indicator (Checkbox / Radio)
   &__item--indicator {
     padding-left: var(--p-8);

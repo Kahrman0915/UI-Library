@@ -1,6 +1,9 @@
 // AppShell — the shared chrome as structure. See AppShell.tsx.
 //
-// strip 48 · rail 48 · sidebar 256 → Main Content 1136 at 1440, 1616 at 1920.
+// strip 48 · rail 52 · sidebar 252 → Main Content 1136 at 1440, 1616 at 1920.
+//
+// The strip shares the sidebar palette with the rail and the sidebar, so the three read as
+// one frame around the page; only the open tab paints the page colour (see TabBar).
 
 .ui-app-shell {
   display: flex;
@@ -17,17 +20,21 @@
     align-items: stretch;
     flex: none;
     height: var(--app-strip-height);
-    background: var(--background);
-    border-bottom: var(--border-w-100) solid var(--border);
+    background: var(--sidebar);
+    border-bottom: var(--border-w-100) solid var(--sidebar-border);
   }
 
+  // Hugs the logo mark and the application's wordmark. It used to be exactly the rail's
+  // width so its divider sat over the rail's edge; with a wordmark it cannot, and the owner
+  // accepted the divider landing past the rail.
   &__logo {
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: var(--p-2);
     flex: none;
-    width: var(--app-rail-width);
-    border-inline-end: var(--border-w-100) solid var(--border);
+    padding-inline: var(--p-2) var(--p-5);
+    border-inline-end: var(--border-w-100) solid var(--sidebar-border);
   }
 
   &__tabs {
@@ -43,7 +50,7 @@
     gap: var(--p-1);
     flex: none;
     padding-inline: var(--p-2);
-    border-inline-start: var(--border-w-100) solid var(--border);
+    border-inline-start: var(--border-w-100) solid var(--sidebar-border);
   }
 
   // ── the row under the strip ──
@@ -64,6 +71,11 @@
     min-width: 0;
     min-height: 0;
     contain: layout;
+    // Offcanvas collapse parks the panel at `left: -var(--sidebar-width)`, which is measured
+    // from this box, so without a clip it slides out over the rail and past the window edge.
+    // `clip`, not `hidden`: Main already scrolls, and a second scroll container here could be
+    // scrolled sideways by focus or scrollIntoView.
+    overflow: clip;
 
     // SidebarProvider is `min-height: 100svh` — right for a bare page, wrong under a
     // strip, where it would push the workspace 48px past the viewport.

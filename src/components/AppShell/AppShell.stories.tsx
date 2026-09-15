@@ -3,8 +3,8 @@ import { Bell, Box, FileText, Flame, Grid2x2, Home, Inbox, Layers, LayoutGrid, P
 import AppShell, { AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './AppShell';
 import AppRail, { AppRailItem } from '../AppRail';
 import TabBar, { TabBarList, TabBarTab, TabBarNewTab, TabBarMenu } from '../TabBar';
-import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
-import Mark from '../Mark';
+import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
+import Tooltip, { TooltipContent, TooltipTrigger } from '../Tooltip';
 import Button from '../Button';
 import Avatar from '../Avatar';
 import ModeToggler from '../ModeToggler';
@@ -28,7 +28,7 @@ const meta: Meta<typeof AppShell> = {
       description:
         'The chrome every sub-application shares, as structure rather than advice: a tab strip (logo · `TabBar` · actions), ' +
         'then `AppRail` · `Sidebar` · `AppShellMain`. The strip\'s `actions` hold Ask Aiden alone — the assistant\'s place in every ' +
-        'application; tab search lives in the `TabBar` itself (`TabBarMenu`). Strip 48, rail 48, sidebar 256, so Main Content is 1136 wide at the 1440 ' +
+        'application; tab search lives in the `TabBar` itself (`TabBarMenu`). Strip 48, rail 52, sidebar 252, so Main Content is 1136 wide at the 1440 ' +
         'design viewport and 1616 at 1920 — the width every flow screen is drawn at. A page fills Main with a `PageContainer` and ' +
         'never re-derives the geometry. `AppRail` is its own component, composed here like `Sidebar` and `TabBar`; the shell has no ' +
         'brand prop and reads the scope it stands in.',
@@ -38,7 +38,15 @@ const meta: Meta<typeof AppShell> = {
         avoid: ['Hand-rolling the strip, the rail or the workspace — the workspace\'s `contain: layout` and the SidebarProvider height override are the parts that took a phase to get right.'],
         notes: 'The Aiden mounting contract (`Fab` at `--z-80`, `AidenPanel` at `--z-40`, Fab hidden while a surface is open) is composed by the app for now; see the DART Central prototype.',
       },
-      changelog: [{ date: '2026-09-07', summary: 'Initial build. The shared application chrome as a component.', detail: 'AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace · AppShellMain; composes `AppRail`, `TabBar` and `Sidebar`. Geometry from the Figma App Shell proof; `--app-rail-width` and `--app-strip-height` tokens. docs/skill-and-shell-plan.md Phase 1.' }],
+      changelog: [
+        {
+          date: '2026-09-15',
+          summary: 'The strip joins the rail and sidebar on one surface, the logo carries the application name, and Ask Aiden is a quiet icon button.',
+          detail:
+            'The strip paints `--sidebar` with a `--sidebar-border` rule, so the strip, rail and sidebar read as one frame around the page. `__logo` no longer takes the rail\'s width: it hugs the logo and the wordmark (`padding-inline: --p-2 --p-5`). Rail 48 → 52 and sidebar 256 → 252 via the tokens, so Main Content stays 1136 / 1616. `AppShellWorkspace` now sets `overflow: clip`: an offcanvas collapse parks the panel at minus the sidebar width from the workspace, so without the clip it slid out over the rail and past the window edge.\n\n' +
+            'Story: the wordmark sits beside the logo; Ask Aiden is a ghost icon-only `Button` with a tooltip; the sidebar hides when collapsed (offcanvas — the rail is the collapsed view); the sidebar header is a plain "Home" title.',
+        },
+        { date: '2026-09-07', summary: 'Initial build. The shared application chrome as a component.', detail: 'AppShell · AppShellTabStrip · AppShellBody · AppShellWorkspace · AppShellMain; composes `AppRail`, `TabBar` and `Sidebar`. Geometry from the Figma App Shell proof; `--app-rail-width` and `--app-strip-height` tokens. docs/skill-and-shell-plan.md Phase 1.' }],
     } satisfies UiDocsParameters,
   },
 };
@@ -53,10 +61,10 @@ const APPS = [
   { code: 'nb', name: 'NoteGen', Icon: FileText },
   { code: 'rm', name: 'DARTBoards', Icon: Grid2x2 },
 ];
-const NAV = [
+const NAV: Array<{ label: string; Icon: typeof Home; active?: boolean; count?: number }> = [
   { label: 'Home', Icon: Home },
   { label: 'My Requests', Icon: Inbox, active: true },
-  { label: "What's New", Icon: Bell },
+  { label: "What's New", Icon: Bell, count: 3 },
   { label: 'Settings', Icon: Settings },
 ];
 
@@ -70,11 +78,21 @@ function Shell({ width }: { width: PageContainerWidth }) {
   return (
     <AppShell id="shell">
       <AppShellTabStrip
-        logo={<Button id="shell-home" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central" />}
+        logo={
+          <>
+            <Button id="shell-home" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
+            <span style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-6)', fontWeight: 'var(--font-medium)', color: 'var(--foreground)', whiteSpace: 'nowrap' }}>
+              Dart Central
+            </span>
+          </>
+        }
         actions={
-          <span data-surface="aiden">
-            <Button id="shell-aiden" variant="aiden" style="secondary" size="sm" label="Ask Aiden" IconLeft={() => <Sparkles size={14} aria-hidden="true" />} />
-          </span>
+          <Tooltip id="shell-aiden-tooltip" side="bottom">
+            <TooltipTrigger>
+              <Button id="shell-aiden" variant="default" style="ghost" iconOnly IconCenter={() => <Sparkles size={20} aria-hidden="true" />} aria-label="Ask Aiden" />
+            </TooltipTrigger>
+            <TooltipContent>Ask Aiden</TooltipContent>
+          </Tooltip>
         }
       >
         <TabBar id="shell-tabs" defaultValue="requests">
@@ -107,20 +125,23 @@ function Shell({ width }: { width: PageContainerWidth }) {
           </AppRail>
 
           <AppShellWorkspace>
-            <Sidebar collapsible="icon">
+            {/* Offcanvas (the default): collapsing hides the sidebar and the rail is the collapsed view. */}
+            <Sidebar>
               <SidebarHeader>
-                <Mark id="shell-sidebar-mark" Icon={LayoutGrid} size="sm" motion="none" title="DART Central" description="Workspace" />
+                <span style={{ fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-5)', fontWeight: 'var(--font-semibold)', color: 'var(--sidebar-foreground)' }}>Home</span>
               </SidebarHeader>
               <SidebarContent>
                 <SidebarGroup>
+                  <SidebarGroupLabel>Navigation</SidebarGroupLabel>
                   <SidebarGroupContent>
                     <SidebarMenu>
-                      {NAV.map(({ label, Icon, active }) => (
+                      {NAV.map(({ label, Icon, active, count }) => (
                         <SidebarMenuItem key={label}>
-                          <SidebarMenuButton tooltip={label} isActive={active}>
+                          <SidebarMenuButton isActive={active}>
                             <Icon />
                             <span>{label}</span>
                           </SidebarMenuButton>
+                          {count ? <SidebarMenuBadge>{count}</SidebarMenuBadge> : null}
                         </SidebarMenuItem>
                       ))}
                     </SidebarMenu>

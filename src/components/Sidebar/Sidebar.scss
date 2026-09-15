@@ -159,7 +159,8 @@
     display: none;
   }
   // Drop the groups' horizontal padding so the icon button centers in the
-  // 3rem rail instead of being pushed right by the accumulated indent.
+  // collapsed rail (--sidebar-width-icon) instead of being pushed right by the
+  // accumulated indent.
   .ui-sidebar__group {
     padding-left: 0;
     padding-right: 0;
@@ -289,10 +290,20 @@
 }
 
 // Full-width dividers marking the frozen (non-scrolling) header + footer.
+//
+// The header is sized to sit level with AppRail's header beside it: 6 + a 32px row + 6 = 44
+// (--h-11), the same as the rail's 4 + 36 + 4. The min-height keeps a text-only header (a plain
+// "Home" title) level too. The 12 at the sides is content padding (4) + group padding (8), so
+// the header's content starts on the rows' left edge — nothing links the two, so change them
+// together.
 .ui-sidebar__header {
+  justify-content: center;
+  min-height: var(--h-11);
+  padding: var(--p-1-5) var(--p-3);
   border-bottom: var(--border-w-100) solid var(--sidebar-border);
 }
 .ui-sidebar__footer {
+  padding-inline: var(--p-3);
   border-top: var(--border-w-100) solid var(--sidebar-border);
 }
 
@@ -302,7 +313,7 @@
   flex: 1;
   gap: var(--p-2);
   min-height: 0;
-  padding: var(--p-2);
+  padding: var(--p-1); // + the group's 8 puts rows at 12, level with the header
   overflow-y: auto;
   overflow-x: hidden;
 
@@ -337,9 +348,11 @@
   height: var(--h-8);
   padding: 0 var(--p-2);
   font-size: var(--text-xs);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   line-height: var(--leading-4);
-  color: var(--muted-foreground);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--sidebar-muted-foreground);
   user-select: none;
 }
 
@@ -413,7 +426,8 @@
   border: none;
   border-radius: var(--rounded-md);
   background: transparent;
-  color: var(--sidebar-foreground);
+  // Resting links are muted so the active row and the hovered row lead.
+  color: var(--sidebar-muted-foreground);
   font-family: inherit;
   font-size: var(--text-sm);
   font-weight: var(--font-normal);
@@ -448,14 +462,16 @@
      snap on every row. color-mix resolves to a plain colour, so the transition
      survives. Don't reintroduce a gradient here. */
   &:hover {
-    background: color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar));
+    background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
     outline: none;
     box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring);
   }
-  /* ACTIVE MUST NOT BE THE SAME PAINT AS HOVER, but it must not SHOUT either.
+  /* 2026-09-15: softened to a 70% pass of the accent, with hover at 35%, so the
+     selected row reads as selected without being the loudest thing in the rail.
+     ACTIVE MUST NOT BE THE SAME PAINT AS HOVER, but it must not SHOUT either.
      The first fix for the collision reached for --sidebar-primary, a solid
      slate: that is dL 71 from the rail where the accent was dL 2 — swapping an
      invisible state for one that pulls the eye off the page content entirely.
@@ -466,7 +482,7 @@
      carries the rest. Dark mode never had the problem: accent on rail is
      dL ~13 there, which is why this only ever showed up in light. */
   &--active {
-    background: var(--sidebar-accent);
+    background: color-mix(in srgb, var(--sidebar-accent) 70%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
     font-weight: var(--font-medium);
   }
@@ -527,12 +543,14 @@
   justify-content: center;
   min-width: var(--w-5);
   height: var(--h-5);
-  padding: 0 var(--p-1);
-  border-radius: var(--rounded-md);
+  padding: 0 var(--p-1-5);
+  border-radius: var(--rounded-full);
+  // A count that wants attention: the error pill, not plain text.
+  background: var(--error);
   font-size: var(--text-xs);
   line-height: var(--leading-4);
-  font-weight: var(--font-medium);
-  color: var(--sidebar-foreground);
+  font-weight: var(--font-semibold);
+  color: var(--error-foreground);
   pointer-events: none;
   user-select: none;
 }
@@ -563,7 +581,7 @@
   height: var(--h-7);
   padding: 0 var(--p-2);
   border-radius: var(--rounded-md);
-  color: var(--sidebar-foreground);
+  color: var(--sidebar-muted-foreground);
   font-size: var(--text-sm);
   line-height: var(--leading-5);
   text-decoration: none;
@@ -582,7 +600,7 @@
     white-space: nowrap;
   }
   &:hover {
-    background: color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar));
+    background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
   }
   &:focus-visible {
@@ -591,7 +609,7 @@
   }
   /* Same collision as the menu button above — active and hover were one paint. */
   &--active {
-    background: var(--sidebar-accent);
+    background: color-mix(in srgb, var(--sidebar-accent) 70%, var(--sidebar));
     color: var(--sidebar-accent-foreground);
     font-weight: var(--font-medium);
   }

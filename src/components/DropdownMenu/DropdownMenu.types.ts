@@ -50,11 +50,16 @@ export type DropdownMenuContentProps = Omit<
 };
 
 /** A menu action. Selecting it runs `onClick` and **closes the menu**. */
+/** `destructive` paints the item in the error colour, for actions that remove or delete. */
+export type DropdownMenuItemVariant = 'default' | 'destructive';
+
 export type DropdownMenuItemProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'children' | 'onClick'
 > & {
   children: React.ReactNode;
+  /** Default `default`. See {@link DropdownMenuItemVariant}. */
+  variant?: DropdownMenuItemVariant;
   /** Runs on click or Enter, then the menu closes. */
   onClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
   /** Skipped by arrow-key navigation and unclickable. */

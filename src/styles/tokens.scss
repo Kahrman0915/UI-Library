@@ -519,13 +519,14 @@ html {
 
   /* Sidebar — distinct chrome surface (not remapped by a theme). Widths are
      mode-independent. */
-  --sidebar-width: 16rem;
-  --sidebar-width-icon: 3rem;
+  --sidebar-width: 15.75rem;      /* 252 — gives the rail's extra 4 back, so Main Content does not move */
+  --sidebar-width-icon: 3.25rem;  /* 52 — the collapsed sidebar matches the rail beside it */
   --sidebar-width-mobile: 18rem;
 
-  /* App shell chrome — the geometry every sub-application shares. Rail 48 + sidebar 256
-     leaves Main Content 1136 at 1440 and 1616 at 1920, the width the flow screens are drawn at. */
-  --app-rail-width: 3rem;
+  /* App shell chrome — the geometry every sub-application shares. Rail 52 + sidebar 252
+     leaves Main Content 1136 at 1440 and 1616 at 1920, the width the flow screens are drawn at.
+     Neither 52 nor 252 is on the spacing ramp: panel geometry, like the Toast stack width. */
+  --app-rail-width: 3.25rem;
   --app-strip-height: 3rem;
 
   /* The Aiden assistant panel (AidenPanel) — wider than a sidebar because it
@@ -534,8 +535,12 @@ html {
      sidebar widths. */
   --aiden-panel-width: 420px;
   --sidebar: var(--base-sidebar);
-  --sidebar-background: #f8fafc;
   --sidebar-foreground: #0f172a;
+  /* Resting sidebar and rail links — muted so hover and the active row lead. Between
+     slate-500 and slate-600: the lightest value that clears AA on every tinted rail (worst
+     4.51:1, nb with data-tint="rail"). slate-500 itself fell to 3.79:1 on the rm rail. Not --muted-foreground: dark --muted-foreground is slate-200,
+     1.18:1 from the foreground, so it does not mute. */
+  --sidebar-muted-foreground: #5b687c;
   --sidebar-primary: #334155;
   --sidebar-primary-foreground: #f8fafc;
   --sidebar-accent: var(--base-sidebar-accent);  /* slate-200. Was #f1f5f9, only
@@ -955,7 +960,7 @@ html {
   --base-border-hover: #cbd5e1;
   --base-input: #475569;
   --base-ring: #94a3b8;
-  --base-sidebar: #1e293b;
+  --base-sidebar: #172033;   /* slate-850: separates from both the #0f172a page and #1e293b cards */
   --base-sidebar-accent: #334155;
   --base-sidebar-border: #334155;
 
@@ -1019,10 +1024,11 @@ html {
   --input: var(--base-input);
   --ring: var(--base-ring);
 
-  /* Sidebar (dark) — slate-800 surface, distinct from the slate-900 page. */
+  /* Sidebar (dark) — slate-850 surface, between the slate-900 page and slate-800 cards. */
   --sidebar: var(--base-sidebar);
-  --sidebar-background: #1e293b;
   --sidebar-foreground: #f8fafc;
+  /* slate-400, 6.35:1 on the dark rail. slate-500 would be 3.42:1 and fail AA. */
+  --sidebar-muted-foreground: #94a3b8;
   --sidebar-primary: #e2e8f0;
   --sidebar-primary-foreground: #0f172a;
   --sidebar-accent: var(--base-sidebar-accent);

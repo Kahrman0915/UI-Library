@@ -686,6 +686,7 @@ export type {
   DropdownMenuTriggerProps,
   DropdownMenuContentProps,
   DropdownMenuItemProps,
+  DropdownMenuItemVariant,
   DropdownMenuLabelProps,
   DropdownMenuSeparatorProps,
   DropdownMenuGroupProps,

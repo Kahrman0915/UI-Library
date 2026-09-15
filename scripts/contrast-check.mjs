@@ -335,6 +335,8 @@ const PAIRINGS = [
   ['muted-foreground', 'accent'], // Tabs tablist triggers (default variant) — moved here off --muted 2026-08-26
   ['sidebar-foreground', 'sidebar'],
   ['muted-foreground', 'sidebar'],
+  ['sidebar-muted-foreground', 'sidebar'], // resting sidebar + rail links (2026-09-15)
+  ['sidebar-accent-foreground', 'sidebar-accent'], // active + hovered sidebar rows, worst case: the full accent
   ['tooltip-foreground', 'tooltip-background'],
   // Tabs' active label sits ON the sliding indicator pill, not on the tablist.
   // The pill is light in both modes, so this pairing does not flip — which is

@@ -1163,3 +1163,27 @@ and they had to be restored.
 **A number that looks wrong may be the collapsed variant.** `submenu → 20` read as a
 failure and was correct: in a 52-wide collapsed sidebar, 52 minus two lots of 16 padding is
 20. Check which variant a number came from before calling it a bug.
+
+---
+
+## Landed in code — 2026-09-15 (branch `code-fixes`)
+
+Every item on the Figma "✅ Code changes to make" page is implemented. `tsc`, `npm run build`,
+the guardrail greps and `npm run test:contrast` all pass, and the App Shell story was checked in
+the browser in light and dark mode.
+
+- **Geometry:** rail 52 and sidebar 252, so Main is still 1136 at x 304 (1440). The rail header
+  now has the sidebar header's `--h-11` minimum, so **both headers measure 44 and both bottom rules
+  sit at y 92**, matching the Figma spec. Without it the rail header was 37, because the collapse
+  button in code is 28px, not the 36px tile Figma draws.
+- **One value differs from Figma: light `--sidebar-muted-foreground` is `#5b687c`, not slate-500
+  `#64748b`.** The contrast gate runs every brand × tint. On the `rm` rail with `data-tint="rail"`,
+  slate-500 measured **3.79:1**, below AA. `#5b687c` is the lightest value that clears AA in every
+  context (worst 4.51:1, `nb` tinted rail). Dark stays slate-400. **The Figma variable
+  `sidebar/muted-foreground` (Light) was moved to `#5b687c` to match, with the reason in its description.**
+- **Active-item toggle:** clicking the active `AppRailItem` collapses and reopens the sidebar
+  without navigating, and the trigger's label and `aria-expanded` follow. Inactive items are
+  unaffected.
+- **Menu-item copies:** `DropdownMenuItem variant="destructive"` copies the ContextMenu rule into
+  an existing copy, so the count stays at four. No shared base was extracted.
+- **Page header exception** is recorded in CLAUDE.md's `PageHeader` row.

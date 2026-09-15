@@ -96,6 +96,13 @@ const meta: Meta<typeof TabBar> = {
       },
       changelog: [
         {
+          date: '2026-09-15',
+          summary: 'The bar moves onto the sidebar surface, and the open tab now paints the page with a soft brand tint.',
+          detail:
+            'The bar paints `--sidebar` with a `--sidebar-border` rule, tab edges and the tab menu divider use `--sidebar-border`, and hover (tabs, "+" and the tab menu) is `--sidebar-accent` — so the strip reads as the same frame as the rail and sidebar.\n\n' +
+            'The open tab paints `--background` with a `--primary-soft` tint over it (8% light, 10% dark). It used to paint `--accent`, which is lighter than the bar in dark and darker in light, so the selected tab read raised in one mode and recessed in the other. Hovering the open tab no longer repaints it.',
+        },
+        {
           date: '2026-09-07',
           summary: 'A tab menu at the far end of the bar: search the open tabs, reopen recently closed ones.',
           detail: '`TabBarMenu` (`tabs`, `recentlyClosed`, `onReopen`) on `Popover` + `Command`; pinned with `margin-inline-start: auto` outside the tablist like the "+". Figma: `TabBar/Tab menu` behind `Show tab menu`.',

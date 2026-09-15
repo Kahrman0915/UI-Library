@@ -10,7 +10,7 @@ import {
   useMemo,
   useState,
 } from 'react';
-import { PanelLeft } from 'lucide-react';
+import { PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import Drawer from '#components/Drawer/Drawer';
 import Skeleton from '#components/Skeleton/Skeleton';
 import Tooltip, {
@@ -47,6 +47,13 @@ import './Sidebar.scss';
 // ═══════════════════════════════════════════════════════════════════════════
 
 const SidebarContext = createContext<SidebarContextValue | null>(null);
+
+/**
+ * Internal: the sidebar context, or `null` outside a provider. For chrome that
+ * sits beside a sidebar but must also work without one (AppRail). Not exported
+ * from the package — `useSidebar` is the public hook.
+ */
+export const useOptionalSidebar = (): SidebarContextValue | null => useContext(SidebarContext);
 
 export const useSidebar = (): SidebarContextValue => {
   const ctx = useContext(SidebarContext);
@@ -274,23 +281,42 @@ Sidebar.displayName = 'Sidebar';
 
 const SidebarTrigger = forwardRef<HTMLButtonElement, SidebarTriggerProps>(
   ({ className, onClick, ...rest }, ref) => {
-    const { toggleSidebar } = useSidebar();
+    const { toggleSidebar, state, isMobile, openMobile } = useSidebar();
+    const tooltipId = useId();
+    // The glyph and the name say what a click WILL do, not what the sidebar is:
+    // panel-left-close while it is open, panel-left-open while it is closed.
+    const open = isMobile ? openMobile : state === 'expanded';
+    const label = open ? 'Collapse sidebar' : 'Expand sidebar';
+    // ⌘ on Apple platforms, Ctrl elsewhere — matches the shortcut the provider binds.
+    const shortcut =
+      typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform)
+        ? `⌘${SIDEBAR_KEYBOARD_SHORTCUT.toUpperCase()}`
+        : `Ctrl+${SIDEBAR_KEYBOARD_SHORTCUT.toUpperCase()}`;
     return (
-      <button
-        // Default label sits BEFORE {...rest} so a consumer can localize or
-        // replace it. After the spread it was unoverridable.
-        aria-label="Toggle sidebar"
-        {...rest}
-        ref={ref}
-        type="button"
-        className={`ui-sidebar__trigger${className ? ' ' + className : ''}`}
-        onClick={(e) => {
-          onClick?.(e);
-          toggleSidebar();
-        }}
-      >
-        <PanelLeft />
-      </button>
+      <Tooltip id={`${tooltipId}-tooltip`} side="right">
+        <TooltipTrigger>
+          <button
+            // Default label sits BEFORE {...rest} so a consumer can localize or
+            // replace it. After the spread it was unoverridable.
+            aria-label={label}
+            {...rest}
+            ref={ref}
+            type="button"
+            // Derived state, so it sits after the spread.
+            aria-expanded={open}
+            className={`ui-sidebar__trigger${className ? ' ' + className : ''}`}
+            onClick={(e) => {
+              onClick?.(e);
+              toggleSidebar();
+            }}
+          >
+            {open ? <PanelLeftClose aria-hidden="true" /> : <PanelLeftOpen aria-hidden="true" />}
+          </button>
+        </TooltipTrigger>
+        <TooltipContent>
+          {label} · {shortcut}
+        </TooltipContent>
+      </Tooltip>
     );
   },
 );
