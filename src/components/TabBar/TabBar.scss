@@ -255,6 +255,17 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
   color: var(--foreground);
 }
 
+// The pinned-tab shape: the icon alone in a cell the size of the "+", so a permanent tab
+// reads as chrome rather than as a document with a stubby name. It drops the 140px floor
+// (which exists to stop short LABELS producing stubby tabs) and the label padding.
+.ui-tab-bar__tab--icon-only {
+  justify-content: center;
+  width: var(--w-12);
+  min-width: 0;
+  max-width: none;
+  padding-inline: 0;
+}
+
 .ui-tab-bar__tab-icon {
   display: inline-flex;
   flex-shrink: 0;

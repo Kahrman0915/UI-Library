@@ -3,6 +3,7 @@ import { ChevronDown, Plus, X } from 'lucide-react';
 import Popover, { PopoverContent, PopoverTrigger } from '../Popover';
 import Command, { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '../Command';
 import ContextMenu, { ContextMenuContent, ContextMenuTrigger } from '../ContextMenu';
+import Tooltip, { TooltipContent, TooltipTrigger } from '../Tooltip';
 import { TabBarContext, TabBarGroupContext, TabBarSplitContext } from './TabBar.context';
 import { TAB_BAR_DRAG_TYPE } from './TabBar.constants';
 import type {
@@ -238,6 +239,7 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
       value,
       label,
       Icon,
+      iconOnly = false,
       closable = true,
       onClose,
       closeLabel,
@@ -261,8 +263,13 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
       if (!disabled) ctx.setValue(value);
     };
 
+    const showClose = closable && !iconOnly;
+
     const tab = (
       <div
+        // The label is the only name an icon-only tab has. Before the spread, so a
+        // consumer's own aria-label still wins.
+        aria-label={iconOnly ? label : undefined}
         {...rest}
         ref={ref}
         id={tabId(ctx.id, value)}
@@ -280,7 +287,7 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
         hidden={group?.collapsed && !active && !split?.active ? true : undefined}
         tabIndex={active && !disabled ? 0 : -1}
         draggable={draggable || undefined}
-        className={`ui-tab-bar__tab${className ? ' ' + className : ''}`}
+        className={`ui-tab-bar__tab${iconOnly ? ' ui-tab-bar__tab--icon-only' : ''}${className ? ' ' + className : ''}`}
         onClick={select}
         onDragStart={(e) => {
           if (!draggable) return;
@@ -331,8 +338,8 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
             <Icon aria-hidden="true" />
           </span>
         )}
-        <span className="ui-tab-bar__tab-label">{label}</span>
-        {closable && (
+        {!iconOnly && <span className="ui-tab-bar__tab-label">{label}</span>}
+        {showClose && (
           <button
             type="button"
             aria-label={closeLabel ?? `Close ${label}`}
@@ -351,7 +358,17 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
       </div>
     );
 
-    return withMenu(`${tabId(ctx.id, value)}-menu`, menu, tab);
+    // An icon-only tab shows its name on hover and focus, like a pinned browser tab.
+    const named = iconOnly ? (
+      <Tooltip id={`${tabId(ctx.id, value)}-tooltip`} side="bottom">
+        <TooltipTrigger>{tab}</TooltipTrigger>
+        <TooltipContent>{label}</TooltipContent>
+      </Tooltip>
+    ) : (
+      tab
+    );
+
+    return withMenu(`${tabId(ctx.id, value)}-menu`, menu, named);
   },
 );
 

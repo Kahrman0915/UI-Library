@@ -55,8 +55,15 @@ export type TabBarTabProps = Omit<
   value: string;
   /** The tab's text. Truncates with an ellipsis rather than growing the tab. */
   label: string;
-  /** Optional leading glyph — the document's or application's icon. */
+  /** Optional leading glyph — the document's or application's icon. Required when `iconOnly`. */
   Icon?: LucideIcon;
+  /**
+   * Shows only the `Icon`, in a 48px cell the size of the new-tab button — the
+   * pinned-tab shape, for a permanent tab like Home. `label` becomes the tab's
+   * accessible name and appears in a tooltip. An icon-only tab has no close button
+   * (there is no room for one), whatever `closable` says; close it from its `menu`.
+   */
+  iconOnly?: boolean;
   /**
    * Whether the tab renders a close button. Defaults to `true`; set `false`
    * for a permanent tab (a Home tab that cannot be closed).

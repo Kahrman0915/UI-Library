@@ -83,7 +83,7 @@ const meta: Meta<typeof TabBar> = {
           name: 'TabBarTab',
           description:
             'One open document: `value`, `label`, an optional leading `Icon`, ' +
-            'and a close button unless `closable={false}`.',
+            'and a close button unless `closable={false}`. `iconOnly` gives the 48px pinned-tab shape: icon, tooltip, no close button.',
         },
         {
           name: 'TabBarGroup',
@@ -123,6 +123,12 @@ const meta: Meta<typeof TabBar> = {
           'target still clears 24×24.',
       },
       changelog: [
+        {
+          date: '2026-09-15',
+          summary: 'Icon-only tabs, for a permanent tab like Home.',
+          detail:
+            '`iconOnly` on `TabBarTab` shows the `Icon` alone in a 48px cell the size of the "+" (`.ui-tab-bar__tab--icon-only` drops the 140px floor and the label padding). `label` becomes the accessible name and appears in a `Tooltip`. There is no close button on an icon-only tab, whatever `closable` says; close it from its `menu`.',
+        },
         {
           date: '2026-09-15',
           summary: 'Tab groups, split tabs, drag and drop, and a right-click menu on every tab.',
@@ -367,6 +373,7 @@ export const AllStates: Story = {
   render: () => (
     <TabBar id="tab-bar-states" defaultValue="tab-1">
       <TabBarList aria-label="States">
+        <TabBarTab value="home" label="Home — icon only" Icon={Home} iconOnly />
         <TabBarTab value="tab-1" label="Tab 1 — open, permanent" Icon={Home} closable={false} />
         <TabBarTab value="tab-2" label="Tab 2 — resting" Icon={Box} />
         <TabBarTab value="tab-3" label="Tab 3 — a label far too long to fit" Icon={BarChart3} />
@@ -473,6 +480,7 @@ function Workspace() {
         label={d.label}
         Icon={d.Icon}
         closable={d.closable !== false}
+        iconOnly={value === 'home'}
         onClose={() => layout.close(value)}
         menu={tabMenu(value)}
       />
