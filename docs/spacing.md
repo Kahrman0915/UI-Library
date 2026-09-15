@@ -108,21 +108,37 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content. Two widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule | `Width` = full · narrow; variants are FILL with only max-width bound to `container/narrow` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
-| `PageHeader` | L5 title → description · L4 between actions · L3 text ↔ actions · L2 row → toolbar | `With toolbar` variants; `Title`/`Description` text, `Actions` + `Toolbar` slots |
+| `PageContainer` | L1: page margin, and page header → content. Three widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule (an 832→1248 column inside the margin); `form` is a tighter centred column capped at `--container-form`, 736→1104 (a 672→1008 column), for a stack of fields | `Width` = full · narrow · form; variants are FILL with only max-width bound to `container/narrow` or `container/form` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
+| `PageHeader` | L5 overline → title → description · L4 inside the overline and between actions · L3 visual ↔ text ↔ actions · L2 row → toolbar. `size` moves TYPE only — the levels are identical at both rungs | `Size` × `With toolbar` variants; `Title`/`Description`/`Overline` text, `Actions` + `Toolbar` + `Visual` slots, the last two off by default |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
 | `Toolbar` + `ToolbarGroup` | L3 between groups · L4 inside a group | `Justify` variants; `Leading group` + `Trailing group` slots, a `Middle group` slot behind `Show middle group` for a second filter axis, plus a `Toolbar/Group` part |
 
 A page is `AppShell › AppShellMain › PageContainer › PageHeader › Stack level 2 › Section › Stack level 3 › Card`.
 The content window `AppShellMain` gives a page is 1136 wide at 1440 and 1616 at 1920 (strip 48, rail 48, sidebar 256).
-Why only two widths: inside the app shell the content window is 1136 at 1440 and 1616 at 1920,
+Why these three: inside the app shell the content window is 1136 at 1440 and 1616 at 1920,
 so any cap wider than that behaves like `full`; a `default` (1152) and a `wide` (1280) existed
-for a day and did exactly that. Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
+for a day and did exactly that. Both remaining caps sit well inside the window with page surface
+beside them. `form` exists because `narrow` was tried on the request forms first and read too
+wide for a field stack; 672 is the column they were designed at. The cap is the padded box,
+so a cap is the column plus twice the L1 margin: 736 for a 672 column at 1440, 1104 for 1008
+at 1920. Pick by what the page holds:
+scans across → `full`, read down → `narrow`, fill in → `form`.
+Proven on the Figma page **📐 Spacing · applied to built screens**: both duplicated flow
 screens are now composed from these five at 1440 and 1920, nothing hand-spaced.
 A screen built from them makes one decision per container — which level — and none
 about pixels. The page's search field goes in `PageHeader`'s `toolbar`, never as a
 sibling in the section stack: that sibling gap is the one that read wrong at 1920.
+
+`PageHeader`'s `size` is the one place a component changes its type ramp without changing a
+single gap, and that is deliberate: the ranking of overline, title and description is the same
+on a working screen as on a hero, so no level moves. A level that moved on its own is what
+this ladder exists to prevent.
+
+`PageHeader`'s `visual` is a child of the title ROW, not of the text block, so the row's
+existing L3 gap separates it from the words and the overline and title both run to its
+right. That is the shape the 33 hand-drawn page headings across the two flows already
+draw, at a 16px gap bound to the same variable Stack level 3 uses.
 
 ## 8 · In Figma
 
@@ -132,6 +148,42 @@ sibling in the section stack: that sibling gap is the one that read wrong at 192
   density (`fluid/N-name/density`); the target of `Space`, not for direct use.
 - Figma shows the two ends; the browser slides between them. Pin a frame's modes only when
   the frame is meant to show that state; a working screen stays on Auto.
+
+### Building a screen frame — the recipe, and it is not optional
+
+Measured across the 86 `PageContainer` instances in the file, the convention is already
+unanimous. Follow it and a page is consistent with every other page by construction.
+
+1. **The frame IS the content window: 1136 wide at 1440, 1616 at 1920.** Not the viewport,
+   and not some rounder number — the viewport minus the rail (48) and the sidebar (256).
+   Every Admin Flow screen is exactly 1136. A frame drawn at 1200 quietly makes its page
+   64px wider than the rest of the system, and nothing warns you.
+2. **One `PageContainer`, filling the frame.** It supplies the page margin, so the frame's
+   own padding is zero. `full` gives a 1072 column at 1440, `narrow` 832, `form` 672.
+3. **`PageHeader` in the Page header slot, a `Stack level={2}` in Content**, one `Section`
+   per band inside it.
+4. **Pin `Mode` freely; leave the two space collections alone.** See below.
+
+To show the page inside the chrome, drop that same `PageContainer` into an `AppShell`
+instance's `Main content` slot. It fills 1136 and the column resolves to 1072 — the same
+number the standalone frame gives, which is the check that the frame was built right.
+
+### When to touch `Space` and `Space · width` — almost never
+
+**A pin does not make the spacing work.** Every gap already reads the ladder through the
+components, and both collections resolve to their defaults with no pin at all: `Space · width`
+to 1440 and `Space` to balanced. Pinning only *overrides which end resolves*.
+
+- **A working screen pins neither.** All 84 flow-screen containers sit on frames with no
+  space pin. They inherit 1440 / balanced, which is what they are drawn at. Pinning 1440
+  by hand is redundant with the default and reads as a decision when it is an accident.
+- **Pin `Space · width` only on a frame whose job is to state a width** — the 1920 proofs,
+  and the two `AppShell` instances that exist to show 1440 against 1920. That pin is what
+  lets a 1920 frame show the 1920 ladder instead of being redrawn.
+- **Pin `Space` only on a frame demonstrating density.** Today that is the four frames on
+  `📐 Spacing · applied to built screens` and nothing else.
+- **`Mode` and `Brand` are not this.** Pin those wherever you like — every Admin Flow screen
+  pins `Mode=Dark`. The rule above is about the two space collections only.
 - Handing off: Dev Mode reports `space/3-block`, and the developer types `--space-3`.
 
 ## 9 · Not covered here

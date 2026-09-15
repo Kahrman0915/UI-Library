@@ -49,13 +49,21 @@ export const LADDER: Record<Density, Record<LevelN, readonly [number, number]>> 
 };
 
 /**
- * The one container cap — `narrow`, for reading pages, forms and single-column lists —
- * [at FLUID.min, at FLUID.max], on the SAME width rule as the ladder: × 1.5 at 1920, fluid
- * in between. `full` has no cap. There used to be `default` and `wide` caps too; inside the
- * app shell the content window is 1136 at 1440 and 1616 at 1920, narrower than either cap,
- * so both behaved exactly like `full` and were removed (owner, 2026-09-08).
+ * The container caps — [at FLUID.min, at FLUID.max], on the SAME width rule as the ladder:
+ * × 1.5 at 1920, fluid in between. `full` has no cap.
+ *
+ * THE CAP IS THE PADDED BOX (max-width on a border-box with the L1 margin inside), so the
+ * column a page actually gets is the cap minus twice L1: at 1440 that is 64 less, at 1920
+ * 96 less. `narrow` (896 → 1344) gives an 832 → 1248 reading column: detail pages,
+ * single-column lists, card grids. `form` (736 → 1104) gives the 672 → 1008 column the flow
+ * forms were designed at — narrow was tried on them first and read too wide for a stack
+ * of fields (owner, 2026-09-08); a first cut set the cap to 672 and got a 608 column. Both
+ * fit inside the shell's content window (1136 / 1616) with page surface beside them, which
+ * is the test a cap has to pass: `default` (1152) and `wide` (1280) did not — inside the
+ * shell they behaved exactly like `full` — and were removed the same day.
  */
-export type ContainerWidth = 'narrow';
+export type ContainerWidth = 'narrow' | 'form';
 export const CONTAINERS: Record<ContainerWidth, readonly [number, number]> = {
   narrow: [896, 1344],
+  form: [736, 1104],
 };

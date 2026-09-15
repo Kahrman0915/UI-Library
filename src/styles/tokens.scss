@@ -1548,8 +1548,9 @@ html {
   --space-4: clamp(var(--p-2), -0.25rem + 0.8333vw, var(--p-3));
   /* L5 micro: icon → label; title → subtitle */
   --space-5: clamp(var(--p-1), -0.125rem + 0.4167vw, var(--p-1-5));
-  /* Container cap (PageContainer width="narrow"): the same rule, × 1.5 at the large end. */
+  /* Container caps (PageContainer width="narrow" | "form"): the same rule, × 1.5 at the large end. */
   --container-narrow: clamp(56rem, -28rem + 93.3333vw, 84rem);
+  --container-form: clamp(46rem, -23rem + 76.6667vw, 69rem);
 }
 
 /* Density reshapes the whole ladder (owner's tables). */

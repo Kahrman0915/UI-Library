@@ -99,6 +99,28 @@
     }
   }
 
+  // THE FULL-BLEED MEDIA. Deliberately almost empty, for the same reason
+  // `.ui-card__media` is: AspectRatio already supplies the box, the clip and
+  // `object-fit: cover`, and `.ui-dialog` is `overflow: hidden`, so media
+  // touching a panel edge inherits the panel's radius with nothing declared
+  // here. A radius of its own would fight the parent and show as a hairline of
+  // panel background in the corners.
+  &__media {
+    // `.ui-dialog` is a flex column capped at 85vh, where the default
+    // `flex-shrink: 1` would let a tall panel squash the media and quietly
+    // break the ratio it exists to guarantee.
+    flex: none;
+
+    // Media BETWEEN sections needs the same hairline the header carries
+    // downward, or the media and the block under it read as one unit. A header
+    // above it already draws its own bottom rule, so only what FOLLOWS is
+    // declared here.
+    & + .ui-dialog__body,
+    & + .ui-dialog__footer {
+      border-top: var(--border-w-100) solid var(--border);
+    }
+  }
+
   &__footer {
     display: flex;
     align-items: center;

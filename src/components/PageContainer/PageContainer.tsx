@@ -17,7 +17,7 @@ const PageContainer = forwardRef<HTMLElement, PageContainerProps>(
   ({ width = 'full', as = 'div', className, children, ...rest }, ref) => {
     const cls =
       'ui-page-container' +
-      (width === 'narrow' ? ' ui-page-container--narrow' : '') +
+      (width === 'full' ? '' : ` ui-page-container--${width}`) +
       (className ? ' ' + className : '');
     return createElement(as, { ...rest, ref, className: cls }, children);
   },

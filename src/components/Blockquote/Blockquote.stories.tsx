@@ -14,6 +14,14 @@ const meta: Meta<typeof Blockquote> = {
       tags: ['typography'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The citation gets an explicit line height instead of the browser default.',
+          detail:
+            '`.ui-blockquote__cite` set `--text-sm` with no `line-height`, so it fell ' +
+            'back to `normal`. Now `--leading-5`, the house pair for 14px text.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

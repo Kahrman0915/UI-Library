@@ -33,6 +33,7 @@
   &__label {
     color: var(--muted-foreground);
     font-size: var(--text-xs);
+    line-height: var(--leading-4);
     font-weight: var(--font-medium);
     text-transform: uppercase;
     letter-spacing: var(--tracking-wide);

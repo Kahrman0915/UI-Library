@@ -205,6 +205,9 @@ export type {
   AlertDialogFooterProps,
 } from './components/AlertDialog';
 
+export { default as Announcement } from './components/Announcement';
+export type { AnnouncementProps } from './components/Announcement';
+
 export { default as Alert } from './components/Alert';
 export type {
   AlertProps,
@@ -592,12 +595,14 @@ export {
   default as Dialog,
   DialogHeader,
   DialogBody,
+  DialogMedia,
   DialogFooter,
 } from './components/Dialog';
 export type {
   DialogProps,
   DialogHeaderProps,
   DialogBodyProps,
+  DialogMediaProps,
   DialogFooterProps,
   DialogContentAlignment,
 } from './components/Dialog';
@@ -827,7 +832,7 @@ export type { StackProps, StackLevel, StackDirection, StackAlign, StackJustify }
 export { default as PageContainer } from './components/PageContainer';
 export type { PageContainerProps, PageContainerWidth } from './components/PageContainer';
 export { default as PageHeader } from './components/PageHeader';
-export type { PageHeaderProps } from './components/PageHeader';
+export type { PageHeaderProps, PageHeaderSize } from './components/PageHeader';
 export { default as Section } from './components/Section';
 export type { SectionProps, SectionVariant } from './components/Section';
 export { default as Toolbar, ToolbarGroup } from './components/Toolbar';

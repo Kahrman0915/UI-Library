@@ -14,18 +14,21 @@
     width: var(--w-8);
     height: var(--h-8);
     font-size: var(--text-xs);
+    line-height: var(--leading-3);
   }
 
   &--sz-default {
     width: var(--w-10);
     height: var(--h-10);
     font-size: var(--text-sm);
+    line-height: var(--leading-4);
   }
 
   &--sz-lg {
     width: var(--w-14);
     height: var(--h-14);
     font-size: var(--text-base);
+    line-height: var(--leading-4);
   }
 
   // ---- Inner clip layer — holds fallback + image so badge can escape ----

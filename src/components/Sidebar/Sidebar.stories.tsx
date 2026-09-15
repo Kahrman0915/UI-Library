@@ -52,6 +52,18 @@ const meta: Meta<typeof Sidebar> = {
       tags: ['compound', '23 parts', 'navigation'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The search input, the menu badge and the sub-button get explicit line ' +
+            'heights.',
+          detail:
+            '`.ui-sidebar__input`, `.ui-sidebar__menu-badge` and `.ui-sidebar__menu- ' +
+            'sub-button` set a font-size with no `line-height`, and nothing above them ' +
+            'declared one, so all three fell back to `normal`. Now `--leading-5`, ' +
+            '`--leading-4` and `--leading-5`, with `--leading-4` on the sub-button’s ' +
+            'small size.',
+        },
+        {
           date: '2026-08-08',
           summary:
             'Hovering a menu row no longer looks identical to the selected row. Hover is now a ' +

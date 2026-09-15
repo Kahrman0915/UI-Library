@@ -34,6 +34,16 @@ const meta: Meta<typeof Command> = {
       tags: ['compound', '9 parts', 'portal'],
       changelog: [
         {
+          date: '2026-09-11',
+          summary:
+            'The group heading and the empty state get explicit line heights.',
+          detail:
+            '`.ui-command__group-heading` and `.ui-command__empty` set a font-size with ' +
+            'no `line-height` and fell back to `normal`. Now `--leading-4` and ' +
+            '`--leading-5`. `__shortcut` was left alone: it inherits 20px from the ' +
+            'item, which is correct.',
+        },
+        {
           date: '2026-09-02',
           summary:
             'The `error` item is a touch lighter in dark mode.',

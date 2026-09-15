@@ -141,3 +141,17 @@ in Figma, 16 in the browser). Owner's call: `FLUID.min` is now 1440. The ladder 
 caps and the × 1.5 rule are unchanged; only the viewport the small end is pinned to moved,
 so a 1440 frame in Figma now shows exactly what a 1440 browser shows. Below 1440 the small
 ladder holds, as a clamp does. The Figma mode is renamed 1024 → 1440.
+
+## Revision 4 (2026-09-08) — the container caps are `narrow` and `form`
+
+The four caps became two (`full` · `narrow`) once it was clear that, inside the app shell's
+1136 / 1616 content window, `default` (1152) and `wide` (1280) behaved exactly like `full`.
+Then the Request Flow forms were regrouped onto `narrow` and the owner found 832 too wide
+for a stack of fields — 672 is the column the forms and the chooser were designed at, and it
+still leaves 304 of page beside it at 1920. So a third width came back from the other
+direction: `form`, a 672 → 1008 column on the same × 1.5 rule — which makes the cap on
+the padded box 736 → 1104, the same arithmetic that gives narrow's 896 cap an 832 column
+(a first cut capped form at 672 and shipped a 608 column). Owner's naming: **`full` · `narrow` ·
+`form`**, picked by what the page holds — scans across, read down, fill in. `full` stays the
+prop default. The test a cap has to pass is that it sits inside the content window with page
+surface beside it; both remaining caps do.

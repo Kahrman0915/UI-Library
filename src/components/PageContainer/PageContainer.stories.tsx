@@ -26,7 +26,7 @@ const meta: Meta<typeof PageContainer> = {
       usage: {
         when: [
           'Wrap every page\'s content in one. Then `PageHeader`, then a `Stack level={2}` of sections.',
-          'Pick `width` by the page\'s kind: `full` (the default) for anything that scans across — a table, a queue, a dashboard; `narrow` for anything you read down — a form, a detail page, a list of cards.',
+          'Pick `width` by the page\'s kind: `full` (the default) for anything that scans across — a table, a queue, a dashboard; `narrow` for anything you read down — a detail page, a list of cards; `form` for a stack of fields, and the chooser that starts one.',
         ],
         avoid: [
           'Nesting one inside another. One page, one container; sections are Stacks.',
@@ -35,6 +35,11 @@ const meta: Meta<typeof PageContainer> = {
         notes: 'No `id`: a layout primitive. Pass `as="main"` only when the app shell does not already provide the main landmark.',
       },
       changelog: [
+        {
+          date: '2026-09-08',
+          summary: 'A third width, `form`: a tighter centred column for a stack of fields (a 672 → 1008 column inside the page margin).',
+          detail: '`narrow` was tried on the request forms first and read too wide for a field stack, so the column they were designed at is back as its own width. `PageContainerWidth` is `full | narrow | form`; the new cap is `--container-form` (736 → 1104 on the padded box), on the same width rule as `--container-narrow`.',
+        },
         {
           date: '2026-09-08',
           summary: 'Two widths, not four: `full` (now the default) and `narrow`.',
@@ -55,7 +60,7 @@ const meta: Meta<typeof PageContainer> = {
       ],
     } satisfies UiDocsParameters,
   },
-  argTypes: { width: { control: 'select', options: ['full', 'narrow'] } },
+  argTypes: { width: { control: 'select', options: ['full', 'narrow', 'form'] } },
   args: { width: 'full' },
 };
 export default meta;
@@ -79,7 +84,7 @@ export const Playground: Story = {
 export const Widths: Story = {
   render: () => (
     <Stack level={2} style={{ background: 'var(--muted)', padding: 'var(--space-2)' }}>
-      {(['full', 'narrow'] as const).map((w) => (
+      {(['full', 'narrow', 'form'] as const).map((w) => (
         <PageContainer key={w} width={w} style={{ background: 'var(--background)', outline: 'var(--border-w-100) dashed var(--border)' }}>
           <Slab h={40} label={`width="${w}"`} />
         </PageContainer>

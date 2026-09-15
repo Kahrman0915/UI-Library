@@ -1,11 +1,13 @@
 import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
+import AspectRatio from '../AspectRatio';
 import { useMounted } from '#/hooks/useMounted';
 import type {
   DialogProps,
   DialogHeaderProps,
   DialogBodyProps,
+  DialogMediaProps,
   DialogFooterProps,
 } from './Dialog.types';
 import './Dialog.scss';
@@ -311,6 +313,27 @@ const DialogBody = forwardRef<HTMLDivElement, DialogBodyProps>(
 
 DialogBody.displayName = 'DialogBody';
 
+// The full-bleed media region. Deliberately almost empty, exactly like
+// `CardMedia`: AspectRatio supplies the box, the clip and `object-fit: cover`
+// on img/video/iframe, and `.ui-dialog` is `overflow: hidden`, so media touching
+// a panel edge inherits the panel's radius with nothing declared here.
+const DialogMedia = forwardRef<HTMLDivElement, DialogMediaProps>(
+  ({ ratio = 16 / 9, className, children, ...rest }, ref) => {
+    return (
+      <AspectRatio
+        {...rest}
+        ref={ref}
+        ratio={ratio}
+        className={`ui-dialog__media${className ? ' ' + className : ''}`}
+      >
+        {children}
+      </AspectRatio>
+    );
+  },
+);
+
+DialogMedia.displayName = 'DialogMedia';
+
 const DialogFooter = forwardRef<HTMLDivElement, DialogFooterProps>(
   ({ children, className, ...rest }, ref) => {
     return (
@@ -328,4 +351,4 @@ const DialogFooter = forwardRef<HTMLDivElement, DialogFooterProps>(
 DialogFooter.displayName = 'DialogFooter';
 
 export default Dialog;
-export { DialogHeader, DialogBody, DialogFooter };
+export { DialogHeader, DialogBody, DialogMedia, DialogFooter };

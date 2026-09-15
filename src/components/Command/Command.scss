@@ -71,6 +71,7 @@
   &__group-heading {
     padding: var(--p-1-5) var(--p-2);
     font-size: var(--text-xs);
+    line-height: var(--leading-4);
     font-weight: var(--font-medium);
     color: var(--muted-foreground);
     text-transform: uppercase;
@@ -152,6 +153,7 @@
     padding: var(--p-6) var(--p-2);
     text-align: center;
     font-size: var(--text-sm);
+    line-height: var(--leading-5);
     color: var(--muted-foreground);
   }
 }

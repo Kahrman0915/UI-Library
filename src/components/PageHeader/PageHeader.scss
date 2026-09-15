@@ -1,9 +1,11 @@
 // PageHeader — the spacing inside a page header, decided once. See PageHeader.tsx.
 //
-// row → toolbar   level 2   (the search is part of the header, not a section)
-// text ↔ actions  level 3
-// action ↔ action level 4
-// title → desc    level 5
+// row → toolbar     level 2   (the search is part of the header, not a section)
+// visual ↔ text     level 3   (the same rung as text ↔ actions — one row, one gap)
+// text ↔ actions    level 3
+// action ↔ action   level 4
+// overline → title  level 5
+// title → desc      level 5
 
 .ui-page-header {
   display: flex;
@@ -19,11 +21,65 @@
     gap: var(--space-3);
   }
 
+  // The object that introduces the page — a FeaturedIcon, an Avatar, a mark. A
+  // sibling of `__text`, so the row's own level-3 gap separates them and the
+  // overline and title both sit to its right.
+  //
+  // No `min-height` floor, unlike CardVisual's `__header-media`: the first line
+  // of the text block is the overline when there is one and the title when
+  // there is not, so a fixed floor would be wrong in one of the two cases. The
+  // row already aligns to flex-start, which is what keeps the visual level with
+  // whichever line comes first.
+  &__visual {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    // Size a bare icon against the title's own type, the way CardVisual sizes
+    // one against a card title. Anything with its own dimensions (FeaturedIcon,
+    // Avatar) is unaffected.
+    svg {
+      width: var(--w-6);
+      height: var(--h-6);
+    }
+  }
+
   &__text {
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
     min-width: 0;
+
+    // The text takes the free space, which is what pushes `__actions` to the end
+    // of the row. `justify-content: space-between` did that on its own while the
+    // row held two children, and broke the moment `__visual` made it three: with
+    // no actions, the space landed BETWEEN the visual and the title and threw the
+    // glyph to the far left. Same fix `CardHeader` uses on `__header-content`.
+    flex: 1;
+  }
+
+  // The short line above the title. A flex row, not a paragraph, because it
+  // routinely carries a Badge or an icon beside the words — same treatment as
+  // CardOverline, and deliberately not uppercased here either.
+  &__overline {
+    display: flex;
+    align-items: center;
+
+    // Level 4, not 5. The overline is a row of small things beside each other —
+    // a Badge, a date, a glyph — which is the rung a toolbar's controls sit at.
+    // Level 5 is 4px at the design viewport, tighter than any icon-to-label gap
+    // in the library, and it runs a Badge into the words next to it.
+    gap: var(--space-4);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+
+    svg {
+      width: var(--w-4);
+      height: var(--h-4);
+      flex-shrink: 0;
+    }
   }
 
   &__title {
@@ -52,5 +108,48 @@
     display: flex;
     flex-direction: column;
     min-width: 0;
+  }
+
+  // The hero rung. Two rungs exist because the design file has exactly two
+  // clusters of page heading — 24px on every working screen, 36px on What's New,
+  // and nothing between them.
+  //
+  // TYPE ONLY. Every gap stays on its level: the hierarchy of overline → title →
+  // description does not change because the type got bigger, and a level that
+  // moved on its own is the thing the spacing ladder exists to prevent. This is
+  // the same split `CardTitle.scale` records — padding has to move together
+  // across regions, type has no such dependency.
+  //
+  // Descendant selectors off the one root class, so no region gained a prop.
+  // (0,2,0) here beats each base rule's (0,1,0).
+  &--sz-lg {
+    .ui-page-header__overline {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+
+      // The glyph deliberately does NOT step with the words. The one hero header
+      // in the file pairs a 16px icon with 16px text, and a 20px glyph beside a
+      // 16px eyebrow starts competing with the title underneath it.
+    }
+
+    .ui-page-header__title {
+      font-size: var(--text-4xl);
+      line-height: var(--leading-10);
+    }
+
+    // Steps up with the overline, not for looks: at this rung the overline is
+    // 16px, so a description left at 14px would be SMALLER than the eyebrow
+    // above it, which inverts the ranking the header exists to state.
+    .ui-page-header__description {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+    }
+
+    // Only the bare-glyph default moves. A FeaturedIcon, Avatar or mark brings
+    // its own dimensions and is untouched — same contract CardVisual documents.
+    .ui-page-header__visual svg {
+      width: var(--w-8);
+      height: var(--h-8);
+    }
   }
 }

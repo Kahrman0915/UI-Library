@@ -25,6 +25,13 @@ const meta: Meta<typeof AppRail> = {
         notes: '`href` renders an `<a>`; omit it for a `<button>` when a router does the switch. `count` shows as a corner dot (the number is announced, not printed) — a visible number belongs in the sidebar row\'s `SidebarMenuBadge`.',
       },
       changelog: [
+        {
+          date: '2026-09-11',
+          summary: 'The tiles sit 4px apart instead of 2, matching the gap between `Sidebar` menu rows.',
+          detail:
+            'The rail and the sidebar stand side by side and read as one piece of chrome, so they should not use different rungs. At 2 an active tile and the tile hovered beneath it left a 2px seam between two 36px fills, which reads as one block rather than two. Applies to the applications list and the footer.\n\n' +
+            'Still open, and visible in the same situation: a hovered tile paints the **same** `--sidebar-accent` as the selected tile, so the two states are indistinguishable. `Sidebar` hit this exact collision and fixed it on 2026-08-08 by making hover a partial pass of the selected paint; the rail never got that change.',
+        },
         { date: '2026-09-07', summary: 'The unread count is a small dot, not a numbered pill.', detail: '`count` renders a `StatusDot` (busy, 10px) in the tile corner with an accessible `${count} unread` label; the 24px Badge swamped the 36px tile.' },
         { date: '2026-09-07', summary: 'Split out of AppShell as its own component.', detail: 'Same API and classes; `AppShell` now imports it. Own Figma page.' },
         { date: '2026-09-07', summary: 'Initial build inside AppShell. Icon-only links on the icon-button shell (owner corrected the first Mark-tile cut).', detail: '`AppRail` (label, header, footer) and `AppRailItem` (id, label, Icon, active, count, href).' },
