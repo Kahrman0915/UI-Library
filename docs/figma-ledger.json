@@ -38,7 +38,8 @@
    "⏳ Banner + Alert sets (14:60, empty)",
    "🗑 Archive — old mocks (144:180, 23 unused components)",
    "🗑 Aiden — Download Flow (116:180, handoff mock)"
-  ]
+  ],
+  "componentIndexCount": "77 components + 1 proposal (2026-09-15, SplitView added)"
  },
  "docMasters": {
   "pageHeader": "146:134",
@@ -363,7 +364,10 @@
   "A track that FILLs its cell while its indicator stays FIXED will silently paint 100% forever, because the oversized indicator just clips. Progress's spec table showed 10%, 50% and 100% as three identical full bars. Any progress / meter / slider built as clip-a-wide-child needs BOTH sides pinned, and the check is a screenshot — the raw numbers read as a harmless layout quirk.",
   "When a state exists in the Spec table but not on the axis, extend the axis only where the file's convention says that state is placeable. Tabs/Trigger gained hover and disabled (tab and menu items carry hover here) but NOT focus, which stays painted — so 16 of the 20 spec triggers became instances and 4 deliberately did not. A mixed table is the correct outcome, not an unfinished one.",
   "Variable SCOPES gate the human colour picker only — the plugin API binds regardless. A file can therefore be full of bindings a designer cannot recreate or modify by hand, and it looks fine until someone tries. Audit scopes against actual usage: any token bound to icon strokes needs STROKE_COLOR, to vector fills SHAPE_FILL. text/muted-foreground had 166 stroke bindings and a TEXT_FILL-only scope.",
-  "Scope foreground-family tokens TEXT_FILL + STROKE_COLOR + SHAPE_FILL, never FRAME_FILL — icons are stroked vectors so text colours must reach strokes (the currentColor convention), but a text token offered as a frame fill invites painting surfaces with it."
+  "Scope foreground-family tokens TEXT_FILL + STROKE_COLOR + SHAPE_FILL, never FRAME_FILL — icons are stroked vectors so text colours must reach strokes (the currentColor convention), but a text token offered as a frame fill invites painting surfaces with it.",
+  "2026-09-15 · Cloning a variant INSIDE its own set (variant.clone() then set.appendChild) drops componentPropertyReferences on every layer — TabBar/Tab State=Split partner rendered the default label until Label/Icon/Closable refs were copied back from its twin by layer name. Copy refs after any in-set clone.",
+  "2026-09-15 · A vertical auto-layout frame created with createAutoLayout then resize(w, h) pins its HEIGHT (primary axis) — spec cells collapsed to 10px and overlapped. Set layoutSizingVertical = HUG after the resize.",
+  "2026-09-15 · The component index had 8 links pointing at the wrong page (AppRail, AppShell, PageHeader, Section, Stack, Toolbar → Spinner; Announcement → AlertDialog; PageContainer → Pagination) — new rows were cloned from a neighbour and kept its hyperlink. Repaired by matching each row to the page with its own name; do that check whenever a row is added."
  ],
  "components": {
   "Button": {
@@ -2075,7 +2079,9 @@
    "setIds": [
     "1279:26339",
     "1280:26322",
-    "1557:688"
+    "1557:688",
+    "3306:1369",
+    "3307:1180"
    ],
    "assembledFrame": "1280:26323",
    "frames": {
@@ -2092,8 +2098,19 @@
    "notes": "Bar is an assembled FRAME of instances, not a locked component — the tab list must be extendable (same call as Sidebar menu and Chat transcript). Spec frame swaps the usual size axis for state x closable, because a tab has one height and hugs 140-200 wide. Focus deliberately NOT painted as a cell: the ring is INSET (tabs sit flush, an outset ring is clipped by the list overflow) and every shared Focus/* effect style is outset. | [1.1 — 2026-08-26] Same gap as Breadcrumb and Accordion: the atoms and every composition were healthy, but only components appear in the Assets panel, so there was nothing to drag. Added an assembled TabBar set (Tabs 2–6 + Show new tab), 25 exposed instances. Verified on a placed instance: tabs retitled, Open moved from tab 1 to tab 3, the + toggled, and a Tabs 4->5 switch KEPT all four renames while adding \"Tab 5\". ONE THING NOTHING ENFORCES: exactly one tab should be State=Open. The exposed instances let a designer set two, which is invalid. Stated in the set description; not expressible as a constraint. The editable \"TabBar — assembled\" frame (1280:26323) stays for strips longer than six and for the overflow-scroll behaviour.",
    "labels": "Generic Tab 1..N throughout, in both Figma and Storybook (owner call 2026-08-11). The set default Label is \"Tab 1\". Short labels sit at the 140px floor, so the assembled bar is 140/140/140 x47 — byte-for-byte the widths the code measures.",
    "parity": "Verified against the rendered component, not by eye: bar 48h, tab 47h, padding 12/12, gap 8, 14/20/400 type, icon 16, close 20 box with 14 glyph, indicator 2px, + 48x47, hairline 1px --border. All match.",
-   "version": "1.1 · 2026-08-26",
-   "geometryFix": "Binding the atoms fixed more than the new set cost. TabBar/Tab carried RAW 12px horizontal padding and both atom sets had Figma's default radius-5 wrapper, all unbound — so every tab instance on the page inherited the finding. The new set added 40 (20 tabs x 2 sides); binding the atom cleared those AND 72 pre-existing, taking the page from 226 unbound-geometry findings to 76. What remains is the 80px page-frame padding on Spec/Theming/Examples, part of the file-wide unboundGeometryFinding."
+   "version": "1.4 · 2026-09-15",
+   "geometryFix": "Binding the atoms fixed more than the new set cost. TabBar/Tab carried RAW 12px horizontal padding and both atom sets had Figma's default radius-5 wrapper, all unbound — so every tab instance on the page inherited the finding. The new set added 40 (20 tabs x 2 sides); binding the atom cleared those AND 72 pre-existing, taking the page from 226 unbound-geometry findings to 76. What remains is the 80px page-frame padding on Spec/Theming/Examples, part of the file-wide unboundGeometryFinding.",
+   "groupsSplit_2026_09_15": {
+    "sets": {
+     "TabBar/Group": "3306:1369 — Color (15 category hues) × Collapsed = 30 variants; TEXT Label + Count; SLOT Tabs (drop TabBar/Tab or TabBar/Split). One absolute group line in category/{hue}/base spans the chip and its tabs (code draws it per tab; reads the same, and avoids a colour axis on the Tab set).",
+     "TabBar/Split": "3307:1180 — Open = none|start|end; two exposed TabBar/Tab halves at FILL in a fixed 320 frame, a centred 1px join rect on sidebar/border.",
+     "TabBar/Tab": "gains State=Split partner (3305:705): the Open surface with the indicator hidden."
+    },
+    "spec": "Groups · split · drag — Light + Dark (3309:1442) appended to the Spec frame. Drag states are painted, not variants: dragging = instance opacity 0.5; drop marker = absolute 2px --primary rect; chip drop = 2px outside stroke in the group colour on the label pill.",
+    "examples": "Groups and split — Light/Dark (3317:1564 / 3317:1687): the workspace bar plus a ContextMenu/Content tab menu (Body slot filled with Item/SubTrigger/Separator). Keyboard pills for Shift+F10 and chip Enter; two a11y paragraphs (chip is role=tab + aria-expanded; drag has a menu route); changelog 1.4.",
+    "layout": "Spec frame widened 2408 → 3060, so Theming moved to x 4580 and Examples to x 6120.",
+    "lint": "all zeros"
+   }
   },
   "AidenPanel": {
    "status": "done-v4",
@@ -2247,6 +2264,26 @@
    "instance": "2806:118 — Dialog/Alignment=left at 576, Show media on, media box 324 (16:9), footer buttons overridden to Learn more (outline) + Got it (default, NOT the master's error red).",
    "lint": "Overview all zeros after binding 19 hand-set padding/gap/radius values to spacing/* and radius/*; the two new Media regions on the Dialog master lint all zeros.",
    "open": "Spec (a Dialog vs Announcement comparison, like AlertDialog's) and Examples · Docs · History are not built. The motion announcement card on Request Flow section 9 is still a hand-built frame and could be rebuilt on this preset — its keyframes live on the stage internals, so that is a real migration rather than a swap."
+  },
+  "SplitView": {
+   "status": "done-v4",
+   "pageId": "3310:44",
+   "version": "1.0 · 2026-09-15",
+   "themed": true,
+   "setIds": [
+    "3310:54",
+    "3311:117"
+   ],
+   "frames": {
+    "overview": "3312:74",
+    "spec": "3313:109",
+    "theming": "3314:279",
+    "examplesDocsHistory": "3315:965"
+   },
+   "props": "SplitView/Pane — VARIANT Active (false|true) + SLOT Content; active marker is an absolute 2px Brand/primary rect. SplitView — VARIANT Panes (1|2) × Drop (none|start|end) + TEXT Drop label; panes are exposed Pane instances at FILL; Drop≠none adds an absolute drop-zones frame: resting zone background at 0.7, hovered zone primary-light at paint opacity 0.06 (the variable alpha is dropped on bind), dashed 2px border/primary, popover label with Shadow/sm.",
+   "codeOnly": "onTabDrop, startDropLabel, endDropLabel. Fixed 50/50 by owner decision — no width axis, no divider.",
+   "theming": "Seven Brand modes × light/dark on Panes=2, Drop=end: only the active marker and the hovered zone move.",
+   "lint": "all zeros"
   }
  },
  "queue": {
