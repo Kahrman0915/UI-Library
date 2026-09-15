@@ -42,6 +42,14 @@
     align-items: stretch;
     flex: 1;
     min-width: 0;
+
+    // A TabBar is a flex item here, so it would hug its tabs and the tab menu's
+    // `margin-inline-start: auto` would only push it past the "+". Filling the strip is
+    // what puts the menu at the far end, the way a browser ends its tab strip.
+    > .ui-tab-bar {
+      flex: 1;
+      min-width: 0;
+    }
   }
 
   &__actions {

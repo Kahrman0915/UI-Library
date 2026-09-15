@@ -1,5 +1,5 @@
 import { Children, forwardRef, isValidElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { ChevronDown, Plus, X } from 'lucide-react';
+import { GalleryVerticalEnd, Plus, X } from 'lucide-react';
 import Popover, { PopoverContent, PopoverTrigger } from '../Popover';
 import Command, { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '../Command';
 import ContextMenu, { ContextMenuContent, ContextMenuTrigger } from '../ContextMenu';
@@ -559,8 +559,10 @@ TabBarNewTab.displayName = 'TabBarNewTab';
 // ═════════════════════════════════════════════════════════════════════════════
 
 /**
- * The control every browser puts at the end of its tab strip: a chevron that
- * opens a search over the open tabs and the recently closed list. Built on
+ * The control every browser puts at the end of its tab strip: a button that
+ * opens a search over the open tabs and the recently closed list. Its glyph is a
+ * stack of pages (`GalleryVerticalEnd`) — "your tabs" — rather than a chevron,
+ * which reads as "more of this", or an app window, which is the rail's job. Built on
  * `Popover` + `Command`, so typing filters and the arrow keys move the
  * highlight without leaving the search field. Pinned to the far end with
  * `margin-inline-start: auto`, outside the tablist like the "+".
@@ -612,7 +614,7 @@ const TabBarMenu = forwardRef<HTMLButtonElement, TabBarMenuProps>(
             type="button"
             className={`ui-icon-button ui-icon-button--fill ui-tab-bar__menu${className ? ' ' + className : ''}`}
           >
-            <ChevronDown aria-hidden="true" />
+            <GalleryVerticalEnd aria-hidden="true" />
           </button>
         </PopoverTrigger>
         <PopoverContent

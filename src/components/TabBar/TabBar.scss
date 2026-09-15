@@ -26,6 +26,9 @@
   flex: 0 1 auto;
   min-width: 0;
   overflow-x: auto;
+  // Tucks the last tab's own edge under the "+"'s leading rule (below), so the two never
+  // stack into a 2px line when the tabs fit.
+  margin-inline-end: calc(-1 * var(--border-w-100));
 
   // The strip is 48px of chrome with no room for a scrollbar gutter, and every
   // browser hides its own tab-strip scrollbar for the same reason. Scrolling
@@ -316,10 +319,15 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
 
 // Full-height chrome cell, so it squares off with the tabs beside it rather
 // than floating as a rounded button in the strip.
+//
+// It carries its own leading rule. A tab's edge is the tab's, so once the list scrolls and
+// cuts a tab off mid-way, nothing marks where the tabs end and the "+" begins. The list
+// sits 1px under this rule, so when the tabs fit it lands on the last tab's edge.
 .ui-tab-bar__new {
   flex-shrink: 0;
   width: var(--w-12);
   align-self: stretch;
+  border-inline-start: var(--border-w-100) solid var(--sidebar-border);
   --ui-icon-button-radius: 0;
 
   svg {

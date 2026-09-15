@@ -1,8 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Bell, Box, FileText, Flame, Grid2x2, Home, Inbox, Layers, LayoutGrid, Plus, Search, Settings, Sparkles } from 'lucide-react';
+import { BarChart3, Bell, Box, ChartColumn, FileText, Flame, Grid2x2, Home, Inbox, Layers, LayoutGrid, ListChecks, Plus, Search, Settings, Sparkles } from 'lucide-react';
+import type { LucideIcon } from 'lucide-react';
 import AppShell, { AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './AppShell';
 import AppRail, { AppRailItem } from '../AppRail';
-import TabBar, { TabBarList, TabBarTab, TabBarNewTab, TabBarMenu } from '../TabBar';
+import TabBar, { TabBarGroup, TabBarList, TabBarTab, TabBarNewTab, TabBarMenu, TabBarSplit } from '../TabBar';
+import SplitView, { SplitViewPane } from '../SplitView';
+import { ContextMenuItem, ContextMenuSeparator } from '../ContextMenu';
+import { useTabLayout } from '../../hooks/useTabLayout';
+import type { TabLayoutItem } from '../../hooks/useTabLayout';
 import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
 import Tooltip, { TooltipContent, TooltipTrigger } from '../Tooltip';
 import Button from '../Button';
@@ -41,6 +46,12 @@ const meta: Meta<typeof AppShell> = {
       changelog: [
         {
           date: '2026-09-15',
+          summary: 'The tab bar fills the strip, and the story shows an icon-only Home tab, a tab group and a split view.',
+          detail:
+            '`.ui-app-shell__tabs > .ui-tab-bar` now takes `flex: 1`, so the tab menu sits at the far end of the strip rather than right after the "+". Story: Home is `iconOnly`; My Requests and Approval queue are a `TabBarGroup`; two dashboards are a `TabBarSplit`, and Main holds a `SplitView` that shows both while either is selected. The layout runs on `useTabLayout` and is saved.',
+        },
+        {
+          date: '2026-09-15',
           summary: 'The strip joins the rail and sidebar on one surface, the logo carries the application name, and Ask Aiden is a quiet icon button.',
           detail:
             'The strip paints `--sidebar` with a `--sidebar-border` rule, so the strip, rail and sidebar read as one frame around the page. `__logo` no longer takes the rail\'s width: it hugs the logo and the wordmark (`padding-inline: --p-2 --p-5`). Rail 48 → 52 and sidebar 256 → 252 via the tokens, so Main Content stays 1136 / 1616. `AppShellWorkspace` now sets `overflow: clip`: an offcanvas collapse parks the panel at minus the sidebar width from the workspace, so without the clip it slid out over the rail and past the window edge.\n\n' +
@@ -74,7 +85,113 @@ const Row = ({ id, title, description }: { id: string; title: string; descriptio
   </Card>
 );
 
+type Doc = { label: string; Icon: LucideIcon; closable?: boolean };
+const DOCS: Record<string, Doc> = {
+  home: { label: 'Home', Icon: Home, closable: false },
+  requests: { label: 'My Requests', Icon: Inbox },
+  queue: { label: 'Approval queue', Icon: ListChecks },
+  volume: { label: 'Originations volume', Icon: BarChart3 },
+  pipeline: { label: 'Pipeline health', Icon: ChartColumn },
+  'whats-new': { label: "What's New", Icon: Bell },
+};
+
+/** My Requests is the real page; the other tabs open a titled placeholder. */
+function Page({ value, width }: { value: string; width: PageContainerWidth }) {
+  if (value !== 'requests') {
+    return (
+      <PageContainer width={width}>
+        <PageHeader id={`page-${value}`} title={DOCS[value].label} description="An open document in the workspace." />
+      </PageContainer>
+    );
+  }
+  return (
+    <PageContainer width={width}>
+      <PageHeader
+        id="my-requests"
+        title="My Requests"
+        description="Submit requests to the DART Central admin team and track their status."
+        actions={<Button id="new-request" label="New request" IconLeft={Plus} />}
+        toolbar={<Input id="search-requests" placeholder="Search requests by name or reference number…" aria-label="Search requests" IconLeft={Search} />}
+      />
+      <Stack level={2}>
+        <Section id="g-review" heading="In review" variant="group">
+          <Stack level={3}>
+            <Row id="r417" title="Add Originations Daily Volume to the library" description="Request to add the Originations Daily Volume dashboard to the Dartboards library." />
+            <Row id="r425" title="Let me pin a dashboard to the top of Browse" description="A pin control on each dashboard card that keeps my most-used boards at the top." />
+          </Stack>
+        </Section>
+        <Section id="g-active" heading="Active" variant="group">
+          <Stack level={3}>
+            <Row id="r412" title="Promote Collateral Health Dashboard" description="Highlighted on the browse page, 08/25/2026 – 10/31/2026." />
+          </Stack>
+        </Section>
+      </Stack>
+    </PageContainer>
+  );
+}
+
 function Shell({ width }: { width: PageContainerWidth }) {
+  const layout = useTabLayout({
+    storageKey: 'ui-lib-stories-app-shell-tabs',
+    initial: {
+      tabs: ['home', 'requests', 'queue', 'volume', 'pipeline', 'whats-new'],
+      active: 'requests',
+      groups: [{ id: 'requests-group', label: 'Requests', color: 'blue', collapsed: false }],
+      groupOf: { requests: 'requests-group', queue: 'requests-group' },
+      split: ['volume', 'pipeline'],
+    },
+  });
+  const { state } = layout;
+  const closed = Object.keys(DOCS).filter((v) => !state.tabs.includes(v));
+
+  const tabMenu = (value: string) => (
+    <>
+      {state.split?.includes(value) ? (
+        <ContextMenuItem onClick={layout.unsplit}>Close split view</ContextMenuItem>
+      ) : (
+        state.active &&
+        state.active !== value && (
+          <ContextMenuItem onClick={() => layout.split(value, 'end', state.active!)}>Open beside {DOCS[state.active].label}</ContextMenuItem>
+        )
+      )}
+      {state.groupOf[value] ? (
+        <ContextMenuItem onClick={() => layout.removeFromGroup(value)}>Remove from group</ContextMenuItem>
+      ) : (
+        <ContextMenuItem onClick={() => layout.addToGroup(value, 'requests-group')}>Add to Requests</ContextMenuItem>
+      )}
+      {DOCS[value].closable !== false && (
+        <>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={() => layout.close(value)}>Close tab</ContextMenuItem>
+        </>
+      )}
+    </>
+  );
+
+  const renderTab = (value: string) => (
+    <TabBarTab
+      key={value}
+      value={value}
+      label={DOCS[value].label}
+      Icon={DOCS[value].Icon}
+      iconOnly={value === 'home'}
+      closable={DOCS[value].closable !== false}
+      onClose={() => layout.close(value)}
+      menu={tabMenu(value)}
+    />
+  );
+  const renderItem = (item: TabLayoutItem) =>
+    item.type === 'tab' ? (
+      renderTab(item.value)
+    ) : (
+      <TabBarSplit key={item.values.join('+')}>
+        {renderTab(item.values[0])}
+        {renderTab(item.values[1])}
+      </TabBarSplit>
+    );
+
+  const panes = state.split && state.active && state.split.includes(state.active) ? state.split : state.active ? [state.active] : [];
+
   return (
     <AppShell id="shell">
       <AppShellTabStrip
@@ -95,15 +212,38 @@ function Shell({ width }: { width: PageContainerWidth }) {
           </Tooltip>
         }
       >
-        <TabBar id="shell-tabs" defaultValue="requests">
-          <TabBarList>
-            <TabBarTab value="home" label="Home" Icon={Home} closable={false} />
-            <TabBarTab value="requests" label="My Requests" Icon={Inbox} />
+        <TabBar id="shell-tabs" value={state.active ?? undefined} onValueChange={layout.select} onTabMove={layout.move}>
+          <TabBarList aria-label="Open documents">
+            {layout.segments.map((seg) =>
+              seg.type === 'group' ? (
+                <TabBarGroup
+                  key={seg.group.id}
+                  value={seg.group.id}
+                  label={seg.group.label}
+                  color={seg.group.color}
+                  collapsed={seg.group.collapsed}
+                  onCollapsedChange={(collapsed) => layout.updateGroup(seg.group.id, { collapsed })}
+                  menu={
+                    <>
+                      <ContextMenuItem onClick={() => layout.ungroup(seg.group.id)}>Ungroup</ContextMenuItem>
+                      <ContextMenuItem variant="destructive" onClick={() => layout.closeGroup(seg.group.id)}>
+                        Close group
+                      </ContextMenuItem>
+                    </>
+                  }
+                >
+                  {seg.items.map(renderItem)}
+                </TabBarGroup>
+              ) : (
+                renderItem(seg)
+              ),
+            )}
           </TabBarList>
-          <TabBarNewTab />
+          <TabBarNewTab onClick={() => closed[0] && layout.open(closed[0])} disabled={closed.length === 0} />
           <TabBarMenu
-            tabs={[{ value: 'home', label: 'Home', Icon: Home }, { value: 'requests', label: 'My Requests', Icon: Inbox }]}
-            recentlyClosed={[{ value: 'whats-new', label: "What's New", Icon: Bell }, { value: 'settings', label: 'Settings', Icon: Settings }]}
+            tabs={state.tabs.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
+            recentlyClosed={closed.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
+            onReopen={(item) => layout.open(item.value)}
           />
         </TabBar>
       </AppShellTabStrip>
@@ -151,28 +291,18 @@ function Shell({ width }: { width: PageContainerWidth }) {
             </Sidebar>
             <SidebarInset>
               <AppShellMain>
-                <PageContainer width={width}>
-                  <PageHeader
-                    id="my-requests"
-                    title="My Requests"
-                    description="Submit requests to the DART Central admin team and track their status."
-                    actions={<Button id="new-request" label="New request" IconLeft={Plus} />}
-                    toolbar={<Input id="search-requests" placeholder="Search requests by name or reference number…" aria-label="Search requests" IconLeft={Search} />}
-                  />
-                  <Stack level={2}>
-                    <Section id="g-review" heading="In review" variant="group">
-                      <Stack level={3}>
-                        <Row id="r417" title="Add Originations Daily Volume to the library" description="Request to add the Originations Daily Volume dashboard to the Dartboards library." />
-                        <Row id="r425" title="Let me pin a dashboard to the top of Browse" description="A pin control on each dashboard card that keeps my most-used boards at the top." />
-                      </Stack>
-                    </Section>
-                    <Section id="g-active" heading="Active" variant="group">
-                      <Stack level={3}>
-                        <Row id="r412" title="Promote Collateral Health Dashboard" description="Highlighted on the browse page, 08/25/2026 – 10/31/2026." />
-                      </Stack>
-                    </Section>
-                  </Stack>
-                </PageContainer>
+                <SplitView id="shell-split" onTabDrop={({ value, side }) => layout.split(value, side)}>
+                  {panes.map((v) => (
+                    <SplitViewPane
+                      key={v}
+                      aria-label={DOCS[v].label}
+                      active={v === state.active}
+                      onPointerDown={() => v !== state.active && layout.select(v)}
+                    >
+                      <Page value={v} width={width} />
+                    </SplitViewPane>
+                  ))}
+                </SplitView>
               </AppShellMain>
             </SidebarInset>
           </AppShellWorkspace>

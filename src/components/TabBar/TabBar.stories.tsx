@@ -125,6 +125,16 @@ const meta: Meta<typeof TabBar> = {
       changelog: [
         {
           date: '2026-09-15',
+          summary: 'A line always separates the tabs from the "+", including when the tabs scroll.',
+          detail: 'The rule used to belong to the last tab alone, so once the list overflowed and cut a tab off mid-way nothing marked the edge. `.ui-tab-bar__new` now carries `border-inline-start`, and `.ui-tab-bar__list` sits 1px under it (`margin-inline-end: -1px`) so the two lines coincide when the tabs fit.',
+        },
+        {
+          date: '2026-09-15',
+          summary: 'The tab menu button shows a stack of pages instead of a chevron.',
+          detail: '`TabBarMenu` renders `GalleryVerticalEnd` (your tabs) rather than `ChevronDown`, which read as "more of this", and rather than an app window, which is the rail\'s job.',
+        },
+        {
+          date: '2026-09-15',
           summary: 'Icon-only tabs, for a permanent tab like Home.',
           detail:
             '`iconOnly` on `TabBarTab` shows the `Icon` alone in a 48px cell the size of the "+" (`.ui-tab-bar__tab--icon-only` drops the 140px floor and the label padding). `label` becomes the accessible name and appears in a `Tooltip`. There is no close button on an icon-only tab, whatever `closable` says; close it from its `menu`.',
