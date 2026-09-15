@@ -136,20 +136,22 @@ export function SkeletonCompact({ x, y, titleW, tracks, children }: { x: number;
   );
 }
 
-/** Edit-mode decorations: dashed outline, drag grip, resize corner. */
-export function EditDecor({ w, h, opacity, outlineHeight, handleY, gripX, withResize = true }: { w: number; h: number; opacity: Track; outlineHeight?: Track; handleY?: Track; gripX?: number; withResize?: boolean }) {
+/**
+ * A card in edit mode: the dashed outline and the drag grip (top left) fade in with edit
+ * mode; the ••• card menu (top right) is always there. There is no resize handle — a card
+ * changes size by choosing Compact or Thumbnail from that menu, never by dragging a corner.
+ * `moreScale` pulses the ••• button when the cursor clicks it.
+ */
+export function EditDecor({ w, h, opacity, outlineHeight, moreScale }: { w: number; h: number; opacity: Track; outlineHeight?: Track; moreScale?: Track }) {
   return (
     <>
       <Anim tracks={{ opacity, height: outlineHeight }} className="pd-dashed pd-dashed--primary" style={at(1, 1, w - 2, h - 2, { opacity: 0, borderRadius: 7 })} />
-      <Anim tracks={{ opacity }} className="pd-control" style={at(gripX ?? w - 28, 6, 22, 14, { opacity: 0, borderRadius: 4 })}>
+      <Anim tracks={{ opacity }} className="pd-control" style={at(6, 6, 22, 14, { opacity: 0, borderRadius: 4 })}>
         {[0, 1, 2].map((a) => [0, 1].map((b) => <Box key={`${a}${b}`} x={6 + a * 4} y={3 + b * 4} w={2} h={2} className="pd-bar pd-bar--muted-fg" style={{ borderRadius: 1 }} />))}
       </Anim>
-      {withResize ? (
-        <Anim tracks={{ opacity, y: handleY }} style={at(w - 14, h - 14, 10, 10, { opacity: 0 })}>
-          <Box x={0} y={8} w={10} h={2} className="pd-bar pd-bar--primary" style={{ borderRadius: 1 }} />
-          <Box x={8} y={0} w={2} h={10} className="pd-bar pd-bar--primary" style={{ borderRadius: 1 }} />
-        </Anim>
-      ) : null}
+      <Anim tracks={moreScale ? { scale: moreScale } : undefined} className="pd-control pd-center" style={at(w - 26, 6, 20, 20, { borderRadius: 5, gap: 2 })}>
+        {[0, 1, 2].map((i) => <span key={i} className="pd-bar pd-bar--muted-fg" style={{ width: 3, height: 3 }} />)}
+      </Anim>
     </>
   );
 }
