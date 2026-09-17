@@ -16,6 +16,13 @@ const meta: Meta<typeof CloseButton> = {
       tags: ['icon button'],
       changelog: [
         {
+          date: '2026-09-17',
+          summary:
+            'New `chip` variant: a filled close button that stays visible over video and images.',
+          detail:
+            '`variant="chip"` paints `--popover` with a `--border` hairline (an inset box-shadow, so the box size is unchanged) and `--shadow-xs`; the glyph is `--popover-foreground`. Hover fills with `--accent` like `background`. First consumer: the What’s New announcement slides.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:
@@ -25,7 +32,7 @@ const meta: Meta<typeof CloseButton> = {
     } satisfies UiDocsParameters,
   },
   argTypes: {
-    variant: { control: 'select', options: ['default', 'background'] },
+    variant: { control: 'select', options: ['default', 'background', 'chip'] },
     disabled: { control: 'boolean' },
     onClick: { action: 'clicked' },
   },
@@ -70,6 +77,46 @@ export const Variants: Story = {
           background (hover for fill)
         </span>
       </div>
+      <div style={{ display: 'grid', gap: 4, justifyItems: 'center' }}>
+        <CloseButton {...args} id="close-chip" variant="chip" />
+        <span
+          style={{
+            fontFamily: 'var(--font-family)',
+            fontSize: 'var(--text-xs)',
+            color: 'var(--muted-foreground)',
+          }}
+        >
+          chip (filled at rest)
+        </span>
+      </div>
+    </div>
+  ),
+};
+
+/**
+ * `chip` is the one to reach for when the button sits on media — a clip, a
+ * cover image, a gradient — where the transparent variants vanish at rest.
+ */
+export const OverMedia: Story = {
+  name: 'In context — over media',
+  parameters: { layout: 'padded' },
+  render: () => (
+    <div
+      style={{
+        position: 'relative',
+        width: 360,
+        aspectRatio: '16 / 9',
+        borderRadius: 'var(--rounded-lg)',
+        overflow: 'hidden',
+        background:
+          'linear-gradient(135deg, var(--category-sky), var(--category-indigo) 55%, var(--category-violet))',
+      }}
+    >
+      <CloseButton
+        id="close-over-media"
+        variant="chip"
+        style={{ position: 'absolute', top: 'var(--p-3)', right: 'var(--p-3)' }}
+      />
     </div>
   ),
 };

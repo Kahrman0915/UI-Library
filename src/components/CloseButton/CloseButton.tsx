@@ -24,7 +24,7 @@ const CloseButton = forwardRef<HTMLButtonElement, CloseButtonProps>(
         ref={ref}
         id={id}
         type="button"
-        className={`ui-icon-button${variant === 'background' ? ' ui-icon-button--fill' : ''} ui-close-button ui-close-button--${variant} ui-close-button--sz-${size}${className ? ' ' + className : ''}`}
+        className={`ui-icon-button${variant !== 'default' ? ' ui-icon-button--fill' : ''} ui-close-button ui-close-button--${variant} ui-close-button--sz-${size}${className ? ' ' + className : ''}`}
         disabled={disabled}
         onClick={onClick}
         aria-label={ariaLabel}
