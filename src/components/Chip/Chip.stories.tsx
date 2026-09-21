@@ -219,6 +219,7 @@ export const BrandDB: Story = {
 // Inside `data-surface="aiden"` the active chip takes Aiden's gradient (and its
 // hover deepens it); inactive chips read violet. See Foundations/Themes → Aiden Surface.
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div data-surface="aiden" style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
       <Chip id="aiden-active" label="Active" active />

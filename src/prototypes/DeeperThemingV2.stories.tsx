@@ -1085,6 +1085,7 @@ export const MarkAnatomy: Story = {
 };
 
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: function AidenSurfaceStory() {
     const mode = useGlobalMode();
     return (

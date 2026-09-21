@@ -217,6 +217,7 @@ export const CompoundComposition: Story = {
 // flowing gradient — and pops a one-shot particle burst when it hits 100%.
 // See Foundations/Themes → Aiden Surface.
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => {
     const [value, setValue] = useState(0);
     const [run, setRun] = useState(0);

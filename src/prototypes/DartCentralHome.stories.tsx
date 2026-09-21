@@ -60,7 +60,7 @@ import './DartCentralHome.scss';
 import { AidenSparkles } from './AidenSparkles';
 
 const meta: Meta = {
-  title: 'Prototypes/DART Central — Home',
+  title: 'Prototypes/Home',
   parameters: {
     layout: 'fullscreen',
     ui: {
@@ -350,7 +350,7 @@ function Shell() {
  * which brand it is in.
  */
 export const Home_db: Story = {
-  name: 'DART Central (db)',
+  name: 'db',
   render: () => (
     <div data-theme="db" style={{ height: '100vh' }}>
       <Shell />
@@ -364,7 +364,7 @@ export const Home_db: Story = {
  * theming system reaches past the accent.
  */
 export const Home_db_tinted: Story = {
-  name: 'DART Central (db · tinted)',
+  name: 'db · tinted',
   render: () => (
     <div data-theme="db" data-tint="page rail" style={{ height: '100vh' }}>
       <Shell />

@@ -38,7 +38,7 @@ import type { UiDocsParameters } from '../../types/DocsTypes';
 import { AidenSparkles } from '../../prototypes/AidenSparkles';
 
 const meta: Meta<typeof AidenPanel> = {
-  title: 'AI/AidenPanel',
+  title: 'AI/AIPanel',
   component: AidenPanel,
   parameters: {
     layout: 'fullscreen',

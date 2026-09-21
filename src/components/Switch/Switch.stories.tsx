@@ -209,6 +209,7 @@ export const InForm: Story = {
 // Inside `data-surface="aiden"` the checked track takes Aiden's gradient.
 // See Foundations/Themes → Aiden Surface.
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div data-surface="aiden" style={{ display: 'grid', gap: 'var(--p-2-5)' }}>
       <Switch id="aiden-on" label="On" defaultChecked />

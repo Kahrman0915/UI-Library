@@ -373,6 +373,7 @@ const AidenSampler = () => (
 );
 
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-6)', maxWidth: 'var(--max-w-3xl)' }}>
       <div>

@@ -45,7 +45,7 @@ import Checkbox from '../components/Checkbox/Checkbox';
  * once, for design review. This one is the sequence, for the experience.)
  */
 const meta: Meta = {
-  title: 'Prototypes/Aiden Documents — Live',
+  title: 'Prototypes/AI Documents — Live',
   parameters: { layout: 'padded' },
 };
 

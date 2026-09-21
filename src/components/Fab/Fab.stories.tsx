@@ -201,6 +201,7 @@ function AidenChatWidget({ onClose }: { onClose: () => void }) {
 }
 
 export const AidenLauncher: Story = {
+  name: 'AI Launcher',
   render: () => {
     const [open, setOpen] = useState(false);
     return (
@@ -301,7 +302,7 @@ export const BesideASidePanel: Story = {
 };
 
 export const NeutralVsAiden: Story = {
-  name: 'Neutral vs Aiden',
+  name: 'Neutral vs AI',
   render: () => (
     <div style={{ ...FRAME, minHeight: 460, background: 'var(--background)' }}>
       {/* Neutral (host brand primary) — bottom-left */}
