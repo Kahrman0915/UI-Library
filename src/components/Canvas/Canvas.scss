@@ -1,0 +1,116 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Canvas — the Builder's edit surface.
+//
+// THE GRID IS A BACKGROUND, NOT ELEMENTS. Figma's `Canvas/Ground` has to be 51
+// vertical and 35 horizontal rectangles because Figma has no repeating fill; in
+// CSS the same 32px pitch is two gradients that tile, cost no DOM, and resize
+// with the container for free.
+//
+// The surface paints NO ground of its own — the grid sits on whatever the page
+// already has, so dropping this into AppShellMain does not stack a second
+// background under the first.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-canvas {
+  position: relative;
+  min-height: 0;
+  // Items are placed absolutely by the application; the canvas is their
+  // containing block. It also contains any handle that overhangs an edge.
+  isolation: isolate;
+}
+
+.ui-canvas--grid {
+  // `--o-20` mirrors Figma exactly: the variable holds the SOLID line colour
+  // and the layer is placed at 20%. Keeping the strength here rather than
+  // baking it into the token means one number to change, and it stays legible.
+  //
+  // Two hard stops, not a blur — `1px` then `transparent` gives a crisp
+  // hairline; a gradient without the stop would smear it across the whole
+  // 32px cell.
+  background-image:
+    linear-gradient(
+      to right,
+      color-mix(in srgb, var(--canvas-line) calc(var(--o-20) * 100%), transparent) 0 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in srgb, var(--canvas-line) calc(var(--o-20) * 100%), transparent) 0 1px,
+      transparent 1px
+    );
+  background-size: var(--w-8) var(--h-8);
+  // Pin the tiling to the top-left corner so the grid does not shift as the
+  // canvas resizes — a grid that slides under the widgets reads as drift.
+  background-position: 0 0;
+}
+
+// ---- Item ----
+
+.ui-canvas-item {
+  position: relative;
+  // The 7px frame is Figma's: it is breathing room for the handles, which
+  // overhang the corners. Without it a handle sits on the widget's own edge.
+  padding: var(--p-1-5);
+  border-radius: var(--rounded-xl);
+  // Transparent — the widget inside brings its own surface (usually a Card).
+  // An opaque item would paint a second card behind the first.
+  background: transparent;
+  // A ring rather than a border: a border would move the content box by 1px
+  // the moment the item became selected, nudging every widget on the canvas.
+  box-shadow: 0 0 0 var(--border-w-100) transparent;
+  transition: box-shadow var(--duration-fast) var(--ease-out);
+}
+
+.ui-canvas-item--selected {
+  // --border-w-300 (2px), NOT -200 — the scale is not linear (-200 is 1.33px).
+  // 2px is the library's selection weight: AppRail's selected bar and TabBar's
+  // open-tab underline both use it, "one line, one weight".
+  box-shadow: 0 0 0 var(--border-w-300) var(--primary);
+}
+
+.ui-canvas-item__content {
+  min-width: 0;
+}
+
+// Handles overhang the top corners so they never eat into the widget's own
+// content box — a grip that stole 20px would change the thing it is a handle
+// for. They are siblings of the content, not wrappers around it.
+.ui-canvas-item__grip,
+.ui-canvas-item__menu {
+  position: absolute;
+  inset-block-start: calc(var(--p-2) * -1);
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-5);
+  height: var(--h-5);
+  border: 0;
+  border-radius: var(--rounded-md);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  padding: 0;
+}
+
+.ui-canvas-item__grip {
+  inset-inline-start: calc(var(--p-2) * -1);
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+}
+
+.ui-canvas-item__menu {
+  inset-inline-end: calc(var(--p-2) * -1);
+}

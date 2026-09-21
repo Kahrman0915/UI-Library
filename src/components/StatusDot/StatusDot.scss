@@ -3,10 +3,10 @@
   display: inline-block;
   flex-shrink: 0;
   border-radius: var(--rounded-full);
-  // Named via --ui-status-color so the pulse ring can reuse the same colour.
+  // Named via --ui-status-color so the pulse ring can reuse the same color.
   background: var(--ui-status-color);
 
-  // ---- Status colours ----
+  // ---- Status colors ----
   &--online {
     --ui-status-color: var(--success);
   }

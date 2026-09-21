@@ -1,4 +1,5 @@
 import { createElement, forwardRef } from 'react';
+import Separator from '../Separator';
 import type { PageHeaderProps } from './PageHeader.types';
 import './PageHeader.scss';
 
@@ -21,10 +22,12 @@ const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
       id,
       overline,
       title,
+      meta,
       visual,
       description,
       actions,
       toolbar,
+      showDivider = false,
       size = 'default',
       headingLevel = 'h1',
       className,
@@ -50,7 +53,20 @@ const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
               // and a div inside a p is invalid markup the browser silently un-nests.
               <div className="ui-page-header__overline">{overline}</div>
             )}
-            {createElement(headingLevel, { id: `${id}-title`, className: 'ui-page-header__title' }, title)}
+            {/*
+              With no `meta` the heading is emitted exactly as before — no wrapper,
+              no extra div — so every header already in the wild renders byte for
+              byte the same. The row only appears when something has to sit beside
+              the title.
+            */}
+            {meta === undefined ? (
+              createElement(headingLevel, { id: `${id}-title`, className: 'ui-page-header__title' }, title)
+            ) : (
+              <div className="ui-page-header__title-row">
+                {createElement(headingLevel, { id: `${id}-title`, className: 'ui-page-header__title' }, title)}
+                <div className="ui-page-header__meta">{meta}</div>
+              </div>
+            )}
             {description !== undefined && (
               <p id={`${id}-description`} className="ui-page-header__description">
                 {description}
@@ -60,6 +76,12 @@ const PageHeader = forwardRef<HTMLElement, PageHeaderProps>(
           {actions !== undefined && <div className="ui-page-header__actions">{actions}</div>}
         </div>
         {toolbar !== undefined && <div className="ui-page-header__toolbar">{toolbar}</div>}
+        {/*
+          Last, so it closes the whole header rather than sitting between the title row
+          and a toolbar. `decorative` because the <header> element already draws the
+          boundary — a role="separator" here would announce it twice.
+        */}
+        {showDivider && <Separator decorative className="ui-page-header__divider" />}
       </header>
     );
   },

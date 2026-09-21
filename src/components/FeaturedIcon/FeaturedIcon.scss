@@ -6,13 +6,13 @@ $ui-featured-icon-categories:
   'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue',
   'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
 
-// A boxed icon tile. The tile owns the size and the colour; the glyph fills a
+// A boxed icon tile. The tile owns the size and the color; the glyph fills a
 // fixed fraction of it.
 //
 // TWO INDEPENDENT AXES, the same mechanism Badge uses: the COLOR class sets a
 // local palette as custom properties, and the APPEARANCE class consumes it. So
-// every colour works with every appearance — before this, `default` was the
-// only filled tile in the set and no other colour could be filled at all.
+// every color works with every appearance — before this, `default` was the
+// only filled tile in the set and no other color could be filled at all.
 
 .ui-featured-icon {
   display: inline-flex;
@@ -80,7 +80,7 @@ $ui-featured-icon-categories:
 }
 
 // ---------------------------------------------------------------------------
-// COLOR AXIS — each colour publishes one palette; the appearance rules consume
+// COLOR AXIS — each color publishes one palette; the appearance rules consume
 // it. `--_fill` / `--_on-fill` is the solid pair; `--_soft` / `--_soft-ink` /
 // `--_soft-line` is the tint, its ink and its edge.
 // ---------------------------------------------------------------------------
@@ -88,7 +88,7 @@ $ui-featured-icon-categories:
 // `default` IS the theme's primary — there is no separate `brand`, exactly as
 // Badge models it. On the main brand `--primary` is neutral slate, so an
 // unthemed tile still reads as chrome; inside a `data-theme` the whole family
-// moves with the brand. Do not reintroduce a `brand` colour: it would be a
+// moves with the brand. Do not reintroduce a `brand` color: it would be a
 // second way to say the same thing, and the two would drift.
 .ui-featured-icon--default {
   --_fill: var(--primary);
@@ -130,7 +130,7 @@ $ui-featured-icon-categories:
   --_soft-line: var(--info-border);
 }
 
-// Category hues take the SAME three-part soft shape as the semantic colours —
+// Category hues take the SAME three-part soft shape as the semantic colors —
 // tint, ink, soft border — so a category tile and a semantic one read as the
 // same object. The tint is `-bg` rather than `-light` because that is what the
 // category palette ships (10% light / 15% dark, against the semantics' 6%),
@@ -147,7 +147,7 @@ $ui-featured-icon-categories:
 }
 
 // ---------------------------------------------------------------------------
-// APPEARANCE AXIS — consumes the local props set by the colour above.
+// APPEARANCE AXIS — consumes the local props set by the color above.
 // ---------------------------------------------------------------------------
 
 .ui-featured-icon--soft {

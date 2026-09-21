@@ -57,6 +57,11 @@ export type {
   StatusDotSize,
 } from './components/StatusDot';
 
+export { default as Swatch } from './components/Swatch';
+export type { SwatchProps, SwatchSize, SwatchShape } from './components/Swatch';
+export { default as FilterTag, FilterTagGroup } from './components/FilterTag';
+export type { FilterTagProps, FilterTagGroupProps, FilterTagSize } from './components/FilterTag';
+
 export { default as Toggle } from './components/Toggle';
 export type { ToggleProps, ToggleVariant, ToggleSize } from './components/Toggle';
 
@@ -132,6 +137,7 @@ export {
   ChatComposerMenu,
   ChatArtifact,
   ChatArtifactCard,
+  ChatActionCard,
   ChatLayoutAside,
 } from './components/Chat';
 export type {
@@ -172,6 +178,8 @@ export type {
   ChatComposerMenuProps,
   ChatArtifactProps,
   ChatArtifactCardProps,
+  ChatActionCardProps,
+  ChatActionStatus,
   ChatLayoutAsideProps,
   ChatDensity,
   ChatSender,
@@ -264,6 +272,31 @@ export type {
   SelectAlign,
 } from './components/Select';
 
+export { default as Canvas, CanvasItem } from './components/Canvas';
+export type { CanvasProps, CanvasItemProps } from './components/Canvas';
+
+export {
+  default as Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeaderCell,
+  TableRow,
+  TableSelectionCell,
+} from './components/Table';
+export type {
+  TableProps,
+  TableBodyProps,
+  TableCellProps,
+  TableHeadProps,
+  TableHeaderCellProps,
+  TableRowProps,
+  TableSelectionCellProps,
+  TableDensity,
+  TableSortDirection,
+  TableAlign,
+} from './components/Table';
+
 export {
   default as TabBar,
   TabBarList,
@@ -284,6 +317,7 @@ export type {
   TabBarNewTabProps,
   TabBarMenuProps,
   TabBarMenuItem,
+  TabBarMenuGroup,
   TabBarActivationMode,
 } from './components/TabBar';
 export { default as SplitView, SplitViewPane } from './components/SplitView';

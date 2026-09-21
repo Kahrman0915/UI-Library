@@ -13,7 +13,7 @@ const meta: Meta<typeof Section> = {
       description:
         'A heading with its content under it, at the level the ladder gives that relationship: ' +
         '`default` puts a section heading level 2 above its content; `group` is a small uppercase label ' +
-        'level 4 above a labelled group. The space *between* sections is the `Stack level={2}` they sit in.',
+        'level 4 above a labeled group. The space *between* sections is the `Stack level={2}` they sit in.',
       tags: ['layout', 'ladder', 'section'],
       usage: {
         when: ['Every titled region of a page. Put sections in a `Stack level={2}`; put the section\'s own rows in a `Stack level={3}` inside it.', '`variant="group"` for the status groups on a list page — a label over a run of cards.'],

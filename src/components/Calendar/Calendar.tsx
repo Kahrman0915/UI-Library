@@ -125,7 +125,7 @@ const Calendar = forwardRef<HTMLDivElement, CalendarProps>(
       // with focus still parked on the field and every arrow key went nowhere.
       // Select, Popover and HoverCard all focus in a rAF for the same reason.
       //
-      // The flag is cleared inside the callback, not before it: a cancelled
+      // The flag is cleared inside the callback, not before it: a canceled
       // frame (a second arrow key landing in the same frame, or a double
       // mount under StrictMode) must not consume the request.
       const frame = requestAnimationFrame(() => {

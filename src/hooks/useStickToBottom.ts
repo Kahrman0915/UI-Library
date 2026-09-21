@@ -7,7 +7,7 @@ export type UseStickToBottomOptions = {
 
 /**
  * Keeps a scroll container pinned to the bottom as its content grows — the
- * chat-transcript behaviour: new messages follow to the newest, unless the
+ * chat-transcript behavior: new messages follow to the newest, unless the
  * user has scrolled up to read history (then it stays put and exposes
  * `scrollToBottom` for a jump affordance).
  *

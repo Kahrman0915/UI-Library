@@ -108,7 +108,7 @@ has real Slots for its content):
 
 | Component | Levels it carries | In Figma |
 |---|---|---|
-| `PageContainer` | L1: page margin, and page header → content. Three widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule (an 832→1248 column inside the margin); `form` is a tighter centred column capped at `--container-form`, 736→1104 (a 672→1008 column), for a stack of fields | `Width` = full · narrow · form; variants are FILL with only max-width bound to `container/narrow` or `container/form` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
+| `PageContainer` | Page margin at L2, page header → content at L3 (both were L1 until 2026-09-20). Three widths: `full` (default) uses the whole content window; `narrow` is a centred reading column capped at `--container-narrow`, 896→1344 on the ladder's width rule (an 848→1272 column inside the margin); `form` is a tighter centred column capped at `--container-form`, 736→1104 (a 688→1032 column), for a stack of fields | `Width` = full · narrow · form; variants are FILL with only max-width bound to `container/narrow` or `container/form` in `Space · width`, so an instance fills, caps and widens with the mode; `Page header` + `Content` slots |
 | `PageHeader` | L5 overline → title → description · L4 inside the overline and between actions · L3 visual ↔ text ↔ actions · L2 row → toolbar. `size` moves TYPE only — the levels are identical at both rungs | `Size` × `With toolbar` variants; `Title`/`Description`/`Overline` text, `Actions` + `Toolbar` + `Visual` slots, the last two off by default |
 | `Section` | L2 heading → content (`default`) · L4 label → content (`group`) | `Variant` variants; `Heading` text, `Actions` + `Content` slots |
 | `Stack` | the level you give it; a wrapping horizontal Stack is the grid | `Level × Direction` variants; `Children` slot |
@@ -159,7 +159,7 @@ unanimous. Follow it and a page is consistent with every other page by construct
    Every Admin Flow screen is exactly 1136. A frame drawn at 1200 quietly makes its page
    64px wider than the rest of the system, and nothing warns you.
 2. **One `PageContainer`, filling the frame.** It supplies the page margin, so the frame's
-   own padding is zero. `full` gives a 1072 column at 1440, `narrow` 832, `form` 672.
+   own padding is zero. `full` gives a 1088 column at 1440, `narrow` 848, `form` 688.
 3. **`PageHeader` in the Page header slot, a `Stack level={2}` in Content**, one `Section`
    per band inside it.
 4. **Pin `Mode` freely; leave the two space collections alone.** See below.

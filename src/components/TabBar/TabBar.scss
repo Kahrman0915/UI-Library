@@ -1,9 +1,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // TabBar — the browser-style strip of open documents.
 //
-// The bar is exactly --h-12 (48px) TALL INCLUDING its bottom hairline, which
-// is why nothing here re-states the 47px content height the design measures:
-// box-sizing is border-box globally, so the border eats its own pixel.
+// The bar is exactly --h-12 (48px) tall, and its bottom hairline is an INSET SHADOW, not a
+// border (2026-09-19). An inset shadow paints beneath the bar's children, so the open tab —
+// the page color, opaque, full height — covers the line where it sits and reads as part of
+// the page below it, the way Notion's and a browser's open tab does. A border would paint
+// under the tabs' box instead and the tab could only cover it by overlapping 1px, which the
+// list's `overflow-x: auto` would clip.
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-tab-bar {
@@ -13,7 +16,7 @@
   // The bar is chrome, so it paints from the sidebar palette like the rail and the sidebar.
   // Only the open tab paints the page (below).
   background: var(--sidebar);
-  border-block-end: var(--border-w-100) solid var(--sidebar-border);
+  box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
 }
 
 // Hugs its tabs, shrinks before it scrolls, and never pushes the "+" away.
@@ -65,10 +68,12 @@
     background var(--duration-fast) var(--ease-premium),
     color var(--duration-fast) var(--ease-premium);
 
-  // A transient highlight on the bar, so it stays on the bar's palette.
+  // A transient highlight on the bar, so it stays on the bar's palette. A painted tab would
+  // hide the bar's hairline beneath it, so it re-draws the same line on itself.
   &:hover:not([aria-disabled='true']):not([data-state='active']):not([data-split='active']) {
     background: var(--sidebar-accent);
     color: var(--foreground);
+    box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
   }
 
   &:focus-visible {
@@ -78,26 +83,12 @@
     box-shadow: inset 0 0 0 var(--focus-ring-width) var(--focus);
   }
 
-  // The open tab is continuous with the document it opens onto: the page colour, with the
-  // theme's soft tint over it (--primary-soft is 8% in light, 10% in dark). It used to paint
-  // --accent, which is lighter than the bar in dark and darker in light, so the selected tab
-  // read raised in one mode and recessed in the other. The tint is an image layer rather than
-  // a colour, so it snaps when the state changes — hover, which transitions, never uses it.
+  // The open tab IS the page (owner, 2026-09-19, Notion's model): the page color, no tint,
+  // no underline and square corners. Opaque and full height, so it covers the bar's inset
+  // hairline and joins the document it opens onto; its neighbours' inline rules frame it.
   &[data-state='active'] {
     background-color: var(--background);
-    background-image: linear-gradient(var(--primary-soft), var(--primary-soft));
     color: var(--foreground);
-  }
-
-  // The brand underline. A pseudo-element rather than a node so the tab's
-  // children stay exactly what the consumer passed.
-  &[data-state='active']::after {
-    content: '';
-    position: absolute;
-    inset-inline: 0;
-    inset-block-end: 0;
-    height: var(--border-w-300);
-    background: var(--primary);
   }
 
   &[aria-disabled='true'] {
@@ -134,8 +125,8 @@
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Groups — a chip in the group's colour, then its tabs, each with a line in the same
-// colour along the top so the run reads as one set.
+// Groups — a chip in the group's color, then its tabs, each tinted with that color and
+// carrying a line in it along the top, so the run reads as one set (owner, 2026-09-18).
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-tab-bar__group {
@@ -144,7 +135,7 @@
   flex-shrink: 0;
 }
 
-// Names quoted: a bare `cyan` is a Sass colour and would serialise to `aqua`.
+// Names quoted: a bare `cyan` is a Sass color and would serialise to `aqua`.
 $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky',
   'blue', 'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
 
@@ -167,6 +158,23 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
   background: var(--_group);
 }
 
+// Every tab in a group sits on the group's soft tint. An image layer, so the hover rule (a
+// background color, and more specific) still replaces it. A painted tab hides the bar's
+// inset hairline, so it re-draws the line on itself.
+.ui-tab-bar__group .ui-tab-bar__tab {
+  background-image: linear-gradient(var(--_group-bg), var(--_group-bg));
+  box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
+}
+
+// The open tab inside a group is the page like any other open tab (2026-09-19): no tint, no
+// line, so it joins the document below. The group still reads from its chip and top line.
+.ui-tab-bar__group .ui-tab-bar__tab[data-state='active'],
+.ui-tab-bar__group .ui-tab-bar__tab[data-split='active'] {
+  background-color: var(--background);
+  background-image: none;
+  box-shadow: none;
+}
+
 .ui-tab-bar__group-chip {
   position: relative;
   display: flex;
@@ -181,6 +189,7 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
 
   &:hover {
     background: var(--sidebar-accent);
+    box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
   }
 
   &:focus-visible {
@@ -250,11 +259,10 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
   border-inline-end: none;
 }
 
-// Both halves sit on the open-tab surface while the split is on screen; the underline
-// stays on the half that is selected.
+// Both halves are the page while the split is on screen, so the pair joins the SplitView
+// below as one open document.
 .ui-tab-bar__tab[data-split='active'] {
   background-color: var(--background);
-  background-image: linear-gradient(var(--primary-soft), var(--primary-soft));
   color: var(--foreground);
 }
 
@@ -337,14 +345,14 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
 }
 
 // The tab menu: the same full-height chrome cell as the "+", pinned to the far
-// end of the bar with its own leading hairline, the way every browser ends its
-// tab strip.
+// end of the bar. No leading hairline (owner, 2026-09-18): like the "+" it sits on
+// the bar, so it reads as part of the tabs rather than paired with whatever follows
+// the bar.
 .ui-tab-bar__menu {
   flex-shrink: 0;
   width: var(--w-12);
   align-self: stretch;
   margin-inline-start: auto;
-  border-inline-start: var(--border-w-100) solid var(--sidebar-border);
   --ui-icon-button-radius: 0;
 
   svg {
@@ -359,6 +367,21 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
 .ui-tab-bar__new.ui-icon-button--fill:hover:not(:disabled),
 .ui-tab-bar__menu.ui-icon-button--fill:hover:not(:disabled) {
   background: var(--sidebar-accent);
+  box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
+}
+
+// With `groupLabel` the menu names the tab group on screen (2026-09-19): the stacked glyph
+// and the group's name, so the bar says which set of tabs it is showing. The cell hugs the
+// name; with no label it stays the 48px square above.
+.ui-tab-bar__menu--labeled {
+  width: auto;
+  gap: var(--p-2);
+  padding-inline: var(--p-4);
+  color: var(--muted-foreground);
+  font-family: var(--font-family);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  white-space: nowrap;
 }
 
 // The surface is a Command palette, which brings its own chrome — the popover's

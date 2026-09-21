@@ -15,7 +15,7 @@ export type TooltipAlign = 'start' | 'center' | 'end';
  *   information here.
  * - **Uncontrolled only** — there is no `open` / `onOpenChange`.
  * - Tooltip is the one carve-out from theming: it always uses the neutral
- *   `--tooltip-*` inverse, never the active `data-theme` colour.
+ *   `--tooltip-*` inverse, never the active `data-theme` color.
  */
 export type TooltipProps = {
   /** Required. Seeds the content id used by the trigger's `aria-describedby`. */

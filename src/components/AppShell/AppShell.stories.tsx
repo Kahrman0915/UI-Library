@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { BarChart3, Bell, Box, ChartColumn, FileText, Flame, Grid2x2, Home, Inbox, Layers, LayoutGrid, ListChecks, Plus, Search, Settings, Sparkles } from 'lucide-react';
+import { useState } from 'react';
+import { BarChart3, Bell, Box, ChartColumn, ChevronDown, CircleHelp, CircleUser, FileText, Flame, LayoutDashboard, LayoutGrid, Home, Inbox, Layers, ListChecks, LogOut, Plus, Search, Settings, Slash } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import AppShell, { AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './AppShell';
 import AppRail, { AppRailItem } from '../AppRail';
@@ -8,10 +9,10 @@ import SplitView, { SplitViewPane } from '../SplitView';
 import { ContextMenuItem, ContextMenuSeparator } from '../ContextMenu';
 import { useTabLayout } from '../../hooks/useTabLayout';
 import type { TabLayoutItem } from '../../hooks/useTabLayout';
-import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarHeader, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
-import Tooltip, { TooltipContent, TooltipTrigger } from '../Tooltip';
+import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
+import DropdownMenu, { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../DropdownMenu';
+import Fab from '../Fab';
 import Button from '../Button';
-import Avatar from '../Avatar';
 import ModeToggler from '../ModeToggler';
 import Badge from '../Badge';
 import Input from '../Input';
@@ -21,7 +22,10 @@ import PageHeader from '../PageHeader';
 import Section from '../Section';
 import Stack from '../Stack';
 import Card, { CardHeader } from '../Card';
+import Drawer, { DrawerHeader, DrawerBody, DrawerFooter } from '../Drawer';
+import { Toaster, toast } from '../Toast';
 import type { UiDocsParameters } from '../../types/DocsTypes';
+import { AidenSparkles } from '../../prototypes/AidenSparkles';
 
 const meta: Meta<typeof AppShell> = {
   title: 'Components/AppShell',
@@ -31,9 +35,10 @@ const meta: Meta<typeof AppShell> = {
     layout: 'fullscreen',
     ui: {
       description:
-        'The chrome every sub-application shares, as structure rather than advice: a tab strip (logo · `TabBar` · actions), ' +
-        'then `AppRail` · `Sidebar` · `AppShellMain`. The strip\'s `actions` hold Ask Aiden alone — the assistant\'s place in every ' +
-        'application; tab search lives in the `TabBar` itself (`TabBarMenu`). Strip 48, rail 52, sidebar 252, so Main Content is 1136 wide at the 1440 ' +
+        'The chrome every sub-application shares, as structure rather than advice: a tab strip (the account cell · `TabBar`), ' +
+        'then `AppRail` · `Sidebar` · `AppShellMain`. The account cell is the DART Central mark and your name with its menu, 304 wide ' +
+        'so the tabs start over the page; tab search and tab groups live in the `TabBar` itself (`TabBarMenu`), and Aiden is a `Fab` ' +
+        'in the bottom-right corner. Strip 48, rail 52, sidebar 252, so Main Content is 1136 wide at the 1440 ' +
         'design viewport and 1616 at 1920 — the width every flow screen is drawn at. A page fills Main with a `PageContainer` and ' +
         'never re-derives the geometry. `AppRail` is its own component, composed here like `Sidebar` and `TabBar`; the shell has no ' +
         'brand prop and reads the scope it stands in.',
@@ -41,9 +46,36 @@ const meta: Meta<typeof AppShell> = {
       usage: {
         when: ['Every application in the suite. One `AppShell` at the root, in a `100dvh` box; `AppShellWorkspace` holds the `SidebarProvider`.'],
         avoid: ['Hand-rolling the strip, the rail or the workspace — the workspace\'s `contain: layout` and the SidebarProvider height override are the parts that took a phase to get right.'],
-        notes: 'The Aiden mounting contract (`Fab` at `--z-80`, `AidenPanel` at `--z-40`, Fab hidden while a surface is open) is composed by the app for now; see the DART Central prototype.',
+        notes: 'The Aiden mounting contract (`Fab` at `--z-40`, below every overlay, and hidden while an `AidenPanel` is open) is composed by the app for now; see the DART Central prototype.',
       },
       changelog: [
+        {
+          date: '2026-09-19',
+          summary: 'A drawer opened in the shell starts below the tab strip, the Aiden button sits under it, and toasts stack above the Aiden button.',
+          detail: '`AppShell` provides `DrawerBelowStripContext`, so any `Drawer` inside starts at `--app-strip-height` and covers the rail, sidebar and page. The Fab moved to `--z-40` and the Toaster lifts above a bottom-right Fab (see those components). New `Overlays` story.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'On a narrow window the sidebar slides out beside the rail instead of covering the whole screen.',
+          detail: '`AppShellWorkspace` now provides the internal `SidebarContainedContext`. Below the 768px mobile breakpoint a `Sidebar` inside it no longer swaps to a portalled `Drawer` (which covered the rail and the tab strip); it stays in the workspace as an overlay, fully out or fully off-canvas, over a full-width page. The rail trigger, the sidebar trigger and ⌘B open it; Escape or a click on the page closes it.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'The shell no longer runs 48px past the bottom of the window when the sidebar provider also wraps the rail.',
+          detail: 'The `SidebarProvider` height override only matched `AppShellWorkspace > .ui-sidebar-provider`, but the documented composition puts the provider directly in `AppShellBody` so a rail item can toggle the sidebar. There it kept its `min-height: 100svh` under the 48px strip (page 948 tall in a 900 window). `__body > .ui-sidebar-provider` now gets the same override.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'The strip follows Notion: your account top-left across the rail and sidebar, tabs over the page, Aiden as a Fab, and tab groups you switch between.',
+          detail:
+            '`__logo` is now the account cell, a fixed `--app-rail-width + --sidebar-width` (304) so the tabs start over Main. Supabase’s pattern: the DART Central mark (a ghost icon button home), a muted slash (`.ui-app-shell__sep`), then the user’s name and a chevron in a ghost `Button` (`className="ui-app-shell__account"`) that opens a `DropdownMenu` (profile, settings, help, sign out). No avatar — the name says it. The strip hairline is an inset shadow so the open tab can cover it and join the page. Ask Aiden left the strip — `actions` is empty and the `.ui-app-shell__aiden` hook is gone — for a `Fab` inside `data-surface="aiden"`. The rail footer keeps only the mode toggle (settings moved into the account menu), and the sidebar has no header — a small app name there is the recorded fallback if users lose track of which app they are in. Story: groups use the tab menu switcher (`TabBarMenu` `groups` / `groupLabel`); each set keeps its own saved layout.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'Ask Aiden is a small icon button at the same weight as the tab controls; on hover its icon turns Aiden blurple.',
+          detail:
+            'Story: the button is `size="sm"` (32px box, 16px glyph, 1.33 stroke), matching the tab menu and the "+"; at the default size the sparkle was 20px and 1.67 stroke and out-weighed them. New hook `.ui-app-shell__aiden`: on hover the glyph takes `--aiden-text`; the neutral ghost hover tile is unchanged. Add the class to the Ask Aiden button in `actions`.',
+        },
         {
           date: '2026-09-15',
           summary: 'The tab bar fills the strip, and the story shows an icon-only Home tab, a tab group and a split view.',
@@ -64,19 +96,17 @@ const meta: Meta<typeof AppShell> = {
 export default meta;
 type Story = StoryObj<typeof AppShell>;
 
-const APPS = [
-  { code: 'db', name: 'DART Central', Icon: LayoutGrid, active: true },
+const APPS: Array<{ code: string; name: string; Icon: typeof Box; active?: boolean; count?: number }> = [
+  { code: 'db', name: 'DARTBoards', Icon: LayoutDashboard },
   { code: 'dc', name: 'IRM', Icon: Box, count: 3 },
   { code: 'ph', name: 'Phoenix', Icon: Flame },
   { code: 'ec', name: 'Eclipse', Icon: Layers },
   { code: 'nb', name: 'NoteGen', Icon: FileText },
-  { code: 'rm', name: 'DARTBoards', Icon: Grid2x2 },
 ];
 const NAV: Array<{ label: string; Icon: typeof Home; active?: boolean; count?: number }> = [
   { label: 'Home', Icon: Home },
   { label: 'My Requests', Icon: Inbox, active: true },
   { label: "What's New", Icon: Bell, count: 3 },
-  { label: 'Settings', Icon: Settings },
 ];
 
 const Row = ({ id, title, description }: { id: string; title: string; description: string }) => (
@@ -130,16 +160,56 @@ function Page({ value, width }: { value: string; width: PageContainerWidth }) {
   );
 }
 
+
+/**
+ * Tab groups, Notion's model: a group is a named set of tabs and the bar shows one set at a
+ * time. `null` is the window's ungrouped tabs. Each set keeps its own saved layout.
+ */
+type Group = { value: string; label: string; tabs: string[] };
+const UNGROUPED = ['home', 'requests', 'queue', 'volume', 'pipeline', 'whats-new'];
+const INITIAL_GROUPS: Group[] = [
+  { value: 'q3', label: 'Q3 Review', tabs: ['home', 'volume', 'pipeline'] },
+  { value: 'onboarding', label: 'Onboarding', tabs: ['home', 'whats-new', 'queue'] },
+];
+
 function Shell({ width }: { width: PageContainerWidth }) {
+  const [groups, setGroups] = useState<Group[]>(INITIAL_GROUPS);
+  const [activeGroup, setActiveGroup] = useState<string | null>(null);
+  const group = groups.find((g) => g.value === activeGroup) ?? null;
+  // Keyed on the group, so switching sets remounts the bar with that set's own saved layout.
+  return (
+    <ShellFrame
+      key={activeGroup ?? 'window'}
+      width={width}
+      group={group}
+      groups={groups}
+      onSelectGroup={setActiveGroup}
+      onGroupTabs={(tabs) => {
+        const value = `group-${groups.length + 1}`;
+        setGroups([...groups, { value, label: `Group ${groups.length + 1}`, tabs }]);
+        setActiveGroup(value);
+      }}
+    />
+  );
+}
+
+function ShellFrame({
+  width,
+  group,
+  groups,
+  onSelectGroup,
+  onGroupTabs,
+}: {
+  width: PageContainerWidth;
+  group: Group | null;
+  groups: Group[];
+  onSelectGroup: (value: string | null) => void;
+  onGroupTabs: (tabs: string[]) => void;
+}) {
+  const initialTabs = group ? group.tabs : UNGROUPED;
   const layout = useTabLayout({
-    storageKey: 'ui-lib-stories-app-shell-tabs',
-    initial: {
-      tabs: ['home', 'requests', 'queue', 'volume', 'pipeline', 'whats-new'],
-      active: 'requests',
-      groups: [{ id: 'requests-group', label: 'Requests', color: 'blue', collapsed: false }],
-      groupOf: { requests: 'requests-group', queue: 'requests-group' },
-      split: ['volume', 'pipeline'],
-    },
+    storageKey: `ui-lib-stories-app-shell-tabs-${group ? group.value : 'window'}`,
+    initial: { tabs: initialTabs, active: initialTabs[1] ?? initialTabs[0], groups: [], groupOf: {} },
   });
   const { state } = layout;
   const closed = Object.keys(DOCS).filter((v) => !state.tabs.includes(v));
@@ -153,11 +223,6 @@ function Shell({ width }: { width: PageContainerWidth }) {
         state.active !== value && (
           <ContextMenuItem onClick={() => layout.split(value, 'end', state.active!)}>Open beside {DOCS[state.active].label}</ContextMenuItem>
         )
-      )}
-      {state.groupOf[value] ? (
-        <ContextMenuItem onClick={() => layout.removeFromGroup(value)}>Remove from group</ContextMenuItem>
-      ) : (
-        <ContextMenuItem onClick={() => layout.addToGroup(value, 'requests-group')}>Add to Requests</ContextMenuItem>
       )}
       {DOCS[value].closable !== false && (
         <>
@@ -197,19 +262,41 @@ function Shell({ width }: { width: PageContainerWidth }) {
       <AppShellTabStrip
         logo={
           <>
-            <Button id="shell-home" style="ghost" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
-            <span style={{ fontSize: 'var(--text-base)', lineHeight: 'var(--leading-6)', fontWeight: 'var(--font-medium)', color: 'var(--foreground)', whiteSpace: 'nowrap' }}>
-              Dart Central
-            </span>
+            <Button id="shell-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
+            <Slash className="ui-app-shell__sep" aria-hidden="true" />
+            <DropdownMenu id="shell-account-menu">
+            <DropdownMenuTrigger>
+              <Button
+                id="shell-account"
+                className="ui-app-shell__account"
+                style="ghost"
+                label="Kahrman McKenzie"
+                IconRight={ChevronDown}
+              />
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="start">
+              <DropdownMenuLabel>kahrman.mckenzie@gmail.com</DropdownMenuLabel>
+              <DropdownMenuItem>
+                <CircleUser aria-hidden="true" />
+                My profile
+              </DropdownMenuItem>
+              <DropdownMenuItem>
+                <Settings aria-hidden="true" />
+                Settings
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem>
+                <CircleHelp aria-hidden="true" />
+                Help
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem variant="destructive">
+                <LogOut aria-hidden="true" />
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
           </>
-        }
-        actions={
-          <Tooltip id="shell-aiden-tooltip" side="bottom">
-            <TooltipTrigger>
-              <Button id="shell-aiden" variant="default" style="ghost" iconOnly IconCenter={() => <Sparkles size={20} aria-hidden="true" />} aria-label="Ask Aiden" />
-            </TooltipTrigger>
-            <TooltipContent>Ask Aiden</TooltipContent>
-          </Tooltip>
         }
       >
         <TabBar id="shell-tabs" value={state.active ?? undefined} onValueChange={layout.select} onTabMove={layout.move}>
@@ -244,6 +331,12 @@ function Shell({ width }: { width: PageContainerWidth }) {
             tabs={state.tabs.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
             recentlyClosed={closed.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
             onReopen={(item) => layout.open(item.value)}
+            groupLabel={group?.label}
+            groups={groups.map((g) => ({ value: g.value, label: g.label, count: g.tabs.length }))}
+            activeGroup={group?.value ?? null}
+            onSelectGroup={onSelectGroup}
+            ungroupedCount={UNGROUPED.length}
+            onGroupTabs={() => onGroupTabs(state.tabs)}
           />
         </TabBar>
       </AppShellTabStrip>
@@ -252,24 +345,16 @@ function Shell({ width }: { width: PageContainerWidth }) {
         <SidebarProvider>
           <AppRail
             header={<SidebarTrigger />}
-            footer={
-              <>
-                <ModeToggler id="shell-mode" variant="ghost" size="sm" />
-                <Avatar id="shell-me" fallback="KM" alt="Kahrman McKenzie" size="sm" />
-              </>
-            }
+            footer={<ModeToggler id="shell-mode" variant="ghost" size="sm" />}
           >
             {APPS.map(({ code, name, Icon, active, count }) => (
-              <AppRailItem key={code} id={`shell-app-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
+              <AppRailItem key={code} data-theme={code} id={`shell-app-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
             ))}
           </AppRail>
 
           <AppShellWorkspace>
             {/* Offcanvas (the default): collapsing hides the sidebar and the rail is the collapsed view. */}
             <Sidebar>
-              <SidebarHeader>
-                <span style={{ fontSize: 'var(--text-sm)', lineHeight: 'var(--leading-5)', fontWeight: 'var(--font-semibold)', color: 'var(--sidebar-foreground)' }}>Home</span>
-              </SidebarHeader>
               <SidebarContent>
                 <SidebarGroup>
                   <SidebarGroupLabel>Navigation</SidebarGroupLabel>
@@ -308,6 +393,13 @@ function Shell({ width }: { width: PageContainerWidth }) {
           </AppShellWorkspace>
         </SidebarProvider>
       </AppShellBody>
+
+      {/* Aiden: the Fab in the page's bottom-right corner, inside the Aiden surface for its gradient. */}
+      <div data-surface="aiden">
+        <Fab id="shell-aiden" size="default" intro aria-label="Ask Aiden">
+          <AidenSparkles />
+        </Fab>
+      </div>
     </AppShell>
   );
 }
@@ -326,6 +418,104 @@ export const FullWidthPage: Story = {
   render: () => (
     <div data-theme="db" style={{ height: '100vh' }}>
       <Shell width="full" />
+    </div>
+  ),
+};
+
+/**
+ * Overlays in the shell. A `Drawer` opened inside `AppShell` starts below the tab strip, so
+ * the tabs stay visible, and covers the rail, the sidebar and the page. The Aiden `Fab` sits
+ * under it (`--z-40`, below every overlay). A toast in the Fab's corner stacks above the Fab.
+ */
+function OverlayShell() {
+  const [open, setOpen] = useState(false);
+  return (
+    <AppShell id="overlay-shell">
+      <AppShellTabStrip
+        logo={
+          <>
+            <Button id="overlay-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
+            <Slash className="ui-app-shell__sep" aria-hidden="true" />
+            <Button id="overlay-account" className="ui-app-shell__account" style="ghost" label="Kahrman McKenzie" IconRight={ChevronDown} />
+          </>
+        }
+      >
+        <TabBar id="overlay-tabs" value="dashboards">
+          <TabBarList aria-label="Open documents">
+            <TabBarTab value="home" label="Home" Icon={Home} iconOnly closable={false} />
+            <TabBarTab value="dashboards" label="Dashboards" Icon={LayoutDashboard} />
+          </TabBarList>
+          <TabBarNewTab />
+        </TabBar>
+      </AppShellTabStrip>
+      <AppShellBody>
+        <SidebarProvider>
+          <AppRail header={<SidebarTrigger />} footer={<ModeToggler id="overlay-mode" variant="ghost" size="sm" />}>
+            {APPS.map(({ code, name, Icon }) => (
+              <AppRailItem key={code} id={`overlay-app-${code}`} href={`/${code}`} label={name} Icon={Icon} />
+            ))}
+          </AppRail>
+          <AppShellWorkspace>
+            <Sidebar>
+              <SidebarContent>
+                <SidebarGroup>
+                  <SidebarGroupContent>
+                    <SidebarMenu>
+                      <SidebarMenuItem>
+                        <SidebarMenuButton isActive>
+                          <LayoutDashboard />
+                          <span>Dashboards</span>
+                        </SidebarMenuButton>
+                      </SidebarMenuItem>
+                    </SidebarMenu>
+                  </SidebarGroupContent>
+                </SidebarGroup>
+              </SidebarContent>
+            </Sidebar>
+            <SidebarInset>
+              <AppShellMain>
+                <PageContainer width="narrow">
+                  <PageHeader
+                    id="overlay-page"
+                    title="Dashboards"
+                    description="Open the edit drawer, or save to see the toast land above the Aiden button."
+                    actions={
+                      <>
+                        <Button id="overlay-toast" style="outline" label="Save" onClick={() => toast('Dashboard updated', { description: 'Collateral Health Dashboard · 3 fields changed.' })} />
+                        <Button id="overlay-edit" label="Edit dashboard" onClick={() => setOpen(true)} />
+                      </>
+                    }
+                  />
+                </PageContainer>
+              </AppShellMain>
+            </SidebarInset>
+          </AppShellWorkspace>
+        </SidebarProvider>
+      </AppShellBody>
+      <Drawer id="overlay-drawer" open={open} onClose={() => setOpen(false)}>
+        <DrawerHeader id="overlay-drawer" onClose={() => setOpen(false)} title="Edit dashboard" description="Direct edit, no request. Recorded in Activity under your name." />
+        <DrawerBody>
+          <Input id="overlay-name" label="Name" defaultValue="Collateral Health Dashboard" />
+        </DrawerBody>
+        <DrawerFooter>
+          <Button id="overlay-cancel" style="ghost" label="Cancel" onClick={() => setOpen(false)} />
+          <Button id="overlay-save" label="Save changes" onClick={() => setOpen(false)} />
+        </DrawerFooter>
+      </Drawer>
+      <Toaster />
+      <div data-surface="aiden">
+        <Fab id="overlay-aiden" size="default" aria-label="Ask Aiden">
+          <AidenSparkles />
+        </Fab>
+      </div>
+    </AppShell>
+  );
+}
+
+export const Overlays: Story = {
+  render: () => (
+    <div data-theme="db" style={{ height: '100vh' }}>
+      <OverlayShell />
     </div>
   ),
 };

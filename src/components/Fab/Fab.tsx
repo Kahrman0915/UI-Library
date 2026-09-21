@@ -5,8 +5,8 @@ import './Fab.scss';
 // A floating action button — fixed to a corner of the viewport. Token-driven:
 // it fills with `--primary`, so under `data-surface='aiden'` it becomes the
 // Aiden gradient (its signature "Ask Aiden" launcher), and picks up any host
-// brand's colour elsewhere. `pulse` adds expanding sonar rings; `badge` shows
-// a corner count.
+// brand's color elsewhere. `pulse` adds expanding sonar rings; `intro` twinkles the
+// icon's shapes once on mount; `badge` shows a corner count.
 const Fab = forwardRef<HTMLButtonElement, FabProps>(
   (
     {
@@ -15,6 +15,7 @@ const Fab = forwardRef<HTMLButtonElement, FabProps>(
       position = 'bottom-right',
       size = 'lg',
       pulse = false,
+      intro = false,
       badge,
       className,
       ...rest
@@ -26,7 +27,7 @@ const Fab = forwardRef<HTMLButtonElement, FabProps>(
       ref={ref}
       id={id}
       type="button"
-      className={`ui-fab ui-fab--pos-${position} ui-fab--sz-${size}${className ? ' ' + className : ''}`}
+      className={`ui-fab ui-fab--pos-${position} ui-fab--sz-${size}${intro ? ' ui-fab--intro' : ''}${className ? ' ' + className : ''}`}
     >
       {pulse && (
         <span className="ui-fab__rings" aria-hidden="true">

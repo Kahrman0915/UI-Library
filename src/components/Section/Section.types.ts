@@ -1,6 +1,6 @@
 /**
  * `default` — a section of a page: base-size heading, content level 2 below it.
- * `group` — a labelled group inside a section (the status groups on My Requests): a small
+ * `group` — a labeled group inside a section (the status groups on My Requests): a small
  * uppercase overline, content level 4 below it. Same component, one rung tighter.
  */
 export type SectionVariant = 'default' | 'group';

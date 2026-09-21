@@ -11,7 +11,7 @@ export type StatusDotProps = Omit<
   React.HTMLAttributes<HTMLSpanElement>,
   'children'
 > & {
-  /** Default `neutral`. Maps to the semantic colour tokens. */
+  /** Default `neutral`. Maps to the semantic color tokens. */
   status?: StatusDotStatus;
   /** Dot diameter. */
   size?: StatusDotSize;

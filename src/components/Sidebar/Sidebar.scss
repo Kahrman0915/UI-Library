@@ -60,6 +60,22 @@
   width: var(--sidebar-width-icon);
 }
 
+// overlay (contained + narrow, e.g. inside AppShellWorkspace below 768px): the panel
+// slides out OVER the page from the rail's edge instead of pushing it, so the gap never
+// reserves width. `position: fixed` resolves against the containing workspace here, so
+// the panel starts beside the rail and under the tab strip rather than at the window edge.
+.ui-sidebar-wrap[data-overlay='true'] .ui-sidebar__gap {
+  width: 0;
+}
+.ui-sidebar-wrap[data-overlay='true'][data-state='expanded'] .ui-sidebar__container {
+  box-shadow: var(--shadow-lg);
+}
+.ui-sidebar__scrim {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-20);
+}
+
 // ── The visible panel ───────────────────────────────────────────────────────
 .ui-sidebar__inner {
   display: flex;
@@ -455,11 +471,11 @@
      darker so hover lands below. Either way the two states differ, which is the
      whole point (they used to be one paint, told apart only by font-weight).
 
-     IT MUST STAY A COLOUR. The base is `background: transparent` with
+     IT MUST STAY A COLOR. The base is `background: transparent` with
      `transition: background`, and an earlier version of this fix layered an
      --opacity-50 gradient over the accent instead. That works visually but
      background-image CANNOT interpolate from `none`, so the fade turned into a
-     snap on every row. color-mix resolves to a plain colour, so the transition
+     snap on every row. color-mix resolves to a plain color, so the transition
      survives. Don't reintroduce a gradient here. */
   &:hover {
     background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));

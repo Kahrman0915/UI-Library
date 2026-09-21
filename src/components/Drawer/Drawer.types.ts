@@ -28,7 +28,7 @@ export type DrawerProps = React.HTMLAttributes<HTMLDivElement> & {
 export type DrawerHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Must equal the `Drawer`'s `id`, or the panel loses its accessible name. */
   id: string;
-  /** Rendered as the `<h2>` the drawer is labelled by. */
+  /** Rendered as the `<h2>` the drawer is labeled by. */
   title: string;
   /** Rendered under the title and referenced by the panel's `aria-describedby`. */
   description?: string;

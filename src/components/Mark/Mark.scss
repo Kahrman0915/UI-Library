@@ -9,9 +9,9 @@
       expressed as one — those read `--ui-mark-px`, set per size below.
 
    2. THE PAINT DOES NOT DEPEND ON `motion`. All three motion levels render the
-      same colours; the modifier gates animation and nothing else. The POC this
+      same colors; the modifier gates animation and nothing else. The POC this
       came from had a still mark that was NOT mode-aware and a live one that
-      was, which meant turning motion off silently changed the tile's colours.
+      was, which meant turning motion off silently changed the tile's colors.
       They are one mark now.
 
    The gradient's stops are not round numbers. Figma's 135deg mark measures its
@@ -39,7 +39,7 @@
   isolation: isolate;
   overflow: hidden;
   border-radius: 22.5%;
-  /* The brand's own on-colour, which is already mode-split. A flat white glyph
+  /* The brand's own on-color, which is already mode-split. A flat white glyph
      measured 1.74–2.66:1 on the pale dark-mode tiles — under the 3:1 graphical
      floor for every brand, and effectively illegible on two of them. */
   color: var(--primary-foreground);
@@ -208,7 +208,7 @@
 }
 
 /* ── DARK — THE GLASS, TURNED OVER ──────────────────────────────────────────
-   The colours swap in tokens.scss; only the sheen's GEOMETRY changes here.
+   The colors swap in tokens.scss; only the sheen's GEOMETRY changes here.
 
    The band now rises from the base instead of falling from the top, so its
    anchored edge moves from the top of the tile to the bottom — and the pivot
@@ -360,7 +360,7 @@
    reads as a physical object under glass rather than a picture that scales.
 
    DRIVEN ENTIRELY BY THREE NUMBERS. `usePointerTilt` writes --mx and --my
-   (both −1 to 1, origin at the tile's centre) and --on (0 at rest, 1 while
+   (both −1 to 1, origin at the tile's center) and --on (0 at rest, 1 while
    tracking); every rule here is a calc off those three. No per-frame style
    writing beyond the variables, no layout reads in the loop, and the whole
    thing falls back to nothing if the handler never runs — which is exactly what

@@ -71,7 +71,7 @@ const M = ({ children }: { children: React.ReactNode }) => (
 
 const DUR: [string, string, string][] = [
   ['--duration-fast', '100ms', 'quick micro-interactions'],
-  ['--duration-instant', '150ms', 'hover colour shifts'],
+  ['--duration-instant', '150ms', 'hover color shifts'],
   ['--duration-normal', '200ms', 'default UI transitions'],
   ['--duration-slow', '300ms', 'larger surfaces'],
   ['--duration-entrance', '220ms', 'overlay entrances (dialog/menu/popover)'],

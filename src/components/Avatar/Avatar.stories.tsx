@@ -14,8 +14,19 @@ const meta: Meta<typeof Avatar> = {
         'A person or entity’s picture, falling back to their initials when there is ' +
         'no image or it fails to load. `AvatarGroup` overlaps several into a stack ' +
         'with a `+N` overflow chip.',
-      tags: ['3 sizes', 'fallback'],
+      tags: ['4 sizes', 'fallback'],
       changelog: [
+        {
+          date: '2026-09-19',
+          summary: 'Avatar renders spans instead of divs, so it can sit inside a button — an account menu trigger.',
+          detail: 'The root and `__inner` are `<span>`s (`__inner` gains `display: block`, so it still fills the disc). A div is not allowed in a button\'s content. The forwarded ref is now an `HTMLSpanElement`; `AvatarGroup` is unchanged.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'A new `xs` size: a 24px disc for an account chip beside a name, such as the top-left of the app shell.',
+          detail:
+            '`.ui-avatar--sz-xs` is `--w-6`/`--h-6` with `--text-xs` on `--leading-3` (the same type rung as `sm`; there is no smaller text token), and a `--w-1` badge. `AvatarSize` gains `xs`; `AvatarGroup` accepts it too. The default is still `default`.',
+        },
         {
           date: '2026-09-11',
           summary:
@@ -25,7 +36,7 @@ const meta: Meta<typeof Avatar> = {
             '`.ui-avatar--sz-sm|default|lg` set a font-size with no `line-height`, so ' +
             'the initials fell back to `normal` — a value that varies by font and ' +
             'platform. Now `--leading-3` / `--leading-4` / `--leading-4`: the smallest ' +
-            'rung at or above the font size, because a single centred initial should ' +
+            'rung at or above the font size, because a single centered initial should ' +
             'never drive the disc’s box.',
         },
         {
@@ -52,7 +63,7 @@ const meta: Meta<typeof Avatar> = {
     } satisfies UiDocsParameters,
   },
   argTypes: {
-    size: { control: 'select', options: ['sm', 'default', 'lg'] },
+    size: { control: 'select', options: ['xs', 'sm', 'default', 'lg'] },
     shape: { control: 'select', options: ['circle', 'square'] },
     src: { control: 'text' },
     fallback: { control: 'text' },
@@ -76,6 +87,7 @@ export const Playground: Story = {};
 export const Sizes: Story = {
   render: () => (
     <div style={{ display: 'flex', gap: 16, alignItems: 'flex-end' }}>
+      <Avatar id="sz-xs" size="xs" fallback="KM" />
       <Avatar id="sz-sm" size="sm" fallback="KM" />
       <Avatar id="sz-md" size="default" fallback="KM" />
       <Avatar id="sz-lg" size="lg" fallback="KM" />

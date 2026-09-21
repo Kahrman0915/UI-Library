@@ -43,7 +43,7 @@ const meta: Meta<typeof Breadcrumb> = {
         ],
         notes:
           'A breadcrumb is NAVIGATION, not cancellation. It answers "where am I and how do I go up"; a `Cancel` button answers "throw this away". If a screen holds unsaved work, the guard belongs to the navigation event, not to a button — otherwise the sidebar, the app rail and the tab strip are all unguarded doors, and adding a Cancel button next to a breadcrumb just duplicates a route that is already covered.\n\n' +
-          'Do not repeat the application name in the trail when the chrome already states it. Root at the section the user would recognise from the nav.',
+          'Do not repeat the application name in the trail when the chrome already states it. Root at the section the user would recognize from the nav.',
       },
       changelog: [
         {

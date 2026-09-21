@@ -14,6 +14,11 @@ const meta: Meta<typeof ModeToggler> = {
       tags: ['3 sizes'],
       changelog: [
         {
+          date: '2026-09-18',
+          summary: 'The small size is a 32px square (was 30px), the same box as a small icon-only Button.',
+          detail: '`--sz-sm` padding is `calc(var(--p-2) - var(--border-w-100))`: the toggler has a 1px transparent border the Button box does not, so the padding gives that pixel back. Glyph stays 16px (1.33 stroke).',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

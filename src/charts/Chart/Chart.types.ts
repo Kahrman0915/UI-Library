@@ -8,7 +8,7 @@ export type ChartCurve = Curve;
 
 export type ChartSeries = {
   /**
-   * Stable identity. The colour slot is derived from this, NOT from the array
+   * Stable identity. The color slot is derived from this, NOT from the array
    * index, so hiding one series never repaints the others.
    */
   key: string;
@@ -32,7 +32,7 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   description?: string;
   /** X-axis band labels. Milestone 1 has no time scale — these are strings. */
   categories: string[];
-  /** Max 8 keep a colour slot; the tail folds into a muted "Other". */
+  /** Max 8 keep a color slot; the tail folds into a muted "Other". */
   series: ChartSeries[];
   /**
    * OUTER height in px, including the x-axis band and legend. Getting this
@@ -54,18 +54,18 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   stacked?: boolean;
   /** `expand` normalises each category to a share (100% stacked). */
   offset?: StackOffset;
-  /** Bars want a gap between categories; line and area want vertices on centre. */
+  /** Bars want a gap between categories; line and area want vertices on center. */
   bandPadding?: boolean;
   /** Defaults to true once there are 2+ series. */
   showLegend?: boolean;
   /**
    * Label each series at its own last point instead of in a legend.
    *
-   * The reason is not decoration. A legend asks the reader to hold a colour in
+   * The reason is not decoration. A legend asks the reader to hold a color in
    * memory, cross the chart, and match it — which is exactly the step that
-   * fails for anyone who cannot separate two of the colours, and the step that
+   * fails for anyone who cannot separate two of the colors, and the step that
    * a crossing line makes hardest. A label at the end of the line removes the
-   * lookup entirely, so colour stops being the only thing carrying identity.
+   * lookup entirely, so color stops being the only thing carrying identity.
    *
    * Widens the right margin to fit the longest label, and turns the legend off
    * by default, since the labels ARE the key.
@@ -75,7 +75,7 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   /** The table twin is ALWAYS in the DOM; this controls what is visible. */
   view?: ChartView;
   emptyLabel?: string;
-  /** Controlled legend filtering. Keys listed here render de-emphasised. */
+  /** Controlled legend filtering. Keys listed here render de-emphasized. */
   hiddenSeries?: string[];
   onSeriesToggle?: (key: string, visible: boolean) => void;
   /**
@@ -94,10 +94,10 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
    * would otherwise mute the entire chart and leave nothing foregrounded.
    */
   /**
-   * Colour each DATUM by its value instead of each series by its slot.
+   * Color each DATUM by its value instead of each series by its slot.
    *
-   * Categorical is the default and stays the default: colour means identity.
-   * Set this only for ORDERED data, where colour means quantity — and then one
+   * Categorical is the default and stays the default: color means identity.
+   * Set this only for ORDERED data, where color means quantity — and then one
    * series is usually the right shape, because the scale, not the series list,
    * is doing the distinguishing.
    */
@@ -109,7 +109,7 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
 
   emphasis?: string | string[];
   /**
-   * Pointing at a legend entry emphasises that series for as long as you point.
+   * Pointing at a legend entry emphasizes that series for as long as you point.
    *
    * On by default wherever a legend renders: it is the cheapest fix for a dense
    * chart and it costs nothing when unused. Transient — it overrides `emphasis`
@@ -121,7 +121,7 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
   children?: ReactNode;
 };
 
-/** Nothing emphasised · the subject · the context behind it. */
+/** Nothing emphasized · the subject · the context behind it. */
 export type SeriesEmphasis = 'none' | 'on' | 'off';
 
 export type BarChartProps = Omit<ChartProps, 'stacked' | 'offset' | 'bandPadding' | 'children'> & { layout?: BarLayout };

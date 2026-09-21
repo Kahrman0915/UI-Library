@@ -24,7 +24,7 @@ const meta: Meta<typeof Tabs> = {
         'when switching is expensive or destructive.\n\n' +
         '`variant` changes only how the tablist looks — `default` (enclosed pill track), ' +
         '`line` (a bar on `--primary`) and `browser` (a card tab joined to its panel) ' +
-        'all share identical semantics, keyboard behaviour and aria wiring.',
+        'all share identical semantics, keyboard behavior and aria wiring.',
       tags: ['compound', '4 parts', '3 variants'],
       usage: {
         when: [
@@ -312,7 +312,7 @@ export const ManyTabs: Story = {
 
 /**
  * The three treatments side by side. Every one of them has identical semantics,
- * keyboard behaviour and aria wiring — `variant` is presentation only.
+ * keyboard behavior and aria wiring — `variant` is presentation only.
  *
  * Note what each does with the panel. `default` and `line` leave `TabsContent`
  * unstyled, so a `Card` belongs there. `browser` makes the panel the surface

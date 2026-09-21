@@ -9,7 +9,7 @@ import './docs.scss';
  * Printing every story's source in full made pages 17,000px tall — you scrolled
  * past hundreds of lines of JSX to reach the next example, and page length was
  * set by how verbose a snippet happened to be rather than by how much there was
- * to read. Collapsed, this shows just enough to recognise the snippet;
+ * to read. Collapsed, this shows just enough to recognize the snippet;
  * expanded, it caps its height and scrolls inside itself, so the page never
  * grows past a predictable length.
  *
@@ -69,7 +69,7 @@ export function CodePane({
         <>
           <div className="ui-docs-code__fade" aria-hidden="true" />
           {/*
-            The centring lives on this wrapper, NOT on the Button. Button's
+            The centering lives on this wrapper, NOT on the Button. Button's
             press state is `transform: scale(…)` at a higher specificity, which
             REPLACES a `transform: translate(-50%, -50%)` set on the same
             element — so on mousedown the button jumped half its own size down

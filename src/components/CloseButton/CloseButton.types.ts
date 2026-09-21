@@ -1,5 +1,10 @@
-/** `background` adds a surface behind the glyph, for sitting over an image. */
-export type CloseButtonVariant = 'default' | 'background';
+/**
+ * `default` tints only the glyph on hover. `background` also fills with
+ * `--accent` on hover. `chip` is filled AT REST — a `--popover` disc with a
+ * `--border` hairline and `--shadow-xs` — for a close button laid over media
+ * or imagery, where a transparent X disappears.
+ */
+export type CloseButtonVariant = 'default' | 'background' | 'chip';
 /** Box size. All three keep a ≥24×24 pointer target — see {@link CloseButtonProps.size}. */
 export type CloseButtonSize = 'sm' | 'default' | 'lg';
 
@@ -17,7 +22,7 @@ export type CloseButtonProps = Omit<
    */
   size?: CloseButtonSize;
   disabled?: boolean;
-  /** What dismissal does. The button has no behaviour of its own. */
+  /** What dismissal does. The button has no behavior of its own. */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   /** Accessible name. Default `'Close'` — override to localize, or to say what
    *  is being closed when several are on screen. Named `ariaLabel` rather than

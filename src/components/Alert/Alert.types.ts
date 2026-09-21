@@ -1,6 +1,6 @@
 import type { LucideIcon } from 'lucide-react';
 
-/** Semantic colour family. `brand` follows the active `data-theme`. */
+/** Semantic color family. `brand` follows the active `data-theme`. */
 export type AlertVariant =
   | 'default'
   | 'brand'
@@ -9,7 +9,7 @@ export type AlertVariant =
   | 'warning'
   | 'error';
 
-/** `default` is a filled tint; `outline` is transparent with a coloured border. */
+/** `default` is a filled tint; `outline` is transparent with a colored border. */
 export type AlertStyle = 'default' | 'outline';
 
 // `style` is redefined as the visual style (default | outline), so the native

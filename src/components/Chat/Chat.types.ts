@@ -78,7 +78,7 @@ export type ChatMessageActionsProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 /**
- * - `divider` — a labelled rule ("Today", "New messages").
+ * - `divider` — a labeled rule ("Today", "New messages").
  * - `system` — an inline system note.
  * - `status` — a note with a leading `StatusDot` (see `status`).
  */
@@ -187,6 +187,65 @@ export type ChatToolCallProps = Omit<
   statusLabel?: React.ReactNode;
   /** Start expanded. Uncontrolled — the card owns its state after that. */
   defaultOpen?: boolean;
+  className?: string;
+};
+
+// ── Action card ──────────────────────────────────────────────────────────────
+
+/**
+ * Where an action Aiden proposed has got to.
+ *
+ * - `proposed` — it wants a decision before anything changes. The only state
+ *   that blocks.
+ * - `running` — confirmed and under way.
+ * - `done` — it changed something. The card becomes a receipt, and is where an
+ *   undo belongs.
+ * - `failed` — it did not change anything, and says so.
+ */
+export type ChatActionStatus = 'proposed' | 'running' | 'done' | 'failed';
+
+/**
+ * An action the assistant wants to take, and then the record that it took it.
+ *
+ * **Not `ChatToolCall`, and the difference is the point.** A tool call is a
+ * disclosure — collapsible, the tool name in mono, args and result for anyone
+ * curious, and entirely ignorable. This is a decision: it asks before the
+ * product changes and leaves a receipt afterwards, so it is never collapsed and
+ * never dismissible. Reach for the tool call to show HOW something ran; reach
+ * for this to ask WHETHER it should.
+ *
+ * The buttons are yours (`primaryAction` / `secondaryAction`, the shape
+ * `Announcement` already uses) because only the caller knows whether the confirm
+ * is destructive — and the house rule stands: a destructive confirm is
+ * `variant="error"` and its companion is `style="ghost"`, never `outline`.
+ *
+ * `title` is Omitted from the native attributes because ours is content, not a
+ * browser tooltip.
+ */
+export type ChatActionCardProps = Omit<
+  React.HTMLAttributes<HTMLDivElement>,
+  'title'
+> & {
+  /** Seeds `${id}-title`, `${id}-description` and `${id}-status`. */
+  id: string;
+  /** What the action will do, or did. Written as a sentence, not a tool name. */
+  title: React.ReactNode;
+  /** The specific thing being acted on — the space, the dashboard, the file. */
+  description?: React.ReactNode;
+  /** Default `proposed`. See {@link ChatActionStatus}. */
+  status?: ChatActionStatus;
+  /**
+   * The action's own glyph, used while it is `proposed`. The other three states
+   * replace it with their own — a spinner, a check, an alert — because at that
+   * point the state is the thing you need to read.
+   */
+  icon?: React.ReactNode;
+  /** Overrides the status line (default Needs your OK / Working… / Done / Couldn't finish). */
+  statusLabel?: React.ReactNode;
+  /** Trailing button — Confirm while proposed, Undo once done, Retry on failure. */
+  primaryAction?: React.ReactNode;
+  /** The quieter companion, leading the primary. Cancel, or nothing. */
+  secondaryAction?: React.ReactNode;
   className?: string;
 };
 
@@ -368,7 +427,7 @@ export type ChatCitationProps = Omit<
   className?: string;
 };
 
-/** The labelled group of source cards under a cited reply. */
+/** The labeled group of source cards under a cited reply. */
 export type ChatSourcesProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Optional heading above the cards (e.g. "Sources"). */
   label?: React.ReactNode;
@@ -399,7 +458,7 @@ export type ChatSourceProps = Omit<
 // ── Greeting / empty state ───────────────────────────────────────────────────
 
 /**
- * The centred start screen for an empty conversation. A dedicated component
+ * The centered start screen for an empty conversation. A dedicated component
  * rather than a reuse of `Empty` — it slots `ChatSuggestions` underneath and
  * carries the assistant's own rhythm.
  *

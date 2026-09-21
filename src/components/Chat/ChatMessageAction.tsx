@@ -12,7 +12,7 @@ import type { ChatMessageActionProps } from './Chat.types';
  * meant every consumer would have re-invented the copy timer and the pressed
  * state. This is the shipped version: the shared `.ui-icon-button` shell, an
  * optional `aria-pressed` toggle shape, and `CodeBlock`'s exact
- * copy-with-check-swap behaviour behind a single `copyValue` prop.
+ * copy-with-check-swap behavior behind a single `copyValue` prop.
  */
 const ChatMessageAction = forwardRef<HTMLButtonElement, ChatMessageActionProps>(
   ({ icon: Icon, label, active, copyValue, onClick, className, ...rest }, ref) => {

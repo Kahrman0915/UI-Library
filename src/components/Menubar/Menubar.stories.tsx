@@ -24,7 +24,7 @@ const meta: Meta<typeof Menubar> = {
       description:
         'The desktop-style horizontal menu bar. Once one menu is open, hovering the ' +
         'others switches between them, and arrow keys move across the triggers. Built ' +
-        'on `DropdownMenu`, so positioning and item behaviour come along for free.',
+        'on `DropdownMenu`, so positioning and item behavior come along for free.',
       tags: ['compound', '11 parts'],
       changelog: [
         {
@@ -130,7 +130,7 @@ export const KeyboardNavigation: Story = {
           'The bar is a **single tab stop** — a roving tabindex means Tab lands on ' +
           'the bar once and moves past it, rather than stepping through every menu. ' +
           'Arrow keys move between triggers from there. Once any menu is open, ' +
-          '*hovering* another trigger switches to it, which is the behaviour that ' +
+          '*hovering* another trigger switches to it, which is the behavior that ' +
           'makes a menu bar feel native. Two v1 gaps to know about: there are no ' +
           'submenus (only `ContextMenu` has those), and ArrowLeft/Right does not ' +
           'work from *inside* an open menu — use hover, or Escape then arrow.',

@@ -17,8 +17,8 @@ const Badge = forwardRef<HTMLDivElement, BadgeProps>(
     },
     ref,
   ) => {
-    // Two independent axes: the colour class sets a local palette, the
-    // appearance class consumes it. Every colour therefore works with every
+    // Two independent axes: the color class sets a local palette, the
+    // appearance class consumes it. Every color therefore works with every
     // appearance, which the old flat variant list could not express.
     return (
       <div

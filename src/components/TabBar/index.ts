@@ -10,5 +10,6 @@ export type {
   TabBarNewTabProps,
   TabBarMenuProps,
   TabBarMenuItem,
+  TabBarMenuGroup,
   TabBarActivationMode,
 } from './TabBar.types';

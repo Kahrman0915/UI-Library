@@ -52,6 +52,11 @@ const meta: Meta<typeof Sidebar> = {
       tags: ['compound', '23 parts', 'navigation'],
       changelog: [
         {
+          date: '2026-09-19',
+          summary: 'Inside the app shell, a narrow window opens the sidebar as a slide-out over the page, not a full-window drawer.',
+          detail: 'New internal `SidebarContainedContext` (provided by `AppShellWorkspace`, not exported). When it is set and the viewport is below the mobile breakpoint, `Sidebar` renders its desktop structure with `data-overlay="true"`: the gap reserves no width, the panel is driven by `openMobile` and collapses offcanvas only, a transparent `.ui-sidebar__scrim` closes it on a page click, and Escape closes it. A sidebar outside the shell still becomes a `Drawer`.',
+        },
+        {
           date: '2026-09-15',
           summary: 'A quieter sidebar: muted resting links, softer selected and hover states, uppercase group labels, a red count badge, and a collapse button that says what it does.',
           detail:
@@ -79,12 +84,12 @@ const meta: Meta<typeof Sidebar> = {
             'partial pass of the selected paint rather than the same paint.',
           detail:
             'Hover and `--active` both set a flat `--sidebar-accent`, so the two states were one ' +
-            'colour told apart only by `font-weight`. Hover is now ' +
+            'color told apart only by `font-weight`. Hover is now ' +
             '`color-mix(in srgb, var(--sidebar-accent) 55%, var(--sidebar))` — the accent blended ' +
             'back toward the rail it sits on, which is mode-correct for free: light rails are ' +
             'lighter than the accent so hover lands above active, dark rails are darker so it ' +
             'lands below.\n\n' +
-            'IT MUST STAY A COLOUR. The base is `background: transparent` with ' +
+            'IT MUST STAY A COLOR. The base is `background: transparent` with ' +
             '`transition: background`. An earlier version of this fix layered a gradient over the ' +
             'accent, which looks right and breaks the animation — `background-image` cannot ' +
             'interpolate from `none`, so every row snapped instead of fading. Do not reintroduce ' +

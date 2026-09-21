@@ -228,8 +228,8 @@
   // is a 20px tile and a bullet needs 6.
   //
   // The box is as tall as the row's LINE BOX, not as tall as the disc, and the
-  // disc centres inside it — so on a bullet that wraps to three lines the marker
-  // sits on the first line. .ui-item centres its media, which is what an avatar
+  // disc centers inside it — so on a bullet that wraps to three lines the marker
+  // sits on the first line. .ui-item centers its media, which is what an avatar
   // wants and the opposite of what a bullet wants. Height tracks --leading-*
   // rather than an equivalent --h-* on purpose: if the row's line-height moves,
   // this has to move with it.

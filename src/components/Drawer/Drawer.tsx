@@ -1,4 +1,4 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
@@ -10,6 +10,15 @@ import type {
 } from './Drawer.types';
 import './Drawer.scss';
 import { getFocusable } from '#/utils/focus';
+
+/**
+ * Internal: `true` inside `AppShell`. A drawer opened there starts below the tab strip
+ * instead of covering it — the strip stays visible and usable, and the overlay covers the
+ * rail, the sidebar and the page (owner, 2026-09-19). Context passes through the portal,
+ * so the shell reaches a drawer rendered into `document.body`. Not exported from the
+ * package.
+ */
+export const DrawerBelowStripContext = createContext(false);
 
 // closed → open (slide in) → closing (slide out) → closed. The `closing` state
 // keeps the panel mounted so its exit animation can play, mirroring Tooltip.
@@ -32,6 +41,7 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     const panelRef = useRef<HTMLDivElement | null>(null);
     const previouslyFocused = useRef<HTMLElement | null>(null);
     const mounted = useMounted();
+    const belowStrip = useContext(DrawerBelowStripContext);
     const [state, setState] = useState<DrawerState>(open ? 'open' : 'closed');
 
     // Only reference ids that exist (same fix as Dialog): the unconditional
@@ -63,6 +73,19 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         return prev === 'closed' ? 'closed' : 'closing';
       });
     }, [open]);
+
+    // Inside AppShell the tab strip stays live above the drawer, so using the tab bar —
+    // a tab, the "+", the tab menu — means the user is moving to another document: ask
+    // the consumer to close. Pointer only; the focus trap keeps the keyboard in here.
+    // Capture phase, so it runs before the tab's own handler switches the document.
+    useEffect(() => {
+      if (!belowStrip || state !== 'open') return;
+      const handlePointerDown = (e: PointerEvent) => {
+        if (e.target instanceof Element && e.target.closest('.ui-tab-bar')) onClose();
+      };
+      document.addEventListener('pointerdown', handlePointerDown, true);
+      return () => document.removeEventListener('pointerdown', handlePointerDown, true);
+    }, [belowStrip, state, onClose]);
 
     // Escape asks the consumer to close (which flips `open` → the exit anim).
     useEffect(() => {
@@ -161,7 +184,7 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
 
     return createPortal(
       <div
-        className={`ui-drawer-overlay${isClosing ? ' ui-drawer-overlay--closing' : ''}`}
+        className={`ui-drawer-overlay${belowStrip ? ' ui-drawer-overlay--below-strip' : ''}${isClosing ? ' ui-drawer-overlay--closing' : ''}`}
         onClick={handleOverlayClick}
         role="presentation"
       >

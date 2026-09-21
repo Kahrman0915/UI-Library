@@ -4,6 +4,7 @@ import { Sparkles } from 'lucide-react';
 import AidenLauncher from './AidenLauncher';
 import Mark from '../Mark';
 import type { UiDocsParameters } from '../../types/DocsTypes';
+import { AidenSparkles } from '../../prototypes/AidenSparkles';
 
 const meta: Meta<typeof AidenLauncher> = {
   title: 'AI/AidenLauncher',
@@ -47,7 +48,7 @@ export const Default: Story = {
           id="launcher"
           title="Ask Aiden"
           description="Your assistant across the whole suite."
-          icon={<Sparkles size={28} aria-hidden="true" />}
+          icon={<AidenSparkles size={48} gradient />}
           suggestions={[
             'Summarize my open requests',
             'Build a dashboard from this data',

@@ -12,6 +12,13 @@
   }
 }
 
+// Inside AppShell the tab strip stays above the drawer: the overlay starts under it, and
+// because the overlay's backdrop-filter makes it the panel's containing block, the panel's
+// `inset: 0` edges follow (a top drawer drops under the strip too).
+.ui-drawer-overlay--below-strip {
+  top: var(--app-strip-height);
+}
+
 .ui-drawer {
   position: fixed;
   display: flex;

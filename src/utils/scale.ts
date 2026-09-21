@@ -73,7 +73,7 @@ export type BandScale = {
   readonly step: number;
   readonly count: number;
   readonly range: readonly [number, number];
-  /** Centre of band `index` — where a line vertex or tick belongs. */
+  /** Center of band `index` — where a line vertex or tick belongs. */
   center: (index: number) => number;
   /** Pixel → band index, or -1 outside. The hit-test for pointer + keyboard. */
   invert: (px: number) => number;
@@ -116,7 +116,7 @@ export function bandScale(
     invert: {
       value: (px: number) => {
         if (!usable) return -1;
-        // Nearest band by CENTRE, not "inside the painted band". A pointer in
+        // Nearest band by CENTER, not "inside the painted band". A pointer in
         // the gap between two bars must still resolve to one of them, or the
         // crosshair flickers off every time it crosses a gutter.
         const i = Math.round((px - start - bandwidth / 2) / step);

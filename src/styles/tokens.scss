@@ -231,9 +231,12 @@ html {
 
   /* -----------------------------------------------------------------------
      Custom — Icon
-     The RENDERED stroke width a lucide icon draws at 12 / 16 / 24px. lucide's
+     The RENDERED stroke width a lucide icon draws at each icon size. lucide's
      own stroke-width is 2 *viewBox units*, so it already scales with the icon
-     and these are the values that fall out: 2 x size / 24.
+     and these are the values that fall out: 2 x size / 24. Named by icon SIZE
+     (2026-09-18) so they read the same as Figma's `icon-border-width/{size}`
+     primitives and `icon/stroke-weight` modes — one per size the library draws,
+     so every Figma mode aliases a token instead of carrying a typed-in number.
 
      ⚠ Do NOT assign these to `stroke-width`. That property is in viewBox
      units, so `stroke-width: var(--icon-border-width)` on a 16px icon renders
@@ -242,9 +245,11 @@ html {
      unset and let lucide scale; these tokens exist to *document* the resulting
      widths, and the Figma `icon/stroke-weight` modes alias them.
      ----------------------------------------------------------------------- */
-  --icon-border-width-sm: 1px; /* at a 12px icon */
-  --icon-border-width: 1.33px; /* at a 16px icon */
-  --icon-border-width-lg: 2px; /* at a 24px icon */
+  --icon-border-width-12: 1px;
+  --icon-border-width-14: 1.167px;
+  --icon-border-width-16: 1.33px; /* the default: most icons are 16px */
+  --icon-border-width-20: 1.667px;
+  --icon-border-width-24: 2px;
 
   /* -----------------------------------------------------------------------
      Opacity Scale (for CSS opacity property)
@@ -281,6 +286,18 @@ html {
     0px 8px 10px -1px var(--shadow-color-xl);
   --shadow-2xl: 0px 1px 3px 0px var(--shadow-color-2xl),
     0px 12px 16px -2px var(--shadow-color-2xl);
+  /* A DOCKED panel, not a floating card. The other shadows all cast downward,
+     which does nothing for a surface whose visible edge is vertical — and in
+     light every surface token is #ffffff, so the page and the panel are the
+     same colour and the lift is the only thing separating them. A tight layer
+     for definition plus a wide soft halo.
+
+     SYMMETRIC ON PURPOSE: `box-shadow` has no logical-direction form, so a
+     leftward cast would point the wrong way under `dir="rtl"`. At the viewport
+     edge only the inboard side is ever visible, so a halo reads identically
+     and mirrors for free. */
+  --shadow-panel: 0px 2px 8px 0px var(--shadow-color-2xl),
+    0px 0px 56px -6px var(--shadow-color-2xl);
 
   /* -----------------------------------------------------------------------
      Z-Index Scale
@@ -308,7 +325,7 @@ html {
      They are multipliers rather than booleans because CSS has no booleans and
      the value has to enter calc(): every tinted surface is
      `color-mix(…, var(--tint-stock) calc(N% * var(--tint-page)), <base>)`,
-     so 0 collapses the mix to the base colour numerically. It also leaves the
+     so 0 collapses the mix to the base color numerically. It also leaves the
      door open to a continuous 0–1 strength without touching any call site.
 
      `page` tints the content surfaces; `rail` tints the sidebar alone, so a
@@ -330,6 +347,7 @@ html {
   --duration-reveal: 500ms;   /* full-screen View Transition reveal (ModeToggler) */
   --duration-ripple: 600ms;   /* Button ripple expand (useRipple) */
   --duration-pulse: 2800ms;   /* Fab "sonar" ring pulse — slow + elegant */
+  --duration-twinkle: 900ms;  /* one Fab sparkle twinkle (the `intro` runs three) */
   /* Mark glass. Longer than anything else in the scale, and COPRIME on purpose:
      11s and 7.3s share no common factor, so the bloom and the sheen never line
      up and the composite has no visible loop. Tuned against each other — moving
@@ -502,6 +520,13 @@ html {
      the pill is light in both modes, so its ink never flips. */
   --tabs-indicator: #ffffff;
   --tabs-indicator-foreground: #0f172a;
+
+  /* Canvas — the Builder's edit surface. A 32px grid of hairlines, drawn as a
+     background-image rather than 86 elements the way Figma has to. The token
+     holds the SOLID colour and the component applies --o-20, mirroring the
+     Figma model (solid variable + the instance placed at 20%) so the strength
+     stays visible in one place instead of baked into a hex. */
+  --canvas-line: #94a3b8;
   --secondary: var(--base-secondary);
   --secondary-foreground: #1e293b;
   --muted: var(--base-muted);
@@ -554,8 +579,8 @@ html {
      of glass. The RAMP is per-brand and lives in the brand blocks; the GLASS is
      one lighting model shared by every brand, and lives here.
 
-     These are whole gradients and whole shadow colours rather than a hex plus
-     an alpha, for the same reason --shadow-* embeds its own colour: the layer
+     These are whole gradients and whole shadow colors rather than a hex plus
+     an alpha, for the same reason --shadow-* embeds its own color: the layer
      IS the value. Splitting a four-stop falloff into four tokens would let a
      consumer set three of them and get something that is no longer a highlight.
 
@@ -681,12 +706,12 @@ html {
      Slot N is one series; --chart-muted is the fold past six.
 
      WHY GREY, ON PURPOSE: a chart that reads in slate is working on form,
-     hierarchy, motion and interaction rather than leaning on hue. Colour can
-     flatter a weak chart. Per-brand colour is a later, additive change — the
+     hierarchy, motion and interaction rather than leaning on hue. Color can
+     flatter a weak chart. Per-brand color is a later, additive change — the
      searched palettes exist in the POC recipe (BRAND_CHARTS) and drop straight
      in once the charts themselves are right.
 
-     Being one hue makes this the MOST colour-blind-safe palette obtainable:
+     Being one hue makes this the MOST color-blind-safe palette obtainable:
      lightness differences survive protan, deutan and tritan intact, which is
      the exact opposite of an even hue wheel at constant lightness (that scores
      CVD dE 0.5 against a floor of 8 — the trap that looks most correct).
@@ -726,7 +751,7 @@ html {
   --chart-4: #607087; /* step 2 */
   --chart-5: #0e1b2d; /* step 6 */
   --chart-6: #4a596f; /* step 3 */
-  /* The "Other" fold and every de-emphasised mark under `emphasis`.
+  /* The "Other" fold and every de-emphasized mark under `emphasis`.
 
      CONSTRAINED FROM BOTH SIDES, and it is the tighter of the two that sets it.
 
@@ -735,13 +760,13 @@ html {
      surface and away from 3:1, which it does not reach (2.06:1) and structurally
      cannot: the lightest slot already sits near the floor at 3.66:1, so nothing
      lighter clears it. Discharged the way the fold always was — the mute drops
-     stroke weight as well as colour, and the table twin and tooltip still carry
+     stroke weight as well as color, and the table twin and tooltip still carry
      every muted value.
 
      It must also stay dE >= 15 FROM EVERY SLOT — the same floor adjacent slots
      are held to. Miss that and emphasis silently does nothing whenever the
      subject happens to be the nearest slot: the reader sees two identical
-     colours and reasonably concludes they are one series. The previous dark
+     colors and reasonably concludes they are one series. The previous dark
      value was dE 2.7 from --chart-2 and had exactly that bug, in the FOLD as
      well as in emphasis, which is why `npm run test:palette` now gates it.
 
@@ -856,7 +881,7 @@ html {
      `-text` tags remain the strictly-AA-safe path. */
   --category-foreground: #ffffff;
 
-  /* Focus ring colours (semantic + neutral) */
+  /* Focus ring colors (semantic + neutral) */
   --focus: rgba(148, 163, 184, 0.5);
   --error-focus: rgba(211, 36, 36, 0.4);
   --warning-focus: rgba(194, 65, 12, 0.4);
@@ -1006,6 +1031,11 @@ html {
      stays dark, so --tabs-indicator-foreground is not redeclared. */
   --tabs-indicator: #94a3b8;
 
+  /* Canvas — see the light block. Slate-600 rather than a lightened slate:
+     the grid sits ON the page surface, so in dark it has to read as a recess
+     in the ground, not as a set of glowing wires over it. */
+  --canvas-line: #475569;
+
   /* Tooltip — always the neutral slate inverse, never themed (carve-out). */
   --tooltip-background: #cbd5e1;
   --tooltip-foreground: #0f172a;
@@ -1048,7 +1078,7 @@ html {
      contrast where a dark halo would spend it.
 
      --mark-shade is pushed into the far corner, AWAY from the glyph. An earlier
-     cut centred it and it read as a smudge under the icon. */
+     cut centered it and it read as a smudge under the icon. */
   /* The neutral ramp inverts with everything else: the dark tile is PALE, so
      the highlight steps UP the slate scale and the deep corner is a mid-slate
      rather than near-black. --primary-main is already slate-300 here, and its
@@ -1136,7 +1166,7 @@ html {
   --chart-5: #e0e9f5; /* step 6 */
   --chart-6: #98a6ba; /* step 3 */
   /* Was #64748b, which sat dE 2.7 from --chart-2 — close enough that a folded
-     "Other" and a real series read as the same colour, and emphasising slot 2
+     "Other" and a real series read as the same color, and emphasizing slot 2
      produced no visible emphasis at all. See the light block for the full
      reasoning; this trades 3.07:1 down to 1.79:1 to buy dE 15.4, because a mute
      that COLLIDES with a slot is a wrong chart, while a faint one is a quiet
@@ -1253,7 +1283,7 @@ html {
      the inverted counterpart of the light white value. */
   --category-foreground: #0f172a;
 
-  /* Focus ring colours (semantic + neutral) */
+  /* Focus ring colors (semantic + neutral) */
   --focus: rgba(147, 197, 253, 0.45);
   --error-focus: rgba(250, 133, 133, 0.4);
   --warning-focus: rgba(251, 191, 36, 0.4);
@@ -1435,7 +1465,7 @@ html {
    gradient, and its six categorical chart slots.
 
    --chart-1..6 STOP BEING NEUTRAL SLATE inside a theme scope. No token is
-   renamed and nothing errors, so this is a silent behavioural change for any
+   renamed and nothing errors, so this is a silent behavioral change for any
    consumer that expected the slate ramp under a brand — it is intended, and it
    is the reason charts now read as the brand rather than as chrome. */
 /* =========================================================================
@@ -2012,7 +2042,7 @@ html {
 /* AIDEN TAKES THE MAIN BRAND'S NEUTRALS BACK, and this is a decision rather
    than a gap. Aiden composes INSIDE a brand, so without this an Aiden panel
    dropped into a tinted db page would inherit db's tinted surfaces and repaint
-   itself in another product's colour — tearing a hole in the page it is a guest
+   itself in another product's color — tearing a hole in the page it is a guest
    in. And Aiden's own product is a CHAT: a reading surface, where a tint is a
    liability rather than an asset. Its identity is carried by the gradient and
    the mark, which is a categorical difference; a surface tint is only ever a

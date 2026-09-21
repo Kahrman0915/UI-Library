@@ -90,12 +90,12 @@ import { Button, Card, Dialog } from '@ui/lib';`}</Pre>
 
       <H2>The three axes of theming</H2>
       <P>
-        Colour moves on three <em>independent</em>, attribute-driven axes that compose freely. Full detail
+        Color moves on three <em>independent</em>, attribute-driven axes that compose freely. Full detail
         (and live demos) live in <strong>Foundations → Themes</strong>.
       </P>
       <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 720 }}>
         {[
-          ['1 · Mode', <><C>data-mode="light|dark"</C> on <C>&lt;html&gt;</C> — flips every colour. The <C>ModeToggler</C> owns it.</>],
+          ['1 · Mode', <><C>data-mode="light|dark"</C> on <C>&lt;html&gt;</C> — flips every color. The <C>ModeToggler</C> owns it.</>],
           ['2 · Theme', <><C>data-theme="{'{code}'}"</C> on any subtree — remaps just <C>--primary</C> to a sub-brand hue (8 codes). Absence = the neutral main brand.</>],
           ['3 · Surface', <><C>data-surface="aiden"</C> — the AI surface, a violet gradient identity that layers <em>inside</em> any brand.</>],
         ].map(([k, v]) => (
@@ -109,16 +109,16 @@ import { Button, Card, Dialog } from '@ui/lib';`}</Pre>
       <H2>Two token layers</H2>
       <P>
         <strong>Primitives</strong> are the raw scales — spacing, sizing, radii, the type ramp, motion.{' '}
-        <strong>Semantic</strong> tokens are the colours that move on the three axes (<C>--background</C>,{' '}
+        <strong>Semantic</strong> tokens are the colors that move on the three axes (<C>--background</C>,{' '}
         <C>--primary</C>, <C>--error</C>…), each paired with a <C>-foreground</C> for text on it. See{' '}
         <strong>Typography</strong>, <strong>Spacing &amp; Sizing</strong>, <strong>Motion</strong>, and{' '}
-        <strong>Tokens</strong> (colour).
+        <strong>Tokens</strong> (color).
       </P>
 
       <H2>Accessibility is built in</H2>
       <P>
         Every text-on-surface pairing the components use clears <strong>WCAG AA</strong>, enforced by a
-        contrast script (<C>npm run test:contrast</C>) that fails CI below 4.5:1. Where a themed colour is
+        contrast script (<C>npm run test:contrast</C>) that fails CI below 4.5:1. Where a themed color is
         used as <em>text</em> on a tint, a nudged <C>-text</C> token keeps it legible; reduced-motion is
         honoured globally.
       </P>
@@ -129,7 +129,7 @@ import { Button, Card, Dialog } from '@ui/lib';`}</Pre>
           ['Typography', 'The type ramp, weights, leading, tracking.'],
           ['Spacing & Sizing', 'The spacing scale, radii, borders, max-widths.'],
           ['Motion', 'Durations, easings, reduced-motion.'],
-          ['Tokens', 'The colour system + live contrast pairings.'],
+          ['Tokens', 'The color system + live contrast pairings.'],
           ['Themes', 'The three axes in depth + the Aiden surface.'],
           ['Components', '59 components, each with stories.'],
         ].map(([t, d]) => (

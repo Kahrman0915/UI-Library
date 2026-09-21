@@ -21,7 +21,19 @@ const meta: Meta<typeof Chip> = {
         'once. One standalone on/off control is a `Toggle`; one-of-N mutually ' +
         'exclusive options is a `ToggleGroup`.',
       tags: ['multi-select'],
+      usage: {
+        when: ['Choosing filters or tags where any number can be on at once.'],
+        avoid: [
+          'Showing a filter that is already APPLIED and can be removed — use `FilterTag`. Chip is a toggle and announces `aria-pressed`, so an applied filter drawn as a Chip reads as "not pressed" while it is on, and a trailing X icon inside the Chip is not a separate control.',
+        ],
+      },
       changelog: [
+        {
+          date: '2026-09-18',
+          summary: 'Docs only — a removable applied filter is now `FilterTag`, not a Chip with an X.',
+          detail:
+            'Chip is unchanged. The Browse page had drawn its active filters as Chips with a trailing X glyph; that looks right but announces a toggle state, and the X is not a control of its own. `FilterTag` covers that role with a real, separately named remove button.',
+        },
         {
           date: '2026-07-30',
           summary:
@@ -73,7 +85,7 @@ export const Sizes: Story = {
 };
 
 /**
- * An `IconCenter` with no `label` renders alone in a squared, centred box —
+ * An `IconCenter` with no `label` renders alone in a squared, centered box —
  * the same rule Toggle and ToggleGroup use. `aria-label` is required by the
  * type in this shape, because there is no visible text to name the control.
  */

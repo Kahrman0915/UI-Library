@@ -9,7 +9,7 @@ import Switch from '../../components/Switch';
 import Input from '../../components/Input';
 import Chip from '../../components/Chip';
 
-// ─── Theme catalogue ────────────────────────────────────────────────────────
+// ─── Theme catalog ────────────────────────────────────────────────────────
 const themes = [
   // Hue names match the Figma Brand collection's mode names, so a value can be
   // traced from a swatch here to a variable there without a lookup table.
@@ -416,7 +416,7 @@ export const AidenSurface: Story = {
         <P>
           The surface reuses the entire theming machinery. It remaps{' '}
           <Code>--primary</Code> to Aiden's <strong>solid violet</strong> (the
-          gradient's fallback colour), so every <em>scalar</em> <Code>--primary</Code>{' '}
+          gradient's fallback color), so every <em>scalar</em> <Code>--primary</Code>{' '}
           consumer — outline / link / secondary text, borders, focus rings, and the
           checked checkbox / switch / radio / active chip — turns violet{' '}
           <em>for free</em>. Then the handful of <strong>hero fills</strong> that want

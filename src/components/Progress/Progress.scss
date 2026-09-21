@@ -96,11 +96,11 @@
 }
 
 // Aiden AI surface: the determinate default bar takes the gradient AND flows —
-// a palindrome (start→mid→end→mid→start) at 2× width, animated so the colours
+// a palindrome (start→mid→end→mid→start) at 2× width, animated so the colors
 // travel rightward (with the bar's growth) for a seamless "processing" shimmer.
 // (Position runs 200%→0 because an oversized background shifts left as the % rises,
 // so the reverse direction reads as rightward flow.) Semantic variants keep their
-// colour; the indeterminate shimmer keeps its own animation. Under
+// color; the indeterminate shimmer keeps its own animation. Under
 // prefers-reduced-motion the global rule collapses the duration, and the
 // palindrome's end frame == start, so it settles to a clean static gradient.
 [data-surface='aiden'] .ui-progress--default:not(.ui-progress--indeterminate) .ui-progress__indicator {

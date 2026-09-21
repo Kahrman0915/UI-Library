@@ -1,8 +1,8 @@
 // FullScreenDialog — geometry only.
 //
-// Everything else (surface colour, header/body/footer chrome, entrance and exit
+// Everything else (surface color, header/body/footer chrome, entrance and exit
 // keyframes) comes from Dialog. This file's whole job is to turn Dialog's small
-// centred card into a page that fills the viewport.
+// centered card into a page that fills the viewport.
 //
 // EVERY SELECTOR HERE IS TWO CLASSES (0,2,0) so it cannot lose to `.ui-dialog`
 // (0,1,0) on stylesheet order. `.ui-command-dialog` is the cautionary tale: it
@@ -54,7 +54,7 @@
   // Width is the flex MAIN axis on the overlay, so `min-width: auto` applies: a
   // long unbreakable string (a pasted URL in a feedback textarea, a wide table)
   // could push the panel past 100%, and `justify-content: center` would then
-  // centre the overflow and carry the left edge off-screen where it cannot be
+  // center the overflow and carry the left edge off-screen where it cannot be
   // reached. Height is the cross axis, so it has no equivalent problem.
   min-width: 0;
 
@@ -65,12 +65,12 @@
 }
 
 // ── The content column ──────────────────────────────────────────────────────
-// A centred column WITHOUT a wrapper element. The body stays the full-width
+// A centered column WITHOUT a wrapper element. The body stays the full-width
 // scroll container — which is the point, because capping the body's own width
 // would drag the scrollbar inward to the column edge instead of letting it hug
 // the viewport, and on a full-screen page that reads as broken.
 //
-// One grid track, centred: auto-placement drops each child into row n of the
+// One grid track, centered: auto-placement drops each child into row n of the
 // single column. Children stretch to the column width by default (a form fills
 // it), which they would NOT under the flex + `align-items: flex-start` this
 // replaces, and the body's existing `gap` carries over untouched.
@@ -92,7 +92,7 @@
   //
   // The horizontal padding is not arbitrary: it must match the header's
   // padding-inline floor, and it does so algebraically rather than by accident.
-  // The column is centred inside a content box already inset by p-6 on both
+  // The column is centered inside a content box already inset by p-6 on both
   // sides, so its left edge lands at `p-6 + (panel - 2*p-6 - column) / 2`,
   // which reduces to `(panel - column) / 2` — exactly what the header computes.
   // Change one and the title stops lining up with the content under it.
@@ -168,7 +168,7 @@
     --ui-fsd-content-width: var(--max-w-2xl);
   }
   // Default. Prose. The same column Chat uses for its transcript, so the system
-  // has ONE "readable centred column" value rather than two that nearly agree.
+  // has ONE "readable centered column" value rather than two that nearly agree.
   &--content-lg {
     --ui-fsd-content-width: var(--max-w-3xl);
   }

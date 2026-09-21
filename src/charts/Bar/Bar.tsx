@@ -53,7 +53,7 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
             // slots: the requirement compounds, and a lightness band (which the
             // series ramp needs, so no mark dominates) forces neighbouring hues
             // to similar luminance. Measured on the shipped ramp, adjacent pairs
-            // sit at 1.12–2.24:1. Separating the marks with the surface colour
+            // sit at 1.12–2.24:1. Separating the marks with the surface color
             // converts "3:1 against your neighbour" into "3:1 against the
             // background", which the palette DOES satisfy — and it is what both
             // the W3C guidance and Chartability #6 prescribe.
@@ -63,11 +63,11 @@ const ChartBars = ({ layout = 'grouped' }: { layout?: BarLayout }) => {
             // gap would invert into a negative height. Below ~3px the gap is
             // dropped entirely — a visible thin band beats a correctly-gapped
             // invisible one.
-            // ORDERED CHARTS COLOUR THE DATUM, NOT THE SERIES. The group's
+            // ORDERED CHARTS COLOR THE DATUM, NOT THE SERIES. The group's
             // `color` is the series' slot; when a scale is active each bar
             // overrides it with the step its own VALUE lands on. That is what
             // lets one series carry an ordered encoding — and one series is
-            // also what keeps every bar centred under its own category, since
+            // also what keeps every bar centered under its own category, since
             // a grouped layout gives each series its own sub-band.
             const scaleColor = c.colorScale
               ? `var(--chart-${scaleStep(raw, c.colorScale.domain, c.colorScale.kind, c.colorScale.steps, c.colorScale.center)})`

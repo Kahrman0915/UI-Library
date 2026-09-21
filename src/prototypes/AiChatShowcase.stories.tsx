@@ -123,7 +123,7 @@ function Landing() {
             >
               <ChatSuggestions>
                 <ChatSuggestion>How do I center a div?</ChatSuggestion>
-                <ChatSuggestion>Summarise this PDF</ChatSuggestion>
+                <ChatSuggestion>Summarize this PDF</ChatSuggestion>
                 <ChatSuggestion>Write a SQL query</ChatSuggestion>
                 <ChatSuggestion>Explain CSS grid</ChatSuggestion>
               </ChatSuggestions>

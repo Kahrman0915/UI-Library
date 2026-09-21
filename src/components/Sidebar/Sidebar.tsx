@@ -55,6 +55,15 @@ const SidebarContext = createContext<SidebarContextValue | null>(null);
  */
 export const useOptionalSidebar = (): SidebarContextValue | null => useContext(SidebarContext);
 
+/**
+ * Internal: `true` when the sidebar stands inside a container that already holds it in
+ * place — `AppShellWorkspace`, whose `contain: layout` makes the panel's `position: fixed`
+ * resolve against the workspace rather than the window. Below the mobile breakpoint a
+ * contained sidebar does NOT swap to a `Drawer` (which portals to the body and would cover
+ * the rail and the tab strip); it slides out over the page from the rail's edge instead.
+ */
+export const SidebarContainedContext = createContext(false);
+
 export const useSidebar = (): SidebarContextValue => {
   const ctx = useContext(SidebarContext);
   if (!ctx) {
@@ -207,6 +216,18 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
   ) => {
     const { isMobile, state, openMobile, setOpenMobile } = useSidebar();
     const drawerId = useId();
+    const contained = useContext(SidebarContainedContext);
+    // Contained + narrow: an overlay beside the rail, driven by the mobile open state.
+    const overlay = contained && isMobile && collapsible !== 'none';
+
+    useEffect(() => {
+      if (!overlay || !openMobile) return;
+      const onKey = (e: KeyboardEvent) => {
+        if (e.key === 'Escape') setOpenMobile(false);
+      };
+      document.addEventListener('keydown', onKey);
+      return () => document.removeEventListener('keydown', onKey);
+    }, [overlay, openMobile, setOpenMobile]);
 
     if (collapsible === 'none') {
       return (
@@ -221,7 +242,7 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       );
     }
 
-    if (isMobile) {
+    if (isMobile && !overlay) {
       return (
         <Drawer
           id={drawerId}
@@ -249,16 +270,27 @@ const Sidebar = forwardRef<HTMLDivElement, SidebarProps>(
       );
     }
 
+    // In overlay mode the panel is either fully out or fully off-canvas: an icon strip
+    // would duplicate the rail beside it.
+    const shownState = overlay ? (openMobile ? 'expanded' : 'collapsed') : state;
+    const collapseMode = overlay ? 'offcanvas' : collapsible;
+
     return (
       <div
         {...rest}
         ref={ref}
         className="ui-sidebar-wrap"
-        data-state={state}
-        data-collapsible={state === 'collapsed' ? collapsible : ''}
+        data-state={shownState}
+        data-collapsible={shownState === 'collapsed' ? collapseMode : ''}
         data-variant={variant}
         data-side={side}
+        data-overlay={overlay ? 'true' : undefined}
       >
+        {/* A click on the page closes the overlay. Transparent: it slides out over the
+            page, it is not a modal. */}
+        {overlay && openMobile && (
+          <div className="ui-sidebar__scrim" aria-hidden="true" onClick={() => setOpenMobile(false)} />
+        )}
         <div className="ui-sidebar__gap" aria-hidden="true" />
         <div className="ui-sidebar__container">
           <div

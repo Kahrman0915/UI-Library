@@ -67,7 +67,7 @@
     display: block;
     // No stroke-width override on purpose. lucide's own width is 2 *viewBox
     // units*, so it scales with the icon — 1px at 12, 1.33px at 16, 1.67px at
-    // 20. Pinning --icon-border-width (1.33 units) here instead rendered a
+    // 20. Pinning --icon-border-width-16 (1.33 units) here instead rendered a
     // 0.665px hairline at 12px, the thinnest stroke in the library.
   }
 

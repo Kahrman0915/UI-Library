@@ -18,8 +18,8 @@ const pointsOf = (data: (number | null)[], c: NonNullable<ReturnType<typeof useC
 /**
  * MARKER SHAPES ARE REDUNDANT ENCODING, not decoration.
  *
- * A line's identity is otherwise carried by colour alone, which is the one
- * channel that fails for a colour-blind reader and the one a crossing makes
+ * A line's identity is otherwise carried by color alone, which is the one
+ * channel that fails for a color-blind reader and the one a crossing makes
  * ambiguous for everybody. Shape is the cheapest second channel: it survives
  * every vision type, greyscale printing and a photocopier.
  *
@@ -83,7 +83,7 @@ const ChartLine = ({ curve = 'linear', markers = 'auto' }: { curve?: ChartCurve;
     <g className="ui-chart__marks ui-chart__marks--line" aria-hidden="true">
       {/* Lines cross, so paint order is legibility, not just taste: the subject
           has to run OVER its context or the muting is undone wherever they
-          intersect. No-op while nothing is emphasised. */}
+          intersect. No-op while nothing is emphasized. */}
       {[...visible].sort(byEmphasis).map((s) => {
         const pts = pointsOf(s.data, c);
         const muted = s.emphasis === 'off';

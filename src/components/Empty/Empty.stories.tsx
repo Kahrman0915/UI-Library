@@ -18,7 +18,7 @@ const meta: Meta<typeof Empty> = {
     layout: 'padded',
     ui: {
       description:
-        'The placeholder for a list, table or panel with nothing in it yet. Centres ' +
+        'The placeholder for a list, table or panel with nothing in it yet. Centers ' +
         'an icon, a title, a sentence explaining why it is empty, and usually the ' +
         'action that would fill it.',
       tags: ['compound', '6 parts'],

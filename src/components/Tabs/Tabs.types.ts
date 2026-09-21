@@ -2,7 +2,7 @@ export type TabsOrientation = 'horizontal' | 'vertical';
 
 /**
  * The visual treatment of the tablist. Purely presentational — every variant
- * has identical semantics, keyboard behaviour and aria wiring.
+ * has identical semantics, keyboard behavior and aria wiring.
  * - `default` — the enclosed pill track. The active tab is a lifted pill.
  * - `line` — no track; the active tab is marked by a bar on `--primary`,
  *   sitting on the list's own hairline. Themes.

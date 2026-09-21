@@ -49,7 +49,7 @@
     gap: var(--p-2);
   }
 
-  // Composes CloseButton — inherits the banner's colour; reset + focus ring
+  // Composes CloseButton — inherits the banner's color; reset + focus ring
   // come from CloseButton.scss.
   &__close.ui-close-button {
     flex-shrink: 0;

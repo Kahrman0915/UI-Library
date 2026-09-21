@@ -50,7 +50,7 @@ const meta: Meta<typeof Card> = {
         ],
         avoid: [
           'Hand-rolling an `<h3>` and a muted `<p>` inside `CardBody`. That is what the parts replace \u2014 they carry the same classes the header does, so the card\u2019s `size` ramp reaches them wherever they sit.',
-          'Putting a `Button` straight into `CardBody`. It is a flex column with the default `align-items: stretch`, so the button fills the card and centres its label \u2014 use `CardActions`.',
+          'Putting a `Button` straight into `CardBody`. It is a flex column with the default `align-items: stretch`, so the button fills the card and centers its label \u2014 use `CardActions`.',
         ],
         notes:
           '`CardActions` and `CardFooter` are different jobs. `CardActions` hugs and ' +
@@ -199,7 +199,7 @@ const meta: Meta<typeof Card> = {
             '`.ui-item__description` already uses — and deliberately NOT uppercased, since the ' +
             'motivating content is sentence case. A kicker that wants caps sets them through ' +
             '`className`.\n\n' +
-            'Nothing changes when the prop is absent. The one new behaviour is the combination: ' +
+            'Nothing changes when the prop is absent. The one new behavior is the combination: ' +
             'with `media` **and** `overline`, `.ui-card__header`\'s `align-items: flex-start` ' +
             'puts the avatar beside the overline rather than the title — the top of the text ' +
             'block, which is the intent.',
@@ -300,7 +300,7 @@ export const Sizes: Story = {
 
 /**
  * `showDivider={false}` drops the hairline under the header, for a card whose
- * heading simply introduces the copy beneath it rather than labelling a separate
+ * heading simply introduces the copy beneath it rather than labeling a separate
  * region.
  *
  * A header that is the card's **last child** never draws the rule at all —
@@ -582,10 +582,10 @@ export const CardGrid: Story = {
  *
  * The action sits in a `CardActions` — a hugging, leading-aligned row. Dropping
  * the `Button` straight into `CardBody` would stretch it to the card's width
- * and centre its label, because the body is a flex column with the default
+ * and center its label, because the body is a flex column with the default
  * `align-items: stretch`.
  *
- * The tiles take **category** colours, not semantic ones: these four options do
+ * The tiles take **category** colors, not semantic ones: these four options do
  * not rank against each other, they only have to be told apart.
  */
 export const OptionCards: Story = {

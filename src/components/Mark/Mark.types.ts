@@ -11,7 +11,7 @@ export type MarkSize = 'sm' | 'default' | 'lg' | 'xl';
  * - `tilt` — everything `ambient` does, and the tile also turns to follow the
  *   pointer with its layers separating in depth.
  *
- * All three render the same colours. Motion is motion here, never a different
+ * All three render the same colors. Motion is motion here, never a different
  * paint — a mark that changed its look when you turned animation off would be
  * two marks.
  */

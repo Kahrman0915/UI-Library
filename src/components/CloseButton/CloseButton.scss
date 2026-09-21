@@ -3,13 +3,34 @@
 // and the Chat composer tools. What stays here is what is specific to a close
 // button: its circular shape and its three sizes.
 //
-// The `background` variant maps to `.ui-icon-button--fill`, added in the TSX.
+// `background` and `chip` both map to `.ui-icon-button--fill`, added in the
+// TSX, so both fill with --accent on hover.
 
 .ui-close-button {
   --ui-icon-button-radius: var(--rounded-full);
 
   > span {
     display: inline-flex;
+  }
+
+  // ---- chip: filled at rest, for sitting over media ----
+  // The hairline is an inset box-shadow, not a border, so the chip measures
+  // exactly the same box as the other two variants and swapping one in moves
+  // nothing. That puts the hairline, the lift and the focus ring on one
+  // property, so focus-visible restates all three rather than replacing them.
+  &--chip {
+    background: var(--popover);
+    color: var(--popover-foreground);
+    box-shadow:
+      inset 0 0 0 var(--border-w-100) var(--border),
+      var(--shadow-xs);
+
+    &:focus-visible {
+      box-shadow:
+        inset 0 0 0 var(--border-w-100) var(--border),
+        var(--shadow-xs),
+        0 0 0 var(--focus-ring-width) var(--focus);
+    }
   }
 
   // ---- Sizes: sm (20px box), default (24px), lg (32px) ----

@@ -139,7 +139,7 @@ export const RequiredWithoutLabel: Story = {
   name: 'Required indicator with no label',
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
-      <NativeSelect id="ns-req-labelled" label="Country" required>
+      <NativeSelect id="ns-req-labeled" label="Country" required>
         <NativeSelectOption value="">Label carries the asterisk</NativeSelectOption>
         <NativeSelectOption value="uk">United Kingdom</NativeSelectOption>
       </NativeSelect>

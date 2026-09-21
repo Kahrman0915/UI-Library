@@ -60,9 +60,9 @@
 
 // Foundations / Prototypes lay out their own wide content, so the MAIN column
 // drops the prose reading width — but the page keeps `.ui-docs`'s own
-// `--max-w-6xl`, so it centres on exactly the same measure as a component page.
+// `--max-w-6xl`, so it centers on exactly the same measure as a component page.
 // Setting `max-width: none` here left them flush against the viewport edge
-// while every component page sat centred.
+// while every component page sat centered.
 .ui-docs--showcase .ui-docs__main {
   max-width: none;
 }
@@ -203,8 +203,8 @@
 }
 
 // `**bold**` from `prose()`. Pinned rather than left to the UA default so a
-// reset can't quietly flatten emphasis, and kept on the surrounding colour —
-// bold in muted prose is emphasis, not a second text colour.
+// reset can't quietly flatten emphasis, and kept on the surrounding color —
+// bold in muted prose is emphasis, not a second text color.
 .ui-docs strong {
   font-weight: var(--font-semibold);
   color: inherit;
@@ -248,7 +248,7 @@
 }
 
 // Stories that lay out their own page (Sidebar, Chat, Dialog triggers) need the
-// full width rather than a centred specimen.
+// full width rather than a centered specimen.
 .ui-docs-stage--fill {
   display: block;
   padding: var(--p-6);
@@ -277,7 +277,7 @@
 //
 // The pane owns the surface (`--card`) and Storybook's own `.docblock-source`
 // background is dropped to transparent, which is what lets the fade gradient
-// end on exactly the right colour. Don't give that background back.
+// end on exactly the right color. Don't give that background back.
 // ---------------------------------------------------------------------------
 .ui-docs-code {
   position: relative;
@@ -288,7 +288,7 @@
 .ui-docs-code__viewport {
   display: flex;
   align-items: flex-start;
-  // Three lines plus the block's padding — enough to recognise the snippet,
+  // Three lines plus the block's padding — enough to recognize the snippet,
   // little enough that the next example stays on screen.
   max-height: var(--h-28);
   overflow: hidden;
@@ -380,7 +380,7 @@
 
 // Positioning lives HERE, on the wrapper — never on the Button itself.
 // `.ui-button:active` sets `transform: scale(…)` at a higher specificity, which
-// replaces (not composes with) a centring `translate(-50%, -50%)` on the same
+// replaces (not composes with) a centering `translate(-50%, -50%)` on the same
 // element: the button jumped out from under the cursor on mousedown, so mouseup
 // landed elsewhere and the click never fired.
 .ui-docs-code__toggle {

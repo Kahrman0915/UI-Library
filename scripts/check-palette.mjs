@@ -167,7 +167,12 @@ const globalTypes = readFileSync(new URL('../src/types/GlobalTypes.ts', import.m
 const badgeScss = readFileSync(new URL('../src/components/Badge/Badge.scss', import.meta.url), 'utf8');
 
 const listFromUnion = () => {
-  const m = globalTypes.match(/export type CategoryColor\s*=([\s\S]*?);/);
+  // `CategoryColor` is derived from the `CATEGORY_COLORS` const (like `Size`
+  // from `SIZES`), so read the array when it exists and fall back to a literal
+  // union. Either way an unparseable source yields [] and FAILS below — never
+  // a silent pass.
+  const arr = globalTypes.match(/export const CATEGORY_COLORS\s*=\s*\[([\s\S]*?)\]\s*as const;/);
+  const m = arr ?? globalTypes.match(/export type CategoryColor\s*=([\s\S]*?);/);
   return m ? [...m[1].matchAll(/'([a-z]+)'/g)].map((x) => x[1]) : [];
 };
 const listFromBadge = () => {

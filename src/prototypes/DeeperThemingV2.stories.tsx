@@ -29,7 +29,7 @@ import { AuditPanel, NewTokensPanel, TokenDiffPanel, TransitionPanel } from './D
  * own while reading as part of one ecosystem. What changed is where the brand is
  * DEFINED. Earlier rounds themed from a single `--primary` and kept running out
  * of hue; the Figma marks turned out to be a better source, because each one
- * already carries three colours with three distinct jobs.
+ * already carries three colors with three distinct jobs.
  *
  *     HIGHLIGHT  the upper corner — reaches out of the brand's own hue family
  *     MAIN       the body — what a person means when they name the brand
@@ -60,7 +60,7 @@ function PocStyle() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 let ctx: CanvasRenderingContext2D | null = null;
-/** Normalise ANY CSS colour to bytes — color-mix serialises as color(srgb …). */
+/** Normalise ANY CSS color to bytes — color-mix serialises as color(srgb …). */
 function toRGBA(css: string): [number, number, number, number] | null {
   if (!ctx) {
     const c = document.createElement('canvas');
@@ -108,7 +108,7 @@ const P: CSSProperties = { margin: '0 0 var(--p-4)', fontSize: 'var(--text-sm)',
  * The story page. FULL-BLEED on purpose: it paints --background, and a box that
  * is `maxWidth + margin: auto` leaves unpainted gutters either side, so dark
  * mode showed white rails down the edges. The measure is held by the inline
- * padding instead, which centres the content identically without narrowing the
+ * padding instead, which centers the content identically without narrowing the
  * painted box. Pair it with data-mode on the same element — see the Mode note.
  */
 const PAGE: CSSProperties = {
@@ -272,15 +272,15 @@ type Story = StoryObj;
 const LAYERS: { n: string; what: string; how: string }[] = [
   { n: '1 · brand ramp', what: 'The three anchors on a 135° axis.',
     how: 'Figma stores a gradientTransform, not an angle. Solved back: the axis runs (0.5,−0.31) to (1.31,0.5) in unit space, and the 0/0.52/1 stops land at 9.7/51.6/90.3% on the CSS gradient line. 0/52/100% — the obvious guess — compresses the ramp and loses the deep corner.' },
-  { n: '2 · radial highlight', what: 'A soft white lift, just above centre.',
+  { n: '2 · radial highlight', what: 'A soft white lift, just above center.',
     how: '35% radius at 45%/40%. Figma layers it at 40% opacity over stops of 0.7/0.3/0; CSS has no layer opacity on a background, so the product is folded into each stop.' },
   { n: '3 · bloom', what: 'A pale blue glow hanging off the top-left.',
-    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
+    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centered at 20%/22% — same light, no extra element.' },
   { n: '4 · sheen', what: 'A white band down the top half.',
     how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
   { n: '5 · sparkle', what: 'One small point of light, upper left.',
     how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
-  { n: '6 · icon', what: 'Centred at 46% of the box, always white.',
+  { n: '6 · icon', what: 'Centered at 46% of the box, always white.',
     how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context. The glyph briefly tracked --primary-foreground so it would match a button in the same mode; that is wrong for a mark, because the mark does not change between modes either.' },
 ];
 
@@ -401,10 +401,10 @@ function DashboardPage({
       <div style={{ display: 'grid', alignContent: 'start' }}>
         {/* THE THEMED-SURFACE SET. These three are the only places a --primary
             derived TINT carries text, and they were the pairing that blocked
-            adoption: colour on a tint has to hold for every brand at once, and
+            adoption: color on a tint has to hold for every brand at once, and
             with the POC anchors it did not. Text here is neutral; the brand is
             in the tint, the icon and the border. Read them against the semantic
-            info Alert below, which keeps coloured text because its hue is one
+            info Alert below, which keeps colored text because its hue is one
             audited value rather than eight. */}
         <Banner
           id={`${brand}-bn`}
@@ -447,7 +447,7 @@ function DashboardPage({
             </Card>
           </div>
           {/* THE CHART — the surface theming previously did not reach. Series
-              colours come from --chart-1..6, authored per brand, so slot 1
+              colors come from --chart-1..6, authored per brand, so slot 1
               carries the brand's own hue. Everything structural around it
               (radius, type, spacing, shadows) is deliberately identical across
               all six, which is what keeps them reading as one product family. */}
@@ -671,7 +671,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Shadow tints',
-    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
+    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a colored wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
     tokens: ['--poc2-shadow-stock', '--shadow-color-xl', '--shadow-color-lg', '--shadow-color-2xs'],
   },
   {
@@ -681,7 +681,7 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Gradients',
-    note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
+    note: 'Not flat colors \u2014 the mark is all three anchors, the hero is main to deep.',
     tokens: ['--poc2-mark', '--poc2-hero', '--poc2-bubble'],
     gradient: true,
   },
@@ -767,13 +767,13 @@ export const Brands: Story = {
         </div>
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>A brand is three colours, not one</h2>
+            <h2 style={H2}>A brand is three colors, not one</h2>
             <p style={P}>
               The Figma marks are the source. Each is a three-stop gradient, and each stop turned out to
               have a job the others cannot do. Earlier rounds of this file themed from a single{' '}
               <code style={MONO}>--primary</code> and kept running out of hue — eight brands do not fit
               on one wheel beside error, warning and success. Three anchors is not three times the
-              colour, it is three times the <em>structure</em>.
+              color, it is three times the <em>structure</em>.
             </p>
           </div>
 
@@ -801,18 +801,18 @@ export const Brands: Story = {
           })}
 
           <div>
-            <h2 style={H2}>One colour, one label</h2>
+            <h2 style={H2}>One color, one label</h2>
             <p style={P}>
               The middle anchor used to be called <em>main</em>, and{' '}
               <code style={MONO}>--primary</code> was a second value derived from it — a few percent
-              darker, because a mark&rsquo;s mid stop is a display colour and did not clear AA under a
-              label. Two colours a hair apart is a smell, so it is gone:{' '}
+              darker, because a mark&rsquo;s mid stop is a display color and did not clear AA under a
+              label. Two colors a hair apart is a smell, so it is gone:{' '}
               <strong><code style={MONO}>--primary</code> is the middle anchor.</strong>
             </p>
             <p style={P}>
               An intermediate pass paid the contrast on the <em>label</em> side — six brands got a dark{' '}
               <code style={MONO}>--primary-foreground</code>, <code style={MONO}>db</code> a light one.
-              It measured fine and it was a worse system: the CTA&rsquo;s label flipped colour depending
+              It measured fine and it was a worse system: the CTA&rsquo;s label flipped color depending
               on which sub-app you were in, for a reason no consumer could see. So{' '}
               <strong>the marks moved instead.</strong> Every light middle came down its own hue —
               chroma and hue untouched — to the lightest value where pure white clears 4.5, and every
@@ -883,7 +883,7 @@ export const Brands: Story = {
               <strong>Highlight → its own token, and nothing with text on it.</strong>{' '}
               <code style={MONO}>--decorative-hi</code> drives the mark, the hero gradient, the
               marketing bubble field, and small non-text accents like a status dot. It is the brightest,
-              most saturated colour the brand owns, so the test for reaching for it is simply whether
+              most saturated color the brand owns, so the test for reaching for it is simply whether
               anything is read on top; if something is, it is the wrong token. An earlier pass built the light surfaces from it; the numbers were good and
               the result was wrong — a panel made from a highlight announces itself, and sub-apps of one
               suite should not announce themselves at every surface.
@@ -899,7 +899,7 @@ export const Brands: Story = {
               <strong>Deep → every tinted surface, plus depth.</strong> Panels, the rail, bands, shadows,
               the dark end of every gradient. Greyed toward slate first, then applied at single digits,
               so a surface shifts <strong>4&ndash;8&nbsp;ΔE00</strong> off its neutral: enough to read as
-              this brand when set beside another, never enough to read as a coloured page. Deep is the
+              this brand when set beside another, never enough to read as a colored page. Deep is the
               right tool because it is high-chroma — a few percent buys real hue at almost no luminance
               cost. Shadows take it too: a shadow holding the object&rsquo;s own dark end reads as light
               falling on it, a grey one reads as dirt.
@@ -933,7 +933,7 @@ export const MarkAnatomy: Story = {
             <h2 style={H2}>One mark, layer by layer</h2>
             <p style={P}>
               The marks elsewhere in this POC were a brand ramp and a flat white wash — two of the six
-              layers the Figma component actually has, which is why they read as a coloured tile rather
+              layers the Figma component actually has, which is why they read as a colored tile rather
               than as glass. This is the full stack, rebuilt from the component&rsquo;s own geometry
               rather than by eye.
             </p>
@@ -953,7 +953,7 @@ export const MarkAnatomy: Story = {
               which is mode-aware. So the rule above holds for the mark this POC documents and NOT for
               the mark it renders in the roster, the marketing heroes or the Figma pages, all of which
               use the live variant. The swatches below follow whichever mark is on screen. Deciding
-              which behaviour is correct is an open question for the owner; until then, do not quote
+              which behavior is correct is an open question for the owner; until then, do not quote
               the paragraph above as though it covered both.
             </p>
             <div style={{ display: 'flex', gap: 'var(--p-4)', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -1155,7 +1155,7 @@ export const AidenSurface: Story = {
                     How do I split this cohort by plan?
                   </div>
                   <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-                    <Chip id="as-c1" label="Summarise" active />
+                    <Chip id="as-c1" label="Summarize" active />
                     <Chip id="as-c2" label="Explain" />
                     <Chip id="as-c3" label="Chart it" />
                   </div>
@@ -1184,7 +1184,7 @@ export const AidenSurface: Story = {
               allowed to be — and it is the direct cost of inheriting the shipped fill instead of
               solving one. The shipped ramp runs straight through db&rsquo;s indigo on its way from
               violet to blue. Two things keep it survivable: the crossing is a{' '}
-              <em>point on a ramp</em> rather than a flat fill, and a gradient against a flat colour is
+              <em>point on a ramp</em> rather than a flat fill, and a gradient against a flat color is
               already categorically different to the eye. It is still the single weakest number on this
               page, and the only real fix is a bespoke Aiden fill — which is exactly what was given up
               to match the product.
@@ -1241,7 +1241,7 @@ export const Tokens: Story = {
           for (const t of g.tokens) {
             let v: string;
             if (g.gradient) {
-              // a gradient is not a colour — read the resolved image, not a pixel
+              // a gradient is not a color — read the resolved image, not a pixel
               probe.style.backgroundImage = '';
               probe.style.backgroundImage = `var(${t})`;
               v = getComputedStyle(probe).backgroundImage;
@@ -1318,7 +1318,7 @@ export const Tokens: Story = {
             <p style={P}>
               Translucent tokens are shown <em>composited over the page</em>, because their raw bytes are
               meaningless on their own — <code style={MONO}>--primary-light</code> is a 6% alpha, not a
-              colour.
+              color.
             </p>
           </div>
 
@@ -1478,11 +1478,11 @@ export const Audit: Story = {
           <div>
             <h2 style={H2}>The rows that matter</h2>
             <p style={P}>
-              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-colour
+              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-color
               model working. Every brand clears 4.5 with the same{' '}
               <code style={MONO}>#ffffff</code> label on the mark&rsquo;s own middle stop. The marks
               moved to earn that: each light middle came down its own hue to the lightest value where
-              white passes, rather than the label changing colour per sub-app.
+              white passes, rather than the label changing color per sub-app.
               <br />
               <strong>The bubble field is not in this table</strong> — it is a{' '}
               <code style={MONO}>background-image</code>, and the probe reads computed{' '}
@@ -1561,12 +1561,12 @@ export const Dashboard: Story = {
             </p>
             <p style={P}>
               So this is an <strong>aesthetic</strong> choice, not an accessibility one, and it is
-              worth making on those terms: the pale rung is the weakest colour the palette owns
+              worth making on those terms: the pale rung is the weakest color the palette owns
               (1.5–2.7:1 in light) and one washed-out bar between two saturated ones can read as a
               rendering fault rather than a category.{' '}
               <strong>Two real cautions:</strong> <code style={MONO}>ec</code> light genuinely
               improves (all-pairs 14.2 → 15.1, CVD 12.7 → 14.8), but{' '}
-              <code style={MONO}>aiden</code> loses badly under colour-blind simulation — light CVD
+              <code style={MONO}>aiden</code> loses badly under color-blind simulation — light CVD
               12.4 → 5.5 and <strong>dark 6.7 → 3.0, under the hard floor of 4</strong>, because its
               slot 4 is the magenta and slot 1 the violet. If 1,3,4 becomes the rule, Aiden needs an
               exception.
@@ -1598,7 +1598,7 @@ export const Marketing: Story = {
               A product UI has to stay quiet, so its budget is tiny. A marketing page{' '}
               <em>alternates</em> — white sections, a full-bleed band, white again. The band takes the
               same greyed <strong>deep</strong> stock as every other surface, just further along it, so
-              it never becomes a different kind of colour from the app; the colour arrives instead where
+              it never becomes a different kind of color from the app; the color arrives instead where
               nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
               numerals, which are that ramp clipped to text.
             </p>
@@ -1634,7 +1634,7 @@ export const Suite: Story = {
             <p style={P}>
               It is also the only page allowed to use <strong>every brand at once</strong>. The
               headline ramp and the six-corner bubble field are the parent&rsquo;s identity — the
-              parent is not a colour, it is the set — and both are scoped to{' '}
+              parent is not a color, it is the set — and both are scoped to{' '}
               <code style={MONO}>.poc2-suite-*</code> so they cannot appear inside a branded page,
               where the whole point is that one brand is in charge.
             </p>
@@ -1655,11 +1655,11 @@ export const ChartPalettes: Story = {
     const ORDER: BrandKey[] = ['db', 'nb', 'dc', 'ec', 'ph', 'rm', 'aiden'];
     const KINDS: { key: string; attr?: string; title: string; blurb: string; n: number }[] = [
       { key: 'cat', title: 'Categorical', n: 6,
-        blurb: 'Unordered series — “which one is this”. Six slots, and no slate left in them: the primary, a pale rung of its hue, the deep, the highlight hue at its brightest, a brand-tinted slate, and a near-black that inverts to near-white in dark. Read in slot order the lightness ALTERNATES, which is what separates two bars standing shoulder to shoulder; read sorted it is an even ladder. Neighbouring pairs hold ΔE 13.5–20.7; all-pairs bottoms out around 8, because six colours cannot all sit 15 apart inside a space bounded by 3:1-against-the-card at both ends. Six simultaneous series is the limit of what any palette carries — which is why the emphasis pattern exists.' },
+        blurb: 'Unordered series — “which one is this”. Six slots, and no slate left in them: the primary, a pale rung of its hue, the deep, the highlight hue at its brightest, a brand-tinted slate, and a near-black that inverts to near-white in dark. Read in slot order the lightness ALTERNATES, which is what separates two bars standing shoulder to shoulder; read sorted it is an even ladder. Neighbouring pairs hold ΔE 13.5–20.7; all-pairs bottoms out around 8, because six colors cannot all sit 15 apart inside a space bounded by 3:1-against-the-card at both ends. Six simultaneous series is the limit of what any palette carries — which is why the emphasis pattern exists.' },
       { key: 'seq', attr: 'sequential', title: 'Sequential', n: 7,
         blurb: 'Magnitude — “how much”. One hue, seven even steps. The pale end is meant to recede into the card; the legibility budget is spent at the deep end.' },
       { key: 'div', attr: 'diverging', title: 'Diverging', n: 7,
-        blurb: 'Signed data — “which side of the baseline”. The HIGH arm is the brand’s own primary hue; the low arm is its opposite, chosen by colour-blind separation rather than by a naive 180° — a naive complement makes dc teal-vs-red and rm magenta-vs-green, which are red-green axes again. The midpoint is the brand-tinted neutral.' },
+        blurb: 'Signed data — “which side of the baseline”. The HIGH arm is the brand’s own primary hue; the low arm is its opposite, chosen by color-blind separation rather than by a naive 180° — a naive complement makes dc teal-vs-red and rm magenta-vs-green, which are red-green axes again. The midpoint is the brand-tinted neutral.' },
     ];
 
     const swatchRow = (n: number) => (
@@ -1677,7 +1677,7 @@ export const ChartPalettes: Story = {
           <div style={{ display: 'grid', gap: 'var(--p-2)', maxWidth: 820 }}>
             <h2 style={H2}>Three palettes, picked by intent</h2>
             <p style={{ margin: 0, fontSize: 'var(--text-sm)', color: 'var(--muted-foreground)' }}>
-              The consumer names the job, not the colours — <code style={MONO}>data-chart-palette</code>{' '}
+              The consumer names the job, not the colors — <code style={MONO}>data-chart-palette</code>{' '}
               re-points <code style={MONO}>--chart-1..N</code> at a different family, so the chart
               component is unchanged and a chart nested in a brand scope still picks up that brand.
             </p>
@@ -1726,8 +1726,8 @@ export const ChartPalettes: Story = {
               The high arm is the brand&rsquo;s own primary hue. The low arm is <em>not</em> its naive
               180° complement — that works for four brands and fails two, because dc&rsquo;s true
               opposite is teal-vs-red and rm&rsquo;s is magenta-vs-green, which are red–green axes and
-              collapse under a colour-blind anomaly (CVD ΔE 5.1 and 3.8). So the opposing arm is
-              searched across 100–260° for the hue that <strong>maximises colour-blind separation</strong>{' '}
+              collapse under a color-blind anomaly (CVD ΔE 5.1 and 3.8). So the opposing arm is
+              searched across 100–260° for the hue that <strong>maximises color-blind separation</strong>{' '}
               while clearing every semantic by 10.
               {'\n\n'}
               This replaced a red/green build, which was the textbook deuteranopia trap: its arms
@@ -1805,17 +1805,17 @@ export const ChartsInUse: Story = {
               showGrid
               /* GROUPED BARS, not lines. Six categorical series is at the limit
                  of what ANY palette can separate — the best all-pairs minimum
-                 available here is 7.9 dE, against the 15 two colours need to be
+                 available here is 7.9 dE, against the 15 two colors need to be
                  unmistakable. Lines make that worse by CROSSING, so the pair a
                  reader must separate is exactly where they overlap. Bars sit
-                 side by side and never occlude, so position carries what colour
+                 side by side and never occlude, so position carries what color
                  alone cannot. This is the honest way to show six at once.
 
                  NO `emphasis` HERE, deliberately. It is the right tool for a
-                 real dashboard — it is also why this chart showed THREE colours
-                 for six series, because emphasis resolves every de-emphasised
+                 real dashboard — it is also why this chart showed THREE colors
+                 for six series, because emphasis resolves every de-emphasized
                  series to a single --chart-muted grey. That is correct focus
-                 behaviour and wrong for the one chart whose job is to show the
+                 behavior and wrong for the one chart whose job is to show the
                  categorical palette. Hover still lifts a single series. */
               emphasisOnHover
               series={[
@@ -1843,12 +1843,12 @@ export const ChartsInUse: Story = {
             'categorical — the default, no attribute',
           )}
 
-          {/* ── LINES — three series, and two channels besides colour ── */}
+          {/* ── LINES — three series, and two channels besides color ── */}
           {frame(
             <LineChart
               id="ciu-line"
               title="Direct passed paid search in 2023"
-              description="Three channels, six years. Each line names itself at its own end and carries its own marker shape, so colour is one cue of three rather than the only one."
+              description="Three channels, six years. Each line names itself at its own end and carries its own marker shape, so color is one cue of three rather than the only one."
               categories={['2020', '2021', '2022', '2023', '2024', '2025']}
               valueFormatter={(v) => `${v}k`}
               curve="monotone"
@@ -1856,13 +1856,13 @@ export const ChartsInUse: Story = {
               showGrid
               showMarkers
               /* endLabels REPLACES the legend — see Chart.types. A legend asks
-                 the reader to hold a colour in memory, cross the chart and
+                 the reader to hold a color in memory, cross the chart and
                  match it, which is exactly the step that fails when two
-                 colours are close and the step a crossing makes hardest. */
+                 colors are close and the step a crossing makes hardest. */
               endLabels
               /* THREE, because a line needs 4.5:1 and not the 3:1 a bar can
                  live at. At 3:1 ec's family fits four; the owner rejected that
-                 set on sight, and both colours they named were the two riding
+                 set on sight, and both colors they named were the two riding
                  the floor (3.12 and 4.00). Dark is the binding mode — its
                  readable band is L 0.68-0.97 against light's 0.15-0.56, so
                  light would fit six at any of these floors and dark fits three.
@@ -1882,7 +1882,7 @@ export const ChartsInUse: Story = {
             <BarChart
               id="ciu-seq"
               title="Revenue rises with every year an account stays"
-              description="Recurring revenue by account tenure. Accounts older than a year carry $37.3M of the $54.2M total — the colour ramp is the value, so the trend reads before any number does."
+              description="Recurring revenue by account tenure. Accounts older than a year carry $37.3M of the $54.2M total — the color ramp is the value, so the trend reads before any number does."
               categories={['0–3m', '3–6m', '6–12m', '1–2y', '2–3y', '3y+']}
               valueFormatter={money}
               colorScale="sequential"
@@ -1893,7 +1893,7 @@ export const ChartsInUse: Story = {
                 { key: 'arr', label: 'Recurring revenue', data: [4.1, 5.6, 7.2, 9.8, 12.4, 15.1] },
               ]}
             />,
-            'sequential — one series, coloured by value',
+            'sequential — one series, colored by value',
             'sequential',
           )}
 
@@ -1916,7 +1916,7 @@ export const ChartsInUse: Story = {
                 { key: 'variance', label: 'Variance vs target', data: [-21, -14, -8, -2, 11, 19] },
               ]}
             />,
-            'diverging — one series, each bar coloured by its own value',
+            'diverging — one series, each bar colored by its own value',
             'diverging',
           )}
         </div>

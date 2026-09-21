@@ -32,13 +32,13 @@ const meta: Meta<typeof Chart> = {
         'and server-renders.\n\n' +
         'The frame knows nothing about marks. A preset composes `<Chart>` with mark children, ' +
         'which is what lets `Bar`, `Line` and `Area` each own their folder and their stories.\n\n' +
-        'Series colours come from `--chart-1` … `--chart-6`, assigned by series **identity** and ' +
+        'Series colors come from `--chart-1` … `--chart-6`, assigned by series **identity** and ' +
         'never by position among the visible ones — hiding a series must never repaint the ' +
         'others. Past six, the tail folds to `--chart-muted` rather than inventing a seventh step.\n\n' +
         'The ramp is **neutral slate on purpose.** A chart that reads in grey is working on form, ' +
-        'hierarchy, motion and interaction rather than leaning on hue — colour can flatter a weak ' +
-        'chart. It is also the most colour-blind-safe palette obtainable, since lightness ' +
-        'differences survive every CVD type intact. Per-brand colour is a later additive change; ' +
+        'hierarchy, motion and interaction rather than leaning on hue — color can flatter a weak ' +
+        'chart. It is also the most color-blind-safe palette obtainable, since lightness ' +
+        'differences survive every CVD type intact. Per-brand color is a later additive change; ' +
         'the searched palettes already exist, parked in the POC recipe.\n\n' +
         'Six slots separate cleanly in **sequence** — down a legend, up a stack — but not ' +
         '**simultaneously**, which is what a five- or six-line chart asks for. That is structural: ' +
@@ -57,7 +57,7 @@ const meta: Meta<typeof Chart> = {
           'Two measures on different scales. There is deliberately no dual axis: the alignment ' +
             'of two y-scales is arbitrary, so the chart invents a correlation the data does not ' +
             'contain. Use two charts, or index both to a common base.',
-          'More than about seven meaningful classes — past that, adjacent colours blur and a ' +
+          'More than about seven meaningful classes — past that, adjacent colors blur and a ' +
             'table serves the reader better.',
           'Five or six series at equal weight. Reach for `emphasis` instead — the ramp separates ' +
             'in sequence but not simultaneously, and that limit is structural, not a tuning miss.',
@@ -86,22 +86,22 @@ const meta: Meta<typeof Chart> = {
           'the direct labels and table twin are the required mitigation.\n\n' +
           'A muted series under `emphasis` sits below 3:1 on the surface in light mode, and cannot ' +
           'not: a mute has to be lighter than every slot to recede, and the lightest slot is ' +
-          'already near the floor. The mute therefore drops stroke weight as well as colour — a ' +
+          'already near the floor. The mute therefore drops stroke weight as well as color — a ' +
           'second, independent channel, the same redundant-encoding rule the rest of the library ' +
-          'follows for status colour. Every muted value stays in the table twin and in the tooltip, ' +
+          'follows for status color. Every muted value stays in the table twin and in the tooltip, ' +
           'and a standing emphasis is announced on its legend entry, so the subject is knowable ' +
-          'without seeing the colours at all.',
+          'without seeing the colors at all.',
       },
       changelog: [
         {
           date: '2026-08-08',
           summary:
-            'Series colours now come from the active brand. Inside a `data-theme` scope ' +
+            'Series colors now come from the active brand. Inside a `data-theme` scope ' +
             '`--chart-1..6` are that brand\'s palette instead of the neutral slate ramp, and the ' +
             'active line marker takes the brand\'s decorative highlight.',
           detail:
-            'A SILENT BEHAVIOURAL CHANGE, and deliberate: no token is renamed and nothing errors, ' +
-            'so a consumer expecting the slate ramp under a brand simply gets brand colour. ' +
+            'A SILENT BEHAVIORAL CHANGE, and deliberate: no token is renamed and nothing errors, ' +
+            'so a consumer expecting the slate ramp under a brand simply gets brand color. ' +
             'Outside a theme scope nothing moves.\n\n' +
             'The marker is `fill: var(--decorative-hi, currentColor)` and the fallback is ' +
             'load-bearing — `--decorative-hi` does not exist outside a brand, so unthemed charts ' +
@@ -123,7 +123,7 @@ const meta: Meta<typeof Chart> = {
             'Resolved once on the frame, so marks, legend swatches and tooltip keys all read one ' +
             'field and cannot disagree. Lines and unstacked areas repaint the subject last; stacks ' +
             'and grouped bars keep declaration order, since a stack\'s order is its meaning. ' +
-            'Turn the hover behaviour off with `emphasisOnHover={false}`.',
+            'Turn the hover behavior off with `emphasisOnHover={false}`.',
         },
         {
           date: '2026-08-04',
@@ -132,7 +132,7 @@ const meta: Meta<typeof Chart> = {
             'more legible in light mode, and no longer colliding with a real series in dark.',
           detail:
             'The dark value sat ΔE 2.7 from `--chart-2` — close enough that a folded bucket read ' +
-            'as that series, and emphasising it produced no visible emphasis at all. Now ΔE 15.4, ' +
+            'as that series, and emphasizing it produced no visible emphasis at all. Now ΔE 15.4, ' +
             'the same floor adjacent slots are held to, at the cost of 3.07:1 → 1.79:1 on the ' +
             'surface: a mute that collides with a slot is a wrong chart, a faint one is only a ' +
             'quiet one. Light moved the other way, 1.48:1 → 2.06:1, being too pale to trace once ' +
@@ -196,7 +196,7 @@ export const IdentityIsStable: Story = {
     const [hidden, setHidden] = useState<string[]>([]);
     return (
       <BarChart id="ident" title="Toggle any legend entry"
-        description="Colour follows the entity, never its rank among the visible ones."
+        description="Color follows the entity, never its rank among the visible ones."
         categories={MONTHS} series={FOUR} hiddenSeries={hidden}
         onSeriesToggle={(key, visible) =>
           setHidden((h) => (visible ? h.filter((k) => k !== key) : [...h, key]))} />
@@ -211,7 +211,7 @@ export const AbsentSeries: Story = {
       <BarChart id="abs-all" title="All four present" categories={MONTHS} series={FOUR} />
 
       <BarChart id="abs-some" title="Organic absent — Paid SHIFTS"
-        description="Slots are assigned from the array as given, so dropping the third entry renumbers the fourth. This is the real behaviour, not the desired one."
+        description="Slots are assigned from the array as given, so dropping the third entry renumbers the fourth. This is the real behavior, not the desired one."
         categories={MONTHS} series={FOUR.filter((s) => s.key !== 'organic')} />
 
       <BarChart id="abs-pin" title="Organic absent — Paid HOLDS"
@@ -252,7 +252,7 @@ export const EmphasisIsRemoval: Story = {
     <div style={{ display: 'grid', gap: 'var(--p-8)' }}>
       <LineChart id="emph-w1" title="Unemphasised"
         categories={MONTHS} series={SIX.slice(0, 3)} emphasisOnHover={false} />
-      <LineChart id="emph-w2" title="Emphasised — the subject line is byte-identical to the one above"
+      <LineChart id="emph-w2" title="Emphasized — the subject line is byte-identical to the one above"
         description="A mark that gains weight gains ink, and ink reads as magnitude. Fattening the subject would make its data look bigger than it is, so the whole change lands on the other five."
         categories={MONTHS} series={SIX.slice(0, 3)} emphasis="r0" emphasisOnHover={false} />
     </div>

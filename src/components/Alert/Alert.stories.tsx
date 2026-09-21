@@ -32,14 +32,14 @@ const meta: Meta<typeof Alert> = {
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
           date: '2026-09-01',
           summary:
             'The action button’s border is stronger, so it reads as a button. Its `--primary-border` step goes ' +
-            'from 40% to 60% — colour, weight and fill are unchanged.',
+            'from 40% to 60% — color, weight and fill are unchanged.',
           detail:
             'The action is an outline button, so its border is the only thing delineating it: the fill measures ' +
             '1.09:1 in light and 1.13:1 in dark against the alert’s tint, which is nothing. At 40% the border came ' +
@@ -60,7 +60,7 @@ const meta: Meta<typeof Alert> = {
           date: '2026-08-27',
           summary:
             'The info / success / warning / error variants now use a dedicated on-tint ' +
-            'text colour, fixing a contrast failure on a tinted card in dark mode.',
+            'text color, fixing a contrast failure on a tinted card in dark mode.',
           detail:
             'Text, icon and title move from the raw --{family} hue to new --{family}-text ' +
             'tokens (color-mix of the hue 85% with --foreground, mirroring --primary-text, ' +
@@ -81,7 +81,7 @@ const meta: Meta<typeof Alert> = {
             'primary; no `[data-theme]` scope remaps them. `.ui-alert__action` rebuilds the ' +
             'whole `--primary-*` family from them — all of it, because a theme scope re-declares ' +
             'every derived token, so overriding `--primary` alone would leave `-soft`/`-border`/' +
-            '`-text` themed and give a slate fill a brand-coloured border. Scoped to the action ' +
+            '`-text` themed and give a slate fill a brand-colored border. Scoped to the action ' +
             'slot rather than `.ui-alert` because the `brand` variant reads `--primary-light`/' +
             '`-text`/`-border` on the alert surface and is meant to follow the theme.',
         },
@@ -323,7 +323,7 @@ const THEMES = ['db', 'dc', 'ec', 'nb', 'ph', 'rm'] as const;
 
 /**
  * The action button holds the main brand's slate in every sub-brand, while the
- * `brand` variant beside it still follows the theme — those two behaviours have
+ * `brand` variant beside it still follows the theme — those two behaviors have
  * to coexist, which is why the token override is scoped to the action slot and
  * not to `.ui-alert`.
  */
@@ -337,7 +337,7 @@ export const ActionStaysMainUnderEveryTheme: Story = {
             data-theme=&quot;{code}&quot;
           </span>
 
-          {/* The action must be slate here, not the brand colour. */}
+          {/* The action must be slate here, not the brand color. */}
           <Alert
             id={`alert-main-${code}`}
             variant="warning"
@@ -347,7 +347,7 @@ export const ActionStaysMainUnderEveryTheme: Story = {
             action={<Button id={`alert-main-${code}-btn`} label="Upgrade" style="outline" size="sm" />}
           />
 
-          {/* …and this one must still be the brand colour. */}
+          {/* …and this one must still be the brand color. */}
           <Alert
             id={`alert-brand-${code}`}
             variant="brand"

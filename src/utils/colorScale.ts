@@ -1,16 +1,16 @@
 /**
- * Value-to-colour scales — the ORDERED counterpart to `series.ts`.
+ * Value-to-color scales — the ORDERED counterpart to `series.ts`.
  *
  * `series.ts` answers "which series is this", and hands every datum in a series
  * the same slot. That is correct for categorical data and wrong for ordered
- * data, where the colour is supposed to encode the VALUE rather than the
+ * data, where the color is supposed to encode the VALUE rather than the
  * membership.
  *
  * Building an ordered encoding out of categorical series — one series per bin,
  * nulls elsewhere — looks like it works and does not. In a grouped layout each
  * series owns its own sub-band, so the bars drift horizontally by series index
  * and stop sitting under their own category label; and every value inside a bin
- * collapses to one colour, discarding the magnitude the scale existed to show.
+ * collapses to one color, discarding the magnitude the scale existed to show.
  * Both were measured on a real chart before this module was written.
  */
 
@@ -20,7 +20,7 @@ export type ColorScaleKind = 'sequential' | 'diverging';
 export type ScaleDomain = [min: number, max: number];
 
 /**
- * Map one value to a 1-based colour step.
+ * Map one value to a 1-based color step.
  *
  * SEQUENTIAL spreads the domain evenly across every step.
  *
@@ -28,7 +28,7 @@ export type ScaleDomain = [min: number, max: number];
  * against the larger half-range, so the two sides stay comparable: an arm is
  * never stretched just because the data happens to be lopsided. With an even
  * step count there is no true middle, so the lower-middle step takes the
- * centre — stated here because a silent off-by-one in a diverging scale moves
+ * center — stated here because a silent off-by-one in a diverging scale moves
  * the apparent zero, which is the one thing it must not do.
  */
 export function scaleStep(
@@ -48,7 +48,7 @@ export function scaleStep(
     // interval rather than by position: with 6 data points across 7 steps it
     // put two adjacent values on the SAME step while leaving two steps unused,
     // and sent the maximum to step 8 before the clamp caught it. Two values one
-    // colour is the exact defect this module exists to remove.
+    // color is the exact defect this module exists to remove.
     const t = (value - lo) / (hi - lo);
     return clamp(Math.round(t * (steps - 1)) + 1);
   }

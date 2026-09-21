@@ -7,7 +7,7 @@ export type SelectAlign = Align;
 /**
  * Styled floating listbox.
  *
- * **Picking between the three "select" components is a behaviour decision — they
+ * **Picking between the three "select" components is a behavior decision — they
  * look identical when closed:**
  * - `NativeSelect` — the default. Short lists (≤ ~7), best on mobile, cheapest.
  * - `Select` — this one. Use when you need rich items: icons, descriptions,

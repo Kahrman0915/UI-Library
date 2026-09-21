@@ -22,7 +22,7 @@ const meta: Meta<typeof InputOTP> = {
             '`.ui-otp__slot` set `--text-base`, `--text-lg` or `--text-xl` with no ' +
             '`line-height`, falling back to `normal`. Now `--leading-4` / `--leading-5` ' +
             '/ `--leading-5` — the smallest rung at or above the font size, since the ' +
-            'digit is centred in a fixed-height box.',
+            'digit is centered in a fixed-height box.',
         },
         {
           date: '2026-09-02',
@@ -33,7 +33,7 @@ const meta: Meta<typeof InputOTP> = {
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {

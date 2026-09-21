@@ -1,5 +1,5 @@
 import { Children, forwardRef, isValidElement, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
-import { GalleryVerticalEnd, Plus, X } from 'lucide-react';
+import { GalleryVerticalEnd, Layers, LayoutGrid, Plus, SquarePlus, X } from 'lucide-react';
 import Popover, { PopoverContent, PopoverTrigger } from '../Popover';
 import Command, { CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList, CommandSeparator, CommandShortcut } from '../Command';
 import ContextMenu, { ContextMenuContent, ContextMenuTrigger } from '../ContextMenu';
@@ -375,7 +375,7 @@ const TabBarTab = forwardRef<HTMLDivElement, TabBarTabProps>(
 TabBarTab.displayName = 'TabBarTab';
 
 // ═════════════════════════════════════════════════════════════════════════════
-// Group — a coloured chip and the tabs it holds.
+// Group — a colored chip and the tabs it holds.
 // ═════════════════════════════════════════════════════════════════════════════
 
 /** Counts document tabs among a group's children, a split counting as two. */
@@ -388,8 +388,8 @@ const countTabs = (children: React.ReactNode): number =>
   }, 0);
 
 /**
- * A tab group, the way Chrome and Figma draw one: a coloured chip in front of its
- * tabs, and a line in the same colour along the top of each. The wrapper is
+ * A tab group, the way Chrome and Figma draw one: a colored chip in front of its
+ * tabs, and a line in the same color along the top of each. The wrapper is
  * `role="none"` so the tablist still owns the tabs directly.
  */
 const TabBarGroup = forwardRef<HTMLDivElement, TabBarGroupProps>(
@@ -560,7 +560,10 @@ TabBarNewTab.displayName = 'TabBarNewTab';
 
 /**
  * The control every browser puts at the end of its tab strip: a button that
- * opens a search over the open tabs and the recently closed list. Its glyph is a
+ * opens a search over the open tabs and the recently closed list. With `groups`
+ * it is also the tab-group switcher (Notion's model, 2026-09-19): a group is a
+ * named set of tabs, the bar shows one set at a time, and `groupLabel` names the
+ * set on screen beside the glyph. Its glyph is a
  * stack of pages (`GalleryVerticalEnd`) — "your tabs" — rather than a chevron,
  * which reads as "more of this", or an app window, which is the rail's job. Built on
  * `Popover` + `Command`, so typing filters and the arrow keys move the
@@ -578,6 +581,15 @@ const TabBarMenu = forwardRef<HTMLButtonElement, TabBarMenuProps>(
       emptyText = 'No tabs match',
       openHeading = 'Open tabs',
       closedHeading = 'Recently closed',
+      groupLabel,
+      groups,
+      activeGroup = null,
+      onSelectGroup,
+      ungroupedCount,
+      onNewGroup,
+      onGroupTabs,
+      windowHeading = 'This window',
+      groupsHeading = 'Tab groups',
       className,
       ...rest
     },
@@ -608,13 +620,14 @@ const TabBarMenu = forwardRef<HTMLButtonElement, TabBarMenuProps>(
       <Popover id={menuId} open={open} onOpenChange={setOpen}>
         <PopoverTrigger>
           <button
-            aria-label={label}
+            aria-label={groupLabel ? `${label}, ${groupLabel}` : label}
             {...rest}
             ref={ref}
             type="button"
-            className={`ui-icon-button ui-icon-button--fill ui-tab-bar__menu${className ? ' ' + className : ''}`}
+            className={`ui-icon-button ui-icon-button--fill ui-tab-bar__menu${groupLabel ? ' ui-tab-bar__menu--labeled' : ''}${className ? ' ' + className : ''}`}
           >
             <GalleryVerticalEnd aria-hidden="true" />
+            {groupLabel && <span aria-hidden="true">{groupLabel}</span>}
           </button>
         </PopoverTrigger>
         <PopoverContent
@@ -631,6 +644,80 @@ const TabBarMenu = forwardRef<HTMLButtonElement, TabBarMenuProps>(
             <CommandInput ref={inputRef} placeholder={placeholder} aria-label={placeholder} />
             <CommandList>
               <CommandEmpty>{emptyText}</CommandEmpty>
+              {groups && (
+                <>
+                  <CommandGroup heading={windowHeading}>
+                    <CommandItem
+                      value={windowHeading}
+                      className="ui-tab-bar__menu-item"
+                      onSelect={() => {
+                        onSelectGroup?.(null);
+                        setOpen(false);
+                      }}
+                    >
+                      <LayoutGrid aria-hidden="true" />
+                      <span className="ui-tab-bar__menu-label">
+                        {ungroupedCount === undefined ? 'Ungrouped tabs' : `${ungroupedCount} ungrouped ${ungroupedCount === 1 ? 'tab' : 'tabs'}`}
+                      </span>
+                      {activeGroup === null && <CommandShortcut>Current</CommandShortcut>}
+                    </CommandItem>
+                  </CommandGroup>
+                  {groups.length > 0 && (
+                    <CommandGroup heading={groupsHeading}>
+                      {groups.map((g) => (
+                        <CommandItem
+                          key={`group-${g.value}`}
+                          value={g.label}
+                          className="ui-tab-bar__menu-item"
+                          onSelect={() => {
+                            onSelectGroup?.(g.value);
+                            setOpen(false);
+                          }}
+                        >
+                          <GalleryVerticalEnd aria-hidden="true" />
+                          <span className="ui-tab-bar__menu-label">{g.label}</span>
+                          {activeGroup === g.value ? (
+                            <CommandShortcut>Current</CommandShortcut>
+                          ) : (
+                            g.count !== undefined && <CommandShortcut>{`${g.count} ${g.count === 1 ? 'tab' : 'tabs'}`}</CommandShortcut>
+                          )}
+                        </CommandItem>
+                      ))}
+                    </CommandGroup>
+                  )}
+                  {(onNewGroup || onGroupTabs) && (
+                    <CommandGroup>
+                      {onNewGroup && (
+                        <CommandItem
+                          value="New empty group"
+                          className="ui-tab-bar__menu-item"
+                          onSelect={() => {
+                            onNewGroup();
+                            setOpen(false);
+                          }}
+                        >
+                          <SquarePlus aria-hidden="true" />
+                          <span className="ui-tab-bar__menu-label">New empty group</span>
+                        </CommandItem>
+                      )}
+                      {onGroupTabs && (
+                        <CommandItem
+                          value="Group these tabs"
+                          className="ui-tab-bar__menu-item"
+                          onSelect={() => {
+                            onGroupTabs();
+                            setOpen(false);
+                          }}
+                        >
+                          <Layers aria-hidden="true" />
+                          <span className="ui-tab-bar__menu-label">Group these tabs</span>
+                        </CommandItem>
+                      )}
+                    </CommandGroup>
+                  )}
+                  <CommandSeparator />
+                </>
+              )}
               <CommandGroup heading={openHeading}>
                 {tabs.map((t) => (
                   <CommandItem

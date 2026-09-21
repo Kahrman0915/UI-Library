@@ -119,7 +119,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
 
     // An ordered chart is usually ONE series, so the "two or more" default would
     // hide the scale — and the scale legend is the only thing that says what the
-    // colours mean. A categorical chart with one series still needs no key.
+    // colors mean. A categorical chart with one series still needs no key.
     // End labels REPLACE the legend rather than joining it. Printing both says
     // the same thing twice and spends the vertical room the labels just earned.
     const legendOn = showLegend ?? (endLabels ? false : colorScale ? true : resolved.length >= 2);
@@ -139,7 +139,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
 
     const x = useMemo(
       // Bars need a padded band (a gap between categories); line and area want
-      // vertices on the band centre with no inner padding at all.
+      // vertices on the band center with no inner padding at all.
       () => bandScale(categories.length, [0, plot.width], {
         paddingInner: bandPadding ? 0.28 : 0,
         paddingOuter: bandPadding ? 0.14 : 0.5,
@@ -252,7 +252,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
                       )}
                       {/* Hit layer LAST so it sits above every mark. Transparent
                           and full height: the pointer only has to be closest,
-                          never dead-centre on a 2px line. */}
+                          never dead-center on a 2px line. */}
                       <rect
                         className="ui-chart__hit"
                         x={0} y={0} width={plot.width} height={plot.height}
@@ -355,7 +355,7 @@ ChartEmpty.displayName = 'ChartEmpty';
 
 /**
  * A SCALE legend, for ordered charts. Series swatches would be a lie here —
- * there is one series and seven colours, so a per-series key describes nothing
+ * there is one series and seven colors, so a per-series key describes nothing
  * a reader needs. What they need is the ramp and the two ends of the domain.
  */
 const ChartScaleLegend = () => {
@@ -373,9 +373,9 @@ const ChartScaleLegend = () => {
       </span>
       <span className="ui-chart__scale-end">{fmt(domain[1])}</span>
       {/* The midpoint is the whole claim of a diverging scale, so it is stated
-          rather than left to be inferred from the colours. */}
+          rather than left to be inferred from the colors. */}
       {kind === 'diverging' && (
-        <span className="ui-chart__scale-note">{`centred on ${fmt(center)}`}</span>
+        <span className="ui-chart__scale-note">{`centered on ${fmt(center)}`}</span>
       )}
     </div>
   );
@@ -395,7 +395,7 @@ const ChartLegend = ({ onToggle }: { onToggle?: (key: string, visible: boolean) 
             <span className="ui-chart__swatch" style={{ background: s.token } as CSSProperties} aria-hidden="true" />
             <span className="ui-chart__legend-label">{s.label}</span>
             {/* Which series the author foregrounded is authored INTENT, not
-                decoration — a reader who never sees the colours still needs it.
+                decoration — a reader who never sees the colors still needs it.
                 A STANDING emphasis only: the same state is reached by pointing
                 and by focusing a legend button, and moving this string on every
                 focus step would chatter down the accessibility tree as a

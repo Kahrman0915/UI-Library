@@ -5,6 +5,8 @@ import type {
   AppShellRegionProps,
   AppShellMainProps,
 } from './AppShell.types';
+import { SidebarContainedContext } from '../Sidebar/Sidebar';
+import { DrawerBelowStripContext } from '../Drawer/Drawer';
 import './AppShell.scss';
 
 // The application shell: the chrome every sub-application shares, as structure rather
@@ -24,7 +26,8 @@ const cx = (base: string, className?: string) => (className ? `${base} ${classNa
 
 const AppShell = forwardRef<HTMLDivElement, AppShellProps>(({ id, className, children, ...rest }, ref) => (
   <div {...rest} ref={ref} id={id} className={cx('ui-app-shell', className)}>
-    {children}
+    {/* Any Drawer opened inside the shell starts below the tab strip. */}
+    <DrawerBelowStripContext.Provider value={true}>{children}</DrawerBelowStripContext.Provider>
   </div>
 ));
 AppShell.displayName = 'AppShell';
@@ -49,7 +52,9 @@ AppShellBody.displayName = 'AppShellBody';
 
 export const AppShellWorkspace = forwardRef<HTMLDivElement, AppShellRegionProps>(({ className, children, ...rest }, ref) => (
   <div {...rest} ref={ref} className={cx('ui-app-shell__workspace', className)}>
-    {children}
+    {/* The workspace contains the sidebar's fixed panel, so below the mobile breakpoint the
+        sidebar slides out beside the rail instead of swapping to a full-window Drawer. */}
+    <SidebarContainedContext.Provider value={true}>{children}</SidebarContainedContext.Provider>
   </div>
 ));
 AppShellWorkspace.displayName = 'AppShellWorkspace';

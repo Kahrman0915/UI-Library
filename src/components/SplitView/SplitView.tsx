@@ -40,7 +40,7 @@ const SplitView = forwardRef<HTMLDivElement, SplitViewProps>(
     const panes = Math.min(Children.count(children), 2);
     const [hover, setHover] = useState<SplitViewSide | null>(null);
 
-    // A drag that ends outside the view (dropped on the bar, or cancelled with Escape)
+    // A drag that ends outside the view (dropped on the bar, or canceled with Escape)
     // never fires dragleave here, so clear the zones whenever any drag ends.
     useEffect(() => {
       if (!hover) return;

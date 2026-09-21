@@ -43,7 +43,7 @@ const meta: Meta<typeof TabBar> = {
         'confuse because they look alike. The tell is what a tab OWNS: a `Tabs` ' +
         'trigger reveals a `TabsContent` shipped beside it, while a `TabBar` tab ' +
         'stands for something the user opened and can close.',
-      tags: ['chrome', 'app shell', 'themed'],
+      tags: ['chrome', 'app shell', 'tab groups'],
       usage: {
         when: [
           'An application shell where the user opens several documents at once ' +
@@ -69,7 +69,7 @@ const meta: Meta<typeof TabBar> = {
           '**Activation is manual by default, unlike `Tabs`.** Arrow keys move ' +
           'focus and Enter or Space commits, because arrowing across five tabs ' +
           'would otherwise mount and tear down five dashboards. Pass ' +
-          '`activationMode="automatic"` for the `Tabs` behaviour.',
+          '`activationMode="automatic"` for the `Tabs` behavior.',
       },
       composition: [
         {
@@ -88,15 +88,24 @@ const meta: Meta<typeof TabBar> = {
         {
           name: 'TabBarGroup',
           description:
-            'A tab group: a chip in one of the 15 category colours, then its tabs, each with a line in the ' +
-            'same colour along the top. `collapsed` folds the tabs behind the chip (the open tab stays). ' +
-            'The chip is a `role="tab"` with `aria-expanded`, so the arrow keys reach it; Enter collapses it.',
+            'A tab group: a chip in one of the 15 category colors, then its tabs, each with a line in the ' +
+            'same color along the top. `collapsed` folds the tabs behind the chip (the open tab stays). ' +
+            'The chip is a `role="tab"` with `aria-expanded`, so the arrow keys reach it; Enter collapses it. ' +
+            'Still supported, but the shipped shell (2026-09-19) keeps groups OUT of the bar: `TabBarMenu` switches between them.',
         },
         {
           name: 'TabBarSplit',
           description:
             'Two `TabBarTab`s drawn as one joined tab, for documents open side by side. Both halves keep ' +
             'the open-tab surface while the split is on screen. The page half is `SplitView`.',
+        },
+        {
+          name: 'TabBarMenu',
+          description:
+            'The stacked-pages button at the far end of the bar: tab search over the open tabs and the recently ' +
+            'closed list, and — with `groups` — the tab-group switcher (Notion’s model): a group is a named set of ' +
+            'tabs, the bar shows one set at a time, `groupLabel` names the set on screen beside the glyph, and ' +
+            '`onSelectGroup` reports the pick.',
         },
         {
           name: 'TabBarNewTab',
@@ -124,6 +133,23 @@ const meta: Meta<typeof TabBar> = {
       },
       changelog: [
         {
+          date: '2026-09-19',
+          summary: 'The open tab is now part of the page: the page color, no tint, no underline. The tab menu can switch between tab groups and name the one on screen.',
+          detail:
+            'Open tab: `--background` only (the `--primary-soft` layer and the `::after` underline are gone), including inside a group and both halves of a split. The bar hairline is an inset `box-shadow` instead of `border-block-end`, so the opaque open tab covers it without overlapping (the list scrolls, so a 1px overhang would be clipped); painted tabs, the chip, "+" and the menu re-draw it on hover. `TabBarMenu` gains `groupLabel` (the group on screen, beside the glyph; the cell hugs it) and a switcher — `groups`, `activeGroup`, `onSelectGroup`, `ungroupedCount`, `onNewGroup`, `onGroupTabs`, `windowHeading`, `groupsHeading` — plus the `TabBarMenuGroup` type.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'The tab menu at the end of the bar lost its divider line, so it reads as part of the tabs like the "+".',
+          detail: '`.ui-tab-bar__menu` no longer sets `border-inline-start`. In the AppShell the only line left in the corner is the actions divider in front of Ask Aiden.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'Grouped tabs are tinted with the group color, and the open tab inside a group takes the group\'s color instead of the app\'s.',
+          detail:
+            'Every tab in a `TabBarGroup` paints the group\'s `-bg` tint as a background-image layer, so hover still replaces it. The open tab inside a group paints the tint twice over `--background` (a step stronger than its siblings) and its underline reads `--category-{c}-text` rather than `--primary` — an indigo underline under an orange group read as a mistake. `-text`, not the vivid hue, because the vivid hue on its own tint measured under the 3:1 non-text floor in light (orange 2.3–2.5); the `-text` step measures 4.1–4.6 and equals the base hue in dark. The top line across the group is unchanged. Tabs outside a group keep the app-color underline.',
+        },
+        {
           date: '2026-09-15',
           summary: 'A line always separates the tabs from the "+", including when the tabs scroll.',
           detail: 'The rule used to belong to the last tab alone, so once the list overflowed and cut a tab off mid-way nothing marked the edge. `.ui-tab-bar__new` now carries `border-inline-start`, and `.ui-tab-bar__list` sits 1px under it (`margin-inline-end: -1px`) so the two lines coincide when the tabs fit.',
@@ -143,7 +169,7 @@ const meta: Meta<typeof TabBar> = {
           date: '2026-09-15',
           summary: 'Tab groups, split tabs, drag and drop, and a right-click menu on every tab.',
           detail:
-            '`TabBarGroup` (`value`, `label`, `color`, `collapsed`, `menu`) draws a category-coloured chip and a matching top line on its tabs; collapsing hides every tab but the open one. `TabBarSplit` joins two tabs into one for a side-by-side view, with `SplitView` as the page half.\n\n' +
+            '`TabBarGroup` (`value`, `label`, `color`, `collapsed`, `menu`) draws a category-colored chip and a matching top line on its tabs; collapsing hides every tab but the open one. `TabBarSplit` joins two tabs into one for a side-by-side view, with `SplitView` as the page half.\n\n' +
             '`onTabMove` on the root makes tabs draggable (native drag and drop, no library) and reports `{ value, before, group }`; the bar reorders nothing. Tabs carry `TAB_BAR_DRAG_TYPE`, so a drop target outside the bar can accept them. `menu` on `TabBarTab` and `TabBarGroup` wraps them in a `ContextMenu`, which is also the keyboard route to everything dragging does.\n\n' +
             '`useTabLayout` holds the order, groups, open tab and split in one object and saves it to localStorage.',
         },
@@ -333,9 +359,10 @@ export const Overflow: Story = {
 };
 
 /**
- * The underline reads `--primary`, so the bar carries whichever application it
- * belongs to. Nothing about the component changes between these — each is
- * simply standing in a different `data-theme` subtree.
+ * The bar is neutral chrome in every theme (2026-09-19): the open tab is the page color
+ * with no underline, so no brand color sits on it. The only things that read `--primary`
+ * are the drag-and-drop insertion marker and the focus ring — standing in a different
+ * `data-theme` subtree changes those and nothing else.
  */
 export const Themed: Story = {
   render: () => (
@@ -403,7 +430,7 @@ const WORKSPACE_DOCS: Record<string, Doc> = {
   volume: { value: 'volume', label: 'Originations volume', Icon: BarChart3 },
   pipeline: { value: 'pipeline', label: 'Pipeline health', Icon: ChartColumn },
   servicing: { value: 'servicing', label: 'Servicing queue', Icon: Layers },
-  calls: { value: 'calls', label: 'Call centre', Icon: Phone },
+  calls: { value: 'calls', label: 'Call center', Icon: Phone },
   notes: { value: 'notes', label: 'Release notes', Icon: FileText },
   collateral: { value: 'collateral', label: 'Collateral', Icon: Box },
 };
@@ -529,7 +556,7 @@ function Workspace() {
                       {seg.group.collapsed ? 'Expand group' : 'Collapse group'}
                     </ContextMenuItem>
                     <ContextMenuSub>
-                      <ContextMenuSubTrigger>Colour</ContextMenuSubTrigger>
+                      <ContextMenuSubTrigger>Color</ContextMenuSubTrigger>
                       <ContextMenuSubContent>
                         <ContextMenuRadioGroup
                           value={seg.group.color}

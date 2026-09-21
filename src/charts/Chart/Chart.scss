@@ -1,9 +1,9 @@
 // Chart — the shared frame, chrome and marks.
 //
-// Every colour is a token. Series marks paint from `color` on a `__series`
+// Every color is a token. Series marks paint from `color` on a `__series`
 // group so the mark itself only ever says `currentColor` — the same trick
 // Checkbox uses for its drawn glyph, and what lets a chart inherit data-mode
-// without a single JS colour value.
+// without a single JS color value.
 
 .ui-chart {
   display: flex;
@@ -91,7 +91,7 @@
 }
 
 // Transparent, full-plot, and LAST in paint order. The pointer only has to be
-// closest to a band, never dead-centre on a 2px line.
+// closest to a band, never dead-center on a 2px line.
 .ui-chart__hit {
   fill: transparent;
   cursor: crosshair;
@@ -107,10 +107,10 @@
 
 .ui-chart__bar--active {
   // DOCUMENTED EXCEPTION — no token, and deliberately so. Every other hover in
-  // the system mixes toward a known colour (`--primary-hover` is a color-mix),
-  // but a series colour is chosen at runtime from the palette, so there is no
-  // authoring-time colour to mix. A relative brightness lift is the only way to
-  // emphasise an arbitrary fill. A token here would have exactly one consumer.
+  // the system mixes toward a known color (`--primary-hover` is a color-mix),
+  // but a series color is chosen at runtime from the palette, so there is no
+  // authoring-time color to mix. A relative brightness lift is the only way to
+  // emphasize an arbitrary fill. A token here would have exactly one consumer.
   filter: brightness(1.12);
 }
 
@@ -154,7 +154,7 @@
 /*
   The direct label at the end of a line.
 
-  `currentColor` on purpose: the label inherits the series colour from the
+  `currentColor` on purpose: the label inherits the series color from the
   wrapping group, so the tie between line and name is itself a visual one and
   needs no lookup. It sits in the right margin the frame reserved for it.
 
@@ -177,17 +177,17 @@
 // THE SUBJECT IS NOT TOUCHED. Everything below demotes the context; nothing
 // promotes the foreground. That is deliberate and it is not only taste: a mark
 // that gains weight gains INK, and ink reads as magnitude. Fattening the
-// emphasised line would make its data look bigger than it is, which is a
+// emphasized line would make its data look bigger than it is, which is a
 // truthfulness problem rather than a styling one. Removing from the others
 // costs nothing that can be misread.
 //
-// TWO CHANNELS, never colour alone. A mute has to sit lighter than every slot
+// TWO CHANNELS, never color alone. A mute has to sit lighter than every slot
 // to recede, and the lightest slot is already near the 3:1 floor against the
 // surface — so a muted mark that genuinely recedes CANNOT also clear 3:1, in
 // the same way adjacent slots cannot. Weight is the second channel that makes
 // the distinction hold anyway: a 2px grey line beside a 3px slate one is
 // unmistakable at luminances far closer than these. Same redundant-encoding
-// rule the rest of the library follows for status colour.
+// rule the rest of the library follows for status color.
 .ui-chart__series--muted {
   .ui-chart__line { stroke-width: var(--border-w-200); }
   // Halved. A muted band still has to read as a band — dropping it to a hairline
@@ -195,8 +195,8 @@
   .ui-chart__area { opacity: var(--o-10); }
 }
 
-// Colour is deliberately NOT transitioned. `color` here comes from an inline
-// `var(--chart-N)`, and Chromium freezes a transitioned var-driven colour when
+// Color is deliberately NOT transitioned. `color` here comes from an inline
+// `var(--chart-N)`, and Chromium freezes a transitioned var-driven color when
 // the variable changes without a recalc — the same trap that froze the Tabs
 // trigger on a live data-mode flip. Weight carries the change instead, which
 // interpolates from a literal and cannot freeze.
@@ -272,8 +272,8 @@
   flex-shrink: 0;
 }
 
-// Text wears TEXT tokens, never the series colour. A coloured mark beside the
-// label carries identity; colouring the words too is how a legend stops being
+// Text wears TEXT tokens, never the series color. A colored mark beside the
+// label carries identity; coloring the words too is how a legend stops being
 // readable and starts being decoration.
 .ui-chart__legend-label {
   font-size: var(--text-xs);
@@ -325,7 +325,7 @@
   font-size: var(--text-xs);
 }
 
-// A short stroke, not a filled box: at tooltip density a block of colour is
+// A short stroke, not a filled box: at tooltip density a block of color is
 // data-weight ink doing a label's job.
 .ui-chart__tooltip-key {
   width: var(--w-2-5);
@@ -408,7 +408,7 @@
 
 /* THE SWATCH NEEDS AN EDGE. A sequential ramp's pale end is SUPPOSED to recede
    into the surface inside the plot — that is how magnitude reads — but the same
-   colour as a 12px legend chip has nothing else to define it. Measured on the
+   color as a 12px legend chip has nothing else to define it. Measured on the
    v2 sequential ramps, the three lightest steps sit at 1.19, 1.68 and 2.45:1
    against the card, all under the 3:1 non-text floor. A hairline costs nothing
    and converts "invisible chip" into "chip whose fill happens to be pale". */

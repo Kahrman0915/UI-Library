@@ -63,8 +63,8 @@ const meta: Meta<typeof FeaturedIcon> = {
         ],
         notes:
           '`color` and `appearance` are independent, the same way {@link Badge} models ' +
-          'them: the colour publishes a palette and the appearance picks which half of ' +
-          'it renders, so **every colour works with every appearance**.\n\n' +
+          'them: the color publishes a palette and the appearance picks which half of ' +
+          'it renders, so **every color works with every appearance**.\n\n' +
           'Default to `soft`. Reach for `solid` when the tile is the loudest thing in ' +
           'its own block, or when a row of tiles IS the content rather than the ' +
           'decoration beside it.',
@@ -73,13 +73,13 @@ const meta: Meta<typeof FeaturedIcon> = {
         {
           date: '2026-09-02',
           summary:
-            'The `error` colour is a touch lighter in dark mode.',
+            'The `error` color is a touch lighter in dark mode.',
           detail:
             'Dark `--error` moved `#f87171` to `#fa8585`, with `-light`, `-soft`, `-border`, `-ring` and ' +
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
@@ -93,7 +93,7 @@ const meta: Meta<typeof FeaturedIcon> = {
             '(`--primary-light` / `--primary-text` / `--primary-border` soft, `--primary` / ' +
             '`--primary-foreground` solid) and `brand` no longer compiles — replace it with ' +
             '`default`, or drop the prop.\n\n' +
-            'TWO CONSEQUENCES WORTH KNOWING. There is no neutral colour in the set any more: ' +
+            'TWO CONSEQUENCES WORTH KNOWING. There is no neutral color in the set any more: ' +
             'a tile that must stay slate inside a themed subtree has to say so itself. And ' +
             '`EmptyMedia variant="icon"` emits `--default`, so **every empty state now themes** ' +
             'and its unthemed tile goes from an opaque `--secondary` to the far fainter 6% ' +
@@ -103,14 +103,14 @@ const meta: Meta<typeof FeaturedIcon> = {
         {
           date: '2026-08-31',
           summary:
-            'New `appearance` prop (`soft` · `solid`) — every colour now has a filled option, not just `default`.',
+            'New `appearance` prop (`soft` · `solid`) — every color now has a filled option, not just `default`.',
           detail:
             'BREAKING (visual). `default` was the only filled tile in the set: it painted an ' +
             'opaque `--muted` with a border that resolved to the SAME value, so it read as a ' +
-            'solid chip with no edge, while the five semantic colours were a 6% tint with a ' +
+            'solid chip with no edge, while the five semantic colors were a 6% tint with a ' +
             '30% ring and the category hues a 10% one. Three treatments, no way to ask for any ' +
             'of them.\n\n' +
-            '`color` and `appearance` are now independent, the mechanism Badge uses: the colour ' +
+            '`color` and `appearance` are now independent, the mechanism Badge uses: the color ' +
             'publishes `--_fill`/`--_on-fill` and `--_soft`/`--_soft-ink`/`--_soft-line`, and ' +
             'the appearance consumes one pair. `appearance` defaults to **`soft`**, so a tile ' +
             'with no `color` changes from the solid slate chip to a soft neutral tint — pass ' +
@@ -174,7 +174,7 @@ export const Sizes: Story = {
 };
 
 /**
- * The two fills, across every colour family. `soft` is the tint, its on-tint ink
+ * The two fills, across every color family. `soft` is the tint, its on-tint ink
  * and a soft ring; `solid` is the vivid fill with inverted ink and no ring —
  * an edge in the same hue as the fill is invisible, and one in a different hue
  * reads as a second object.
@@ -237,7 +237,7 @@ export const Colors: Story = {
 
 /**
  * The tag palette. Same tile, same border weight, same ink relationship as the
- * semantic colours above — the difference is what the hue is *for*. Reach for
+ * semantic colors above — the difference is what the hue is *for*. Reach for
  * these when a set of tiles has to be told apart and none of them outranks
  * another.
  */
@@ -298,7 +298,7 @@ export const Matrix: Story = {
 
 /**
  * `default` is the theme's primary, so it moves with a `data-theme` wrapper —
- * there is no separate `brand` colour to pick. On the main brand `--primary` is
+ * there is no separate `brand` color to pick. On the main brand `--primary` is
  * neutral slate, which is why the first tile still reads as chrome.
  */
 export const Themed: Story = {

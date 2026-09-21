@@ -70,8 +70,12 @@
   }
 
   // ---- Sizes ----
+  // 32 square, the same box as a small icon-only Button (16 glyph + 2 × --p-2): the
+  // toggler carries a 1px transparent border the Button's box does not, so its padding
+  // gives that pixel back. The rail footer stacks the two, and a 28 beside a 32 read as
+  // two different controls (owner, 2026-09-18).
   &--sz-sm {
-    padding: var(--p-1-5);
+    padding: calc(var(--p-2) - var(--border-w-100));
     .ui-mode-toggler__icons {
       width: var(--w-4);
       height: var(--h-4);

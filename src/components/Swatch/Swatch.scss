@@ -1,0 +1,63 @@
+// Swatch — a color chip in one of the 15 category hues. See Swatch.types.ts for
+// why this is not StatusDot.
+
+.ui-swatch {
+  display: inline-block;
+  flex-shrink: 0;
+  // The hue is published as a local prop so the fill and the edge read the same
+  // color; the hue rules below are the only thing that sets it.
+  background: var(--ui-swatch-color);
+
+  // A pale hue on a light page has almost no edge, so the chip gets an inset
+  // ring of its own hue rather than a neutral border — a neutral would read as
+  // chrome around the color instead of part of it. `-border` is the same hue at
+  // 0.3 light / 0.4 dark, which darkens the boundary without changing the fill.
+  // Inset, so the ring never grows the box: a swatch sitting in a row of them
+  // has to keep its measured size.
+  box-shadow: inset 0 0 0 var(--border-w-100) var(--ui-swatch-edge);
+}
+
+// ---- Shapes ----
+.ui-swatch--circle {
+  border-radius: var(--rounded-full);
+}
+
+// Not --rounded-full's opposite: a hard corner at 10px reads as a rendering
+// artefact rather than a square, so the smallest radius that still says "square".
+.ui-swatch--square {
+  border-radius: var(--rounded-sm);
+}
+
+// ---- Sizes ----
+// One rung above StatusDot at every step. A status dot is a mark ON something;
+// a swatch is the thing being chosen, and at 8px the lighter hues stop being
+// tellable apart.
+.ui-swatch--sz-sm {
+  width: var(--w-2-5);
+  height: var(--h-2-5);
+}
+
+.ui-swatch--sz-default {
+  width: var(--w-3);
+  height: var(--h-3);
+}
+
+.ui-swatch--sz-lg {
+  width: var(--w-4);
+  height: var(--h-4);
+}
+
+// ---- Hues ----
+// Quote the names — bare `red`/`cyan`/etc. are Sass color VALUES (cyan even
+// serializes to `aqua`), which would emit wrong class names. Same list and same
+// reason as Badge.
+$ui-swatch-categories:
+  'red', 'orange', 'amber', 'green', 'emerald', 'teal', 'cyan', 'sky', 'blue',
+  'indigo', 'violet', 'purple', 'fuchsia', 'pink', 'rose';
+
+@each $c in $ui-swatch-categories {
+  .ui-swatch--#{$c} {
+    --ui-swatch-color: var(--category-#{$c});
+    --ui-swatch-edge: var(--category-#{$c}-border);
+  }
+}

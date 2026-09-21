@@ -8,7 +8,7 @@
  *   against `--muted-foreground` elsewhere. The quietest rung.
  *
  * `line` and `plain` are presentation only — identical semantics, keyboard
- * behaviour and aria to the other two. In a `ToggleGroup` they also drop the
+ * behavior and aria to the other two. In a `ToggleGroup` they also drop the
  * segmented border-collapse and sit apart on a gap, since they have no borders
  * to share.
  */
@@ -36,7 +36,7 @@ type ToggleBase = Omit<
   IconLeft?: React.FC;
   /** Icon after the label. Must be a zero-prop component. */
   IconRight?: React.FC;
-  /** Icon-only toggle — renders a single centred glyph. Requires an `aria-label`. */
+  /** Icon-only toggle — renders a single centered glyph. Requires an `aria-label`. */
   IconCenter?: React.FC;
   className?: string;
 };

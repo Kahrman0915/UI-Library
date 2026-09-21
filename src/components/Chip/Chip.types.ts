@@ -19,7 +19,7 @@ type ChipBase = Omit<
   IconLeft?: React.FC;
   /** Icon after the label. Must be a zero-prop component. */
   IconRight?: React.FC;
-  /** Renders alone and centred. Supplying it without a `label` makes an icon-only chip. */
+  /** Renders alone and centered. Supplying it without a `label` makes an icon-only chip. */
   IconCenter?: React.FC;
   className?: string;
 };

@@ -21,7 +21,7 @@ const meta: Meta<typeof Textarea> = {
           detail:
             'Matches Input. `.ui-input__required` renders on `required && !label`, `aria-hidden` '+
             'since the native attribute is the announcement. In a multiline wrap it pins to '+
-            'the FIRST line rather than centring, so it does not drift down the block as the '+
+            'the FIRST line rather than centering, so it does not drift down the block as the '+
             'textarea grows — `--multi` zeroes the wrap padding, so the marker carries the '+
             'control’s own inset per size.',
         },
@@ -176,14 +176,14 @@ Version 1.3.2
 
 /**
  * With no label the asterisk moves inside the field — and in a multiline box it
- * pins to the FIRST LINE rather than centring, so it does not drift down the
+ * pins to the FIRST LINE rather than centering, so it does not drift down the
  * block as the textarea grows.
  */
 export const RequiredWithoutLabel: Story = {
   name: 'Required indicator with no label',
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
-      <Textarea id="ta-req-labelled" label="Notes" required placeholder="Label carries the asterisk" />
+      <Textarea id="ta-req-labeled" label="Notes" required placeholder="Label carries the asterisk" />
       <Textarea id="ta-req-bare" required placeholder="Required, no label" />
       <Textarea id="ta-req-optional" placeholder="Not required — no marker" />
       <Textarea id="ta-req-tall" required rows={6} placeholder="Six rows — the marker stays on the first line" />

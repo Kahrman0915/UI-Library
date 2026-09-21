@@ -46,7 +46,7 @@
 
   // ---- Variants: line + plain ----
   // The quiet rungs, for a filter bar where a segmented control would outshout
-  // the content. No box in either state — the pressed item is marked by colour
+  // the content. No box in either state — the pressed item is marked by color
   // plus one extra signal, never by a fill.
   &--line,
   &--plain {
@@ -96,7 +96,7 @@
   }
 
   // plain: weight steps 400 -> 600. Weight is doing nearly all the work here,
-  // because the colour pair cannot — pressed/unpressed is --foreground vs
+  // because the color pair cannot — pressed/unpressed is --foreground vs
   // --muted-foreground, 2.36:1 in light but only 1.18:1 in dark (#f8fafc vs
   // #e2e8f0). A signal that survives both modes has to be non-chromatic.
   //

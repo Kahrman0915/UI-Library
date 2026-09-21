@@ -3,7 +3,7 @@ import type { FeaturedIconProps } from './FeaturedIcon.types';
 import './FeaturedIcon.scss';
 
 // A boxed icon tile — the "featured icon" of empty states, feature callouts and
-// dialogs. Presentational: it renders one lucide glyph inside a coloured tile,
+// dialogs. Presentational: it renders one lucide glyph inside a colored tile,
 // sized by the tile rather than the icon. Decorative by default (aria-hidden);
 // pass `label` to name it when it stands alone.
 const FeaturedIcon = forwardRef<HTMLSpanElement, FeaturedIconProps>(

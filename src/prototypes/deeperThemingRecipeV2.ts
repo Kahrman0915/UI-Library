@@ -44,7 +44,7 @@
  *
  *     HIGHLIGHT   the upper corner. Reaches OUT of the brand's hue family —
  *                 db's indigo opens on teal, ph's orange opens on yellow. It is
- *                 the lightest, airiest colour the brand owns.
+ *                 the lightest, airiest color the brand owns.
  *     PRIMARY     the body. What a person means when they name the brand — and
  *                 literally --primary, the same value the CTA is painted with.
  *     DEEP        the shadow end. Where the mark grounds itself, and the source
@@ -52,7 +52,7 @@
  *
  * Every earlier round of this file tried to theme from ONE number and kept
  * running out of room — the wheel is only 360 degrees and eight brands plus the
- * semantics do not fit. Three anchors is not three times the colour, it is three
+ * semantics do not fit. Three anchors is not three times the color, it is three
  * times the STRUCTURE: each anchor has a natural home, so the brand reaches
  * further without any of them fighting.
  *
@@ -72,8 +72,8 @@
  * Six of the seven take the middle anchor directly. aiden authors its own
  * (`primary: { light, dark }` on its entry), and that is a supported shape
  * rather than a special case: the mark is display art with no contrast
- * constraint, --primary is a UI colour, and once in a while a brand wants them
- * to be genuinely different colours.
+ * constraint, --primary is a UI color, and once in a while a brand wants them
+ * to be genuinely different colors.
  *
  * This is NOT the two-value model removed below. That one had --primary sitting
  * a few percent off the middle for no reason a consumer could see — a
@@ -90,16 +90,16 @@
  * in one sentence? If not, it is drift, and the brand should just use its
  * middle stop.
  *
- * ONE COLOUR, ONE LABEL. This is the change that shaped the file.
+ * ONE COLOR, ONE LABEL. This is the change that shaped the file.
  *
  * The middle anchor USED to be "main", with --primary a second, slightly darker
- * value derived from it — because a mark's mid stop is a display colour and did
- * not clear AA under a label. Two colours a few percent apart is a smell, so it
+ * value derived from it — because a mark's mid stop is a display color and did
+ * not clear AA under a label. Two colors a few percent apart is a smell, so it
  * is gone: --primary IS the middle anchor.
  *
  * An intermediate pass paid for the contrast on the label side instead, giving
  * six brands a DARK --primary-foreground and db a light one. It measured fine and
- * it was a worse system: the CTA's label flipped colour depending on which
+ * it was a worse system: the CTA's label flipped color depending on which
  * sub-app you were in, for reasons no consumer could see.
  *
  * So the marks moved instead. Each light middle came down its own hue — chroma
@@ -133,15 +133,15 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * SURFACES COME FROM DEEP, AND THEY MOVE ONLY SLIGHTLY. An earlier pass built the
  * light surfaces from the HIGHLIGHT anchor, on the reasoning that a light surface
- * wants a light source colour. It measured well and looked wrong: a highlight is
- * the brightest, most saturated colour the brand owns, so a panel built from it
+ * wants a light source color. It measured well and looked wrong: a highlight is
+ * the brightest, most saturated color the brand owns, so a panel built from it
  * announces itself. Sub-apps are supposed to feel like one suite — the surface
  * should COMPLEMENT the accent, not compete with it.
  *
  * So the tint source is the deep anchor, desaturated toward slate first (the
  * --tint-stock stock) and then applied at single digits. The target is a
  * surface that shifts ~4-8 dE00 off the neutral: you can see it when a brand
- * sits next to another brand, and you never read it as "a coloured page". Deep
+ * sits next to another brand, and you never read it as "a colored page". Deep
  * also has the property that makes this cheap — it is high-chroma, so a few
  * percent buys real hue, and the luminance cost stays small.
  *
@@ -282,7 +282,7 @@ export const BRAND_ANCHORS = {
   // the gamut at teal caps near 0.09 there, BELOW success's own 0.105 — and
   // rotating toward cyan only trades the collision for --info (hue 204 gives
   // success 7.2 but info 8.3). A bright teal and a muted pine at the same
-  // lightness are the same colour to the eye; there is no third option.
+  // lightness are the same color to the eye; there is no third option.
   //
   // So this is a WAIVER like ec/--info and ph/--warning, and it should be
   // recorded in semWaiver if it is adopted — but it is the tightest of the
@@ -380,7 +380,7 @@ export const BRAND_ANCHORS = {
   aiden: { light: ['#b65ffd', '#5a37e6', '#2c6dea'], dark: ['#b75ef2', '#9076f9', '#93c5fd'], markDeep: { light: '#2c6dea', dark: '#4f99ec' }, accent: { light: '#5897e2', dark: '#3473bb' }, chart2Dark: '#93c5fd', on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a37e6', dark: '#9076f9' }, icon: 'sparkles' },
 } as const;
 
-/** --primary IS the middle anchor. No derivation, no second colour. */
+/** --primary IS the middle anchor. No derivation, no second color. */
 export const PRIMARY_LIGHT: Record<string, string> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, ('primary' in v ? v.primary.light : v.light[1])]),
 );
@@ -422,7 +422,7 @@ const CHART_THEMING = true;
 
 /**
  * Slots 3-6 per brand and mode: four of the six shipped slate steps, ordered by
- * the solver to maximise the minimum adjacent dE given slot 2. Aiden is absent
+ * the solver to maximize the minimum adjacent dE given slot 2. Aiden is absent
  * on purpose — it is a surface, not a brand, and keeps the neutral ramp.
  */
 const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
@@ -439,11 +439,11 @@ const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
  * ceiling that exposed is worth more than the fix.
  *
  * The chain gate only ever compared slot N with slot N+1, which is sufficient
- * while the emphasis pattern is on, because every de-emphasised series resolves
- * to a single --chart-muted grey and only two or three colours ever paint. Turn
+ * while the emphasis pattern is on, because every de-emphasized series resolves
+ * to a single --chart-muted grey and only two or three colors ever paint. Turn
  * emphasis off, as any chart showing all six categories does, and the ungated
  * pairs appear: slots 4 and 6 measured dE 5.3 on every brand — 5.2 under
- * colour-blind simulation — because both are dark slates and nothing had ever
+ * color-blind simulation — because both are dark slates and nothing had ever
  * asked them to differ.
  *
  * Re-solved against every pair among the six, AND against the card that
@@ -453,7 +453,7 @@ const CHART_NEUTRALS: Record<string, { light: string[]; dark: string[] }> = {
  * the lightest tinted card in the set. Worst against the real card: 3.58.
  *
  * But the honest headline is the CEILING, not the improvement: the best all-pairs minimum reachable is 7.9
- * with NO tint at all, and 6.4 at the 20% used here. Six colours cannot all sit
+ * with NO tint at all, and 6.4 at the 20% used here. Six colors cannot all sit
  * 15 apart inside a space bounded by 3:1-against-the-card at BOTH ends and by
  * distinctness from the mute. This is the same compounding the chart component
  * already documents for contrast — "no categorical palette can deliver 3:1
@@ -519,13 +519,13 @@ const CHART_SEQ: Record<string, { light: string[]; dark: string[] }> = {
  * 5.9-8.5, so under a red-green anomaly the scale collapses and the reader
  * loses the SIGN — the one thing a diverging ramp exists to carry. Every other
  * decision in this palette was CVD-gated and then the most famous CVD trap in
- * data visualisation went in unchecked.
+ * data visualization went in unchecked.
  *
  * THE OPPOSING ARM IS CHOSEN BY CVD, NOT BY 180 DEGREES. A naive complement
  * works for four brands and fails two: dc's true opposite is teal-vs-red and
  * rm's is magenta-vs-green, which are red-green axes again (CVD 5.1 and 3.8).
  * So the arm is searched across 100-260 degrees for the hue that MAXIMISES
- * colour-blind separation while clearing every semantic by 10. Results:
+ * color-blind separation while clearing every semantic by 10. Results:
  *
  *   db  268 -> 102   CVD 23.8      ec  240 ->  60   CVD 18.2
  *   nb  136 -> 270   CVD 22.4      ph   57 -> 273   CVD 27.7
@@ -569,7 +569,7 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * subsystem's surface-gap doctrine, and holding it is exactly what forced my
  * palettes dark and heavy. Light tints are what make a chart look airy. The
  * owner's reference simply spends that budget differently, and on BARS — which
- * are large, adjacent, and labelled — it reads fine. It would not on a
+ * are large, adjacent, and labeled — it reads fine. It would not on a
  * one-pixel line or a scatter dot.
  *
  * DARK IS DERIVED BY ROLE, NOT BY FORMULA. Each slot keeps the JOB it does in
@@ -628,18 +628,18 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  *   near-grey at a usable lightness converge, and the only escape drops the
  *   grey under 3:1 as well. Structural, not a search failure.
  * · db and aiden DARK land at 7.7 and 7.8 all-pairs against ec's 8.6.
- * In all three, marker shape and the direct label carry what colour cannot.
+ * In all three, marker shape and the direct label carry what color cannot.
  *
  * DARK SLOT 5 IS THE LINE PALETTE'S PURPLE (owner, 2026-08-06). It was the
  * slate #7995a6; it is now #aab9ff, the same value the line chart uses for its
- * second series — so in dark the two charts visibly share a colour instead of
+ * second series — so in dark the two charts visibly share a color instead of
  * being neighbours that never met.
  *
  * IT COSTS SEPARATION AND THE NUMBERS SHOULD BE ON THE RECORD: all-pairs falls
  * 8.6 -> 6.5 (slots 2 and 5, both pale blue-lavender now) and the worst
  * NEIGHBOURING pair falls 15.0 -> 13.0 (slots 4 and 5, the cyan against the
  * purple). Both are still well clear of the 8.5 hard floor, and grouped bars
- * lean on position as well as colour, so this is a real but bounded trade
+ * lean on position as well as color, so this is a real but bounded trade
  * rather than a break. It is not repairable by moving slot 2: the binding pair
  * is 4/5, and a search over every legal slot-2 value finds nothing that
  * restores a 15 neighbour.
@@ -648,7 +648,7 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * #024f79 by eye; ec's --primary is #067db8 and its --primary-deep is #01517a,
  * dE 1.3 and 0.6 away. Invisible as a change, and it makes two of the six slots
  * LITERALLY brand tokens, so a chart bar and a primary button are provably the
- * same colour rather than nearly.
+ * same color rather than nearly.
  *
  * DARK SLOT 3 LIFTED #0c6fa7 -> #2088bb, 2.35 -> 3.24 on the card. The
  * asymmetry with light is the point: the owner's light slot 4 sits at 1.98 and
@@ -669,14 +669,14 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  *
  * SLOT 2 PULLED DOWN A RUNG (owner, 2026-08-06). #79b2d4 -> #70a3d4 in light:
  * same soft pale blue, L 0.74 -> 0.70. It fixes three things at once — the
- * colour-blind pair 2/4 goes 3.5 -> 8.0, all-pairs 6.3 -> 9.4, and clearance
+ * color-blind pair 2/4 goes 3.5 -> 8.0, all-pairs 6.3 -> 9.4, and clearance
  * from --chart-muted 6.2 -> 9.6, so a slot-2 series no longer reads as
- * de-emphasised when `emphasis` is on. Costs 16.9 -> 14.2 on the worst
+ * de-emphasized when `emphasis` is on. Costs 16.9 -> 14.2 on the worst
  * neighbouring pair, which is well clear of the 8.5 hard floor. The cyan is
  * untouched, by owner decision.
  *
  * The SOFTNESS was the problem, which is worth knowing before softening
- * anything else here: a low-chroma colour at high lightness carries almost no
+ * anything else here: a low-chroma color at high lightness carries almost no
  * signal on EITHER channel, so it crowds both the cyan and the mute at once. No
  * value under chroma 0.08 clears both. #70a3d4 buys its way out with a little
  * chroma (0.077 -> 0.091), not with a hue change.
@@ -696,15 +696,15 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * fix that is correct in one mode inverts in the other.
  *
  * THE LIGHTNESS LADDER IS THE ACCESSIBILITY STORY, not the hue placement.
- * Within one hue family a colour-blind reader has almost no hue channel left,
+ * Within one hue family a color-blind reader has almost no hue channel left,
  * so LIGHTNESS is the only thing carrying the distinction. Both modes had
  * exactly one pair standing too close on it — slots 2 and 4, a ~0.03 rung apart
- * — and that single gap WAS the entire colour-blind weakness. Spreading it is
+ * — and that single gap WAS the entire color-blind weakness. Spreading it is
  * the fix above. The rule generalises: inside one hue family, no two slots may
  * share a lightness rung, and the ladder is worth checking before the hexes.
  *
  * The line chart will test this hardest: a bar leans on area, a shared edge and
- * a fixed position in its group, so colour is one cue of four. A one-pixel
+ * a fixed position in its group, so color is one cue of four. A one-pixel
  * stroke has none of them, and lines CROSS — the two series a reader is
  * comparing end up on the same pixels exactly where they must be told apart.
  * The two sub-3:1 tints also stop reading as shapes at 1px.
@@ -724,10 +724,10 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  *   db      #d5dcea    0.021  ->   #d7dce5    0.013
  *
  * Every light mute moved toward neutral, most of them by 4-5x. THE DERIVED RULE
- * WAS RIGHT ABOUT THE SLOT AND WRONG ABOUT THE CHROMA: knocking a colour back
+ * WAS RIGHT ABOUT THE SLOT AND WRONG ABOUT THE CHROMA: knocking a color back
  * with alpha lowers its contrast but keeps its hue at full saturation relative
  * to what is left, so the result is a TINT — and a tinted mute still reads as a
- * colour with an opinion. The dark mutes were left alone, which fits: at 28%
+ * color with an opinion. The dark mutes were left alone, which fits: at 28%
  * over a dark card the composite is already near-neutral (0.019-0.035).
  *
  * If this becomes a rule again it needs a chroma cut as well as an alpha cut.
@@ -735,7 +735,7 @@ const CHART_DIV: Record<string, { light: string[]; dark: string[] }> = {
  * beat a formula that is close.
  *
  * ph's light mute is the one to look at: #e2ddd6 sits 9.7 from slot 2 against
- * the 12 floor, so a de-emphasised series and slot 2 are closer than the system
+ * the 12 floor, so a de-emphasized series and slot 2 are closer than the system
  * allows anywhere else.
  */
 const CHART_MUTE: Record<string, { light: string; dark: string }> = {
@@ -765,19 +765,19 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
      7.4 -> 9.5, neighbour 16.9 -> 14.5, still two slots under 3:1.
      SLOT 2 IS VERY FAINT AT 1.39:1 and that is the honest cost of the
      direction. A pale desaturated blue-grey and --chart-muted (#a9b6c7) are
-     structurally the same colour, so the only escapes are lighter or more
+     structurally the same color, so the only escapes are lighter or more
      chromatic; lighter keeps their look, chromatic (#a290e1, 2.76) does not.
      Their own value was already 1.63.
 
      SLOT 2 IS THE OWNER'S #a2b2d0. It once sat 2.2 dE from --chart-muted, and
      the fix was a bespoke warm mute for db alone; that is gone, because the
-     mute is now DERIVED from slot 2 itself (see CHART_MUTE_SRC) and a colour
+     mute is now DERIVED from slot 2 itself (see CHART_MUTE_SRC) and a color
      cannot collide with something computed from it.
 
      DARK IS UNTOUCHED BY OWNER DECISION (2026-08-07), including two slots that
      do NOT clear --info: slot 2 at 6.5 and slot 4 at 4.2 against a floor of 10.
      Dark --info is #7cd4fd and slot 4 is #9ddcfa — at 4.2 they are effectively
-     one colour, so an info badge beside a db chart is a real hazard. Owner:
+     one color, so an info badge beside a db chart is a real hazard. Owner:
      "do not change dark mode, I don't care that it is near info here." Recorded
      rather than silently carried: this is accepted, not passing. */
   db:    { light: ['#466af4', '#a2b2d0', '#0d3bbf', '#5fc3ec', '#7f92a3', '#2b406a'],
@@ -860,7 +860,7 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  * TAKES SLOT 5 — each mode picks the slot that is actually visible in it.
  *
  * The cause is the asymmetry this file keeps meeting: light's readable band
- * sits BELOW these colours and dark's sits ABOVE them, so one pale value is dim
+ * sits BELOW these colors and dark's sits ABOVE them, so one pale value is dim
  * in one mode and bright in the other. Insisting on the same slot in both would
  * force one mode to carry a stroke it cannot show. Nothing is lost by letting
  * the hue differ, because SERIES IDENTITY IS NOT CARRIED BY HUE HERE — the
@@ -871,17 +871,17 @@ const CHART_HAND: Record<string, { light: string[]; dark: string[] }> = {
  *
  * dE ~10 IS BELOW THE 15 THIS FILE HOLDS EVERYWHERE ELSE, and it is accepted
  * rather than overlooked. It is affordable for one reason: this chart no longer
- * asks colour to work alone. Two colours 10 apart, one squared and one
- * triangular, each labelled where it ends, are easier to tell apart than two
- * colours 15 apart in a legend. THAT is what the redundant encoding was for,
- * and it is what makes reusing the bar colours possible at all — the
- * alternative was three fully-separated invented colours, and a reader moving
+ * asks color to work alone. Two colors 10 apart, one squared and one
+ * triangular, each labeled where it ends, are easier to tell apart than two
+ * colors 15 apart in a legend. THAT is what the redundant encoding was for,
+ * and it is what makes reusing the bar colors possible at all — the
+ * alternative was three fully-separated invented colors, and a reader moving
  * between the two charts on one page should see one system, not two.
  *
  * Dark's CVD 4.9 is the value to watch: slot 4's pale cyan against slot 6's
  * near-white are close under a red-green anomaly. Shape carries that pair.
  *
- * A FOURTH SERIES FOLDS TO --chart-muted rather than picking up a colour that
+ * A FOURTH SERIES FOLDS TO --chart-muted rather than picking up a color that
  * cannot carry it — the cap belongs in the chart where it can be seen.
  */
 const CHART_LINE: Record<string, { light: string[]; dark: string[] }> = {
@@ -931,13 +931,13 @@ function chartVars(
   const a = anchors[k];
   // The AUTHORED primary, not the mark's middle stop. Identical for every brand
   // that does not separate them, so this changes no existing output — but nb
-  // now does separate them (see its anchors), and a chart must plot the colour
+  // now does separate them (see its anchors), and a chart must plot the color
   // the buttons use, not the one the logo is drawn with.
   const slot1 = (mode === 'light' ? PRIMARY_LIGHT[k] : PRIMARY_DARK[k]) ?? (mode === 'light' ? a.light[1] : a.dark[1]);
   // dark slot 2 is the COMPANION, not the deep — see the header for why.
   // Slot 3 is the ACCENT: the artwork hue tamed to chart duty (3:1 on card,
   // capped chroma, chain-dE from slot 2, semantics hard-cleared) — so a
-  // 3-series chart carries colour and branding without leaving the family.
+  // 3-series chart carries color and branding without leaving the family.
   const slot2 = mode === 'light' ? a.light[2] : a.chart2Dark;
   const slot3 = a.accent[mode];
   return [slot1, slot2, slot3, ...neutrals].map((hex, i) => `  --chart-${i + 1}: ${hex};`).join('\n') + '\n';
@@ -964,7 +964,7 @@ function rampVars(k: string, mode: 'light' | 'dark'): string {
  * diverging. Scoped to the brand that has one — an unscoped switch would leave
  * --chart-1..4 undefined on every other brand, which fails silently and paints
  * nothing. Slots 5 and 6 fold to --chart-muted so a fifth series is VISIBLY
- * past the cap rather than quietly given a colour that cannot carry it.
+ * past the cap rather than quietly given a color that cannot carry it.
  */
 function lineBlocks(k: string, sel: string): string {
   const set = CHART_LINE[k];
@@ -1020,7 +1020,7 @@ function anchorBlocks(
        re-declared inside the aiden scope to move its stops at all. Emitting
        the gradient per brand removes that trap and the three --poc2-mark-*-at
        variables with it. Aiden's middle holds a PLATEAU (44%→62%) because a
-       stop is a point: naming the colour twice is the only way to give it a
+       stop is a point: naming the color twice is the only way to give it a
        band, and the blurple is the thing Aiden actually is. */
     const [s1, s2, s3] = k === 'aiden' ? ['9.7%', '44%', '62%'] : ['9.7%', '51.6%', '51.6%'];
     const gradient = `  --decorative-gradient: linear-gradient(135deg,
@@ -1084,7 +1084,7 @@ ${anchorBlocks()}
 
   /* SLIGHT, ON PURPOSE. Each surface lands 4-8 dE00 off its neutral base — the
      range where a brand is legible against another brand but never legible as
-     "a coloured panel". Percentages differ per token only because the bases do:
+     "a colored panel". Percentages differ per token only because the bases do:
      --accent is the near-white row-hover surface and can take the most; --muted
      is the darkest and carries the system's tightest muted-text pairing, so it
      takes the least. Worst muted-foreground reading across all seven brands:
@@ -1214,8 +1214,8 @@ ${anchorBlocks()}
    remove the pink — and handed the tile to the BLUE, because everything from
    22% to 90.3% became the run down to the deep. Owner: "now it is too blue."
    The problem was never how far the pink reached; it was that the blurple in
-   the MIDDLE — the colour that is actually Aiden, the one the buttons carry —
-   had no room. It was a crossing point between two other colours rather than a
+   the MIDDLE — the color that is actually Aiden, the one the buttons carry —
+   had no room. It was a crossing point between two other colors rather than a
    body. So the ends go back exactly where they were (9.7% and 90.3%) and the
    middle is named TWICE, holding from 44% to 62%. The pink still opens the
    corner, the blue still closes it, and the thing between them is now the
@@ -1366,11 +1366,11 @@ ${anchorBlocks()}
 [data-theme-poc2][data-tint~='rail']    { --tint-rail: 1; }
 
 [data-theme-poc2] {
-  /* The scope declares its own text colour. Without this the subtree INHERITS
-     whatever colour the surrounding page had — and since a POC scope carries its
+  /* The scope declares its own text color. Without this the subtree INHERITS
+     whatever color the surrounding page had — and since a POC scope carries its
      own data-mode, a dark demo sitting on a light Storybook page inherited light
      text and rendered #0f172a on a near-black shell. Only elements that set a
-     colour of their own (the components) looked right, which is exactly the kind
+     color of their own (the components) looked right, which is exactly the kind
      of half-correct that survives a screenshot. */
   color: var(--foreground);
 
@@ -1386,18 +1386,18 @@ ${anchorBlocks()}
      runs from 9.7% to 51.6% — half the tile — which is right for the brands
      whose highlight is a near neighbour of their primary. It is wrong for one
      whose highlight has left the hue family: aiden's pink then reads as a
-     second colour rather than as a light source. See the aiden override. */
-  /* The middle colour gets TWO stops so it can hold a plateau rather than being
+     second color rather than as a light source. See the aiden override. */
+  /* The middle color gets TWO stops so it can hold a plateau rather than being
      a single crossing point. Defaulted to the same position as --poc2-mark-b-at,
      which is a visual no-op — the six brands that do not set it render exactly
-     as before. A gradient stop is a point: the only way to give a colour a BAND
+     as before. A gradient stop is a point: the only way to give a color a BAND
      is to name it twice. */
   --poc2-hero: linear-gradient(135deg,
     var(--primary) 0%,
     var(--primary-deep) 100%);
   /* Shadows carry the DEEP anchor, GREYED. A grey shadow under a saturated
      object reads as dirt, so the brand's own dark end is still in there — but
-     the raw deep put a visibly coloured wash under every card. Pre-mixing into
+     the raw deep put a visibly colored wash under every card. Pre-mixing into
      slate-700 keeps the direction and drops the saturation: chroma across the
      seven falls 25-107 to 5-38. Aiden is the one that stays high, because its
      deep starts at chroma 107 — four times anything else in the set.
@@ -1453,7 +1453,7 @@ ${anchorBlocks()}
 
 /* ── DECLARING CHART INTENT ─────────────────────────────────────────────────
    Three palettes now live in every brand scope, and the consumer says WHICH by
-   naming the job rather than by choosing colours:
+   naming the job rather than by choosing colors:
 
      <div data-chart-palette="sequential"> … </div>
      <div data-chart-palette="diverging">  … </div>
@@ -1461,7 +1461,7 @@ ${anchorBlocks()}
 
    The chart component keeps reading --chart-1..N exactly as it does today; the
    attribute only re-points those slots at a different family. That is the whole
-   mechanism — no colour logic in JS, no second component, and a chart nested in
+   mechanism — no color logic in JS, no second component, and a chart nested in
    a brand scope still picks up that brand automatically.
 
    It is deliberately an ATTRIBUTE and not a prop-driven class, so it composes
@@ -1496,7 +1496,7 @@ ${anchorBlocks()}
    whether anything is read on top of it; if something is, it is the wrong
    token and --primary (or --primary-text) is the right one. */
 /* ── THE SUITE RAMP ─────────────────────────────────────────────────────────
-   The parent brand is not a colour, it is the SET. These two are the only
+   The parent brand is not a color, it is the SET. These two are the only
    things in the file that use every brand at once, and they belong on the
    suite's own page — never inside a sub-app, where the point is that one brand
    is in charge.
@@ -1621,15 +1621,15 @@ ${anchorBlocks()}
 /* ── THE MARK, LAYER FOR LAYER ──────────────────────────────────────────────
    Read straight off the Figma component (128x128, radius 28.8 = 22.5%). The
    earlier version had the brand ramp and a flat white wash and stopped there,
-   which is why it read as a coloured tile rather than as glass: it was missing
+   which is why it read as a colored tile rather than as glass: it was missing
    four of the six layers. Bottom to top the real mark is
 
      1  brand ramp        linear, 3 stops
-     2  radial highlight  a soft white lift above centre
+     2  radial highlight  a soft white lift above center
      3  bloom             a pale blue glow hanging off the top-left corner
      4  sheen             a white band down the top half
      5  sparkle           a small blurred dot, upper left
-     6  icon              centred at 46%
+     6  icon              centered at 46%
 
    plus one drop shadow and three inner shadows. Three further drop shadows
    exist in the component and are switched OFF — they are not reproduced here.
@@ -1656,7 +1656,7 @@ ${anchorBlocks()}
   color: #ffffff;
   background-image:
     /* 3 · bloom — Figma has this as a 129px ellipse hung at (-39,-37); as a
-       background layer that is a 25%-radius glow centred at 20%/22%. */
+       background layer that is a 25%-radius glow centered at 20%/22%. */
     radial-gradient(25% 25% at 20% 22%,
       color-mix(in srgb, #bfe0ff 23%, transparent) 0%,
       color-mix(in srgb, #bfe0ff 9%, transparent) 50%,
@@ -1732,7 +1732,7 @@ ${anchorBlocks()}
    Both run long and share no common factor, so the pair never lines up and the
    composite has no visible loop.
 
-   The SPARKLE keeps Figma's position and size and gets a specular's behaviour:
+   The SPARKLE keeps Figma's position and size and gets a specular's behavior:
    it swells and dims IN PHASE with the sheen, and slides across the tile when
    the tile tilts on hover. Two earlier passes made it louder than that — a
    pulse, then three four-point stars — and both times it stopped being a
@@ -1822,14 +1822,14 @@ ${anchorBlocks()}
        brand that tightens its highlight tightens it on BOTH marks. The live
        mark cannot just use --poc2-mark: that one is the STATIC ramp built from
        --mark-a/b/c, and the live one is mode-aware
-       (--decorative-hi / --mark-mid / --decorative-deep). Different colours, same
+       (--decorative-hi / --mark-mid / --decorative-deep). Different colors, same
        geometry — and the geometry is the part that has to agree. */
     var(--decorative-gradient);
   /* THE GLYPH FOLLOWS THE TILE, and only the LIVE mark needs this.
      The live mark IS mode-aware, so in dark its tile is the pale dark-mode
      anchor and a white glyph measured 1.74-2.66:1 across the seven — every one
      under the 3:1 graphical floor, nb and ec effectively illegible. The brand's
-     own "on" colour is already the right answer and already mode-split
+     own "on" color is already the right answer and already mode-split
      (#ffffff light / #0f172a dark), so the glyph simply reads it: 6.7-10.2 in
      dark, 3.3-4.7 in light.
      The STATIC mark keeps #ffffff, because its tile does NOT change between
@@ -1881,7 +1881,7 @@ ${anchorBlocks()}
        brand that tightens its highlight tightens it on BOTH marks. The live
        mark cannot just use --poc2-mark: that one is the STATIC ramp built from
        --mark-a/b/c, and the live one is mode-aware
-       (--decorative-hi / --mark-mid / --decorative-deep). Different colours, same
+       (--decorative-hi / --mark-mid / --decorative-deep). Different colors, same
        geometry — and the geometry is the part that has to agree. */
     var(--decorative-gradient);
 }
@@ -2056,7 +2056,7 @@ ${anchorBlocks()}
 
    Opt-in via .poc2-mark--tilt, and DRIVEN ENTIRELY BY TWO NUMBERS. A tiny
    pointer handler writes --mx and --my (both -1 to 1, origin at the tile's
-   centre) and --on (0 at rest, 1 while tracking); every rule below is a calc
+   center) and --on (0 at rest, 1 while tracking); every rule below is a calc
    off those three. No per-frame style writing beyond the variables, no layout
    reads in the loop, and the whole thing falls back to nothing if the handler
    never runs.
@@ -2220,7 +2220,7 @@ ${anchorBlocks()}
 /* The card carries NO brand fill. It used to take a 4% highlight sheen down its
    top edge; that is a surface people read on, so under the deep-only rule it
    goes. Depth comes from the shadows instead — which are the deep anchor, so the
-   card is still lit by the brand without being coloured by it. */
+   card is still lit by the brand without being colored by it. */
 [data-theme-poc2] .ui-card {
   box-shadow:
     0 1px 1px var(--shadow-color-2xs),

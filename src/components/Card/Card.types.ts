@@ -243,7 +243,7 @@ export type CardActionsProps = Omit<
    *
    * It exists because neither of the other two homes works for one:
    * `.ui-card__body` is a flex column with the default `align-items: stretch`,
-   * so a `Button` dropped in fills the card and centres its label; and
+   * so a `Button` dropped in fills the card and centers its label; and
    * `CardFooter` is the dialog-shaped action BAR — right-aligned, with its own
    * rule above it. Use this for an action that belongs to the content, and
    * `CardFooter` for one that closes the card.
