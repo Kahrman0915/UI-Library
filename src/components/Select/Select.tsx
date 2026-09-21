@@ -15,7 +15,7 @@ import { Check, ChevronDown } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
-import { computePosition } from '#/utils/computePosition';
+import { computePosition, measureFloating } from '#/utils/computePosition';
 import { SelectContext } from './Select.context';
 import type {
   SelectContentProps,
@@ -372,7 +372,7 @@ const SelectContent = forwardRef<HTMLDivElement, SelectContentProps>(
     const reposition = useCallback(() => {
       if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
+      const contentRect = measureFloating(contentRef.current);
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );

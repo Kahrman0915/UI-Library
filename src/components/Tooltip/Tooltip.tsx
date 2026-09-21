@@ -14,7 +14,7 @@ import {
 import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
-import { computePosition } from '#/utils/computePosition';
+import { computePosition, measureFloating } from '#/utils/computePosition';
 import type {
   TooltipAlign,
   TooltipContentProps,
@@ -218,7 +218,7 @@ const TooltipContent = forwardRef<HTMLDivElement, TooltipContentProps>(
     const reposition = useCallback(() => {
       if (!triggerNode || !contentRef.current) return;
       const triggerRect = triggerNode.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
+      const contentRect = measureFloating(contentRef.current);
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );

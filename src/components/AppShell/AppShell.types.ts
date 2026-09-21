@@ -12,11 +12,14 @@ export type AppShellProps = React.HTMLAttributes<HTMLDivElement> & {
  */
 export type AppShellTabStripProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'children'> & {
   /**
-   * The account cell: the DART Central mark (a ghost icon button home), a muted slash
-   * (`<Slash className="ui-app-shell__sep" />`), then the user's name and a chevron as the
+   * The account cell: the DART Central mark (a ghost icon button home), then the user's
+   * name and a chevron (a ghost `Button` with `className="ui-app-shell__account"`) as the
    * trigger of a `DropdownMenu` holding profile, settings, help and sign out. Named `logo`
    * for history — it held the app's mark until 2026-09-19. The cell is a fixed
-   * `--app-rail-width + --sidebar-width` (304) so the tabs start over the page.
+   * `--app-rail-width + --sidebar-width` (304) so the tabs start over the page. It is a
+   * two-column grid: the mark centers over the rail, the name lines up with the sidebar's
+   * rows, and the shell draws the short upright rule between them. Pass exactly those two
+   * children — no divider.
    */
   logo?: React.ReactNode;
   /** Optional trailing controls, after a divider. Empty in the shipped shell. */

@@ -2,7 +2,9 @@
    Overlays that more than one screen opens live here, so every screen opens
    them the same way and gets the same component:
 
-   - Open in new tab (the tab bar's +)          → Space S5.1–S5.4
+   - The tab bar's "+" palette (also opened from the Home search card). Only
+     its open state lives here; the palette itself is `newTab.tsx`, rendered in
+     the tab bar.
    - Add to space (Browse, Dashboard, Builder)  → Browse B4.1–B4.5, Pattern/AddToSpace
    - Dashboard info (Browse, Space)             → Browse B2.1–B2.2, Pattern/DashboardInfo
    - How to get access (Dashboard, Space)       → Dashboard D2.3
@@ -15,10 +17,8 @@ import type { ReactNode } from 'react';
 import { AddToSpaceDialog } from './screens/boards/shared/AddToSpaceDialog';
 import { DashboardInfoDialog } from './screens/boards/shared/DashboardInfoDialog';
 import { GetAccessDialog } from './screens/boards/shared/GetAccessDialog';
-import { OpenInNewTabDialog } from './screens/boards/shared/OpenInNewTabDialog';
 
 type Overlay =
-  | { kind: 'new-tab' }
   | { kind: 'add-to-space'; dashboardId: string }
   | { kind: 'dashboard-info'; dashboardId: string }
   | { kind: 'get-access'; dashboardId: string }
@@ -26,6 +26,8 @@ type Overlay =
 
 type UiCtx = {
   openNewTab: () => void;
+  newTabOpen: boolean;
+  setNewTabOpen: (open: boolean) => void;
   openAddToSpace: (dashboardId: string) => void;
   openDashboardInfo: (dashboardId: string) => void;
   openGetAccess: (dashboardId: string) => void;
@@ -36,21 +38,23 @@ const Ctx = createContext<UiCtx | null>(null);
 
 export function UiProvider({ children }: { children: ReactNode }) {
   const [overlay, setOverlay] = useState<Overlay>(null);
+  const [newTabOpen, setNewTabOpen] = useState(false);
   const api = useMemo<UiCtx>(
     () => ({
-      openNewTab: () => setOverlay({ kind: 'new-tab' }),
+      openNewTab: () => setNewTabOpen(true),
+      newTabOpen,
+      setNewTabOpen,
       openAddToSpace: (dashboardId) => setOverlay({ kind: 'add-to-space', dashboardId }),
       openDashboardInfo: (dashboardId) => setOverlay({ kind: 'dashboard-info', dashboardId }),
       openGetAccess: (dashboardId) => setOverlay({ kind: 'get-access', dashboardId }),
       close: () => setOverlay(null),
     }),
-    [],
+    [newTabOpen],
   );
   const close = api.close;
   return (
     <Ctx.Provider value={api}>
       {children}
-      <OpenInNewTabDialog open={overlay?.kind === 'new-tab'} onClose={close} />
       <AddToSpaceDialog
         open={overlay?.kind === 'add-to-space'}
         dashboardId={overlay?.kind === 'add-to-space' ? overlay.dashboardId : null}

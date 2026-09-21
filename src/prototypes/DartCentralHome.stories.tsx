@@ -20,7 +20,6 @@ import {
   Pin,
   Search,
   Settings,
-  Slash,
   Sparkles,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
@@ -133,7 +132,6 @@ function Shell() {
         logo={
           <>
             <Button id="dc-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
-            <Slash className="ui-app-shell__sep" aria-hidden="true" />
             <DropdownMenu id="dc-account-menu">
               <DropdownMenuTrigger>
                 <Button id="dc-account" className="ui-app-shell__account" style="ghost" label="Kahrman McKenzie" IconRight={ChevronDown} />

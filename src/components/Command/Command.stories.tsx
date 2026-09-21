@@ -34,6 +34,11 @@ const meta: Meta<typeof Command> = {
       tags: ['compound', '9 parts', 'portal'],
       changelog: [
         {
+          date: '2026-09-21',
+          summary: 'A list can open with nothing highlighted, so the first row is not mistaken for the selected one.',
+          detail: 'New optional `highlightOnOpen` (default `true`, unchanged). With `false`, an empty search leaves no item active until an arrow key or a hover; typing still highlights the first match. First used by `TabBarMenu`, whose first selectable row is a different tab group than the one on screen.',
+        },
+        {
           date: '2026-09-11',
           summary:
             'The group heading and the empty state get explicit line heights.',

@@ -376,8 +376,8 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
 .ui-tab-bar__menu--labeled {
   width: auto;
   gap: var(--p-2);
+  color: var(--foreground);
   padding-inline: var(--p-4);
-  color: var(--muted-foreground);
   font-family: var(--font-family);
   font-size: var(--text-sm);
   line-height: var(--leading-5);
@@ -405,4 +405,341 @@ $ui-tab-bar-group-colors: 'red', 'orange', 'amber', 'green', 'emerald', 'teal', 
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+// A row's count or the group a tab lives in: muted text in the body face. It was
+// CommandShortcut, whose mono keycap face made "3 tabs" read as a key chord.
+.ui-tab-bar__menu-meta {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ui-tab-bar__menu-current {
+  display: inline-flex;
+  flex-shrink: 0;
+  margin-inline-start: var(--p-2);
+  color: var(--primary-text);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+// The current set and tab are disabled so the keyboard skips them (choosing one
+// did nothing), but they are not unavailable — undo Command's disabled dimming.
+.ui-command__item.ui-tab-bar__menu-item--current[data-disabled] {
+  opacity: 1;
+  cursor: default;
+
+  // Where you are reads in the name too, not only in the small check.
+  .ui-tab-bar__menu-label {
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+  }
+}
+
+.ui-tab-bar__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+// More below the fold: fade the list's foot so Recently closed does not read as
+// absent. A mask, so it fades whatever surface the popover paints.
+.ui-tab-bar__menu-surface[data-more-below] .ui-command__list,
+.ui-tab-bar__new-palette[data-more-below] .ui-command__list {
+  mask-image: linear-gradient(to bottom, var(--foreground) calc(100% - var(--h-10)), transparent);
+}
+
+// ── Manage groups (the menu's second view) ──────────────────────────────────
+
+.ui-tab-bar__manage {
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-family);
+}
+
+.ui-tab-bar__manage-head {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  padding: var(--p-2);
+  border-block-end: var(--border-w-100) solid var(--border);
+}
+
+.ui-tab-bar__manage-back {
+  width: var(--w-8);
+  height: var(--h-8);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+.ui-tab-bar__manage-title {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-tab-bar__manage-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  margin: 0;
+  padding: var(--p-2);
+  list-style: none;
+}
+
+.ui-tab-bar__manage-row {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  min-height: var(--h-9);
+}
+
+.ui-tab-bar__manage-glyph {
+  flex-shrink: 0;
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+}
+
+// Reads as the group's name until focused, then as a field.
+.ui-tab-bar__manage-name {
+  flex: 1;
+  min-width: 0;
+  height: var(--h-8);
+  padding: 0 var(--p-2);
+  border: var(--border-w-100) solid transparent;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+  transition: border-color var(--duration-fast) var(--ease-out);
+
+  &:hover {
+    border-color: var(--border);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-color: var(--ring);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &--static {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    &:hover {
+      border-color: transparent;
+    }
+  }
+}
+
+.ui-tab-bar__manage-confirm {
+  display: flex;
+  flex: 1;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-2);
+  padding: var(--p-1) var(--p-2);
+  border-radius: var(--rounded-md);
+  background: var(--error-light);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+.ui-tab-bar__manage-actions {
+  display: flex;
+  gap: var(--p-1);
+}
+
+// ── New group form ───────────────────────────────────────────────────────────
+
+.ui-tab-bar__form {
+  display: flex;
+  flex-direction: column;
+  width: var(--w-80);
+  font-family: var(--font-family);
+}
+
+.ui-tab-bar__form-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  padding: var(--p-3);
+}
+
+.ui-tab-bar__form-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.ui-tab-bar__form-label {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-tab-bar__form-count {
+  font-weight: var(--font-normal);
+  color: var(--muted-foreground);
+}
+
+// The tab checklist scrolls in a ScrollArea capped at 12rem: it hugs a short list
+// and scrolls a long one. ScrollArea fills a definite height, so the cap is passed
+// down to its inner grid and viewport.
+.ui-tab-bar__form-scroll {
+  max-height: var(--h-48);
+
+  .ui-scroll-area__inner,
+  .ui-scroll-area__viewport {
+    height: auto;
+    max-height: var(--h-48);
+  }
+}
+
+.ui-tab-bar__form-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+.ui-tab-bar__form-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--p-2);
+  padding: var(--p-3);
+  border-block-start: var(--border-w-100) solid var(--border);
+}
+
+// ── Color choice (radio swatches) ───────────────────────────────────────────
+
+.ui-tab-bar__colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-1-5);
+}
+
+.ui-tab-bar__color {
+  position: relative;
+  display: inline-flex;
+  padding: var(--p-1);
+  border-radius: var(--rounded-full);
+  cursor: pointer;
+
+  input {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  // The chosen color wears a ring; the focused one wears the focus ring.
+  &:has(input:checked) {
+    box-shadow: 0 0 0 var(--border-w-300) var(--foreground);
+  }
+
+  &:has(input:focus-visible) {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// ── Manage groups: the swatch opens the color row ───────────────────────────
+
+.ui-tab-bar__manage-row {
+  flex-wrap: wrap;
+}
+
+.ui-tab-bar__manage-swatch {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--w-6);
+  height: var(--h-6);
+  padding: 0;
+  border: 0;
+  border-radius: var(--rounded-full);
+  background: transparent;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ui-tab-bar__manage-colors {
+  flex-basis: 100%;
+  padding-inline-start: var(--p-8);
+  padding-block: var(--p-1);
+}
+
+// ── New-tab menu (the "+" as a search) ──────────────────────────────────────
+
+// The "+" palette is a centered CommandDialog; the list scrolls inside it. The
+// dialog body is a flex row aligned to the start, so the wrapper has to claim
+// the full width itself or the palette hugs its widest row.
+.ui-tab-bar__new-palette {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+
+  > .ui-command {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// The filter chips sit between the search field and the list; they wrap rather
+// than scroll so every category stays visible.
+.ui-tab-bar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-1-5);
+  padding: var(--p-2) var(--p-3);
+  border-block-end: var(--border-w-100) solid var(--border);
 }

@@ -70,6 +70,7 @@ const Command = forwardRef<HTMLDivElement, CommandProps>(
       defaultValue = '',
       onValueChange,
       filter = defaultFilter,
+      highlightOnOpen = true,
       className,
       children,
       onKeyDown,
@@ -152,15 +153,17 @@ const Command = forwardRef<HTMLDivElement, CommandProps>(
     }, [activeId]);
 
     // When the search value changes, always reset to the first visible item so
-    // the highlight stays inside the filtered set.
+    // the highlight stays inside the filtered set. With `highlightOnOpen` off, an
+    // empty search leaves nothing highlighted until an arrow key or a hover.
     useEffect(() => {
       const ids = getVisibleIds();
       if (ids.length === 0) {
         setActiveId(null);
         return;
       }
-      setActiveId((prev) => (prev && ids.includes(prev) ? prev : ids[0]));
-    }, [search, getVisibleIds]);
+      const fallback = highlightOnOpen || search !== '' ? ids[0] : null;
+      setActiveId((prev) => (prev && ids.includes(prev) ? prev : fallback));
+    }, [search, getVisibleIds, highlightOnOpen]);
 
     // Visible count for CommandEmpty to hide/show itself. Two fixes here:
     // (1) real deps — the old effect had NO dependency array, so it ran a DOM

@@ -7299,5 +7299,81 @@
   "aREADINGtrap": "The first ring read-back returned the UNSELECTED value although data-selected was already true -- I had read a node captured before the click, inside the 0.1s transition. A fresh querySelector returned the correct 2px ring. Read after the transition, and re-query rather than reusing a captured reference.",
   "deliberatelyNOTbuilt": "No drag behaviour, collision or persistence -- those are the application's. Documented in the a11y notes: if dragging is wired, the grip needs an arrow-key route.",
   "verify": "tsc clean, build clean, test:contrast pass, test:tokens pass, zero hex/rgba in Canvas.scss, light and dark driven in the browser."
+ },
+ "newTabPaletteOnSpacePage_2026_09_21": {
+  "date": "2026-09-21",
+  "scope": "Figma + code. The Suite prototype's '+' moved from its own 'Open in new tab' dialog to the library's TabBarNewTabMenu (centered CommandDialog palette), so the '+' does the same thing in every TabBar, AppShell and Suite example; the Suite also gained tab groups (Notion model) through TabBarMenu.",
+  "commandItemMeta": {
+   "set": "588:75",
+   "props": [
+    "Meta#4174:0 (TEXT, default 'Opened today')",
+    "Show meta#4174:7 (BOOLEAN, default false)"
+   ],
+   "layers": [
+    "4174:411",
+    "4174:412",
+    "4174:413",
+    "4174:414",
+    "4174:415",
+    "4174:416"
+   ],
+   "why": "The palette's row meta is muted body text (.ui-tab-bar__menu-meta, xs, --muted-foreground), not the mono Shortcut keycap. Off by default, so the 26 existing Command/Item instances are unchanged. Style xs/leading-normal/Normal; fill cloned from the shortcut, so it stays bound to text/muted-foreground."
+  },
+  "spacePageSection5": {
+   "section": "3845:25139",
+   "renamed": "5 · NEW TAB · the + palette",
+   "frames": {
+    "S5.1 open": {
+     "light": "3837:151821",
+     "dark": "3837:156413"
+    },
+    "S5.2 filtered by Spaces": {
+     "light": "3837:152190",
+     "dark": "3837:156441"
+    },
+    "S5.3 search results ('servic')": {
+     "light": "3837:152352",
+     "dark": "3837:156450"
+    },
+    "S5.4 no results ('forcast')": {
+     "light": "3837:152757",
+     "dark": "3837:156492"
+    }
+   },
+   "builtFrom": "Command/Palette (Search text, Show settings group off, Body slot) holding a chips frame of Chip Size=xs instances, Command/Heading, Command/Item (Show shortcut off, Show meta on, Icon swap), Command/Empty. Rows copied from the running prototype so Figma and the prototype show the same content.",
+   "cap": "Palette instance resized to 560 tall when content exceeds it (the code's CommandDialog max-height); the list is clipped there, as it scrolls in code.",
+   "knownDifference": "The chips row sits 4px inside the list edge because Command/Palette only takes content in its Body slot (inside list padding 4). In code the chip row spans the full width between input and list. Recorded on the page's status note.",
+   "notesUpdated": [
+    "3846:71",
+    "3846:77",
+    "3846:80",
+    "3846:83"
+   ],
+   "resolvedElsewhere": "Builder page note 3985:12369 (the old S5 ToggleGroup filter row question) marked RESOLVED."
+  },
+  "notDrawn": "The group switcher's menu surface (TabBarMenu with groups, New group form, Manage groups) and the tab right-click 'Add to group' menu are not drawn on any flow page; the TabBar/Tab menu trigger already appears in every shell."
+ },
+ "appShellAccountDivider_2026_09_21": {
+  "date": "2026-09-21",
+  "change": "The account cell's divider is a short upright rule, not a slash (owner). Code: `.ui-app-shell__sep.ui-separator` on a decorative vertical `Separator`, 1x16 (--h-4), centered, --sidebar-border; replaces the lucide Slash in AppShell stories, DartCentralHome and the Suite Shell. Figma: AppShell master (2669:605) Logo slot 'Icon/slash · separator' replaced by 'Separator · account' (4178:100217), a Separator Variant=vertical instance resized 1x16 with its fill bound to sidebar/border. 197 of 207 instances inherited it; 10 on Patterns had overridden the slot and were swapped in place.",
+  "gotcha": "Inside an instance's slot, `parent.children.indexOf(node)` returned -1 (the sublayer objects are not identity-equal), and `createInstance()` had already appended the new node to the PAGE, so each failed insert left a stray on the canvas. Find the index by id (`findIndex(c => c.id === node.id)`) and remove the new node in the catch."
+ },
+ "appShellAccountCellGrid_2026_09_21": {
+  "date": "2026-09-21",
+  "supersedes": "appShellAccountDivider_2026_09_21 (the short rule lasted the same day)",
+  "change": "No divider in the account cell: the grid separates the mark from the name (owner picked option 3). Code: .ui-app-shell__logo is a two-column grid, first column --app-rail-width with the mark centered (x 26, over the rail icons at 25.5); .ui-app-shell__account starts --p-3 in (x 64, the sidebar rows' left edge) with --p-2 padding, so the name starts at x 72, the sidebar's icon column; the cell keeps --p-3 at the end (button right 291 = sidebar rows' right). .ui-app-shell__sep and every Slash/Separator in the cell removed. Figma: AppShell master (2669:605) Logo slot = 'rail column' (4179:1341, padding spacing/2-5 each side around the 32 icon = 52) + 'account' (4179:1342, FILL, padding-left spacing/5 = 12 + 8, padding-right spacing/2, gap spacing/2) holding the name (FILL) and chevron; slot padding-left spacing/0, padding-right spacing/3, gap spacing/0. Measured: icon center 26, name x 72, chevron right 284 (code 283; the file's 1px inside-stroke convention). 197 instances inherited it; the 10 overridden Logo slots on Patterns were restructured in place.",
+  "noted": "Primitives sidebar-width/icon is 48 and sidebar-width/default 256, both stale against code's 52 / 252 since the 2026-09-15 geometry change. Not rebound here — the rail column is built from padding instead. Worth an owner call."
+ },
+ "appShellAccountUprightRule_2026_09_21": {
+  "date": "2026-09-21",
+  "decision": "Owner picked the UPRIGHT rule (0°) from an angle study (0/10/15/20/30/45° shown as real tab strips in a temporary Storybook page, since deleted). It sits on top of the grid layout in appShellAccountCellGrid_2026_09_21.",
+  "code": "The shell draws it: .ui-app-shell__logo::before, 1px x --h-4, --sidebar-border, at --app-rail-width + --p-1-5 (x 58, the middle of the 12px gap between the rail column and the name box), vertically centered. Apps pass no divider; .ui-app-shell__sep is gone.",
+  "figma": "AppShell master Logo slot gained 'Separator · account' (4180:1345): Separator Variant=vertical, ABSOLUTE at x 58 / y 16, 1x16, fill bound to sidebar/border, constraints MIN / CENTER, so the rail column and the name keep their positions (icon center 26, name x 72). 197 instances inherited it; added by hand to the 10 overridden Logo slots on Patterns. Verified all 207 at x 58, no strays."
+ },
+ "appShellAccountRuleOnRailEdge_2026_09_21": {
+  "date": "2026-09-21",
+  "change": "Owner: line the account divider up with the AppRail's right border. It now sits on the rail border's own pixel, x 51 (the rail is 52 wide with a 1px right border; in Figma an INSIDE stroke on the same pixel), so it reads as that border continuing up into the strip.",
+  "code": ".ui-app-shell__logo first column is calc(--app-rail-width - --border-w-100), the rail's content box, so the mark centers at 25.5 exactly like the rail icons; ::before inset-inline-start calc(--app-rail-width - --border-w-100); the account button's margin is --p-3 + --border-w-100 so its box stays at x 64 and the name at 72. Measured in the browser at 1440.",
+  "figma": "'Separator · account' moved to x 51 in the master (4180:1345) and in the 10 overridden Logo slots on Patterns; all 207 verified at 51. The Figma rail column stays 52 wide (icon center 26 against the rail's 26 in Figma, where the inside stroke does not shift layout), so no other change was needed there."
  }
 }

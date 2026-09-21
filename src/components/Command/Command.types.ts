@@ -24,6 +24,14 @@ export type CommandProps = React.HTMLAttributes<HTMLDivElement> & {
    * return true if the item should be visible. Defaults to case-insensitive substring.
    */
   filter?: (search: string, itemValue: string) => boolean;
+  /**
+   * Highlight the first item before the person has typed or pressed an arrow.
+   * Default `true` (a palette where Enter should act at once). Pass `false`
+   * when the list opens on the thing you are already on — a highlight on the
+   * first row there reads as "this is selected". Typing still highlights the
+   * first match, and the arrow keys highlight as usual.
+   */
+  highlightOnOpen?: boolean;
   className?: string;
   children?: React.ReactNode;
 };

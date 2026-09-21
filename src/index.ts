@@ -305,6 +305,8 @@ export {
   TabBarSplit,
   TabBarNewTab,
   TabBarMenu,
+  TabBarNewGroupItem,
+  TabBarNewTabMenu,
   TAB_BAR_DRAG_TYPE,
 } from './components/TabBar';
 export type {
@@ -318,6 +320,11 @@ export type {
   TabBarMenuProps,
   TabBarMenuItem,
   TabBarMenuGroup,
+  TabBarNewGroup,
+  TabBarNewGroupItemProps,
+  TabBarNewTabItem,
+  TabBarNewTabCategory,
+  TabBarNewTabMenuProps,
   TabBarActivationMode,
 } from './components/TabBar';
 export { default as SplitView, SplitViewPane } from './components/SplitView';

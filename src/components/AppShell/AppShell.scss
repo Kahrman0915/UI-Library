@@ -26,41 +26,59 @@
     box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
   }
 
-  // The account cell (2026-09-19): the DART Central mark, a slash, then the user's name and
-  // a menu — Supabase's lockup (it began the day as Notion's avatar-and-name). It is exactly
-  // as wide as the rail plus the sidebar, so its divider continues the sidebar's edge and the
-  // tabs start over the page they control. The suite mark names DART Central; the rail and
-  // the sidebar name the application (a small name at the top of the sidebar is the
-  // recorded fallback if that proves not enough).
+  // The account cell (2026-09-19): the DART Central mark, then the user's name and a menu.
+  // It is exactly as wide as the rail plus the sidebar, so its edge continues the
+  // sidebar's and the tabs start over the page they control. The suite mark names DART
+  // Central; the rail and the sidebar name the application (a small name at the top of the
+  // sidebar is the recorded fallback if that proves not enough).
+  //
+  // The cell is two columns (2026-09-21), the first exactly as wide as the rail, so the mark
+  // sits centered over the rail's icons and the name sits over the sidebar. Between them the
+  // shell draws a short upright rule itself (a pseudo-element, so every app gets the same
+  // one and assistive tech never meets it): 1px by 16, on the SAME pixel as the rail's
+  // right border (x 51), so it reads as that border continuing up into the strip. The
+  // first column is the rail's content box (its width less the border), so the mark
+  // centers exactly over the rail's icons. It replaced a lucide slash; the owner picked
+  // 0° from an angle study.
   &__logo {
-    display: flex;
+    position: relative;
+    display: grid;
+    grid-template-columns: calc(var(--app-rail-width) - var(--border-w-100)) minmax(0, 1fr);
     align-items: center;
-    justify-content: flex-start;
-    gap: var(--p-2);
     flex: none;
     width: calc(var(--app-rail-width) + var(--sidebar-width));
     min-width: 0;
-    padding-inline: var(--p-2);
+    // The sidebar's rows end 12 short of its edge (content 4 + group 8); so does the name.
+    padding-inline-end: var(--p-3);
     border-inline-end: var(--border-w-100) solid var(--sidebar-border);
-  }
 
-  // The divider between the suite mark and the account name — a muted slash, Supabase's
-  // breadcrumb-like lockup. Decorative (aria-hidden); the two controls either side name
-  // themselves.
-  &__sep {
-    flex: none;
-    width: var(--w-4);
-    height: var(--h-4);
-    color: var(--sidebar-border);
+    > :first-child {
+      justify-self: center;
+    }
+
+    &::before {
+      content: '';
+      position: absolute;
+      inset-inline-start: calc(var(--app-rail-width) - var(--border-w-100));
+      top: calc(50% - var(--h-4) / 2);
+      width: var(--border-w-100);
+      height: var(--h-4);
+      background: var(--sidebar-border);
+    }
   }
 
   // The account trigger in the cell — a ghost `Button` holding the user's name and a
-  // chevron (2026-09-19: no avatar; the name says it). It fills the cell, reads from the start, and the chevron
-  // sits at the far end, like Notion's workspace switcher. Opt in with
-  // `className="ui-app-shell__account"`. Two classes, to beat `.ui-button`'s centering.
+  // chevron (2026-09-19: no avatar; the name says it), like Notion's workspace switcher.
+  // It lines up with the sidebar below it: the box starts 12 past the rail (the extra 1px
+  // makes up for the narrower first column), where the sidebar's rows start, and its 8 of
+  // padding puts the name level with their icons. The chevron sits at
+  // the far end. Opt in with `className="ui-app-shell__account"`. Two classes, to beat
+  // `.ui-button`'s centering and size padding.
   &__account.ui-button {
-    flex: 1;
+    justify-self: stretch;
     min-width: 0;
+    margin-inline-start: calc(var(--p-3) + var(--border-w-100));
+    padding-inline: var(--p-2);
     justify-content: flex-start;
 
     > svg:last-child {

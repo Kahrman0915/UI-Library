@@ -17,9 +17,25 @@ export type Position = {
  *
  * Used by Tooltip and DropdownMenu today; Popover / Combobox / Sheet next.
  */
+/**
+ * The floating element's LAYOUT size, for `computePosition`.
+ *
+ * Never measure it with `getBoundingClientRect()`: that includes transforms, and
+ * every floating surface opens on a `--motion-scale-in` (0.97) keyframe, so a
+ * rect read in the positioning layout effect is ~3% too small. With `align`
+ * `end` or `center` the surface then lands that far past its anchor — a 320px
+ * menu pinned to the right edge of the window overhung it by ~10px — and it is
+ * never re-measured after the animation settles. `offsetWidth`/`offsetHeight`
+ * are the untransformed box.
+ */
+export const measureFloating = (el: HTMLElement): { width: number; height: number } => ({
+  width: el.offsetWidth,
+  height: el.offsetHeight,
+});
+
 export const computePosition = (
   triggerRect: DOMRect,
-  contentRect: DOMRect,
+  contentRect: { width: number; height: number },
   side: Side,
   align: Align,
   sideOffset: number,

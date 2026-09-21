@@ -7,6 +7,12 @@ export type TabBarContextValue = {
   setValue: (value: string) => void;
   activationMode: TabBarActivationMode;
   onTabMove?: (move: TabBarMove) => void;
+  /**
+   * Set by `TabBarMenu` while it is mounted: opens the menu on its "New group"
+   * form with these tabs checked. `TabBarNewGroupItem` (a tab's right-click menu)
+   * calls it, which is how a group can start from the tab itself.
+   */
+  groupForm: { current: ((tabs?: string[]) => void) | null };
 };
 
 export const TabBarContext = createContext<TabBarContextValue | null>(null);
