@@ -2147,7 +2147,7 @@
   },
   "Table": {
    "status": "done-v4",
-   "isProposal": true,
+   "isProposal": false,
    "pageId": "1400:44",
    "setIds": [
     "1400:135",
@@ -2171,8 +2171,9 @@
    "darkHeaderNote": "In dark, surface/secondary and surface/card BOTH resolve to #1e293b, so the header row is the same colour as the body and is separated by its bottom hairline alone (light is #e2e8f0 on #ffffff). Accepted, and stated in the TOKENS section. The header cannot move to --muted: header labels are --muted-foreground, and muted-foreground on muted is 5.1:1, below AA. A stronger dark header needs a NEW token, not a swap.",
    "parity": "Measured, not eyeballed: every column at identical x-offsets across all five rows, every Amount value right-edge at 792 with a 16px gap. An eyeball read of the PNG suggested a ~13px misalignment; the measurement disproved it.",
    "lint": "all zeros (unbound paint 0, unstyled text 0, generic names 0, unbound geometry 0, missing descriptions 0), recursive overflow 0.",
-   "indexRow": "1417:1254 — inserted between TabBar and Tabs. Board count reads \"67 components + 1 proposal\" rather than 68, deliberately.",
-   "assetsPanelStance": "DELIBERATELY template-frame only, owner decision 2026-08-26 while Accordion, Breadcrumb and TabBar each gained an assembled component. A table's row count is genuinely unbounded and its columns vary per use, so a Rows/Columns count variant would either explode or cap the wrong thing. Do not add an assembled Table set without asking."
+   "indexRow": "1417:1254 — between TabBar and Tabs. Board count reads \"81 components\" since 2026-09-20; it read \"80 components + 1 proposal\" while Table was Figma-only.",
+   "assetsPanelStance": "DELIBERATELY template-frame only, owner decision 2026-08-26 while Accordion, Breadcrumb and TabBar each gained an assembled component. A table's row count is genuinely unbounded and its columns vary per use, so a Rows/Columns count variant would either explode or cap the wrong thing. Do not add an assembled Table set without asking.",
+   "codeShipped_2026_09_20": "Proposal framing retired after PR #58 merged. Removed: the Overview proposal-callout frame (1405:173) and the _Doc/Rule after it (1405:180, so two rules do not stack). Chip I1405:156;148:136 now reads 'src/components/Table'. Used-by pill → 'Admin Flow screens — no library component composes it'. Code-only pill → 'caption (label · showCaption) · onSort · row disabled' (the props Figma cannot express). Selected+hover note 1409:635 and the tokens pill now state --primary-soft as decided (owner, 2026-09-20). Changelog row 1.3 (4115:1404) added; the 1.0 'Proposal only' row kept as history. documentationLinks set on all four masters → components-table--docs. Index board 125:180: header + pill now '81 components'. Also fixed a pre-existing stale line (1405:228): the composition note said row states were NOT variant axes, but Table/Row has carried hover/selected since 2026-09-11; disabled is still painted only."
   },
   "Calendar": {
    "status": "done-v4",
