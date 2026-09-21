@@ -20,7 +20,7 @@ const meta: Meta = {
     ui: {
       description:
         'Animated UI mockups for the Dartboards release article, rebuilt in code from the Figma Motion frames. ' +
-        'They are drawn scenery, not the real components — a change to a real screen never breaks a demo — and every colour is a token, ' +
+        'They are drawn scenery, not the real components — a change to a real screen never breaks a demo — and every color is a token, ' +
         'so they follow light and dark mode.\n\n' +
         'Each demo runs on a small keyframe timeline (`productDemos/timeline.tsx`) that ports the Figma keyframes as `[seconds, value, easing]`. ' +
         'One animation loop writes styles straight onto the elements, so React renders the scenery once. Under `prefers-reduced-motion` ' +

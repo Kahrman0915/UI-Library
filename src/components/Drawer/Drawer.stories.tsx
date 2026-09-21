@@ -30,6 +30,11 @@ const meta: Meta<typeof Drawer> = {
       },
       changelog: [
         {
+          date: '2026-09-19',
+          summary: 'Inside the app shell a drawer opens below the tab strip, so the tabs stay visible.',
+          detail: 'New internal `DrawerBelowStripContext`, provided by `AppShell` (not exported). When set, the overlay gets `.ui-drawer-overlay--below-strip` (`top: var(--app-strip-height)`); the overlay\'s `backdrop-filter` makes it the panel\'s containing block, so the panel\'s edges follow. Context passes through the portal. Outside the shell nothing changes.\n\nUsing the tab bar while the drawer is open closes it: a capture-phase `pointerdown` inside `.ui-tab-bar` (a tab, the \"+\", the tab menu) calls `onClose`, so moving to another document never leaves a drawer open over it. The account cell does not. Pointer only — the focus trap keeps the keyboard in the drawer.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

@@ -28,7 +28,7 @@ export type FieldProps = React.HTMLAttributes<HTMLDivElement> & {
  * group has a name.
  *
  * `disabled` is Omitted and redefined so it drives our styling as well as the
- * native behaviour.
+ * native behavior.
  */
 export type FieldSetProps = Omit<
   React.FieldsetHTMLAttributes<HTMLFieldSetElement>,

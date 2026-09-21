@@ -119,7 +119,7 @@ const DARK_ROWS = diff(DARK, POC_DARK);
 const THEME_BLOCKS = TOKEN_BLOCKS.filter((b) => b.selector.includes('data-theme='));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Colour readback
+// Color readback
 // ─────────────────────────────────────────────────────────────────────────────
 
 let ctx: CanvasRenderingContext2D | null = null;
@@ -280,7 +280,7 @@ function useDerivedAudit() {
         // card (#1e293b) for both columns and only swapped --primary, which
         // measures a build that does not exist: under adoption the card is the
         // POC's brand-tinted card, and a tint sitting on it is a different
-        // colour. That single hardcoded value reported ec dark as 4.47 when it
+        // color. That single hardcoded value reported ec dark as 4.47 when it
         // is really 4.01, and hid two of the four failures completely — the
         // POC column now carries [data-theme-poc][data-brand], so --card,
         // --primary-soft and --primary-light all resolve through the real
@@ -513,7 +513,7 @@ export function NewTokensPanel() {
           Today a <code style={CODE}>[data-theme]</code> scope remaps <strong>9</strong> tokens, all{' '}
           <code style={CODE}>--primary-*</code>. Deeper theming means it also remaps the surfaces —
           that is what &ldquo;deeper&rdquo; refers to, and it is the actual work. None of it is a
-          colour decision.
+          color decision.
         </p>
         <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', marginBottom: 'var(--p-4)' }}>
           {SURFACE_TOKENS.map((t) => (
@@ -528,7 +528,7 @@ export function NewTokensPanel() {
           resolves to <code style={CODE}>unset</code>. The POC works around it by hardcoding the
           neutral literals; a real adoption has to introduce the raw layer and derive the semantic
           names from it. That is the single largest cost in this whole exercise and not one line of
-          it is about colour.
+          it is about color.
         </p>
       </div>
 
@@ -689,7 +689,7 @@ export function TokenDiffPanel() {
         <p style={P}>
           Parsed from the POC recipe and matched against the real declaration in{' '}
           <code style={CODE}>tokens.scss</code>. Swatches are read back from the live browser
-          using the <code style={CODE}>dc</code> brand, so &ldquo;proposed&rdquo; is the colour
+          using the <code style={CODE}>dc</code> brand, so &ldquo;proposed&rdquo; is the color
           that would actually render — not an approximation of it.
         </p>
       </div>

@@ -55,7 +55,7 @@
   // --- Icon-only ---
   // An IconCenter with no label. The base chip is justify-content: flex-start
   // and padded for text, so without this the glyph sat off to one side in a
-  // pill-shaped box. Square it up and centre the icon.
+  // pill-shaped box. Square it up and center the icon.
   &--icon-only {
     justify-content: center;
     padding: var(--p-1-5);

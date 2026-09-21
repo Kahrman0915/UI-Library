@@ -152,13 +152,13 @@ const FullScreenDialogHeader = forwardRef<
 FullScreenDialogHeader.displayName = 'FullScreenDialogHeader';
 
 /**
- * The scrolling middle. Full-width scroll container with a centred content
+ * The scrolling middle. Full-width scroll container with a centered content
  * column inside it — see the SCSS for why the column is a grid track rather
  * than a wrapper element.
  *
  * Note `alignment` behaves differently here than on `DialogBody`: this body is
- * a grid, so `alignment="center"` no longer centres the block, only its text.
- * Centre the column with `contentWidth` instead.
+ * a grid, so `alignment="center"` no longer centers the block, only its text.
+ * Center the column with `contentWidth` instead.
  */
 const FullScreenDialogBody = forwardRef<
   HTMLDivElement,

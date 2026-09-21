@@ -16,7 +16,7 @@ export type AppRailProps = Omit<React.HTMLAttributes<HTMLElement>, 'children'> &
 /**
  * One application on the rail: an icon-only link. The rail is an application switcher,
  * so an item is a place to go — an `<a>` by default — and it reads as an icon, not a
- * brand tile; the destination application paints its own colour once you are in it.
+ * brand tile; the destination application paints its own color once you are in it.
  */
 export type AppRailItemProps = Omit<React.HTMLAttributes<HTMLElement>, 'children'> & {
   /** Seeds `${id}-count`. */

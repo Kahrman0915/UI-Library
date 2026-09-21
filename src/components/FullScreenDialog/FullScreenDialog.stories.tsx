@@ -37,7 +37,7 @@ const meta: Meta<typeof FullScreenDialog> = {
   title: 'Components/FullScreenDialog',
   component: FullScreenDialog,
   parameters: {
-    // Not 'centered' — this fills the viewport, and a centred canvas would
+    // Not 'centered' — this fills the viewport, and a centered canvas would
     // misrepresent it.
     layout: 'fullscreen',
     ui: {
@@ -75,7 +75,7 @@ const meta: Meta<typeof FullScreenDialog> = {
         },
         {
           name: 'FullScreenDialogBody',
-          description: 'The scrolling middle. Its content sits in a centred column sized by `contentWidth`.',
+          description: 'The scrolling middle. Its content sits in a centered column sized by `contentWidth`.',
         },
         {
           name: 'FullScreenDialogFooter',
@@ -242,7 +242,7 @@ export const OverAppShell: Story = {
         SIDEBAR but NOT the overlay. Dialog portals to `document.body`, so the
         overlay is not a descendant of this frame and no containing block here
         can reach it — it still covers the whole iframe when opened. That is
-        correct behaviour for a full-screen page and would need a portal-target
+        correct behavior for a full-screen page and would need a portal-target
         prop on Dialog to change, which is not worth adding for a story.
       */
       <div

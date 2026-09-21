@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react';
 /**
  * The tvOS parallax, as three CSS custom properties.
  *
- * Writes `--mx` and `--my` (both −1 to 1, origin at the element's centre) and
+ * Writes `--mx` and `--my` (both −1 to 1, origin at the element's center) and
  * `--on` (0 at rest, 1 while a pointer is tracking). Everything visual lives in
  * CSS as a calc off those three — see the POINTER TILT block in
  * `deeperThemingRecipe.ts`. This file decides nothing about how far anything

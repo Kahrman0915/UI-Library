@@ -33,6 +33,7 @@ export { default as ChatDisclaimer } from './ChatDisclaimer';
 export { default as ChatModelPicker } from './ChatModelPicker';
 export { default as ChatComposerMenu } from './ChatComposerMenu';
 export { default as ChatArtifact, ChatArtifactCard } from './ChatArtifact';
+export { default as ChatActionCard } from './ChatActionCard';
 export { default as ChatLayoutAside } from './ChatLayoutAside';
 export type {
   ChatProps,
@@ -72,6 +73,8 @@ export type {
   ChatComposerMenuProps,
   ChatArtifactProps,
   ChatArtifactCardProps,
+  ChatActionCardProps,
+  ChatActionStatus,
   ChatLayoutAsideProps,
   ChatDensity,
   ChatSender,

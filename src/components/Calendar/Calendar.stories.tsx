@@ -47,7 +47,7 @@ const meta: Meta<typeof Calendar> = {
       },
       a11y: {
         notes:
-          'The grid is a `role="grid"` labelled by the month caption, which is also an `aria-live="polite"` region — paging the month replaces every cell without moving focus off the arrow, so the caption is the only thing that tells a screen-reader user where they now are. Each cell is a `role="gridcell"` carrying `aria-selected`; today also carries `aria-current="date"`.\n\nOne day at a time is tabbable (a roving `tabindex`), so the grid is a single tab stop rather than 42. An unavailable day is marked `aria-disabled`, **not** `disabled` — a natively disabled button drops out of the arrow walk, and arrowing across a blacked-out week would silently swallow the keypress and look like a frozen grid. The click guard is what actually blocks selection.\n\n`ArrowLeft` and `ArrowRight` swap under `dir="rtl"` (they are visual directions); everything else is unaffected.',
+          'The grid is a `role="grid"` labeled by the month caption, which is also an `aria-live="polite"` region — paging the month replaces every cell without moving focus off the arrow, so the caption is the only thing that tells a screen-reader user where they now are. Each cell is a `role="gridcell"` carrying `aria-selected`; today also carries `aria-current="date"`.\n\nOne day at a time is tabbable (a roving `tabindex`), so the grid is a single tab stop rather than 42. An unavailable day is marked `aria-disabled`, **not** `disabled` — a natively disabled button drops out of the arrow walk, and arrowing across a blacked-out week would silently swallow the keypress and look like a frozen grid. The click guard is what actually blocks selection.\n\n`ArrowLeft` and `ArrowRight` swap under `dir="rtl"` (they are visual directions); everything else is unaffected.',
         keyboard: [
           { keys: ['←'], description: 'Previous day. Mirrored under `dir="rtl"`.' },
           { keys: ['→'], description: 'Next day. Mirrored under `dir="rtl"`.' },
@@ -67,7 +67,7 @@ const meta: Meta<typeof Calendar> = {
       },
       motion: {
         notes:
-          'Almost none, deliberately. Only the day cell transitions its background and colour, so hovering across a week reads as one continuous sweep rather than 42 hard flips. Paging a month is an instant swap: 42 cells animating at once is noise, not feedback.',
+          'Almost none, deliberately. Only the day cell transitions its background and color, so hovering across a week reads as one continuous sweep rather than 42 hard flips. Paging a month is an instant swap: 42 cells animating at once is noise, not feedback.',
         moments: [
           {
             trigger: 'Hover',

@@ -29,7 +29,7 @@ const meta: Meta<typeof Input> = {
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
@@ -316,7 +316,7 @@ export const RequiredWithoutLabel: Story = {
   name: 'Required indicator with no label',
   render: () => (
     <div style={{ display: 'grid', gap: 'var(--p-5)', maxWidth: 'var(--max-w-sm)' }}>
-      <Input id="req-labelled" label="Work email" required placeholder="you@company.com" />
+      <Input id="req-labeled" label="Work email" required placeholder="you@company.com" />
       <Input id="req-bare" required placeholder="Required, no label" />
       <Input id="req-optional" placeholder="Not required — no marker" />
 
@@ -324,7 +324,7 @@ export const RequiredWithoutLabel: Story = {
       <Input id="req-icon" required placeholder="With a right icon" IconRight={Search} />
       <Input id="req-both-icons" required placeholder="Both icons" IconLeft={Mail} IconRight={X} />
 
-      {/* Error and disabled, where the marker's colour has somewhere to go. */}
+      {/* Error and disabled, where the marker's color has somewhere to go. */}
       <Input id="req-error" required placeholder="In an error state" error errorMessage="This field is required." />
       <Input id="req-disabled" required placeholder="Disabled — the ask recedes" disabled />
 

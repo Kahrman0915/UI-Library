@@ -21,7 +21,7 @@ const meta: Meta<typeof PageContainer> = {
         'The outer wrapper of a page\'s content, carrying **level 1** of the spacing ladder: its padding ' +
         'is the page margin and its gap is the space between the page header and the content. Both read ' +
         '`--space-1`, so they slide with viewport width and reshape per `data-density`. `width` caps the ' +
-        'centred column — how a page *uses* a big monitor rather than padding it.',
+        'centered column — how a page *uses* a big monitor rather than padding it.',
       tags: ['layout', 'ladder', 'level 1'],
       usage: {
         when: [
@@ -36,8 +36,24 @@ const meta: Meta<typeof PageContainer> = {
       },
       changelog: [
         {
+          date: '2026-09-20',
+          summary:
+            'The page margin drops to level 2 and the header→content gap to level 3. At 1920 that is 36 and 24, where both were 48; at 1440, 24 and 16, where both were 32.',
+          detail:
+            '`padding` moves from `--space-1` to `--space-2` and `gap` from `--space-1` to `--space-3`. **This changes every page in the library** — the container is the page margin everywhere, so nothing is opt-in.\n\n' +
+            'Why: level 1 resolved to 48/48 at 1920, which read too loose against real screens at both widths. The design file had already been tuned to these values on the Browse and space pages and the two had been out of step since 17 September; the owner chose to move the code rather than loosen the file (2026-09-20).\n\n' +
+            'The margin and the gap are now DIFFERENT levels, which is the point: the page edge and the header-to-content relationship are not the same relationship, and holding them at one level was what made the gap read as loose. `--ui-page-header-bleed` tracks `padding`, so `PageHeader`\'s `showDivider` still cancels exactly the margin — measured after the change: at 1920 the container is 1616, padding 36, and the rule still spans 0 → 1616.',
+        },
+        {
+          date: '2026-09-17',
+          summary: 'Publishes its page margin as `--ui-page-header-bleed`, so a child can run edge-to-edge.',
+          detail:
+            'Its first consumer is `PageHeader`\'s new `showDivider` rule, which cancels exactly this much padding to span the full content window. Nothing renders differently — this only declares a custom property.\n\n' +
+            'It is declared HERE rather than read from the child because the container is the only thing that knows its own padding. A header used outside a container then finds the variable unset, bleeds by `0` and stays inset, which is the safe direction: a child can never drag itself out of an arbitrary parent. Keep it in step with `padding` if that ever moves level.',
+        },
+        {
           date: '2026-09-08',
-          summary: 'A third width, `form`: a tighter centred column for a stack of fields (a 672 → 1008 column inside the page margin).',
+          summary: 'A third width, `form`: a tighter centered column for a stack of fields (a 672 → 1008 column inside the page margin).',
           detail: '`narrow` was tried on the request forms first and read too wide for a field stack, so the column they were designed at is back as its own width. `PageContainerWidth` is `full | narrow | form`; the new cap is `--container-form` (736 → 1104 on the padded box), on the same width rule as `--container-narrow`.',
         },
         {
@@ -54,7 +70,7 @@ const meta: Meta<typeof PageContainer> = {
           date: '2026-09-07',
           summary: 'Initial build. Level 1 of the spacing ladder as a component.',
           detail:
-            'Padding and gap read `--space-1`; `width` = full (the whole content window) or narrow (capped at `--container-narrow`, 896 → 1344); centred with `margin-inline: auto`. ' +
+            'Padding and gap read `--space-1`; `width` = full (the whole content window) or narrow (capped at `--container-narrow`, 896 → 1344); centered with `margin-inline: auto`. ' +
             'Together with `Stack` it rebuilds the My Requests screen from nothing but levels — see the story of that name. docs/spacing.md.',
         },
       ],

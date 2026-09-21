@@ -49,7 +49,7 @@
   &__thumb {
     position: absolute;
     top: 50%;
-    // `left` is set inline as a percentage; the translate re-centres the thumb
+    // `left` is set inline as a percentage; the translate re-centers the thumb
     // on that point. Neither `left` nor the range's `width` is transitioned —
     // dragging must track the pointer exactly, with no easing lag.
     transform: translate(-50%, -50%);

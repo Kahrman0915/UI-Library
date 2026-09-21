@@ -42,7 +42,7 @@
 }
 
 // ---- Required marker, multiline case -----------------------------------------
-// The single-line rule in Input.scss centres the asterisk, which is right for a
+// The single-line rule in Input.scss centers the asterisk, which is right for a
 // 40px field and wrong for a box that can be many lines tall — it would drift to
 // the middle of the block as the textarea grows. Pin it to the first line
 // instead, and give it the textarea's own inset, because `--multi` zeroes the

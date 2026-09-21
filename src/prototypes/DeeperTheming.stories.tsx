@@ -29,7 +29,7 @@ import { AuditPanel, NewTokensPanel, TokenDiffPanel } from './DeeperThemingParts
  * own while reading as part of one ecosystem. What changed is where the brand is
  * DEFINED. Earlier rounds themed from a single `--primary` and kept running out
  * of hue; the Figma marks turned out to be a better source, because each one
- * already carries three colours with three distinct jobs.
+ * already carries three colors with three distinct jobs.
  *
  *     HIGHLIGHT  the upper corner — reaches out of the brand's own hue family
  *     MAIN       the body — what a person means when they name the brand
@@ -60,7 +60,7 @@ function PocStyle() {
 // ─────────────────────────────────────────────────────────────────────────────
 
 let ctx: CanvasRenderingContext2D | null = null;
-/** Normalise ANY CSS colour to bytes — color-mix serialises as color(srgb …). */
+/** Normalise ANY CSS color to bytes — color-mix serialises as color(srgb …). */
 function toRGBA(css: string): [number, number, number, number] | null {
   if (!ctx) {
     const c = document.createElement('canvas');
@@ -108,7 +108,7 @@ const P: CSSProperties = { margin: '0 0 var(--p-4)', fontSize: 'var(--text-sm)',
  * The story page. FULL-BLEED on purpose: it paints --background, and a box that
  * is `maxWidth + margin: auto` leaves unpainted gutters either side, so dark
  * mode showed white rails down the edges. The measure is held by the inline
- * padding instead, which centres the content identically without narrowing the
+ * padding instead, which centers the content identically without narrowing the
  * painted box. Pair it with data-mode on the same element — see the Mode note.
  */
 const PAGE: CSSProperties = {
@@ -258,15 +258,15 @@ type Story = StoryObj;
 const LAYERS: { n: string; what: string; how: string }[] = [
   { n: '1 · brand ramp', what: 'The three anchors on a 135° axis.',
     how: 'Figma stores a gradientTransform, not an angle. Solved back: the axis runs (0.5,−0.31) to (1.31,0.5) in unit space, and the 0/0.52/1 stops land at 9.7/51.6/90.3% on the CSS gradient line. 0/52/100% — the obvious guess — compresses the ramp and loses the deep corner.' },
-  { n: '2 · radial highlight', what: 'A soft white lift, just above centre.',
+  { n: '2 · radial highlight', what: 'A soft white lift, just above center.',
     how: '35% radius at 45%/40%. Figma layers it at 40% opacity over stops of 0.7/0.3/0; CSS has no layer opacity on a background, so the product is folded into each stop.' },
   { n: '3 · bloom', what: 'A pale blue glow hanging off the top-left.',
-    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centred at 20%/22% — same light, no extra element.' },
+    how: 'A 129px ellipse pinned at (−39,−37) in Figma. As a background layer that is a 25% glow centered at 20%/22% — same light, no extra element.' },
   { n: '4 · sheen', what: 'A white band down the top half.',
     how: '128×67 in Figma, so 52.3% of the height, on ::before. Vertical, three stops, fading out by 70%.' },
   { n: '5 · sparkle', what: 'One small point of light, upper left.',
     how: '12px at (20,20) with a 4px layer blur in Figma — 12% wide at 14.4%/14.4% on ::after here. Figma\u2019s is a flat disc at alpha 0.32 under a heavy blur, which vanishes into the sheen at small sizes; this is a radial with a bright core and a soft falloff instead. A blurred disc reads as a smudge, a core with falloff reads as light, and it survives being scaled down. The blur is the only value that has to know the pixel size.' },
-  { n: '6 · icon', what: 'Centred at 46% of the box, always white.',
+  { n: '6 · icon', what: 'Centered at 46% of the box, always white.',
     how: 'It has to sit ABOVE the sheen, and a grid child with no z-index does not: ::before paints after it in the same stacking context. The glyph briefly tracked --primary-foreground so it would match a button in the same mode; that is wrong for a mark, because the mark does not change between modes either.' },
 ];
 
@@ -368,10 +368,10 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
       <div style={{ display: 'grid', alignContent: 'start' }}>
         {/* THE THEMED-SURFACE SET. These three are the only places a --primary
             derived TINT carries text, and they were the pairing that blocked
-            adoption: colour on a tint has to hold for every brand at once, and
+            adoption: color on a tint has to hold for every brand at once, and
             with the POC anchors it did not. Text here is neutral; the brand is
             in the tint, the icon and the border. Read them against the semantic
-            info Alert below, which keeps coloured text because its hue is one
+            info Alert below, which keeps colored text because its hue is one
             audited value rather than eight. */}
         <Banner
           id={`${brand}-bn`}
@@ -414,7 +414,7 @@ function DashboardPage({ brand, mode }: { brand: BrandKey; mode: Mode }) {
             </Card>
           </div>
           {/* THE CHART — the surface theming previously did not reach. Series
-              colours come from --chart-1..6, authored per brand, so slot 1
+              colors come from --chart-1..6, authored per brand, so slot 1
               carries the brand's own hue. Everything structural around it
               (radius, type, spacing, shadows) is deliberately identical across
               all six, which is what keeps them reading as one product family. */}
@@ -638,12 +638,12 @@ const MATRIX: { group: string; note?: string; tokens: string[]; gradient?: boole
   },
   {
     group: 'Shadow tints',
-    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a coloured wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
+    note: 'From DEEP, pre-mixed into slate-700 so the brand direction survives without a colored wash under every card. Same weight as the raw deep \u2014 the stock sits at almost the same lightness, so only chroma drops (25\u2013107 to 11\u201355).',
     tokens: ['--poc-shadow-stock', '--poc-shadow-key', '--poc-shadow-far', '--poc-shadow-amb'],
   },
   {
     group: 'Gradients',
-    note: 'Not flat colours \u2014 the mark is all three anchors, the hero is main to deep.',
+    note: 'Not flat colors \u2014 the mark is all three anchors, the hero is main to deep.',
     tokens: ['--poc-mark', '--poc-hero', '--poc-bubble'],
     gradient: true,
   },
@@ -731,13 +731,13 @@ export const Brands: Story = {
         </div>
         <div style={PAGE}>
           <div>
-            <h2 style={H2}>A brand is three colours, not one</h2>
+            <h2 style={H2}>A brand is three colors, not one</h2>
             <p style={P}>
               The Figma marks are the source. Each is a three-stop gradient, and each stop turned out to
               have a job the others cannot do. Earlier rounds of this file themed from a single{' '}
               <code style={MONO}>--primary</code> and kept running out of hue — eight brands do not fit
               on one wheel beside error, warning and success. Three anchors is not three times the
-              colour, it is three times the <em>structure</em>.
+              color, it is three times the <em>structure</em>.
             </p>
           </div>
 
@@ -765,18 +765,18 @@ export const Brands: Story = {
           })}
 
           <div>
-            <h2 style={H2}>One colour, one label</h2>
+            <h2 style={H2}>One color, one label</h2>
             <p style={P}>
               The middle anchor used to be called <em>main</em>, and{' '}
               <code style={MONO}>--primary</code> was a second value derived from it — a few percent
-              darker, because a mark&rsquo;s mid stop is a display colour and did not clear AA under a
-              label. Two colours a hair apart is a smell, so it is gone:{' '}
+              darker, because a mark&rsquo;s mid stop is a display color and did not clear AA under a
+              label. Two colors a hair apart is a smell, so it is gone:{' '}
               <strong><code style={MONO}>--primary</code> is the middle anchor.</strong>
             </p>
             <p style={P}>
               An intermediate pass paid the contrast on the <em>label</em> side — six brands got a dark{' '}
               <code style={MONO}>--primary-foreground</code>, <code style={MONO}>db</code> a light one.
-              It measured fine and it was a worse system: the CTA&rsquo;s label flipped colour depending
+              It measured fine and it was a worse system: the CTA&rsquo;s label flipped color depending
               on which sub-app you were in, for a reason no consumer could see. So{' '}
               <strong>the marks moved instead.</strong> Every light middle came down its own hue —
               chroma and hue untouched — to the lightest value where pure white clears 4.5, and every
@@ -845,7 +845,7 @@ export const Brands: Story = {
               <strong>Highlight → its own token, and nothing with text on it.</strong>{' '}
               <code style={MONO}>--primary-highlight</code> drives the mark, the hero gradient, the
               marketing bubble field, and small non-text accents like a status dot. It is the brightest,
-              most saturated colour the brand owns, so the test for reaching for it is simply whether
+              most saturated color the brand owns, so the test for reaching for it is simply whether
               anything is read on top; if something is, it is the wrong token. An earlier pass built the light surfaces from it; the numbers were good and
               the result was wrong — a panel made from a highlight announces itself, and sub-apps of one
               suite should not announce themselves at every surface.
@@ -861,7 +861,7 @@ export const Brands: Story = {
               <strong>Deep → every tinted surface, plus depth.</strong> Panels, the rail, bands, shadows,
               the dark end of every gradient. Greyed toward slate first, then applied at single digits,
               so a surface shifts <strong>4&ndash;8&nbsp;ΔE00</strong> off its neutral: enough to read as
-              this brand when set beside another, never enough to read as a coloured page. Deep is the
+              this brand when set beside another, never enough to read as a colored page. Deep is the
               right tool because it is high-chroma — a few percent buys real hue at almost no luminance
               cost. Shadows take it too: a shadow holding the object&rsquo;s own dark end reads as light
               falling on it, a grey one reads as dirt.
@@ -895,7 +895,7 @@ export const MarkAnatomy: Story = {
             <h2 style={H2}>One mark, layer by layer</h2>
             <p style={P}>
               The marks elsewhere in this POC were a brand ramp and a flat white wash — two of the six
-              layers the Figma component actually has, which is why they read as a coloured tile rather
+              layers the Figma component actually has, which is why they read as a colored tile rather
               than as glass. This is the full stack, rebuilt from the component&rsquo;s own geometry
               rather than by eye.
             </p>
@@ -1087,7 +1087,7 @@ export const AidenSurface: Story = {
                     How do I split this cohort by plan?
                   </div>
                   <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
-                    <Chip id="as-c1" label="Summarise" active />
+                    <Chip id="as-c1" label="Summarize" active />
                     <Chip id="as-c2" label="Explain" />
                     <Chip id="as-c3" label="Chart it" />
                   </div>
@@ -1169,7 +1169,7 @@ export const Tokens: Story = {
           for (const t of g.tokens) {
             let v: string;
             if (g.gradient) {
-              // a gradient is not a colour — read the resolved image, not a pixel
+              // a gradient is not a color — read the resolved image, not a pixel
               probe.style.backgroundImage = '';
               probe.style.backgroundImage = `var(${t})`;
               v = getComputedStyle(probe).backgroundImage;
@@ -1238,7 +1238,7 @@ export const Tokens: Story = {
             <p style={P}>
               Translucent tokens are shown <em>composited over the page</em>, because their raw bytes are
               meaningless on their own — <code style={MONO}>--primary-light</code> is a 6% alpha, not a
-              colour.
+              color.
             </p>
           </div>
 
@@ -1384,11 +1384,11 @@ export const Audit: Story = {
           <div>
             <h2 style={H2}>The rows that matter</h2>
             <p style={P}>
-              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-colour
+              <strong><code style={MONO}>primary-foreground / primary</code></strong> is the one-color
               model working. Every brand clears 4.5 with the same{' '}
               <code style={MONO}>#ffffff</code> label on the mark&rsquo;s own middle stop. The marks
               moved to earn that: each light middle came down its own hue to the lightest value where
-              white passes, rather than the label changing colour per sub-app.
+              white passes, rather than the label changing color per sub-app.
               <br />
               <strong>The bubble field is not in this table</strong> — it is a{' '}
               <code style={MONO}>background-image</code>, and the probe reads computed{' '}
@@ -1475,7 +1475,7 @@ export const Marketing: Story = {
               A product UI has to stay quiet, so its budget is tiny. A marketing page{' '}
               <em>alternates</em> — white sections, a full-bleed band, white again. The band takes the
               same greyed <strong>deep</strong> stock as every other surface, just further along it, so
-              it never becomes a different kind of colour from the app; the colour arrives instead where
+              it never becomes a different kind of color from the app; the color arrives instead where
               nothing has to be read on it — the hero gradient (highlight → main → deep) and the display
               numerals, which are that ramp clipped to text.
             </p>
@@ -1511,7 +1511,7 @@ export const Suite: Story = {
             <p style={P}>
               It is also the only page allowed to use <strong>every brand at once</strong>. The
               headline ramp and the six-corner bubble field are the parent&rsquo;s identity — the
-              parent is not a colour, it is the set — and both are scoped to{' '}
+              parent is not a color, it is the set — and both are scoped to{' '}
               <code style={MONO}>.poc-suite-*</code> so they cannot appear inside a branded page,
               where the whole point is that one brand is in charge.
             </p>

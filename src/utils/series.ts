@@ -1,5 +1,5 @@
 /**
- * Series → colour-slot assignment.
+ * Series → color-slot assignment.
  *
  * Pure, dependency-free — see the note at the top of `scale.ts`.
  */
@@ -19,9 +19,9 @@ export type SlotAssignment<T> = {
 };
 
 /**
- * Assign a stable colour slot to each series.
+ * Assign a stable color slot to each series.
  *
- * COLOUR FOLLOWS THE ENTITY, NEVER ITS RANK. Slots are derived once from the
+ * COLOR FOLLOWS THE ENTITY, NEVER ITS RANK. Slots are derived once from the
  * full declared list and keyed by `key`, so hiding a series via the legend must
  * not renumber the survivors. Assigning by "position among visible series" is
  * the classic bug:  * the classic bug: a reader who learned "Direct is blue" watches Direct turn orange
@@ -73,7 +73,7 @@ export function assignSlots<T>(
  * Split a series list into the six that keep a slot and the tail that folds.
  *
  * Past six, a seventh step is indistinguishable from an existing one — the
- * remainder becomes a single de-emphasised "Other", or the caller facets into
+ * remainder becomes a single de-emphasized "Other", or the caller facets into
  * small multiples. Returning both halves lets the caller decide which.
  */
 export function foldOverflow<T>(

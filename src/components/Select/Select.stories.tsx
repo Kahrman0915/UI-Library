@@ -42,7 +42,7 @@ const meta: Meta<typeof Select> = {
           'The user is picking an action rather than a value — that is `DropdownMenu`.',
         ],
         notes:
-          'All three look identical when closed: a bordered field with a chevron. The choice is a behaviour decision, not a visual one, so a static mockup cannot communicate it — NativeSelect first, Select for rich items, Combobox for long or searchable lists.',
+          'All three look identical when closed: a bordered field with a chevron. The choice is a behavior decision, not a visual one, so a static mockup cannot communicate it — NativeSelect first, Select for rich items, Combobox for long or searchable lists.',
       },
       composition: [
         {

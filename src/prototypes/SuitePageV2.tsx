@@ -26,7 +26,7 @@ type Mode = 'light' | 'dark';
  *
  * Each app card is a real `data-brand` scope, so its mark, its accent, its
  * border and its tinted surface all come from that brand's anchors. Nothing on
- * this page hardcodes a brand colour.
+ * this page hardcodes a brand color.
  */
 
 const ICONS: Record<BrandKey, LucideIcon> = {
@@ -36,9 +36,9 @@ const ICONS: Record<BrandKey, LucideIcon> = {
 type App = { brand: BrandKey; name: string; tag: string; body: string; features: string[] };
 
 const APPS: App[] = [
-  { brand: 'db', name: 'DARTBoards', tag: 'Your AI-powered analytics command centre',
+  { brand: 'db', name: 'DARTBoards', tag: 'Your AI-powered analytics command center',
     body: 'The control hub for all your data analytics and reporting needs. Build dashboards, create reports and unlock insights with AI.',
-    features: ['AI dashboards', 'Smart reports', 'Real-time analytics', 'Custom visualisations'] },
+    features: ['AI dashboards', 'Smart reports', 'Real-time analytics', 'Custom visualizations'] },
   { brand: 'nb', name: 'NoteGen', tag: 'AI-generated documentation',
     body: 'Automatically generate comprehensive documentation, meeting notes and knowledge bases from your data and conversations.',
     features: ['Auto docs', 'Meeting notes', 'Knowledge base', 'Smart templates'] },
@@ -46,7 +46,7 @@ const APPS: App[] = [
     body: 'Discover patterns, explore data relationships and uncover hidden insights across all your data sources.',
     features: ['Data exploration', 'Pattern discovery', 'Cross-source analysis', 'Visual discovery'] },
   { brand: 'ec', name: 'Eclipse', tag: 'AI-powered predictive analytics',
-    body: 'Machine learning and predictive modelling. Forecast trends, detect anomalies and predict outcomes with AI.',
+    body: 'Machine learning and predictive modeling. Forecast trends, detect anomalies and predict outcomes with AI.',
     features: ['ML models', 'Forecasting', 'Anomaly detection', 'Auto ML'] },
   { brand: 'ph', name: 'Phoenix', tag: 'Real-time data pipelines',
     body: 'Advanced data transformation and pipeline orchestration. Turn raw data into actionable insights automatically.',
@@ -59,7 +59,7 @@ const APPS: App[] = [
 const STATS = [
   { n: '500K+', l: 'Active users' },
   { n: '2M+', l: 'Dashboards created' },
-  { n: '50B+', l: 'Data points analysed' },
+  { n: '50B+', l: 'Data points analyzed' },
   { n: '99.9%', l: 'Uptime SLA' },
 ];
 
@@ -141,7 +141,7 @@ function Mark({ brand, size = 44 }: { brand: BrandKey; size?: number }) {
   );
 }
 
-/** A centred section head: eyebrow pill, title, lede. */
+/** A centered section head: eyebrow pill, title, lede. */
 function Head({ pill, title, lede }: { pill: string; title: string; lede?: string }) {
   return (
     <div style={{ display: 'grid', gap: 'var(--p-4)', justifyItems: 'center', textAlign: 'center', marginBottom: 'var(--p-12)' }}>

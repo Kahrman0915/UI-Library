@@ -54,7 +54,7 @@ const meta: Meta<typeof Mark> = {
           '`data-theme="rm"` and it is that application\'s mark, wrap it in ' +
           '`data-surface="aiden"` and it is Aiden\'s. With no scope at all it paints the ' +
           'main brand.\n\n' +
-          '**All three motion levels render the same colours.** `motion` gates ' +
+          '**All three motion levels render the same colors.** `motion` gates ' +
           'animation and nothing else, so turning it off never changes what the mark ' +
           'looks like standing still.',
       },
@@ -77,7 +77,7 @@ const meta: Meta<typeof Mark> = {
           detail:
             'Promoted out of the deeper-theming-v2 prototype. The glass stack, its ' +
             'lighting model and `usePointerTilt` are the POC\'s, unchanged in ' +
-            'behaviour; what is new is that the paint no longer depends on the motion ' +
+            'behavior; what is new is that the paint no longer depends on the motion ' +
             'level, the thirteen glass literals moved into `tokens.scss` as the ' +
             '`--mark-*` family, and the tile scales on a `size` union rather than a ' +
             'free pixel number.',

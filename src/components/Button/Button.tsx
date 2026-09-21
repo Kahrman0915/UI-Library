@@ -19,6 +19,7 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       onClick,
       IconLeft,
       IconRight,
+      count,
       IconCenter,
       'aria-label': ariaLabel,
       className,
@@ -51,6 +52,13 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
           <>
             {IconLeft && <IconLeft />}
             {label}
+            {/*
+              A span, not a composed `Badge`: Badge renders a div, and a div
+              inside a button is flow content in a phrasing context — invalid
+              markup the browser silently un-nests. It sits after the label and
+              before any trailing icon, so a chevron stays last.
+            */}
+            {count !== undefined && <span className="ui-button__count">{count}</span>}
             {IconRight && <IconRight />}
           </>
         )}

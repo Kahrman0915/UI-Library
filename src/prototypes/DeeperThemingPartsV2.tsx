@@ -119,7 +119,7 @@ const DARK_ROWS = diff(DARK, POC_DARK);
 const THEME_BLOCKS = TOKEN_BLOCKS.filter((b) => b.selector.includes('data-theme='));
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Colour readback
+// Color readback
 // ─────────────────────────────────────────────────────────────────────────────
 
 let ctx: CanvasRenderingContext2D | null = null;
@@ -280,7 +280,7 @@ function useDerivedAudit() {
         // card (#1e293b) for both columns and only swapped --primary, which
         // measures a build that does not exist: under adoption the card is the
         // POC's brand-tinted card, and a tint sitting on it is a different
-        // colour. That single hardcoded value reported ec dark as 4.47 when it
+        // color. That single hardcoded value reported ec dark as 4.47 when it
         // is really 4.01, and hid two of the four failures completely — the
         // POC column now carries [data-theme-poc2][data-brand], so --card,
         // --primary-soft and --primary-light all resolve through the real
@@ -489,7 +489,7 @@ const SCAFFOLD_NAMES = [
 
 /**
  * Tokens that exist today as ONE global value and would start varying by brand.
- * This is a behavioural change even though no name is added: a consumer reading
+ * This is a behavioral change even though no name is added: a consumer reading
  * --chart-1 gets slate today and a brand hue after.
  */
 const NEWLY_BRAND_SCOPED = PER_BRAND_EXISTING.filter(
@@ -586,7 +586,7 @@ export function NewTokensPanel() {
           Today a <code style={CODE}>[data-theme]</code> scope remaps <strong>9</strong> tokens, all{' '}
           <code style={CODE}>--primary-*</code>. Deeper theming means it also remaps the surfaces —
           that is what &ldquo;deeper&rdquo; refers to, and it is the actual work. None of it is a
-          colour decision.
+          color decision.
         </p>
         <div style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap', marginBottom: 'var(--p-4)' }}>
           {SURFACE_TOKENS.map((t) => (
@@ -601,7 +601,7 @@ export function NewTokensPanel() {
           resolves to <code style={CODE}>unset</code>. The POC works around it by hardcoding the
           neutral literals; a real adoption has to introduce the raw layer and derive the semantic
           names from it. That is the single largest cost in this whole exercise and not one line of
-          it is about colour.
+          it is about color.
         </p>
       </div>
 
@@ -762,7 +762,7 @@ export function TokenDiffPanel() {
         <p style={P}>
           Parsed from the POC recipe and matched against the real declaration in{' '}
           <code style={CODE}>tokens.scss</code>. Swatches are read back from the live browser
-          using the <code style={CODE}>dc</code> brand, so &ldquo;proposed&rdquo; is the colour
+          using the <code style={CODE}>dc</code> brand, so &ldquo;proposed&rdquo; is the color
           that would actually render — not an approximation of it.
         </p>
       </div>
@@ -807,7 +807,7 @@ export function TokenDiffPanel() {
  * it plans is worse than no plan, because it is trusted.
  *
  * The one thing NOT derived is the risk commentary at the bottom, because it is
- * judgement rather than measurement, and it is labelled as such.
+ * judgement rather than measurement, and it is labeled as such.
  */
 
 /** POC attribute -> shipped attribute. The renames are the whole mechanical part. */
@@ -839,19 +839,19 @@ const SCOPE_MAP: { poc: string; shipped: string; note: string }[] = [
   },
 ];
 
-/** Decisions that must be made BEFORE a patch can be written. Not colour choices. */
+/** Decisions that must be made BEFORE a patch can be written. Not color choices. */
 const BLOCKERS: { q: string; detail: string; severity: 'blocker' | 'decision' }[] = [
   {
     q: 'The self-reference cycle in the surface layer',
     severity: 'blocker',
     detail:
-      'Every tinted surface is "the neutral it already is, mixed with the brand deep" — but a custom property cannot reference itself, so --background: color-mix(…, var(--background)) resolves to unset. The POC dodges it by hardcoding the neutral literals. Adoption has to introduce a raw neutral layer (--surface-base-* or similar) and derive the semantic names from it. This is the single largest piece of work in the whole migration and none of it is about colour.',
+      'Every tinted surface is "the neutral it already is, mixed with the brand deep" — but a custom property cannot reference itself, so --background: color-mix(…, var(--background)) resolves to unset. The POC dodges it by hardcoding the neutral literals. Adoption has to introduce a raw neutral layer (--surface-base-* or similar) and derive the semantic names from it. This is the single largest piece of work in the whole migration and none of it is about color.',
   },
   {
     q: 'Tint is a fourth axis — decide its default',
     severity: 'decision',
     detail:
-      'RESOLVED as a blocker, now only a choice. Tint used to be two inline custom properties, and --poc2-str was read 22 times with no fallback: an unresolvable var() makes the whole declaration invalid at computed-value time, so an unset strength did not mean "no tint", it meant --card, --accent, --border and thirteen others fell back to inherited or initial. It never showed because the story root always set it. It is now an ATTRIBUTE — data-tint="page rail", a whitespace-list so either word, both, or neither are valid — driving --tint-page / --tint-rail, which default to 0. Absent now means neutral rather than broken. What is left is a product decision, not a defect: should a page with no data-tint render plain (current behaviour, safe) or tinted (needs the attribute set at the app root)?',
+      'RESOLVED as a blocker, now only a choice. Tint used to be two inline custom properties, and --poc2-str was read 22 times with no fallback: an unresolvable var() makes the whole declaration invalid at computed-value time, so an unset strength did not mean "no tint", it meant --card, --accent, --border and thirteen others fell back to inherited or initial. It never showed because the story root always set it. It is now an ATTRIBUTE — data-tint="page rail", a whitespace-list so either word, both, or neither are valid — driving --tint-page / --tint-rail, which default to 0. Absent now means neutral rather than broken. What is left is a product decision, not a defect: should a page with no data-tint render plain (current behavior, safe) or tinted (needs the attribute set at the app root)?',
   },
   {
     q: 'dr and ir have no values',
@@ -1036,7 +1036,7 @@ export function TransitionPanel() {
         <p style={P}>
           Grouped by what they are for. The two ramp families are the bulk of the count and the
           least contentious part of it — they are additive, nothing reads them yet, and they are the
-          reason the charting system can state a job instead of a colour.
+          reason the charting system can state a job instead of a color.
         </p>
         {[
           { title: 'Brand identity', test: (t: string) => t.startsWith('--mark') || t === '--primary-deep' || t === '--decorative-hi' },
@@ -1112,7 +1112,7 @@ export function TransitionPanel() {
           <code style={CODE}>aiden</code> light: the surface&rsquo;s primary is the shipped blurple,
           and the chart opens a shade brighter so it separates from its own slot 3.{' '}
           <strong>The consequence to accept:</strong> in those two cases a legend swatch and the
-          brand accent on the same page are not the same colour.
+          brand accent on the same page are not the same color.
         </p>
       </div>
 

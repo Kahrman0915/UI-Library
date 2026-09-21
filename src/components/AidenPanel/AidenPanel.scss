@@ -28,7 +28,12 @@
   min-height: 0;
   background: var(--background);
   border-inline-start: var(--border-w-100) solid var(--border);
-  box-shadow: var(--shadow-lg);
+  // The panel and the page are the SAME COLOUR in light — every surface token
+  // is #ffffff — so the hairline was carrying the separation alone at 1.48:1
+  // and the panel read as part of the page. The lift does the work instead;
+  // the hairline stays exactly as it was. See --shadow-panel for why it is a
+  // halo rather than a leftward cast.
+  box-shadow: var(--shadow-panel);
   animation: ui-aiden-panel-in var(--duration-slow) var(--ease-out);
 
   &--closing {

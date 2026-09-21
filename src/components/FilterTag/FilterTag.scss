@@ -1,0 +1,107 @@
+// FilterTag — one applied filter with a remove control. See FilterTag.tsx.
+//
+// It borrows Chip's RESTING look on purpose — the outline pill the Browse page
+// was reviewed with — so a row of applied filters and a row of toggle chips read
+// as one family. It does not borrow Chip's behavior: there is no pressed state,
+// no hover fill and no press-scale, because the pill itself is not a control.
+
+.ui-filter-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  max-width: 100%;
+  box-sizing: border-box;
+  // Tighter on the end: the remove button carries its own padding, and a full
+  // --p-3 after it leaves the X floating away from the edge.
+  padding-block: var(--p-1-5);
+  padding-inline: var(--p-3) var(--p-1);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-3xl);
+  background: var(--bg-input-30);
+  color: var(--muted-foreground);
+  font-family: var(--font-family);
+  font-weight: var(--font-normal);
+
+  &__label {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  // The X sits inside a pill with its own padding-block, so its 20px box must
+  // not add height: the negative block margin lets the label's line set the
+  // pill's height, exactly as Chip's does. The ≥24px pointer target is kept by
+  // CloseButton's own hit-target expansion.
+  &__remove {
+    flex-shrink: 0;
+    margin-block: calc(-1 * var(--p-0-5));
+  }
+
+  // xs is 24 tall like Chip's xs, but on a 16px line with 4px padding rather
+  // than Chip's 12px line: the label clips with an ellipsis, and a 12px line box
+  // would cut the descenders off "g" and "y".
+  &--sz-xs {
+    padding-block: var(--p-1);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+
+  &--sz-sm {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+  }
+
+  &--sz-default {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
+.ui-filter-tag-group {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+  font-family: var(--font-family);
+
+  // Programmatic focus lands here only as a last resort; it is not a control,
+  // so it shows no ring.
+  &:focus {
+    outline: none;
+  }
+
+  &__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+
+    // Visually hidden but still the list's accessible name.
+    &--hidden {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+  }
+
+  &__list {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  &__item {
+    display: inline-flex;
+    max-width: 100%;
+  }
+}

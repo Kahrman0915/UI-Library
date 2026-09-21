@@ -20,7 +20,7 @@ const meta: Meta<typeof Badge> = {
     layout: 'centered',
     ui: {
       description:
-        'A small label carrying a status, a count or a category. Each colour comes as ' +
+        'A small label carrying a status, a count or a category. Each color comes as ' +
         'a `{solid, soft, outline}` trio — a filled base, a tinted `-soft` surface with ' +
         'on-tint text, and a transparent bordered outline; `category` switches to the ' +
         '15-hue tag palette for topics and labels that need to be told apart rather ' +
@@ -33,13 +33,13 @@ const meta: Meta<typeof Badge> = {
         {
           date: '2026-09-02',
           summary:
-            'The `error` colour is a touch lighter in dark mode.',
+            'The `error` color is a touch lighter in dark mode.',
           detail:
             'Dark `--error` moved `#f87171` to `#fa8585`, with `-light`, `-soft`, `-border`, `-ring` and ' +
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
@@ -48,9 +48,9 @@ const meta: Meta<typeof Badge> = {
             'BREAKING — `variant`, `category` and `categoryStyle` are replaced by two ' +
             'independent axes, `color` and `appearance`.',
           detail:
-            'Every colour now works with every fill, which the flat variant list could not ' +
-            'express: the 15 category hues gain `outline`, and the semantic colours gain ' +
-            '`soft`. A colour class sets a local palette (--_fill/--_on-fill, --_soft/' +
+            'Every color now works with every fill, which the flat variant list could not ' +
+            'express: the 15 category hues gain `outline`, and the semantic colors gain ' +
+            '`soft`. A color class sets a local palette (--_fill/--_on-fill, --_soft/' +
             '--_soft-ink, --_line/--_line-ink) and the appearance class consumes it. ' +
             'Migration: variant="error-outline" -> color="error" appearance="outline"; ' +
             'variant="outline" -> color="default" appearance="outline"; category="red" ' +
@@ -61,12 +61,12 @@ const meta: Meta<typeof Badge> = {
         {
           date: '2026-08-27',
           summary:
-            'Every colour gained a tinted `soft` variant, so a brand or semantic badge ' +
+            'Every color gained a tinted `soft` variant, so a brand or semantic badge ' +
             'can sit beside a category tag and read as the same kind of thing.',
           detail:
             'Adds soft, error-soft, success-soft, warning-soft, info-soft and aiden-soft ' +
             '(12 -> 18 variants). Each is a `-soft` tint with the new on-tint `-text` ' +
-            'colour and no border, matching the shape of a soft `category` badge. Brand ' +
+            'color and no border, matching the shape of a soft `category` badge. Brand ' +
             'soft uses --primary-soft (8% light / 10% dark) rather than --primary-light ' +
             '(6%), which reads washed out at pill size beside a category tag — this makes ' +
             'Badge the second consumer of --primary-soft after the filled secondary ' +

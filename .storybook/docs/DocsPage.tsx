@@ -51,7 +51,7 @@ const STATUS_VARIANT: Record<UiDocsStatus, 'success' | 'info' | 'warning' | 'err
     deprecated: 'error',
   };
 
-/** Stories whose canvas wants the full column rather than a centred specimen. */
+/** Stories whose canvas wants the full column rather than a centered specimen. */
 const FILL_TITLES = /Sidebar|Chat|Layout|Menubar|Command|Pagination|Breadcrumb/;
 
 /**

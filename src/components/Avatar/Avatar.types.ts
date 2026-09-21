@@ -1,4 +1,4 @@
-export type AvatarSize = 'sm' | 'default' | 'lg';
+export type AvatarSize = 'xs' | 'sm' | 'default' | 'lg';
 export type AvatarShape = 'circle' | 'square';
 /** Overlap amount for a stack. See the note on `AvatarGroupProps.spacing`. */
 export type AvatarGroupSpacing = 'sm' | 'default' | 'lg';
@@ -12,7 +12,7 @@ export type AvatarGroupSpacing = 'sm' | 'default' | 'lg';
  * `fallback` you get an empty, nameless box.
  */
 export type AvatarProps = Omit<
-  React.HTMLAttributes<HTMLDivElement>,
+  React.HTMLAttributes<HTMLSpanElement>,
   'children'
 > & {
   id: string;

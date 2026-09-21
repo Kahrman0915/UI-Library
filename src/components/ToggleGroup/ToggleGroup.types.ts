@@ -85,7 +85,7 @@ type ToggleGroupItemBase = Omit<
   IconLeft?: React.FC;
   /** Icon after the label. Must be a zero-prop component. */
   IconRight?: React.FC;
-  /** Icon-only item — renders a single centred glyph. Requires an `aria-label`. */
+  /** Icon-only item — renders a single centered glyph. Requires an `aria-label`. */
   IconCenter?: React.FC;
   /** Disables just this segment. The group's `disabled` overrides all of them. */
   disabled?: boolean;

@@ -329,6 +329,11 @@ const PAIRINGS = [
   ['muted-foreground', 'muted'],
   ['secondary-foreground', 'secondary'],
   ['muted-foreground', 'secondary'], // Alert desc, Banner desc, Item muted, Avatar initials, Kbd — moved here off --muted for headroom
+  // The `neutral` button's solid (2026-09-16). --primary-main is the one primary
+  // token no data-theme remaps, so this pairing is identical in all six brands —
+  // but it still has to hold in both MODES, where the family inverts: slate-700
+  // with near-white ink in light, slate-300 with near-black ink in dark.
+  ['primary-main-foreground', 'primary-main'],
   ['popover-foreground', 'popover'],
   ['muted-foreground', 'popover'],
   ['accent-foreground', 'accent'],

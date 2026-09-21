@@ -22,7 +22,7 @@ export type CloseButtonProps = Omit<
    */
   size?: CloseButtonSize;
   disabled?: boolean;
-  /** What dismissal does. The button has no behaviour of its own. */
+  /** What dismissal does. The button has no behavior of its own. */
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   /** Accessible name. Default `'Close'` — override to localize, or to say what
    *  is being closed when several are on screen. Named `ariaLabel` rather than

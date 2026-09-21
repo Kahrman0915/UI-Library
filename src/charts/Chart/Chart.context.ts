@@ -11,16 +11,16 @@ export type ResolvedSeries = Omit<ChartSeries, 'slot'> & {
   /** null = folded into "Other". */
   slot: SeriesSlot | null;
   /**
-   * The colour to PAINT WITH — already resolved for emphasis, so it is
+   * The color to PAINT WITH — already resolved for emphasis, so it is
    * `--chart-muted` on a muted series rather than that series' own slot.
    *
    * Every consumer (marks, legend swatch, tooltip key) reads this one field, so
    * the chart and its chrome cannot disagree about which series is foregrounded.
-   * The identity colour survives as `slotToken` for anything that needs the
-   * series' own colour regardless of state.
+   * The identity color survives as `slotToken` for anything that needs the
+   * series' own color regardless of state.
    */
   token: string;
-  /** This series' own slot colour, unaffected by emphasis. */
+  /** This series' own slot color, unaffected by emphasis. */
   slotToken: string;
   visible: boolean;
   emphasis: SeriesEmphasis;
@@ -28,7 +28,7 @@ export type ResolvedSeries = Omit<ChartSeries, 'slot'> & {
 
 /**
  * Muted series first, so the subject paints over its context rather than under
- * it. A no-op when nothing is emphasised.
+ * it. A no-op when nothing is emphasized.
  *
  * ONLY safe where marks overlap arbitrarily — lines, and unstacked areas. A
  * stack's order is semantic (each segment sits on the running total beneath it)
@@ -58,7 +58,7 @@ export type ChartContextValue = {
    * false claim about what the reader is looking at.
    */
   axisFormatter: (value: number) => string;
-  /** True when each series is labelled at its last point rather than in a legend. */
+  /** True when each series is labeled at its last point rather than in a legend. */
   endLabels: boolean;
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
@@ -67,7 +67,7 @@ export type ChartContextValue = {
   /**
    * True while the emphasis came from pointing or focusing rather than the prop.
    *
-   * The distinction is not cosmetic: legend buttons emphasise on FOCUS too, so
+   * The distinction is not cosmetic: legend buttons emphasize on FOCUS too, so
    * without it, arrowing along the legend would move a rendered "(highlighted)"
    * string from entry to entry and chatter the whole way down the accessibility
    * tree. A standing emphasis is authored intent and worth announcing once; an
@@ -75,7 +75,7 @@ export type ChartContextValue = {
    */
   emphasisTransient: boolean;
   /**
-   * Set only when the chart is colouring by VALUE rather than by series.
+   * Set only when the chart is coloring by VALUE rather than by series.
    * Marks read this instead of `series[].token`; null means categorical.
    */
   colorScale: {

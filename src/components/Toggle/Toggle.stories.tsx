@@ -30,8 +30,8 @@ const meta: Meta<typeof Toggle> = {
           summary: 'The unpressed `plain` label drops to regular weight, so you can tell which filter is active in dark mode.',
           detail:
             '`.ui-toggle--plain` goes from `--font-medium` to `--font-normal`; pressed stays `--font-semibold`, so ' +
-            'the step is now 400->600 instead of 500->600. The variant leaned on colour plus one weight step, and ' +
-            'the colour half does not exist in dark: --foreground against --muted-foreground is 2.36:1 in light but ' +
+            'the step is now 400->600 instead of 500->600. The variant leaned on color plus one weight step, and ' +
+            'the color half does not exist in dark: --foreground against --muted-foreground is 2.36:1 in light but ' +
             '1.18:1 in dark (#f8fafc vs #e2e8f0), leaving one weight step at 14px to carry the whole state. Weight ' +
             'is the right lever precisely because it is not a hue, so no theme or mode can collapse it.\n\n' +
             'The 500 floor existed on the theory that 400 would reflow the bar as the selection moved. Measured ' +
@@ -60,7 +60,7 @@ const meta: Meta<typeof Toggle> = {
             'transparent with no border: `line` marks the pressed item with a --primary bar on its bottom ' +
             'edge, reusing the Tabs indicator geometry (--border-w-300 on --rounded-full); `plain` uses ' +
             '--foreground at --font-semibold against --muted-foreground. Presentation only — identical ' +
-            'semantics, keyboard behaviour and aria. `plain` steps weight 500->600 rather than 400->600 ' +
+            'semantics, keyboard behavior and aria. `plain` steps weight 500->600 rather than 400->600 ' +
             'because bold text is wider and a filter bar reflows on every selection change.',
         },
         {

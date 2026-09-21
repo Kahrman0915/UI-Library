@@ -3,37 +3,47 @@ import {
   BarChart3,
   Bell,
   Box,
+  ChevronDown,
   ChevronRight,
+  CircleHelp,
+  CircleUser,
   Clock,
   FileText,
   Flame,
-  Grid2x2,
+  LayoutDashboard,
   Home,
   Inbox,
   Layers,
   LayoutGrid,
+  LogOut,
   Phone,
   Pin,
-  Plus,
   Search,
   Settings,
+  Slash,
   Sparkles,
-  X,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import Avatar from '../components/Avatar';
-import Badge from '../components/Badge';
+import AppShell, { AppShellBody, AppShellMain, AppShellTabStrip, AppShellWorkspace } from '../components/AppShell';
+import AppRail, { AppRailItem } from '../components/AppRail';
+import TabBar, { TabBarList, TabBarMenu, TabBarNewTab, TabBarTab } from '../components/TabBar';
+import DropdownMenu, {
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '../components/DropdownMenu';
+import Fab from '../components/Fab';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import FeaturedIcon from '../components/FeaturedIcon';
 import Kbd from '../components/Kbd';
-import Mark from '../components/Mark';
 import ModeToggler from '../components/ModeToggler';
 import Sidebar, {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarHeader,
   SidebarInset,
   SidebarMenu,
   SidebarMenuButton,
@@ -47,6 +57,7 @@ import InputGroup, {
   InputGroupInput,
 } from '../components/InputGroup';
 import './DartCentralHome.scss';
+import { AidenSparkles } from './AidenSparkles';
 
 const meta: Meta = {
   title: 'Prototypes/DART Central — Home',
@@ -57,10 +68,11 @@ const meta: Meta = {
         'A real application shell, built only from library components and tokens. ' +
         'Themed `db`, responsive, and light/dark aware.\n\n' +
         'It exists to answer a question a spec grid cannot: does the system actually ' +
-        'compose into a product? Everything a component already owns is a component ' +
-        'here — Sidebar, Mark, Card, Item, InputGroup, FeaturedIcon, Kbd, Avatar, ' +
-        'Badge, Button, ModeToggler. The only hand-built chrome is the icon rail, ' +
-        'because an app switcher is not something the library ships.',
+        'compose into a product? The chrome is `AppShell` with no hand-built parts: the ' +
+        'account cell (DART Central mark · your name and menu), a `TabBar` whose Home tab is ' +
+        'icon-only and never closes, `AppRail` (applications, mode toggle), `Sidebar` with no ' +
+        'header, and the Aiden `Fab` bottom-right with its intro twinkle. The page inside is ' +
+        'Card, Item, InputGroup, FeaturedIcon and Kbd.',
       tags: ['prototype', 'composed screen', 'themed db'],
     },
   },
@@ -69,15 +81,14 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-/* The rail's apps. Each is its own product, which is the whole reason the rail
-   exists — and why every tile is a themed Mark rather than a flat glyph. */
+/* The rail's apps. Icon-only links in the one theme the user picked — no per-app
+   color (owner, 2026-09-19). */
 const RAIL_APPS: { code: string; name: string; Icon: LucideIcon; count?: number }[] = [
-  { code: 'db', name: 'DART Central', Icon: LayoutGrid },
+  { code: 'db', name: 'DARTBoards', Icon: LayoutDashboard },
   { code: 'dc', name: 'IRM', Icon: Box, count: 3 },
   { code: 'ph', name: 'Phoenix', Icon: Flame },
   { code: 'ec', name: 'Eclipse', Icon: Layers },
   { code: 'nb', name: 'NoteGen', Icon: FileText },
-  { code: 'rm', name: 'DARTBoards', Icon: Grid2x2 },
 ];
 
 const NAV = [
@@ -103,7 +114,7 @@ const RECENT = [
   { name: 'Eclipse', app: 'Eclipse', Icon: Layers },
   { name: 'NoteGen', app: 'NoteGen', Icon: FileText },
   { name: 'Call Center', app: 'DARTBoards', Icon: Phone },
-  { name: 'DARTBoards', app: 'DARTBoards', Icon: Grid2x2 },
+  { name: 'DARTBoards', app: 'DARTBoards', Icon: LayoutDashboard },
   { name: 'Phone Analytics', app: 'DARTBoards', Icon: BarChart3 },
 ];
 
@@ -113,140 +124,71 @@ const PINNED = [
   { title: 'Tableau Internal', desc: 'Monitor Tableau and DARTBoards platform usage', Icon: BarChart3 },
 ];
 
+
 function Shell() {
   return (
-    <div className="dc-shell">
-      {/* ── tab strip ── */}
-      <div className="dc-tabstrip">
-        <span className="dc-tabstrip__mark">
-          <Mark id="dc-mark" Icon={LayoutGrid} size="sm" motion="none" label="DART Central" />
-        </span>
+    <AppShell id="dc">
+      {/* ── the strip: account cell · tabs. Home is the fixed tab: icon-only, never closable. ── */}
+      <AppShellTabStrip
+        logo={
+          <>
+            <Button id="dc-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
+            <Slash className="ui-app-shell__sep" aria-hidden="true" />
+            <DropdownMenu id="dc-account-menu">
+              <DropdownMenuTrigger>
+                <Button id="dc-account" className="ui-app-shell__account" style="ghost" label="Kahrman McKenzie" IconRight={ChevronDown} />
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="start">
+                <DropdownMenuLabel>kahrman.mckenzie@gmail.com</DropdownMenuLabel>
+                <DropdownMenuItem>
+                  <CircleUser aria-hidden="true" />
+                  My profile
+                </DropdownMenuItem>
+                <DropdownMenuItem>
+                  <Settings aria-hidden="true" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem>
+                  <CircleHelp aria-hidden="true" />
+                  Help
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem variant="destructive">
+                  <LogOut aria-hidden="true" />
+                  Sign out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </>
+        }
+      >
+        <TabBar id="dc-tabs" value="home">
+          <TabBarList aria-label="Open documents">
+            <TabBarTab value="home" label="Home" Icon={Home} iconOnly closable={false} />
+          </TabBarList>
+          <TabBarNewTab />
+          <TabBarMenu tabs={[{ value: 'home', label: 'Home', Icon: Home }]} />
+        </TabBar>
+      </AppShellTabStrip>
 
-        <span className="dc-tabstrip__tab">
-          <Home size={14} aria-hidden="true" />
-          Home
-          <Button
-            id="dc-tab-close"
-            style="ghost"
-            size="xs"
-            iconOnly
-            IconCenter={() => <X size={12} aria-hidden="true" />}
-            aria-label="Close tab"
-          />
-        </span>
-
-        <Button
-          id="dc-tab-new"
-          style="ghost"
-          size="xs"
-          iconOnly
-          IconCenter={() => <Plus size={14} aria-hidden="true" />}
-          aria-label="New tab"
-        />
-
-        <span className="dc-tabstrip__spacer" />
-
-        <span className="dc-tabstrip__actions">
-          <Button
-            id="dc-apps"
-            style="ghost"
-            size="xs"
-            iconOnly
-            IconCenter={() => <Grid2x2 size={14} aria-hidden="true" />}
-            aria-label="All apps"
-          />
-          {/* The one place the Aiden surface appears in the chrome — the gradient
-              is reserved for the assistant's own entry point. */}
-          <span data-surface="aiden">
-            <Button
-              id="dc-ask-aiden"
-              variant="aiden"
-              size="xs"
-              label="Ask Aiden"
-              IconLeft={() => <Sparkles size={12} aria-hidden="true" />}
-            />
-          </span>
-        </span>
-      </div>
-
-      <div className="dc-body">
-        {/* ── app rail — hand-built, the only non-component chrome ── */}
-        <nav className="dc-rail" aria-label="Applications">
-          <div className="dc-rail__group">
-            {RAIL_APPS.map(({ code, name, Icon, count }) => (
-              <span className="dc-rail__slot" key={code} data-theme={code}>
-                <Mark id={`dc-rail-${code}`} Icon={Icon} size="default" motion="none" label={name} />
-                {count && (
-                  <span className="dc-rail__badge">
-                    <Badge id={`dc-rail-${code}-count`} color="error" label={String(count)} />
-                  </span>
-                )}
-              </span>
-            ))}
-          </div>
-
-          <div className="dc-rail__group dc-rail__group--end">
-            <Avatar id="dc-me" fallback="KM" alt="Kahrman McKenzie" size="sm" />
-            <span className="dc-rail__slot">
-              <Button
-                id="dc-notifications"
-                style="ghost"
-                size="sm"
-                iconOnly
-                IconCenter={() => <Bell size={16} aria-hidden="true" />}
-                aria-label="Notifications"
-              />
-              <span className="dc-rail__badge">
-                <Badge id="dc-notifications-count" color="error" label="3" />
-              </span>
-            </span>
-            <ModeToggler id="dc-mode" variant="ghost" size="sm" />
-            <Button
-              id="dc-settings"
-              style="ghost"
-              size="sm"
-              iconOnly
-              IconCenter={() => <Settings size={16} aria-hidden="true" />}
-              aria-label="Settings"
-            />
-          </div>
-        </nav>
-
-        {/* ── sidebar + content ──
-            .dc-workspace carries `contain: layout`, which is what stops the
-            Sidebar's viewport-fixed panel from covering the rail and the tab
-            strip. See the SCSS for why that is the fix and not a hack. */}
-        <div className="dc-workspace">
+      <AppShellBody>
         <SidebarProvider>
-          <Sidebar collapsible="icon">
-            <SidebarHeader>
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  gap: 'var(--p-2)',
-                  padding: 'var(--p-1) var(--p-2)',
-                  fontSize: 'var(--text-xs)',
-                  lineHeight: 'var(--leading-4)',
-                  fontWeight: 'var(--font-semibold)',
-                  letterSpacing: 'var(--tracking-wide)',
-                  textTransform: 'uppercase',
-                  color: 'var(--sidebar-foreground)',
-                }}
-              >
-                DART Central
-                <SidebarTrigger />
-              </span>
-            </SidebarHeader>
+          <AppRail header={<SidebarTrigger />} footer={<ModeToggler id="dc-mode" variant="ghost" size="sm" />}>
+            {RAIL_APPS.map(({ code, name, Icon, count }) => (
+              <AppRailItem key={code} id={`dc-rail-${code}`} href={`/${code}`} label={name} Icon={Icon} count={count} />
+            ))}
+          </AppRail>
 
+          <AppShellWorkspace>
+          <Sidebar>
             <SidebarContent>
               <SidebarGroup>
                 <SidebarGroupContent>
                   <SidebarMenu>
                     {NAV.map(({ label, Icon, active }) => (
                       <SidebarMenuItem key={label}>
-                        <SidebarMenuButton tooltip={label} isActive={active}>
+                        <SidebarMenuButton isActive={active}>
                           <Icon />
                           <span>{label}</span>
                         </SidebarMenuButton>
@@ -259,7 +201,7 @@ function Shell() {
           </Sidebar>
 
           <SidebarInset>
-            <main className="dc-main">
+            <AppShellMain>
               <div className="dc-col">
                 <header className="dc-greeting">
                   <h1 className="dc-greeting__title">Good evening, Kahrman</h1>
@@ -386,12 +328,19 @@ function Shell() {
                   </div>
                 </section>
               </div>
-            </main>
+            </AppShellMain>
           </SidebarInset>
+          </AppShellWorkspace>
         </SidebarProvider>
-        </div>
+      </AppShellBody>
+
+      {/* Aiden: the Fab in the bottom-right corner, inside the Aiden surface for its gradient. */}
+      <div data-surface="aiden">
+        <Fab id="dc-aiden" size="default" intro aria-label="Ask Aiden">
+          <AidenSparkles />
+        </Fab>
       </div>
-    </div>
+    </AppShell>
   );
 }
 

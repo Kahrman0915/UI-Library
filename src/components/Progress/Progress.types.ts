@@ -1,7 +1,7 @@
 /** Track thickness. */
 export type ProgressSize = 'sm' | 'default' | 'lg';
 
-/** Bar colour. `default` follows the active `data-theme`. */
+/** Bar color. `default` follows the active `data-theme`. */
 export type ProgressVariant =
   | 'default'
   | 'success'

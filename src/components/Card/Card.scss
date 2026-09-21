@@ -102,7 +102,7 @@
     // A header with nothing under it has nothing to divide. Without this the
     // rule still paints, one pixel inside `.ui-card`'s own border, doubling it.
     // Invisible only because the two are flush — but it is still a stray edge,
-    // and it shows the moment the card's radius or border colour changes.
+    // and it shows the moment the card's radius or border color changes.
     &:last-child {
       border-bottom: none;
     }
@@ -200,7 +200,7 @@
   // A row of controls that belongs to the CONTENT rather than closing the card.
   // Hugs and aligns to the leading edge: `__body` is a flex column with the
   // default `align-items: stretch`, so a Button dropped straight in fills the
-  // card and centres its label — `align-self` is what stops that.
+  // card and centers its label — `align-self` is what stops that.
   //
   // `__footer` is the other kind: the dialog-shaped bar, right-aligned with its
   // own rule above it.

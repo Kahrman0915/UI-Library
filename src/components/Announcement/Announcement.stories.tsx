@@ -15,7 +15,7 @@ const meta: Meta<typeof Announcement> = {
         'and an action row. A thin preset of `Dialog`: same portal, focus trap, scroll ' +
         'lock, Escape and focus restore, with the arrangement settled, a wider panel so ' +
         'a 16:9 clip has room, and outside-click dismissal on. Motion, ARIA and exit ' +
-        'behaviour are `Dialog`\'s — see that page.',
+        'behavior are `Dialog`\'s — see that page.',
       tags: ['modal', 'preset', 'portal'],
       usage: {
         when: [

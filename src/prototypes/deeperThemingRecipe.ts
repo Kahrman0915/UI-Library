@@ -14,7 +14,7 @@
  *
  *     HIGHLIGHT   the upper corner. Reaches OUT of the brand's hue family —
  *                 db's indigo opens on teal, ph's orange opens on yellow. It is
- *                 the lightest, airiest colour the brand owns.
+ *                 the lightest, airiest color the brand owns.
  *     PRIMARY     the body. What a person means when they name the brand — and
  *                 literally --primary, the same value the CTA is painted with.
  *     DEEP        the shadow end. Where the mark grounds itself, and the source
@@ -22,7 +22,7 @@
  *
  * Every earlier round of this file tried to theme from ONE number and kept
  * running out of room — the wheel is only 360 degrees and eight brands plus the
- * semantics do not fit. Three anchors is not three times the colour, it is three
+ * semantics do not fit. Three anchors is not three times the color, it is three
  * times the STRUCTURE: each anchor has a natural home, so the brand reaches
  * further without any of them fighting.
  *
@@ -42,8 +42,8 @@
  * Six of the seven take the middle anchor directly. aiden authors its own
  * (`primary: { light, dark }` on its entry), and that is a supported shape
  * rather than a special case: the mark is display art with no contrast
- * constraint, --primary is a UI colour, and once in a while a brand wants them
- * to be genuinely different colours.
+ * constraint, --primary is a UI color, and once in a while a brand wants them
+ * to be genuinely different colors.
  *
  * This is NOT the two-value model removed below. That one had --primary sitting
  * a few percent off the middle for no reason a consumer could see — a
@@ -61,16 +61,16 @@
  * in one sentence? If not, it is drift, and the brand should just use its
  * middle stop.
  *
- * ONE COLOUR, ONE LABEL. This is the change that shaped the file.
+ * ONE COLOR, ONE LABEL. This is the change that shaped the file.
  *
  * The middle anchor USED to be "main", with --primary a second, slightly darker
- * value derived from it — because a mark's mid stop is a display colour and did
- * not clear AA under a label. Two colours a few percent apart is a smell, so it
+ * value derived from it — because a mark's mid stop is a display color and did
+ * not clear AA under a label. Two colors a few percent apart is a smell, so it
  * is gone: --primary IS the middle anchor.
  *
  * An intermediate pass paid for the contrast on the label side instead, giving
  * six brands a DARK --primary-foreground and db a light one. It measured fine and
- * it was a worse system: the CTA's label flipped colour depending on which
+ * it was a worse system: the CTA's label flipped color depending on which
  * sub-app you were in, for reasons no consumer could see.
  *
  * So the marks moved instead. Each light middle came down its own hue — chroma
@@ -104,15 +104,15 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * SURFACES COME FROM DEEP, AND THEY MOVE ONLY SLIGHTLY. An earlier pass built the
  * light surfaces from the HIGHLIGHT anchor, on the reasoning that a light surface
- * wants a light source colour. It measured well and looked wrong: a highlight is
- * the brightest, most saturated colour the brand owns, so a panel built from it
+ * wants a light source color. It measured well and looked wrong: a highlight is
+ * the brightest, most saturated color the brand owns, so a panel built from it
  * announces itself. Sub-apps are supposed to feel like one suite — the surface
  * should COMPLEMENT the accent, not compete with it.
  *
  * So the tint source is the deep anchor, desaturated toward slate first (the
  * --surface-tint stock) and then applied at single digits. The target is a
  * surface that shifts ~4-8 dE00 off the neutral: you can see it when a brand
- * sits next to another brand, and you never read it as "a coloured page". Deep
+ * sits next to another brand, and you never read it as "a colored page". Deep
  * also has the property that makes this cheap — it is high-chroma, so a few
  * percent buys real hue, and the luminance cost stays small.
  *
@@ -184,7 +184,7 @@ export const BRAND_ANCHORS = {
   aiden: { light: ['#0060ba', '#6745ff', '#9544ff'], dark: ['#8dc4fc', '#698cfa', '#7725f0'], on: { light: '#ffffff', dark: '#0f172a' }, primary: { light: '#5a56d3', dark: '#8b82f6' }, icon: 'sparkles' },
 } as const;
 
-/** --primary IS the middle anchor. No derivation, no second colour. */
+/** --primary IS the middle anchor. No derivation, no second color. */
 export const PRIMARY_LIGHT: Record<string, string> = Object.fromEntries(
   Object.entries(BRAND_ANCHORS).map(([k, v]) => [k, ('primary' in v ? v.primary.light : v.light[1])]),
 );
@@ -202,11 +202,11 @@ export const BRAND_KEYS = Object.keys(BRAND_ANCHORS) as BrandKey[];
 export const SUB_BRANDS = BRAND_KEYS.filter((k) => k !== 'aiden');
 
 /**
- * PARKED — flip to true to re-enable per-brand chart colour.
+ * PARKED — flip to true to re-enable per-brand chart color.
  *
  * Charts are deliberately NEUTRAL SLATE while they are being built: a chart that
  * reads in grey is working on form, hierarchy, motion and interaction rather
- * than leaning on hue, and colour can flatter a weak chart. The palettes below
+ * than leaning on hue, and color can flatter a weak chart. The palettes below
  * are searched, validated and ready — they drop in as a one-line change once
  * the charts themselves are right. Nothing about them is provisional except the
  * hues, which the owner has already called out as needing a second pass with an
@@ -218,7 +218,7 @@ const CHART_THEMING = false;
  * Per-brand CHART palettes — six slots, slot 1 carrying the brand's own hue.
  *
  * This is the surface theming previously did not reach: with a fixed series
- * ramp, a db dashboard and a dc dashboard drew identical colours.
+ * ramp, a db dashboard and a dc dashboard drew identical colors.
  *
  * SEARCHED, NOT DERIVED — and that is not a shortcut, it is the finding. Three
  * constructions were measured first:
@@ -228,7 +228,7 @@ const CHART_THEMING = false;
  *   - a rotation rule fails far worse. Spreading hue in OKLCH at CONSTANT
  *     lightness scores CVD dE 0.5 against a floor of 8: protan and deutan
  *     collapse the hue axis and leave only lightness, so an even hue wheel is
- *     the LEAST colour-blind-safe palette obtainable. It looks correct and is
+ *     the LEAST color-blind-safe palette obtainable. It looks correct and is
  *     the trap to avoid.
  *   - a per-brand search works. These are its frozen output.
  *
@@ -237,7 +237,7 @@ const CHART_THEMING = false;
  * --info, dc teal 3.9 from --success — and every step dark enough to clear 3:1
  * on white is a step that collides. That collision already exists in every
  * button and badge those brands render; charts do not create it, and enforcing
- * the rule only here would mean ph's chart cannot lead with ph's colour, which
+ * the rule only here would mean ph's chart cannot lead with ph's color, which
  * is the whole feature. Slots 2-6 keep the full floor because those ARE
  * arbitrary series and must not impersonate a status.
  *
@@ -350,7 +350,7 @@ ${anchorBlocks()}
 
   /* SLIGHT, ON PURPOSE. Each surface lands 4-8 dE00 off its neutral base — the
      range where a brand is legible against another brand but never legible as
-     "a coloured panel". Percentages differ per token only because the bases do:
+     "a colored panel". Percentages differ per token only because the bases do:
      --accent is the near-white row-hover surface and can take the most; --muted
      is the darkest and carries the system's tightest muted-text pairing, so it
      takes the least. Worst muted-foreground reading across all seven brands:
@@ -519,10 +519,10 @@ ${anchorBlocks()}
 
    Violet holds across modes (308/308). The BLUE END DOES NOT: 282 in light
    against 271 in dark, 11 degrees apart, which is past the point where two
-   colours read as one. Dark's blue is a true sky where light's is an indigo-
+   colors read as one. Dark's blue is a true sky where light's is an indigo-
    leaning azure. Owner's call, taken with eyes open — dark needs the extra
    lightness to carry ink and the hue moved with it. If the two ever need to be
-   the same colour, the fix is light's blue rotating toward 276, not dark's
+   the same color, the fix is light's blue rotating toward 276, not dark's
    toward 282, because dark has no lightness to spare. The shipped
    tokens.scss pair does NOT do this (its dark runs violet to blue, the reverse
    of its light), which is worth fixing at adoption. */
@@ -576,11 +576,11 @@ ${anchorBlocks()}
    the first cut of the split left var(--primary) in this block and the aiden
    mark silently turned indigo while every measurement still passed. */
 [data-theme-poc] {
-  /* The scope declares its own text colour. Without this the subtree INHERITS
-     whatever colour the surrounding page had — and since a POC scope carries its
+  /* The scope declares its own text color. Without this the subtree INHERITS
+     whatever color the surrounding page had — and since a POC scope carries its
      own data-mode, a dark demo sitting on a light Storybook page inherited light
      text and rendered #0f172a on a near-black shell. Only elements that set a
-     colour of their own (the components) looked right, which is exactly the kind
+     color of their own (the components) looked right, which is exactly the kind
      of half-correct that survives a screenshot. */
   color: var(--foreground);
 
@@ -600,7 +600,7 @@ ${anchorBlocks()}
     var(--primary-deep) 100%);
   /* Shadows carry the DEEP anchor, GREYED. A grey shadow under a saturated
      object reads as dirt, so the brand's own dark end is still in there — but
-     the raw deep put a visibly coloured wash under every card. Pre-mixing into
+     the raw deep put a visibly colored wash under every card. Pre-mixing into
      slate-700 keeps the direction and drops the saturation: chroma across the
      seven falls 25-107 to 5-38. Aiden is the one that stays high, because its
      deep starts at chroma 107 — four times anything else in the set.
@@ -617,7 +617,7 @@ ${anchorBlocks()}
   /* THE BUBBLE FIELD — where the highlight earns its own token. Two soft radial
      washes, highlight in one corner and primary in the other, over whatever
      surface is underneath. Nothing is read ON a bubble (they sit behind a
-     centred column), so the highlight is free here in a way it never is on a
+     centered column), so the highlight is free here in a way it never is on a
      panel: this is the one place the brand gets to be as bright as the mark.
      Alpha is what keeps it safe — the wash is 22%/16% of the anchor, so it
      tints the page rather than replacing it, and the same declaration works on
@@ -636,7 +636,7 @@ ${anchorBlocks()}
    whether anything is read on top of it; if something is, it is the wrong
    token and --primary (or --primary-text) is the right one. */
 /* ── THE SUITE RAMP ─────────────────────────────────────────────────────────
-   The parent brand is not a colour, it is the SET. These two are the only
+   The parent brand is not a color, it is the SET. These two are the only
    things in the file that use every brand at once, and they belong on the
    suite's own page — never inside a sub-app, where the point is that one brand
    is in charge.
@@ -720,15 +720,15 @@ ${anchorBlocks()}
 /* ── THE MARK, LAYER FOR LAYER ──────────────────────────────────────────────
    Read straight off the Figma component (128x128, radius 28.8 = 22.5%). The
    earlier version had the brand ramp and a flat white wash and stopped there,
-   which is why it read as a coloured tile rather than as glass: it was missing
+   which is why it read as a colored tile rather than as glass: it was missing
    four of the six layers. Bottom to top the real mark is
 
      1  brand ramp        linear, 3 stops
-     2  radial highlight  a soft white lift above centre
+     2  radial highlight  a soft white lift above center
      3  bloom             a pale blue glow hanging off the top-left corner
      4  sheen             a white band down the top half
      5  sparkle           a small blurred dot, upper left
-     6  icon              centred at 46%
+     6  icon              centered at 46%
 
    plus one drop shadow and three inner shadows. Three further drop shadows
    exist in the component and are switched OFF — they are not reproduced here.
@@ -755,7 +755,7 @@ ${anchorBlocks()}
   color: #ffffff;
   background-image:
     /* 3 · bloom — Figma has this as a 129px ellipse hung at (-39,-37); as a
-       background layer that is a 25%-radius glow centred at 20%/22%. */
+       background layer that is a 25%-radius glow centered at 20%/22%. */
     radial-gradient(25% 25% at 20% 22%,
       color-mix(in srgb, #bfe0ff 23%, transparent) 0%,
       color-mix(in srgb, #bfe0ff 9%, transparent) 50%,
@@ -831,7 +831,7 @@ ${anchorBlocks()}
    Both run long and share no common factor, so the pair never lines up and the
    composite has no visible loop.
 
-   The SPARKLE keeps Figma's position and size and gets a specular's behaviour:
+   The SPARKLE keeps Figma's position and size and gets a specular's behavior:
    it swells and dims IN PHASE with the sheen, and slides across the tile when
    the tile tilts on hover. Two earlier passes made it louder than that — a
    pulse, then three four-point stars — and both times it stopped being a
@@ -1066,7 +1066,7 @@ ${anchorBlocks()}
 
    Opt-in via .poc-mark--tilt, and DRIVEN ENTIRELY BY TWO NUMBERS. A tiny
    pointer handler writes --mx and --my (both -1 to 1, origin at the tile's
-   centre) and --on (0 at rest, 1 while tracking); every rule below is a calc
+   center) and --on (0 at rest, 1 while tracking); every rule below is a calc
    off those three. No per-frame style writing beyond the variables, no layout
    reads in the loop, and the whole thing falls back to nothing if the handler
    never runs.
@@ -1196,7 +1196,7 @@ ${anchorBlocks()}
 /* The card carries NO brand fill. It used to take a 4% highlight sheen down its
    top edge; that is a surface people read on, so under the deep-only rule it
    goes. Depth comes from the shadows instead — which are the deep anchor, so the
-   card is still lit by the brand without being coloured by it. */
+   card is still lit by the brand without being colored by it. */
 [data-theme-poc] .ui-card {
   box-shadow:
     0 1px 1px var(--poc-shadow-amb),

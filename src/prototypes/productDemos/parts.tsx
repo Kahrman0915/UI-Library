@@ -66,7 +66,7 @@ export function Window({ width, height, addresses, children }: { width: number; 
 
 export type SkeletonRow = { width: number; hue: Hue; active?: Track; muted?: Track; activeAtStart?: boolean };
 
-/** The abstract sidebar used by the three feature demos: skeleton labels, coloured space dots, a sliding highlight. */
+/** The abstract sidebar used by the three feature demos: skeleton labels, colored space dots, a sliding highlight. */
 export function SkeletonSidebar({ rows, highlightY, highlight }: { rows: SkeletonRow[]; highlightY: number; highlight?: Tracks }) {
   return (
     <Box x={0} y={44} w={220} h={496} className="pd-sidebar">

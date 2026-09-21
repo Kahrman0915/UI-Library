@@ -43,7 +43,7 @@ const meta: Meta<typeof Attachment> = {
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {

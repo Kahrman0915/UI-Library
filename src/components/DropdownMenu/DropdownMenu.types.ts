@@ -12,7 +12,7 @@ export type DropdownMenuAlign = 'start' | 'center' | 'end';
  * `aria-activedescendant`). No typeahead, and Tab does not close the menu.
  *
  * `Menubar` reuses this whole family — its content parts are these components
- * re-exported, so positioning and item behaviour come along for free.
+ * re-exported, so positioning and item behavior come along for free.
  */
 export type DropdownMenuProps = {
   /** Required. Seeds `{id}-trigger` / `{id}-content` for the aria wiring. */
@@ -50,7 +50,7 @@ export type DropdownMenuContentProps = Omit<
 };
 
 /** A menu action. Selecting it runs `onClick` and **closes the menu**. */
-/** `destructive` paints the item in the error colour, for actions that remove or delete. */
+/** `destructive` paints the item in the error color, for actions that remove or delete. */
 export type DropdownMenuItemVariant = 'default' | 'destructive';
 
 export type DropdownMenuItemProps = Omit<

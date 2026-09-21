@@ -54,7 +54,7 @@
     //
     // An Alert is an interruption, not part of the page's voice. Inside a
     // themed subtree its action was picking up that brand's --primary, so the
-    // same warning wore a different colour in every product — and on a themed
+    // same warning wore a different color in every product — and on a themed
     // page the button competed with the real CTA instead of reading as the
     // alert's own control.
     //
@@ -62,7 +62,7 @@
     // no [data-theme] scope remaps. Rebuilding ALL of it is the point: a theme
     // scope re-declares every derived token, not just --primary, so overriding
     // --primary alone would leave -soft/-border/-text still themed and produce
-    // a slate fill with a brand-coloured border. Same shape as the theme scopes
+    // a slate fill with a brand-colored border. Same shape as the theme scopes
     // in tokens.scss, sourced from main instead of a brand.
     //
     // SCOPED TO THE ACTION SLOT, NOT `.ui-alert`. The `brand` variant reads

@@ -1,8 +1,8 @@
 # Table — Figma component page (design spec)
 
 **Date:** 2026-08-26
-**Status:** approved by owner, not yet built
-**Scope:** Figma only. There is no `src/components/Table/` and none is planned in this pass.
+**Status:** approved by owner · Figma page built 2026-08-26 · **CODE SHIPPED 2026-09-20**
+**Scope (as written):** Figma only. **Superseded 2026-09-20** — `src/components/Table/` now exists and was built from this spec. The one question §5 left open (`selected + hover`) was answered `--primary-soft`. Everything else below shipped as specified; the density table, the colour table and the §6 a11y contract are the code's contract too.
 
 ---
 

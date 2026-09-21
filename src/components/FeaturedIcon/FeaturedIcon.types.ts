@@ -5,24 +5,24 @@ export type FeaturedIconSize = 'sm' | 'default' | 'lg';
 export type FeaturedIconShape = 'square' | 'circle';
 
 /**
- * The colour axis — the tile's tint, its border and the glyph's ink move
+ * The color axis — the tile's tint, its border and the glyph's ink move
  * together as one palette.
  *
  * `default` **is the active theme's primary** — there is no separate `brand`,
  * the same model {@link BadgeColor} uses. On the main brand `--primary` is
  * neutral slate, so an unthemed tile reads as chrome; inside a `data-theme` it
- * takes the brand. The four semantic colours keep their own hue under every
+ * takes the brand. The four semantic colors keep their own hue under every
  * theme. The 15 category hues are the tag palette, for tiles that need to be
  * told **apart** rather than **ranked** — a request-type chooser, a topic
  * grid, a category list.
  *
- * Reach for a semantic colour when the tile means something (a red tile on a
+ * Reach for a semantic color when the tile means something (a red tile on a
  * destructive confirm), and a category hue when it only has to be distinct.
  * Note the two do not mix well side by side: a `warning` tile beside an
  * `amber` one asks the reader to tell a meaning from a label.
  *
- * Crossed with {@link FeaturedIconAppearance}: the colour sets a palette, the
- * appearance picks which half of it renders, so every colour works with every
+ * Crossed with {@link FeaturedIconAppearance}: the color sets a palette, the
+ * appearance picks which half of it renders, so every color works with every
  * appearance.
  */
 export type FeaturedIconColor =
@@ -34,7 +34,7 @@ export type FeaturedIconColor =
   | CategoryColor;
 
 /**
- * The fill axis, independent of colour.
+ * The fill axis, independent of color.
  *
  * - `soft` (default) — the tint surface, its on-tint ink and a soft ring. The
  *   quiet tile that sits inside a card or an empty state without competing

@@ -5,7 +5,10 @@
 // and lets those layers escape and stretch to the nearest positioned ancestor.
 .ui-fab {
   position: fixed;
-  z-index: var(--z-80);
+  // --z-40, below every overlay (Drawer, Dialog, menus at 50; Toast at 80): a surface
+  // that opens over the page covers the launcher rather than wearing it on top
+  // (owner, 2026-09-19). Was --z-80, which floated it over drawers and FullScreenDialog.
+  z-index: var(--z-40);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -58,39 +61,68 @@
   }
 
   // ── sizes ──────────────────────────────────────────────────────────────────
+  // The glyph is half the button (2026-09-19, owner: "a little bigger" — it was 20 in 48,
+  // which read small for the one control that stands on its own over the page).
   &--sz-lg {
     width: var(--w-14);
     height: var(--h-14);
     .ui-fab__icon svg {
-      width: var(--w-6);
-      height: var(--h-6);
+      width: var(--w-7);
+      height: var(--h-7);
     }
   }
   &--sz-default {
     width: var(--w-12);
     height: var(--h-12);
     .ui-fab__icon svg {
-      width: var(--w-5);
-      height: var(--h-5);
+      width: var(--w-6);
+      height: var(--h-6);
     }
   }
 
+  // ── intro: the sparkles twinkle once on mount ──────────────────────────────
+  // Each direct child of the icon's <svg> (one per star) shrinks, pops just past full size
+  // with a small twist, and settles — staggered by a sixth of a beat so they chase each
+  // other, three beats in all. `both` holds the rest pose through the delay and after the
+  // last beat, so nothing jumps. `transform-box: fill-box` spins each star on its own
+  // center, not the svg's. The global reduced-motion block collapses the duration, so the
+  // stars simply rest.
+  &--intro .ui-fab__icon svg > * {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: ui-fab-twinkle var(--duration-twinkle) var(--ease-in-out) 3 both;
+  }
+
+  &--intro .ui-fab__icon svg > :nth-child(2) {
+    animation-delay: calc(var(--duration-twinkle) / 6);
+  }
+
+  &--intro .ui-fab__icon svg > :nth-child(3) {
+    animation-delay: calc(var(--duration-twinkle) / 3);
+  }
+
   // ── corners ──────────────────────────────────────────────────────────────
+  // `--ui-fab-inset-x` is the distance from the side edge the FAB is pinned to (default
+  // --p-6). A page with a side panel open on that side sets it to the panel's width plus
+  // --p-6, so the FAB sits beside the panel instead of on it — the Builder's side panel,
+  // for example: `calc(var(--p-6) + var(--aiden-panel-width))`. Set it on an ancestor of
+  // both the FAB and the Toaster (the AppShell root, or <html>) so a toast in the same
+  // corner follows. Owner, 2026-09-19.
   &--pos-bottom-right {
     bottom: var(--p-6);
-    right: var(--p-6);
+    right: var(--ui-fab-inset-x, var(--p-6));
   }
   &--pos-bottom-left {
     bottom: var(--p-6);
-    left: var(--p-6);
+    left: var(--ui-fab-inset-x, var(--p-6));
   }
   &--pos-top-right {
     top: var(--p-6);
-    right: var(--p-6);
+    right: var(--ui-fab-inset-x, var(--p-6));
   }
   &--pos-top-left {
     top: var(--p-6);
-    left: var(--p-6);
+    left: var(--ui-fab-inset-x, var(--p-6));
   }
 
   &__icon {
@@ -186,4 +218,42 @@
   .ui-fab__ring {
     display: none;
   }
+}
+
+// Literal values, never var(): a var() in a keyframe for the animated property parks the
+// value without interpolating (see the Drawer note in CLAUDE.md). Rest pose at both ends,
+// so any number of iterations ends exactly where it started.
+@keyframes ui-fab-twinkle {
+  0%,
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: scale(0.55) rotate(-12deg);
+    opacity: 0.6;
+  }
+  62% {
+    transform: scale(1.18) rotate(8deg);
+    opacity: 1;
+  }
+}
+
+// A toast in the Fab's corner stacks above it instead of under it: the Toaster's bottom
+// moves up by the Fab's inset + height, and its padding (--p-4) supplies the gap, so the
+// toast's right edge lands on the Fab's — including when --ui-fab-inset-x moves the Fab. Lives here because it only matters where a Fab is
+// mounted. Owner, 2026-09-19.
+:root:has(.ui-fab--pos-bottom-right) .ui-toaster--bottom-right {
+  bottom: calc(var(--p-6) + var(--h-12));
+  right: calc(var(--ui-fab-inset-x, var(--p-6)) - var(--p-4));
+}
+:root:has(.ui-fab--pos-bottom-right.ui-fab--sz-lg) .ui-toaster--bottom-right {
+  bottom: calc(var(--p-6) + var(--h-14));
+}
+:root:has(.ui-fab--pos-bottom-left) .ui-toaster--bottom-left {
+  bottom: calc(var(--p-6) + var(--h-12));
+  left: calc(var(--ui-fab-inset-x, var(--p-6)) - var(--p-4));
+}
+:root:has(.ui-fab--pos-bottom-left.ui-fab--sz-lg) .ui-toaster--bottom-left {
+  bottom: calc(var(--p-6) + var(--h-14));
 }

@@ -8,7 +8,7 @@ const meta: Meta = {
     layout: 'fullscreen',
     ui: {
       description:
-        'Two layers: primitives (the raw scales — spacing, radii, type) and semantic colours built on top of them. Everything a component renders resolves through these, which is why a theme or a mode can be swapped at runtime without touching a component.',
+        'Two layers: primitives (the raw scales — spacing, radii, type) and semantic colors built on top of them. Everything a component renders resolves through these, which is why a theme or a mode can be swapped at runtime without touching a component.',
     } satisfies UiDocsParameters,
   },
 };
@@ -159,12 +159,12 @@ export const Tokens: Story = {
   render: () => (
     <>
       <p style={{ maxWidth: 'var(--max-w-3xl)', lineHeight: 'var(--leading-6)', color: 'var(--muted-foreground)', fontSize: 'var(--text-sm)' }}>
-        Semantic colours move on <strong>three independent runtime axes</strong>:{' '}
-        <strong>Mode</strong> (<code>data-mode</code> light/dark, flips every colour),{' '}
+        Semantic colors move on <strong>three independent runtime axes</strong>:{' '}
+        <strong>Mode</strong> (<code>data-mode</code> light/dark, flips every color),{' '}
         <strong>Theme</strong> (<code>data-theme="{'{code}'}"</code>, remaps only <code>--primary</code> and
         its family), and <strong>Surface</strong> (<code>data-surface="aiden"</code>, the AI surface — see
         Foundations → Themes → <em>Aiden Surface</em>). Toggle the <em>Mode</em> and <em>Theme</em> toolbar
-        controls to watch everything below re-resolve. Colours follow the{' '}
+        controls to watch everything below re-resolve. Colors follow the{' '}
         <code>surface / surface-foreground</code> convention — a base token sets the surface, the{' '}
         <code>-foreground</code> token sets text and icons on it.
       </p>
@@ -211,7 +211,7 @@ export const Tokens: Story = {
       <Group
         title="Primary — the themed accent (follows data-theme)"
         tokens={[
-          ['primary', 'The theme colour: solid CTA fill, checked controls, active states. Slate on the main brand; a sub-brand hue under data-theme.'],
+          ['primary', 'The theme color: solid CTA fill, checked controls, active states. Slate on the main brand; a sub-brand hue under data-theme.'],
           ['primary-foreground', 'Text/icons on the solid --primary fill.'],
           ['primary-text', 'The "on-surface" primary — use when --primary is TEXT on a light surface (outline/link/secondary button text, Badge outline, brand Alert/Banner titles). color-mix nudged toward --foreground so mid-luminance themes clear AA as text. Solid FILLS keep raw --primary.'],
           ['primary-light', '6% tint — subtle themed surfaces.'],
@@ -232,7 +232,7 @@ export const Tokens: Story = {
       />
 
       <section style={{ marginBottom: 28 }}>
-        <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600 }}>Category colours — 15 hues for tags, charts &amp; data-viz</h3>
+        <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600 }}>Category colors — 15 hues for tags, charts &amp; data-viz</h3>
         <p style={{ maxWidth: 720, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6, marginBottom: 10 }}>
           A vivid 15-hue palette, separate from the semantic system. Each hue has four members plus one
           global text token. The rule: <strong><code>--category-{'{c}'}</code> is a fill</strong> (charts, dots,
@@ -261,7 +261,7 @@ export const Tokens: Story = {
       <section style={{ marginBottom: 28 }}>
         <h3 style={{ margin: '0 0 6px', fontSize: 15, fontWeight: 600 }}>Also in the system</h3>
         <p style={{ maxWidth: 720, fontSize: 13, color: 'var(--muted-foreground)', lineHeight: 1.6 }}>
-          <strong>Chart</strong> (1–6, a neutral ramp) · <strong>Code-block</strong> syntax colours ·{' '}
+          <strong>Chart</strong> (1–6, a neutral ramp) · <strong>Code-block</strong> syntax colors ·{' '}
           <strong>Tooltip</strong> (inverse slate, never themed) · <strong>Sidebar</strong> (its own chrome
           surface) · <strong>Aiden</strong> (the AI <em>surface</em>, <code>data-surface="aiden"</code> — a
           violet gradient identity that layers inside any brand; see Foundations → Themes →{' '}
@@ -286,7 +286,7 @@ export const Tokens: Story = {
           <li><strong>Pair a surface with its <code>-foreground</code>.</strong> Put <code>--card-foreground</code> on <code>--card</code>, <code>--primary-foreground</code> on <code>--primary</code>, etc.</li>
           <li><strong><code>--muted-foreground</code> is for text on <code>--background</code> / <code>--card</code></strong> (AAA there). On <code>--muted</code> it's only ~5:1 — fine for AA, but prefer <code>--foreground</code> for anything that must be effortless to read.</li>
           <li><strong>Never use <code>--accent</code> as a resting surface.</strong> It means "hovered." Use <code>--muted</code> / <code>--secondary</code> / <code>--card</code> for resting content.</li>
-          <li><strong>Semantic <code>-foreground</code> on the solid base is tuned to AA (~5:1), not AAA</strong> — deliberate, so the hues stay vivid. Use the <code>-light</code> tint + coloured text for higher-contrast informational surfaces (Alerts do this).</li>
+          <li><strong>Semantic <code>-foreground</code> on the solid base is tuned to AA (~5:1), not AAA</strong> — deliberate, so the hues stay vivid. Use the <code>-light</code> tint + colored text for higher-contrast informational surfaces (Alerts do this).</li>
           <li><strong>When <code>--primary</code> is <em>text</em> on a light surface, use <code>--primary-text</code>, not <code>--primary</code>.</strong> Raw <code>--primary</code> is tuned as a fill (with <code>--primary-foreground</code> on top); mid-luminance themes fall just under AA as text on a pale tint. <code>--primary-text</code> fixes that. Outline/link/secondary button text, Badge outline, and brand Alert/Banner titles already use it.</li>
         </ul>
       </section>

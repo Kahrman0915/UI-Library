@@ -56,7 +56,7 @@ type Story = StoryObj<typeof ToggleGroup>;
 
 /**
  * The quiet rungs, for a filter bar. `line` marks the selection with a `--primary`
- * bar; `plain` uses weight and colour alone. Both drop the segmented borders and
+ * bar; `plain` uses weight and color alone. Both drop the segmented borders and
  * sit on a gap, so they read as a row of labels rather than a control.
  *
  * Re-clicking the active item clears it — for a filter that means "no filter", so

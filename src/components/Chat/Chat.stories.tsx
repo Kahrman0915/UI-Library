@@ -2,15 +2,18 @@ import { useMemo, useRef, useState } from 'react';
 import {
   Copy,
   FileText,
+  FolderPlus,
   Paperclip,
   Pencil,
   RefreshCw,
   Sparkles,
   ThumbsUp,
+  Trash2,
   X,
 } from 'lucide-react';
 import type { Meta, StoryObj } from '@storybook/react';
 import ChatMessageAction from './ChatMessageAction';
+import ChatActionCard from './ChatActionCard';
 import ChatComposerMenu from './ChatComposerMenu';
 import ChatArtifact, { ChatArtifactCard } from './ChatArtifact';
 import ChatLayoutAside from './ChatLayoutAside';
@@ -45,6 +48,7 @@ import Chat, {
   ChatToolCall,
   ChatToolCalls,
 } from './Chat';
+import Button from '../Button';
 import { CodeBlock } from '../Code/Code';
 import Attachment, {
   AttachmentAction,
@@ -64,12 +68,42 @@ const meta: Meta<typeof Chat> = {
     ui: {
       description:
         'The Aiden assistant chat family — transcript, composer, tool calls, ' +
-        'reasoning, citations and the full-page shell. Modelled on the Claude ' +
+        'reasoning, citations and the full-page shell. Modeled on the Claude ' +
         'conversation UI: assistant turns are full-width bubble-less prose, user ' +
         'turns are contained bubbles on the trailing edge. Message content is yours ' +
         'to provide; rendered markdown lives in `ChatMarkdown` on the `@ui/lib/markdown` subpath.',
       tags: ['compound', 'aiden', '26 parts'],
       changelog: [
+        {
+          date: '2026-09-20',
+          summary:
+            'New part — `ChatActionCard`: an action the assistant wants to take, and then the record that it took it.',
+          detail:
+            '**The gap it closes:** Aiden was narrating changes it had already made — *"Opening the Builder with Collections Performance already on the canvas"* — with no confirm before, no record after, and no way back. An assistant that can create a space, add a dashboard or share something needs `proposed → running → done | failed`, with an undo on the receipt.\n\n' +
+            '**It is deliberately not `ChatToolCall`.** A tool call is a disclosure: collapsible, the tool name in mono, args and result for anyone curious, and entirely ignorable. This is a decision — so it is **never collapsible and carries no dismiss**, because both would let a decision be waved away without being made, and afterwards a receipt you can hide is a receipt you cannot audit. Reach for the tool call to show HOW something ran; reach for this to ask WHETHER it should.\n\n' +
+            '**The buttons are yours** (`primaryAction` / `secondaryAction`, the shape `Announcement` already uses), because only the caller knows whether the confirm is destructive. The house rule is unchanged: a destructive confirm is `variant="error"` and its companion is `style="ghost"`, never `outline`.\n\n' +
+            'Only `proposed` shows the action\'s own `icon`; the other three states replace it with a spinner, a check or an alert, because at that point the state is the thing you need to read. **The status line carries `aria-live`, not the card** — moving `role` from `group` to `status` on the root would re-announce the whole card and is not reliably spoken when a role changes in place. `done` stays visually neutral (a receipt should be legible, not loud); only `failed` tints its surface.',
+        },
+        {
+          date: '2026-09-20',
+          summary:
+            'Guidance, no API change: an answer that names things the user will open should render them as `Item` rows, not describe them in prose.',
+          detail:
+            '`ChatMessage` takes arbitrary children, so a result list needs no new component — `Item` already carries Title, Description, Media and Actions, and `ItemDescription` clamps with an ellipsis. The Aiden surfaces now answer "which dashboards cover collections?" with three real rows instead of naming them in a sentence.\n\n' +
+            '**Two things to get right when you do this.** The group needs `align-self: stretch` — the assistant body is `align-items: flex-start` (full-width prose, not a bubble), so a block child hugs its content and the rows come out ragged. And **keep the row a plain `<div>`**: `Item` renders an `<a>` with `href` and a `<button>` with `onClick`, either of which would nest your row action inside an interactive element, which browsers silently un-nest. Put the link on the title and leave the action a real button — two valid targets, same as `TabBar`\'s close button.\n\n' +
+            '**Size the list to the surface, not the app.** Three rows with two-line descriptions are 210px of a ~380px popover body and will push the composer off the bottom; dropping the descriptions there makes them 48px instead of 70. The smallest surface says what it found, not why.',
+        },
+        {
+          date: '2026-09-20',
+          summary:
+            'An assistant `avatar` now sits at the TOP of the turn it introduces instead of beside its last line.',
+          detail:
+            '`.ui-chat-message` is `align-items: flex-end`, which is right for a user bubble — the avatar reads as attached to the final line the way a tail would. An assistant answer is full-width prose that can run many lines, so the same rule sank an identity mark to the bottom of a long reply, far from the turn it belongs to. `.ui-chat-message--assistant .ui-chat-message__avatar` now takes `align-self: flex-start`.\n\n' +
+            '**No other alignment moved** — the user avatar still sits flush with the last line, and both bodies keep their own rules. Nothing renders differently unless you pass `avatar`, which most consumers do not: the Claude-style restyle deliberately dropped per-message avatars and kept the slot for callers who want one. **The Aiden surfaces are the first such caller** — popover, panel and full screen all show Aiden\'s filled-sparkles glyph (24px, the same art the `Fab` carries) on its turns, so an answer is attributable wherever it is read.\n\n' +
+            'The glyph is filled with Aiden\'s own gradient. Two things make that work on a multi-path icon: the SVG gradient uses `gradientUnits="userSpaceOnUse"` across the whole `24 24` viewBox, so the three stars share ONE ramp — the default scales the gradient to each path\'s own box and you get three tiny rainbows instead of one object — and the fill is **opt-in**, because the same glyph rides the `Fab`, where it sits ON the gradient and has to stay `--primary-foreground`.\n\n' +
+            'A `Mark` tile was tried first and read as too heavy beside body copy — an assistant\'s turn wants a glyph, not a product tile.\n\n' +
+            '**Guidance for `ChatComposerSend`, unchanged API:** step `size` up to `default` on a wide composer. At the `sm` default the button is 30px, which is **3.9% of a 768px full-screen composer** and sits behind ~600px of empty toolbar — it stops registering as the primary action, to the point of reading as absent. In a 388px panel the same button is 7.7% and sits beside the other tools, so `sm` is right there. Size the send to the composer, not to the app.',
+        },
         {
           date: '2026-09-11',
           summary:
@@ -88,13 +122,13 @@ const meta: Meta<typeof Chat> = {
         {
           date: '2026-09-02',
           summary:
-            'A failed tool call’s status colour is a touch lighter in dark mode.',
+            'A failed tool call’s status color is a touch lighter in dark mode.',
           detail:
             'Dark `--error` moved `#f87171` to `#fa8585`, with `-light`, `-soft`, `-border`, `-ring` and ' +
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
@@ -207,7 +241,7 @@ export const Pending: Story = {
       <Chat style={{ flex: 1 }}>
         <ChatMessageList>
           <ChatMessage from="user">
-            <ChatBubble>Summarise the last quarter for me.</ChatBubble>
+            <ChatBubble>Summarize the last quarter for me.</ChatBubble>
           </ChatMessage>
           <ChatMessage from="assistant">
             <ChatBubble pending />
@@ -936,4 +970,67 @@ export const Greeting: StoryObj = {
         </ChatMessageList>
       </Chat>,
     ),
+};
+
+
+/**
+ * `ChatActionCard` — an action the assistant wants to take, and then the record
+ * that it took it.
+ *
+ * **This is not `ChatToolCall`.** A tool call is a disclosure: collapsible, the
+ * tool name in mono, args and result for anyone curious, and entirely
+ * ignorable. This is a decision — it asks before the product changes and leaves
+ * a receipt afterwards, so it is never collapsed and never dismissible.
+ *
+ * The buttons are yours, because only you know whether the confirm is
+ * destructive. The house rule holds: a destructive confirm is `variant="error"`
+ * and its companion is `style="ghost"`, never `outline`.
+ */
+export const ActionCard: StoryObj = {
+  render: () => (
+    <div style={{ width: 520, display: 'grid', gap: 'var(--p-4)' }}>
+      <ChatActionCard
+        id="act-proposed"
+        icon={<FolderPlus aria-hidden="true" />}
+        title="Add Collections Performance to a new space"
+        description="Creates “Collections” and opens the Builder with it on the canvas."
+        secondaryAction={<Button id="act-proposed-cancel" style="ghost" size="sm" label="Not now" />}
+        primaryAction={<Button id="act-proposed-ok" size="sm" label="Confirm" />}
+      />
+
+      <ChatActionCard
+        id="act-running"
+        status="running"
+        title="Adding Collections Performance to a new space"
+        description="Creates “Collections” and opens the Builder with it on the canvas."
+      />
+
+      <ChatActionCard
+        id="act-done"
+        status="done"
+        title="Added Collections Performance to a new space"
+        description="Creates “Collections” and opens the Builder with it on the canvas."
+        primaryAction={<Button id="act-done-undo" style="ghost" size="sm" label="Undo" />}
+      />
+
+      <ChatActionCard
+        id="act-failed"
+        status="failed"
+        title="Couldn’t add Collections Performance"
+        description="The space “Collections” already exists."
+        primaryAction={<Button id="act-failed-retry" style="ghost" size="sm" label="Retry" />}
+      />
+
+      {/* A destructive confirm keeps its own variant — the card never decides
+          that for you. */}
+      <ChatActionCard
+        id="act-destructive"
+        icon={<Trash2 aria-hidden="true" />}
+        title="Delete the “Q3 review” space"
+        description="Removes the space and its 12 dashboards. This cannot be undone."
+        secondaryAction={<Button id="act-destructive-cancel" style="ghost" size="sm" label="Keep it" />}
+        primaryAction={<Button id="act-destructive-ok" variant="error" size="sm" label="Delete" />}
+      />
+    </div>
+  ),
 };

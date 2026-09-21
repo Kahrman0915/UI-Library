@@ -1,12 +1,12 @@
 import type { CategoryColor } from '../../types/GlobalTypes';
 
 /**
- * The colour axis. Each value sets a local palette — solid pair, tint pair and
- * outline pair — which the `appearance` axis then consumes, so **every colour
+ * The color axis. Each value sets a local palette — solid pair, tint pair and
+ * outline pair — which the `appearance` axis then consumes, so **every color
  * works with every appearance**.
  *
  * `default` follows the active `data-theme` (and adopts Aiden's palette under
- * `data-surface="aiden"`); the semantic colours keep their own hue under every
+ * `data-surface="aiden"`); the semantic colors keep their own hue under every
  * theme. The 15 category hues are the tag palette, for topics that need to be
  * told apart rather than ranked.
  */
@@ -20,12 +20,12 @@ export type BadgeColor =
   | CategoryColor;
 
 /**
- * The fill axis, independent of colour.
+ * The fill axis, independent of color.
  *
  * - `solid` — the vivid fill with its on-fill ink.
  * - `soft` — the tint surface with on-tint ink. Reach for this beside another
  *   soft badge: both are a tint plus ink and no border, so they read as siblings.
- * - `outline` — transparent with a coloured border and text.
+ * - `outline` — transparent with a colored border and text.
  */
 export type BadgeAppearance = 'solid' | 'soft' | 'outline';
 
@@ -41,7 +41,7 @@ export type BadgeProps = React.HTMLAttributes<HTMLDivElement> & {
   IconLeft?: React.FC;
   /** Icon after the label. Must be a zero-prop component. */
   IconRight?: React.FC;
-  /** Renders alone and centred, for a badge with no text. */
+  /** Renders alone and centered, for a badge with no text. */
   IconCenter?: React.FC;
   className?: string;
 };

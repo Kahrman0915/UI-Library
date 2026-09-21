@@ -1,8 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { Bell, Box, FileText, Flame, Grid2x2, Layers, LayoutGrid, Settings } from 'lucide-react';
+import { Bell, Box, FileText, Flame, LayoutDashboard, Layers } from 'lucide-react';
 import AppRail, { AppRailItem } from './AppRail';
 import { SidebarProvider, SidebarTrigger } from '../Sidebar';
-import Avatar from '../Avatar';
 import Button from '../Button';
 import ModeToggler from '../ModeToggler';
 import type { UiDocsParameters } from '../../types/DocsTypes';
@@ -22,10 +21,32 @@ const meta: Meta<typeof AppRail> = {
       tags: ['chrome', 'navigation', 'shell'],
       usage: {
         when: ['One per application, on the inline-start edge, inside `AppShell`. One item per sub-application; `active` on the one the user is in.'],
-        avoid: ['Using it for navigation *within* an application — that is `Sidebar`. The rail moves between applications.', 'Drawing brand colour on the items. The destination paints its own colour once you are in it.'],
+        avoid: ['Using it for navigation *within* an application — that is `Sidebar`. The rail moves between applications.', 'Drawing brand color on the items. The destination paints its own color once you are in it.'],
         notes: '`href` renders an `<a>`; omit it for a `<button>` when a router does the switch. `count` shows as a corner dot (the number is announced, not printed) — a visible number belongs in the sidebar row\'s `SidebarMenuBadge`.',
       },
       changelog: [
+        {
+          date: '2026-09-19',
+          summary: 'The story footer drops Settings and the avatar: settings live in the account menu at the top of the app shell, and the account itself sits there too.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'Footer controls rest in the muted rail color like the rest of the rail, and the mode toggle now sits above Settings in the stories.',
+          detail:
+            'Direct `.ui-mode-toggler` and `.ui-button--icon-only` children of `.ui-app-rail__footer` take `--sidebar-muted-foreground`, and on hover the 35% accent tile with `--sidebar-accent-foreground` — the same treatment the header\'s `SidebarTrigger` has. Direct children only.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'The selected application is marked with a bar on the rail\'s edge instead of a filled tile, and hovering an application shows its icon in that app\'s color.',
+          detail:
+            'Active: no fill; a full-height `--border-w-300` (2px, the same weight as the TabBar underline) pill in `--primary` on the rail\'s outer edge (`::before`, pulled out by half the rail/tile difference) plus the glyph in `--primary-text`. Hover (any tile, including the selected one): the 35% accent tile plus the glyph in `--primary-text`. The fill is left to the sidebar, so "which app" (rail) and "where in the app" (sidebar) no longer share a treatment. Both read the item\'s brand scope — give each `AppRailItem` its app\'s `data-theme`.',
+        },
+        {
+          date: '2026-09-18',
+          summary: 'The selected application\'s icon now shows in that application\'s color. Give each item its app\'s `data-theme` to get it.',
+          detail:
+            'The active tile\'s glyph reads `--primary-text` instead of `--sidebar-accent-foreground`, so it follows the brand scope the item stands in. No new prop: `AppRailItem` spreads `...rest` onto the link, so `data-theme="rm"` on the item scopes it. The tile background is unchanged — sidebar tokens are not remapped by a theme. Unscoped items fall back to the main brand\'s slate.',
+        },
         {
           date: '2026-09-15',
           summary: 'A quieter rail: muted icons, a hover that differs from the selected tile, more room between tiles, and the active application toggles the sidebar.',
@@ -52,18 +73,17 @@ export default meta;
 type Story = StoryObj<typeof AppRail>;
 
 const APPS = [
-  { code: 'db', name: 'DART Central', Icon: LayoutGrid, active: true },
+  { code: 'db', name: 'DARTBoards', Icon: LayoutDashboard, active: true },
   { code: 'dc', name: 'IRM', Icon: Box, count: 3 },
   { code: 'ph', name: 'Phoenix', Icon: Flame },
   { code: 'ec', name: 'Eclipse', Icon: Layers },
   { code: 'nb', name: 'NoteGen', Icon: FileText },
-  { code: 'rm', name: 'DARTBoards', Icon: Grid2x2 },
 ];
 
 const Items = () => (
   <>
     {APPS.map(({ code, name, Icon, active, count }) => (
-      <AppRailItem key={code} id={`rail-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
+      <AppRailItem key={code} data-theme={code} id={`rail-${code}`} href={`/${code}`} label={name} Icon={Icon} active={active} count={count} />
     ))}
   </>
 );
@@ -79,8 +99,6 @@ export const Playground: Story = {
           <>
             <Button id="rail-notifications" style="ghost" size="sm" iconOnly IconCenter={() => <Bell size={16} aria-hidden="true" />} aria-label="Notifications" />
             <ModeToggler id="rail-mode" variant="ghost" size="sm" />
-            <Button id="rail-settings" style="ghost" size="sm" iconOnly IconCenter={() => <Settings size={16} aria-hidden="true" />} aria-label="Settings" />
-            <Avatar id="rail-me" fallback="KM" alt="Kahrman McKenzie" size="sm" />
           </>
         }
       >

@@ -3,7 +3,7 @@
 // strip 48 · rail 52 · sidebar 252 → Main Content 1136 at 1440, 1616 at 1920.
 //
 // The strip shares the sidebar palette with the rail and the sidebar, so the three read as
-// one frame around the page; only the open tab paints the page colour (see TabBar).
+// one frame around the page; only the open tab paints the page color (see TabBar).
 
 .ui-app-shell {
   display: flex;
@@ -21,20 +21,51 @@
     flex: none;
     height: var(--app-strip-height);
     background: var(--sidebar);
-    border-bottom: var(--border-w-100) solid var(--sidebar-border);
+    // An inset shadow, not a border: it paints beneath the strip's children, so the open tab
+    // (the page color) covers it and joins the page. See TabBar.scss.
+    box-shadow: inset 0 calc(-1 * var(--border-w-100)) 0 var(--sidebar-border);
   }
 
-  // Hugs the logo mark and the application's wordmark. It used to be exactly the rail's
-  // width so its divider sat over the rail's edge; with a wordmark it cannot, and the owner
-  // accepted the divider landing past the rail.
+  // The account cell (2026-09-19): the DART Central mark, a slash, then the user's name and
+  // a menu — Supabase's lockup (it began the day as Notion's avatar-and-name). It is exactly
+  // as wide as the rail plus the sidebar, so its divider continues the sidebar's edge and the
+  // tabs start over the page they control. The suite mark names DART Central; the rail and
+  // the sidebar name the application (a small name at the top of the sidebar is the
+  // recorded fallback if that proves not enough).
   &__logo {
     display: flex;
     align-items: center;
     justify-content: flex-start;
     gap: var(--p-2);
     flex: none;
-    padding-inline: var(--p-2) var(--p-5);
+    width: calc(var(--app-rail-width) + var(--sidebar-width));
+    min-width: 0;
+    padding-inline: var(--p-2);
     border-inline-end: var(--border-w-100) solid var(--sidebar-border);
+  }
+
+  // The divider between the suite mark and the account name — a muted slash, Supabase's
+  // breadcrumb-like lockup. Decorative (aria-hidden); the two controls either side name
+  // themselves.
+  &__sep {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--sidebar-border);
+  }
+
+  // The account trigger in the cell — a ghost `Button` holding the user's name and a
+  // chevron (2026-09-19: no avatar; the name says it). It fills the cell, reads from the start, and the chevron
+  // sits at the far end, like Notion's workspace switcher. Opt in with
+  // `className="ui-app-shell__account"`. Two classes, to beat `.ui-button`'s centering.
+  &__account.ui-button {
+    flex: 1;
+    min-width: 0;
+    justify-content: flex-start;
+
+    > svg:last-child {
+      margin-inline-start: auto;
+    }
   }
 
   &__tabs {
@@ -93,6 +124,16 @@
       min-height: 0;
       height: 100%;
     }
+  }
+
+  // The same override when the provider wraps the rail as well (the documented composition:
+  // AppShellBody › SidebarProvider › AppRail + AppShellWorkspace), so a rail item can toggle
+  // the sidebar. Without it the body ran 48px past the viewport — measured 948 in a 900 window.
+  &__body > .ui-sidebar-provider {
+    flex: 1;
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
   }
 
   // ── the Main Content region: the scroll container a PageContainer fills ──

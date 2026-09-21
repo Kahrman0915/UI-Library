@@ -39,6 +39,21 @@ const meta: Meta<typeof Fab> = {
       },
       changelog: [
         {
+          date: '2026-09-19',
+          summary: 'The FAB can move aside for a side panel: set one CSS variable and it sits beside the panel instead of on it.',
+          detail: 'New hook `--ui-fab-inset-x` (default `--p-6`): the distance from the side edge the FAB is pinned to, used by all four corners. A page with a side panel open sets it to `calc(var(--p-6) + <panel width>)` — the Builder uses the side panel\'s width. The toast-above-FAB rule reads the same hook, so set it on an ancestor of both the FAB and the Toaster (the AppShell root or `<html>`). New story: Beside a side panel.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'Drawers, dialogs and menus now cover the Fab, and a toast in its corner sits above it instead of under it.',
+          detail: '`z-index` `--z-80` → `--z-40`, below every overlay (Drawer, Dialog and floating menus at 50; Toast at 80). This also fixes the Fab floating over `FullScreenDialog`. Fab.scss adds `:root:has(.ui-fab--pos-bottom-right) .ui-toaster--bottom-right` (and bottom-left, and the `lg` size): the Toaster moves up by the Fab\'s inset + height, so its padding leaves a 16px gap and the toast\'s right edge lands on the Fab\'s.',
+        },
+        {
+          date: '2026-09-19',
+          summary: 'The icon is a size larger (24px default, 28px large), and a new `intro` makes the sparkles twinkle once when the button appears.',
+          detail: '`--sz-default` glyph `--w-5` → `--w-6`, `--sz-lg` `--w-6` → `--w-7` — half the button in both. `intro` adds `.ui-fab--intro`: each child of the icon svg runs `ui-fab-twinkle` (scale 1 → 0.55 → 1.18 → 1 with a small twist) on `--duration-twinkle` (900ms, new token), three times, the 2nd and 3rd shapes a sixth and a third of a beat late. Draw the icon one path per star. Reduced motion collapses it.',
+        },
+        {
           date: '2026-09-02',
           summary:
             'The `error` fill is a touch lighter in dark mode.',
@@ -47,7 +62,7 @@ const meta: Meta<typeof Fab> = {
             '`-focus` re-based on `rgba(250, 133, 133)` so the whole family stays one hue. Error text on ' +
             'a brand-tinted card measured 4.30:1 on `--error-light` and 4.07:1 on `--error-soft` — under ' +
             'WCAG AA — because the tint multiplier lightens `--card` in dark. Thinning the tint could not ' +
-            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text colour was ' +
+            'fix it: with the tint at alpha 0 the ceiling was still only 4.64:1, so the text color was ' +
             'the binding constraint, not the tint. Light mode is unchanged.',
         },
         {
@@ -80,7 +95,7 @@ type Story = StoryObj<typeof Fab>;
 // transform / filter / perspective / contain do. Without this every story's FAB
 // escaped its example card and piled up in the corner of the Storybook iframe,
 // leaving the cards looking empty. `contain: layout` is the cheapest opt-in.
-// The width matters as much as the containment: the docs stage centres each story
+// The width matters as much as the containment: the docs stage centers each story
 // in a flex row, so a wrapper whose only content is an absolutely-positioned FAB
 // shrinks to 0 and the "corner" it anchors to is a degenerate box. An explicit
 // width with `maxWidth: 100%` gives it a real frame at any stage size.
@@ -213,7 +228,7 @@ export const AidenLauncher: Story = {
 // ── Reference / states ───────────────────────────────────────────────────────
 
 export const Playground: Story = {
-  args: { id: 'fab-pg', position: 'bottom-right', size: 'lg', pulse: true, badge: '2' },
+  args: { id: 'fab-pg', position: 'bottom-right', size: 'lg', pulse: true, intro: true, badge: '2' },
   render: (args) => (
     <HostApp>
       <div data-surface="aiden">
@@ -222,6 +237,66 @@ export const Playground: Story = {
         </Fab>
       </div>
     </HostApp>
+  ),
+};
+
+/**
+ * `intro`: the sparkles twinkle once when the button appears — three beats, each star a
+ * little after the last — then rest. Remount the story to see it again.
+ */
+export const Intro: Story = {
+  render: () => (
+    <HostApp>
+      <div data-surface="aiden">
+        <Fab id="fab-intro" size="default" intro aria-label="Ask Aiden">
+          <Sparkles />
+        </Fab>
+      </div>
+    </HostApp>
+  ),
+};
+
+/**
+ * Beside a side panel. A page with a panel open on the FAB's side sets
+ * `--ui-fab-inset-x` to the panel's width plus `--p-6`, and the FAB moves to sit 24px
+ * inside the remaining canvas instead of on the panel — the Builder's case. Set it on an
+ * ancestor of both the FAB and the Toaster so a toast in the same corner follows.
+ */
+export const BesideASidePanel: Story = {
+  name: 'Beside a side panel',
+  render: () => (
+    <div
+      style={{
+        ...FRAME,
+        width: 960,
+        minHeight: 460,
+        background: 'var(--muted)',
+        ['--ui-fab-inset-x' as string]: 'calc(var(--p-6) + var(--aiden-panel-width))',
+      }}
+    >
+      <aside
+        aria-label="Side panel"
+        style={{
+          position: 'absolute',
+          insetBlock: 0,
+          insetInlineEnd: 0,
+          width: 'var(--aiden-panel-width)',
+          background: 'var(--card)',
+          borderInlineStart: 'var(--border-w-100) solid var(--border)',
+          padding: 'var(--p-6)',
+          color: 'var(--muted-foreground)',
+          fontSize: 'var(--text-sm)',
+          lineHeight: 'var(--leading-5)',
+        }}
+      >
+        Side panel — the Builder’s Add components panel sits here.
+      </aside>
+      <div data-surface="aiden">
+        <Fab id="fab-beside-panel" size="default" aria-label="Ask Aiden">
+          <Sparkles />
+        </Fab>
+      </div>
+    </div>
   ),
 };
 

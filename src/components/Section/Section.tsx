@@ -3,7 +3,7 @@ import type { SectionProps } from './Section.types';
 import './Section.scss';
 
 // A heading with its content under it, at the level the ladder gives that relationship:
-// level 2 for a section of a page, level 4 for a labelled group inside one. The space
+// level 2 for a section of a page, level 4 for a labeled group inside one. The space
 // BETWEEN sections is not this component's job — that is the level-2 Stack they sit in.
 // Content is a plain region; what it holds decides its own rhythm (usually a Stack).
 const Section = forwardRef<HTMLElement, SectionProps>(

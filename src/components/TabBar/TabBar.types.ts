@@ -86,7 +86,7 @@ export type TabBarTabProps = Omit<
 };
 
 /**
- * A tab group: a coloured chip followed by the tabs it holds. Collapsing hides the
+ * A tab group: a colored chip followed by the tabs it holds. Collapsing hides the
  * group's tabs behind the chip, except any whose document is on screen (the open
  * tab, or both halves of a showing split), so what is on screen always has a tab.
  *
@@ -115,9 +115,9 @@ export type TabBarGroupProps = Omit<React.HTMLAttributes<HTMLDivElement>, 'color
 
 /**
  * Two tabs shown side by side in the page, drawn as one joined tab. Both halves
- * carry the open-tab surface while either is selected; the underline marks the
- * half that has focus. Pass exactly two `TabBarTab`s. The page layout is
- * `SplitView`'s job, not the bar's.
+ * are the page color while either is selected (there is no underline since
+ * 2026-09-19); `SplitView` marks which pane has focus. Pass exactly two
+ * `TabBarTab`s. The page layout is `SplitView`'s job, not the bar's.
  */
 export type TabBarSplitProps = React.HTMLAttributes<HTMLDivElement> & {
   children?: React.ReactNode;
@@ -167,5 +167,38 @@ export type TabBarMenuProps = Omit<
   /** Group headings. Default `Open tabs` / `Recently closed`. */
   openHeading?: string;
   closedHeading?: string;
+  /**
+   * The tab group on screen, shown beside the stacked glyph (2026-09-19). With a
+   * group, the bar shows one set of tabs at a time and this is how the user
+   * knows which one. Leave it unset for the plain 48px icon cell.
+   */
+  groupLabel?: string;
+  /**
+   * The saved tab groups. Setting this adds a switcher to the top of the menu:
+   * the window's ungrouped tabs, each group, and the group actions. Picking one
+   * fires `onSelectGroup`; the bar changes nothing itself.
+   */
+  groups?: TabBarMenuGroup[];
+  /** The group on screen, or `null` for the window's ungrouped tabs. */
+  activeGroup?: string | null;
+  /** Fires with a group's `value`, or `null` for the ungrouped tabs. */
+  onSelectGroup?: (value: string | null) => void;
+  /** How many tabs are ungrouped, for the "This window" row. */
+  ungroupedCount?: number;
+  /** Shows "New empty group" when set. */
+  onNewGroup?: () => void;
+  /** Shows "Group these tabs" when set — moves the tabs on screen into a new group. */
+  onGroupTabs?: () => void;
+  /** Section headings for the switcher. Default `This window` / `Tab groups`. */
+  windowHeading?: string;
+  groupsHeading?: string;
   className?: string;
+};
+
+/** One saved tab group in the {@link TabBarMenu} switcher. */
+export type TabBarMenuGroup = {
+  value: string;
+  label: string;
+  /** How many tabs the group holds, shown at the end of its row. */
+  count?: number;
 };

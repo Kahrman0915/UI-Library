@@ -59,10 +59,23 @@
     width: 100%;
     padding-block: var(--p-2);
     border-top: var(--border-w-100) solid var(--sidebar-border);
+
+    // The footer's controls (mode, settings, notifications) rest muted like the header's
+    // collapse trigger and the resting tiles, so the rail's selected app leads. Direct
+    // children only, so a control inside something the consumer composes is left alone.
+    > .ui-mode-toggler,
+    > .ui-button--icon-only {
+      color: var(--sidebar-muted-foreground);
+
+      &:hover:not(:disabled) {
+        background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
+        color: var(--sidebar-accent-foreground);
+      }
+    }
   }
 
   // An icon-only link on the shared .ui-icon-button shell (the box is ours; the shell owns
-  // hover, press, focus and the hit target). Doubled class so the rail's surface colours
+  // hover, press, focus and the hit target). Doubled class so the rail's surface colors
   // beat the shell's neutral defaults on specificity, not source order.
   &__item.ui-icon-button {
     position: relative;
@@ -72,21 +85,48 @@
     color: var(--sidebar-muted-foreground);
     text-decoration: none;
 
-    // The same two passes of the accent the sidebar rows use, so a hovered tile (35%) and
-    // the selected tile (70%) are never one paint. Colours, not gradients, so the shared
-    // shell's background transition still fades.
+    // Hover is the only state that fills the tile (35% of the accent, a color rather than a
+    // gradient so the shell's background transition still fades). It also applies to the
+    // selected tile, whose own rule is one class weaker. Hover previews the application: the grey tile plus the icon in that app's own
+    // color. --primary-text follows the brand scope the item stands in, so give each
+    // AppRailItem its app's `data-theme`; unscoped it resolves to the main brand's slate.
     &:hover:not(:disabled) {
-      color: var(--sidebar-accent-foreground);
+      color: var(--primary-text);
       background: color-mix(in srgb, var(--sidebar-accent) 35%, var(--sidebar));
     }
 
     &:focus-visible { box-shadow: 0 0 0 var(--focus-ring-width) var(--sidebar-ring); }
   }
 
-  &__item--active.ui-icon-button,
-  &__item--active.ui-icon-button:hover:not(:disabled) {
-    background: color-mix(in srgb, var(--sidebar-accent) 70%, var(--sidebar));
-    color: var(--sidebar-accent-foreground);
+  // The selected application: a full-height bar on the rail's outer edge plus the icon in
+  // the app's color, and NO fill. The fill is the sidebar's selection language (where you
+  // are inside the app); the rail answers a different question (which app), so it marks
+  // selection with a line, like the TabBar's underline (owner, 2026-09-18). The bar is the
+  // non-color cue, so the state survives for anyone who cannot tell the app color from
+  // slate. Hovering the selected tile still adds the grey tile.
+  //
+  // Both the bar and the glyph read the brand scope: put `data-theme="{code}"` on each
+  // AppRailItem. --primary for the bar (a fill, like the tab underline), --primary-text for
+  // the glyph (the on-surface step).
+  &__item--active.ui-icon-button {
+    background: transparent;
+    color: var(--primary-text);
+
+    // Pulled out of the tile to the rail's outer edge. The tile is centered in the rail's
+    // content box, which is the rail width minus its inline-end border, so the offset is half
+    // of (tile - rail + border) — without the border term the bar hangs 0.5px outside.
+    // ::before because the icon-button shell uses ::after for its hit target. Same 2px
+    // (--border-w-300) as the TabBar's open-tab underline: one line, one weight.
+    &::before {
+      content: '';
+      position: absolute;
+      inset-block: 0;
+      inset-inline-start: calc((var(--w-9) - var(--app-rail-width) + var(--border-w-100)) / 2);
+      width: var(--border-w-300);
+      border-radius: var(--rounded-full);
+      background: var(--primary);
+      pointer-events: none;
+    }
   }
 
   // The unread dot, tucked into the tile's corner. A StatusDot, not a Badge: a 24px pill

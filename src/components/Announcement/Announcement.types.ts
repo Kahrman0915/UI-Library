@@ -9,7 +9,7 @@ import type { DialogProps } from '../Dialog/Dialog.types';
  * announcement — a wider panel so the media has room, `DialogMedia` already
  * wired between the header and the body, and outside-click dismissal ON.
  *
- * **Outside-click is the one behavioural carve-out.** `Dialog` defaults it off
+ * **Outside-click is the one behavioral carve-out.** `Dialog` defaults it off
  * because a dialog usually holds work a stray click must not discard. An
  * announcement holds nothing to lose, and a "what's new" card the user cannot
  * wave away reads as a trap. Pass `closeOnOutsideClick={false}` if a particular

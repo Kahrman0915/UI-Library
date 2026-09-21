@@ -1,6 +1,6 @@
 /**
  * The drag-and-drop data type a dragged tab carries. It is how a drop target
- * outside the bar — `SplitView`, or your own — recognises a tab: check
+ * outside the bar — `SplitView`, or your own — recognizes a tab: check
  * `event.dataTransfer.types.includes(TAB_BAR_DRAG_TYPE)` on `dragover`, then read
  * the tab's `value` with `getData(TAB_BAR_DRAG_TYPE)` on `drop`.
  *

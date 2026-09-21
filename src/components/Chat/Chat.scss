@@ -128,6 +128,15 @@
   flex-shrink: 0;
 }
 
+// The row is align-items: flex-end, which is right for a user bubble — the
+// avatar reads as attached to the last line the way a tail would. An assistant
+// answer is full-width prose that can run many lines, and an identity mark
+// belongs at the turn it introduces, not floating beside its final line. Only
+// the assistant's avatar moves; the body keeps its own alignment rules below.
+.ui-chat-message--assistant .ui-chat-message__avatar {
+  align-self: flex-start;
+}
+
 .ui-chat-message__body {
   display: flex;
   flex-direction: column;
@@ -1018,7 +1027,7 @@ a.ui-chat-source {
   flex-shrink: 0;
   width: var(--w-4);
   height: var(--h-4);
-  // Optically centre against the first text line, ItemMedia's trick.
+  // Optically center against the first text line, ItemMedia's trick.
   margin-top: var(--p-0-5);
   color: var(--error);
 }
@@ -1296,4 +1305,102 @@ a.ui-chat-source {
   @media (max-width: 767px) {
     display: none;
   }
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Action card — what the assistant wants to change, and the receipt afterwards.
+//
+// Deliberately NOT the artifact card's shape: that one is a <button> you open,
+// this one is a decision you answer, so it has no hover lift, no cursor and no
+// focus ring of its own — the focus belongs to the buttons inside it.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ui-chat-action-card {
+  display: flex;
+  // The actions drop to their own line rather than crushing the title. With the
+  // body's min-width below, this is what lets one card serve the 316px popover
+  // and the 736px full screen without a media query.
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--p-3);
+  width: 100%;
+  padding: var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--card);
+  font-family: var(--font-family);
+}
+
+.ui-chat-action-card__mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: var(--w-5);
+  height: var(--h-5);
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-5);
+    height: var(--h-5);
+  }
+}
+
+.ui-chat-action-card__body {
+  // min-width is the wrap trigger: below it the actions take their own line.
+  flex: 1 1 var(--w-48);
+  min-width: var(--w-48);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+}
+
+.ui-chat-action-card__title {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ui-chat-action-card__description {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ui-chat-action-card__status {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ui-chat-action-card__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  flex-shrink: 0;
+  // Pins the buttons to the trailing edge on the line they end up on — beside
+  // the body when there is room, on their own line when they wrapped.
+  margin-inline-start: auto;
+}
+
+// ---- States ----
+//
+// `done` stays neutral on purpose: a receipt should be legible, not loud. Only
+// `failed` tints its surface, because it is the one state asking for attention.
+
+.ui-chat-action-card--done .ui-chat-action-card__mark {
+  color: var(--success);
+}
+
+.ui-chat-action-card--failed {
+  border-color: var(--error-border);
+  background: var(--error-light);
+}
+
+.ui-chat-action-card--failed .ui-chat-action-card__mark {
+  color: var(--error);
 }

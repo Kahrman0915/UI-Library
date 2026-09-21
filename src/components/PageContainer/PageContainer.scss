@@ -1,17 +1,26 @@
-// PageContainer — level 1 of the spacing ladder: the page margin, and the space between
-// the page header and the content. Both read --space-1. The caps are --container-narrow and
+// PageContainer — the page margin, and the space between the page header and the content.
+// The margin is level 2 and the header→content gap is level 3 (owner, 2026-09-20): level 1
+// measured 48/48 at 1920, which read too loose against real screens at both widths, and the
+// design file had already been tuned down to these values. The caps are --container-narrow and
 // --container-form, which follow the ladder's width rule (× 1.5 at 1920, fluid between): a
 // fixed cap plus a growing margin made a narrow page narrower on a big monitor. See PageContainer.tsx.
 
 .ui-page-container {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
-  padding: var(--space-1);
+  gap: var(--space-3);
+  padding: var(--space-2);
   box-sizing: border-box;
   width: 100%;
   margin-inline: auto;
   min-width: 0;
+
+  // The page margin, published so a child that must run edge-to-edge can cancel it —
+  // today that is PageHeader's `showDivider` rule. It is declared HERE, not read from
+  // PageHeader, because the container is the only thing that knows its own padding:
+  // a header outside a container then gets no bleed and stays inset, which is the safe
+  // default. Keep this in step with `padding` above — it is the SAME level, not the gap's.
+  --ui-page-header-bleed: var(--space-2);
 
   // `full` is the default and emits no modifier — a class nothing selects is dead BEM.
   // Two caps, both narrower than the shell's content window (1136 / 1616); anything wider

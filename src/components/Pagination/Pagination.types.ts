@@ -1,5 +1,5 @@
 /**
- * Page navigation for a long list or table. Renders a `<nav>` labelled
+ * Page navigation for a long list or table. Renders a `<nav>` labeled
  * "pagination".
  *
  * Cells are anchors styled as buttons, so every page is a real, shareable link

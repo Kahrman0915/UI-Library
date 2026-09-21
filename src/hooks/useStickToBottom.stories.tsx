@@ -6,7 +6,7 @@ import '../components/Button/Button.scss';
 
 /**
  * `useStickToBottom` keeps a scroll container pinned to the newest content as
- * it grows — the chat-transcript behaviour. Scroll up and it lets go (exposing
+ * it grows — the chat-transcript behavior. Scroll up and it lets go (exposing
  * `isPinned=false` so you can show a jump button); scroll back down and it
  * re-pins. It powers `ChatMessageList`.
  */

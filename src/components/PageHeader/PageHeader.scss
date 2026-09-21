@@ -82,12 +82,47 @@
     }
   }
 
+  // The title and whatever has to sit BESIDE it. Only rendered when `meta` is
+  // given, so a header without one emits the heading bare, exactly as before.
+  //
+  // Level 3, the same rung as text ↔ actions: both are things standing next to
+  // each other on the title row. Measured at 16 on the viewer chrome this was
+  // built for, which is what level 3 resolves to at the design viewport.
+  //
+  // Centered, not baseline-aligned. The meta is a Badge or a short string whose
+  // box is much shorter than the title's line box, and baseline alignment pins
+  // a 20px pill to the bottom of a 36px title at `lg`.
+  &__title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    min-width: 0;
+  }
+
   &__title {
     margin: 0;
     font-size: var(--text-2xl);
     line-height: var(--leading-8);
     font-weight: var(--font-semibold);
     color: var(--foreground);
+
+    // The title yields first: a long name truncates rather than shoving the
+    // badge off the row. `min-width: 0` is what lets it shrink at all inside a
+    // flex row — without it a flex item refuses to go below its content width.
+    min-width: 0;
+  }
+
+  // The trailing lockup — a Badge, a date, a count. NOT actions: nothing here is
+  // a control, which is why it sits with the title rather than in `__actions` at
+  // the end of the row. It never shrinks; the title gives way instead.
+  &__meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    flex-shrink: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
   }
 
   &__description {
@@ -97,11 +132,49 @@
     color: var(--muted-foreground);
   }
 
+  // The controls sit on the BOTTOM edge of the text block, not the top.
+  //
+  // `align-self` on the actions alone, never `align-items: flex-end` on the row:
+  // the row has to stay flex-start so `__visual` keeps sitting level with the
+  // first line of text (see `__visual` above). Bottom-aligning the whole row
+  // would drop the glyph to the foot of a wrapped block, which is the one thing
+  // that rule exists to prevent.
+  //
+  // Why the bottom rather than the title's own line: the header reads as one
+  // block with a baseline, and the controls belong to the page, not to the
+  // title. Top-aligning them against a title + description left them floating
+  // high — 32px controls against a 40px title over a 24px description.
+  //
+  // The trade-off, accepted: a description long enough to wrap carries the
+  // controls down with it, so they end up further from the title. Keep a page
+  // description to a line or two — which is what the prop is for.
   &__actions {
     display: flex;
     align-items: center;
+    align-self: flex-end;
     gap: var(--space-4);
     flex-shrink: 0;
+  }
+
+  // The hairline that closes the header. The root's level-2 gap sits above it, which is
+  // the rung the header→toolbar relationship already uses — the rule is part of the
+  // header block, not a thing floating between two blocks.
+  //
+  // It BLEEDS past the page margin: a rule that stops at the text column reads as
+  // belonging to the content rather than closing the header. `PageContainer` publishes
+  // its own padding as `--ui-page-header-bleed`, and the rule takes that much negative
+  // inline margin to cancel it exactly. Outside a container the variable is unset, the
+  // bleed is 0, and the rule is simply inset — so this can never drag a header out of
+  // an arbitrary parent.
+  //
+  // TWO classes, deliberately: `.ui-separator--horizontal` sets `width: 100%`, which is
+  // the container's width and would leave the rule merely OFFSET by the bleed rather
+  // than widened. `width: auto` lets the flex item stretch, and the negative margins
+  // then grow it by twice the bleed. A single class ties that rule at (0,1,0) and
+  // resolves on stylesheet order.
+  &__divider.ui-separator {
+    width: auto;
+    margin-inline: calc(-1 * var(--ui-page-header-bleed, 0px));
   }
 
   &__toolbar {
@@ -110,9 +183,72 @@
     min-width: 0;
   }
 
-  // The hero rung. Two rungs exist because the design file has exactly two
-  // clusters of page heading — 24px on every working screen, 36px on What's New,
-  // and nothing between them.
+  // The chrome rung. Added 2026-09-16 for headers that are not the top of a
+  // scrolling page: a dashboard viewer's title bar, where the whole bar is 56px
+  // and a 24px title does not fit. Measured at 20px Semi Bold on the viewer
+  // chrome the flow screens already draw.
+  //
+  // The panel rung. A header inside a side panel, not at the top of a page: the
+  // builder's "Add components" and "Add dashboards" panels measure a 16/24 title
+  // over a 12px description at 420px wide, where even `sm` reads as a page
+  // heading dropped into a drawer.
+  //
+  // The description, meta and overline all sit at 12 here, the same as `sm` —
+  // this rung moves the TITLE alone, because 12 is already the ramp's floor for
+  // every supporting role and there is nothing below it to step to.
+  &--sz-xs {
+    .ui-page-header__title {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+    }
+
+    .ui-page-header__description,
+    .ui-page-header__meta {
+      font-size: var(--text-xs);
+      line-height: var(--leading-4);
+    }
+
+    .ui-page-header__visual svg {
+      width: var(--w-4);
+      height: var(--h-4);
+    }
+  }
+
+  // TYPE ONLY. The title steps down to 20 and the description with it, to 12 —
+  // the size the panel headers in the design file already use under a small
+  // title. The overline stays at 12 because that IS the ramp's floor for an
+  // eyebrow, so at this rung the overline and description match, which is the
+  // same thing `lg` does at the top end for the opposite reason: there the
+  // description rises to meet a 16px overline, here it falls to meet a 12px one.
+  &--sz-sm {
+    .ui-page-header__title {
+      font-size: var(--text-xl);
+      line-height: var(--leading-7);
+    }
+
+    .ui-page-header__description {
+      font-size: var(--text-xs);
+      line-height: var(--leading-4);
+    }
+
+    // The meta tracks the description, not the title — it is small trailing
+    // information, and left at 14 it would outweigh a 12px description.
+    .ui-page-header__meta {
+      font-size: var(--text-xs);
+      line-height: var(--leading-4);
+    }
+
+    // Steps down with the title, same reasoning as the `lg` rule in reverse: a
+    // bare glyph is sized against the title it introduces.
+    .ui-page-header__visual svg {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  // The hero rung. The ramp is drawn from the shared `Size` vocabulary and each
+  // rung has a measured case in the design file: 20px on viewer chrome, 24px on
+  // every working screen, 36px on What's New. Nothing sits between them.
   //
   // TYPE ONLY. Every gap stays on its level: the hierarchy of overline → title →
   // description does not change because the type got bigger, and a level that
@@ -141,6 +277,12 @@
     // 16px, so a description left at 14px would be SMALLER than the eyebrow
     // above it, which inverts the ranking the header exists to state.
     .ui-page-header__description {
+      font-size: var(--text-base);
+      line-height: var(--leading-6);
+    }
+
+    // The meta tracks the description at every rung.
+    .ui-page-header__meta {
       font-size: var(--text-base);
       line-height: var(--leading-6);
     }

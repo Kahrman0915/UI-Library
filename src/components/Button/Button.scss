@@ -13,7 +13,7 @@
 
   // Motion: every touchable state change eases on the signature --ease-premium
   // instead of snapping. transform is quicker (--duration-fast) so the press
-  // reads as immediate/tactile while colour + ring settle smoothly.
+  // reads as immediate/tactile while color + ring settle smoothly.
   transition:
     color var(--duration-instant) var(--ease-premium),
     background-color var(--duration-instant) var(--ease-premium),
@@ -48,11 +48,19 @@
     box-shadow: none;
   }
 
+  // No shadow: `outline` is a flat control, exactly like `secondary` beside it
+  // (tint/wash + border), and every other flat style here already resets it. It
+  // also has to be reset because the fill is `--bg-input-30`, a translucent wash
+  // — and while CSS clips an outer box-shadow to outside the border box, Figma
+  // does NOT, so in dark (where --shadow-color-xs is white 10%) the mirror
+  // rendered these buttons ~9% lighter than the browser does. Measured
+  // 2026-09-20: Figma #2f3647 vs the browser's #182032.
   &--default-outline {
     background: var(--bg-input-30);
     color: var(--primary-text);
     outline: var(--border-w-100) solid var(--primary-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   // Ghost is the deliberate neutral in the default family: the quiet
@@ -140,6 +148,7 @@
     color: var(--error);
     outline: var(--border-w-100) solid var(--error-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   &--error-ghost {
@@ -215,6 +224,7 @@
     color: var(--info);
     outline: var(--border-w-100) solid var(--info-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   &--info-ghost {
@@ -290,6 +300,7 @@
     color: var(--success);
     outline: var(--border-w-100) solid var(--success-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   &--success-ghost {
@@ -365,6 +376,7 @@
     color: var(--warning);
     outline: var(--border-w-100) solid var(--warning-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   &--warning-ghost {
@@ -442,6 +454,7 @@
     color: var(--aiden-text);
     outline: var(--border-w-100) solid var(--aiden-outline-border);
     outline-offset: -1px;
+    box-shadow: none;
   }
 
   &--aiden-ghost {
@@ -496,6 +509,108 @@
     color: color-mix(in srgb, var(--aiden-text) 85%, var(--foreground));
   }
 
+  // ============================================================
+  // NEUTRAL variant — slate in every theme
+  // ============================================================
+  //
+  // The chrome button: a toolbar's Filter and Sort, a viewer bar's Share, a
+  // segmented control's neighbour. Controls that sit beside the page's themed
+  // CTA and must not compete with it, or read as the brand when they are not
+  // about the brand.
+  //
+  // `default`'s ghost has always been the neutral carve-out, but ghost has no
+  // border, and these controls are bordered in every design that uses them.
+  // Before this variant the only bordered option was `default-outline`, which
+  // reads --primary-border and --primary-text and therefore themes — so a
+  // Filter button went indigo on an indigo application. That had been worked
+  // around twice (Toast keeps outline as a recorded carve-out; the Alert action
+  // bumped --primary-border to 60%) before it was worth a variant.
+  //
+  // It builds on the NEUTRAL VOCABULARY THAT ALREADY EXISTS rather than minting
+  // a parallel --primary-main-* derived family: --primary-main for the solid
+  // (slate-700 light / slate-300 dark, and never remapped by a data-theme),
+  // --border for the edge, --muted-foreground for the label, --secondary for the
+  // soft fill, --accent for ghost hover, --ring / --focus for the rings. Every
+  // one of those is already mode-aware and already exempt from theming.
+
+  &--neutral-default {
+    background: var(--primary-main);
+    color: var(--primary-main-foreground);
+  }
+
+  &--neutral-secondary {
+    background: var(--secondary);
+    color: var(--secondary-foreground);
+    outline: var(--border-w-100) solid var(--border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  &--neutral-outline {
+    background: var(--bg-input-30);
+    color: var(--muted-foreground);
+    outline: var(--border-w-100) solid var(--border);
+    outline-offset: -1px;
+    box-shadow: none;
+  }
+
+  // Identical to `default-ghost` by design, not by accident: that style was
+  // already the neutral one, and two neutral ghosts that differed would be a
+  // bug. It exists so `variant="neutral"` works across the whole style ladder
+  // without a consumer having to switch variants half way down it.
+  &--neutral-ghost {
+    background: transparent;
+    color: var(--secondary-foreground);
+    box-shadow: none;
+  }
+
+  &--neutral-link {
+    background: transparent;
+    color: var(--secondary-foreground);
+    border: none;
+    box-shadow: none;
+  }
+
+  // ---- Neutral variant focus states ----
+
+  &--neutral:focus-visible {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &--neutral-outline:focus-visible {
+    outline: var(--border-w-100) solid var(--ring);
+    outline-offset: -1px;
+    color: var(--foreground);
+  }
+
+  // ---- Neutral variant hover states ----
+
+  // The solid darkens toward the page's own text color in light and lightens in
+  // dark, which is what --foreground does for free at both ends.
+  &--neutral-default:hover:not(:disabled) {
+    background: color-mix(in srgb, var(--primary-main) 85%, var(--foreground));
+  }
+
+  &--neutral-secondary:hover:not(:disabled) {
+    background:
+      linear-gradient(0deg, var(--opacity-50), var(--opacity-50)),
+      var(--secondary);
+  }
+
+  &--neutral-outline:hover:not(:disabled) {
+    background: var(--bg-input-50);
+    color: var(--foreground);
+  }
+
+  &--neutral-ghost:hover:not(:disabled) {
+    background: var(--accent);
+    color: var(--accent-foreground);
+  }
+
+  &--neutral-link:hover:not(:disabled) {
+    color: var(--foreground);
+  }
+
   // ---- Aiden icon-only special border-radius ----
 
   &--aiden-icon-only {
@@ -506,6 +621,33 @@
 
   // Compact rung below `small`, sized to sit inside dense surfaces (Toast
   // action rows) without inflating them. Same type ramp as `small`, tighter box.
+  // The count that rides on a button — filters applied, items selected.
+  //
+  // ONE rule covers all six variants and all five styles, because the fill is a
+  // tint of `currentColor`: whatever color the label already is, the pill is
+  // 15% of it over the button's own background. A solid primary button gets a
+  // white-ish pill, a neutral outline gets a slate one, an error ghost gets red
+  // — with no per-variant declarations to keep in step.
+  //
+  // `min-width` keeps a single digit from collapsing to a sliver, and the
+  // tabular figures stop the button's width jumping as the number changes.
+  &__count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    flex-shrink: 0;
+    min-width: var(--w-5);
+    padding-inline: var(--p-1-5);
+    border-radius: var(--rounded-full);
+    background: color-mix(in srgb, currentColor 15%, transparent);
+    color: inherit;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    font-weight: var(--font-medium);
+    font-variant-numeric: tabular-nums;
+  }
+
   &--sz-xs {
     padding: var(--p-1) var(--p-2-5);
     --ui-button-pad-x: var(--p-2-5);
@@ -600,8 +742,18 @@
       padding: var(--p-1);
     }
 
+    // A small icon-only button draws a 16px glyph, not the 14px a labeled sm button
+    // pairs with its 12px text: on its own the icon is the whole control, and 16 is the
+    // library's default icon size — 1.33 stroke, the same as ModeToggler sm, so two
+    // small icon controls side by side (the rail footer) render at one weight
+    // (owner, 2026-09-18). Box: 16 + 2 × --p-2 = 32.
     &.ui-button--sz-sm {
       padding: var(--p-2);
+
+      svg {
+        width: var(--w-4);
+        height: var(--h-4);
+      }
     }
 
     &.ui-button--sz-default {

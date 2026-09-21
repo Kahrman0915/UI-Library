@@ -12,7 +12,7 @@ import type {
 } from './Avatar.types';
 import './Avatar.scss';
 
-const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
+const Avatar = forwardRef<HTMLSpanElement, AvatarProps>(
   (
     {
       id,
@@ -35,14 +35,16 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
 
     const showImage = Boolean(src) && !imageError;
 
+    // Spans, not divs: an avatar routinely sits inside a button (an account menu trigger),
+    // and a div is not allowed in a button's phrasing content.
     return (
-      <div
+      <span
         {...rest}
         ref={ref}
         id={id}
         className={`ui-avatar ui-avatar--sz-${size} ui-avatar--${shape}${className ? ' ' + className : ''}`}
       >
-        <div className="ui-avatar__inner">
+        <span className="ui-avatar__inner">
           <span className="ui-avatar__fallback" aria-hidden={showImage}>
             {fallback}
           </span>
@@ -54,11 +56,11 @@ const Avatar = forwardRef<HTMLDivElement, AvatarProps>(
               onError={() => setImageError(true)}
             />
           )}
-        </div>
+        </span>
         {badge !== undefined && badge !== null && (
           <span className="ui-avatar__badge">{badge}</span>
         )}
-      </div>
+      </span>
     );
   },
 );
