@@ -39,7 +39,7 @@ import { ChatGreeting } from '../components/Chat';
  * this recipe. Until then, this story is the reference implementation.
  */
 const meta: Meta = {
-  title: 'AI/Aiden History Sidebar',
+  title: 'AI/AI History Sidebar',
   parameters: {
     layout: 'fullscreen',
     ui: {

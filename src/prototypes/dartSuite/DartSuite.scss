@@ -1,0 +1,61 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DART Suite prototype — shared prototype-only styles.
+//
+// Tokens only, like the library. Screen folders keep their own `.ds-{area}-*`
+// rules in their own .scss files; this file holds only what every area shares.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A labelled key/value list — request fields, dashboard info, review details.
+.ds-fields {
+  display: grid;
+  grid-template-columns: minmax(var(--w-32), max-content) 1fr;
+  gap: var(--space-4) var(--space-3);
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+
+  dt {
+    color: var(--muted-foreground);
+  }
+
+  dd {
+    margin: 0;
+    color: var(--foreground);
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+}
+
+// Plain body copy inside a card or section.
+.ds-muted {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+.ds-text {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+// A ScrollArea that sizes to its content up to a cap, then scrolls.
+//
+// ScrollArea fills a DEFINITE height (`height: 100%` down its inner grid and
+// viewport), which suits a region with a fixed box. A list that should hug a
+// short result set and only scroll once it is long has a max-height instead,
+// and a percentage of a max-height-only parent resolves to auto — so the
+// viewport would grow past the cap and be clipped, never scrolling. Passing the
+// cap down lets the viewport itself stop at it. Set `--ds-scroll-max` on the
+// ScrollArea (via its className) to the cap.
+.ds-scroll-max {
+  max-height: var(--ds-scroll-max);
+
+  .ui-scroll-area__inner,
+  .ui-scroll-area__viewport {
+    height: auto;
+    max-height: var(--ds-scroll-max);
+  }
+}

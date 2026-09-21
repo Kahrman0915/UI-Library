@@ -39,7 +39,7 @@ import Attachment, {
  * button) saves a real CSV.
  */
 const meta: Meta = {
-  title: 'Prototypes/Aiden File Delivery',
+  title: 'Prototypes/AI File Delivery',
   parameters: { layout: 'centered' },
 };
 

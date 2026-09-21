@@ -6,7 +6,7 @@ import { Button, Badge, Input, Checkbox, Switch, Chip } from '../index';
 import { ThemeHarness } from './ThemeHarness';
 
 const meta: Meta = {
-  title: 'Prototypes/Aiden Surface',
+  title: 'Prototypes/AI Surface',
   parameters: { layout: 'fullscreen' },
 };
 export default meta;

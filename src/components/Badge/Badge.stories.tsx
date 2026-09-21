@@ -267,6 +267,7 @@ export const ThemesShowcase: Story = {
 // gradient and the outline badge its solid violet — the AI-surface identity,
 // which holds even inside a brand theme. See Foundations/Themes → Aiden Surface.
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div data-surface="aiden" style={{ display: 'flex', gap: 'var(--p-2)', flexWrap: 'wrap' }}>
       <Badge id="aiden-default" color="default" label="Default" />

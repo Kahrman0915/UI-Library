@@ -1,0 +1,233 @@
+// DartBoards · the Builder. Prototype layout glue — tokens throughout.
+//
+// The canvas fills the page; the tool rail is pinned to the right edge and the
+// canvas stops at it; the side panel FLOATS over the canvas (Builder ② BUILD
+// NOTES: an in-flow panel would re-wrap the grid, which is the reflow-on-Done
+// the owner rejected). Panel and rail widths are panel geometry, not spacing.
+
+.ds-builder {
+  --ds-builder-panel: calc(var(--w-96) + var(--w-9)); // 420
+  --ds-builder-rail: var(--w-14); // 56
+
+  position: relative;
+  height: 100%;
+  min-height: var(--h-96);
+  overflow: hidden;
+}
+
+// The canvas scrolls in a ScrollArea pinned to the builder's box, so its height
+// is definite; the Canvas inside fills at least that height, and its grid
+// scrolls with the widgets rather than sliding under them.
+.ds-builder__canvas {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  inset-inline-end: var(--ds-builder-rail);
+}
+
+.ds-builder__ground {
+  min-height: 100%;
+}
+
+// ── Header: the space's own name and description, inline-editable ─────────
+.ds-builder-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.ds-builder-head__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  flex: 1;
+  min-width: var(--w-64);
+}
+
+.ds-builder-head__overline {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-builder-head__title,
+.ds-builder-head__description {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--rounded-sm);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  width: 100%;
+
+  &::placeholder {
+    color: var(--muted-foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &[readonly] {
+    cursor: default;
+  }
+}
+
+.ds-builder-head__title {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+  font-weight: var(--font-semibold);
+}
+
+.ds-builder-head__description {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+.ds-builder-head__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+// ── Canvas items ───────────────────────────────────────────────────────────
+.ds-builder-item {
+  min-width: 0;
+  outline: var(--border-w-100) dashed var(--primary-border);
+  outline-offset: calc(var(--border-w-100) * -1);
+
+  &:hover {
+    outline-color: var(--primary);
+  }
+
+  &[data-selected] {
+    outline-color: transparent;
+  }
+}
+
+// The item's ••• sits inside CanvasItem's 20px menu handle.
+.ds-builder-item-menu {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// The empty state centers in the canvas the user can SEE, not the half the
+// panel is over. Placement only — never put this offset on the grid.
+.ds-builder-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--h-96);
+
+  &--panel {
+    padding-inline-end: var(--ds-builder-panel);
+  }
+}
+
+// ── The floating panel ────────────────────────────────────────────────────
+.ds-builder-panel {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: var(--ds-builder-rail);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  width: min(var(--ds-builder-panel), calc(100% - var(--ds-builder-rail)));
+  background: var(--background);
+  border-inline-start: var(--border-w-100) solid var(--border);
+  box-shadow: var(--shadow-lg);
+}
+
+.ds-builder-panel__head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  padding: var(--space-3) var(--space-3) 0;
+}
+
+.ds-builder-panel__title {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+// A ScrollArea taking the panel's remaining height. The padding sits on the
+// content inside it, so it scrolls with the content instead of adding to the
+// ScrollArea's own box.
+.ds-builder-panel__body {
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-builder-panel__content {
+  padding: var(--space-3);
+}
+
+.ds-builder-panel__foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-3);
+  border-block-start: var(--border-w-100) solid var(--border);
+}
+
+.ds-builder-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-4);
+}
+
+.ds-builder-swatch {
+  display: inline-block;
+  width: var(--w-4);
+  height: var(--h-4);
+  border-radius: var(--rounded-full);
+
+  @each $hue in ('violet', 'blue', 'cyan', 'emerald', 'amber', 'rose') {
+    &[data-hue='#{$hue}'] {
+      background: var(--category-#{$hue});
+    }
+  }
+}
+
+// ── The tool rail ──────────────────────────────────────────────────────────
+.ds-builder-rail {
+  position: absolute;
+  inset-block: 0;
+  inset-inline-end: 0;
+  z-index: 3;
+  display: flex;
+  justify-content: center;
+  width: var(--ds-builder-rail);
+  padding-block: var(--space-4);
+  background: var(--background);
+  border-inline-start: var(--border-w-100) solid var(--border);
+}

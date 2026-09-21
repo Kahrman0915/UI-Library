@@ -278,6 +278,7 @@ export const IconOnly: Story = {
 };
 
 export const AidenIconOnly: Story = {
+  name: 'AI Icon Only',
   args: {
     variant: 'aiden',
     iconOnly: true,
@@ -369,6 +370,7 @@ export const ThemesShowcase: Story = {
 // stays neutral slate — the same carve-out as the brand themes.
 // See Foundations/Themes → Aiden Surface.
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div
       data-surface="aiden"

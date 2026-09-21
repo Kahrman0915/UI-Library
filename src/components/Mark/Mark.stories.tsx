@@ -132,6 +132,7 @@ export const Brands: Story = {
 
 /** Aiden is a surface, not a theme — it layers inside whatever brand it sits in. */
 export const AidenSurface: Story = {
+  name: 'AI Surface',
   render: () => (
     <div style={ROW}>
       <div>

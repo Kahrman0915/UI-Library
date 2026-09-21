@@ -60,7 +60,7 @@ import { useStreamingText } from '../hooks/useStreamingText';
  * has attach / dictation / expand-drawer / send.
  */
 const meta: Meta = {
-  title: 'Prototypes/Aiden Chat',
+  title: 'Prototypes/AI Chat',
   parameters: { layout: 'fullscreen' },
 };
 

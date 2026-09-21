@@ -1,0 +1,241 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// Aiden — the four stops and the two tab pages (Figma: Aiden A1.1–A1.5).
+// Tokens only. Everything else comes from AidenPanel, Chat, Card and Fab.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// ── A1.2 · the mini window ───────────────────────────────────────────────────
+// 380×520 in Figma; the ramp's nearest rungs are 384 wide and 384+128 = 512
+// tall. Right edge on the Fab's right edge, one --p-3 above the 56px Fab.
+// --z-40, the Fab's and the panel's layer: below every menu at 50, so a
+// DropdownMenu or the Add-to-space dialog opened from a result paints above it.
+.ds-aiden-mini {
+  position: fixed;
+  z-index: var(--z-40);
+  right: var(--ui-fab-inset-x, var(--p-6));
+  bottom: calc(var(--p-6) + var(--h-14) + var(--p-3));
+  width: min(var(--w-96), calc(100vw - var(--p-6) - var(--p-6)));
+  height: min(
+    calc(var(--h-96) + var(--h-32)),
+    calc(100vh - var(--app-strip-height) - var(--p-6) - var(--h-14) - var(--p-3) - var(--p-6))
+  );
+  border-radius: var(--rounded-lg);
+  box-shadow: var(--shadow-lg);
+  background: var(--background);
+  animation: ds-aiden-mini-in var(--duration-normal) var(--ease-out);
+
+  > .ds-aiden-conversation {
+    flex: 1;
+    min-height: 0;
+  }
+}
+
+// Literal keyframes — never var() inside them (CLAUDE.md, Drawer pattern).
+@keyframes ds-aiden-mini-in {
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ds-aiden-mini {
+    animation: none;
+  }
+}
+
+// ── Rich turns ───────────────────────────────────────────────────────────────
+// The assistant body is `align-items: flex-start`, so a block child hugs its
+// content; stretch pins the rows to the message width (AidenPanel stories).
+.ds-aiden-rows,
+.ds-aiden-rich,
+.ds-aiden-action {
+  align-self: stretch;
+  margin-top: var(--p-1);
+}
+
+.ds-aiden-rows {
+  gap: var(--p-2);
+}
+
+.ds-aiden-rich {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+// A result's title is a link-shaped button: the row stays a plain div so the
+// add button beside it is not nested inside another control.
+.ds-aiden-link {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  border-radius: var(--rounded-sm);
+
+  &:hover {
+    text-decoration: underline;
+    text-underline-offset: var(--p-0-5);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// ── A1.5 · the launcher ──────────────────────────────────────────────────────
+.ds-aiden-launcher {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: var(--space-2);
+}
+
+.ds-aiden-launcher__column {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+  width: 100%;
+  max-width: var(--max-w-xl);
+
+  .ui-chat-greeting {
+    height: auto;
+    padding: 0;
+  }
+}
+
+.ds-aiden-launcher__suggestions {
+  justify-content: center;
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+// ── A1.4 · the full tab ──────────────────────────────────────────────────────
+.ds-aiden-page {
+  display: flex;
+  height: 100%;
+  min-height: 0;
+}
+
+.ds-aiden-history {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  width: var(--w-60);
+  padding: var(--space-3);
+  border-inline-end: var(--border-w-100) solid var(--border);
+  min-height: 0;
+
+  // A phone has room for the conversation only.
+  @media (max-width: 767px) {
+    display: none;
+  }
+}
+
+// New chat stays put; the list scrolls in a ScrollArea that takes the rest of
+// the column's height (the column is a flex column of definite height).
+.ds-aiden-history__scroll {
+  flex: 1;
+  min-height: 0;
+}
+
+.ds-aiden-history__label {
+  margin: var(--p-2) 0 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+}
+
+.ds-aiden-history__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ds-aiden-history__item {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  column-gap: var(--p-2);
+  width: 100%;
+  padding: var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: transparent;
+  color: var(--foreground);
+  font-family: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: background-color var(--duration-instant) var(--ease-out);
+
+  svg {
+    grid-row: span 2;
+    width: var(--w-4);
+    height: var(--h-4);
+    margin-top: var(--p-0-5);
+    color: var(--muted-foreground);
+  }
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  &[aria-current='page'] {
+    background: var(--secondary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-aiden-history__title {
+  overflow: hidden;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.ds-aiden-history__when {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-aiden-page__main {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+
+  // Figma A1.4: one 768 column, the composer docked under it with no rule.
+  .ui-chat-layout__footer {
+    border-top: none;
+    padding-bottom: var(--space-2);
+
+    > * {
+      max-width: var(--max-w-3xl);
+      margin-inline: auto;
+    }
+  }
+}
+
+.ds-aiden-page__empty {
+  height: 100%;
+}

@@ -1,0 +1,296 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// What's New (Figma: Whats New W1–W4). Tokens only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// A resting frame for an entry with no clip — the media box never collapses.
+.ds-wn-still {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  background: var(--muted);
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-8);
+    height: var(--h-8);
+  }
+}
+
+.ds-wn-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-wn-version {
+  padding: 0 var(--p-1-5);
+  border-radius: var(--rounded-sm);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-5);
+}
+
+.ds-wn-badges {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ds-wn-date {
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+.ds-wn-featured__title {
+  margin: 0;
+  font-size: var(--text-3xl);
+  line-height: var(--leading-9);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ds-wn-lede {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  color: var(--muted-foreground);
+}
+
+.ds-wn-bullets {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-72), 1fr));
+  gap: var(--space-4) var(--space-3);
+  margin: 0;
+  padding-inline-start: var(--p-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+.ds-wn-card__title {
+  margin: 0;
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ds-wn-copy {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+// Badges on the leading edge, the action on the trailing one.
+.ds-wn-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-4);
+}
+
+.ds-wn-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-64), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-wn-center {
+  display: flex;
+  justify-content: center;
+}
+
+.ds-wn-end {
+  margin: 0;
+  text-align: center;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-wn-alerts {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.ds-wn-alerts__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-wn-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.ds-wn-details {
+  display: grid;
+  gap: var(--space-5);
+  margin: 0;
+  padding-inline-start: var(--p-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-6);
+  color: var(--foreground);
+
+  strong {
+    font-weight: var(--font-semibold);
+  }
+}
+
+.ds-wn-soon {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: var(--space-4);
+}
+
+// ── The tour (W3) ─────────────────────────────────────────────────────────────
+// Two classes so the width outranks .ui-dialog's own (the FullScreenDialog rule).
+
+.ui-dialog.ds-wn-tour {
+  position: relative;
+  width: 100%;
+  max-width: var(--max-w-xl);
+}
+
+.ds-wn-tour__close {
+  position: absolute;
+  inset-block-start: var(--p-3);
+  inset-inline-end: var(--p-3);
+  z-index: 1;
+}
+
+.ds-wn-tour__hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  width: 100%;
+  height: 100%;
+  padding: var(--p-8);
+  text-align: center;
+  // The brand's artwork gradient; the main brand has none, so fall back to --primary.
+  background: var(--decorative-gradient, var(--primary));
+  color: var(--primary-foreground);
+}
+
+.ds-wn-tour__hero-overline {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ds-wn-tour__hero-title {
+  max-width: var(--max-w-md);
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+  font-weight: var(--font-semibold);
+  text-wrap: balance;
+}
+
+.ds-wn-tour__body {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--p-6) var(--p-4);
+}
+
+.ds-wn-tour__text {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  gap: var(--space-5);
+}
+
+.ds-wn-tour__overline {
+  margin: var(--p-2) 0 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-wn-tour__title {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-7);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ds-wn-tour__desc {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+.ds-wn-tour__tiles {
+  flex: 1;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.ds-wn-tour__tile {
+  display: grid;
+  gap: var(--p-1);
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: start;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: var(--rounded-md);
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &:hover .ds-wn-tour__tile-media {
+    background: var(--accent);
+  }
+}
+
+.ds-wn-tour__tile-media {
+  display: grid;
+  place-items: center;
+  width: var(--w-24);
+  height: var(--h-14);
+  border-radius: var(--rounded-md);
+  background: var(--secondary);
+  color: var(--primary-text);
+  transition: background-color var(--duration-fast) var(--ease-out);
+
+  svg {
+    width: var(--w-6);
+    height: var(--h-6);
+  }
+}
+
+.ds-wn-tour__tile-title {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+.ds-wn-tour__tile-sub {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}

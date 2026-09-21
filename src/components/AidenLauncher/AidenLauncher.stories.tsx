@@ -7,7 +7,7 @@ import type { UiDocsParameters } from '../../types/DocsTypes';
 import { AidenSparkles } from '../../prototypes/AidenSparkles';
 
 const meta: Meta<typeof AidenLauncher> = {
-  title: 'AI/AidenLauncher',
+  title: 'AI/AILauncher',
   component: AidenLauncher,
   parameters: {
     ui: {

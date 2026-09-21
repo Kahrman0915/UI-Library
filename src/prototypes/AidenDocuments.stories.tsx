@@ -45,7 +45,7 @@ import Checkbox from '../components/Checkbox/Checkbox';
  * ready/failed scenarios.
  */
 const meta: Meta = {
-  title: 'Prototypes/Aiden Documents',
+  title: 'Prototypes/AI Documents',
   parameters: { layout: 'padded' },
 };
 
