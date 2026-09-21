@@ -1,0 +1,95 @@
+// DartBoards · Space + Shared with me + the Open in new tab dialog.
+// Prototype layout glue only — tokens throughout.
+
+.ds-space-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+// The space grid. The cards keep their own height (Space ② BUILD NOTES: a mixed
+// grid is ragged, and that is the product question, not a bug), so rows align
+// to the start rather than stretching every card to the tallest.
+.ds-space-grid {
+  display: grid;
+  gap: var(--space-3);
+  align-items: start;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--w-80)), 1fr));
+
+  &--two {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &--three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  &--full {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  // A KPI row on top: compact cards take one column, thumbnails span two.
+  &--kpis {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    > :has(.ds-space-card--thumbnail) {
+      grid-column: span 2;
+    }
+  }
+}
+
+.ds-space-cell {
+  min-width: 0;
+}
+
+.ds-space-card {
+  min-width: 0;
+}
+
+.ds-space-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 5 / 2;
+  border-radius: var(--rounded-md);
+  background: var(--muted);
+  color: var(--muted-foreground);
+  overflow: hidden;
+
+  svg {
+    width: var(--w-5);
+    height: var(--h-5);
+  }
+
+  &--skeleton {
+    background: none;
+  }
+}
+
+.ds-space-hover {
+  max-width: var(--max-w-xs);
+}
+
+.ds-space-empty {
+  flex: 1;
+}
+
+// ── Open in new tab (S5.1–S5.4) ────────────────────────────────────────────
+.ds-newtab__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-height: var(--h-80);
+}
+
+// Both regions scroll in ScrollAreas: the filter row sideways on a narrow
+// dialog, the results down, capped by .ds-scroll-max (DartSuite.scss).
+.ds-newtab__scroll {
+  --ds-scroll-max: var(--h-96);
+}
+
+.ds-newtab__results {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}

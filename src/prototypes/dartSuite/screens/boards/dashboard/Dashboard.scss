@@ -1,0 +1,240 @@
+// DartBoards · the Dashboard viewer. Tokens only.
+// One inset rhythm (24 at the design width): the header and the embed share it.
+
+.ds-dash {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  min-height: 100%;
+  padding-bottom: var(--space-2);
+  box-sizing: border-box;
+}
+
+.ds-dash-header {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  padding: var(--space-3) var(--space-2) var(--p-2);
+  background: var(--background);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ds-dash-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  padding: 0 var(--space-2);
+}
+
+// ── The embed region ───────────────────────────────────────────────────────
+
+.ds-dash-embed {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  flex: 1;
+  min-height: var(--h-96);
+  padding: var(--space-3);
+  border-radius: var(--rounded-lg);
+  background: var(--secondary);
+
+  &--center {
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--p-2);
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+  }
+
+  &__stamp {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    font-weight: var(--font-normal);
+    color: var(--muted-foreground);
+  }
+}
+
+.ds-dash-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-48), 1fr));
+  gap: var(--space-4);
+}
+
+.ds-dash-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  padding: var(--p-4);
+  border-radius: var(--rounded-md);
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+
+  &__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  &__value {
+    font-size: var(--text-2xl);
+    line-height: var(--leading-8);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.ds-dash-charts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-80), 1fr));
+  gap: var(--space-4);
+  flex: 1;
+}
+
+.ds-dash-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+  padding: var(--p-4);
+  border-radius: var(--rounded-md);
+  background: var(--card);
+  border: var(--border-w-100) solid var(--border);
+
+  &__title {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+  }
+}
+
+// Column chart — one bar per month.
+.ds-dash-columns {
+  display: flex;
+  align-items: stretch;
+  gap: var(--p-2);
+  flex: 1;
+  min-height: var(--h-56);
+
+  &__col {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: var(--p-1);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__bar {
+    width: 100%;
+    background: var(--chart-1);
+    border-radius: var(--rounded-sm) var(--rounded-sm) 0 0;
+  }
+
+  &__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+}
+
+// Horizontal bars — one per segment, one chart color each.
+.ds-dash-hbars {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: var(--p-3);
+  flex: 1;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__row {
+    display: grid;
+    grid-template-columns: var(--w-16) 1fr var(--w-8);
+    align-items: center;
+    gap: var(--p-3);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  &__track {
+    height: var(--h-3);
+    border-radius: var(--rounded-full);
+    background: var(--muted);
+    overflow: hidden;
+  }
+
+  &__fill {
+    display: block;
+    height: 100%;
+    border-radius: var(--rounded-full);
+
+    @for $i from 1 through 6 {
+      &--#{$i} {
+        background: var(--chart-#{$i});
+      }
+    }
+  }
+
+  &__value {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    color: var(--foreground);
+  }
+}
+
+// ── Export dialogs ─────────────────────────────────────────────────────────
+
+.ui-dialog.ds-dash-export {
+  max-width: var(--max-w-lg);
+  transition: max-width var(--duration-normal) var(--ease-out);
+
+  &.ds-dash-export--expanded {
+    max-width: var(--max-w-5xl);
+  }
+}
+
+.ds-dash-export__body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+}
+
+.ds-dash-export__fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+}
+
+.ds-dash-export__hint {
+  margin: var(--p-2) 0;
+}
+
+// A ScrollArea capped by .ds-scroll-max (DartSuite.scss). The Table draws its
+// own border, so the scroll box carries none.
+.ds-dash-export__table {
+  --ds-scroll-max: var(--h-48);
+
+  .ds-dash-export--expanded & {
+    --ds-scroll-max: var(--h-96);
+  }
+}
+
+.ds-dash-export__expand {
+  display: flex;
+  justify-content: flex-end;
+}

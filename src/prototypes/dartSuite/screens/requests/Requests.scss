@@ -1,0 +1,206 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DART Central · Request Flow — prototype layout glue. Tokens only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ds-requests-meta {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-requests-eyebrow {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  letter-spacing: var(--tracking-wider);
+  text-transform: uppercase;
+  color: var(--muted-foreground);
+}
+
+// ── My Requests · list cards ──
+.ds-requests-card {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-4);
+  padding: var(--space-3);
+
+  &__main {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1);
+  }
+
+  &__title {
+    margin: 0;
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+  }
+
+  &__aside {
+    flex: none;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: var(--p-1);
+  }
+
+  &__note {
+    padding: 0 var(--space-3) var(--space-3);
+  }
+}
+
+.ds-requests-skel-icon {
+  flex: none;
+  width: var(--w-10);
+  height: var(--h-10);
+}
+
+// The one division that matters — live above, finished below — gets more
+// air than the group boundaries do (③: 48 vs 32).
+.ds-requests-done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.ds-requests-divider {
+  margin-block: var(--space-4);
+}
+
+// ── Detail ──
+.ds-requests-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+}
+
+.ds-requests-thread {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-5);
+
+  &__entry {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--p-3);
+  }
+
+  &__body {
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--p-1);
+  }
+}
+
+.ds-requests-reply {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+
+    &--end {
+      justify-content: flex-end;
+    }
+  }
+}
+
+// ── Chooser ──
+.ds-requests-chooser {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-64), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-requests-option {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+  height: 100%;
+  padding: var(--space-3);
+
+  &__action {
+    margin-top: auto;
+  }
+}
+
+// ── Forms ──
+.ds-requests-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  &__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding: var(--space-3);
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+
+    &--end {
+      justify-content: flex-end;
+    }
+  }
+}
+
+.ds-requests-fields {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-5);
+}
+
+// Dashboard Request tabs: the panels sit a step below the mode switch.
+.ds-requests-tabs .ui-tabs__content {
+  padding-top: var(--space-3);
+}
+
+.ds-requests-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-56), 1fr));
+  gap: var(--p-4);
+  align-items: start;
+}
+
+.ds-requests-preview {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+// ── Scope · searchable multi-select (composed: Popover + Command + Checkbox) ──
+.ds-requests-scope {
+  min-width: var(--w-80);
+  padding: 0;
+
+  // Command scrolls its own list; this only caps how tall it grows here.
+  .ui-command__list {
+    max-height: var(--h-72);
+  }
+
+  &__check {
+    display: inline-flex;
+    pointer-events: none; // the row is the control; the box only shows state
+  }
+}

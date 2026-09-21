@@ -1,0 +1,367 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DART Central · Admin Flow — prototype-only layout glue. Tokens only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// KPI tiles (1.1, 2.1, and the single KPI on each MANAGE page).
+.ds-admin-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-48), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-admin-kpi {
+  padding: var(--space-3);
+  min-width: var(--w-40);
+
+  p {
+    margin: 0;
+  }
+}
+
+.ds-admin-kpi__value {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-9);
+  font-weight: var(--font-semibold);
+
+  &--info {
+    color: var(--info);
+  }
+  &--error {
+    color: var(--error);
+  }
+  &--success {
+    color: var(--success);
+  }
+  &--warning {
+    color: var(--warning);
+  }
+  &--violet {
+    color: var(--category-violet-text);
+  }
+}
+
+.ds-admin-kpi__label {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ds-admin-kpi__hint {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+// Toolbars.
+.ds-admin-search {
+  min-width: var(--w-72);
+}
+
+.ds-admin-selbar {
+  padding: var(--space-4) var(--space-3);
+  border-radius: var(--rounded-lg);
+  background: var(--primary-light);
+}
+
+// A link-style title inside a table cell or card: left-aligned, wrapping.
+.ds-admin-rowlink.ui-button {
+  height: auto;
+  padding-block: 0;
+  text-align: start;
+  white-space: normal;
+  justify-content: flex-start;
+}
+
+.ds-admin-ref {
+  white-space: nowrap;
+}
+
+// Status + date stacked on the right of a request header / queue card.
+.ds-admin-status {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--space-5);
+  white-space: nowrap;
+}
+
+// Overview queue preview card.
+.ds-admin-qcard {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+}
+
+.ds-admin-qcard__text {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-5);
+  flex: 1;
+  min-width: 0;
+}
+
+.ds-admin-qcard__title.ui-button {
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+// Overview customize mode.
+.ds-admin-widget {
+  position: relative;
+  min-width: 0;
+
+  &--editing {
+    outline: var(--border-w-100) dashed var(--border-hover);
+    outline-offset: var(--p-1);
+    border-radius: var(--rounded-lg);
+  }
+}
+
+.ds-admin-kpis .ds-admin-widget--editing .ds-admin-wctl {
+  position: absolute;
+  top: var(--p-1);
+  right: var(--p-1);
+  z-index: 1;
+}
+
+.ds-admin-wctl {
+  display: inline-flex;
+  gap: var(--p-0-5);
+  border-radius: var(--rounded-md);
+  background: var(--card);
+}
+
+// Simple label/value list (overview widgets, widget picker).
+.ds-admin-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  li {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+  }
+}
+
+// Review screens.
+.ds-admin-field {
+  display: contents;
+}
+
+.ds-admin-thread {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.ds-admin-thread__entry {
+  display: flex;
+  gap: var(--space-4);
+  align-items: flex-start;
+}
+
+.ds-admin-thread__text {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.ds-admin-thread__foot {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-w-100) solid var(--border);
+}
+
+.ds-admin-composer {
+  margin-top: var(--space-3);
+  padding-top: var(--space-3);
+  border-top: var(--border-w-100) solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ds-admin-composer__row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.ds-admin-composer__actions {
+  display: flex;
+  gap: var(--space-4);
+  flex-shrink: 0;
+}
+
+.ds-admin-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+
+  &--end {
+    justify-content: flex-end;
+  }
+
+  &--center {
+    justify-content: center;
+  }
+}
+
+.ds-admin-similar {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ds-admin-similar__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ds-admin-similar__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.ds-admin-inline-icon {
+  width: var(--w-3);
+  height: var(--h-3);
+  vertical-align: middle;
+}
+
+.ds-admin-dialog {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+// Banner cards (5.2).
+.ds-admin-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-4);
+}
+
+.ds-admin-banner__badges,
+.ds-admin-banner__actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.ds-admin-banner__title {
+  margin: 0 0 var(--space-5);
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  font-weight: var(--font-semibold);
+  color: var(--foreground);
+}
+
+.ds-admin-banner__meta {
+  margin: var(--space-4) 0 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+
+  + .ui-alert {
+    margin-top: var(--space-4);
+  }
+}
+
+// Usage charts (5.5) — a token-painted stand-in; there is no Chart component.
+.ds-admin-grid2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-80), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-admin-chart {
+  margin: 0;
+}
+
+.ds-admin-chart__plot {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-4);
+  height: var(--h-48);
+}
+
+.ds-admin-chart__col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.ds-admin-chart__bar {
+  width: 100%;
+  min-height: var(--h-1);
+  border-radius: var(--rounded-sm) var(--rounded-sm) 0 0;
+  background: var(--primary);
+}
+
+.ds-admin-chart__value,
+.ds-admin-chart__label {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+  white-space: nowrap;
+}
+
+// Access Control.
+.ds-admin-person {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.ds-admin-fieldset {
+  margin: 0;
+  padding: 0;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+
+  legend {
+    margin-bottom: var(--space-4);
+    font-weight: var(--font-medium);
+  }
+}
+
+.ds-admin-error {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--error);
+}

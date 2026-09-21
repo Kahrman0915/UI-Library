@@ -1,0 +1,77 @@
+/* ── DART Suite prototype · shared overlays ───────────────────────────────────
+   Overlays that more than one screen opens live here, so every screen opens
+   them the same way and gets the same component:
+
+   - Open in new tab (the tab bar's +)          → Space S5.1–S5.4
+   - Add to space (Browse, Dashboard, Builder)  → Browse B4.1–B4.5, Pattern/AddToSpace
+   - Dashboard info (Browse, Space)             → Browse B2.1–B2.2, Pattern/DashboardInfo
+   - How to get access (Dashboard, Space)       → Dashboard D2.3
+
+   The dialog components themselves live with the screens that own them; this
+   file only holds which one is open. */
+
+import { createContext, useContext, useMemo, useState } from 'react';
+import type { ReactNode } from 'react';
+import { AddToSpaceDialog } from './screens/boards/shared/AddToSpaceDialog';
+import { DashboardInfoDialog } from './screens/boards/shared/DashboardInfoDialog';
+import { GetAccessDialog } from './screens/boards/shared/GetAccessDialog';
+import { OpenInNewTabDialog } from './screens/boards/shared/OpenInNewTabDialog';
+
+type Overlay =
+  | { kind: 'new-tab' }
+  | { kind: 'add-to-space'; dashboardId: string }
+  | { kind: 'dashboard-info'; dashboardId: string }
+  | { kind: 'get-access'; dashboardId: string }
+  | null;
+
+type UiCtx = {
+  openNewTab: () => void;
+  openAddToSpace: (dashboardId: string) => void;
+  openDashboardInfo: (dashboardId: string) => void;
+  openGetAccess: (dashboardId: string) => void;
+  close: () => void;
+};
+
+const Ctx = createContext<UiCtx | null>(null);
+
+export function UiProvider({ children }: { children: ReactNode }) {
+  const [overlay, setOverlay] = useState<Overlay>(null);
+  const api = useMemo<UiCtx>(
+    () => ({
+      openNewTab: () => setOverlay({ kind: 'new-tab' }),
+      openAddToSpace: (dashboardId) => setOverlay({ kind: 'add-to-space', dashboardId }),
+      openDashboardInfo: (dashboardId) => setOverlay({ kind: 'dashboard-info', dashboardId }),
+      openGetAccess: (dashboardId) => setOverlay({ kind: 'get-access', dashboardId }),
+      close: () => setOverlay(null),
+    }),
+    [],
+  );
+  const close = api.close;
+  return (
+    <Ctx.Provider value={api}>
+      {children}
+      <OpenInNewTabDialog open={overlay?.kind === 'new-tab'} onClose={close} />
+      <AddToSpaceDialog
+        open={overlay?.kind === 'add-to-space'}
+        dashboardId={overlay?.kind === 'add-to-space' ? overlay.dashboardId : null}
+        onClose={close}
+      />
+      <DashboardInfoDialog
+        open={overlay?.kind === 'dashboard-info'}
+        dashboardId={overlay?.kind === 'dashboard-info' ? overlay.dashboardId : null}
+        onClose={close}
+      />
+      <GetAccessDialog
+        open={overlay?.kind === 'get-access'}
+        dashboardId={overlay?.kind === 'get-access' ? overlay.dashboardId : null}
+        onClose={close}
+      />
+    </Ctx.Provider>
+  );
+}
+
+export function useUi() {
+  const ctx = useContext(Ctx);
+  if (!ctx) throw new Error('useUi must be used inside <UiProvider>');
+  return ctx;
+}
