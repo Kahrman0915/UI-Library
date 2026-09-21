@@ -1,4 +1,4 @@
-// DartBoards · Space + Shared with me + the Open in new tab dialog.
+// DartBoards · Space + Shared with me.
 // Prototype layout glue only — tokens throughout.
 
 .ds-space-page {
@@ -74,22 +74,3 @@
   flex: 1;
 }
 
-// ── Open in new tab (S5.1–S5.4) ────────────────────────────────────────────
-.ds-newtab__body {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  min-height: var(--h-80);
-}
-
-// Both regions scroll in ScrollAreas: the filter row sideways on a narrow
-// dialog, the results down, capped by .ds-scroll-max (DartSuite.scss).
-.ds-newtab__scroll {
-  --ds-scroll-max: var(--h-96);
-}
-
-.ds-newtab__results {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}

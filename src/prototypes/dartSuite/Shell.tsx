@@ -31,7 +31,6 @@ import {
   Plus,
   Settings,
   ShieldCheck,
-  Slash,
   Sparkles,
   Store,
   Activity,
@@ -45,7 +44,10 @@ import type { LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import AppShell, { AppShellBody, AppShellMain, AppShellTabStrip, AppShellWorkspace } from '../../components/AppShell';
 import AppRail, { AppRailItem } from '../../components/AppRail';
-import TabBar, { TabBarList, TabBarMenu, TabBarNewTab, TabBarTab } from '../../components/TabBar';
+import TabBar, { TabBarList, TabBarMenu, TabBarNewGroupItem, TabBarTab } from '../../components/TabBar';
+import type { TabBarMenuItem } from '../../components/TabBar';
+import { ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from '../../components/ContextMenu';
+import Swatch from '../../components/Swatch';
 import DropdownMenu, {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -77,7 +79,7 @@ import { scopeProducts, useSuite } from './store';
 import type { SuiteState } from './store';
 import { appOf } from './types';
 import type { AdminScope, Route } from './types';
-import { useUi } from './ui';
+import { SuiteNewTab } from './newTab';
 import { WHATS_NEW } from './screens/whatsNew/entries';
 
 /* ── Tab titles and icons ─────────────────────────────────────────────────── */
@@ -289,10 +291,42 @@ const SCOPES: { value: string; label: string }[] = [
 export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactNode }) {
   const { state, setAdminScope } = useSuite();
   const nav = useNav();
-  const { openNewTab } = useUi();
   const app = appOf(nav.route);
 
-  const menuTabs = nav.tabs.map((t) => ({ value: t.id, ...tabMeta(t.route, state) }));
+  const item = (t: { id: string; route: Route }): TabBarMenuItem => ({ value: t.id, ...tabMeta(t.route, state), groupable: t.id !== 'home' });
+  const setOf = (group: string | null) => nav.tabs.filter((t) => t.id !== 'home' && t.group === group).map(item);
+
+  // Right-click on a tab: move it to another group, or start a new one with it.
+  const tabMenu = (tabId: string) => {
+    const targets = nav.groups.filter((g) => g.id !== nav.activeGroup);
+    return (
+      <>
+        <ContextMenuSub>
+          <ContextMenuSubTrigger>Add to group</ContextMenuSubTrigger>
+          <ContextMenuSubContent>
+            {targets.map((g) => (
+              <ContextMenuItem key={g.id} onClick={() => nav.moveToGroup(tabId, g.id)}>
+                <Swatch color={g.color} size="sm" />
+                {g.label}
+              </ContextMenuItem>
+            ))}
+            {targets.length > 0 && <ContextMenuSeparator />}
+            <TabBarNewGroupItem tabs={[tabId]} />
+          </ContextMenuSubContent>
+        </ContextMenuSub>
+        {nav.activeGroup !== null && <ContextMenuItem onClick={() => nav.moveToGroup(tabId, null)}>Remove from group</ContextMenuItem>}
+        <ContextMenuSeparator />
+        <ContextMenuItem
+          onClick={() => {
+            nav.markTabBarUsed();
+            nav.closeTab(tabId);
+          }}
+        >
+          Close tab
+        </ContextMenuItem>
+      </>
+    );
+  };
 
   return (
     <AppShell id="ds">
@@ -308,7 +342,6 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
               aria-label="DART Central home"
               onClick={() => nav.activate('home')}
             />
-            <Slash className="ui-app-shell__sep" aria-hidden="true" />
             <DropdownMenu id="ds-account-menu">
               <DropdownMenuTrigger>
                 <Button id="ds-account" className="ui-app-shell__account" style="ghost" label={ME.name} IconRight={ChevronDown} />
@@ -359,7 +392,8 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
           }}
         >
           <TabBarList aria-label="Open documents">
-            {nav.tabs.map((t) => {
+            {/* One set at a time: groups are switched from the tab menu, never drawn in the bar. */}
+            {nav.visibleTabs.map((t) => {
               const { label, Icon } = tabMeta(t.route, state);
               return t.id === 'home' ? (
                 <TabBarTab key={t.id} value="home" label="Home" Icon={Home} iconOnly closable={false} />
@@ -373,17 +407,36 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
                     nav.markTabBarUsed();
                     nav.closeTab(t.id);
                   }}
+                  menu={tabMenu(t.id)}
                 />
               );
             })}
           </TabBarList>
-          <TabBarNewTab
-            onClick={() => {
+          <SuiteNewTab />
+          <TabBarMenu
+            tabs={nav.visibleTabs.map(item)}
+            recentlyClosed={nav.closed.slice(0, 5).map((c) => ({ ...tabMeta(c.route, state), value: c.key }))}
+            onReopen={(i) => {
               nav.markTabBarUsed();
-              openNewTab();
+              nav.reopen(i.value);
             }}
+            groups={nav.groups.map((g) => ({ value: g.id, label: g.label, color: g.color, tabs: setOf(g.id) }))}
+            activeGroup={nav.activeGroup}
+            onSelectGroup={(g) => {
+              nav.markTabBarUsed();
+              nav.selectGroup(g);
+            }}
+            ungroupedTabs={setOf(null)}
+            onOpenTab={(tab, g) => {
+              nav.markTabBarUsed();
+              nav.openTabIn(tab, g);
+            }}
+            onCreateGroup={nav.createGroup}
+            onRecolorGroup={nav.recolorGroup}
+            onRenameGroup={nav.renameGroup}
+            onUngroup={nav.ungroup}
+            onDeleteGroup={nav.deleteGroup}
           />
-          <TabBarMenu tabs={menuTabs} />
         </TabBar>
       </AppShellTabStrip>
 

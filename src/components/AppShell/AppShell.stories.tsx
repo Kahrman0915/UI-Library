@@ -1,13 +1,17 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { useState } from 'react';
-import { BarChart3, Bell, Box, ChartColumn, ChevronDown, CircleHelp, CircleUser, FileText, Flame, LayoutDashboard, LayoutGrid, Home, Inbox, Layers, ListChecks, LogOut, Plus, Search, Settings, Slash } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { BarChart3, Bell, Box, ChartColumn, ChevronDown, CircleHelp, CircleUser, FileText, Flame, LayoutDashboard, LayoutGrid, Home, Inbox, Layers, ListChecks, LogOut, Plus, Search, Settings } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import AppShell, { AppShellTabStrip, AppShellBody, AppShellWorkspace, AppShellMain } from './AppShell';
 import AppRail, { AppRailItem } from '../AppRail';
-import TabBar, { TabBarGroup, TabBarList, TabBarTab, TabBarNewTab, TabBarMenu, TabBarSplit } from '../TabBar';
+import TabBar, { TabBarList, TabBarTab, TabBarNewTabMenu, TabBarMenu, TabBarNewGroupItem, TabBarSplit } from '../TabBar';
 import SplitView, { SplitViewPane } from '../SplitView';
-import { ContextMenuItem, ContextMenuSeparator } from '../ContextMenu';
+import { ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from '../ContextMenu';
+import Swatch from '../Swatch';
 import { useTabLayout } from '../../hooks/useTabLayout';
+import type { TabBarMenuProps, TabBarNewTabCategory, TabBarNewTabItem } from '../TabBar/TabBar.types';
+import { WINDOW, isNewTab, newTabValue, useTabSets } from '../../prototypes/tabSets';
+import type { TabSet, TabSetGroup, TabSets } from '../../prototypes/tabSets';
 import type { TabLayoutItem } from '../../hooks/useTabLayout';
 import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGroupLabel, SidebarInset, SidebarMenu, SidebarMenuBadge, SidebarMenuButton, SidebarMenuItem, SidebarProvider, SidebarTrigger } from '../Sidebar';
 import DropdownMenu, { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../DropdownMenu';
@@ -49,6 +53,16 @@ const meta: Meta<typeof AppShell> = {
         notes: 'The Aiden mounting contract (`Fab` at `--z-40`, below every overlay, and hidden while an `AidenPanel` is open) is composed by the app for now; see the DART Central prototype.',
       },
       changelog: [
+        {
+          date: '2026-09-21',
+          summary: 'The slash between the home mark and your name is now a short straight line, drawn by the shell in line with the rail\'s right edge. The mark sits right above the rail\'s icons and your name lines up with the sidebar below it.',
+          detail: '`.ui-app-shell__logo` is a two-column grid: the first column is `--app-rail-width`, with the mark centered in it, and the account button fills the second. The account button starts `--p-3` (12) in, where the sidebar\'s rows start, and its `--p-2` padding puts the name level with the sidebar\'s row icons; the cell keeps `--p-3` at the end to match. The divider is the cell\'s `::before`: 1px by `--h-4`, `--sidebar-border`, on the same pixel as the rail\'s right border (`--app-rail-width - --border-w-100`), so it reads as that border continuing into the strip. The first column is the rail\'s content box (width less the border), so the mark centers exactly over the rail\'s icons. Chosen upright from an angle study. **Apps no longer pass a divider**: remove any `Slash` or `.ui-app-shell__sep` from the `logo` slot (the class is gone) and pass exactly the mark and the account button.',
+        },
+        {
+          date: '2026-09-21',
+          summary: 'Every example on this page uses the same "+" and the same group button: the "+" opens the new-tab palette and the button at the far end switches tab groups.',
+          detail: 'The Overlays story had a plain `TabBarNewTab` and no `TabBarMenu`. It now renders the shared `ShellNewTab` (the same `TabBarNewTabMenu` the Playground uses) and a `TabBarMenu` wired to the same `useTabSets` groups. No component change.',
+        },
         {
           date: '2026-09-19',
           summary: 'A drawer opened in the shell starts below the tab strip, the Aiden button sits under it, and toasts stack above the Aiden button.',
@@ -123,14 +137,42 @@ const DOCS: Record<string, Doc> = {
   volume: { label: 'Originations volume', Icon: BarChart3 },
   pipeline: { label: 'Pipeline health', Icon: ChartColumn },
   'whats-new': { label: "What's New", Icon: Bell },
+  dashboards: { label: 'Dashboards', Icon: LayoutDashboard },
 };
+/* What the "+" menu offers, by category. */
+const SHELL_CATEGORIES: TabBarNewTabCategory[] = [
+  { value: 'requests', label: 'Requests' },
+  { value: 'dashboards', label: 'Dashboards' },
+  { value: 'news', label: 'News' },
+];
+const SHELL_PAGES: TabBarNewTabItem[] = [
+  { value: 'requests', label: 'My Requests', Icon: Inbox, category: 'requests' },
+  { value: 'queue', label: 'Approval queue', Icon: ListChecks, category: 'requests' },
+  { value: 'volume', label: 'Originations volume', Icon: BarChart3, category: 'dashboards' },
+  { value: 'pipeline', label: 'Pipeline health', Icon: ChartColumn, category: 'dashboards' },
+  { value: 'whats-new', label: "What's New", Icon: Bell, category: 'news' },
+];
+
+/** The shell's "+": the same new-tab palette in every AppShell story. */
+const ShellNewTab = ({ onOpen }: { onOpen: (value: string) => void }) => (
+  <TabBarNewTabMenu
+    items={SHELL_PAGES}
+    categories={SHELL_CATEGORIES}
+    recent={SHELL_PAGES.slice(0, 3).map((p, i) => ({ ...p, description: ['Opened today', 'Opened yesterday', '2 days ago'][i] }))}
+    actions={[{ value: 'blank', label: 'New blank tab', Icon: Plus }]}
+    onOpen={(item) => onOpen(item.value === 'blank' ? newTabValue() : item.value)}
+  />
+);
+
+/** A catalog document, or a blank "New tab" the "+" opened. */
+const docOf = (v: string): Doc => DOCS[v] ?? (isNewTab(v) ? { label: 'New tab', Icon: Plus } : { label: v, Icon: FileText });
 
 /** My Requests is the real page; the other tabs open a titled placeholder. */
 function Page({ value, width }: { value: string; width: PageContainerWidth }) {
   if (value !== 'requests') {
     return (
       <PageContainer width={width}>
-        <PageHeader id={`page-${value}`} title={DOCS[value].label} description="An open document in the workspace." />
+        <PageHeader id={`page-${value}`} title={docOf(value).label} description="An open document in the workspace." />
       </PageContainer>
     );
   }
@@ -162,57 +204,93 @@ function Page({ value, width }: { value: string; width: PageContainerWidth }) {
 
 
 /**
- * Tab groups, Notion's model: a group is a named set of tabs and the bar shows one set at a
- * time. `null` is the window's ungrouped tabs. Each set keeps its own saved layout.
+ * Tab groups, Notion's model: a group is a named set of tabs and the bar shows ONE set at a
+ * time; the tab menu at the far end is the switcher. The model lives in
+ * `prototypes/tabSets.tsx`, shared with the TabBar stories, so both pages run the same rules.
  */
-type Group = { value: string; label: string; tabs: string[] };
 const UNGROUPED = ['home', 'requests', 'queue', 'volume', 'pipeline', 'whats-new'];
-const INITIAL_GROUPS: Group[] = [
-  { value: 'q3', label: 'Q3 Review', tabs: ['home', 'volume', 'pipeline'] },
-  { value: 'onboarding', label: 'Onboarding', tabs: ['home', 'whats-new', 'queue'] },
+const INITIAL_GROUPS: TabSetGroup[] = [
+  { value: 'q3', label: 'Q3 Review', color: 'violet' },
+  { value: 'onboarding', label: 'Onboarding', color: 'emerald' },
 ];
+const INITIAL_SETS: Record<string, TabSet> = {
+  [WINDOW]: { tabs: UNGROUPED, active: 'requests' },
+  q3: { tabs: ['home', 'volume', 'pipeline'], active: 'volume' },
+  onboarding: { tabs: ['home', 'whats-new', 'queue'], active: 'whats-new' },
+};
 
 function Shell({ width }: { width: PageContainerWidth }) {
-  const [groups, setGroups] = useState<Group[]>(INITIAL_GROUPS);
-  const [activeGroup, setActiveGroup] = useState<string | null>(null);
-  const group = groups.find((g) => g.value === activeGroup) ?? null;
-  // Keyed on the group, so switching sets remounts the bar with that set's own saved layout.
+  const sets = useTabSets({
+    groups: INITIAL_GROUPS,
+    sets: INITIAL_SETS,
+    pinned: 'home',
+    item: (v) => ({ value: v, label: docOf(v).label, Icon: docOf(v).Icon }),
+    notify: (title, description) => toast.success(title, { description }),
+  });
+  // Keyed on the set, so switching remounts the bar with that set's own tabs.
   return (
     <ShellFrame
-      key={activeGroup ?? 'window'}
+      key={sets.key}
       width={width}
-      group={group}
-      groups={groups}
-      onSelectGroup={setActiveGroup}
-      onGroupTabs={(tabs) => {
-        const value = `group-${groups.length + 1}`;
-        setGroups([...groups, { value, label: `Group ${groups.length + 1}`, tabs }]);
-        setActiveGroup(value);
-      }}
+      set={sets.set}
+      onSetChange={sets.reportSet}
+      closed={sets.closed}
+      onClosed={sets.onClosed}
+      onReopened={sets.onReopened}
+      menu={sets.menuProps}
+      groups={sets.groups}
+      activeGroup={sets.activeGroup}
+      onMoveTab={sets.moveTab}
     />
   );
 }
 
 function ShellFrame({
   width,
-  group,
+  set,
+  onSetChange,
+  closed,
+  onClosed,
+  onReopened,
+  menu,
   groups,
-  onSelectGroup,
-  onGroupTabs,
+  activeGroup,
+  onMoveTab,
 }: {
   width: PageContainerWidth;
-  group: Group | null;
-  groups: Group[];
-  onSelectGroup: (value: string | null) => void;
-  onGroupTabs: (tabs: string[]) => void;
+  set: TabSet;
+  onSetChange: (set: TabSet) => void;
+  closed: string[];
+  onClosed: (value: string) => void;
+  onReopened: (value: string) => void;
+  menu: Omit<TabBarMenuProps, 'tabs' | 'recentlyClosed' | 'onReopen'>;
+  groups: TabSetGroup[];
+  activeGroup: string | null;
+  onMoveTab: (tab: string, target: string | null) => void;
 }) {
-  const initialTabs = group ? group.tabs : UNGROUPED;
-  const layout = useTabLayout({
-    storageKey: `ui-lib-stories-app-shell-tabs-${group ? group.value : 'window'}`,
-    initial: { tabs: initialTabs, active: initialTabs[1] ?? initialTabs[0], groups: [], groupOf: {} },
-  });
+  const layout = useTabLayout({ initial: { tabs: set.tabs, active: set.active, groups: [], groupOf: {} } });
   const { state } = layout;
-  const closed = Object.keys(DOCS).filter((v) => !state.tabs.includes(v));
+
+  // Report this set's tabs back to the Shell, so the menu can search them from any other set.
+  const tabsKey = state.tabs.join('|');
+  useEffect(() => {
+    onSetChange({ tabs: state.tabs, active: state.active ?? state.tabs[0] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabsKey, state.active]);
+
+  const closeTab = (value: string) => {
+    layout.close(value);
+    onClosed(value);
+  };
+  // Moving a tab takes it off this bar; the Shell adds it to the other set.
+  const moveTab = (value: string, target: string | null) => {
+    layout.close(value);
+    onMoveTab(value, target);
+  };
+  const reopen = (value: string) => {
+    layout.open(value);
+    onReopened(value);
+  };
 
   const tabMenu = (value: string) => (
     <>
@@ -221,13 +299,34 @@ function ShellFrame({
       ) : (
         state.active &&
         state.active !== value && (
-          <ContextMenuItem onClick={() => layout.split(value, 'end', state.active!)}>Open beside {DOCS[state.active].label}</ContextMenuItem>
+          <ContextMenuItem onClick={() => layout.split(value, 'end', state.active!)}>Open beside {docOf(state.active).label}</ContextMenuItem>
         )
       )}
-      {DOCS[value].closable !== false && (
+      {value !== 'home' && (
         <>
           <ContextMenuSeparator />
-          <ContextMenuItem onClick={() => layout.close(value)}>Close tab</ContextMenuItem>
+          <ContextMenuSub>
+            <ContextMenuSubTrigger>Add to group</ContextMenuSubTrigger>
+            <ContextMenuSubContent>
+              {groups
+                .filter((g) => g.value !== activeGroup)
+                .map((g) => (
+                  <ContextMenuItem key={g.value} onClick={() => moveTab(value, g.value)}>
+                    <Swatch color={g.color} size="sm" />
+                    {g.label}
+                  </ContextMenuItem>
+                ))}
+              {groups.some((g) => g.value !== activeGroup) && <ContextMenuSeparator />}
+              <TabBarNewGroupItem tabs={[value]} />
+            </ContextMenuSubContent>
+          </ContextMenuSub>
+          {activeGroup !== null && <ContextMenuItem onClick={() => moveTab(value, null)}>Remove from group</ContextMenuItem>}
+        </>
+      )}
+      {docOf(value).closable !== false && (
+        <>
+          <ContextMenuSeparator />
+          <ContextMenuItem onClick={() => closeTab(value)}>Close tab</ContextMenuItem>
         </>
       )}
     </>
@@ -237,11 +336,11 @@ function ShellFrame({
     <TabBarTab
       key={value}
       value={value}
-      label={DOCS[value].label}
-      Icon={DOCS[value].Icon}
+      label={docOf(value).label}
+      Icon={docOf(value).Icon}
       iconOnly={value === 'home'}
-      closable={DOCS[value].closable !== false}
-      onClose={() => layout.close(value)}
+      closable={docOf(value).closable !== false}
+      onClose={() => closeTab(value)}
       menu={tabMenu(value)}
     />
   );
@@ -263,7 +362,6 @@ function ShellFrame({
         logo={
           <>
             <Button id="shell-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
-            <Slash className="ui-app-shell__sep" aria-hidden="true" />
             <DropdownMenu id="shell-account-menu">
             <DropdownMenuTrigger>
               <Button
@@ -301,42 +399,15 @@ function ShellFrame({
       >
         <TabBar id="shell-tabs" value={state.active ?? undefined} onValueChange={layout.select} onTabMove={layout.move}>
           <TabBarList aria-label="Open documents">
-            {layout.segments.map((seg) =>
-              seg.type === 'group' ? (
-                <TabBarGroup
-                  key={seg.group.id}
-                  value={seg.group.id}
-                  label={seg.group.label}
-                  color={seg.group.color}
-                  collapsed={seg.group.collapsed}
-                  onCollapsedChange={(collapsed) => layout.updateGroup(seg.group.id, { collapsed })}
-                  menu={
-                    <>
-                      <ContextMenuItem onClick={() => layout.ungroup(seg.group.id)}>Ungroup</ContextMenuItem>
-                      <ContextMenuItem variant="destructive" onClick={() => layout.closeGroup(seg.group.id)}>
-                        Close group
-                      </ContextMenuItem>
-                    </>
-                  }
-                >
-                  {seg.items.map(renderItem)}
-                </TabBarGroup>
-              ) : (
-                renderItem(seg)
-              ),
-            )}
+            {/* One set at a time: groups are switched from the tab menu, never drawn in the bar. */}
+            {layout.segments.map((seg) => (seg.type === 'group' ? seg.items.map(renderItem) : renderItem(seg)))}
           </TabBarList>
-          <TabBarNewTab onClick={() => closed[0] && layout.open(closed[0])} disabled={closed.length === 0} />
+          <ShellNewTab onOpen={layout.open} />
           <TabBarMenu
-            tabs={state.tabs.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
-            recentlyClosed={closed.map((v) => ({ value: v, label: DOCS[v].label, Icon: DOCS[v].Icon }))}
-            onReopen={(item) => layout.open(item.value)}
-            groupLabel={group?.label}
-            groups={groups.map((g) => ({ value: g.value, label: g.label, count: g.tabs.length }))}
-            activeGroup={group?.value ?? null}
-            onSelectGroup={onSelectGroup}
-            ungroupedCount={UNGROUPED.length}
-            onGroupTabs={() => onGroupTabs(state.tabs)}
+            {...menu}
+            tabs={state.tabs.map((v) => ({ value: v, label: docOf(v).label, Icon: docOf(v).Icon, groupable: v !== 'home' }))}
+            recentlyClosed={closed.filter((v) => !state.tabs.includes(v)).map((v) => ({ value: v, label: docOf(v).label, Icon: docOf(v).Icon }))}
+            onReopen={(item) => reopen(item.value)}
           />
         </TabBar>
       </AppShellTabStrip>
@@ -380,7 +451,7 @@ function ShellFrame({
                   {panes.map((v) => (
                     <SplitViewPane
                       key={v}
-                      aria-label={DOCS[v].label}
+                      aria-label={docOf(v).label}
                       active={v === state.active}
                       onPointerDown={() => v !== state.active && layout.select(v)}
                     >
@@ -427,6 +498,61 @@ export const FullWidthPage: Story = {
  * the tabs stay visible, and covers the rail, the sidebar and the page. The Aiden `Fab` sits
  * under it (`--z-40`, below every overlay). A toast in the Fab's corner stacks above the Fab.
  */
+/**
+ * The Overlays story's bar. Smaller than the Playground's (no split view, no drag), but its
+ * "+" and its group button are the same controls running the same tab-set model.
+ */
+function OverlayTabs() {
+  const sets = useTabSets({
+    groups: INITIAL_GROUPS,
+    sets: { ...INITIAL_SETS, [WINDOW]: { tabs: ['home', 'dashboards'], active: 'dashboards' } },
+    pinned: 'home',
+    item: (v) => ({ value: v, label: docOf(v).label, Icon: docOf(v).Icon }),
+  });
+  return <OverlayTabsFrame key={sets.key} sets={sets} />;
+}
+
+function OverlayTabsFrame({ sets }: { sets: TabSets }) {
+  const layout = useTabLayout({ initial: { tabs: sets.set.tabs, active: sets.set.active, groups: [], groupOf: {} } });
+  const { state } = layout;
+  const tabsKey = state.tabs.join('|');
+  useEffect(() => {
+    sets.reportSet({ tabs: state.tabs, active: state.active ?? state.tabs[0] });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabsKey, state.active]);
+  const closed = sets.closed.filter((v) => !state.tabs.includes(v));
+  return (
+    <TabBar id="overlay-tabs" value={state.active ?? undefined} onValueChange={layout.select}>
+      <TabBarList aria-label="Open documents">
+        {state.tabs.map((v) => (
+          <TabBarTab
+            key={v}
+            value={v}
+            label={docOf(v).label}
+            Icon={docOf(v).Icon}
+            iconOnly={v === 'home'}
+            closable={docOf(v).closable !== false}
+            onClose={() => {
+              layout.close(v);
+              sets.onClosed(v);
+            }}
+          />
+        ))}
+      </TabBarList>
+      <ShellNewTab onOpen={layout.open} />
+      <TabBarMenu
+        {...sets.menuProps}
+        tabs={state.tabs.map(sets.menuItem)}
+        recentlyClosed={closed.map(sets.menuItem)}
+        onReopen={(item) => {
+          layout.open(item.value);
+          sets.onReopened(item.value);
+        }}
+      />
+    </TabBar>
+  );
+}
+
 function OverlayShell() {
   const [open, setOpen] = useState(false);
   return (
@@ -435,18 +561,11 @@ function OverlayShell() {
         logo={
           <>
             <Button id="overlay-home" style="ghost" size="sm" iconOnly IconCenter={() => <LayoutGrid size={16} aria-hidden="true" />} aria-label="DART Central home" />
-            <Slash className="ui-app-shell__sep" aria-hidden="true" />
             <Button id="overlay-account" className="ui-app-shell__account" style="ghost" label="Kahrman McKenzie" IconRight={ChevronDown} />
           </>
         }
       >
-        <TabBar id="overlay-tabs" value="dashboards">
-          <TabBarList aria-label="Open documents">
-            <TabBarTab value="home" label="Home" Icon={Home} iconOnly closable={false} />
-            <TabBarTab value="dashboards" label="Dashboards" Icon={LayoutDashboard} />
-          </TabBarList>
-          <TabBarNewTab />
-        </TabBar>
+        <OverlayTabs />
       </AppShellTabStrip>
       <AppShellBody>
         <SidebarProvider>
