@@ -18,6 +18,12 @@ const meta: Meta<typeof HoverCard> = {
       tags: ['compound', '3 parts', 'portal'],
       changelog: [
         {
+          date: '2026-09-21',
+          summary: 'Right- and center-aligned menus now line up with their trigger instead of hanging a few pixels past it.',
+          detail:
+            'Position is computed from the surface’s layout size (`measureFloating`, `offsetWidth`/`offsetHeight`) instead of `getBoundingClientRect()`. The surface opens on a `--motion-scale-in` (0.97) keyframe, so the rect read in the positioning effect was ~3% small and `align` `end`/`center` landed that far past the anchor — a 320px menu pinned to the window’s right edge overhung it by ~10px — and was never re-measured once the animation settled.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

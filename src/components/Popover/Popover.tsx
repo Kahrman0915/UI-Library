@@ -15,7 +15,7 @@ import { createPortal } from 'react-dom';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
-import { computePosition } from '#/utils/computePosition';
+import { computePosition, measureFloating } from '#/utils/computePosition';
 import type {
   PopoverCloseProps,
   PopoverContentProps,
@@ -163,7 +163,7 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
     const reposition = useCallback(() => {
       if (!ctx.triggerNode || !contentRef.current) return;
       const triggerRect = ctx.triggerNode.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
+      const contentRect = measureFloating(contentRef.current);
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );

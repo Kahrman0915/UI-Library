@@ -12,7 +12,7 @@ import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
-import { computePosition } from '#/utils/computePosition';
+import { computePosition, measureFloating } from '#/utils/computePosition';
 import type { ComboboxOption, ComboboxProps } from './Combobox.types';
 import '../Input/Input.scss';
 import '../Label/Label.scss';
@@ -139,7 +139,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     const reposition = useCallback(() => {
       if (!triggerRef.current || !contentRef.current) return;
       const triggerRect = triggerRef.current.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
+      const contentRect = measureFloating(contentRef.current);
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );

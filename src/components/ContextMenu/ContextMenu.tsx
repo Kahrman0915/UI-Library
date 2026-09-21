@@ -12,7 +12,7 @@ import { createPortal } from 'react-dom';
 import { Check, ChevronRight } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
-import { computePosition } from '#/utils/computePosition';
+import { computePosition, measureFloating } from '#/utils/computePosition';
 import {
   ContextMenuRootContext,
   ContextMenuSubContext,
@@ -235,7 +235,7 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
 
     useLayoutEffect(() => {
       if (!ctx.open || !ctx.pointerPosition || !contentRef.current) return;
-      const rect = contentRef.current.getBoundingClientRect();
+      const rect = measureFloating(contentRef.current);
       setPosition(
         clampToViewport(
           ctx.pointerPosition.x,
@@ -733,7 +733,7 @@ const ContextMenuSubContent = forwardRef<
     useLayoutEffect(() => {
       if (!sub.open || !sub.triggerNode || !contentRef.current) return;
       const triggerRect = sub.triggerNode.getBoundingClientRect();
-      const contentRect = contentRef.current.getBoundingClientRect();
+      const contentRect = measureFloating(contentRef.current);
       setPosition(
         computePosition(triggerRect, contentRect, side, align, sideOffset),
       );
