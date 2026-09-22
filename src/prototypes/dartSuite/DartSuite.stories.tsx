@@ -12,7 +12,8 @@ const meta: Meta = {
   title: 'Prototypes/Prototype',
   // The theme is a Storybook global, not a wrapper attribute: dialogs, menus and
   // toasts portal to <body>, and a wrapper's data-theme never reaches them. The
-  // preview decorator writes this onto <html>, so portals are themed too.
+  // preview decorator writes this onto <html>, so portals are themed too. The
+  // user's own pick (account menu → Theme, see ui.tsx) then takes over.
   globals: { theme: 'db' },
   parameters: {
     layout: 'fullscreen',
@@ -26,7 +27,9 @@ const meta: Meta = {
         'a request you file appears in the admin queue, approving it changes what the requester sees, a dashboard ' +
         'you add to a space appears on that space.\n\n' +
         '**Switch who you are from the account menu** (Prototype · act as) to see the requester, overall-admin, ' +
-        'sub-admin and Aiden-only admin sidebars. All data is sample data and resets on reload.\n\n' +
+        'sub-admin and Aiden-only admin sidebars. **Pick your theme there too** (Theme): one of the six built themes for ' +
+        'the whole suite, every application and the rail included — not one per application. Indigo by default; the pick ' +
+        'is remembered. All data is sample data and resets on reload.\n\n' +
         'Built only from `@ui/lib` components; anything Figma names `Pattern/*` is composed at the call site.',
       tags: ['prototype', 'end to end', 'dummy data'],
     },
