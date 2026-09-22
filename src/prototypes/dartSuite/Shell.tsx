@@ -82,7 +82,8 @@ import type { SuiteState } from './store';
 import { appOf } from './types';
 import type { AdminScope, Route } from './types';
 import { SuiteNewTab } from './newTab';
-import { useUi } from './ui';
+import { THEMES, useUi } from './ui';
+import type { ThemeCode } from './ui';
 import { WHATS_NEW } from './screens/whatsNew/entries';
 
 /* ── Tab titles and icons ─────────────────────────────────────────────────── */
@@ -294,7 +295,7 @@ const SCOPES: { value: string; label: string }[] = [
 export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactNode }) {
   const { state, setAdminScope } = useSuite();
   const nav = useNav();
-  const { aidenStop, setAidenStop } = useUi();
+  const { aidenStop, setAidenStop, theme, setTheme } = useUi();
   const app = appOf(nav.route);
 
   const item = (t: { id: string; route: Route }): TabBarMenuItem => ({ value: t.id, ...tabMeta(t.route, state), groupable: t.id !== 'home' });
@@ -360,6 +361,17 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
                   <Settings aria-hidden="true" />
                   Settings
                 </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                {/* One theme for the whole suite, chosen by the user (not one per application). */}
+                <DropdownMenuLabel>Theme</DropdownMenuLabel>
+                <DropdownMenuRadioGroup value={theme} onValueChange={(v) => setTheme(v as ThemeCode)}>
+                  {THEMES.map((t) => (
+                    <DropdownMenuRadioItem key={t.value} value={t.value}>
+                      <span className="ds-theme-dot" data-theme={t.value} aria-hidden="true" />
+                      {t.label}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Prototype · act as</DropdownMenuLabel>
                 <DropdownMenuRadioGroup

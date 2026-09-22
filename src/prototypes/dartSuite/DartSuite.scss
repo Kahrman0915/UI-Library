@@ -59,3 +59,14 @@
     max-height: var(--ds-scroll-max);
   }
 }
+
+// The account menu's theme picker: a chip in each theme's own primary. The chip
+// carries data-theme itself, so it resolves that theme's --primary wherever the
+// menu is portalled, whatever theme the page is in.
+.ds-theme-dot {
+  flex: none;
+  width: var(--w-3);
+  height: var(--h-3);
+  border-radius: var(--rounded-full);
+  background: var(--primary);
+}
