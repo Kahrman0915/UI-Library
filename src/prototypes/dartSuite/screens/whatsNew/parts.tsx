@@ -6,9 +6,11 @@ import { ChevronLeft, ChevronRight, LayoutGrid, Library, Megaphone, Move, Rocket
 import type { LucideIcon } from 'lucide-react';
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
+import Code from '../../../../components/Code';
 import CloseButton from '../../../../components/CloseButton';
 import Dialog, { DialogMedia } from '../../../../components/Dialog';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
+import Item, { ItemContent, ItemDescription, ItemMedia, ItemTitle } from '../../../../components/Item';
 import { EditModeDemo } from '../../../productDemos/EditModeDemo';
 import { LibraryDemo } from '../../../productDemos/LibraryDemo';
 import { SpacesDemo } from '../../../productDemos/SpacesDemo';
@@ -45,7 +47,7 @@ export function EntryMeta({ entry }: { entry: WnEntry }) {
       <span>{entry.date}</span>
       <span aria-hidden="true">·</span>
       <span>{entry.product}</span>
-      {entry.version && <code className="ds-wn-version">{entry.version}</code>}
+      {entry.version && <Code>{entry.version}</Code>}
     </div>
   );
 }
@@ -146,27 +148,31 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
           </div>
         ) : (
           <div className="ds-wn-tour__tiles" aria-live="polite">
-            <button type="button" className="ds-wn-tour__tile" onClick={close}>
-              <span className="ds-wn-tour__tile-media">
-                <Megaphone aria-hidden="true" />
-              </span>
-              <span className="ds-wn-tour__tile-title">What’s New</span>
-              <span className="ds-wn-tour__tile-sub">All the updates</span>
-            </button>
-            <button
-              type="button"
-              className="ds-wn-tour__tile"
+            <Item id="ds-wn-tour-tile-whats-new" size="sm" onClick={close}>
+              <ItemMedia variant="icon">
+                <Megaphone />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>What’s New</ItemTitle>
+                <ItemDescription>All the updates</ItemDescription>
+              </ItemContent>
+            </Item>
+            <Item
+              id="ds-wn-tour-tile-story"
+              size="sm"
               onClick={() => {
                 close();
                 go({ page: 'whats-new-story', id: 'introducing-dartboards' });
               }}
             >
-              <span className="ds-wn-tour__tile-media">
-                <Rocket aria-hidden="true" />
-              </span>
-              <span className="ds-wn-tour__tile-title">Release story</span>
-              <span className="ds-wn-tour__tile-sub">How to get started</span>
-            </button>
+              <ItemMedia variant="icon">
+                <Rocket />
+              </ItemMedia>
+              <ItemContent>
+                <ItemTitle>Release story</ItemTitle>
+                <ItemDescription>How to get started</ItemDescription>
+              </ItemContent>
+            </Item>
           </div>
         )}
         {step < last ? (

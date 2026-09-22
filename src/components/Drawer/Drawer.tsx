@@ -33,7 +33,10 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       children,
       side = 'right',
       closeOnOutsideClick = true,
+      modal = true,
       className,
+      'aria-labelledby': ariaLabelledBy,
+      'aria-describedby': ariaDescribedBy,
       ...rest
     },
     ref,
@@ -79,23 +82,27 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
     // the consumer to close. Pointer only; the focus trap keeps the keyboard in here.
     // Capture phase, so it runs before the tab's own handler switches the document.
     useEffect(() => {
-      if (!belowStrip || state !== 'open') return;
+      if (!modal || !belowStrip || state !== 'open') return;
       const handlePointerDown = (e: PointerEvent) => {
         if (e.target instanceof Element && e.target.closest('.ui-tab-bar')) onClose();
       };
       document.addEventListener('pointerdown', handlePointerDown, true);
       return () => document.removeEventListener('pointerdown', handlePointerDown, true);
-    }, [belowStrip, state, onClose]);
+    }, [modal, belowStrip, state, onClose]);
 
-    // Escape asks the consumer to close (which flips `open` → the exit anim).
+    // Escape asks the consumer to close (which flips `open` → the exit anim). A docked
+    // (non-modal) panel only answers an Escape pressed inside it — the canvas beside it
+    // stays live, and an Escape meant for a menu there must not close the panel too.
     useEffect(() => {
       if (state === 'closed') return;
       const handleKeyDown = (e: KeyboardEvent) => {
-        if (e.key === 'Escape') onClose();
+        if (e.key !== 'Escape') return;
+        if (!modal && !(e.target instanceof Node && panelRef.current?.contains(e.target))) return;
+        onClose();
       };
       document.addEventListener('keydown', handleKeyDown);
       return () => document.removeEventListener('keydown', handleKeyDown);
-    }, [state, onClose]);
+    }, [state, onClose, modal]);
 
     // Focus trap while fully open; restore focus to the opener on the way out.
     useEffect(() => {
@@ -112,6 +119,13 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         panel.setAttribute('tabindex', '-1');
         panel.focus();
       }
+
+      // A docked panel moves focus in and back out, but does not trap it: Tab leaves
+      // for the canvas beside it, which is the point of a non-modal panel.
+      if (!modal)
+        return () => {
+          previouslyFocused.current?.focus?.();
+        };
 
       const handleTab = (e: KeyboardEvent) => {
         if (e.key !== 'Tab') return;
@@ -138,14 +152,14 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         document.removeEventListener('keydown', handleTab);
         previouslyFocused.current?.focus?.();
       };
-    }, [state]);
+    }, [state, modal]);
 
     // Scroll lock while mounted (open or animating out) — preserve scrollbar
     // space to avoid layout shift. Keyed on the mounted boolean so the lock is
     // applied once and only released on full close (not re-run on `closing`).
     const isMounted = state !== 'closed';
     useEffect(() => {
-      if (!isMounted) return;
+      if (!isMounted || !modal) return;
       const scrollbarWidth =
         window.innerWidth - document.documentElement.clientWidth;
       const previousOverflow = document.body.style.overflow;
@@ -158,7 +172,7 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         document.body.style.overflow = previousOverflow;
         document.body.style.paddingRight = previousPaddingRight;
       };
-    }, [isMounted]);
+    }, [isMounted, modal]);
 
     // Safety net: finish the close after the exit animation's duration even if
     // `animationend` never fires (reduced-motion, a backgrounded tab, or an
@@ -182,40 +196,49 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
 
     const isClosing = state === 'closing';
 
+    const panel = (
+      <div
+        {...rest}
+        id={id}
+        ref={(node) => {
+          panelRef.current = node;
+          if (typeof ref === 'function') ref(node);
+          else if (ref)
+            (
+              ref as unknown as React.MutableRefObject<HTMLDivElement | null>
+            ).current = node;
+        }}
+        role="dialog"
+        aria-modal={modal ? 'true' : undefined}
+        // DrawerHeader's ids win; a header composed from something else (a PageHeader in a
+        // docked panel) names the panel through the consumer's own aria attributes.
+        aria-labelledby={refIds.title ? `${id}-title` : ariaLabelledBy}
+        aria-describedby={refIds.desc ? `${id}-description` : ariaDescribedBy}
+        data-side={side}
+        data-state={state}
+        className={`ui-drawer ui-drawer--${side}${modal ? '' : ' ui-drawer--docked'}${isClosing ? ' ui-drawer--closing' : ''}${className ? ' ' + className : ''}`}
+        onAnimationEnd={(e) => {
+          // Unmount only after the slide-out finishes. Enter/child animations
+          // (which also bubble here) are ignored via the name check.
+          if (isClosing && e.animationName.startsWith('ui-drawer-out')) {
+            setState((prev) => (prev === 'closing' ? 'closed' : prev));
+          }
+        }}
+      >
+        {children}
+      </div>
+    );
+
+    // Docked: in place, beside the work — no portal, no overlay.
+    if (!modal) return panel;
+
     return createPortal(
       <div
         className={`ui-drawer-overlay${belowStrip ? ' ui-drawer-overlay--below-strip' : ''}${isClosing ? ' ui-drawer-overlay--closing' : ''}`}
         onClick={handleOverlayClick}
         role="presentation"
       >
-        <div
-          {...rest}
-          id={id}
-          ref={(node) => {
-            panelRef.current = node;
-            if (typeof ref === 'function') ref(node);
-            else if (ref)
-              (
-                ref as unknown as React.MutableRefObject<HTMLDivElement | null>
-              ).current = node;
-          }}
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby={refIds.title ? `${id}-title` : undefined}
-          aria-describedby={refIds.desc ? `${id}-description` : undefined}
-          data-side={side}
-          data-state={state}
-          className={`ui-drawer ui-drawer--${side}${isClosing ? ' ui-drawer--closing' : ''}${className ? ' ' + className : ''}`}
-          onAnimationEnd={(e) => {
-            // Unmount only after the slide-out finishes. Enter/child animations
-            // (which also bubble here) are ignored via the name check.
-            if (isClosing && e.animationName.startsWith('ui-drawer-out')) {
-              setState((prev) => (prev === 'closing' ? 'closed' : prev));
-            }
-          }}
-        >
-          {children}
-        </div>
+        {panel}
       </div>,
       document.body,
     );

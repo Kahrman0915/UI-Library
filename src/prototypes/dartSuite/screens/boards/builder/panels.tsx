@@ -30,6 +30,7 @@ import Input from '../../../../../components/Input';
 import Item, { ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '../../../../../components/Item';
 import Label from '../../../../../components/Label';
 import Section from '../../../../../components/Section';
+import Swatch from '../../../../../components/Swatch';
 import Stack from '../../../../../components/Stack';
 import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGroup';
 import type { Dashboard, Space, SpaceCardLayout } from '../../../types';
@@ -370,7 +371,7 @@ export function SettingsPanel({ value, onChange, onBack }: { value: SettingsValu
               key={h.value}
               value={h.value}
               aria-label={h.label}
-              IconCenter={() => <span className="ds-builder-swatch" data-hue={h.value} aria-hidden="true" />}
+              IconCenter={() => <Swatch color={h.value} aria-hidden="true" />}
             />
           ))}
         </ToggleGroup>

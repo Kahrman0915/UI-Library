@@ -36,6 +36,7 @@ import Button from '../../../../../components/Button';
 import Canvas, { CanvasItem } from '../../../../../components/Canvas';
 import ScrollArea from '../../../../../components/ScrollArea';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../../../../components/Dialog';
+import Drawer, { DrawerFooter } from '../../../../../components/Drawer';
 import DropdownMenu, {
   DropdownMenuContent,
   DropdownMenuItem,
@@ -48,6 +49,7 @@ import DropdownMenu, {
 import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../../../../components/Empty';
 import Input from '../../../../../components/Input';
 import PageContainer from '../../../../../components/PageContainer';
+import PageHeader from '../../../../../components/PageHeader';
 import Section from '../../../../../components/Section';
 import Stack from '../../../../../components/Stack';
 import { toast } from '../../../../../components/Toast';
@@ -304,9 +306,7 @@ export function Builder({ spaceId, seedDashboardId }: { spaceId?: string; seedDa
     const menu = (
       <DropdownMenu id={`${cid}-menu`}>
         <DropdownMenuTrigger>
-          <button type="button" className="ds-builder-item-menu" aria-label={`Edit ${dash.name}`}>
-            <Ellipsis aria-hidden="true" />
-          </button>
+          <Button id={`${cid}-menu-trigger`} style="ghost" size="xs" iconOnly IconCenter={Ellipsis} aria-label={`Edit ${dash.name}`} />
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
           <DropdownMenuLabel>Card layout</DropdownMenuLabel>
@@ -429,6 +429,10 @@ export function Builder({ spaceId, seedDashboardId }: { spaceId?: string; seedDa
   }
 
   const showPanel = panel && !preview;
+  // The drawer keeps the last panel on screen while it slides out (panel is null by then).
+  const lastPanel = useRef<PanelId>('components');
+  if (panel) lastPanel.current = panel;
+  const shownPanel = panel ?? lastPanel.current;
 
   return (
     <div ref={rootRef} className="ds-builder">
@@ -514,18 +518,30 @@ export function Builder({ spaceId, seedDashboardId }: { spaceId?: string; seedDa
       </Canvas>
       </ScrollArea>
 
-      {showPanel && (
-        <aside className="ds-builder-panel" aria-labelledby="ds-builder-panel-title">
-          <div className="ds-builder-panel__head">
-            <h2 id="ds-builder-panel-title" className="ds-builder-panel__title">
-              {PANEL_META[panel].title}
-            </h2>
-            <p className="ds-muted">{PANEL_META[panel].description}</p>
-          </div>
+      {/* A docked, non-modal Drawer: the canvas beside it stays live while you add
+          components or change settings. Header is PageHeader (sm), as Figma draws it. */}
+      <Drawer
+        id="ds-builder-panel"
+        modal={false}
+        side="right"
+        open={!!showPanel}
+        onClose={() => setPanel(null)}
+        className="ds-builder-panel"
+        aria-labelledby="ds-builder-panel-head-title"
+        aria-describedby="ds-builder-panel-head-description"
+      >
+        <PageHeader
+          id="ds-builder-panel-head"
+          size="sm"
+          headingLevel="h2"
+          className="ds-builder-panel__head"
+          title={PANEL_META[shownPanel].title}
+          description={PANEL_META[shownPanel].description}
+        />
           <ScrollArea id="ds-builder-panel-scroll" className="ds-builder-panel__body">
             <div className="ds-builder-panel__content">
-            {panel === 'components' && <ComponentsPanel onPick={pickComponent} />}
-            {panel === 'dashboards' && (
+            {shownPanel === 'components' && <ComponentsPanel onPick={pickComponent} />}
+            {shownPanel === 'dashboards' && (
               <DashboardsPanel
                 dashboards={state.dashboards}
                 onCanvas={onCanvas}
@@ -536,21 +552,21 @@ export function Builder({ spaceId, seedDashboardId }: { spaceId?: string; seedDa
                 onBack={() => setPanel('components')}
               />
             )}
-            {panel === 'filters' && (
+            {shownPanel === 'filters' && (
               <FiltersPanel dashboards={state.dashboards.filter((d) => d.lifecycle !== 'draft')} filters={filters} onChange={setFilters} onBack={() => setPanel('components')} />
             )}
-            {panel === 'layout' && (
+            {shownPanel === 'layout' && (
               <LayoutPanel
                 value={draft.preset}
                 onChange={(preset) => commit((d) => ({ ...d, preset }))}
                 onBack={() => setPanel('components')}
               />
             )}
-            {panel === 'settings' && <SettingsPanel value={settings} onChange={setSettings} onBack={() => setPanel('components')} />}
+            {shownPanel === 'settings' && <SettingsPanel value={settings} onChange={setSettings} onBack={() => setPanel('components')} />}
             </div>
           </ScrollArea>
-          <div className="ds-builder-panel__foot">
-            {panel === 'filters' ? (
+        <DrawerFooter>
+            {shownPanel === 'filters' ? (
               <>
                 <Button id="ds-builder-filters-clear" style="ghost" label="Clear all" disabled={!filters.category.length && !filters.source.length && !filters.tags.length} onClick={() => setFilters(NO_FILTERS)} />
                 <Button id="ds-builder-filters-show" label="Show dashboards" onClick={() => setPanel('dashboards')} />
@@ -575,9 +591,8 @@ export function Builder({ spaceId, seedDashboardId }: { spaceId?: string; seedDa
             ) : (
               <Button id="ds-builder-panel-done" label="Done" onClick={() => setPanel(null)} />
             )}
-          </div>
-        </aside>
-      )}
+        </DrawerFooter>
+      </Drawer>
 
       <nav className="ds-builder-rail" aria-label="Builder panels">
         <ToggleGroup

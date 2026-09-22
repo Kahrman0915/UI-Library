@@ -189,18 +189,3 @@
   gap: var(--p-2);
 }
 
-// ── Scope · searchable multi-select (composed: Popover + Command + Checkbox) ──
-.ds-requests-scope {
-  min-width: var(--w-80);
-  padding: 0;
-
-  // Command scrolls its own list; this only caps how tall it grows here.
-  .ui-command__list {
-    max-height: var(--h-72);
-  }
-
-  &__check {
-    display: inline-flex;
-    pointer-events: none; // the row is the control; the box only shows state
-  }
-}

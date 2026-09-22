@@ -8,6 +8,9 @@
    - Add to space (Browse, Dashboard, Builder)  → Browse B4.1–B4.5, Pattern/AddToSpace
    - Dashboard info (Browse, Space)             → Browse B2.1–B2.2, Pattern/DashboardInfo
    - How to get access (Dashboard, Space)       → Dashboard D2.3
+   - Aiden's stop (closed / mini / panel). Two controls open Aiden — the Fab
+     and the Ask Aiden button at the far end of the tab strip — so which stop
+     is showing lives here, not in AidenHost.
 
    The dialog components themselves live with the screens that own them; this
    file only holds which one is open. */
@@ -24,7 +27,11 @@ type Overlay =
   | { kind: 'get-access'; dashboardId: string }
   | null;
 
+export type AidenStop = 'closed' | 'mini' | 'panel';
+
 type UiCtx = {
+  aidenStop: AidenStop;
+  setAidenStop: (stop: AidenStop | ((prev: AidenStop) => AidenStop)) => void;
   openNewTab: () => void;
   newTabOpen: boolean;
   setNewTabOpen: (open: boolean) => void;
@@ -39,8 +46,11 @@ const Ctx = createContext<UiCtx | null>(null);
 export function UiProvider({ children }: { children: ReactNode }) {
   const [overlay, setOverlay] = useState<Overlay>(null);
   const [newTabOpen, setNewTabOpen] = useState(false);
+  const [aidenStop, setAidenStop] = useState<AidenStop>('closed');
   const api = useMemo<UiCtx>(
     () => ({
+      aidenStop,
+      setAidenStop,
       openNewTab: () => setNewTabOpen(true),
       newTabOpen,
       setNewTabOpen,
@@ -49,7 +59,7 @@ export function UiProvider({ children }: { children: ReactNode }) {
       openGetAccess: (dashboardId) => setOverlay({ kind: 'get-access', dashboardId }),
       close: () => setOverlay(null),
     }),
-    [newTabOpen],
+    [newTabOpen, aidenStop],
   );
   const close = api.close;
   return (

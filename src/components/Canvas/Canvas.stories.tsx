@@ -56,6 +56,11 @@ const meta: Meta<typeof Canvas> = {
       changelog: [
         {
           date: '2026-09-21',
+          summary: 'The menu handle now takes a library icon-only Button as its trigger, sized and colored by the handle.',
+          detail: '`.ui-canvas-item__menu > .ui-button.ui-button--icon-only` fills the 20px handle, drops its own box and hover fill for the handle\'s (`--primary-hover`), and sizes the glyph to `--w-3`. Mirrors Figma\'s Canvas/Item, whose menu handle is a Button/Icon-only. Apps no longer need a bare `<button>` there.',
+        },
+        {
+          date: '2026-09-21',
           summary: 'Initial build — Canvas ships in code.',
           detail:
             'The second and last component the product screens used that code did not have (`Table` was the other). Built from the Figma `Canvas/Ground` and `Canvas/Item` masters, which had 22 uses across the Builder screens and no counterpart to import.\n\n' +

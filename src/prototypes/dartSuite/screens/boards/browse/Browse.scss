@@ -77,26 +77,16 @@
 }
 
 // The title is the keyboard route into the dashboard; it reads as the title.
-.ds-browse-title-btn {
+// Card and row titles are library link Buttons (the card's real click target, per
+// Card's docs) set in the title color, since Figma's BrowseCard title is plain
+// text/foreground rather than a link color. Two classes to beat the link style.
+.ds-browse-title-link.ui-button {
+  height: auto;
   padding: 0;
-  margin: 0;
-  border: none;
-  background: none;
   font: inherit;
-  color: inherit;
-  text-align: left;
-  cursor: pointer;
-  border-radius: var(--rounded-sm);
-
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: var(--p-0-5);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
+  color: var(--foreground);
+  text-align: start;
+  white-space: normal;
 }
 
 .ds-browse-meta {
@@ -163,45 +153,27 @@
 // ── Loading ────────────────────────────────────────────────────────────────
 
 .ds-browse-skeleton-card {
-  display: flex;
-  flex-direction: column;
-  border: var(--border-w-100) solid var(--border);
-  border-radius: var(--rounded-xl);
-  overflow: hidden;
-  background: var(--card);
-
+  // A Card holding Skeletons: the card is the surface, these only fill it.
   &__cover {
-    aspect-ratio: 8 / 3;
+    width: 100%;
+    height: 100%;
     border-radius: 0;
   }
 
-  &__body {
-    display: flex;
-    flex-direction: column;
+  .ui-card__body {
     gap: var(--p-3);
-    padding: var(--space-3);
   }
 }
 
 .ds-browse-skeleton-row {
-  display: flex;
-  align-items: center;
-  gap: var(--p-4);
-  padding: var(--p-4);
-  border: var(--border-w-100) solid var(--border);
-  border-radius: var(--rounded-lg);
-
+  // An outlined Item holding Skeletons, the same shape as a loaded row.
   &__thumb {
     width: var(--w-40);
     height: var(--h-24);
-    flex-shrink: 0;
   }
 
-  &__text {
-    display: flex;
-    flex-direction: column;
+  .ui-item__content {
     gap: var(--p-2);
-    flex: 1;
   }
 }
 
@@ -241,37 +213,22 @@
   border-bottom: var(--border-w-100) solid var(--border);
   padding-bottom: var(--p-2);
 
-  &__trigger {
+  // The row Figma's Collapsible trigger draws: label, count, then the ghost
+  // icon-only toggle at the end.
+  &__head {
     display: flex;
     align-items: center;
     gap: var(--p-2);
-    width: 100%;
-    padding: var(--p-2) 0;
-    border: none;
-    background: none;
-    font: inherit;
+    padding: var(--p-1) 0;
     font-size: var(--text-sm);
     line-height: var(--leading-5);
     font-weight: var(--font-medium);
     color: var(--foreground);
-    cursor: pointer;
-    border-radius: var(--rounded-sm);
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-    }
   }
 
   &__label {
     margin-right: auto;
     text-align: left;
-  }
-
-  &__chevron {
-    width: var(--w-4);
-    height: var(--h-4);
-    color: var(--muted-foreground);
   }
 
   &__options {

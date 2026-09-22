@@ -386,7 +386,7 @@ export const Default: Story = {
       <>
         <HostPage>
           {!open && (
-            <Fab id="aiden-fab" onClick={() => setOpen(true)} aria-label="Ask Aiden" pulse>
+            <Fab id="aiden-fab" onClick={() => setOpen(true)} aria-label="Ask Aiden" pulse intro>
               <AidenSparkles />
             </Fab>
           )}
@@ -414,7 +414,7 @@ export const ThreeStateFlow: Story = {
       <>
         <HostPage>
           {view === 'closed' && (
-            <Fab id="flow-fab" onClick={() => setView('panel')} aria-label="Ask Aiden" pulse>
+            <Fab id="flow-fab" onClick={() => setView('panel')} aria-label="Ask Aiden" pulse intro>
               <AidenSparkles />
             </Fab>
           )}
@@ -462,7 +462,7 @@ export const FirstRun: Story = {
       <>
         <HostPage>
           {!open && (
-            <Fab id="first-run-fab" onClick={() => setOpen(true)} aria-label="Ask Aiden" pulse>
+            <Fab id="first-run-fab" onClick={() => setOpen(true)} aria-label="Ask Aiden" pulse intro>
               <AidenSparkles />
             </Fab>
           )}

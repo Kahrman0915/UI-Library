@@ -17,6 +17,7 @@ import Sidebar, { SidebarContent, SidebarGroup, SidebarGroupContent, SidebarGrou
 import DropdownMenu, { DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../DropdownMenu';
 import Fab from '../Fab';
 import Button from '../Button';
+import Tooltip, { TooltipContent, TooltipTrigger } from '../Tooltip';
 import ModeToggler from '../ModeToggler';
 import Badge from '../Badge';
 import Input from '../Input';
@@ -53,6 +54,11 @@ const meta: Meta<typeof AppShell> = {
         notes: 'The Aiden mounting contract (`Fab` at `--z-40`, below every overlay, and hidden while an `AidenPanel` is open) is composed by the app for now; see the DART Central prototype.',
       },
       changelog: [
+        {
+          date: '2026-09-22',
+          summary: 'Ask Aiden is back at the far right of the tab strip: a small button with the filled sparkles in Aiden\'s gradient.',
+          detail: 'Story only; the component is unchanged. `actions` holds a ghost icon-only `Button` (`size="sm"`, matching the tab menu and the "+") inside a `Tooltip`, with `AidenSparkles` at 16px and `gradient` on. The shell draws its divider before `actions`. The bottom-right `Fab` is still in the stories.',
+        },
         {
           date: '2026-09-21',
           summary: 'The slash between the home mark and your name is now a short straight line, drawn by the shell in line with the rail\'s right edge. The mark sits right above the rail\'s icons and your name lines up with the sidebar below it.',
@@ -168,6 +174,26 @@ const ShellNewTab = ({ onOpen }: { onOpen: (value: string) => void }) => (
 const docOf = (v: string): Doc => DOCS[v] ?? (isNewTab(v) ? { label: 'New tab', Icon: Plus } : { label: v, Icon: FileText });
 
 /** My Requests is the real page; the other tabs open a titled placeholder. */
+/** Ask Aiden at the far end of the strip: a small ghost icon button carrying the
+ *  filled sparkles in Aiden's gradient, matched in weight to the tab menu and "+". */
+function AskAiden({ id }: { id: string }) {
+  return (
+    <Tooltip id={`${id}-tooltip`} side="bottom">
+      <TooltipTrigger>
+        <Button
+          id={id}
+          style="ghost"
+          size="sm"
+          iconOnly
+          IconCenter={() => <AidenSparkles size={16} gradient />}
+          aria-label="Ask Aiden"
+        />
+      </TooltipTrigger>
+      <TooltipContent>Ask Aiden</TooltipContent>
+    </Tooltip>
+  );
+}
+
 function Page({ value, width }: { value: string; width: PageContainerWidth }) {
   if (value !== 'requests') {
     return (
@@ -396,6 +422,7 @@ function ShellFrame({
           </DropdownMenu>
           </>
         }
+        actions={<AskAiden id="shell-ask-aiden" />}
       >
         <TabBar id="shell-tabs" value={state.active ?? undefined} onValueChange={layout.select} onTabMove={layout.move}>
           <TabBarList aria-label="Open documents">
@@ -564,6 +591,7 @@ function OverlayShell() {
             <Button id="overlay-account" className="ui-app-shell__account" style="ghost" label="Kahrman McKenzie" IconRight={ChevronDown} />
           </>
         }
+        actions={<AskAiden id="overlay-ask-aiden" />}
       >
         <OverlayTabs />
       </AppShellTabStrip>
@@ -623,7 +651,7 @@ function OverlayShell() {
       </Drawer>
       <Toaster />
       <div data-surface="aiden">
-        <Fab id="overlay-aiden" size="default" aria-label="Ask Aiden">
+        <Fab id="overlay-aiden" size="default" intro aria-label="Ask Aiden">
           <AidenSparkles />
         </Fab>
       </div>

@@ -35,7 +35,11 @@ export type CanvasProps = React.HTMLAttributes<HTMLDivElement> & {
 export type CanvasItemProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Shows the drag handle at the leading top corner. */
   grip?: boolean;
-  /** The trailing top-corner control — typically a `DropdownMenu` trigger. */
+  /**
+   * The trailing top-corner control — typically a `DropdownMenu` whose trigger is an
+   * icon-only `Button` (`style="ghost"`, `iconOnly`). The handle sizes it to 20px and
+   * gives it the handle's colors, as Figma's Canvas/Item does with a Button/Icon-only.
+   */
   menu?: React.ReactNode;
   /** Accessible name for the grip. Default `Drag to move`. */
   gripLabel?: string;

@@ -9,7 +9,7 @@ import type { Route } from './types';
 import './DartSuite.scss';
 
 const meta: Meta = {
-  title: 'Prototypes/Suite',
+  title: 'Prototypes/Prototype',
   // The theme is a Storybook global, not a wrapper attribute: dialogs, menus and
   // toasts portal to <body>, and a wrapper's data-theme never reaches them. The
   // preview decorator writes this onto <html>, so portals are themed too.

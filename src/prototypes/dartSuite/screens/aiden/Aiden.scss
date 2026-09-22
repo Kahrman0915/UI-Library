@@ -67,29 +67,6 @@
   gap: var(--p-2);
 }
 
-// A result's title is a link-shaped button: the row stays a plain div so the
-// add button beside it is not nested inside another control.
-.ds-aiden-link {
-  padding: 0;
-  border: none;
-  background: none;
-  color: inherit;
-  font: inherit;
-  text-align: start;
-  cursor: pointer;
-  border-radius: var(--rounded-sm);
-
-  &:hover {
-    text-decoration: underline;
-    text-underline-offset: var(--p-0-5);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-}
-
 // ── A1.5 · the launcher ──────────────────────────────────────────────────────
 .ds-aiden-launcher {
   display: flex;
@@ -159,66 +136,6 @@
   color: var(--muted-foreground);
 }
 
-.ds-aiden-history__list {
-  display: flex;
-  flex-direction: column;
-  gap: var(--p-0-5);
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.ds-aiden-history__item {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  column-gap: var(--p-2);
-  width: 100%;
-  padding: var(--p-2);
-  border: none;
-  border-radius: var(--rounded-md);
-  background: transparent;
-  color: var(--foreground);
-  font-family: inherit;
-  text-align: start;
-  cursor: pointer;
-  transition: background-color var(--duration-instant) var(--ease-out);
-
-  svg {
-    grid-row: span 2;
-    width: var(--w-4);
-    height: var(--h-4);
-    margin-top: var(--p-0-5);
-    color: var(--muted-foreground);
-  }
-
-  &:hover {
-    background: var(--accent);
-  }
-
-  &[aria-current='page'] {
-    background: var(--secondary);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-}
-
-.ds-aiden-history__title {
-  overflow: hidden;
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-
-.ds-aiden-history__when {
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  color: var(--muted-foreground);
-}
-
 .ds-aiden-page__main {
   flex: 1;
   min-width: 0;
@@ -238,4 +155,14 @@
 
 .ds-aiden-page__empty {
   height: 100%;
+}
+
+// A result's title is a library link Button: the row stays a plain Item so the add
+// button beside it is not nested inside another control. Two classes to let the
+// title wrap like text.
+.ds-aiden-link.ui-button {
+  height: auto;
+  padding: 0;
+  text-align: start;
+  white-space: normal;
 }

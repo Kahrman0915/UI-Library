@@ -166,7 +166,7 @@ export function Browse() {
       view === 'grid' ? (
         <div className="ds-browse-grid" aria-busy="true" aria-label="Loading dashboards">
           {Array.from({ length: PAGE }, (_, i) => (
-            <BrowseCardSkeleton key={i} />
+            <BrowseCardSkeleton key={i} index={i} />
           ))}
         </div>
       ) : (
@@ -231,7 +231,7 @@ export function Browse() {
             {visible.map((d) => (
               <BrowseCard key={d.id} d={d} />
             ))}
-            {loadingMore && Array.from({ length: Math.min(4, matching.length - visible.length) }, (_, i) => <BrowseCardSkeleton key={`s${i}`} />)}
+            {loadingMore && Array.from({ length: Math.min(4, matching.length - visible.length) }, (_, i) => <BrowseCardSkeleton key={`s${i}`} index={100 + i} />)}
           </div>
         ) : (
           <div className="ds-browse-rows">

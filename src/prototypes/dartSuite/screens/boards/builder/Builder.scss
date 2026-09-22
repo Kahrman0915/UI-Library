@@ -112,31 +112,6 @@
   }
 }
 
-// The item's ••• sits inside CanvasItem's 20px menu handle.
-.ds-builder-item-menu {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  border-radius: inherit;
-  background: transparent;
-  color: inherit;
-  cursor: pointer;
-
-  svg {
-    width: var(--w-3);
-    height: var(--h-3);
-  }
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-}
-
 // The empty state centers in the canvas the user can SEE, not the half the
 // panel is over. Placement only — never put this offset on the grid.
 .ds-builder-empty {
@@ -150,33 +125,18 @@
   }
 }
 
-// ── The floating panel ────────────────────────────────────────────────────
-.ds-builder-panel {
-  position: absolute;
-  inset-block: 0;
+// ── The side panel ────────────────────────────────────────────────────────
+// A docked `Drawer` (`modal={false}`) — it brings the surface, border, shadow and slide.
+// This only moves its edge to sit beside the tool rail and sets its width; two classes
+// to outrank the drawer's own side rule.
+.ui-drawer.ds-builder-panel {
   inset-inline-end: var(--ds-builder-rail);
-  z-index: 2;
-  display: flex;
-  flex-direction: column;
   width: min(var(--ds-builder-panel), calc(100% - var(--ds-builder-rail)));
-  background: var(--background);
-  border-inline-start: var(--border-w-100) solid var(--border);
-  box-shadow: var(--shadow-lg);
+  max-width: none;
 }
 
 .ds-builder-panel__head {
-  display: flex;
-  flex-direction: column;
-  gap: var(--p-1);
   padding: var(--space-3) var(--space-3) 0;
-}
-
-.ds-builder-panel__title {
-  margin: 0;
-  font-size: var(--text-base);
-  line-height: var(--leading-6);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
 }
 
 // A ScrollArea taking the panel's remaining height. The padding sits on the
@@ -191,31 +151,10 @@
   padding: var(--space-3);
 }
 
-.ds-builder-panel__foot {
-  display: flex;
-  justify-content: flex-end;
-  gap: var(--space-4);
-  padding: var(--space-4) var(--space-3);
-  border-block-start: var(--border-w-100) solid var(--border);
-}
-
 .ds-builder-tiles {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-4);
-}
-
-.ds-builder-swatch {
-  display: inline-block;
-  width: var(--w-4);
-  height: var(--h-4);
-  border-radius: var(--rounded-full);
-
-  @each $hue in ('violet', 'blue', 'cyan', 'emerald', 'amber', 'rose') {
-    &[data-hue='#{$hue}'] {
-      background: var(--category-#{$hue});
-    }
-  }
 }
 
 // ── The tool rail ──────────────────────────────────────────────────────────

@@ -58,6 +58,8 @@ import DropdownMenu, {
   DropdownMenuTrigger,
 } from '../../components/DropdownMenu';
 import Button from '../../components/Button';
+import Tooltip, { TooltipContent, TooltipTrigger } from '../../components/Tooltip';
+import { AidenSparkles } from '../AidenSparkles';
 import ModeToggler from '../../components/ModeToggler';
 import Sidebar, {
   SidebarContent,
@@ -80,6 +82,7 @@ import type { SuiteState } from './store';
 import { appOf } from './types';
 import type { AdminScope, Route } from './types';
 import { SuiteNewTab } from './newTab';
+import { useUi } from './ui';
 import { WHATS_NEW } from './screens/whatsNew/entries';
 
 /* ── Tab titles and icons ─────────────────────────────────────────────────── */
@@ -291,6 +294,7 @@ const SCOPES: { value: string; label: string }[] = [
 export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactNode }) {
   const { state, setAdminScope } = useSuite();
   const nav = useNav();
+  const { aidenStop, setAidenStop } = useUi();
   const app = appOf(nav.route);
 
   const item = (t: { id: string; route: Route }): TabBarMenuItem => ({ value: t.id, ...tabMeta(t.route, state), groupable: t.id !== 'home' });
@@ -381,6 +385,26 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
               </DropdownMenuContent>
             </DropdownMenu>
           </>
+        }
+        actions={
+          /* Ask Aiden at the far end of the strip, beside the Fab (owner, 2026-09-22: keep both).
+             The strip button opens the side panel; the Fab opens the mini window. */
+          <Tooltip id="ds-ask-aiden-tooltip" side="bottom">
+            <TooltipTrigger>
+              <Button
+                id="ds-ask-aiden"
+                style="ghost"
+                size="sm"
+                iconOnly
+                IconCenter={() => <AidenSparkles size={16} gradient />}
+                aria-label={aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}
+                aria-expanded={aidenStop === 'panel'}
+                aria-controls={aidenStop === 'panel' ? 'ds-aiden-panel' : undefined}
+                onClick={() => setAidenStop((s) => (s === 'panel' ? 'closed' : 'panel'))}
+              />
+            </TooltipTrigger>
+            <TooltipContent>{aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}</TooltipContent>
+          </Tooltip>
         }
       >
         <TabBar

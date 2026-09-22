@@ -20,20 +20,20 @@ import { useCallback, useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import { Maximize2, SquarePen, X } from 'lucide-react';
 import AidenPanel, { AidenPanelHeader } from '../../../../components/AidenPanel';
+import Button from '../../../../components/Button';
 import Card from '../../../../components/Card';
 import Fab from '../../../../components/Fab';
 import { AidenSparkles } from '../../../AidenSparkles';
 import { useNav } from '../../nav';
+import { useUi } from '../../ui';
 import { Conversation } from './Conversation';
 import './Aiden.scss';
-
-type Stop = 'closed' | 'mini' | 'panel';
 
 const MODEL = 'Claude Opus 5';
 
 export function AidenHost() {
   const { route, open } = useNav();
-  const [stop, setStop] = useState<Stop>('closed');
+  const { aidenStop: stop, setAidenStop: setStop } = useUi();
   const [chatId, setChatId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
 
@@ -41,14 +41,14 @@ export function AidenHost() {
   // Aiden already has the whole body there; a second copy floating over it is noise.
   useEffect(() => {
     if (onAidenTab) setStop('closed');
-  }, [onAidenTab]);
+  }, [onAidenTab, setStop]);
 
-  const close = useCallback(() => setStop('closed'), []);
-  const toPanel = useCallback(() => setStop('panel'), []);
+  const close = useCallback(() => setStop('closed'), [setStop]);
+  const toPanel = useCallback(() => setStop('panel'), [setStop]);
   const toTab = useCallback(() => {
     setStop('closed');
     open(chatId ? { page: 'aiden-chat', chatId } : { page: 'aiden-launcher' });
-  }, [chatId, open]);
+  }, [chatId, open, setStop]);
   const newChat = () => {
     setChatId(null);
     setDraft('');
@@ -114,22 +114,8 @@ export function AidenHost() {
               </div>
               <div className="ui-aiden-panel__header-actions">
                 {newChatButton}
-                <button
-                  type="button"
-                  className="ui-icon-button ui-icon-button--fill ui-aiden-panel__header-button"
-                  aria-label="Expand to side panel"
-                  onClick={toPanel}
-                >
-                  <Maximize2 aria-hidden="true" />
-                </button>
-                <button
-                  type="button"
-                  className="ui-icon-button ui-icon-button--fill ui-aiden-panel__header-button"
-                  aria-label="Close Aiden"
-                  onClick={close}
-                >
-                  <X aria-hidden="true" />
-                </button>
+                <Button id="ds-aiden-mini-expand" style="ghost" size="xs" iconOnly IconCenter={Maximize2} aria-label="Expand to side panel" onClick={toPanel} />
+                <Button id="ds-aiden-mini-close" style="ghost" size="xs" iconOnly IconCenter={X} aria-label="Close Aiden" onClick={close} />
               </div>
             </div>
             {conversation(true)}
@@ -139,7 +125,7 @@ export function AidenHost() {
 
       <AidenPanel
         id="ds-aiden-panel"
-        open={stop === 'panel'}
+        open={stop === 'panel' && !onAidenTab}
         onClose={close}
         onExpand={toTab}
         // Pinned below the tab strip, so the open tabs stay visible (A1.3).
