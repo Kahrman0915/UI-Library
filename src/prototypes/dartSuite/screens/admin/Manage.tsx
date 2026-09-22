@@ -37,7 +37,7 @@ import { useNav } from '../../nav';
 import { scopeProducts, today, useSuite } from '../../store';
 import type { Tone } from '../../store';
 import type { Banner, Dashboard, Promotion, Redirect } from '../../types';
-import { ConfirmDialog, eventOf, Kpi, parseDate, PRODUCT_LABEL, RefCode, splitTarget, ToneBadge, UsageBars, useFirstLoad } from './shared';
+import { ConfirmDialog, eventOf, Kpi, parseDate, PRODUCT_LABEL, RefCode, splitTarget, ToneBadge, useFirstLoad, ViewsByProduct, ViewsOverTime } from './shared';
 import './Admin.scss';
 
 const uid = (p: string) => `${p}-${Math.random().toString(36).slice(2, 7)}`;
@@ -947,20 +947,8 @@ export function AdminUsage() {
           <Kpi id="ds-mu-k4" value={never.length} label="Never opened" hint="live 90+ days, 0 views" tone="error" />
         </div>
         <div className="ds-admin-grid2">
-          <Card id="ds-mu-over-time">
-            <CardBody>
-              <Section id="ds-mu-sec-time" heading="Views over time" variant="group">
-                <UsageBars id="ds-mu-chart-time" title="Views over time" labels={r.months} values={r.months.map((_, i) => Math.round((views / r.months.length / 1000) * (0.8 + 0.1 * i)))} />
-              </Section>
-            </CardBody>
-          </Card>
-          <Card id="ds-mu-by-product">
-            <CardBody>
-              <Section id="ds-mu-sec-prod" heading="Views by product" variant="group">
-                <UsageBars id="ds-mu-chart-prod" title="Views by product" labels={['DART Central', 'Dartboards', 'Aiden']} values={byProduct} />
-              </Section>
-            </CardBody>
-          </Card>
+          <ViewsOverTime id="ds-mu-over-time" months={r.months} totals={r.months.map((_, i) => Math.round((views / r.months.length / 1000) * (0.8 + 0.1 * i)))} />
+          <ViewsByProduct id="ds-mu-by-product" totals={byProduct as [number, number, number]} />
         </div>
         <Section id="ds-mu-sec-table" heading="Most opened, and least" variant="group">
           <Table id="ds-mu-table" label="Most and least opened dashboards">

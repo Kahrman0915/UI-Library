@@ -30,6 +30,11 @@ const meta: Meta<typeof Drawer> = {
       },
       changelog: [
         {
+          date: '2026-09-22',
+          summary: 'A drawer can now dock beside your work instead of covering it: no backdrop, no focus trap, and the page next to it stays usable.',
+          detail: 'New `modal={false}`. The panel renders in place (no portal) and positions `absolute` in its nearest positioned ancestor (`.ui-drawer--docked`, `--z-10`); there is no overlay, focus trap, scroll lock or outside-click close, and it drops `aria-modal`. Escape closes it only while focus is inside it. Focus still moves in on open and back on close, and the slide and the 400ms close fallback are unchanged. The panel also now falls back to the consumer\'s own `aria-labelledby` / `aria-describedby` when it has no `DrawerHeader`, so a composed header (a `PageHeader`) can name it. First consumer: the Suite Builder\'s side panel, which had been hand-built.',
+        },
+        {
           date: '2026-09-19',
           summary: 'Inside the app shell a drawer opens below the tab strip, so the tabs stay visible.',
           detail: 'New internal `DrawerBelowStripContext`, provided by `AppShell` (not exported). When set, the overlay gets `.ui-drawer-overlay--below-strip` (`top: var(--app-strip-height)`); the overlay\'s `backdrop-filter` makes it the panel\'s containing block, so the panel\'s edges follow. Context passes through the portal. Outside the shell nothing changes.\n\nUsing the tab bar while the drawer is open closes it: a capture-phase `pointerdown` inside `.ui-tab-bar` (a tab, the \"+\", the tab menu) calls `onClose`, so moving to another document never leaves a drawer open over it. The account cell does not. Pointer only — the focus trap keeps the keyboard in the drawer.',
@@ -251,6 +256,44 @@ export const NoCloseButton: Story = {
           </DrawerFooter>
         </Drawer>
       </>
+    );
+  },
+};
+
+/**
+ * `modal={false}`: a docked panel beside the work, not over it. The frame is the
+ * positioned ancestor it docks into. The page beside it stays live — click it, tab
+ * into it — and Escape only closes the panel while focus is inside the panel.
+ */
+export const Docked: Story = {
+  render: () => {
+    const [open, setOpen] = useState(true);
+    return (
+      <div
+        style={{
+          position: 'relative',
+          height: 'var(--h-96)',
+          overflow: 'hidden',
+          border: 'var(--border-w-100) solid var(--border)',
+          borderRadius: 'var(--rounded-lg)',
+          background: 'var(--background)',
+        }}
+      >
+        <div style={{ padding: 'var(--p-6)', display: 'flex', flexDirection: 'column', gap: 'var(--p-3)', alignItems: 'flex-start' }}>
+          <p style={{ margin: 0, color: 'var(--muted-foreground)' }}>The page beside the panel stays usable.</p>
+          <Button id="docked-toggle" style="outline" label={open ? 'Close panel' : 'Open panel'} onClick={() => setOpen((o) => !o)} />
+          <Input id="docked-page-field" label="A field on the page" placeholder="Type here while the panel is open" />
+        </div>
+        <Drawer id="docked-drawer" modal={false} open={open} onClose={() => setOpen(false)}>
+          <DrawerHeader id="docked-drawer" title="Add components" description="Choose what to add to your space." onClose={() => setOpen(false)} />
+          <DrawerBody>
+            <p>Pick a component; it lands on the page beside this panel.</p>
+          </DrawerBody>
+          <DrawerFooter>
+            <Button id="docked-done" label="Done" onClick={() => setOpen(false)} />
+          </DrawerFooter>
+        </Drawer>
+      </div>
     );
   },
 };

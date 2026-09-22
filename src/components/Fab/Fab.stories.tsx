@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react';
-import { MessageSquarePlus, Plus, Sparkles } from 'lucide-react';
+import { MessageSquarePlus, Plus } from 'lucide-react';
+import { AidenSparkles } from '../../prototypes/AidenSparkles';
 import Fab from './Fab';
 import CloseButton from '../CloseButton/CloseButton';
 import Avatar from '../Avatar/Avatar';
@@ -38,6 +39,11 @@ const meta: Meta<typeof Fab> = {
         ],
       },
       changelog: [
+        {
+          date: '2026-09-22',
+          summary: 'The AI examples now show the filled sparkles and twinkle when they appear, matching the Figma component.',
+          detail: 'The twinkle\'s low point moved from 30% to 27% of the beat (0.243s of 0.9s), the value on Figma\'s `Icon/sparkles-fill` keyframes; scale, twist, opacity, stagger and three beats were already the same. Stories swap lucide\'s stroked `Sparkles` for the product\'s filled `AidenSparkles` (one path per star, so all three stars animate, where lucide\'s outline only moved two shapes) and turn `intro` on for every AI example except the disabled one. The component API is unchanged: the glyph is still the caller\'s.',
+        },
         {
           date: '2026-09-19',
           summary: 'The FAB can move aside for a side panel: set one CSS variable and it sits beside the panel instead of on it.',
@@ -212,11 +218,12 @@ export const AidenLauncher: Story = {
               id="aiden-fab"
               position="bottom-right"
               pulse
+              intro
               badge="2"
               aria-label="Ask Aiden — 2 new messages"
               onClick={() => setOpen(true)}
             >
-              <Sparkles />
+              <AidenSparkles />
             </Fab>
           )}
         </div>
@@ -234,7 +241,7 @@ export const Playground: Story = {
     <HostApp>
       <div data-surface="aiden">
         <Fab {...args} aria-label="Ask Aiden">
-          <Sparkles />
+          <AidenSparkles />
         </Fab>
       </div>
     </HostApp>
@@ -250,7 +257,7 @@ export const Intro: Story = {
     <HostApp>
       <div data-surface="aiden">
         <Fab id="fab-intro" size="default" intro aria-label="Ask Aiden">
-          <Sparkles />
+          <AidenSparkles />
         </Fab>
       </div>
     </HostApp>
@@ -293,8 +300,8 @@ export const BesideASidePanel: Story = {
         Side panel — the Builder’s Add components panel sits here.
       </aside>
       <div data-surface="aiden">
-        <Fab id="fab-beside-panel" size="default" aria-label="Ask Aiden">
-          <Sparkles />
+        <Fab id="fab-beside-panel" size="default" intro aria-label="Ask Aiden">
+          <AidenSparkles />
         </Fab>
       </div>
     </div>
@@ -311,8 +318,8 @@ export const NeutralVsAiden: Story = {
       </Fab>
       {/* Aiden gradient + pulse — bottom-right */}
       <div data-surface="aiden">
-        <Fab id="fab-aiden" position="bottom-right" pulse badge="2" aria-label="Ask Aiden">
-          <Sparkles />
+        <Fab id="fab-aiden" position="bottom-right" pulse intro badge="2" aria-label="Ask Aiden">
+          <AidenSparkles />
         </Fab>
       </div>
       <p style={{ padding: 'var(--p-8)', margin: 0, color: 'var(--muted-foreground)', maxWidth: 480 }}>
@@ -371,7 +378,7 @@ export const Disabled: Story = {
           pulse
           style={{ position: 'relative', inset: 'auto' }}
         >
-          <Sparkles />
+          <AidenSparkles />
         </Fab>
         <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
           live
@@ -385,7 +392,7 @@ export const Disabled: Story = {
           disabled
           style={{ position: 'relative', inset: 'auto' }}
         >
-          <Sparkles />
+          <AidenSparkles />
         </Fab>
         <span style={{ fontSize: 'var(--text-xs)', color: 'var(--muted-foreground)' }}>
           disabled

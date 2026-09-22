@@ -62,6 +62,16 @@
     animation: ui-drawer-in-bottom var(--duration-slow) var(--ease-premium);
   }
 
+  // Docked (`modal={false}`): a panel beside the work, not over it. It positions inside
+  // its nearest positioned ancestor instead of the viewport and sits just above the
+  // content it docks against, well below the floating surfaces, so a menu opened from
+  // inside it still paints on top. Size and inset come from the side rules above; a
+  // consumer can move its edge with its own class (the Builder docks it beside a rail).
+  &--docked {
+    position: absolute;
+    z-index: var(--z-10);
+  }
+
   // Exit animations — two classes, so they outrank the single-class enter rule
   // once --closing is applied.
   &--closing {

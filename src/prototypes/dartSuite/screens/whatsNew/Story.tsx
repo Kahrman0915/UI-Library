@@ -11,6 +11,7 @@ import type { LucideIcon } from 'lucide-react';
 import Badge from '../../../../components/Badge';
 import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
 import Button from '../../../../components/Button';
+import Code from '../../../../components/Code';
 import Card, { CardBody, CardHeader, CardMedia } from '../../../../components/Card';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import Item, { ItemContent, ItemDescription, ItemMedia, ItemTitle } from '../../../../components/Item';
@@ -121,7 +122,7 @@ export function WhatsNewStory({ id }: { id: string }) {
   const badges = (
     <div className="ds-wn-badges">
       <EntryBadges entry={entry} idPrefix={`ds-wns-${entry.id}`} />
-      {entry.version && <code className="ds-wn-version">{entry.version}</code>}
+      {entry.version && <Code>{entry.version}</Code>}
     </div>
   );
 

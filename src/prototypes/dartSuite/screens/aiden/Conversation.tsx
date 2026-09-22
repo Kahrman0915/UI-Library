@@ -95,9 +95,7 @@ function Results({ ids, compact, idPrefix }: { ids: string[]; compact?: boolean;
             </ItemMedia>
             <ItemContent>
               <ItemTitle>
-                <button type="button" className="ds-aiden-link" onClick={() => go({ page: 'dashboard', id: d.id })}>
-                  {d.name}
-                </button>
+                <Button id={`ds-aiden-dash-${d.id}`} style="link" className="ds-aiden-link" label={d.name} onClick={() => go({ page: 'dashboard', id: d.id })} />
               </ItemTitle>
               {!compact && <ItemDescription>{d.description}</ItemDescription>}
             </ItemContent>
@@ -136,9 +134,7 @@ function Requests({ ids, compact, idPrefix }: { ids: string[]; compact?: boolean
                 </ItemMedia>
                 <ItemContent>
                   <ItemTitle>
-                    <button type="button" className="ds-aiden-link" onClick={() => go({ page: 'request-detail', id: r.id })}>
-                      {r.title}
-                    </button>
+                    <Button id={`ds-aiden-req-${r.id.replace(/\W/g, '')}`} style="link" className="ds-aiden-link" label={r.title} onClick={() => go({ page: 'request-detail', id: r.id })} />
                   </ItemTitle>
                   {!compact && <ItemDescription>{`${r.id} · ${typeLabel[r.type]}`}</ItemDescription>}
                 </ItemContent>

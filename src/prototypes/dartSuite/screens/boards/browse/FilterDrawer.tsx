@@ -126,15 +126,24 @@ export function FilterDrawer({ open, onClose, base, total, applied, onApply }: P
                       open={isOpen}
                       onOpenChange={(o) => setExpanded((e) => ({ ...e, [facet.id]: o }))}
                     >
-                      <CollapsibleTrigger>
-                        <button type="button" className="ds-browse-facet__trigger">
-                          <span className="ds-browse-facet__label">{facet.label}</span>
-                          {picked.length > 0 && (
-                            <Badge id={`ds-browse-facet-${facet.id}-count`} label={String(picked.length)} color="info" appearance="soft" />
-                          )}
-                          <ChevronsUpDown aria-hidden="true" className="ds-browse-facet__chevron" />
-                        </button>
-                      </CollapsibleTrigger>
+                      {/* Figma's Collapsible trigger: the label, a trailing slot (the count),
+                          then a ghost icon-only button that does the toggling. */}
+                      <div className="ds-browse-facet__head">
+                        <span className="ds-browse-facet__label">{facet.label}</span>
+                        {picked.length > 0 && (
+                          <Badge id={`ds-browse-facet-${facet.id}-count`} label={String(picked.length)} color="info" appearance="soft" />
+                        )}
+                        <CollapsibleTrigger>
+                          <Button
+                            id={`ds-browse-facet-${facet.id}-trigger`}
+                            style="ghost"
+                            size="xs"
+                            iconOnly
+                            IconCenter={ChevronsUpDown}
+                            aria-label={`${isOpen ? 'Hide' : 'Show'} ${facet.label} options`}
+                          />
+                        </CollapsibleTrigger>
+                      </div>
                       <CollapsibleContent>
                         <ul className="ds-browse-facet__options">
                           {list.map((o) => {

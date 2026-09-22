@@ -28,7 +28,7 @@ import { useNav } from '../../nav';
 import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
 import type { SuiteState } from '../../store';
 import type { ActivityEntry, AdminWidget } from '../../types';
-import { byQueueOrder, eventOf, Kpi, PRODUCT_LABEL, RefCode, requesterOf, splitTarget, StatusBadge, ToneBadge, TYPE_ICON, UsageBars } from './shared';
+import { byQueueOrder, eventOf, Kpi, PRODUCT_LABEL, RefCode, requesterOf, splitTarget, StatusBadge, ToneBadge, TYPE_ICON, ViewsByProduct, ViewsOverTime } from './shared';
 import type { KpiTone } from './shared';
 import './Admin.scss';
 
@@ -178,6 +178,18 @@ function kpiFor(id: WidgetId, s: SuiteState): { value: string | number; label: s
   }
 }
 
+/** Widgets that are charts, and the run-grouping that sets them side by side. */
+const CHART_WIDGETS: WidgetId[] = ['usage', 'views-by-product'];
+function groupCharts(list: WidgetId[]): (WidgetId | WidgetId[])[] {
+  const out: (WidgetId | WidgetId[])[] = [];
+  for (const w of list) {
+    const last = out[out.length - 1];
+    if (CHART_WIDGETS.includes(w)) Array.isArray(last) ? last.push(w) : out.push([w]);
+    else out.push(w);
+  }
+  return out;
+}
+
 function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
   const { go } = useNav();
   switch (id) {
@@ -188,9 +200,9 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
     case 'activity-10':
       return <ActivityTable id={`ds-ov-act-${id}`} rows={state.activity.slice(0, id === 'activity' ? 5 : 10)} />;
     case 'usage':
-      return <UsageBars id="ds-ov-usage" title="Views over time" labels={['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']} values={[31, 36, 40, 38, 44, 48]} />;
+      return <ViewsOverTime id="ds-ov-usage" months={['Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep']} totals={[31, 36, 40, 38, 44, 48]} />;
     case 'views-by-product':
-      return <UsageBars id="ds-ov-byprod" title="Views by product" labels={['DART Central', 'Dartboards', 'Aiden']} values={[12, 29, 7]} />;
+      return <ViewsByProduct id="ds-ov-byprod" totals={[12, 29, 7]} />;
     case 'dash-most-opened':
       return (
         <ul className="ds-admin-list">
@@ -380,7 +392,20 @@ export function AdminOverview() {
               })}
             </div>
           )}
-          {blocks.map((w) => {
+          {groupCharts(blocks).map((w) => {
+            // Charts title themselves (Figma's Chart is card + title), so they take no
+            // Section heading; a run of them shares a row, as in Figma's 1.4.
+            if (Array.isArray(w))
+              return (
+                <div key={w.join('+')} className="ds-admin-grid2">
+                  {w.map((c) => (
+                    <div key={c} className={editing ? 'ds-admin-widget ds-admin-widget--editing' : 'ds-admin-widget'}>
+                      {controls(c, blocks)}
+                      <WidgetBody id={c} state={state} />
+                    </div>
+                  ))}
+                </div>
+              );
             const def = defOf(w)!;
             const viewAll =
               w === 'queue' || w === 'queue-5' ? (

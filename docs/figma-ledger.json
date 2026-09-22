@@ -7375,5 +7375,37 @@
   "change": "Owner: line the account divider up with the AppRail's right border. It now sits on the rail border's own pixel, x 51 (the rail is 52 wide with a 1px right border; in Figma an INSIDE stroke on the same pixel), so it reads as that border continuing up into the strip.",
   "code": ".ui-app-shell__logo first column is calc(--app-rail-width - --border-w-100), the rail's content box, so the mark centers at 25.5 exactly like the rail icons; ::before inset-inline-start calc(--app-rail-width - --border-w-100); the account button's margin is --p-3 + --border-w-100 so its box stays at x 64 and the name at 72. Measured in the browser at 1440.",
   "figma": "'Separator · account' moved to x 51 in the master (4180:1345) and in the 10 overridden Logo slots on Patterns; all 207 verified at 51. The Figma rail column stays 52 wide (icon center 26 against the rail's 26 in Figma, where the inside stroke does not shift layout), so no other change was needed there."
- }
+ },
+ "suiteGapFixes_2026_09_21": {
+  "date": "2026-09-21",
+  "why": "Owner asked to close the gaps a component census found between the Suite prototype and the Figma flow pages, before a per-screen audit.",
+  "dialogOverlay": {
+   "component": "4191:165534 Dialog/Overlay (in the Dialog page's parts frame)",
+   "variable": "VariableID:4190:71003 overlay/opacity (Mode collection, FLOAT, OPACITY scope): Light 50, Dark 30, in PERCENT",
+   "structure": "'blur' layer (surface/bg-overlay at paint opacity 0.01, BACKGROUND_BLUR 4 = --overlay-blur) + 'tint' layer (surface/bg-overlay at paint opacity 1, LAYER opacity bound to overlay/opacity) + centred Content SLOT. Two layers because Figma drops a colour variable's alpha, and a layer-opacity binding on one layer would also fade its blur.",
+   "replaced": "26 hand-drawn 'scrim' frames: Browse 13, Admin Flow 11, Dashboard 2 (dialogs into the Content slot; drawers moved out above the Overlay at the same screen position), plus the Dialog page's own 'stage — overlay' demo."
+  },
+  "browseSkeletonCards": "4 hand-drawn 'card (skeleton)' frames -> Card instances (header off, Cover slot + Body slot holding the original Skeleton instances). Cover slot set to HUG so it follows the 141px skeleton; an instance slot's own height override does not stick.",
+  "exportPreviewTable": "D3.3 light + dark: the hand-drawn 'Table header row' / 'Row 1-4' -> ui-table__header of Table/HeaderCell (sm) + ui-table__row frames of Table/Cell (sm, text), the file's house table pattern. Row 4 keeps its 50% fade.",
+  "tableHeaderCellSortable": "Table/HeaderCell (1400:135) gained BOOLEAN 'Sortable#4191:1' (default true) bound to sort-indicator visibility across all 18 variants — a column with no onSort in code renders no chevrons. Off on the four export-preview headers.",
+  "commandItemMeta": "See newTabPaletteOnSpacePage_2026_09_21.",
+  "notFindings": [
+   "Admin Flow's 94 ui-table frames outside instances are the READ FIRST data-contract and routes diagrams, not screens.",
+   "Builder's 86 'grid line' rectangles are inside the Canvas/Ground master, which lives on the Builder page.",
+   "What's New's ~50k artwork nodes are the announcement and Figma Motion clip artwork."
+  ],
+  "leftAsLibraryGap": "Builder side-panel footers (14 frames) and the panel surface: the library has no docked non-modal side panel; code draws the same surface (ds-builder-panel), so both sides match. Needs an owner call on a component."
+ },
+ "builderPanelsAsDockedDrawer_2026_09_22": {
+  "date": "2026-09-22",
+  "decision": "Owner: the Builder's side panel is a Drawer — add a non-modal mode rather than a new component. Code: Drawer `modal={false}` (docked: in place, absolute, no overlay/trap/scroll-lock/outside-click, Escape only from inside, no aria-modal; falls back to consumer aria-labelledby). Figma: a docked drawer is a Drawer instance with NO Dialog/Overlay behind it.",
+  "drawerMaster": "514:236 gained BOOLEAN 'Show header#4194:0' (default true, bound to the header frame's visibility in all 4 variants) so a composed header (PageHeader sm, as the Builder draws) can lead the Body slot. 28 pre-existing instances unchanged.",
+  "builderPanels": "All 28 hand-drawn Builder panels are now Drawer Side=right instances: 14 standalone 'BL4.x panel · …' frames in section '4 · PANELS' (names, positions and Mode pins kept) and 14 in-screen panels inside the AppShell Main content slot of BL1.1–BL2.4 (light + dark). Each: Show header off, Show footer on, maxWidth lifted (the master caps at 384 = --max-w-sm; the panel is 420 — code lifts it too), Body slot padding/gap 0 holding the original 'panel body' (PageHeader sm + ScrollArea/content), footer buttons set from the old 'panel footer' (Done; or Clear all + Show dashboards; or Reset all + Apply settings), first button hidden when there was one. Verified: 28 drawers, 0 panels or 'panel footer' frames left, 0 strays.",
+  "apiLessons": [
+   "Inserting a node into an instance's SLOT content re-keys the ids of that content, so any reference taken before the insert goes stale (\"node does not exist\"). Re-find from a stable top-level frame id after every structural edit.",
+   "A layer hidden inside an instance that is itself slot content of another instance is no longer returned by `.children` and cannot be reached by a constructed instance-sublayer id. Configure such instances fully at PAGE level (where every layer is reachable), then insert them in one step.",
+   "A use_figma script that throws is rolled back in full here — including edits made before the throw — so a failure in a trailing report line undoes the whole run. Keep reports read-only and defensive, and verify state after any error before retrying."
+  ]
+ },
+ "askAidenStripRestored_2026_09_22": {"summary": "Owner: keep both Aiden entry points — put Ask Aiden back at the far right of the tab strip (as in code: AppShell stories + the Prototype story) and keep the Fab.", "master": "AppShell 2669:605: the strip's Actions slot (2669:209, hidden since 2026-09-19) is visible again behind a new BOOLEAN 'Show Ask Aiden#4198:0' (default true). Its button 3081:656 (Button/Icon-only default/ghost/sm) swapped Icon → Icon/sparkles-fill 3772:90; each of the three stars carries a GRADIENT_LINEAR with stops bound to the Aiden gradient variables (1116:44/45/46, mode-aware) and a per-star gradientTransform so ONE ramp spans the 24 box — the Figma spelling of the code's userSpaceOnUse gradient (a plain style fill would give each star its own ramp).", "reach": "Hidden nodes in instances are not enumerated, so no instance could have overridden the slot: 197 of 207 AppShell instances now show the button with no per-screen edits (Admin/Request Flow, Browse, Space, Builder, Dashboard, Aiden, What's New, Spacing, AppShell page). The strip stays 1440/1920 — TabBar is FILL and gives up the 48. The 10 that do not are proposal studies on Patterns ('Tabs — Notion-style', 'User theme across all apps') whose Show Ask Aiden reads false from an older hide override; left alone.", "knownGap": "The sparkles master carries the Fab's twinkle keyframes and instances inherit them, so the strip glyph twinkles on a screen's timeline where the code's strip button does not. Instance sublayers cannot be written to, so this cannot be turned off per use."}
 }

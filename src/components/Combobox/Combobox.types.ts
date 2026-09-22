@@ -87,5 +87,22 @@ export type ComboboxProps = Omit<
   sideOffset?: number;
   /** Default `true` — the listbox takes the trigger's width as its minimum. */
   matchTriggerWidth?: boolean;
+  /**
+   * Pick several. Rows show a check box, a pick toggles the row and the list stays
+   * open, and the selection lives in `values` / `defaultValues` / `onValuesChange`
+   * (the single-value props are ignored). Filtering never deselects: the trigger's
+   * count can exceed the rows on screen.
+   */
+  multiple?: boolean;
+  /** Controlled selection when `multiple`. Pair with `onValuesChange`. */
+  values?: string[];
+  /** Uncontrolled initial selection when `multiple`. */
+  defaultValues?: string[];
+  onValuesChange?: (values: string[]) => void;
+  /**
+   * What the trigger says for a `multiple` selection. Default: the label when one is
+   * picked, `"{n} selected"` for more, the placeholder for none.
+   */
+  summary?: (selected: ComboboxOption[]) => React.ReactNode;
   className?: string;
 };

@@ -113,4 +113,28 @@
 
 .ui-canvas-item__menu {
   inset-inline-end: calc(var(--p-2) * -1);
+
+  // The trailing handle holds the app's menu trigger: an icon-only `Button` (Figma's
+  // Canvas/Item puts a Button/Icon-only here). The handle is the surface, so the button
+  // fills it and takes the handle's ink rather than painting its own box. Two classes
+  // to beat `.ui-button`'s size and style rules.
+  > .ui-button.ui-button--icon-only {
+    width: 100%;
+    height: 100%;
+    min-width: 0;
+    padding: 0;
+    border-radius: inherit;
+    background: transparent;
+    color: inherit;
+    box-shadow: none;
+
+    &:hover:not(:disabled) {
+      background: var(--primary-hover);
+    }
+
+    svg {
+      width: var(--w-3);
+      height: var(--h-3);
+    }
+  }
 }

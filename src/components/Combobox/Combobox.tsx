@@ -61,6 +61,11 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       align = 'start',
       sideOffset = 4,
       matchTriggerWidth = true,
+      multiple = false,
+      values: valuesProp,
+      defaultValues,
+      onValuesChange,
+      summary,
       className,
       ...rest
     },
@@ -79,6 +84,19 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       },
       [controlledValue, onValueChange],
     );
+
+    // Multiple mode keeps its own selection list, beside the single value.
+    const controlledValues = valuesProp !== undefined;
+    const [internalValues, setInternalValues] = useState<string[]>(defaultValues ?? []);
+    const values = controlledValues ? valuesProp : internalValues;
+    const setValues = useCallback(
+      (next: string[]) => {
+        if (!controlledValues) setInternalValues(next);
+        onValuesChange?.(next);
+      },
+      [controlledValues, onValuesChange],
+    );
+    const isPicked = (v: string) => (multiple ? values.includes(v) : v === value);
 
     const controlledOpen = openProp !== undefined;
     const [openState, setOpenState] = useState(defaultOpen);
@@ -127,13 +145,15 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     useEffect(() => {
       if (!open) return;
       setSearch('');
-      const currentIdx = options.findIndex((o) => o.value === value);
+      const currentIdx = options.findIndex((o) => (multiple ? values.includes(o.value) : o.value === value));
       setHighlightIndex(currentIdx >= 0 ? currentIdx : 0);
       const raf = requestAnimationFrame(() => {
         searchRef.current?.focus();
       });
       return () => cancelAnimationFrame(raf);
-    }, [open, value, options]);
+      // Re-run on open only in multiple mode: a pick must not jump the highlight.
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [open, multiple ? undefined : value, options]);
 
     // Position the popup.
     const reposition = useCallback(() => {
@@ -200,20 +220,27 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
       (idx: number) => {
         const option = filtered[idx];
         if (!option || option.disabled) return;
+        if (multiple) {
+          // Toggle and stay open, focus on the search, so several picks are one trip.
+          setValues(values.includes(option.value) ? values.filter((v) => v !== option.value) : [...values, option.value]);
+          setHighlightIndex(idx);
+          return;
+        }
         setValue(option.value);
         setOpen(false);
         triggerRef.current?.focus();
       },
-      [filtered, setValue, setOpen],
+      [filtered, setValue, setOpen, multiple, values, setValues],
     );
 
     const clear = useCallback(
       (e: React.MouseEvent) => {
         e.stopPropagation();
+        if (multiple) return setValues([]);
         if (!controlledValue) setInternalValue(undefined);
         onValueChange?.('');
       },
-      [controlledValue, onValueChange],
+      [controlledValue, onValueChange, multiple, setValues],
     );
 
     const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -243,8 +270,18 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     };
 
     const selected = options.find((o) => o.value === value);
-    const showPlaceholder = !selected;
-    const showClear = clearable && !!selected && !disabled;
+    const pickedOptions = multiple ? options.filter((o) => values.includes(o.value)) : [];
+    const triggerText = multiple
+      ? pickedOptions.length === 0
+        ? null
+        : summary
+          ? summary(pickedOptions)
+          : pickedOptions.length === 1
+            ? pickedOptions[0].label
+            : `${pickedOptions.length} selected`
+      : selected?.label;
+    const showPlaceholder = triggerText == null;
+    const showClear = clearable && !showPlaceholder && !disabled;
     const activeDescendantId = filtered[highlightIndex]
       ? `${id}-opt-${filtered[highlightIndex].value}`
       : undefined;
@@ -341,7 +378,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
             <span
               className={`ui-combobox__value${showPlaceholder ? ' ui-combobox__value--placeholder' : ''}`}
             >
-              {showPlaceholder ? placeholder : selected!.label}
+              {showPlaceholder ? placeholder : triggerText}
             </span>
           </button>
           {showClear && (
@@ -359,14 +396,12 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           </span>
         </div>
 
-        {name !== undefined && (
-          <input
-            type="hidden"
-            name={name}
-            value={value ?? ''}
-            required={required}
-          />
-        )}
+        {name !== undefined &&
+          (multiple ? (
+            values.map((v) => <input key={v} type="hidden" name={name} value={v} />)
+          ) : (
+            <input type="hidden" name={name} value={value ?? ''} required={required} />
+          ))}
 
         {/*
           `role="alert"` so a validation error that appears after submit is
@@ -428,6 +463,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                 id={listboxId}
                 role="listbox"
                 aria-labelledby={triggerId}
+                aria-multiselectable={multiple || undefined}
                 className="ui-combobox__listbox"
               >
                 {filtered.length === 0 ? (
@@ -436,7 +472,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                   </div>
                 ) : (
                   filtered.map((option, idx) => {
-                    const isSelected = option.value === value;
+                    const isSelected = isPicked(option.value);
                     const isHighlighted = idx === highlightIndex;
                     return (
                       <div
@@ -454,7 +490,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
                         onClick={() => selectAt(idx)}
                       >
                         <span
-                          className="ui-combobox__item-indicator"
+                          className={`ui-combobox__item-indicator${multiple ? ' ui-combobox__item-indicator--box' : ''}`}
                           aria-hidden="true"
                         >
                           {isSelected && <Check />}

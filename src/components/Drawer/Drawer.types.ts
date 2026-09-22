@@ -4,7 +4,8 @@ export type DrawerSide = 'top' | 'right' | 'bottom' | 'left';
 /**
  * Edge panel. Shares Dialog's portal, focus trap, scroll lock and Escape
  * handling, and animates out via a `closed → open → closing` state machine.
- * Controlled only — there is no `defaultOpen`.
+ * Controlled only — there is no `defaultOpen`. `modal={false}` makes it a docked,
+ * non-modal panel instead (see `modal`).
  */
 export type DrawerProps = React.HTMLAttributes<HTMLDivElement> & {
   /** Required. `DrawerHeader` must be given the SAME id — it seeds
@@ -22,6 +23,16 @@ export type DrawerProps = React.HTMLAttributes<HTMLDivElement> & {
    * to `false`. Set `false` for a drawer holding unsaved work.
    */
   closeOnOutsideClick?: boolean;
+  /**
+   * Default `true`. `false` makes a DOCKED, non-modal panel for work that happens beside
+   * it — the Builder's side panel, where you add components and watch the canvas change.
+   * It renders in place (no portal) and positions `absolute` inside its nearest positioned
+   * ancestor; there is no overlay, no focus trap, no scroll lock and no outside-click
+   * close, and it is a non-modal dialog (no `aria-modal`). Escape still closes it, but only
+   * while focus is inside the panel. Focus moves in on open and back on close, and the
+   * slide animation is the same. `closeOnOutsideClick` is ignored.
+   */
+  modal?: boolean;
   className?: string;
 };
 

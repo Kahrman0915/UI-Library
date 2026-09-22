@@ -10,7 +10,8 @@ import { Bell, FileEdit, LayoutDashboard, Lightbulb, MessageSquare, Megaphone, R
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../../../components/AlertDialog';
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
-import Card from '../../../../components/Card';
+import Card, { CardBody } from '../../../../components/Card';
+import { BarChart, LineChart } from '../../../../charts';
 import Code from '../../../../components/Code';
 import Textarea from '../../../../components/Textarea';
 import { personById } from '../../data';
@@ -281,25 +282,58 @@ export const splitTarget = (t: string): [string | null, string] => {
 };
 
 
-/* ── Bar chart (5.5) — a token-painted stand-in; there is no Chart component ── */
+/* ── Usage charts (1.4, 5.5) — Figma's Chart/Line and Chart/Bar ─────────────────
+   The library's LineChart / BarChart inside a Card: the Figma Chart master is the
+   card and the chart together, so the chart carries the title and subtitle and
+   nothing above it repeats them. Series and copy are Figma's. */
 
-export function UsageBars({ id, title, labels, values, unit = 'k' }: { id: string; title: string; labels: string[]; values: number[]; unit?: string }) {
-  const max = Math.max(...values, 1);
+const k = (v: number) => `${v}k`;
+
+/** "Views over time" — one line per device, over the months given. */
+export function ViewsOverTime({ id, months, totals }: { id: string; months: string[]; totals: number[] }) {
+  const split = (share: number) => totals.map((t) => Math.round(t * share));
   return (
-    <figure id={id} className="ds-admin-chart" aria-label={title}>
-      <div className="ds-admin-chart__plot">
-        {values.map((v, i) => (
-          <div key={labels[i]} className="ds-admin-chart__col">
-            <span className="ds-admin-chart__value">
-              {v}
-              {unit}
-            </span>
-            <div className="ds-admin-chart__bar" style={{ height: `${Math.round((v / max) * 100)}%` }} title={`${labels[i]}: ${v}${unit}`} />
-            <span className="ds-admin-chart__label">{labels[i]}</span>
-          </div>
-        ))}
-      </div>
-    </figure>
+    <Card id={id}>
+      <CardBody>
+        <LineChart
+          id={`${id}-chart`}
+          title="Views over time"
+          description="All products · last 6 months"
+          categories={months}
+          series={[
+            { key: 'mobile', label: 'Mobile', data: split(0.35) },
+            { key: 'desktop', label: 'Desktop', data: split(0.5) },
+            { key: 'tablet', label: 'Tablet', data: split(0.15) },
+          ]}
+          valueFormatter={k}
+          height={240}
+        />
+      </CardBody>
+    </Card>
+  );
+}
+
+/** "Views by product" — how people arrived, per product. */
+export function ViewsByProduct({ id, totals }: { id: string; totals: [number, number, number] }) {
+  const split = (share: number) => totals.map((t) => Math.round(t * share));
+  return (
+    <Card id={id}>
+      <CardBody>
+        <BarChart
+          id={`${id}-chart`}
+          title="Views by product"
+          description="Last 30 days"
+          categories={['DART Central', 'Dartboards', 'Aiden']}
+          series={[
+            { key: 'direct', label: 'Direct', data: split(0.5) },
+            { key: 'referral', label: 'Referral', data: split(0.3) },
+            { key: 'organic', label: 'Organic', data: split(0.2) },
+          ]}
+          valueFormatter={k}
+          height={240}
+        />
+      </CardBody>
+    </Card>
   );
 }
 

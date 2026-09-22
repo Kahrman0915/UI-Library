@@ -90,9 +90,7 @@ export function BrowseCard({ d }: { d: Dashboard }) {
       <CardBody>
         <div className="ds-browse-card__text">
           <CardTitle>
-            <button type="button" className="ds-browse-title-btn" onClick={stop(m.open)}>
-              {d.name}
-            </button>
+            <Button id={`ds-browse-title-${d.id}`} style="link" className="ds-browse-title-link" label={d.name} onClick={stop(m.open)} />
           </CardTitle>
           <CardDescription>{d.description}</CardDescription>
         </div>
@@ -131,9 +129,7 @@ export function BrowseRow({ d }: { d: Dashboard }) {
         </ItemMedia>
         <ItemContent>
           <ItemTitle>
-            <button type="button" className="ds-browse-title-btn" onClick={stop(m.open)}>
-              {d.name}
-            </button>
+            <Button id={`ds-browse-row-title-${d.id}`} style="link" className="ds-browse-title-link" label={d.name} onClick={stop(m.open)} />
             {m.inSpaces > 0 && (
               <Badge
                 id={`ds-browse-row-in-${d.id}`}
@@ -168,29 +164,35 @@ export function BrowseRow({ d }: { d: Dashboard }) {
   );
 }
 
-export function BrowseCardSkeleton() {
+export function BrowseCardSkeleton({ index }: { index: number }) {
   return (
-    <div className="ds-browse-skeleton-card" aria-hidden="true">
-      <Skeleton className="ds-browse-skeleton-card__cover" />
-      <div className="ds-browse-skeleton-card__body">
+    <Card id={`ds-browse-skeleton-${index}`} className="ds-browse-skeleton-card" aria-hidden="true">
+      <CardMedia ratio={8 / 3}>
+        <Skeleton className="ds-browse-skeleton-card__cover" />
+      </CardMedia>
+      <CardBody>
         <Skeleton shape="text" width="60%" />
         <Skeleton shape="text" />
         <Skeleton shape="text" width="80%" />
         <Skeleton height="var(--h-9)" />
-      </div>
-    </div>
+      </CardBody>
+    </Card>
   );
 }
 
 export function BrowseRowSkeleton() {
   return (
-    <div className="ds-browse-skeleton-row" aria-hidden="true">
-      <Skeleton className="ds-browse-skeleton-row__thumb" />
-      <div className="ds-browse-skeleton-row__text">
+    <Item variant="outline" className="ds-browse-skeleton-row" aria-hidden="true">
+      <ItemMedia>
+        <Skeleton className="ds-browse-skeleton-row__thumb" />
+      </ItemMedia>
+      <ItemContent>
         <Skeleton shape="text" width="30%" />
         <Skeleton shape="text" width="70%" />
-      </div>
-      <Skeleton width="var(--w-28)" height="var(--h-8)" />
-    </div>
+      </ItemContent>
+      <ItemActions>
+        <Skeleton width="var(--w-28)" height="var(--h-8)" />
+      </ItemActions>
+    </Item>
   );
 }

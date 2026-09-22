@@ -295,47 +295,11 @@
   }
 }
 
-// Usage charts (5.5) — a token-painted stand-in; there is no Chart component.
+// Two-up row: the usage charts (1.4, 5.5) sit side by side, as Figma draws them.
 .ds-admin-grid2 {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(var(--w-80), 1fr));
   gap: var(--space-3);
-}
-
-.ds-admin-chart {
-  margin: 0;
-}
-
-.ds-admin-chart__plot {
-  display: flex;
-  align-items: stretch;
-  gap: var(--space-4);
-  height: var(--h-48);
-}
-
-.ds-admin-chart__col {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  align-items: center;
-  gap: var(--space-5);
-  min-width: 0;
-}
-
-.ds-admin-chart__bar {
-  width: 100%;
-  min-height: var(--h-1);
-  border-radius: var(--rounded-sm) var(--rounded-sm) 0 0;
-  background: var(--primary);
-}
-
-.ds-admin-chart__value,
-.ds-admin-chart__label {
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  color: var(--muted-foreground);
-  white-space: nowrap;
 }
 
 // Access Control.

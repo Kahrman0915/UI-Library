@@ -220,6 +220,26 @@
   }
 }
 
+// Multiple mode: the indicator is a check box, so a row reads as "one of several I
+// can pick" — Checkbox's own box, drawn here because a real input inside an option
+// would be a second focus target in a listbox that owns focus through the search.
+.ui-combobox__item-indicator--box {
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-sm);
+  background: var(--bg-input-30);
+  color: var(--primary-foreground);
+
+  .ui-combobox__item[data-state='checked'] & {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+}
+
 .ui-combobox__item-content {
   flex: 1;
   min-width: 0;

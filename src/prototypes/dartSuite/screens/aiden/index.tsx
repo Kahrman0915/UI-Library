@@ -23,6 +23,7 @@ import {
   ChatSuggestions,
 } from '../../../../components/Chat';
 import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../../../components/Empty';
+import Item, { ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '../../../../components/Item';
 import ScrollArea from '../../../../components/ScrollArea';
 import { toast } from '../../../../components/Toast';
 import { AidenSparkles } from '../../../AidenSparkles';
@@ -107,22 +108,26 @@ export function AidenChatPage({ chatId }: { chatId: string }) {
         />
         <ScrollArea id="ds-aiden-history-scroll" className="ds-aiden-history__scroll" type="hover">
           <p className="ds-aiden-history__label">Recent</p>
-          <ul className="ds-aiden-history__list">
-          {state.aidenChats.map((c) => (
-            <li key={c.id}>
-              <button
-                type="button"
-                className="ds-aiden-history__item"
+          <ItemGroup className="ds-aiden-history__list">
+            {state.aidenChats.map((c) => (
+              <Item
+                key={c.id}
+                id={`ds-aiden-history-${c.id}`}
+                size="xs"
+                variant={c.id === chatId ? 'muted' : 'default'}
                 aria-current={c.id === chatId ? 'page' : undefined}
                 onClick={() => c.id !== chatId && replace({ page: 'aiden-chat', chatId: c.id })}
               >
-                <MessageSquare aria-hidden="true" />
-                <span className="ds-aiden-history__title">{c.title}</span>
-                <span className="ds-aiden-history__when">{c.updatedAt}</span>
-              </button>
-            </li>
-          ))}
-          </ul>
+                <ItemMedia>
+                  <MessageSquare />
+                </ItemMedia>
+                <ItemContent>
+                  <ItemTitle>{c.title}</ItemTitle>
+                  <ItemDescription>{c.updatedAt}</ItemDescription>
+                </ItemContent>
+              </Item>
+            ))}
+          </ItemGroup>
         </ScrollArea>
       </nav>
 

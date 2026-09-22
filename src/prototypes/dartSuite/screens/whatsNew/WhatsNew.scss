@@ -27,16 +27,6 @@
   color: var(--muted-foreground);
 }
 
-.ds-wn-version {
-  padding: 0 var(--p-1-5);
-  border-radius: var(--rounded-sm);
-  background: var(--secondary);
-  color: var(--secondary-foreground);
-  font-family: var(--font-family-mono);
-  font-size: var(--text-xs);
-  line-height: var(--leading-5);
-}
-
 .ds-wn-badges {
   display: flex;
   flex-wrap: wrap;
@@ -242,55 +232,6 @@
 .ds-wn-tour__tiles {
   flex: 1;
   display: flex;
-  gap: var(--space-4);
-}
-
-.ds-wn-tour__tile {
-  display: grid;
-  gap: var(--p-1);
-  padding: 0;
-  border: 0;
-  background: none;
-  text-align: start;
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
-  border-radius: var(--rounded-md);
-
-  &:focus-visible {
-    outline: none;
-    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
-  }
-
-  &:hover .ds-wn-tour__tile-media {
-    background: var(--accent);
-  }
-}
-
-.ds-wn-tour__tile-media {
-  display: grid;
-  place-items: center;
-  width: var(--w-24);
-  height: var(--h-14);
-  border-radius: var(--rounded-md);
-  background: var(--secondary);
-  color: var(--primary-text);
-  transition: background-color var(--duration-fast) var(--ease-out);
-
-  svg {
-    width: var(--w-6);
-    height: var(--h-6);
-  }
-}
-
-.ds-wn-tour__tile-title {
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
-  font-weight: var(--font-medium);
-}
-
-.ds-wn-tour__tile-sub {
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  color: var(--muted-foreground);
+  flex-direction: column;
+  gap: var(--space-5);
 }

@@ -19,6 +19,11 @@ const meta: Meta<typeof Combobox> = {
       changelog: [
         {
           date: '2026-09-21',
+          summary: 'Combobox can pick several: rows show a check box, a pick keeps the list open, and the trigger sums up the selection.',
+          detail: 'New `multiple` with `values` / `defaultValues` / `onValuesChange` and an optional `summary(selected)` for the trigger text (default: the label for one, "{n} selected" for more). The listbox carries `aria-multiselectable`; `name` posts one hidden input per value; `clearable` empties the list. The indicator becomes a check box (`.ui-combobox__item-indicator--box`). Filtering never deselects. First consumer: the Suite\'s banner Scope field, which had been composed by hand from Popover, Command and Checkbox.',
+        },
+        {
+          date: '2026-09-21',
           summary: 'Right- and center-aligned menus now line up with their trigger instead of hanging a few pixels past it.',
           detail:
             'Position is computed from the surface’s layout size (`measureFloating`, `offsetWidth`/`offsetHeight`) instead of `getBoundingClientRect()`. The surface opens on a `--motion-scale-in` (0.97) keyframe, so the rect read in the positioning effect was ~3% small and `align` `end`/`center` landed that far past the anchor — a 320px menu pinned to the window’s right edge overhung it by ~10px — and was never re-measured once the animation settled.',
@@ -297,4 +302,35 @@ export const InForm: Story = {
       </div>
     </form>
   ),
+};
+
+/**
+ * `multiple`: pick several. A pick toggles the row and the list stays open; the
+ * trigger names one pick, then counts. Filtering never deselects.
+ */
+export const Multiple: Story = {
+  render: () => {
+    const [values, setValues] = useState<string[]>(['sla', 'overview']);
+    return (
+      <div style={{ width: 'var(--w-80)' }}>
+        <Combobox
+          id="combobox-multiple"
+          multiple
+          label="Scope"
+          description="Where this notice appears."
+          values={values}
+          onValuesChange={setValues}
+          clearable
+          searchPlaceholder="Search dashboards…"
+          options={[
+            { value: 'sla', label: 'Servicing SLA' },
+            { value: 'overview', label: 'Servicing Overview' },
+            { value: 'delivery', label: 'Delivery SLA' },
+            { value: 'collections', label: 'Collections Performance' },
+            { value: 'revenue', label: 'Revenue by Region' },
+          ]}
+        />
+      </div>
+    );
+  },
 };
