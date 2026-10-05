@@ -19,6 +19,11 @@
       "types": "./dist/markdown.d.ts",
       "import": "./dist/markdown.js",
       "require": "./dist/markdown.cjs"
+    },
+    "./toast": {
+      "types": "./dist/toast.d.ts",
+      "import": "./dist/toast.js",
+      "require": "./dist/toast.cjs"
     }
   },
   "files": [

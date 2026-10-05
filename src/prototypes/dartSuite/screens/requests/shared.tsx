@@ -14,6 +14,7 @@ import FeaturedIcon from '../../../../components/FeaturedIcon';
 import type { FeaturedIconColor } from '../../../../components/FeaturedIcon/FeaturedIcon.types';
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
+import Text from '../../../../components/Text';
 import { useLeaveGuard, useNav } from '../../nav';
 import type { LeaveGuard } from '../../nav';
 import { useSuite } from '../../store';
@@ -239,9 +240,9 @@ export function FormShell({
           </div>
         </Card>
         <div className="ds-requests-form__footer">
-          <p className="ds-muted" aria-live="polite">
+          <Text tone="muted" aria-live="polite">
             {note}
-          </p>
+          </Text>
           <Button
             id={`${id}-submit`}
             label={phase === 'failed' ? 'Try again' : phase === 'submitting' ? 'Submitting…' : 'Submit for review'}

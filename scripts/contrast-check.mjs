@@ -372,6 +372,12 @@ const PAIRINGS = [
   ['warning', 'warning-light', 'card'],
   ['info', 'info-light', 'background'],
   ['info', 'info-light', 'card'],
+  // SelectionBar: its count (--foreground) and "Clear selection" link
+  // (--primary-text) sit on a --primary-light tint, over the page or a card.
+  ['foreground', 'primary-light', 'background'],
+  ['foreground', 'primary-light', 'card'],
+  ['primary-text', 'primary-light', 'background'],
+  ['primary-text', 'primary-light', 'card'],
   ['primary-text', 'primary-soft', 'background'],
   ['primary-text', 'primary-soft', 'card'],
   ['error', 'error-soft', 'background'],

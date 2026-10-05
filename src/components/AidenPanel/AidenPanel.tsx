@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { Maximize2, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { AidenPanelContext, useAidenPanelContext } from './AidenPanel.context';
@@ -81,13 +82,20 @@ const AidenPanel = forwardRef<HTMLDivElement, AidenPanelProps>(
       [id, onClose, onExpand],
     );
 
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(state !== 'closed' && mounted);
+
     if (state === 'closed' || !mounted) return null;
 
     const isClosing = state === 'closing';
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <AidenPanelContext.Provider value={ctx}>
         <div
+          {...scope}
           {...rest}
           id={id}
           ref={(node) => {
@@ -123,6 +131,8 @@ const AidenPanel = forwardRef<HTMLDivElement, AidenPanelProps>(
         </div>
       </AidenPanelContext.Provider>,
       document.body,
+        )}
+      </>
     );
   },
 );

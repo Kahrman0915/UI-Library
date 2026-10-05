@@ -38,6 +38,12 @@ const meta: Meta<typeof PageHeader> = {
       },
       changelog: [
         {
+          date: '2026-10-02',
+          summary: 'The title block keeps its one-line width first, so actions that can widen (a search) only take the room the description does not need.',
+          detail:
+            '`__text` is `flex: 1 1 auto` instead of `flex: 1`, and `__actions` sets `justify-content: flex-end`. With ordinary actions nothing changes — they cannot grow, so the text still takes all the spare room. A page that lets its actions grow (Marketplace › Reports: search and a subject picker that rest at a 160 floor and widen to 256 and 224) now fills the description\'s line first and hands the rest to the controls, which stay right-aligned. With a basis of 0 the spare room was split evenly and the description wrapped beside a full-width search.',
+        },
+        {
           date: '2026-09-17',
           summary: 'New `showDivider` — a hairline closing the header that bleeds past the page margin.',
           detail:

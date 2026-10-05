@@ -7,6 +7,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { CalendarDays } from 'lucide-react';
 import Label from '#components/Label/Label';
 import Calendar from '#components/Calendar/Calendar';
@@ -89,6 +90,8 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
     );
     const mounted = useMounted();
     const { present, status, onExitAnimationEnd } = usePresence(open);
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(present && mounted);
 
     const triggerId = `${id}-trigger`;
     const panelId = `${id}-panel`;
@@ -160,6 +163,7 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
 
     const panel = present && mounted && (
       <div
+        {...scope}
         ref={panelRef}
         id={panelId}
         role="dialog"
@@ -306,6 +310,7 @@ const DatePicker = forwardRef<HTMLButtonElement, DatePickerProps>(
             {errorMessage}
           </p>
         )}
+        {panel && <span ref={scopeAnchorRef} hidden />}
         {panel && createPortal(panel, document.body)}
       </div>
     );

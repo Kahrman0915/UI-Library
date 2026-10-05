@@ -21,6 +21,17 @@ export type ChartSeries = {
 };
 
 export type ChartView = 'chart' | 'table' | 'both';
+
+/**
+ * A theme's chart colours, used by ONE chart.
+ *
+ * Omit it (the default) and the chart takes the palette of whatever theme the
+ * page is in — which is what a user-picked theme should give you everywhere.
+ * Set it and only this chart's slots change: the card around it, its buttons and
+ * its text stay on the page's theme. That is the whole reason it is not
+ * `data-theme` on a wrapper, which would repaint `--primary` too.
+ */
+export type ChartPalette = 'db' | 'dc' | 'ec' | 'nb' | 'ph' | 'rm';
 export type BarLayout = 'grouped' | 'stacked' | 'stacked100';
 
 export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
@@ -72,6 +83,14 @@ export type ChartProps = Omit<HTMLAttributes<HTMLElement>, 'title'> & {
    */
   endLabels?: boolean;
   showGrid?: boolean;
+  /**
+   * Repaint this chart's series from another theme's palette.
+   *
+   * Identity, not decoration: a colour a reader can refer to ("the magenta
+   * one"). Save it with the chart so every reader sees the same colours —
+   * per-viewer chart colours break that shared reference.
+   */
+  palette?: ChartPalette;
   /** The table twin is ALWAYS in the DOM; this controls what is visible. */
   view?: ChartView;
   emptyLabel?: string;

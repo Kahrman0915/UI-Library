@@ -15,7 +15,7 @@
    composer. The breadcrumb is the only way back — there is no Cancel. */
 
 import { useEffect, useState } from 'react';
-import { Check, CheckCircle2, Info, Lightbulb, ThumbsUp } from 'lucide-react';
+import { Check, CheckCircle2, ExternalLink, Info, Lightbulb, ThumbsUp } from 'lucide-react';
 import Alert from '../../../../components/Alert';
 import Avatar from '../../../../components/Avatar';
 import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
@@ -33,9 +33,13 @@ import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '../../../../components/Table';
 import Textarea from '../../../../components/Textarea';
 import { toast } from '../../../../components/Toast';
+import Text from '../../../../components/Text';
+import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
+import Timeline, { TimelineItem } from '../../../../components/Timeline';
 import { DISCARD_REPLY, useLeaveGuard, useNav } from '../../nav';
 import { adminStatus, today, typeLabel, useSuite } from '../../store';
 import type { Banner, Dashboard, Request } from '../../types';
+import { CONTROLS, IRM_UNPUBLISHED, irmFor } from '../../irm';
 import { DecisionDialog, fieldValue, isStaged, PRODUCT_LABEL, requesterOf, StatusBadge, TYPE_ICON, useGoAfterCommit } from './shared';
 import type { Decision } from './shared';
 import './Admin.scss';
@@ -96,7 +100,7 @@ function RequestHeader({ r, sub }: { r: Request; sub: string }) {
       actions={
         <div className="ds-admin-status">
           <StatusBadge id={`ds-ar-status-${key}`} request={r} />
-          <span className="ds-muted">{sub}</span>
+          <Text as="span" tone="muted">{sub}</Text>
         </div>
       }
     />
@@ -120,7 +124,7 @@ function Diff({ r, applied }: { r: Request; applied?: boolean }) {
           <TableRow key={c.field}>
             <TableCell>{c.field}</TableCell>
             <TableCell>{c.current}</TableCell>
-            <TableCell>{c.current === c.proposed ? <span className="ds-muted">no change</span> : c.proposed}</TableCell>
+            <TableCell>{c.current === c.proposed ? <Text as="span" tone="muted">no change</Text> : c.proposed}</TableCell>
           </TableRow>
         ))}
       </TableBody>
@@ -133,16 +137,63 @@ function Details({ r, applied }: { r: Request; applied?: boolean }) {
   return (
     <Card id={`ds-ar-details-${r.id.replace('#', '')}`}>
       <CardBody>
-        <dl className="ds-fields">
+        <DescriptionList>
           {r.fields.map((f) => (
-            <div key={f.label} className="ds-admin-field">
-              <dt>{f.label}</dt>
-              <dd>{f.value}</dd>
-            </div>
+            <DescriptionListItem key={f.label} term={f.label}>
+              {f.value}
+            </DescriptionListItem>
           ))}
-        </dl>
+        </DescriptionList>
       </CardBody>
     </Card>
+  );
+}
+
+/**
+ * The IRM record behind a dashboard request. IRM owns the report; this queue
+ * only decides whether it is SHOWN in DartBoards — so the one thing an admin
+ * needs from IRM before approving is whether its controls are done.
+ */
+function IrmStatus({ r }: { r: Request }) {
+  const { state } = useSuite();
+  if (!r.type.startsWith('dashboard-')) return null;
+  const number = fieldValue(r, 'IRM record');
+  const dash =
+    state.dashboards.find((x) => x.id === r.assetId) ?? state.dashboards.find((x) => x.name === fieldValue(r, 'Dashboard', 'Display title'));
+  const record = IRM_UNPUBLISHED.find((x) => x.number === number) ?? (dash ? irmFor(dash) : undefined);
+  const key = r.id.replace('#', '');
+  if (!record) {
+    return number ? (
+      <Alert id={`ds-ar-irm-${key}`} variant="info" title={`IRM record ${number}`} description="Check its controls in IRM before approving." />
+    ) : null;
+  }
+  const c = CONTROLS[record.controls];
+  const ok = record.controls === 'complete';
+  const publishing = r.type === 'dashboard-add';
+  return (
+    <Alert
+      id={`ds-ar-irm-${key}`}
+      variant={ok ? 'success' : 'warning'}
+      title={`${record.number} · ${c.label}`}
+      description={
+        ok
+          ? `${record.name}. Owner ${record.businessOwner}, last reviewed ${record.lastReviewed}.`
+          : publishing
+            ? `Its controls are not complete in IRM. Hold this request, or ask ${record.businessOwner} to finish them first.`
+            : `Its controls need attention in IRM. That does not block a listing change, but ${record.businessOwner} should know.`
+      }
+      action={
+        <Button
+          id={`ds-ar-irm-${key}-open`}
+          size="sm"
+          style="outline"
+          label="Open IRM record"
+          IconRight={ExternalLink}
+          aria-label={`Open ${record.number} in IRM (opens in a new tab)`}
+          onClick={() => toast(`Opening ${record.number} in IRM`, { description: 'IRM opens in a new tab.' })}
+        />
+      }
+    />
   );
 }
 
@@ -168,19 +219,18 @@ function Thread({
     <Card id={`ds-ar-thread-${key}`}>
       <CardBody>
         <Section id={`ds-ar-activity-${key}`} heading="Activity" variant="group">
-          <ol className="ds-admin-thread">
+          <Timeline aria-label="Activity">
             {r.thread.map((t) => (
-              <li key={t.id} className="ds-admin-thread__entry">
-                <Avatar id={`ds-ar-av-${key}-${t.id}`} size="sm" fallback={t.author === 'system' ? 'DC' : initialsOf(t.name)} />
-                <div className="ds-admin-thread__text">
-                  <p className="ds-muted">
-                    {t.author === 'admin' ? `${t.name} (admin)` : t.name}  ·  {t.at}
-                  </p>
-                  <p className="ds-text">{t.text}</p>
-                </div>
-              </li>
+              <TimelineItem
+                key={t.id}
+                marker={<Avatar id={`ds-ar-av-${key}-${t.id}`} size="sm" fallback={t.author === 'system' ? 'DC' : initialsOf(t.name)} />}
+                author={t.author === 'admin' ? `${t.name} (admin)` : t.name}
+                time={t.at}
+              >
+                {t.text}
+              </TimelineItem>
             ))}
-          </ol>
+          </Timeline>
         </Section>
         {canReply &&
           (reply === null ? (
@@ -199,10 +249,10 @@ function Thread({
                 onValueChange={setReply}
               />
               <div className="ds-admin-composer__row">
-                <p className="ds-muted">
+                <Text tone="muted">
                   Send reply hands it back. {first} sees “Needs your reply” and it leaves your queue.
                   {twoVerbs ? ' Send & close answers and ends it.' : ''}
-                </p>
+                </Text>
                 <div className="ds-admin-composer__actions">
                   <Button id={`ds-ar-cancel-reply-${key}`} style="ghost" size="sm" label="Cancel" onClick={() => setReply(null)} />
                   {twoVerbs && <Button id={`ds-ar-send-close-${key}`} style="outline" size="sm" label="Send & close" disabled={empty} onClick={() => onSend(true)} />}
@@ -355,6 +405,7 @@ export function AdminReview({ id }: { id: string }) {
         <Crumbs r={r} />
         <RequestHeader r={r} sub={`Submitted ${r.submittedAt}`} />
         {outcome}
+        <IrmStatus r={r} />
         <Details r={r} />
         {r.type === 'feature' && s.active && (
           <Card id={`ds-ar-similar-${key}`}>
@@ -369,10 +420,10 @@ export function AdminReview({ id }: { id: string }) {
                   <li key={b.id} className="ds-admin-similar__row">
                     <FeaturedIcon Icon={Lightbulb} size="sm" color="violet" />
                     <div className="ds-admin-similar__text">
-                      <p className="ds-text">{b.title}</p>
-                      <p className="ds-muted">
+                      <Text>{b.title}</Text>
+                      <Text tone="muted">
                         <ThumbsUp aria-hidden="true" className="ds-admin-inline-icon" /> {b.votes} upvotes
-                      </p>
+                      </Text>
                     </div>
                     <Button
                       id={`ds-ar-dup-${key}-${b.id}`}
@@ -481,9 +532,9 @@ function FeatureDrawer({
             title="This becomes public"
             description={`Anyone using DART Central can read and upvote it. ${first} wrote the first two fields privately, so edit anything they wouldn’t want published.`}
           />
-          <p className="ds-muted">
+          <Text tone="muted">
             Closes {r.id} and publishes directly, since you are the reviewer. The closing entry in {first}’s thread is how they learn where it went.
-          </p>
+          </Text>
         </Stack>
       </DrawerBody>
       <DrawerFooter>
@@ -513,7 +564,7 @@ const applyFields = (r: Request): ApplyField[] => {
   if (r.changes?.length) return r.changes.map((c) => ({ label: c.field, value: c.proposed, was: c.current !== c.proposed ? c.current : undefined }));
   if (r.type === 'dashboard-add')
     return [
-      { label: 'Dashboard name', value: fieldValue(r, 'Dashboard name', 'Name') || r.title },
+      { label: 'Dashboard name', value: fieldValue(r, 'Display title', 'Dashboard name', 'Name') || r.title },
       { label: 'Category', value: fieldValue(r, 'Category') || 'Operations', options: CATEGORIES },
       { label: 'Description', value: fieldValue(r, 'Description') || r.summary },
     ];
@@ -586,7 +637,9 @@ export function AdminApplied({ id }: { id: string }) {
           for (const v of values) {
             if (v.label === 'Owner') dash.owner = v.value;
             if (v.label === 'Description') dash.description = v.value;
-            if (v.label === 'Name') dash.name = v.value;
+            if (v.label === 'Name' || v.label === 'Display title') dash.name = v.value;
+            if (v.label === 'Category') dash.category = v.value as Dashboard['category'];
+            if (v.label === 'Tags') dash.tags = v.value.split(',').map((t) => t.trim()).filter(Boolean);
           }
       } else if (r.type === 'dashboard-add') {
         const name = val('Dashboard name');
@@ -608,6 +661,9 @@ export function AdminApplied({ id }: { id: string }) {
         };
         dash.lifecycle = 'published';
         dash.description = val('Description');
+        // The listing keeps its IRM number; IRM still owns the report.
+        const irm = fieldValue(r, 'IRM record');
+        if (irm) dash.irm = irm;
         if (!existing) d.dashboards.unshift(dash);
         req.assetId = dash.id;
       } else if (isBanner) {

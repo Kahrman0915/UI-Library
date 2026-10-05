@@ -1,3 +1,5 @@
+@use '../../styles/sr-only' as *;
+
 // Pagination cells reuse the Button visual (.ui-button classes) for fill, hover,
 // focus ring and theming. Only layout and a few square-cell tweaks live here.
 .ui-pagination {
@@ -50,15 +52,7 @@
   }
 
   &__sr-only {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
+    @include sr-only;
   }
 
   // Disabled cell (aria-disabled since these are <a>s, not <button>s) — mirrors

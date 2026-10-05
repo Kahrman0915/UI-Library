@@ -31,9 +31,15 @@ import Stack from '../../../../../components/Stack';
 import { toast } from '../../../../../components/Toast';
 import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
-import type { Dashboard, SpaceCardLayout, SpaceItem } from '../../../types';
+import type { Dashboard, NativeFilters, SpaceCardLayout, SpaceItem } from '../../../types';
 import { useUi } from '../../../ui';
-import { SpaceCard, SpaceCardSkeleton } from './SpaceCards';
+import { ASSET_META, AssetCard, SpaceCard, SpaceCardSkeleton } from './SpaceCards';
+import { SpaceBlockView, filtersInSpace } from './SpaceBlocks';
+import { MetricViewCard } from './MetricViewCard';
+import { useOpenReport } from '../reports';
+import { WidgetCard } from '../native/WidgetCard';
+import { DEFAULT_NATIVE_FILTERS } from '../native/nativeData';
+import '../native/Native.scss';
 import { gridClass, groupBySection } from './spaceLayout';
 import './Space.scss';
 
@@ -55,6 +61,8 @@ export function SpacePage({ id }: { id: string }) {
   const [removing, setRemoving] = useState<Dashboard | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [popover, setPopover] = useState<Popover>(null);
+  // Hooks stay above the early return below.
+  const openReport = useOpenReport();
 
   if (!space) {
     return (
@@ -75,8 +83,33 @@ export function SpacePage({ id }: { id: string }) {
     );
   }
 
+  // A space started from a suite keeps a link back to it; nothing else about the suite follows it.
+  const fromSuite = space.fromSuite ? state.suites.find((x) => x.id === space.fromSuite) : undefined;
   const byId = (dashId: string) => state.dashboards.find((d) => d.id === dashId);
-  const items = space.items.filter((i) => byId(i.dashboardId));
+  const assetById = (id: string) => state.assets.find((a) => a.id === id);
+  const items = space.items.filter((i) => (i.block ? true : i.assetId ? assetById(i.assetId) : byId(i.dashboardId)));
+  /** Live charts follow the space's filter bar when it has one, else their suite. */
+  const filtersFor = (suiteId: string) => filtersInSpace(state, items, space.filters, suiteId);
+  const setSpaceFilters = (f: NativeFilters) =>
+    update((d) => {
+      const s = d.spaces.find((x) => x.id === space.id);
+      if (s) s.filters = f;
+    });
+
+  // A block: rendered as on the Builder canvas. The filter bar stays live here — it is the space's control.
+  const renderBlock = (item: SpaceItem) => (
+    <div key={`block-${item.blockId}`} className="ds-space-cell ds-space-cell--block">
+      <SpaceBlockView
+        id={`ds-space-${space.id}-block-${item.blockId}`}
+        block={item.block!}
+        state={state}
+        items={items}
+        filters={space.filters ?? DEFAULT_NATIVE_FILTERS}
+        onFiltersChange={setSpaceFilters}
+        filtersFor={filtersFor}
+      />
+    </div>
+  );
   const grouped = items.some((i) => i.section);
   const preset = space.layout ?? 'auto';
   const base = `ds-space-${space.id}`;
@@ -108,7 +141,110 @@ export function SpacePage({ id }: { id: string }) {
     toast.success('Space deleted', { description: `${name} was deleted. Its dashboards are still in the library.` });
   };
 
+  // A single chart from a native dashboard: live, following its suite's filters.
+  const renderWidget = (item: SpaceItem) => {
+    const dash = byId(item.dashboardId)!;
+    const widget = dash.native?.widgets.find((w) => w.id === item.widgetId);
+    if (!widget) return null;
+    const removeWidget = () => {
+      const index = space.items.indexOf(item);
+      update((d) => {
+        const s = d.spaces.find((x) => x.id === space.id);
+        if (s) s.items = s.items.filter((i) => !(i.dashboardId === item.dashboardId && i.widgetId === item.widgetId));
+      });
+      toast.success('Chart removed', {
+        description: `“${widget.title}” was removed from ${space.name}.`,
+        action: {
+          label: 'Undo',
+          onClick: () =>
+            update((d) => {
+              const s = d.spaces.find((x) => x.id === space.id);
+              if (s) s.items.splice(index, 0, item);
+            }),
+        },
+      });
+    };
+    return (
+      <div key={`${dash.id}-${widget.id}`} className="ds-space-cell ds-space-cell--widget">
+        <WidgetCard
+          id={`${base}-widget-${dash.id}-${widget.id}`}
+          dashboard={dash}
+          widget={widget}
+          filters={filtersFor(dash.native!.suiteId)}
+          inSpace={{
+            onOpenDashboard: () => go({ page: 'dashboard', id: dash.id, fromSpaceId: space.id, widget: widget.id }),
+            onRemove: removeWidget,
+          }}
+        />
+      </div>
+    );
+  };
+
+  // A metric, workflow or report: its card, and a menu that can only remove it.
+  const renderAsset = (item: SpaceItem) => {
+    const asset = assetById(item.assetId!)!;
+    // A metric is shown as this space set it up — as a number, trend or breakdown.
+    if (item.metric) {
+      const hasBar = items.some((i) => i.block?.type === 'filters');
+      return (
+        <div key={`metric-${asset.id}-${item.viewId}`} className={`ds-space-cell${item.metric.display !== 'number' ? ' ds-space-cell--metric-wide' : ''}`}>
+          <MetricViewCard id={`${base}-metric-${asset.id}-${item.viewId}`} asset={asset} view={item.metric} space={hasBar ? space.filters ?? DEFAULT_NATIVE_FILTERS : null} />
+        </div>
+      );
+    }
+    const cardId = `${base}-asset-${asset.id}`;
+    const removeAsset = () => {
+      const index = space.items.indexOf(item);
+      update((d) => {
+        const s = d.spaces.find((x) => x.id === space.id);
+        if (s) s.items = s.items.filter((i) => i.assetId !== asset.id);
+      });
+      toast.success(`${ASSET_META[asset.kind].label} removed`, {
+        description: `${asset.name} was removed from ${space.name}.`,
+        action: {
+          label: 'Undo',
+          onClick: () =>
+            update((d) => {
+              const s = d.spaces.find((x) => x.id === space.id);
+              if (s) s.items.splice(index, 0, item);
+            }),
+        },
+      });
+    };
+    const menu = (
+      <DropdownMenu id={`${cardId}-menu`}>
+        <DropdownMenuTrigger>
+          <Button id={`${cardId}-menu-trigger`} style="ghost" size="xs" iconOnly IconCenter={Ellipsis} aria-label={`More actions for ${asset.name}`} />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem variant="destructive" onClick={removeAsset}>
+            <Trash2 aria-hidden="true" />
+            Remove from space
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    );
+    return (
+      <div key={`asset-${asset.id}`} className="ds-space-cell">
+        <AssetCard
+          id={cardId}
+          asset={asset}
+          action={menu}
+          onOpen={() =>
+            // A report is a web report: it opens outside DART Central, like everywhere else it appears.
+            asset.report
+              ? openReport(asset as Parameters<typeof openReport>[0])
+              : toast(`${ASSET_META[asset.kind].open}`, { description: `${asset.name} is not built in this prototype.` })
+          }
+        />
+      </div>
+    );
+  };
+
   const renderCard = (item: SpaceItem) => {
+    if (item.block) return renderBlock(item);
+    if (item.assetId) return renderAsset(item);
+    if (item.widgetId) return renderWidget(item);
     const dash = byId(item.dashboardId)!;
     const cardId = `${base}-card-${dash.id}`;
     const menu = (
@@ -288,6 +424,20 @@ export function SpacePage({ id }: { id: string }) {
       <PageContainer>
         <PageHeader
           id={`${base}-header`}
+          overline={
+            fromSuite ? (
+              <span className="ds-space-from">
+                Started from the
+                <Button
+                  id={`${base}-from-suite`}
+                  style="link"
+                  size="xs"
+                  label={`${fromSuite.name} suite`}
+                  onClick={() => go({ page: 'browse', suite: fromSuite.id })}
+                />
+              </span>
+            ) : undefined
+          }
           title={space.name}
           description={space.description}
           showDivider

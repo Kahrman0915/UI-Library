@@ -37,6 +37,7 @@ import PageHeader from '../../../../../components/PageHeader';
 import Skeleton from '../../../../../components/Skeleton';
 import { toast } from '../../../../../components/Toast';
 import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
+import Grid from '../../../../../components/Grid';
 import { seriesFor } from '../../../data';
 import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
@@ -44,13 +45,15 @@ import type { Dashboard } from '../../../types';
 import { useUi } from '../../../ui';
 import { addUnavailable, copyDashboardLink, updatedLabel } from '../shared/boardsShared';
 import { ExportDialog } from './ExportDialog';
+import { NativeDashboard } from '../native/NativeDashboard';
+import { ExternalDetails } from '../external/ExternalDetails';
 import type { ExportKind } from './ExportDialog';
 import './Dashboard.scss';
 
 const MONTHS = ['Oct', 'Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
 const SEGMENTS = ['North', 'South', 'East', 'West', 'Central', 'Online'];
 
-export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?: string }) {
+export function DashboardViewer({ id, fromSpaceId, widget }: { id: string; fromSpaceId?: string; widget?: string }) {
   const { state, logActivity } = useSuite();
   const { go } = useNav();
   const ui = useUi();
@@ -90,6 +93,9 @@ export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?:
       </div>
     );
   }
+
+  // An external chart has no embed here: it gets its details page, and opens in its own tool.
+  if (d.external) return <ExternalDetails d={d} fromSpaceId={fromSpaceId} />;
 
   // D2.1 — refresh shows the loading state again, then confirms.
   const refresh = () => {
@@ -150,7 +156,7 @@ export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?:
         />
       </ToolbarGroup>
       <ToolbarGroup>
-        <Button
+        {!d.native && <Button
           id={`ds-dash-${d.id}-tableau`}
           style="ghost"
           size="sm"
@@ -158,7 +164,7 @@ export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?:
           IconLeft={ExternalLink}
           disabled={!d.hasAccess}
           onClick={() => toast(`Opening in ${d.source}…`, { description: `${d.name} opens in a new browser tab.` })}
-        />
+        />}
         <Button id={`ds-dash-${d.id}-share`} style="outline" size="sm" label="Share" IconLeft={Share2} onClick={() => copyDashboardLink(d)} />
         <Button
           id={`ds-dash-${d.id}-add`}
@@ -220,7 +226,8 @@ export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?:
             onClose={() => setNoticeOpen(false)}
           />
         )}
-        <Embed d={d} />
+        {/* A native dashboard is rendered by DartBoards itself; anything else is a BI tool's frame. */}
+        {d.native ? <NativeDashboard d={d} focusWidget={widget} /> : <Embed d={d} />}
       </>
     );
   }
@@ -254,7 +261,7 @@ export function DashboardViewer({ id, fromSpaceId }: { id: string; fromSpaceId?:
           id={`ds-dash-${d.id}-header`}
           size="sm"
           title={d.name}
-          meta={<Badge id={`ds-dash-${d.id}-source`} label={d.source} color="info" appearance="solid" />}
+          meta={<Badge id={`ds-dash-${d.id}-source`} label={d.native ? 'Native · DART' : d.source} color="info" appearance="solid" />}
           toolbar={toolbar}
         />
       </div>
@@ -290,15 +297,15 @@ function Embed({ d }: { d: Dashboard }) {
           {d.source} · updated {updatedLabel(d)}
         </span>
       </div>
-      <div className="ds-dash-kpis">
+      <Grid level={4} minItemWidth="var(--w-48)" stretch>
         {kpis.map((k) => (
           <div key={k.label} className="ds-dash-kpi">
             <span className="ds-dash-kpi__label">{k.label}</span>
             <span className="ds-dash-kpi__value">{k.value}</span>
           </div>
         ))}
-      </div>
-      <div className="ds-dash-charts">
+      </Grid>
+      <Grid level={4} minItemWidth="var(--w-80)" stretch className="ds-dash-charts">
         <div className="ds-dash-panel">
           <span className="ds-dash-panel__title">Trend · last 12 months</span>
           <div className="ds-dash-columns">
@@ -324,7 +331,7 @@ function Embed({ d }: { d: Dashboard }) {
             ))}
           </ul>
         </div>
-      </div>
+      </Grid>
     </div>
   );
 }
@@ -333,15 +340,15 @@ function EmbedSkeleton() {
   return (
     <div className="ds-dash-embed" aria-busy="true" aria-label="Loading dashboard">
       <Skeleton shape="text" width="30%" />
-      <div className="ds-dash-kpis">
+      <Grid level={4} minItemWidth="var(--w-48)" stretch>
         {[0, 1, 2, 3].map((i) => (
           <Skeleton key={i} height="var(--h-20)" />
         ))}
-      </div>
-      <div className="ds-dash-charts">
+      </Grid>
+      <Grid level={4} minItemWidth="var(--w-80)" stretch className="ds-dash-charts">
         <Skeleton height="var(--h-72)" />
         <Skeleton height="var(--h-72)" />
-      </div>
+      </Grid>
     </div>
   );
 }

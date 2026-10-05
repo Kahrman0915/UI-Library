@@ -22,6 +22,7 @@ import Section from '../../../../components/Section';
 import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '../../../../components/Table';
 import { toast } from '../../../../components/Toast';
+import Text from '../../../../components/Text';
 import { ShieldAlert } from 'lucide-react';
 import { ME, PEOPLE, personById } from '../../data';
 import { today, useSuite } from '../../store';
@@ -165,7 +166,7 @@ export function AdminAccess() {
                       <span className="ds-admin-person">
                         <Avatar id={`ds-ac-av-${a.personId}`} size="xs" fallback={initials(p.name)} />
                         {p.name}
-                        {self && <span className="ds-muted">(you)</span>}
+                        {self && <Text as="span" tone="muted">(you)</Text>}
                       </span>
                     </TableCell>
                     <TableCell>{a.products.map((x) => PRODUCT_LABEL[x]).join(' · ')}</TableCell>
@@ -192,7 +193,7 @@ export function AdminAccess() {
               })}
             </TableBody>
           </Table>
-          <p className="ds-muted">An admin sees only the products they administer. The navigation and the queue are scoped by this table and nothing else.</p>
+          <Text tone="muted">An admin sees only the products they administer. The navigation and the queue are scoped by this table and nothing else.</Text>
         </Section>
 
         <Section
@@ -237,10 +238,10 @@ export function AdminAccess() {
               })}
             </TableBody>
           </Table>
-          <p className="ds-muted">
+          <Text tone="muted">
             Three levels, in deliberate order. Standard is everyone. Contributor adds dashboard requests. Publisher adds Banner / Notice, because a banner displays to every
             user of that product.
-          </p>
+          </Text>
         </Section>
       </Stack>
 
@@ -275,7 +276,7 @@ export function AdminAccess() {
               ))}
             </NativeSelect>
             <fieldset className="ds-admin-fieldset">
-              <legend className="ds-text">Administers</legend>
+              <legend><Text as="span">Administers</Text></legend>
               {ALL_PRODUCTS.map((p) => (
                 <Checkbox
                   key={p}
@@ -287,7 +288,7 @@ export function AdminAccess() {
               ))}
               {draft.products.length === 0 && <p className="ds-admin-error">Pick at least one product.</p>}
             </fieldset>
-            <p className="ds-muted">Widening someone’s reach is the one change this page can make that nothing else can undo for them. Activity records your name, the products added or removed, and when.</p>
+            <Text tone="muted">Widening someone’s reach is the one change this page can make that nothing else can undo for them. Activity records your name, the products added or removed, and when.</Text>
           </Stack>
         </DrawerBody>
         <DrawerFooter>
@@ -319,7 +320,7 @@ export function AdminAccess() {
                 </NativeSelectOption>
               ))}
             </NativeSelect>
-            <p className="ds-muted">May file: {MAY_FILE[grantDraft.level]}.</p>
+            <Text tone="muted">May file: {MAY_FILE[grantDraft.level]}.</Text>
           </Stack>
         </DrawerBody>
         <DrawerFooter>

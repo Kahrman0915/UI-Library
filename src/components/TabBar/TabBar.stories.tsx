@@ -155,6 +155,11 @@ const meta: Meta<typeof TabBar> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Visually-hidden text now uses the shared pattern.',
+          detail: 'The local screen-reader-only rule was replaced by the library\'s `sr-only` mixin (also available as the `.ui-sr-only` class), built on the new `--w-px` / `--h-px` tokens. Six components carried their own copy, with two clip techniques; there is one now.',
+        },
+        {
           date: '2026-09-21',
           summary: 'The new-tab palette can be opened from elsewhere on the page, such as a search card on a home screen.',
           detail: '`TabBarNewTabMenu` takes an optional controlled `open` + `onOpenChange`; omit them and the "+" owns its open state as before. First consumer: the Suite prototype, whose Home search card opens the same palette as the "+".',

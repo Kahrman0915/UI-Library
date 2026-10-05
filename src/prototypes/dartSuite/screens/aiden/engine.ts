@@ -203,14 +203,20 @@ export type SendDeps = {
  * Append the user's turn now, the reply after a short think. Returns the chat
  * id — a new one when `chat` is null.
  */
-export function sendMessage(chat: AidenChat | null, text: string, { state, saveChat, update }: SendDeps): string {
+export function sendMessage(
+  chat: AidenChat | null,
+  text: string,
+  { state, saveChat, update }: SendDeps,
+  /** A reply the asking surface already worked out (a native chart reading its own numbers). */
+  known?: string,
+): string {
   const user: RichMessage = { id: mid(), from: 'user', text };
   const base: AidenChat = chat
     ? { ...chat, messages: [...chat.messages, user], updatedAt: 'Just now' }
     : { id: newChatId(), title: titleFrom(text), messages: [user], updatedAt: 'Just now' };
   saveChat(base);
 
-  const reply = buildReply(text, state, base.messages);
+  const reply: RichMessage = known ? { id: mid(), from: 'assistant', text: known, kind: 'text' } : buildReply(text, state, base.messages);
   const chatId = base.id;
   set({ pending: { ...rt.pending, [chatId]: true }, streamingId: null });
   timers.set(

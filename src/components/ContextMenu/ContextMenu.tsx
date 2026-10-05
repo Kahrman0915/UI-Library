@@ -9,6 +9,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { Check, ChevronRight } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
@@ -314,10 +315,17 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
     };
 
     const { present, status, onExitAnimationEnd } = usePresence(ctx.open);
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(present && mounted);
+
     if (!present || !mounted) return null;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <div
+        {...scope}
         // Default name for the menu (it had none) — sits BEFORE the spread so
         // consumers can override/localize via aria-label or aria-labelledby.
         aria-label="Context menu"
@@ -344,6 +352,8 @@ const ContextMenuContent = forwardRef<HTMLDivElement, ContextMenuContentProps>(
         {children}
       </div>,
       document.body,
+        )}
+      </>
     );
   },
 );
@@ -766,10 +776,17 @@ const ContextMenuSubContent = forwardRef<
       }
     };
 
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef1, scope: scope1 } = usePortalScope(sub.open && mounted);
+
     if (!sub.open || !mounted) return null;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef1} hidden />
+        {createPortal(
       <div
+        {...scope1}
         {...rest}
         ref={(node) => {
           contentRef.current = node;
@@ -793,6 +810,8 @@ const ContextMenuSubContent = forwardRef<
         {children}
       </div>,
       document.body,
+        )}
+      </>
     );
   },
 );

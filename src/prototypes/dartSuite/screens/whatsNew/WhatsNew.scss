@@ -92,12 +92,6 @@
   margin-top: var(--space-4);
 }
 
-.ds-wn-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-64), 1fr));
-  gap: var(--space-3);
-}
-
 .ds-wn-center {
   display: flex;
   justify-content: center;

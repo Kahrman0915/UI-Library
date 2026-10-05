@@ -1,1 +1,1 @@
-export { default, BarChart, ChartBars } from './Bar';
+export { BarChart, ChartBars } from './Bar';

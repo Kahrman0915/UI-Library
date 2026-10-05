@@ -31,6 +31,12 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // Root — flex row with center-aligned media/content/actions.
 // Uses grid so that Header spans full width above the row and Footer below.
+//
+// The footer starts in the CONTENT column, not under the media (2026-10-03). It
+// carries meta about the row — a time, a branch, a count — which reads as part of
+// the text block; spanning the media column put it under the avatar or
+// thumbnail, detached from the title it describes. It still runs under the
+// actions. The header stays full width: it labels the whole row.
 // ─────────────────────────────────────────────────────────────────────────────
 
 .ui-item {
@@ -40,7 +46,7 @@
   grid-template-areas:
     'header  header  header'
     'media   content actions'
-    'footer  footer  footer';
+    '.       footer  footer';
   align-items: center;
   column-gap: var(--p-3);
   row-gap: var(--p-2);

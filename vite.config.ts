@@ -21,7 +21,7 @@ export default defineConfig({
   },
   build: {
     lib: {
-      // Two entries. `markdown` is the ONLY module allowed to import the
+      // Three entries. `markdown` is the ONLY module allowed to import the
       // markdown/highlighting dependencies — it is deliberately not exported
       // from src/index.ts, so the main entry stays dependency-free and apps
       // that never render AI markdown never pay for it. See CLAUDE.md hard
@@ -29,6 +29,9 @@ export default defineConfig({
       entry: {
         index: resolve(__dirname, 'src/index.ts'),
         markdown: resolve(__dirname, 'src/markdown.ts'),
+        // `@ui/lib/toast`: toast() + <Toaster> without the barrel. Shares the
+        // toast store chunk with `index`, so the two entries are one system.
+        toast: resolve(__dirname, 'src/toast.ts'),
       },
       formats: ['es', 'cjs'],
       fileName: (format, entryName) => `${entryName}.${format === 'es' ? 'js' : 'cjs'}`,

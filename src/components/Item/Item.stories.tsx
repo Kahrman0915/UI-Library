@@ -36,6 +36,11 @@ const meta: Meta<typeof Item> = {
       tags: ['compound', '10 parts', '3 sizes'],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: '`ItemFooter` now sits under the title, not under the media.',
+          detail: 'The footer row of the grid was `footer footer footer`, spanning the media column, so meta landed under the avatar or thumbnail, detached from the title it describes. It is now `. footer footer`: it starts in the content column and still runs under the actions. `ItemHeader` stays full width — it labels the whole row. No new prop; the only footer in use was meta text.',
+        },
+        {
           date: '2026-08-27',
           summary:
             'Grouped rows are a real list again, the entrance animation is now opt-in, ' +

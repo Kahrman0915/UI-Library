@@ -16,6 +16,7 @@ import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import Input from '../../../../components/Input';
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
+import SelectionBar from '../../../../components/SelectionBar';
 import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TableSelectionCell } from '../../../../components/Table';
 import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup';
@@ -126,18 +127,19 @@ export function AdminQueue() {
 
   // 2.6 — while a selection is live the selection bar replaces the filter row.
   const selectionBar = (
-    <Toolbar id="ds-aq-selection" label="Selected requests" justify="between" className="ds-admin-selbar">
-      <ToolbarGroup>
-        <span className="ds-text">
-          {pickedVisible.length} request{pickedVisible.length === 1 ? '' : 's'} selected
-        </span>
-        <Button id="ds-aq-clear-sel" style="link" size="sm" label="Clear selection" onClick={() => setPicked([])} />
-      </ToolbarGroup>
-      <ToolbarGroup>
-        <Button id="ds-aq-bulk-deny" style="outline" variant="error" size="sm" label="Deny" onClick={() => setDialog({ decision: 'deny', ids: pickedVisible })} />
-        <Button id="ds-aq-bulk-approve" size="sm" label="Approve" onClick={() => setDialog({ decision: 'approve', ids: pickedVisible })} />
-      </ToolbarGroup>
-    </Toolbar>
+    <SelectionBar
+      id="ds-aq-selection"
+      label="Selected requests"
+      count={pickedVisible.length}
+      summary={`${pickedVisible.length} request${pickedVisible.length === 1 ? '' : 's'} selected`}
+      onClear={() => setPicked([])}
+      actions={
+        <>
+          <Button id="ds-aq-bulk-deny" style="outline" variant="error" size="sm" label="Deny" onClick={() => setDialog({ decision: 'deny', ids: pickedVisible })} />
+          <Button id="ds-aq-bulk-approve" size="sm" label="Approve" onClick={() => setDialog({ decision: 'approve', ids: pickedVisible })} />
+        </>
+      }
+    />
   );
 
   return (

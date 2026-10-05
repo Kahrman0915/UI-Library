@@ -42,6 +42,8 @@
   }
 
   &__title {
+    // A heading now — drop the user-agent margin so the layout is unchanged.
+    margin: 0;
     font-size: var(--text-base);
     font-weight: var(--font-semibold);
     line-height: var(--leading-5);

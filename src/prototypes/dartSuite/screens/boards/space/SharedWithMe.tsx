@@ -10,6 +10,7 @@ import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import FeaturedIcon from '../../../../../components/FeaturedIcon';
 import PageContainer from '../../../../../components/PageContainer';
 import PageHeader from '../../../../../components/PageHeader';
+import Text from '../../../../../components/Text';
 import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import { SpaceCardSkeleton } from './SpaceCards';
@@ -53,9 +54,9 @@ export function SharedWithMe() {
                   media={<FeaturedIcon Icon={LayoutGrid} size="sm" color={s.hue} />}
                 />
                 <CardBody>
-                  <p className="ds-muted">
+                  <Text tone="muted">
                     {n} {n === 1 ? 'dashboard' : 'dashboards'} · shared with you
-                  </p>
+                  </Text>
                   <CardActions>
                     <Button
                       id={`ds-shared-${s.id}-open`}

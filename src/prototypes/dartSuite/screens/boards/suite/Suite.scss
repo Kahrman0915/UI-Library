@@ -1,0 +1,152 @@
+// DartBoards · Suites. Tokens only.
+
+// ── The strip of suites on Browse ──────────────────────────────────────────
+
+.ds-suite-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--w-72), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-suite-card {
+  cursor: pointer;
+
+  // Two classes: Card's body is a column by default.
+  &.ui-card .ui-card__body {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-align: start;
+    gap: var(--p-3);
+  }
+
+  &__text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-0-5);
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__badge {
+    align-self: flex-start;
+  }
+}
+
+// ── The suite page ─────────────────────────────────────────────────────────
+
+.ds-suite-section-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+// Many sections: "Section [All sections ▾]" on one line, the label beside the
+// picker so it sits on the toolbar's row rather than above it.
+.ds-suite-section-pick.ui-input-field {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--p-2);
+
+  .ui-label {
+    flex: none;
+  }
+
+  > :last-child {
+    min-width: var(--w-64);
+  }
+}
+
+// "View all N in <section>" closes a truncated section, aligned to its content.
+.ds-suite-more {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.ds-suite-foot {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+// ── The suite a dashboard belongs to, on a Browse card ─────────────────────
+
+.ds-suite-tag.ui-button {
+  align-self: flex-start;
+  height: auto;
+  padding: 0;
+  gap: var(--p-1);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+  }
+
+  &:hover {
+    color: var(--foreground);
+  }
+}
+
+// ── Create a space from a suite ────────────────────────────────────────────
+
+.ds-suite-pick {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__section {
+    padding: var(--p-2) 0;
+    border-bottom: var(--border-w-100) solid var(--border);
+
+    &:last-child {
+      border-bottom: none;
+    }
+  }
+
+  &__row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--p-2);
+  }
+
+  // A section's dashboards sit under its label, indented past the section's box.
+  &__dashboards {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-2);
+    margin: var(--p-2) 0 var(--p-1);
+    padding: 0 0 0 var(--p-6);
+    list-style: none;
+  }
+}
+
+.ds-suite-sections-pick {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+  margin: 0;
+  padding: 0;
+  border: 0;
+
+  &__legend {
+    margin-bottom: var(--p-2);
+    padding: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+  }
+}
+
+// Eleven sections, some opened to their dashboards, must not push the footer off the dialog.
+.ds-suite-pick-scroll {
+  --ds-scroll-max: var(--h-80);
+}

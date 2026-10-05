@@ -40,6 +40,11 @@ const meta: Meta<typeof Fab> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'A bottom-corner Fab now makes room for itself at the end of the page, so a long page can scroll its last row clear of the button.',
+          detail: 'While a bottom-right or bottom-left Fab is mounted, Fab.scss publishes `--ui-fab-clearance` on :root (`--p-6` plus the button: `--h-12`, or `--h-14` at `lg`). PageContainer adds it to its bottom padding. Unset when no such Fab is mounted, so nothing else moves.',
+        },
+        {
           date: '2026-09-22',
           summary: 'The AI examples now show the filled sparkles and twinkle when they appear, matching the Figma component.',
           detail: 'The twinkle\'s low point moved from 30% to 27% of the beat (0.243s of 0.9s), the value on Figma\'s `Icon/sparkles-fill` keyframes; scale, twist, opacity, stagger and three beats were already the same. Stories swap lucide\'s stroked `Sparkles` for the product\'s filled `AidenSparkles` (one path per star, so all three stars animate, where lucide\'s outline only moved two shapes) and turn `intro` on for every AI example except the disabled one. The component API is unchanged: the glyph is still the caller\'s.',

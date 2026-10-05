@@ -20,6 +20,7 @@ import PageHeader from '../../../../components/PageHeader';
 import Section from '../../../../components/Section';
 import Stack from '../../../../components/Stack';
 import { toast } from '../../../../components/Toast';
+import Grid from '../../../../components/Grid';
 import { Walkthrough } from '../../../productDemos/Walkthrough';
 import { useNav } from '../../nav';
 import { WHATS_NEW } from './entries';
@@ -157,7 +158,7 @@ export function WhatsNewStory({ id }: { id: string }) {
         {badges}
 
         <Section id="ds-wns-included" heading="What’s included" variant="group">
-          <div className="ds-wn-grid">
+          <Grid level={3} minItemWidth="var(--w-64)" stretch>
             {INCLUDED.map((c) => (
               <Card id={`ds-wns-inc-${c.clip}`} key={c.title}>
                 <CardMedia ratio={16 / 10}>
@@ -172,7 +173,7 @@ export function WhatsNewStory({ id }: { id: string }) {
                 />
               </Card>
             ))}
-          </div>
+          </Grid>
         </Section>
 
         <Section id="ds-wns-start" heading="How to get started" variant="group">
@@ -212,7 +213,7 @@ export function WhatsNewStory({ id }: { id: string }) {
         </Section>
 
         <Section id="ds-wns-soon" heading="Coming soon" variant="group">
-          <div className="ds-wn-grid">
+          <Grid level={3} minItemWidth="var(--w-64)" stretch>
             {SOON.map((s) => (
               <Card id={`ds-wns-soon-${s.title}`} key={s.title}>
                 <CardBody>
@@ -227,7 +228,7 @@ export function WhatsNewStory({ id }: { id: string }) {
                 </CardBody>
               </Card>
             ))}
-          </div>
+          </Grid>
         </Section>
       </Stack>
     </PageContainer>

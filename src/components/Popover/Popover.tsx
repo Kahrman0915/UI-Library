@@ -12,6 +12,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
@@ -216,10 +217,17 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
       return () => document.removeEventListener('keydown', onKey);
     }, [ctx.open, ctx.triggerNode, ctx.close]);
 
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(present && mounted);
+
     if (!present || !mounted) return null;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <div
+        {...scope}
         {...rest}
         ref={(node) => {
           contentRef.current = node;
@@ -245,6 +253,8 @@ const PopoverContent = forwardRef<HTMLDivElement, PopoverContentProps>(
         {children}
       </div>,
       document.body,
+        )}
+      </>
     );
   },
 );

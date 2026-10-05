@@ -1,0 +1,130 @@
+// DartBoards · space blocks. Tokens only.
+
+// Every block is a full row of the space.
+.ds-space-cell--block {
+  grid-column: 1 / -1;
+}
+
+.ds-block .ui-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+}
+
+.ds-block-note {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+// Filter bar: the filters, and (in the Builder) the block's menu at the end.
+.ds-block-filters {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+// Quick links: an even grid across the full-width block; each tile is the link.
+.ds-block-links.ui-item-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--w-64), 1fr));
+  gap: var(--space-4);
+}
+
+.ds-block-link {
+  width: 100%;
+  cursor: pointer;
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+}
+
+// What changed: Aiden's reading, as plain bullets.
+.ds-block-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+  margin: 0;
+  padding-left: var(--p-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+// KPI strip: one compact row, wrapping on a narrow space.
+.ds-block-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-48), 1fr));
+  gap: var(--space-4);
+  margin: 0;
+}
+
+.ds-block-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+  padding: var(--p-3) var(--p-4);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+
+  &__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  &__value {
+    margin: 0;
+    font-size: var(--text-xl);
+    line-height: var(--leading-7);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__change {
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+}
+
+// Divider: a rule with room above and below, so it separates rather than crowds.
+.ds-block-divider {
+  padding-block: var(--space-4);
+}
+
+// Data freshness: one line when all is well; the late sources listed when not.
+.ds-block-fresh__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+.ds-block-fresh__title {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+}
+
+.ds-block-fresh__when {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ds-block-fresh__late {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  margin: 0;
+  padding-left: var(--p-5);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}

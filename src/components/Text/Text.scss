@@ -1,0 +1,30 @@
+// Text — running text on the type ramp, with no margin. See Text.tsx.
+//
+// `default` tone, `normal` weight and a wrapping (unclamped) line emit no modifier: a class
+// nothing selects is dead BEM.
+
+.ui-text {
+  margin: 0;
+  color: var(--foreground);
+  font-weight: var(--font-normal);
+  // Long unbroken strings (a URL, an id) wrap instead of pushing the layout wider.
+  overflow-wrap: anywhere;
+
+  &--sz-xs { font-size: var(--text-xs); line-height: var(--leading-4); }
+  &--sz-sm { font-size: var(--text-sm); line-height: var(--leading-5); }
+  &--sz-base { font-size: var(--text-base); line-height: var(--leading-6); }
+  &--sz-lg { font-size: var(--text-lg); line-height: var(--leading-7); }
+
+  &--muted { color: var(--muted-foreground); }
+
+  &--medium { font-weight: var(--font-medium); }
+  &--semibold { font-weight: var(--font-semibold); }
+
+  &--clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--ui-text-lines);
+    line-clamp: var(--ui-text-lines);
+    overflow: hidden;
+  }
+}

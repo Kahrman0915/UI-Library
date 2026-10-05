@@ -6,16 +6,19 @@
 
 import type {
   ActivityEntry,
+  Asset,
   Admin,
   AdminWidget,
   AidenChat,
   Banner,
   Dashboard,
+  NativeSpec,
   Person,
   Promotion,
   Redirect,
   Request,
   Space,
+  Suite,
 } from './types';
 
 export const ME: Person = { id: 'u-km', name: 'Kahrman McKenzie', initials: 'KM', email: 'kahrman.mckenzie@gmail.com' };
@@ -72,6 +75,12 @@ export const DASHBOARDS: Dashboard[] = [
   d('servicing-overview', 'Servicing Overview', 'Queues, handle time and backlog for every servicing team.', { category: 'Operations', views: 910, hue: 'blue', owner: 'Maya Hart' }),
   d('servicing-overview-legacy', 'Legacy Servicing Overview', 'The previous servicing dashboard, kept while teams migrate.', { category: 'Operations', views: 41, hue: 'amber', health: 'decommissioning' }),
   d('collateral-health', 'Collateral Health', 'Valuation age, coverage ratios and exceptions by portfolio.', { category: 'Risk', views: 344, hue: 'emerald' }),
+  // The Servicing team's suite — dashboards they used to keep behind their own left navigation.
+  d('servicing-queue-depth', 'Queue Depth by Hour', 'Work waiting in each servicing queue, hour by hour, against staffed capacity.', { category: 'Operations', views: 486, hue: 'cyan', owner: 'Maya Hart' }),
+  d('servicing-handle-time', 'Handle Time', 'Average and 90th-percentile handle time by team, channel and work type.', { category: 'Operations', views: 402, hue: 'violet', owner: 'Maya Hart' }),
+  d('servicing-quality', 'Quality Scores', 'Call and case quality reviews by agent and team, with the calibration trend.', { category: 'Operations', views: 233, hue: 'rose', owner: 'Maya Hart', tags: ['New'] }),
+  d('servicing-escalations', 'Escalations', 'Complaints and escalations by reason, age and the team that owns them.', { category: 'Customer', views: 318, hue: 'amber', owner: 'Maya Hart' }),
+  d('servicing-staffing', 'Staffing vs Forecast', 'Scheduled agents against the volume forecast, by interval and site.', { category: 'Operations', views: 276, hue: 'blue', owner: 'Maya Hart', hasAccess: false }),
 ];
 
 /* ── Spaces ───────────────────────────────────────────────────────────────── */
@@ -91,6 +100,10 @@ export const SPACES: Space[] = [
       { dashboardId: 'marketing-funnel', layout: 'card' },
       { dashboardId: 'nps-trends', layout: 'card' },
       { dashboardId: 'delivery-sla', layout: 'card' },
+      // One chart from a NATIVE dashboard, not the whole dashboard.
+      { dashboardId: 'col-daily-summary', widgetId: 'arrears-trend', layout: 'card' },
+      // An EXTERNAL chart: a link card, never drawn as if it were live.
+      { dashboardId: 'col-delinquency-region', layout: 'card' },
     ],
   },
   {
@@ -128,6 +141,260 @@ export const SPACES: Space[] = [
   },
 ];
 
+/* ── Metrics, workflows and reports ───────────────────────────────────────────
+   What a space can hold besides dashboards (the Builder's rail). */
+
+const EARLY = 'Collections › Early stage';
+const SERVICING = 'Servicing › Service levels';
+const RISK = 'Credit risk › Portfolio';
+
+export const ASSETS: Asset[] = [
+  { id: 'm-roll-rate', kind: 'metric', name: 'Roll rate into 1–30 days', description: 'Share of current balances that missed a payment.', owner: 'Jordan Lee', source: 'DART', glance: '3.4% · down 0.4 pts', updatedAt: 'Sep 26, 2026', subject: EARLY,
+    metric: { grains: ['day', 'week', 'month'], breakdowns: ['org', 'region', 'product'], unit: '%', certified: true } },
+  { id: 'm-cure-rate', kind: 'metric', name: 'Cure rate', description: 'Share of 1–30 day balances back to current within 30 days.', owner: 'Jordan Lee', source: 'DART', glance: '41.2% · up 1.2 pts', updatedAt: 'Sep 26, 2026', subject: EARLY,
+    metric: { grains: ['week', 'month'], breakdowns: ['org', 'product'], unit: '%', certified: true } },
+  { id: 'm-ptp-kept', kind: 'metric', name: 'Promise kept rate', description: 'Promises to pay that were kept, across every queue.', owner: 'Maya Hart', source: 'DART', glance: '68% · flat', updatedAt: 'Sep 25, 2026', subject: 'Collections › Promises & payments',
+    metric: { grains: ['day', 'week', 'month'], breakdowns: ['org'], unit: '%', certified: false } },
+  { id: 'm-first-response', kind: 'metric', name: 'First response time', description: 'Median time to first response on servicing cases.', owner: 'Maya Hart', source: 'Power BI', glance: '2h 14m · down 9m', updatedAt: 'Sep 25, 2026', subject: SERVICING,
+    metric: { grains: ['day', 'week'], breakdowns: ['org', 'region'], unit: 'time', certified: true } },
+  { id: 'w-hardship', kind: 'workflow', name: 'Hardship plan approval', description: 'Review and approve hardship plans submitted by agents.', owner: 'Sam Okafor', source: 'DART workflows', glance: '12 open · 3 waiting on you', updatedAt: 'Sep 26, 2026', subject: EARLY,
+    workflow: { assignedToMe: 3, overdue: 1 } },
+  { id: 'w-agency', kind: 'workflow', name: 'Agency placement review', description: 'Accounts proposed for outside agencies, for sign-off.', owner: 'Jordan Lee', source: 'DART workflows', glance: '28 open', updatedAt: 'Sep 24, 2026', subject: 'Collections › Late stage & recoveries',
+    workflow: { assignedToMe: 0, overdue: 0 } },
+  { id: 'w-access', kind: 'workflow', name: 'Dashboard access requests', description: 'Access requests waiting on you as a dashboard owner.', owner: 'Priya Raman', source: 'DART workflows', glance: '4 open · 1 overdue', updatedAt: 'Sep 26, 2026', subject: 'DartBoards › Administration',
+    workflow: { assignedToMe: 4, overdue: 1 } },
+  { id: 'r-monthly-pack', kind: 'report', name: 'Monthly Collections Pack', description: 'The committee pack: arrears, cures, roll rates and recoveries.', owner: 'Jordan Lee', source: 'Report server', glance: 'Monthly · Sep 2026 ready', updatedAt: 'Sep 2, 2026', subject: EARLY,
+    report: { format: 'Web report', cadence: 'Monthly', audience: 'Collections committee', url: 'https://reports.example.com/collections/monthly-pack' } },
+  { id: 'r-risk-deck', kind: 'report', name: 'Quarterly Risk Committee Pack', description: 'Exposure, limits and watchlist movement for the quarter.', owner: 'Jordan Lee', source: 'Report server', glance: 'Quarterly · Q3 ready', updatedAt: 'Sep 30, 2026', subject: RISK,
+    report: { format: 'Web report', cadence: 'Quarterly', audience: 'Risk committee', url: 'https://reports.example.com/risk/quarterly-committee' } },
+  { id: 'r-sla-weekly', kind: 'report', name: 'Servicing SLA Weekly', description: 'Service levels by team, with breaches explained.', owner: 'Maya Hart', source: 'Report server', glance: 'Weekly · every Monday', updatedAt: 'Sep 28, 2026', subject: SERVICING,
+    report: { format: 'Web report', cadence: 'Weekly', audience: 'Servicing leads', url: 'https://reports.example.com/servicing/sla-weekly' } },
+  { id: 'r-daily-flash', kind: 'report', name: 'Collections Daily Flash', description: 'Yesterday in one page: dollars collected, cures, promises and queue health.', owner: 'Jordan Lee', source: 'Report server', glance: 'Daily · 7:00 AM ET', updatedAt: 'Oct 2, 2026', subject: EARLY,
+    report: { format: 'Web report', cadence: 'Daily', audience: 'Collections managers', url: 'https://reports.example.com/collections/daily-flash' } },
+  { id: 'r-hardship-monthly', kind: 'report', name: 'Hardship Program Review', description: 'Plans opened, kept and broken, and what the program cost this month.', owner: 'Sam Okafor', source: 'Report server', glance: 'Monthly · Sep 2026 ready', updatedAt: 'Sep 5, 2026', subject: 'Collections › Promises & payments',
+    report: { format: 'Web report', cadence: 'Monthly', audience: 'Hardship program team', url: 'https://reports.example.com/collections/hardship-review' } },
+  { id: 'r-agency-quarterly', kind: 'report', name: 'Agency Performance Review', description: 'Recovery rate, fees and complaints for every outside agency.', owner: 'Jordan Lee', source: 'Report server', glance: 'Quarterly · Q3 ready', updatedAt: 'Oct 1, 2026', subject: 'Collections › Late stage & recoveries',
+    report: { format: 'Web report', cadence: 'Quarterly', audience: 'Vendor management', url: 'https://reports.example.com/collections/agency-review' } },
+  { id: 'r-quality-weekly', kind: 'report', name: 'Call Quality Weekly', description: 'Calibrated quality scores by team, with the lowest-scoring calls to review.', owner: 'Maya Hart', source: 'Report server', glance: 'Weekly · every Tuesday', updatedAt: 'Sep 30, 2026', subject: SERVICING,
+    report: { format: 'Web report', cadence: 'Weekly', audience: 'Team leads', url: 'https://reports.example.com/servicing/quality-weekly' } },
+  { id: 'r-pipeline-weekly', kind: 'report', name: 'Pipeline Review', description: 'Stage movement, slipped deals and the forecast, for the Monday pipeline call.', owner: 'Priya Raman', source: 'Report server', glance: 'Weekly · every Monday', updatedAt: 'Sep 29, 2026', subject: 'Revenue › Pipeline',
+    report: { format: 'Web report', cadence: 'Weekly', audience: 'Sales leadership', url: 'https://reports.example.com/sales/pipeline-review' } },
+  { id: 'r-month-end', kind: 'report', name: 'Month-End Close Summary', description: 'Accruals, adjustments and variances signed off at close.', owner: 'Dana Wu', source: 'Report server', glance: 'Monthly · Sep close ready', updatedAt: 'Oct 2, 2026', subject: 'Finance › Close',
+    report: { format: 'Web report', cadence: 'Monthly', audience: 'Finance', url: 'https://reports.example.com/finance/month-end' } },
+  { id: 'r-collateral-monthly', kind: 'report', name: 'Collateral Coverage Report', description: 'Valuation age, coverage ratios and exceptions by portfolio.', owner: 'Jordan Lee', source: 'Report server', glance: 'Monthly · Sep 2026 ready', updatedAt: 'Sep 8, 2026', subject: RISK,
+    report: { format: 'Web report', cadence: 'Monthly', audience: 'Credit risk', url: 'https://reports.example.com/risk/collateral-coverage' } },
+];
+
+/* ── Suites ───────────────────────────────────────────────────────────────── */
+
+/* The Collections team's suite is the LARGE one — 42 dashboards behind a nested
+   left navigation (stage › product › dashboard) before it came into DartBoards.
+   It exists so the suite page can be seen at the size that breaks naive layouts. */
+const COL: [string, string, string, Dashboard['hue'], number][] = [
+  ['daily-summary', 'Collections Daily Summary', 'Balances in arrears, cures and roll rates for yesterday, against plan.', 'amber', 1840],
+  ['portfolio-roll', 'Portfolio Roll Rates', 'How balances move between delinquency buckets month over month.', 'violet', 1422],
+  ['kpi-scorecard', 'Collections KPI Scorecard', 'The twelve measures the collections committee reviews every week.', 'blue', 1310],
+  ['queue-status', 'Queue Status', 'Accounts waiting in each work queue, oldest first, refreshed every 15 minutes.', 'cyan', 980],
+  ['dialer-pacing', 'Dialer Pacing', 'Calls placed, abandoned and connected by campaign, against the pacing target.', 'emerald', 744],
+  ['work-assignment', 'Work Assignment', 'Accounts assigned to each team and agent, and what is still unworked.', 'blue', 512],
+  ['right-party-contact', 'Right-Party Contact', 'The share of attempts that reached the customer, by time of day and channel.', 'violet', 690],
+  ['contact-attempts', 'Contact Attempts', 'Attempts per account per week, checked against the contact policy.', 'rose', 431],
+  ['channel-mix', 'Channel Mix', 'Calls, texts, email and letters, and which of them led to a payment.', 'amber', 388],
+  ['early-cards-roll', 'Early Stage · Cards Roll', 'Card balances rolling from current into 1–30 days, by segment.', 'violet', 602],
+  ['early-cards-cure', 'Early Stage · Cards Cure', 'Card accounts that paid back to current inside 30 days.', 'emerald', 544],
+  ['early-loans-roll', 'Early Stage · Loans Roll', 'Personal loan balances rolling into 1–30 days, by vintage.', 'blue', 470],
+  ['early-loans-cure', 'Early Stage · Loans Cure', 'Personal loan accounts that cured inside 30 days.', 'cyan', 402],
+  ['early-mortgage-roll', 'Early Stage · Mortgage Roll', 'Mortgage payments missed for the first time, by region.', 'amber', 355],
+  ['mid-cards-roll', 'Mid Stage · Cards Roll', 'Card balances moving from 31–60 into 61–90 days.', 'rose', 330],
+  ['mid-cards-ptp', 'Mid Stage · Cards Promises', 'Promises to pay taken on mid-stage card accounts, and how many were kept.', 'violet', 298],
+  ['mid-loans-roll', 'Mid Stage · Loans Roll', 'Personal loan balances moving from 31–60 into 61–90 days.', 'blue', 276],
+  ['mid-loans-ptp', 'Mid Stage · Loans Promises', 'Promises to pay taken on mid-stage loans, and how many were kept.', 'emerald', 240],
+  ['mid-mortgage-loss-mit', 'Mortgage Loss Mitigation', 'Forbearance, modification and repayment plans in progress.', 'cyan', 312],
+  ['chargeoff-forecast', 'Charge-off Forecast', 'Expected charge-offs for the next six months, by product.', 'rose', 520],
+  ['chargeoff-actuals', 'Charge-off Actuals', 'Balances charged off this month against the forecast.', 'amber', 466],
+  ['agency-placement', 'Agency Placement', 'Accounts placed with each outside agency, and when they come back.', 'blue', 214],
+  ['agency-performance', 'Agency Performance', 'Recovery rate and fees by agency and placement cycle.', 'violet', 262],
+  ['legal-pipeline', 'Legal Pipeline', 'Accounts referred for legal action, by stage and age.', 'emerald', 150],
+  ['team-leaderboard', 'Team Leaderboard', 'Dollars collected and promises kept by team, this week and last.', 'amber', 890],
+  ['team-quality', 'Team Quality', 'Call quality scores by team, with the calibration trend.', 'cyan', 310],
+  ['agent-scorecard', 'Agent Scorecard', 'Each agent against their targets for contacts, promises and dollars.', 'blue', 1020],
+  ['agent-coaching', 'Agent Coaching', 'Coaching sessions held, open actions and the change that followed.', 'rose', 286],
+  ['agent-attendance', 'Agent Attendance', 'Schedule adherence and absence by team.', 'emerald', 240],
+  ['ptp-kept', 'Promise Kept Rate', 'Promises to pay made and kept, by stage, channel and agent.', 'violet', 760],
+  ['payment-plans', 'Payment Plans', 'Plans set up, active and broken, with the balances they cover.', 'amber', 522],
+  ['settlements', 'Settlements', 'Settlement offers made and accepted, and the discount given.', 'blue', 344],
+  ['champion-challenger', 'Champion–Challenger', 'Live strategy tests and how each challenger is doing against the champion.', 'cyan', 204],
+  ['treatment-tests', 'Treatment Tests', 'Letter, text and call-timing experiments and their results.', 'rose', 176],
+  ['segment-migration', 'Segment Migration', 'How accounts move between risk segments month to month.', 'emerald', 190],
+  ['call-frequency', 'Call Frequency Limits', 'Accounts near or over the weekly contact limit.', 'amber', 402],
+  ['complaints', 'Collections Complaints', 'Complaints about collections activity by reason and outcome.', 'rose', 318],
+  ['regulatory-flags', 'Regulatory Flags', 'Accounts carrying a hardship, bankruptcy or military flag.', 'violet', 260],
+  ['volume-forecast', 'Volume Forecast', 'Accounts entering collections over the next 13 weeks.', 'blue', 280],
+  ['liquidation-forecast', 'Liquidation Forecast', 'Expected dollars collected by month and stage.', 'cyan', 244],
+  ['definitions', 'Collections Definitions', 'What every measure in this suite means and how it is calculated.', 'emerald', 612],
+  ['data-freshness', 'Data Freshness', 'When each source last loaded, and anything running late.', 'amber', 199],
+];
+const col = (...ids: string[]) => ids.map((id) => `col-${id}`);
+
+/* Two of them are NATIVE — built by the Collections team with the design system
+   (the pilot for "reports as React dashboards"). They share the suite's filters. */
+const NATIVE: Record<string, NativeSpec> = {
+  'col-daily-summary': {
+    suiteId: 'collections',
+    accepts: ['period', 'product'],
+    widgets: [
+      { id: 'headline', title: 'Headline', description: 'Where the book stands at the end of the period.', kind: 'kpis', metric: 'headline', span: 2 },
+      { id: 'arrears-trend', title: 'Balance in arrears', description: 'Weekly balance 1+ days past due, by product.', kind: 'line', metric: 'arrears' },
+      { id: 'collected-vs-plan', title: 'Collected against plan', description: 'Dollars collected by stage, against the plan.', kind: 'bar', metric: 'collected' },
+      { id: 'queues', title: 'Queues past service level', description: 'Work queues with accounts waiting longer than the target.', kind: 'table', metric: 'queues', span: 2 },
+    ],
+  },
+  'col-portfolio-roll': {
+    suiteId: 'collections',
+    accepts: ['period', 'product'],
+    widgets: [
+      { id: 'roll-early', title: 'Roll rate into 1–30 days', description: 'Share of current balances missing a payment, by product.', kind: 'line', metric: 'roll' },
+      { id: 'cure-rate', title: 'Cure rate', description: 'Share of 1–30 day balances back to current within the period.', kind: 'line', metric: 'cure' },
+      { id: 'bucket-balances', title: 'Balance by bucket', description: 'Where arrears sit today, by days past due.', kind: 'bar', metric: 'buckets', span: 2 },
+    ],
+  },
+};
+
+/* And three are EXTERNAL — single charts that stay in their BI tool and open there. */
+const EXTERNAL: Dashboard[] = [
+  d('col-delinquency-region', 'Delinquency by Region', 'Balances 30+ days past due on a regional map, with the month-on-month change.', {
+    category: 'Risk', owner: 'Jordan Lee', hue: 'rose', views: 1180, source: 'Tableau',
+    external: { url: 'https://tableau.example.com/views/Collections/DelinquencyByRegion' },
+  }),
+  d('col-vintage-curves', 'Recovery Vintage Curves', 'Cumulative recovery by charge-off month, one curve per vintage.', {
+    category: 'Risk', owner: 'Jordan Lee', hue: 'violet', views: 342, source: 'Tableau',
+    external: { url: 'https://tableau.example.com/views/Collections/RecoveryVintages' },
+  }),
+  d('col-agency-scorecard', 'Agency Scorecard', 'Each outside agency ranked on recovery rate, fees and complaints.', {
+    category: 'Risk', owner: 'Jordan Lee', hue: 'cyan', views: 205, source: 'Power BI',
+    external: { url: 'https://app.powerbi.example.com/reports/agency-scorecard' },
+  }),
+];
+
+export const COLLECTIONS_DASHBOARDS: Dashboard[] = [
+  ...COL.map(([id, name, desc, hue, views]) =>
+    d(`col-${id}`, name, desc, {
+      category: 'Risk', owner: 'Jordan Lee', hue, views, source: 'DART', native: NATIVE[`col-${id}`],
+      // Filed under "Start here" in its suite, but it is about early stage — and subject is what the Builder finds by.
+      ...(id === 'portfolio-roll' ? { subject: 'Collections › Early stage' } : {}),
+    }),
+  ),
+  ...EXTERNAL,
+];
+
+export const SUITES: Suite[] = [
+  {
+    id: 'servicing',
+    name: 'Servicing Operations',
+    team: 'Servicing team',
+    owner: 'Maya Hart',
+    description: 'Queues, service levels, quality and staffing for every servicing team, in the order the floor uses them.',
+    hue: 'emerald',
+    updatedAt: 'Sep 24, 2026',
+    sections: [
+      { id: 'today', name: 'Today', dashboardIds: ['servicing-overview', 'servicing-queue-depth', 'servicing-sla'] },
+      { id: 'performance', name: 'Performance', dashboardIds: ['servicing-handle-time', 'servicing-quality', 'delivery-sla'] },
+      { id: 'backlog', name: 'Backlog & escalations', dashboardIds: ['support-backlog', 'servicing-escalations'] },
+      { id: 'planning', name: 'Planning', dashboardIds: ['servicing-staffing', 'headcount-plan'] },
+    ],
+  },
+  {
+    id: 'risk',
+    name: 'Credit Risk',
+    team: 'Risk team',
+    owner: 'Jordan Lee',
+    description: 'Exposure, collateral and early-warning signals, reviewed at the weekly risk committee.',
+    hue: 'rose',
+    updatedAt: 'Sep 21, 2026',
+    sections: [
+      { id: 'portfolio', name: 'Portfolio', dashboardIds: ['risk-exposure', 'collateral-health'] },
+      { id: 'early-warning', name: 'Early warning', dashboardIds: ['churn-risk', 'collections-performance'] },
+    ],
+  },
+  {
+    id: 'collections',
+    name: 'Collections & Recoveries',
+    team: 'Collections team',
+    owner: 'Jordan Lee',
+    description: 'Every stage from the first missed payment to recovery — the Collections team’s whole reporting estate.',
+    hue: 'amber',
+    updatedAt: 'Sep 26, 2026',
+    startSectionId: 'start',
+    sections: [
+      { id: 'start', name: 'Start here', dashboardIds: col('daily-summary', 'portfolio-roll', 'delinquency-region', 'kpi-scorecard', 'definitions') },
+      {
+        id: 'daily', name: 'Daily operations',
+        dashboardIds: col('queue-status', 'dialer-pacing', 'work-assignment', 'right-party-contact', 'contact-attempts', 'channel-mix'),
+        topics: [
+          { id: 'queues', name: 'Queues', dashboardIds: col('queue-status', 'dialer-pacing', 'work-assignment') },
+          { id: 'contact', name: 'Contact', dashboardIds: col('right-party-contact', 'contact-attempts', 'channel-mix') },
+        ],
+      },
+      {
+        id: 'early', name: 'Early stage (1–30 days)',
+        dashboardIds: col('early-cards-roll', 'early-cards-cure', 'early-loans-roll', 'early-loans-cure', 'early-mortgage-roll'),
+        topics: [
+          { id: 'cards', name: 'Cards', dashboardIds: col('early-cards-roll', 'early-cards-cure') },
+          { id: 'loans', name: 'Loans', dashboardIds: col('early-loans-roll', 'early-loans-cure') },
+          { id: 'mortgages', name: 'Mortgages', dashboardIds: col('early-mortgage-roll') },
+        ],
+      },
+      {
+        id: 'mid', name: 'Mid stage (31–90 days)',
+        dashboardIds: col('mid-cards-roll', 'mid-cards-ptp', 'mid-loans-roll', 'mid-loans-ptp', 'mid-mortgage-loss-mit'),
+        topics: [
+          { id: 'cards', name: 'Cards', dashboardIds: col('mid-cards-roll', 'mid-cards-ptp') },
+          { id: 'loans', name: 'Loans', dashboardIds: col('mid-loans-roll', 'mid-loans-ptp') },
+          { id: 'mortgages', name: 'Mortgages', dashboardIds: col('mid-mortgage-loss-mit') },
+        ],
+      },
+      {
+        id: 'late', name: 'Late stage & recoveries',
+        dashboardIds: col('chargeoff-forecast', 'chargeoff-actuals', 'vintage-curves', 'agency-placement', 'agency-performance', 'agency-scorecard', 'legal-pipeline'),
+        topics: [
+          { id: 'chargeoff', name: 'Charge-off', dashboardIds: col('chargeoff-forecast', 'chargeoff-actuals', 'vintage-curves') },
+          { id: 'agencies', name: 'Agencies', dashboardIds: col('agency-placement', 'agency-performance', 'agency-scorecard') },
+          { id: 'legal', name: 'Legal', dashboardIds: col('legal-pipeline') },
+        ],
+      },
+      {
+        id: 'agents', name: 'Agent performance',
+        dashboardIds: col('team-leaderboard', 'team-quality', 'agent-scorecard', 'agent-coaching', 'agent-attendance'),
+        topics: [
+          { id: 'teams', name: 'Teams', dashboardIds: col('team-leaderboard', 'team-quality') },
+          { id: 'individuals', name: 'Individuals', dashboardIds: col('agent-scorecard', 'agent-coaching', 'agent-attendance') },
+        ],
+      },
+      { id: 'promises', name: 'Promises & payments', dashboardIds: [...col('ptp-kept', 'payment-plans', 'settlements'), 'collections-performance'] },
+      { id: 'strategy', name: 'Strategy & tests', dashboardIds: col('champion-challenger', 'treatment-tests', 'segment-migration') },
+      { id: 'compliance', name: 'Compliance', dashboardIds: col('call-frequency', 'complaints', 'regulatory-flags') },
+      { id: 'forecasting', name: 'Forecasting & capacity', dashboardIds: [...col('volume-forecast', 'liquidation-forecast'), 'servicing-staffing'] },
+      { id: 'reference', name: 'Reference', dashboardIds: col('definitions', 'data-freshness') },
+    ],
+  },
+  {
+    id: 'growth',
+    name: 'Revenue & Growth',
+    team: 'Sales operations',
+    owner: 'Priya Raman',
+    description: 'Pipeline to bookings, and what marketing spend returned along the way.',
+    hue: 'violet',
+    updatedAt: 'Sep 18, 2026',
+    sections: [
+      { id: 'pipeline', name: 'Pipeline', dashboardIds: ['pipeline-health', 'revenue-by-region'] },
+      { id: 'marketing', name: 'Marketing', dashboardIds: ['marketing-funnel', 'campaign-roi'] },
+    ],
+  },
+];
+
+/** Suites the prototype user already follows — they sit in the DartBoards sidebar. */
+export const FOLLOWED_SUITES = ['servicing', 'collections'];
+
 /* ── Requests ─────────────────────────────────────────────────────────────── */
 
 const sys = (id: string, at: string, text: string) => ({ id, author: 'system' as const, name: 'DART Central', at, text });
@@ -152,12 +419,13 @@ export const REQUESTS: Request[] = [
     ],
   },
   {
-    id: '#0417', type: 'dashboard-add', product: 'DARTBoards', title: 'Add Originations Daily Volume to the library',
+    id: '#0417', type: 'dashboard-add', product: 'DARTBoards', title: 'Publish Originations Daily Volume to DartBoards',
     summary: 'Request to add the Originations Daily Volume dashboard to the Dartboards library.', requesterId: ME.id,
     submittedAt: '09/01/2026', updatedAt: '09/01/2026', status: 'new',
     fields: [
-      { label: 'Dashboard name', value: 'Originations Daily Volume' },
-      { label: 'Tableau URL', value: 'https://tableau.example.com/views/OriginationsDaily' },
+      { label: 'IRM record', value: 'IRM-20512' },
+      { label: 'IRM report name', value: 'IRM-20512 Originations Daily Volume v1' },
+      { label: 'Display title', value: 'Originations Daily Volume' },
       { label: 'Category', value: 'Operations' },
       { label: 'Description', value: 'New originations by channel and product, with the daily target line.' },
     ],
@@ -214,7 +482,7 @@ export const REQUESTS: Request[] = [
     ],
   },
   {
-    id: '#0405', type: 'dashboard-remove', product: 'DARTBoards', title: 'Remove Legacy Servicing Overview',
+    id: '#0405', type: 'dashboard-remove', product: 'DARTBoards', title: 'Unpublish Legacy Servicing Overview',
     summary: 'Superseded by Servicing Overview v2.', requesterId: ME.id, submittedAt: '08/10/2026', updatedAt: '08/12/2026',
     status: 'denied',
     fields: [
@@ -253,20 +521,20 @@ export const REQUESTS: Request[] = [
     thread: [sys('t1', '09/02/2026', 'Request submitted.')],
   },
   {
-    id: '#0431', type: 'dashboard-edit', product: 'DARTBoards', title: 'Update Servicing SLA owner and description',
+    id: '#0431', type: 'dashboard-edit', product: 'DARTBoards', title: 'Update the Servicing SLA listing',
     summary: 'Ownership moved to the servicing platform team.', requesterId: 'u-mh', submittedAt: '09/04/2026', updatedAt: '09/04/2026',
     status: 'new', assetId: 'servicing-sla',
     fields: [{ label: 'Dashboard', value: 'Servicing SLA' }],
     changes: [
-      { field: 'Owner', current: 'Priya Raman', proposed: 'Maya Hart' },
+      { field: 'Display title', current: 'Servicing SLA', proposed: 'Servicing SLA by Team' },
       { field: 'Description', current: 'First response, handle time and breach risk across servicing teams.', proposed: 'First response, handle time and breach risk, by team and channel.' },
     ],
     thread: [sys('t1', '09/04/2026', 'Request submitted.')],
   },
   {
-    id: '#0410', type: 'dashboard-add', product: 'DARTBoards', title: 'Add Servicing Overview v2', summary: 'The rebuilt servicing dashboard.',
+    id: '#0410', type: 'dashboard-add', product: 'DARTBoards', title: 'Publish Servicing Overview v2 to DartBoards', summary: 'The rebuilt servicing dashboard.',
     requesterId: 'u-mh', submittedAt: '08/18/2026', updatedAt: '08/20/2026', status: 'approved',
-    fields: [{ label: 'Dashboard name', value: 'Servicing Overview v2' }], thread: [sys('t1', '08/18/2026', 'Request submitted.'), admin('t2', '08/20/2026', 'Approved. Created as a draft.')],
+    fields: [{ label: 'IRM record', value: 'IRM-20240' }, { label: 'Display title', value: 'Servicing Overview v2' }], thread: [sys('t1', '08/18/2026', 'Request submitted.'), admin('t2', '08/20/2026', 'Approved. Created as a draft.')],
   },
   {
     id: '#0398', type: 'banner', product: 'Aiden', title: 'Aiden summaries are in beta', summary: 'Info banner, 08/05/2026 – 09/30/2026.',
@@ -308,7 +576,7 @@ export const ADMINS: Admin[] = [
 ];
 
 export const ACTIVITY: ActivityEntry[] = [
-  { id: 'a1', at: '09/04/2026 09:12', who: 'Maya Hart', action: 'submitted', target: '#0431 Update Servicing SLA owner', product: 'DARTBoards' },
+  { id: 'a1', at: '09/04/2026 09:12', who: 'Maya Hart', action: 'submitted', target: '#0431 Update the Servicing SLA listing', product: 'DARTBoards' },
   { id: 'a2', at: '09/03/2026 16:40', who: 'Sam Okafor', action: 'replied on', target: '#0419 Can Aiden summarize a dashboard?', product: 'Aiden' },
   { id: 'a3', at: '09/02/2026 11:05', who: 'Dana Wu', action: 'submitted', target: '#0421 Scheduled maintenance this Saturday', product: 'DART Central' },
   { id: 'a4', at: '09/02/2026 10:20', who: 'Kahrman McKenzie', action: 'submitted', target: '#0425 Let me pin a dashboard to the top of Browse', product: 'DARTBoards' },

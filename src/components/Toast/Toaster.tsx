@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { useMounted } from '#/hooks/useMounted';
 import ToastCard from './ToastCard';
 import { emit, subscribe } from './toast-emitter';
@@ -184,6 +185,9 @@ const Toaster = ({
     };
   }, [visibleToasts, duration]);
 
+  // Carry the opener's theme/mode/density onto the portaled surface.
+  const { anchorRef: scopeAnchorRef, scope } = usePortalScope(mounted);
+
   if (!mounted) return null;
 
   // The container stays mounted even when empty — several screen-reader/browser
@@ -196,8 +200,12 @@ const Toaster = ({
     else pauseApiRef.current?.resume();
   };
 
-  return createPortal(
+  return (
+    <>
+      <span ref={scopeAnchorRef} hidden />
+      {createPortal(
     <div
+      {...scope}
       ref={containerRef}
       role="region"
       aria-label={label}
@@ -235,6 +243,8 @@ const Toaster = ({
       ))}
     </div>,
     document.body,
+      )}
+    </>
   );
 };
 

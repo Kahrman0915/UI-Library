@@ -24,6 +24,7 @@ import {
   LayoutDashboard,
   LayoutGrid,
   Link2,
+  ExternalLink,
   ListChecks,
   LogOut,
   Megaphone,
@@ -54,6 +55,7 @@ import DropdownMenu, {
   DropdownMenuLabel,
   DropdownMenuRadioGroup,
   DropdownMenuRadioItem,
+  DropdownMenuCheckboxItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../../components/DropdownMenu';
@@ -71,6 +73,9 @@ import Sidebar, {
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
   SidebarProvider,
   SidebarTrigger,
 } from '../../components/Sidebar';
@@ -85,6 +90,7 @@ import { SuiteNewTab } from './newTab';
 import { THEMES, useUi } from './ui';
 import type { ThemeCode } from './ui';
 import { WHATS_NEW } from './screens/whatsNew/entries';
+import { SIDEBAR_SECTIONS, orderedSections, suiteIcon } from './screens/boards/suite/suiteShared';
 
 /* ── Tab titles and icons ─────────────────────────────────────────────────── */
 
@@ -129,7 +135,20 @@ export function tabMeta(route: Route, state: SuiteState): { label: string; Icon:
     case 'admin-access':
       return { label: 'Access Control', Icon: ShieldCheck };
     case 'browse':
-      return { label: 'Browse', Icon: BarChart3 };
+      return route.suite
+        ? { label: state.suites.find((x) => x.id === route.suite)?.name ?? 'Suite', Icon: suiteIcon(route.suite) }
+        : { label: 'Browse', Icon: BarChart3 };
+    case 'marketplace':
+      return { label: 'Marketplace', Icon: Store };
+    case 'reports':
+      return { label: 'Reports', Icon: FileBarChart };
+    case 'metrics':
+      return { label: 'Metrics', Icon: Activity };
+    case 'metric':
+      return { label: state.assets.find((a) => a.id === route.id)?.name ?? 'Metric', Icon: Activity };
+    case 'report':
+      // A report's page in DartBoards; the link icon says the report itself lives elsewhere.
+      return { label: state.assets.find((a) => a.id === route.id)?.name ?? 'Report', Icon: ExternalLink };
     case 'space':
       return { label: state.spaces.find((s) => s.id === route.id)?.name ?? 'Space', Icon: LayoutGrid };
     case 'shared':
@@ -139,8 +158,11 @@ export function tabMeta(route: Route, state: SuiteState): { label: string; Icon:
         label: route.spaceId ? `Edit · ${state.spaces.find((s) => s.id === route.spaceId)?.name ?? 'space'}` : 'New space',
         Icon: LayoutGrid,
       };
-    case 'dashboard':
-      return { label: state.dashboards.find((d) => d.id === route.id)?.name ?? 'Dashboard', Icon: BarChart3 };
+    case 'dashboard': {
+      const d = state.dashboards.find((x) => x.id === route.id);
+      // An external chart's tab is its DartBoards details page — the link icon says the chart itself lives elsewhere.
+      return { label: d?.name ?? 'Dashboard', Icon: d?.external ? ExternalLink : BarChart3 };
+    }
     case 'aiden-launcher':
       return { label: 'New tab', Icon: Sparkles };
     case 'aiden-chat':
@@ -160,7 +182,9 @@ function NavList({ items, current }: { items: NavItem[]; current: Route }) {
         const active =
           (match ?? [route.page]).includes(current.page) &&
           (route.page !== 'space' || (current.page === 'space' && current.id === (route as { id: string }).id)) &&
-          (route.page !== 'placeholder' || (current.page === 'placeholder' && current.title === (route as { title: string }).title));
+          (route.page !== 'placeholder' || (current.page === 'placeholder' && current.title === (route as { title: string }).title)) &&
+          // A suite is Browse scoped down; its own sidebar item is the active one, not "Dashboards".
+          !(route.page === 'browse' && current.page === 'browse' && current.suite);
         return (
           <SidebarMenuItem key={label}>
             <SidebarMenuButton isActive={active} onClick={() => go(route)}>
@@ -244,10 +268,10 @@ function BoardsSidebar({ current }: { current: Route }) {
     { label: 'Shared with me', Icon: UsersRound, route: { page: 'shared' } },
   ];
   const market: NavItem[] = [
-    { label: 'All', Icon: Store, route: { page: 'placeholder', title: 'Marketplace' } },
+    { label: 'All', Icon: Store, route: { page: 'marketplace' } },
     { label: 'Dashboards', Icon: ChartColumn, route: { page: 'browse' }, match: ['browse', 'dashboard'] },
-    { label: 'Reports', Icon: FileBarChart, route: { page: 'placeholder', title: 'Reports' } },
-    { label: 'Metrics', Icon: Activity, route: { page: 'placeholder', title: 'Metrics' } },
+    { label: 'Reports', Icon: FileBarChart, route: { page: 'reports' }, match: ['reports', 'report'] },
+    { label: 'Metrics', Icon: Activity, route: { page: 'metrics' }, match: ['metrics', 'metric'] },
   ];
   // "New space" is active while the Builder is creating one.
   const creating = current.page === 'builder' && !current.spaceId;
@@ -259,6 +283,7 @@ function BoardsSidebar({ current }: { current: Route }) {
           <NavList items={spaces.map((s) => (s.label === 'New space' && creating ? { ...s, match: ['builder'] } : s))} current={current} />
         </SidebarGroupContent>
       </SidebarGroup>
+      <SuitesGroup current={current} />
       <SidebarGroup>
         <SidebarGroupLabel>Marketplace</SidebarGroupLabel>
         <SidebarGroupContent>
@@ -271,6 +296,83 @@ function BoardsSidebar({ current }: { current: Route }) {
         </SidebarGroupContent>
       </SidebarGroup>
     </>
+  );
+}
+
+/**
+ * The suites you follow, in the ONE DartBoards sidebar. A team that built its
+ * suite around its own left navigation gets that navigation here, one level
+ * down: the suite is an item, and only the suite you are IN opens to show its
+ * sections — so following five suites costs five rows, not five navigations.
+ */
+function SuitesGroup({ current }: { current: Route }) {
+  const { state } = useSuite();
+  const { go } = useNav();
+  const followed = state.followedSuites.map((id) => state.suites.find((s) => s.id === id)).filter((s) => !!s);
+  if (!followed.length) return null;
+  const inSuite = current.page === 'browse' ? current.suite : undefined;
+  const section = current.page === 'browse' ? current.section : undefined;
+  return (
+    <SidebarGroup>
+      <SidebarGroupLabel>Suites</SidebarGroupLabel>
+      <SidebarGroupContent>
+        <SidebarMenu>
+          {followed.map((s) => {
+            const Icon = suiteIcon(s.id);
+            const open = inSuite === s.id;
+            // A big suite shows its first few sections and a way to the rest; the one you are
+            // in always shows, even past the cap, so the sidebar never loses your place.
+            const ordered = orderedSections(s);
+            const capped = ordered.length > SIDEBAR_SECTIONS;
+            const rows = capped
+              ? ordered.filter((sec, i) => i < SIDEBAR_SECTIONS - 1 || sec.id === section)
+              : ordered;
+            return (
+              <SidebarMenuItem key={s.id}>
+                <SidebarMenuButton isActive={open && !section} aria-expanded={open} onClick={() => go({ page: 'browse', suite: s.id })}>
+                  <Icon />
+                  <span>{s.name}</span>
+                </SidebarMenuButton>
+                {open && (
+                  <SidebarMenuSub>
+                    {rows.map((sec) => (
+                      <SidebarMenuSubItem key={sec.id}>
+                        <SidebarMenuSubButton
+                          href="#"
+                          isActive={section === sec.id}
+                          aria-current={section === sec.id ? 'page' : undefined}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            go({ page: 'browse', suite: s.id, section: sec.id });
+                          }}
+                        >
+                          <span>{sec.name}</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                    {capped && (
+                      <SidebarMenuSubItem>
+                        {/* Opens the section picker's home: the suite's overview, every section on one page. */}
+                        <SidebarMenuSubButton
+                          href="#"
+                          className="ds-sidebar-more"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            go({ page: 'browse', suite: s.id });
+                          }}
+                        >
+                          <span>All {ordered.length} sections</span>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    )}
+                  </SidebarMenuSub>
+                )}
+              </SidebarMenuItem>
+            );
+          })}
+        </SidebarMenu>
+      </SidebarGroupContent>
+    </SidebarGroup>
   );
 }
 
@@ -295,7 +397,7 @@ const SCOPES: { value: string; label: string }[] = [
 export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactNode }) {
   const { state, setAdminScope } = useSuite();
   const nav = useNav();
-  const { aidenStop, setAidenStop, theme, setTheme } = useUi();
+  const { aidenStop, setAidenStop, theme, setTheme, leaveNotices, setLeaveNotices } = useUi();
   const app = appOf(nav.route);
 
   const item = (t: { id: string; route: Route }): TabBarMenuItem => ({ value: t.id, ...tabMeta(t.route, state), groupable: t.id !== 'home' });
@@ -372,6 +474,11 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
+                <DropdownMenuSeparator />
+                {/* Brings back every "opens in a new tab" message the user ticked away. */}
+                <DropdownMenuCheckboxItem checked={leaveNotices} onCheckedChange={(on) => setLeaveNotices(!!on)}>
+                  Explain links that open a new tab
+                </DropdownMenuCheckboxItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuLabel>Prototype · act as</DropdownMenuLabel>
                 <DropdownMenuRadioGroup

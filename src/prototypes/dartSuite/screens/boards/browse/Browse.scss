@@ -1,23 +1,31 @@
 // DartBoards · Browse. Tokens only.
 
 // Search · Filter · Sort · view toggle, on the title row.
+// The header's controls take the room the title block does not need (PageHeader
+// lets the text keep its one line first), and stay right-aligned in it.
+.ui-page-header__actions:has(> .ds-browse-actions) {
+  flex-grow: 1;
+}
+
 .ds-browse-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex: 1;
   align-items: center;
   justify-content: flex-end;
   gap: var(--space-4);
 }
 
+// The search gives up width before the page description does (PageHeader's
+// actions shrink first): 256 at rest, down to a 160 floor.
 .ds-browse-search {
-  width: var(--w-64);
-}
-
-// Four across at 1920, wrapping naturally below.
-.ds-browse-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(var(--w-64), 1fr));
-  gap: var(--space-3);
+  // Rests at its 160 floor and GROWS to 256 into whatever room the page
+  // description leaves — so on a crowded header it is the search that gives way,
+  // never the description. `contain: inline-size` stops the native <input>'s own
+  // intrinsic width (~20ch) from becoming the floor instead.
+  flex: 1 1 var(--w-40);
+  min-width: var(--w-40);
+  max-width: var(--w-64);
+  contain: inline-size;
 }
 
 .ds-browse-rows {
@@ -57,23 +65,10 @@
   }
 }
 
-.ds-browse-cover {
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-
-.ds-browse-flag {
-  position: absolute;
-  top: var(--p-3);
-
-  &--start {
-    left: var(--p-3);
-  }
-
-  &--end {
-    right: var(--p-3);
-  }
+// On a card the flags sit in CardMedia's `overlay`, which lays them along the
+// cover's top edge. An end flag can be the only one, so it pushes itself right.
+.ds-browse-flag--end {
+  margin-inline-start: auto;
 }
 
 // The title is the keyboard route into the dashboard; it reads as the title.
@@ -135,11 +130,17 @@
 .ds-browse-row__thumb {
   position: relative;
 
+  // A row thumbnail is not a CardMedia, so its flags still place themselves.
   .ds-browse-flag {
+    position: absolute;
     top: var(--p-1-5);
 
     &--start {
       left: var(--p-1-5);
+    }
+
+    &--end {
+      right: var(--p-1-5);
     }
   }
 }

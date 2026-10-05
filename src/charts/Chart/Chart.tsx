@@ -40,7 +40,7 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
       height = DEFAULT_HEIGHT, width = DEFAULT_WIDTH,
       valueFormatter = (v) => formatTick(v),
       yDomain = 'auto', showLegend, showGrid = true, view = 'chart', endLabels = false,
-      emptyLabel = 'No data to display', hiddenSeries, onSeriesToggle,
+      emptyLabel = 'No data to display', hiddenSeries, onSeriesToggle, palette,
       emphasis, emphasisOnHover = true,
       colorScale, scaleSteps = 7, scaleCenter = 0,
       className, children, ...rest
@@ -201,6 +201,9 @@ const Chart = forwardRef<HTMLElement, ChartProps>(
           ref={ref as React.Ref<HTMLElement>}
           id={id}
           className={cx('ui-chart', `ui-chart--view-${view}`, className)}
+          // The chart-only palette scope (tokens.scss). On the figure itself, so
+          // the legend swatches and the table twin repaint with the marks.
+          data-chart-palette={palette}
           role="group"
           aria-labelledby={ids.title}
           aria-describedby={description ? ids.desc : undefined}
@@ -502,4 +505,3 @@ export {
   ChartGrid, ChartXAxis, ChartYAxis,
   ChartLegend, ChartTooltip, ChartTable, ChartEmpty,
 };
-export default Chart;

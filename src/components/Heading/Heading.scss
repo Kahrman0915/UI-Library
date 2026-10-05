@@ -1,0 +1,22 @@
+// Heading — the library's heading sizes with no margin. See Heading.tsx.
+//
+// Every rung is a size some component already uses for its own title, so a Heading placed
+// beside a Card or a PageHeader matches it. Semibold throughout, on --foreground.
+
+.ui-heading {
+  margin: 0;
+  color: var(--foreground);
+  font-weight: var(--font-semibold);
+  // A two-line heading reads better with its lines evened out than with one orphaned word.
+  text-wrap: balance;
+
+  &--sz-base { font-size: var(--text-base); line-height: var(--leading-6); }
+  &--sz-lg { font-size: var(--text-lg); line-height: var(--leading-7); }
+  &--sz-xl { font-size: var(--text-xl); line-height: var(--leading-7); }
+  &--sz-2xl { font-size: var(--text-2xl); line-height: var(--leading-8); }
+
+  // The two display sizes tighten their tracking, as large type should — PageHeader's
+  // `lg` title does the same.
+  &--sz-3xl { font-size: var(--text-3xl); line-height: var(--leading-9); letter-spacing: var(--tracking-tight); }
+  &--sz-4xl { font-size: var(--text-4xl); line-height: var(--leading-10); letter-spacing: var(--tracking-tight); }
+}

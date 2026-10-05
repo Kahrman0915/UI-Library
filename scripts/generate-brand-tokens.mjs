@@ -19,9 +19,13 @@
 //
 // ── WHAT IT DOES NOT SHIP ────────────────────────────────────────────────────
 // Phase A takes the identity tokens and the six categorical chart slots. The
-// ordered ramps (--chart-seq-*, --chart-div-*) need a seventh slot and a
-// [data-chart-palette] axis in the chart components, so they are Phase B and are
-// filtered out here rather than shipped as tokens nothing reads.
+// ordered ramps (--chart-seq-*, --chart-div-*) need a seventh slot, so they are
+// Phase B and are filtered out here rather than shipped as tokens nothing reads.
+//
+// It also emits the CHART-ONLY palette scopes: [data-chart-palette='{code}']
+// carries a theme's chart slots and nothing else, so one chart can take another
+// theme's colours without dragging --primary (and every button near it) with it.
+// See the comment on the emitted block.
 
 import { readFileSync, writeFileSync } from 'node:fs';
 
@@ -134,6 +138,20 @@ parts.push(
   '',
 );
 
+// The chart-only subset. --decorative-hi rides along because the emphasis marker
+// reads it (`fill: var(--decorative-hi, currentColor)`), so a repainted chart
+// would otherwise keep the page theme's marker.
+const CHART_KEEP = new Set(['chart-1', 'chart-2', 'chart-3', 'chart-4', 'chart-5', 'chart-6', 'chart-muted', 'decorative-hi']);
+const chartBlock = (decls, who) => {
+  const kept = decls.filter((d) => CHART_KEEP.has(d.name));
+  if (!kept.length) {
+    console.error(`✗ ${who} produced an EMPTY chart-palette block.`);
+    process.exit(2);
+  }
+  return kept.map((d) => `  --${d.name}: ${d.value};`).join('\n');
+};
+const chartParts = [];
+
 for (const key of [...BRANDS, 'aiden']) {
   const rec = found.get(key);
   if (!rec.light || !rec.dark) {
@@ -170,7 +188,44 @@ for (const key of [...BRANDS, 'aiden']) {
     `}`,
     '',
   );
+
+  if (!rec.isSurface) {
+    const c = `[data-chart-palette='${key}']`;
+    chartParts.push(
+      `${c} {`,
+      chartBlock(lightDecls, ` ${key} chart light`),
+      `}`,
+      `[data-mode='dark'] ${c},`,
+      `[data-mode='dark']${c} {`,
+      chartBlock(darkDecls, ` ${key} chart dark`),
+      `}`,
+      `[data-mode='light'] ${c},`,
+      `[data-mode='light']${c} {`,
+      chartBlock(lightDecls, ` ${key} chart light`),
+      `}`,
+      '',
+    );
+  }
 }
+
+parts.push(
+  `/* CHART-ONLY palettes. A theme's chart slots with none of its identity, so a`,
+  `   single chart can be repainted without theming the card around it:`,
+  `   `,
+  `     <BarChart palette="rm" … />   →   data-chart-palette='rm'`,
+  `   `,
+  `   Why a second axis and not just data-theme on a wrapper: data-theme swaps`,
+  `   --primary too, so a magenta chart would hand every button inside that`,
+  `   wrapper a magenta fill. This declares --chart-* (plus --decorative-hi, which`,
+  `   the emphasis marker reads) and nothing else.`,
+  `   `,
+  `   It sits on the chart itself, BELOW whatever theme the page carries, and a`,
+  `   custom property declared on an element always beats one inherited from an`,
+  `   ancestor — so no specificity race with the [data-theme] blocks above.`,
+  `   Omit it and the chart inherits the page's palette, which is the default. */`,
+  '',
+  ...chartParts,
+);
 
 parts.push(END);
 const generated = parts.join('\n');

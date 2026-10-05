@@ -77,6 +77,12 @@ export type CardHeaderProps = Omit<
   /** Supporting line under the title. Also a `string`. */
   description?: string;
   /**
+   * Clamp the description to this many lines (see `CardDescription.lines`). On the
+   * preset so clamping does not force a hand-composed header, which would lose
+   * the `{id}-title` this header seeds.
+   */
+  descriptionLines?: number;
+  /**
    * Leading visual, rendered before the title — a featured icon, an avatar, a
    * status dot. Same role `ItemMedia` / `EmptyMedia` / `AttachmentMedia` play
    * in their families; Card was the only one of the four without it.
@@ -129,6 +135,18 @@ export type CardMediaProps = Omit<
   ratio?: number;
   /** The cover itself — an `<img>`, a `<video>`, an illustration, a chart. */
   children: React.ReactNode;
+  /**
+   * Things that sit ON the cover — a status badge, a kind tag, an "In 2 spaces"
+   * count. Rendered in a layer over the media, laid out along its top edge:
+   * the first child at the start, the last at the end (space-between). The
+   * layer is inset by the card's own padding rung and lets clicks through to
+   * the cover except on its children.
+   *
+   * This is the supported way to overlay a cover. Positioning children against
+   * the media's own `position: relative` worked, but was an implementation
+   * detail rather than a contract.
+   */
+  overlay?: React.ReactNode;
   className?: string;
 };
 
@@ -200,6 +218,12 @@ export type CardDescriptionProps = Omit<
   'children'
 > & {
   children: React.ReactNode;
+  /**
+   * Clamp to this many lines, ending in an ellipsis. Omit to show it all. The
+   * equivalent of what `ItemDescription` does at 2 lines in its own stylesheet —
+   * here it is a choice, because a card description is often the only copy.
+   */
+  lines?: number;
   className?: string;
 };
 

@@ -6,14 +6,27 @@
 
 import { useEffect, useState } from 'react';
 import type { LucideIcon } from 'lucide-react';
-import { Bell, FileEdit, LayoutDashboard, Lightbulb, MessageSquare, Megaphone, Rocket, Trash2 } from 'lucide-react';
+import { Bell, FileEdit, LayoutDashboard, Lightbulb, MessageSquare, Megaphone, Palette, Rocket, Trash2 } from 'lucide-react';
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../../../components/AlertDialog';
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
 import Card, { CardBody } from '../../../../components/Card';
 import { BarChart, LineChart } from '../../../../charts';
+import type { ChartPalette } from '../../../../charts';
+import DropdownMenu, {
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '../../../../components/DropdownMenu';
+import Tooltip, { TooltipContent, TooltipTrigger } from '../../../../components/Tooltip';
+import { useSuite } from '../../store';
+import { THEMES, useUi } from '../../ui';
 import Code from '../../../../components/Code';
 import Textarea from '../../../../components/Textarea';
+import Grid from '../../../../components/Grid';
+import Text from '../../../../components/Text';
 import { personById } from '../../data';
 import { useNav } from '../../nav';
 import { adminStatus, toneBadge } from '../../store';
@@ -90,7 +103,7 @@ export function Kpi({ id, value, label, hint, tone = 'info' }: { id: string; val
 }
 
 export function KpiRow({ children }: { children: React.ReactNode }) {
-  return <div className="ds-admin-kpis">{children}</div>;
+  return <Grid level={3} minItemWidth="var(--w-48)" stretch>{children}</Grid>;
 }
 
 /* ── Hooks ───────────────────────────────────────────────────────────────── */
@@ -196,7 +209,7 @@ export function DecisionDialog({
       <AlertDialogHeader id={`${id}-header`} title={copy.title} />
       <AlertDialogBody>
         <div className="ds-admin-dialog">
-          <p className="ds-text">{copy.body}</p>
+          <Text>{copy.body}</Text>
           <Textarea
             id={`${id}-text`}
             label={copy.label}
@@ -275,7 +288,7 @@ const EVENT: Record<string, { label: string; tone: Tone }> = {
 
 export const eventOf = (a: ActivityEntry) => EVENT[a.action] ?? { label: a.action.charAt(0).toUpperCase() + a.action.slice(1), tone: 'default' as Tone };
 
-/** "#0431 Update Servicing SLA owner" → ['#0431', 'Update Servicing SLA owner']. */
+/** "#0431 Update the Servicing SLA listing" → ['#0431', 'Update the Servicing SLA listing']. */
 export const splitTarget = (t: string): [string | null, string] => {
   const m = /^(#\d+)\s+(.*)$/.exec(t);
   return m ? [m[1], m[2]] : [null, t];
@@ -289,14 +302,82 @@ export const splitTarget = (t: string): [string | null, string] => {
 
 const k = (v: number) => `${v}k`;
 
+/* The per-chart colour control. A chart follows the user's theme unless someone
+   picks a colour for it; the pick is SHARED (saved on the content, store.tsx),
+   so every reader sees the same chart in the same colour.
+
+   It repaints the chart only — the card, its text and any button in it stay on
+   the user's theme — which is what `palette` does and a `data-theme` wrapper
+   would not. */
+function ChartColor({ chartId }: { chartId: string }) {
+  const { state, setChartPalette } = useSuite();
+  const { theme } = useUi();
+  const current = state.chartPalettes[chartId];
+  const themeName = THEMES.find((t) => t.value === theme)?.label ?? 'your theme';
+  return (
+    <DropdownMenu id={`${chartId}-color-menu`}>
+      <Tooltip id={`${chartId}-color-tip`} side="left">
+        <TooltipTrigger>
+          <DropdownMenuTrigger>
+            <Button
+              id={`${chartId}-color`}
+              style="ghost"
+              size="sm"
+              iconOnly
+              IconCenter={Palette}
+              aria-label="Chart color"
+            />
+          </DropdownMenuTrigger>
+        </TooltipTrigger>
+        <TooltipContent>Chart color</TooltipContent>
+      </Tooltip>
+      <DropdownMenuContent align="end">
+        <DropdownMenuLabel>Chart color</DropdownMenuLabel>
+        <DropdownMenuRadioGroup
+          value={current ?? 'theme'}
+          onValueChange={(v) => setChartPalette(chartId, v === 'theme' ? null : (v as ChartPalette))}
+        >
+          <DropdownMenuRadioItem value="theme">Match my theme ({themeName})</DropdownMenuRadioItem>
+          {THEMES.map((t) => (
+            <DropdownMenuRadioItem key={t.value} value={t.value}>
+              <span className="ds-theme-dot" data-chart-palette={t.value} aria-hidden="true" />
+              {t.label}
+            </DropdownMenuRadioItem>
+          ))}
+        </DropdownMenuRadioGroup>
+      </DropdownMenuContent>
+    </DropdownMenu>
+  );
+}
+
+/** The card a usage chart sits in: the chart, with its colour control on top. */
+function ChartCard({ id, children }: { id: string; children: React.ReactNode }) {
+  return (
+    <Card id={id} className="ds-admin-chart">
+      <CardBody>
+        <div className="ds-admin-chart__control">
+          <ChartColor chartId={`${id}-chart`} />
+        </div>
+        {children}
+      </CardBody>
+    </Card>
+  );
+}
+
+/** The colour a chart renders in: whatever was picked for it, else the page's theme. */
+function usePalette(chartId: string) {
+  const { state } = useSuite();
+  return state.chartPalettes[chartId];
+}
+
 /** "Views over time" — one line per device, over the months given. */
 export function ViewsOverTime({ id, months, totals }: { id: string; months: string[]; totals: number[] }) {
   const split = (share: number) => totals.map((t) => Math.round(t * share));
   return (
-    <Card id={id}>
-      <CardBody>
+    <ChartCard id={id}>
         <LineChart
           id={`${id}-chart`}
+          palette={usePalette(`${id}-chart`)}
           title="Views over time"
           description="All products · last 6 months"
           categories={months}
@@ -308,8 +389,7 @@ export function ViewsOverTime({ id, months, totals }: { id: string; months: stri
           valueFormatter={k}
           height={240}
         />
-      </CardBody>
-    </Card>
+    </ChartCard>
   );
 }
 
@@ -317,10 +397,10 @@ export function ViewsOverTime({ id, months, totals }: { id: string; months: stri
 export function ViewsByProduct({ id, totals }: { id: string; totals: [number, number, number] }) {
   const split = (share: number) => totals.map((t) => Math.round(t * share));
   return (
-    <Card id={id}>
-      <CardBody>
+    <ChartCard id={id}>
         <BarChart
           id={`${id}-chart`}
+          palette={usePalette(`${id}-chart`)}
           title="Views by product"
           description="Last 30 days"
           categories={['DART Central', 'Dartboards', 'Aiden']}
@@ -332,8 +412,7 @@ export function ViewsByProduct({ id, totals }: { id: string; totals: [number, nu
           valueFormatter={k}
           height={240}
         />
-      </CardBody>
-    </Card>
+    </ChartCard>
   );
 }
 

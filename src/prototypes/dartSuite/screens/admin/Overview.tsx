@@ -23,6 +23,8 @@ import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '../../../../components/Table';
 import Alert from '../../../../components/Alert';
 import { toast } from '../../../../components/Toast';
+import Grid from '../../../../components/Grid';
+import Text from '../../../../components/Text';
 import { DEFAULT_WIDGETS } from '../../data';
 import { useNav } from '../../nav';
 import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
@@ -122,7 +124,7 @@ function QueuePreview({ n, state }: { n: number; state: SuiteState }) {
   const { go } = useNav();
   const products = scopeProducts(state.adminScope);
   const rows = state.requests.filter((r) => products.includes(r.product) && adminStatus(r.status).active).sort(byQueueOrder);
-  if (!rows.length) return <p className="ds-muted">Nothing is waiting. Every request is decided.</p>;
+  if (!rows.length) return <Text tone="muted">Nothing is waiting. Every request is decided.</Text>;
   return (
     <Stack level={4}>
       {rows.slice(0, n).map((r) => {
@@ -134,9 +136,9 @@ function QueuePreview({ n, state }: { n: number; state: SuiteState }) {
               <div className="ds-admin-qcard">
                 <FeaturedIcon Icon={TYPE_ICON[r.type]} color={r.type.startsWith('banner') ? 'warning' : r.type.startsWith('dashboard') ? 'info' : 'default'} />
                 <div className="ds-admin-qcard__text">
-                  <p className="ds-muted">
+                  <Text tone="muted">
                     {r.id}  ·  {typeLabel[r.type]}  ·  {requesterOf(r).name}
-                  </p>
+                  </Text>
                   <Button
                     id={`ds-ov-q-open-${key}`}
                     style="link"
@@ -144,11 +146,11 @@ function QueuePreview({ n, state }: { n: number; state: SuiteState }) {
                     className="ds-admin-rowlink ds-admin-qcard__title"
                     onClick={open}
                   />
-                  <p className="ds-muted">{r.summary}</p>
+                  <Text tone="muted">{r.summary}</Text>
                 </div>
                 <div className="ds-admin-status">
                   <StatusBadge id={`ds-ov-q-st-${key}`} request={r} />
-                  <span className="ds-muted">{r.submittedAt}</span>
+                  <Text as="span" tone="muted">{r.submittedAt}</Text>
                 </div>
               </div>
             </CardBody>
@@ -212,7 +214,7 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
             .map((d) => (
               <li key={d.id}>
                 <Button id={`ds-ov-mo-${d.id}`} style="link" size="sm" label={d.name} onClick={() => go({ page: 'dashboard', id: d.id })} />
-                <span className="ds-muted">{d.views.toLocaleString()} views</span>
+                <Text as="span" tone="muted">{d.views.toLocaleString()} views</Text>
               </li>
             ))}
         </ul>
@@ -224,7 +226,7 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
             .filter((b) => b.visible && b.state !== 'draft')
             .map((b) => (
               <li key={b.id}>
-                <span className="ds-text">{b.title}</span>
+                <Text as="span">{b.title}</Text>
                 <Badge id={`ds-ov-bn-${b.id}`} label={b.state} color={b.state === 'expired' ? 'warning' : 'success'} appearance="soft" />
               </li>
             ))}
@@ -237,10 +239,10 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
             .filter((p) => p.state !== 'ended')
             .map((p) => (
               <li key={p.id}>
-                <span className="ds-text">{state.dashboards.find((d) => d.id === p.dashboardId)?.name ?? p.dashboardId}</span>
-                <span className="ds-muted">
+                <Text as="span">{state.dashboards.find((d) => d.id === p.dashboardId)?.name ?? p.dashboardId}</Text>
+                <Text as="span" tone="muted">
                   {p.starts} – {p.ends}
-                </span>
+                </Text>
               </li>
             ))}
         </ul>
@@ -253,13 +255,13 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
             .slice(0, 5)
             .map((a) => (
               <li key={a.id}>
-                <span className="ds-text">
+                <Text as="span">
                   {a.who} {a.action} {a.target}
-                </span>
-                <span className="ds-muted">{a.at}</span>
+                </Text>
+                <Text as="span" tone="muted">{a.at}</Text>
               </li>
             ))}
-          {!state.activity.some((a) => /admin|access/i.test(a.action)) && <li className="ds-muted">No access changes yet.</li>}
+          {!state.activity.some((a) => /admin|access/i.test(a.action)) && <li><Text as="span" tone="muted">No access changes yet.</Text></li>}
         </ul>
       );
     case 'redirects-top':
@@ -269,8 +271,8 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
             .sort((a, b) => b.hits - a.hits)
             .map((r) => (
               <li key={r.id}>
-                <span className="ds-text">{r.from}</span>
-                <span className="ds-muted">{r.hits.toLocaleString()} hits</span>
+                <Text as="span">{r.from}</Text>
+                <Text as="span" tone="muted">{r.hits.toLocaleString()} hits</Text>
               </li>
             ))}
         </ul>
@@ -380,7 +382,7 @@ export function AdminOverview() {
             />
           )}
           {kpis.length > 0 && (
-            <div className="ds-admin-kpis">
+            <Grid level={3} minItemWidth="var(--w-48)" stretch className="ds-admin-kpis">
               {kpis.map((w) => {
                 const k = kpiFor(w, state);
                 return (
@@ -390,21 +392,21 @@ export function AdminOverview() {
                   </div>
                 );
               })}
-            </div>
+            </Grid>
           )}
           {groupCharts(blocks).map((w) => {
             // Charts title themselves (Figma's Chart is card + title), so they take no
             // Section heading; a run of them shares a row, as in Figma's 1.4.
             if (Array.isArray(w))
               return (
-                <div key={w.join('+')} className="ds-admin-grid2">
+                <Grid key={w.join('+')} level={3} minItemWidth="var(--w-80)" stretch>
                   {w.map((c) => (
                     <div key={c} className={editing ? 'ds-admin-widget ds-admin-widget--editing' : 'ds-admin-widget'}>
                       {controls(c, blocks)}
                       <WidgetBody id={c} state={state} />
                     </div>
                   ))}
-                </div>
+                </Grid>
               );
             const def = defOf(w)!;
             const viewAll =
@@ -457,7 +459,7 @@ export function AdminOverview() {
                     const added = widgets.includes(c.id);
                     return (
                       <li key={c.id}>
-                        <span className="ds-text">{c.label}</span>
+                        <Text as="span">{c.label}</Text>
                         <Button
                           id={`ds-ov-pick-${c.id}`}
                           size="xs"

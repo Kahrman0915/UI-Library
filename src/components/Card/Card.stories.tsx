@@ -71,6 +71,16 @@ const meta: Meta<typeof Card> = {
       ],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: '`CardMedia` takes an `overlay` — badges or tags placed on the cover, as a supported region.',
+          detail: 'Rendered in `.ui-card__media-overlay`: absolute along the cover\'s top edge, first child at the start and last at the end, inset by `--p-3`, `pointer-events: none` on the layer and `auto` on its children. `.ui-card__media` now declares `position: relative` itself, so the positioning context is a contract rather than AspectRatio\'s implementation detail. Story: CoverOverlay.',
+        },
+        {
+          date: '2026-10-03',
+          summary: 'A description can be clamped to a set number of lines: `lines` on `CardDescription`, or `descriptionLines` on `CardHeader`.',
+          detail: 'The count rides on the `--ui-card-description-lines` custom property, so one rule (`.ui-card__description--clamp`, a `-webkit-line-clamp` box) serves any number. It is on the header preset as well as the part so clamping does not force a hand-composed header, which would lose the `{id}-title` the preset seeds. Story: ClampedDescription.',
+        },
+        {
           date: '2026-09-07',
           summary:
             'Padding moved from the `--space-inset` role to level 3 of the spacing ladder, `--space-3`, the same day; the roles were withdrawn.',
@@ -454,6 +464,50 @@ export const Interactive: Story = {
       <CardBody>
         <p>Unlimited seats, SSO, and priority support.</p>
       </CardBody>
+    </Card>
+  ),
+};
+
+/**
+ * A long description clamped to two lines — `descriptionLines` on the header, or
+ * `lines` on a composed `CardDescription`. Both cards are the same width; only
+ * the clamp differs, so a grid keeps one card height.
+ */
+export const ClampedDescription: Story = {
+  render: () => {
+    const long =
+      'Recovery rate, fees and complaints for every outside agency, broken down by placement cycle, product and region, with the month-on-month change for each.';
+    return (
+      <div style={{ display: 'flex', gap: 'var(--space-3)' }}>
+        <Card id="clamp-preset" style={{ width: 300 }}>
+          <CardHeader id="clamp-preset-header" title="Header preset" description={long} descriptionLines={2} />
+        </Card>
+        <Card id="clamp-composed" style={{ width: 300 }}>
+          <CardBody>
+            <CardTitle>Composed parts</CardTitle>
+            <CardDescription lines={2}>{long}</CardDescription>
+          </CardBody>
+        </Card>
+      </div>
+    );
+  },
+};
+
+/** Tags on the cover through `overlay`: first child at the start, last at the end. */
+export const CoverOverlay: Story = {
+  render: () => (
+    <Card id="cover-overlay" style={{ width: 340 }}>
+      <CardMedia
+        overlay={
+          <>
+            <Badge id="co-new" label="New" color="info" />
+            <Badge id="co-spaces" label="In 2 spaces" color="info" appearance="outline" />
+          </>
+        }
+      >
+        <div style={{ width: '100%', height: '100%', background: 'var(--muted)' }} />
+      </CardMedia>
+      <CardHeader id="cover-overlay-header" title="Collections Daily Summary" description="Balances in arrears, cures and roll rates for yesterday." />
     </Card>
   ),
 };

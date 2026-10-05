@@ -62,6 +62,8 @@ export type { SwatchProps, SwatchSize, SwatchShape } from './components/Swatch';
 export { default as FilterTag, FilterTagGroup } from './components/FilterTag';
 export type { FilterTagProps, FilterTagGroupProps, FilterTagSize } from './components/FilterTag';
 
+export { default as Timeline, TimelineItem } from './components/Timeline';
+export type { TimelineProps, TimelineItemProps } from './components/Timeline';
 export { default as Toggle } from './components/Toggle';
 export type { ToggleProps, ToggleVariant, ToggleSize } from './components/Toggle';
 
@@ -382,6 +384,8 @@ export type {
 } from './components/Calendar';
 
 export { default as DatePicker } from './components/DatePicker';
+export { default as DescriptionList, DescriptionListItem } from './components/DescriptionList';
+export type { DescriptionListProps, DescriptionListItemProps, DescriptionListOrientation } from './components/DescriptionList';
 export type {
   DatePickerProps,
   DatePickerSize,
@@ -621,6 +625,8 @@ export type { InputOTPProps, InputOTPSize } from './components/InputOTP';
 export { default as Label } from './components/Label';
 export type { LabelProps, LabelSize } from './components/Label';
 
+export { default as Text } from './components/Text';
+export type { TextProps, TextSize, TextTone, TextWeight } from './components/Text';
 export { default as Textarea } from './components/Textarea';
 export type { TextareaProps, TextareaSize } from './components/Textarea';
 
@@ -705,6 +711,7 @@ export type {
   EmptyHeaderProps,
   EmptyMediaProps,
   EmptyTitleProps,
+  EmptyTitleAs,
   EmptyDescriptionProps,
   EmptyContentProps,
   EmptyMediaVariant,
@@ -882,6 +889,10 @@ export { default as Slider } from './components/Slider';
 export type { SliderProps, SliderSize } from './components/Slider';
 
 export { default as Spinner } from './components/Spinner';
+export { default as Heading } from './components/Heading';
+export type { HeadingProps, HeadingLevel, HeadingSize } from './components/Heading';
+export { default as Grid } from './components/Grid';
+export type { GridProps, GridLevel } from './components/Grid';
 export { default as Stack } from './components/Stack';
 export type { StackProps, StackLevel, StackDirection, StackAlign, StackJustify } from './components/Stack';
 export { default as PageContainer } from './components/PageContainer';
@@ -890,6 +901,8 @@ export { default as PageHeader } from './components/PageHeader';
 export type { PageHeaderProps, PageHeaderSize } from './components/PageHeader';
 export { default as Section } from './components/Section';
 export type { SectionProps, SectionVariant } from './components/Section';
+export { default as SelectionBar } from './components/SelectionBar';
+export type { SelectionBarProps } from './components/SelectionBar';
 export { default as Toolbar, ToolbarGroup } from './components/Toolbar';
 export type { ToolbarProps, ToolbarGroupProps, ToolbarJustify } from './components/Toolbar';
 export type { SpinnerProps } from './components/Spinner';
@@ -934,6 +947,8 @@ export { useStickToBottom } from './hooks/useStickToBottom';
 export type { UseStickToBottomOptions } from './hooks/useStickToBottom';
 export { usePointerTilt } from './hooks/usePointerTilt';
 export { useStreamingText } from './hooks/useStreamingText';
+export { usePortalScope, readPortalScope, PORTAL_SCOPE_ATTRS } from './hooks/usePortalScope';
+export type { PortalScope } from './hooks/usePortalScope';
 export { useTabLayout } from './hooks/useTabLayout';
 export type {
   UseTabLayoutOptions,

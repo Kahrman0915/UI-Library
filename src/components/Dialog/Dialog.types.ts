@@ -56,8 +56,12 @@ export type DialogHeaderProps = Omit<
   React.HTMLAttributes<HTMLDivElement>,
   'title'
 > & {
-  /** Must match the `Dialog`'s `id` — it seeds `{id}-title` for aria-labelledby. */
-  id: string;
+  /**
+   * Optional, and ignored inside a `Dialog`: the header takes the Dialog's own id
+   * from context, so `{id}-title` always matches the Dialog's `aria-labelledby`.
+   * Only a header rendered outside a Dialog uses this.
+   */
+  id?: string;
   /** The dialog's heading. Rendered into `{id}-title`, which names the dialog. */
   title: string;
   /** Supporting line under the title. Rendered into `{id}-description`, which

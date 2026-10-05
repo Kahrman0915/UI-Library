@@ -1,6 +1,8 @@
 /* R2.1 New Request · chooser — four option cards, each into its branch. */
 
-import { Bell, ChevronRight, LayoutGrid, Lightbulb, MessageSquare } from 'lucide-react';
+import { Bell, ChevronRight, ExternalLink, LayoutGrid, Lightbulb, MessageSquare } from 'lucide-react';
+import Alert from '../../../../components/Alert';
+import { toast } from '../../../../components/Toast';
 import type { LucideIcon } from 'lucide-react';
 import Button from '../../../../components/Button';
 import Card, { CardDescription, CardTitle } from '../../../../components/Card';
@@ -8,6 +10,7 @@ import FeaturedIcon from '../../../../components/FeaturedIcon';
 import type { FeaturedIconColor } from '../../../../components/FeaturedIcon/FeaturedIcon.types';
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
+import Grid from '../../../../components/Grid';
 import { useNav } from '../../nav';
 import type { RequestKind } from '../../types';
 import { Crumbs, MY_REQUESTS } from './shared';
@@ -20,7 +23,13 @@ const OPTIONS: { kind: RequestKind; title: string; description: string; Icon: Lu
     Icon: Bell,
     color: 'warning',
   },
-  { kind: 'dashboard', title: 'Dashboard', description: 'Add, edit, promote, or remove a dashboard in the Dartboards library.', Icon: LayoutGrid, color: 'info' },
+  {
+    kind: 'dashboard',
+    title: 'Dashboard in DartBoards',
+    description: 'Publish a finished dashboard to DartBoards, change its title or description in Browse, promote it, or unpublish it.',
+    Icon: LayoutGrid,
+    color: 'info',
+  },
   {
     kind: 'general',
     title: 'General Request',
@@ -45,9 +54,9 @@ export function NewRequest() {
         id="ds-newreq-header"
         overline={<Crumbs trail={[MY_REQUESTS, { label: 'New request' }]} />}
         title="New Request"
-        description="What would you like to submit to the DART Central admin team?"
+        description="Requests about DART Central and about how dashboards appear in DartBoards."
       />
-      <div className="ds-requests-chooser">
+      <Grid level={3} minItemWidth="var(--w-64)" stretch>
         {OPTIONS.map((o) => {
           const pick = () => go(o.kind === 'dashboard' ? { page: 'request-form', kind: 'dashboard', mode: 'add' } : { page: 'request-form', kind: o.kind });
           return (
@@ -74,7 +83,25 @@ export function NewRequest() {
             </Card>
           );
         })}
-      </div>
+      </Grid>
+      {/* Not a fifth option — a way out for the most common wrong turn. Reports are built and controlled in IRM. */}
+      <Alert
+        id="ds-newreq-irm"
+        variant="info"
+        title="Need a new report, or a change to its data, visuals, access or controls?"
+        description="Reports are built and controlled in IRM. Come back here once yours is finished, to publish it to DartBoards."
+        action={
+          <Button
+            id="ds-newreq-irm-go"
+            size="sm"
+            style="outline"
+            label="Open IRM"
+            IconRight={ExternalLink}
+            aria-label="Open IRM (opens in a new tab)"
+            onClick={() => toast('Opening IRM', { description: 'IRM opens in a new tab.' })}
+          />
+        }
+      />
     </PageContainer>
   );
 }

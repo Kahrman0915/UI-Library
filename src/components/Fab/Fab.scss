@@ -257,3 +257,16 @@
 :root:has(.ui-fab--pos-bottom-left.ui-fab--sz-lg) .ui-toaster--bottom-left {
   bottom: calc(var(--p-6) + var(--h-14));
 }
+
+// The room a bottom-corner Fab takes out of the page: its size plus its bottom inset. Published
+// on :root, only while such a Fab is mounted, for whatever owns the end of the page to reserve —
+// PageContainer adds it to its bottom padding, so the last row of a long page can scroll clear of
+// the launcher instead of ending underneath it (it covered the last column's sort control on the
+// Admin Overview). The Fab cannot do this itself: it is fixed, so it has no say in the page's
+// height. Owner, 2026-10-03.
+:root:has(.ui-fab--pos-bottom-right, .ui-fab--pos-bottom-left) {
+  --ui-fab-clearance: calc(var(--p-6) + var(--h-12));
+}
+:root:has(.ui-fab--pos-bottom-right.ui-fab--sz-lg, .ui-fab--pos-bottom-left.ui-fab--sz-lg) {
+  --ui-fab-clearance: calc(var(--p-6) + var(--h-14));
+}

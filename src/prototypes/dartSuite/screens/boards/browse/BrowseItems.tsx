@@ -10,7 +10,7 @@
    The whole card opens the dashboard; the title is the keyboard route. The
    two actions stop the click so they do not also open it. */
 
-import { Clock, Eye } from 'lucide-react';
+import { Clock, ExternalLink, Eye, Layers } from 'lucide-react';
 import type { MouseEvent } from 'react';
 import Badge from '../../../../../components/Badge';
 import Button from '../../../../../components/Button';
@@ -21,7 +21,9 @@ import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import type { Dashboard } from '../../../types';
 import { useUi } from '../../../ui';
-import { DashboardThumb, addUnavailable, spacesWith, updatedLabel } from '../shared/boardsShared';
+import { DashboardThumb, KindLabel, addUnavailable, spacesWith, updatedLabel } from '../shared/boardsShared';
+import { suitesWith } from '../suite/suiteShared';
+import { ExternalTag, openAriaLabel, openLabel, useOpenExternal } from '../external/externalShared';
 
 const stop = (fn: () => void) => (e?: MouseEvent) => {
   e?.stopPropagation();
@@ -34,9 +36,14 @@ function useCardModel(d: Dashboard) {
   const ui = useUi();
   const inSpaces = spacesWith(state, d.id).length;
   const unavailable = addUnavailable(state, d.id);
+  const openExternal = useOpenExternal();
   return {
     inSpaces,
     unavailable,
+    // An external chart: the card goes to its DartBoards details page (open, below);
+    // only the explicit "Open in Tableau" button leaves.
+    external: !!d.external,
+    leave: () => openExternal(d),
     open: () => go({ page: 'dashboard', id: d.id }),
     add: () => ui.openAddToSpace(d.id),
     info: () => ui.openDashboardInfo(d.id),
@@ -61,7 +68,9 @@ function Meta({ d }: { d: Dashboard }) {
 function Flags({ d, inSpaces }: { d: Dashboard; inSpaces: number }) {
   return (
     <>
-      {d.tags.includes('New') && (
+      {d.external ? (
+        <ExternalTag d={d} className="ds-browse-flag ds-browse-flag--start ds-ext-tag" />
+      ) : d.tags.includes('New') && (
         <Badge id={`ds-browse-new-${d.id}`} className="ds-browse-flag ds-browse-flag--start" label="New" color="info" appearance="solid" />
       )}
       {inSpaces > 0 && (
@@ -77,18 +86,41 @@ function Flags({ d, inSpaces }: { d: Dashboard; inSpaces: number }) {
   );
 }
 
-export function BrowseCard({ d }: { d: Dashboard }) {
+/** The suite a dashboard is curated into — a way from the open library into its team's view. */
+function SuiteTag({ d }: { d: Dashboard }) {
+  const { state } = useSuite();
+  const { go } = useNav();
+  const [suite] = suitesWith(state, d.id);
+  if (!suite) return null;
+  return (
+    <span onClick={(e) => e.stopPropagation()}>
+      <Button
+        id={`ds-browse-suite-${d.id}`}
+        style="link"
+        size="xs"
+        className="ds-suite-tag"
+        IconLeft={Layers}
+        label={suite.name}
+        aria-label={`Open the ${suite.name} suite`}
+        onClick={() => go({ page: 'browse', suite: suite.id })}
+      />
+    </span>
+  );
+}
+
+/** `inSuite` — already inside a suite's view, so the card does not name the suite again. */
+/** `showKind` — on a list that mixes kinds (Marketplace › All), say this is a dashboard. */
+export function BrowseCard({ d, inSuite = false, showKind = false }: { d: Dashboard; inSuite?: boolean; showKind?: boolean }) {
   const m = useCardModel(d);
   return (
     <Card id={`ds-browse-card-${d.id}`} interactive className="ds-browse-card" onClick={m.open}>
-      <CardMedia ratio={8 / 3}>
-        <div className="ds-browse-cover">
-          <DashboardThumb dashboard={d} />
-          <Flags d={d} inSpaces={m.inSpaces} />
-        </div>
+      <CardMedia ratio={8 / 3} overlay={<Flags d={d} inSpaces={m.inSpaces} />}>
+        <DashboardThumb dashboard={d} />
       </CardMedia>
       <CardBody>
         <div className="ds-browse-card__text">
+          {showKind && <KindLabel kind="dashboard" />}
+          {!inSuite && <SuiteTag d={d} />}
           <CardTitle>
             <Button id={`ds-browse-title-${d.id}`} style="link" className="ds-browse-title-link" label={d.name} onClick={stop(m.open)} />
           </CardTitle>
@@ -96,20 +128,37 @@ export function BrowseCard({ d }: { d: Dashboard }) {
         </div>
         <Meta d={d} />
         <div className="ds-browse-card__actions" onClick={(e) => e.stopPropagation()}>
-          <Button
-            id={`ds-browse-add-${d.id}`}
-            label="Add to space"
-            disabled={m.unavailable}
-            title={m.unavailable ? 'Already in every one of your spaces' : undefined}
-            onClick={() => m.add()}
-          />
-          <Button
-            id={`ds-browse-info-${d.id}`}
-            style="link"
-            size="sm"
-            label="View dashboard details"
-            onClick={() => m.info()}
-          />
+          {m.external ? (
+            <>
+              <Button
+                id={`ds-browse-leave-${d.id}`}
+                style="outline"
+                label={openLabel(d)}
+                IconRight={ExternalLink}
+                aria-label={openAriaLabel(d)}
+                disabled={!d.hasAccess}
+                onClick={m.leave}
+              />
+              <Button id={`ds-browse-info-${d.id}`} style="link" size="sm" label="View details" onClick={m.open} />
+            </>
+          ) : (
+            <>
+              <Button
+                id={`ds-browse-add-${d.id}`}
+                label="Add to space"
+                disabled={m.unavailable}
+                title={m.unavailable ? 'Already in every one of your spaces' : undefined}
+                onClick={() => m.add()}
+              />
+              <Button
+                id={`ds-browse-info-${d.id}`}
+                style="link"
+                size="sm"
+                label="View dashboard details"
+                onClick={() => m.info()}
+              />
+            </>
+          )}
         </div>
       </CardBody>
     </Card>
@@ -143,21 +192,39 @@ export function BrowseRow({ d }: { d: Dashboard }) {
           <Meta d={d} />
         </ItemContent>
         <ItemActions className="ds-browse-row__actions" onClick={(e) => e.stopPropagation()}>
-          <Button
-            id={`ds-browse-row-add-${d.id}`}
-            size="sm"
-            label="Add to space"
-            disabled={m.unavailable}
-            title={m.unavailable ? 'Already in every one of your spaces' : undefined}
-            onClick={() => m.add()}
-          />
-          <Button
-            id={`ds-browse-row-info-${d.id}`}
-            style="link"
-            size="sm"
-            label="View dashboard details"
-            onClick={() => m.info()}
-          />
+          {m.external ? (
+            <>
+              <Button
+                id={`ds-browse-row-leave-${d.id}`}
+                size="sm"
+                style="outline"
+                label={openLabel(d)}
+                IconRight={ExternalLink}
+                aria-label={openAriaLabel(d)}
+                disabled={!d.hasAccess}
+                onClick={m.leave}
+              />
+              <Button id={`ds-browse-row-info-${d.id}`} style="link" size="sm" label="View details" onClick={m.open} />
+            </>
+          ) : (
+            <>
+              <Button
+                id={`ds-browse-row-add-${d.id}`}
+                size="sm"
+                label="Add to space"
+                disabled={m.unavailable}
+                title={m.unavailable ? 'Already in every one of your spaces' : undefined}
+                onClick={() => m.add()}
+              />
+              <Button
+                id={`ds-browse-row-info-${d.id}`}
+                style="link"
+                size="sm"
+                label="View dashboard details"
+                onClick={() => m.info()}
+              />
+            </>
+          )}
         </ItemActions>
       </Item>
     </div>

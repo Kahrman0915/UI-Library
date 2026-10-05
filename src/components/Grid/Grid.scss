@@ -1,0 +1,91 @@
+// Grid — equal items in columns that reflow, with the gap on the spacing ladder.
+//
+// Three modes, picked by Grid.tsx from the props:
+//   --fluid   minItemWidth only: as many columns as fit, no breakpoints.
+//   --capped  minItemWidth + columns: reflows, but never past `columns`.
+//   --fixed   columns only: that many equal columns, always.
+// `--ui-grid-template` is written by the component only when `maxItemWidth` pins the tracks;
+// it overrides whichever mode is in force. See Grid.tsx for why that has to be measured.
+
+.ui-grid {
+  --_gap: var(--space-3);
+  // auto-fill keeps empty columns at the end of a short row; `stretch` swaps in auto-fit,
+  // which collapses them so the items fill the row.
+  --_fill: auto-fill;
+
+  display: grid;
+  gap: var(--_gap);
+  // Pinned tracks pack to the start, so a capped grid leaves its spare width at the end
+  // rather than spreading it between the items.
+  justify-content: start;
+  // The probes are absolutely positioned against the grid.
+  position: relative;
+  min-width: 0;
+  // ul / ol as a Grid: the list is the layout, not a bulleted list.
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  // `min(100%, …)` keeps a single column inside a container narrower than the minimum.
+  &--fluid {
+    grid-template-columns: var(
+      --ui-grid-template,
+      repeat(var(--_fill), minmax(min(100%, var(--ui-grid-min)), 1fr))
+    );
+  }
+
+  // The column count becomes a cap: each track is at least the minimum, AND at least the
+  // width that `columns` equal tracks would get, so auto-fill can never fit one more.
+  &--capped {
+    grid-template-columns: var(
+      --ui-grid-template,
+      repeat(
+        var(--_fill),
+        minmax(
+          min(
+            100%,
+            max(
+              var(--ui-grid-min),
+              calc((100% - (var(--ui-grid-cols) - 1) * var(--_gap)) / var(--ui-grid-cols))
+            )
+          ),
+          1fr
+        )
+      )
+    );
+  }
+
+  &--stretch {
+    --_fill: auto-fit;
+  }
+
+  &--fixed {
+    grid-template-columns: var(--ui-grid-template, repeat(var(--ui-grid-cols), minmax(0, 1fr)));
+  }
+
+  // ---- The ladder ----
+  &--level-1 { --_gap: var(--space-1); }
+  &--level-2 { --_gap: var(--space-2); }
+  &--level-3 { --_gap: var(--space-3); }
+  &--level-4 { --_gap: var(--space-4); }
+  &--level-5 { --_gap: var(--space-5); }
+
+  // A grid item defaults to min-width:auto and will not shrink below its content, which is
+  // how one long title widens its whole column.
+  > * {
+    min-width: 0;
+  }
+
+  &__probe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 0;
+    visibility: hidden;
+    pointer-events: none;
+    list-style: none;
+
+    &--min { width: var(--ui-grid-min); }
+    &--max { width: var(--ui-grid-max); }
+  }
+}
