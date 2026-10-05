@@ -11,6 +11,7 @@ import CloseButton from '../../../../components/CloseButton';
 import Dialog, { DialogMedia } from '../../../../components/Dialog';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import Item, { ItemContent, ItemDescription, ItemMedia, ItemTitle } from '../../../../components/Item';
+import Heading from '../../../../components/Heading';
 import { EditModeDemo } from '../../../productDemos/EditModeDemo';
 import { LibraryDemo } from '../../../productDemos/LibraryDemo';
 import { SpacesDemo } from '../../../productDemos/SpacesDemo';
@@ -143,7 +144,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
           <div className="ds-wn-tour__text" aria-live="polite">
             <FeaturedIcon Icon={s.Icon} size="sm" />
             <p className="ds-wn-tour__overline">What’s New · {step + 1} of {last}</p>
-            <h2 className="ds-wn-tour__title">{s.title}</h2>
+            <Heading level={2} size="lg">{s.title}</Heading>
             <p className="ds-wn-tour__desc">{s.text}</p>
           </div>
         ) : (

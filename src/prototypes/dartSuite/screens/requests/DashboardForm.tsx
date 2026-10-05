@@ -31,6 +31,7 @@ import Tabs, { TabsContent, TabsList, TabsTrigger } from '../../../../components
 import Textarea from '../../../../components/Textarea';
 import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
+import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
 import { CONTROLS, IRM_UNPUBLISHED, displayTitleFrom, irmFor } from '../../irm';
 import type { IrmRecord } from '../../irm';
 import { useSuite } from '../../store';
@@ -71,39 +72,18 @@ function IrmRecordPanel({ id, record }: { id: string; record: IrmRecord }) {
           <span className="ds-req-irm__label">Managed in IRM · change these there</span>
           <Button id={`${id}-open`} style="link" size="sm" label="Open IRM record" IconRight={ExternalLink} aria-label={`Open ${record.number} in IRM (opens in a new tab)`} onClick={() => openIrm(record.number)} />
         </div>
-        <dl className="ds-req-irm__facts">
-          <div>
-            <dt>IRM record</dt>
-            <dd>{record.number}</dd>
-          </div>
-          <div className="ds-req-irm__wide">
-            <dt>Report name in IRM</dt>
-            <dd>{record.name}</dd>
-          </div>
-          <div>
-            <dt>Developer</dt>
-            <dd>{record.developer}</dd>
-          </div>
-          <div>
-            <dt>Business owner</dt>
-            <dd>{record.businessOwner}</dd>
-          </div>
-          <div>
-            <dt>Source</dt>
-            <dd>{record.source}</dd>
-          </div>
-          <div>
-            <dt>Access group</dt>
-            <dd>{record.accessGroup}</dd>
-          </div>
-          <div className="ds-req-irm__wide">
-            <dt>Controls</dt>
-            <dd>
+        <DescriptionList orientation="vertical" className="ds-req-irm__facts">
+          <DescriptionListItem term="IRM record">{record.number}</DescriptionListItem>
+          <DescriptionListItem term="Report name in IRM" className="ds-req-irm__wide">{record.name}</DescriptionListItem>
+          <DescriptionListItem term="Developer">{record.developer}</DescriptionListItem>
+          <DescriptionListItem term="Business owner">{record.businessOwner}</DescriptionListItem>
+          <DescriptionListItem term="Source">{record.source}</DescriptionListItem>
+          <DescriptionListItem term="Access group">{record.accessGroup}</DescriptionListItem>
+          <DescriptionListItem term="Controls" className="ds-req-irm__wide">
               <Badge id={`${id}-controls`} label={c.label} color={c.color} appearance="soft" />
               <Text as="span" tone="muted"> · last reviewed {record.lastReviewed}</Text>
-            </dd>
-          </div>
-        </dl>
+            </DescriptionListItem>
+        </DescriptionList>
       </CardBody>
     </Card>
   );

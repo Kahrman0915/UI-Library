@@ -41,21 +41,6 @@
   white-space: nowrap;
 }
 
-.ds-wn-featured__title {
-  margin: 0;
-  font-size: var(--text-3xl);
-  line-height: var(--leading-9);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-.ds-wn-lede {
-  margin: 0;
-  font-size: var(--text-base);
-  line-height: var(--leading-6);
-  color: var(--muted-foreground);
-}
-
 .ds-wn-bullets {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(var(--w-72), 1fr));
@@ -65,21 +50,6 @@
   font-size: var(--text-sm);
   line-height: var(--leading-5);
   color: var(--foreground);
-}
-
-.ds-wn-card__title {
-  margin: 0;
-  font-size: var(--text-base);
-  line-height: var(--leading-6);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-.ds-wn-copy {
-  margin: 0;
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
-  color: var(--muted-foreground);
 }
 
 // Badges on the leading edge, the action on the trailing one.
@@ -206,14 +176,6 @@
   font-size: var(--text-xs);
   line-height: var(--leading-4);
   color: var(--muted-foreground);
-}
-
-.ds-wn-tour__title {
-  margin: 0;
-  font-size: var(--text-lg);
-  line-height: var(--leading-7);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
 }
 
 .ds-wn-tour__desc {

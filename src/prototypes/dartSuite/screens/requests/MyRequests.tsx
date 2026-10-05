@@ -22,6 +22,7 @@ import Separator from '../../../../components/Separator';
 import Skeleton from '../../../../components/Skeleton';
 import Stack from '../../../../components/Stack';
 import Text from '../../../../components/Text';
+import Heading from '../../../../components/Heading';
 import { ME } from '../../data';
 import { useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
@@ -197,7 +198,7 @@ function RequestCard({ r }: { r: Request }) {
           <Text size="xs" tone="muted">
             {r.id} · {typeLabel[r.type]} · {scopeLabel(r)}
           </Text>
-          <h3 className="ds-requests-card__title">{r.title}</h3>
+          <Heading level={3} size="base">{r.title}</Heading>
           <Text tone="muted">{r.summary}</Text>
         </div>
         <div className="ds-requests-card__aside">

@@ -110,11 +110,7 @@
 }
 
 .ds-boards-info-name {
-  margin: 0 0 var(--p-1);
-  font-size: var(--text-base);
-  line-height: var(--leading-6);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
+  margin-bottom: var(--p-1);
 }
 
 // Dashboard information — the listing and the IRM report, each with its own action.

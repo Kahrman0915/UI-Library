@@ -15,6 +15,7 @@ import type { FeaturedIconColor } from '../../../../components/FeaturedIcon/Feat
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
 import Text from '../../../../components/Text';
+import Grid from '../../../../components/Grid';
 import { useLeaveGuard, useNav } from '../../nav';
 import type { LeaveGuard } from '../../nav';
 import { useSuite } from '../../store';
@@ -257,4 +258,8 @@ export function FormShell({
 }
 
 /** A two-up row of fields that stacks when the column is narrow. */
-export const Row = ({ children }: { children: ReactNode }) => <div className="ds-requests-row">{children}</div>;
+export const Row = ({ children }: { children: ReactNode }) => (
+  <Grid level={3} minItemWidth="var(--w-56)" stretch className="ds-requests-row">
+    {children}
+  </Grid>
+);

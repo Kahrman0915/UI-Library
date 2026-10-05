@@ -7,6 +7,8 @@ import Card from '../../../../components/Card';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import Item, { ItemActions, ItemContent, ItemMedia, ItemTitle } from '../../../../components/Item';
 import Kbd from '../../../../components/Kbd';
+import Heading from '../../../../components/Heading';
+import Text from '../../../../components/Text';
 import { useNav } from '../../nav';
 import { useSuite } from '../../store';
 import { useUi } from '../../ui';
@@ -41,9 +43,9 @@ export function Home() {
   return (
     <div className="dc-col">
       <header className="dc-greeting">
-        <h1 className="dc-greeting__title">
+        <Heading level={1} size="2xl">
           {greeting()}, {ME.name.split(' ')[0]}
-        </h1>
+        </Heading>
         <p className="dc-greeting__sub">What would you like to work on today?</p>
       </header>
 
@@ -149,9 +151,9 @@ export function Home() {
                 </ItemMedia>
                 <ItemContent>
                   <ItemTitle>{s.name}</ItemTitle>
-                  <span style={{ fontSize: 'var(--text-xs)', lineHeight: 'var(--leading-4)', color: 'var(--muted-foreground)' }}>
+                  <Text as="span" size="xs" tone="muted">
                     {s.items.length} dashboards · {s.description}
-                  </span>
+                  </Text>
                 </ItemContent>
               </Item>
             </Card>

@@ -21,6 +21,8 @@ import Section from '../../../../components/Section';
 import Stack from '../../../../components/Stack';
 import { toast } from '../../../../components/Toast';
 import Grid from '../../../../components/Grid';
+import Heading from '../../../../components/Heading';
+import Text from '../../../../components/Text';
 import { Walkthrough } from '../../../productDemos/Walkthrough';
 import { useNav } from '../../nav';
 import { WHATS_NEW } from './entries';
@@ -197,7 +199,7 @@ export function WhatsNewStory({ id }: { id: string }) {
 
         <Section id="ds-wns-details" heading="Full details" variant="group">
           <Stack level={4}>
-            <p className="ds-wn-copy">Stop hunting for the dashboards you check every day. Here’s everything Dartboards gives you:</p>
+            <Text tone="muted">Stop hunting for the dashboards you check every day. Here’s everything Dartboards gives you:</Text>
             <ul className="ds-wn-details">
               {DETAILS.map(([term, text]) => (
                 <li key={term}>
@@ -222,8 +224,8 @@ export function WhatsNewStory({ id }: { id: string }) {
                     <Badge id={`ds-wns-soon-${s.title}-badge`} label="Soon" color="default" appearance="outline" />
                   </div>
                   <Stack level={5}>
-                    <h3 className="ds-wn-card__title">{s.title}</h3>
-                    <p className="ds-wn-copy">{s.text}</p>
+                    <Heading level={3} size="base">{s.title}</Heading>
+                    <Text tone="muted">{s.text}</Text>
                   </Stack>
                 </CardBody>
               </Card>

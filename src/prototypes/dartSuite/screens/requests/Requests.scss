@@ -2,16 +2,6 @@
 // DART Central · Request Flow — prototype layout glue. Tokens only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-.ds-requests-eyebrow {
-  margin: 0;
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  font-weight: var(--font-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
 // ── My Requests · list cards ──
 .ds-requests-card {
   display: flex;
@@ -25,14 +15,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--p-1);
-  }
-
-  &__title {
-    margin: 0;
-    font-size: var(--text-base);
-    line-height: var(--leading-6);
-    font-weight: var(--font-semibold);
-    color: var(--foreground);
   }
 
   &__aside {
@@ -140,9 +122,8 @@
 }
 
 .ds-requests-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-56), 1fr));
-  gap: var(--p-4);
+  // Fields in a row keep their own height, so an error message under one field
+  // does not stretch its neighbour.
   align-items: start;
 }
 
@@ -178,22 +159,12 @@
 }
 
 .ds-req-irm__facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--p-3) var(--p-6);
-  margin: 0;
-
-  dt {
-    font-size: var(--text-xs);
-    line-height: var(--leading-4);
-    color: var(--muted-foreground);
-  }
-
-  dd {
-    margin: 0;
-    font-size: var(--text-sm);
-    line-height: var(--leading-5);
-    color: var(--foreground);
+  // DescriptionList vertical, laid out two pairs to a row; a pair marked wide spans both.
+  // The pair div is display: flex in the vertical layout, so it is the grid item here.
+  &.ui-description-list--vertical {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-3);
   }
 }
 

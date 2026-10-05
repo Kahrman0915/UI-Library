@@ -11,6 +11,7 @@ import Button from '../../../../../components/Button';
 import Card, { CardBody, CardDescription, CardTitle } from '../../../../../components/Card';
 import FeaturedIcon from '../../../../../components/FeaturedIcon';
 import Section from '../../../../../components/Section';
+import Grid from '../../../../../components/Grid';
 import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import { countLabel, suiteDashboardIds, suiteIcon } from './suiteShared';
@@ -23,7 +24,7 @@ export function SuiteStrip() {
 
   return (
     <Section id="ds-browse-suites" heading="Team suites" variant="group">
-      <div className="ds-suite-strip">
+      <Grid level={3} minItemWidth="var(--w-72)">
         {state.suites.map((s) => {
           const open = () => go({ page: 'browse', suite: s.id });
           const following = state.followedSuites.includes(s.id);
@@ -52,7 +53,7 @@ export function SuiteStrip() {
             </Card>
           );
         })}
-      </div>
+      </Grid>
     </Section>
   );
 }

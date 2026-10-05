@@ -20,6 +20,7 @@ import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
 import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
 import Timeline, { TimelineItem } from '../../../../components/Timeline';
+import Section from '../../../../components/Section';
 import { ME } from '../../data';
 import { useLeaveGuard, useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
@@ -129,7 +130,7 @@ export function RequestDetail({ id }: { id: string }) {
 
         <Card id="ds-reqd-activity">
           <div className="ds-requests-panel">
-            <h2 className="ds-requests-eyebrow">Activity</h2>
+            <Section id="ds-reqd-activity-section" heading="Activity" variant="group">
             <Timeline aria-label="Activity">
               {r.thread.map((t) => {
                 const w = who(t);
@@ -158,6 +159,7 @@ export function RequestDetail({ id }: { id: string }) {
                 );
               })}
             </Timeline>
+            </Section>
 
             {done ? (
               // OPEN in Figma (③): whether a DONE request keeps its composer. Built as the

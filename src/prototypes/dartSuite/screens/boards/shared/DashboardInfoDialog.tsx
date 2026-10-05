@@ -40,7 +40,7 @@ export function DashboardInfoDialog({ open, dashboardId, onClose }: { open: bool
           <div className="ds-boards-info-head">
             <DashboardThumb dashboard={d} size="row" />
             <div>
-              <p className="ds-boards-info-name">{d.name}</p>
+              <Text size="base" weight="semibold" className="ds-boards-info-name">{d.name}</Text>
               <Text tone="muted">{d.description}</Text>
             </div>
           </div>
