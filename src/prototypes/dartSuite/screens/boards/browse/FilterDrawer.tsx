@@ -18,6 +18,7 @@ import Drawer, { DrawerBody, DrawerFooter, DrawerHeader } from '../../../../../c
 import FilterTag, { FilterTagGroup } from '../../../../../components/FilterTag';
 import Input from '../../../../../components/Input';
 import Separator from '../../../../../components/Separator';
+import Text from '../../../../../components/Text';
 import type { Dashboard } from '../../../types';
 import { FACETS, appliedCount, matches, optionsOf } from './facets';
 import type { Facet, FacetId, Filters } from './facets';
@@ -181,7 +182,7 @@ export function FilterDrawer({ open, onClose, base, total, applied, onApply }: P
           })}
 
           {q && FACETS.every((f) => !optionsOf(f, base).some((o) => o.toLowerCase().includes(q))) && (
-            <p className="ds-muted">No filter options match “{query}”.</p>
+            <Text tone="muted">No filter options match “{query}”.</Text>
           )}
         </div>
       </DrawerBody>

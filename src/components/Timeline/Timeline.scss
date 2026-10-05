@@ -1,0 +1,89 @@
+// Timeline — an ordered run of events, each led by a marker. See Timeline.tsx.
+//
+// On the ladder: entries sit level 3 apart (a block each), the marker sits level 4 from its
+// content, and the meta line, body and actions sit level 5 apart inside an entry.
+
+.ui-timeline {
+  --_gap: var(--space-3);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--_gap);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  min-width: 0;
+
+  &__item {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-4);
+    min-width: 0;
+  }
+
+  // The marker column is as wide as the marker and as tall as the entry, which is what lets
+  // the connector run from under the marker to the next one without measuring anything.
+  &__marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    // The default dot is centred on the first line of the meta (16px line, 8px dot).
+    min-width: var(--w-8);
+  }
+
+  &__dot {
+    width: var(--w-2);
+    height: var(--h-2);
+    margin-top: var(--p-1);
+    border-radius: var(--rounded-full);
+    background: var(--muted-foreground);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-5);
+    min-width: 0;
+    flex: 1;
+  }
+
+  &__meta {
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  &__body {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+    overflow-wrap: anywhere;
+    max-width: 100%;
+
+    > p {
+      margin: 0;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  // ---- Connector ----
+  // A hairline from under each marker down through the gap to the next one. The negative
+  // bottom margin carries it across the gap between entries; the last entry draws none.
+  &--connector &__item:not(:last-child) &__marker::after {
+    content: '';
+    flex: 1;
+    width: var(--border-w-100);
+    margin-top: var(--space-5);
+    margin-bottom: calc(-1 * var(--_gap));
+    background: var(--border);
+  }
+}

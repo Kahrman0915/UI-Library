@@ -30,6 +30,16 @@ const meta: Meta<typeof Drawer> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: '`DrawerHeader` takes its ids from the `Drawer`, so its `id` is optional and can no longer leave the drawer unnamed.',
+          detail: 'Drawer shares its own `id` through context, and DrawerHeader seeds `{id}-title` / `{id}-description` from it — the ids the panel\'s `aria-labelledby` / `aria-describedby` look for. A mismatched header id used to produce a drawer with no accessible name and no warning. DrawerHeaderProps\' `id` is now optional and only used outside a Drawer. Same change as DialogHeader.',
+        },
+        {
+          date: '2026-10-03',
+          summary: 'Portaled surfaces carry the theme of the section that opened them.',
+          detail: 'The surface renders into `document.body`, outside the subtree that opened it, so a menu opened inside `<section data-theme="rm">` used to render in the page\'s theme. A hidden marker now sits where the component is and, while the surface is open, the nearest `data-mode` / `data-theme` / `data-tint` / `data-density` / `data-surface` above it is stamped on the portal root (`usePortalScope`). Values on `<html>` are skipped — the portal inherits those already. Spread before `...rest`, so a consumer\'s own `data-theme` still wins.',
+        },
+        {
           date: '2026-09-22',
           summary: 'A drawer can now dock beside your work instead of covering it: no backdrop, no focus trap, and the page next to it stays usable.',
           detail: 'New `modal={false}`. The panel renders in place (no portal) and positions `absolute` in its nearest positioned ancestor (`.ui-drawer--docked`, `--z-10`); there is no overlay, focus trap, scroll lock or outside-click close, and it drops `aria-modal`. Escape closes it only while focus is inside it. Focus still moves in on open and back on close, and the slide and the 400ms close fallback are unchanged. The panel also now falls back to the consumer\'s own `aria-labelledby` / `aria-describedby` when it has no `DrawerHeader`, so a composed header (a `PageHeader`) can name it. First consumer: the Suite Builder\'s side panel, which had been hand-built.',

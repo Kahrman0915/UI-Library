@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import Button from '../../../../../components/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../../../../components/Dialog';
 import { toast } from '../../../../../components/Toast';
+import Text from '../../../../../components/Text';
 import { useSuite } from '../../../store';
 
 export function GetAccessDialog({ open, dashboardId, onClose }: { open: boolean; dashboardId: string | null; onClose: () => void }) {
@@ -26,13 +27,13 @@ export function GetAccessDialog({ open, dashboardId, onClose }: { open: boolean;
       {d && (
         <DialogBody>
           <div className="ds-boards-dialog-stack">
-            <p className="ds-text">
+            <Text>
               {d.name} is owned by {d.owner}. Access is granted through their data governance request, not through DART
               Central. Approvals usually take two working days.
-            </p>
-            <p className="ds-muted">
+            </Text>
+            <Text tone="muted">
               {d.hasAccess ? 'You already have access to this dashboard.' : 'You do not have access yet. Send a request and the owner will be notified.'}
-            </p>
+            </Text>
           </div>
         </DialogBody>
       )}

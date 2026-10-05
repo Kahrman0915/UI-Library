@@ -56,7 +56,14 @@
     // row held two children, and broke the moment `__visual` made it three: with
     // no actions, the space landed BETWEEN the visual and the title and threw the
     // glyph to the far left. Same fix `CardHeader` uses on `__header-content`.
-    flex: 1;
+    //
+    // Basis `auto` — the text's own one-line width — not 0 (2026-10-02). With
+    // actions that cannot grow it resolves exactly as `flex: 1` did; the
+    // difference only shows when the actions CAN grow (a search that widens into
+    // spare room): the text keeps its one line first, and the actions get what is
+    // left. A basis of 0 split the spare room evenly and wrapped the description
+    // while the search sat at full width beside it.
+    flex: 1 1 auto;
   }
 
   // The short line above the title. A flex row, not a paragraph, because it
@@ -152,6 +159,7 @@
     display: flex;
     align-items: center;
     align-self: flex-end;
+    justify-content: flex-end;
     gap: var(--space-4);
     flex-shrink: 0;
   }

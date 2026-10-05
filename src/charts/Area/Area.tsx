@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { forwardRef } from 'react';
 import { byEmphasis, useChartContext } from '../Chart/Chart.context';
-import Chart from '../Chart/Chart';
+import { Chart } from '../Chart/Chart';
 
 const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -56,4 +56,3 @@ const AreaChart = forwardRef<HTMLElement, AreaChartProps>(
 AreaChart.displayName = 'AreaChart';
 
 export { AreaChart, ChartArea };
-export default AreaChart;

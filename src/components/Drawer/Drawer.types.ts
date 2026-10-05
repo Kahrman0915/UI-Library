@@ -37,8 +37,12 @@ export type DrawerProps = React.HTMLAttributes<HTMLDivElement> & {
 };
 
 export type DrawerHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
-  /** Must equal the `Drawer`'s `id`, or the panel loses its accessible name. */
-  id: string;
+  /**
+   * Optional, and ignored inside a `Drawer`: the header takes the Drawer's own id
+   * from context, so `{id}-title` always matches the panel's `aria-labelledby`.
+   * Only a header rendered outside a Drawer uses this.
+   */
+  id?: string;
   /** Rendered as the `<h2>` the drawer is labeled by. */
   title: string;
   /** Rendered under the title and referenced by the panel's `aria-describedby`. */

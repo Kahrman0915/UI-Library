@@ -17,6 +17,9 @@ import Separator from '../../../../components/Separator';
 import Stack from '../../../../components/Stack';
 import Textarea from '../../../../components/Textarea';
 import { toast } from '../../../../components/Toast';
+import Text from '../../../../components/Text';
+import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
+import Timeline, { TimelineItem } from '../../../../components/Timeline';
 import { ME } from '../../data';
 import { useLeaveGuard, useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
@@ -97,7 +100,7 @@ export function RequestDetail({ id }: { id: string }) {
         actions={
           <div className="ds-requests-card__aside">
             <Badge id={`ds-reqd-badge-${key}`} label={s.label} IconLeft={s.Icon} {...toneBadge(s.tone)} />
-            <span className="ds-requests-meta">Submitted {r.submittedAt}</span>
+            <Text as="span" size="xs" tone="muted">Submitted {r.submittedAt}</Text>
           </div>
         }
       />
@@ -106,19 +109,19 @@ export function RequestDetail({ id }: { id: string }) {
         {/* Every field the branch collected — the person needs their own answers to reply. */}
         <Card id="ds-reqd-fields">
           <div className="ds-requests-panel">
-            <dl className="ds-fields">
+            <DescriptionList>
               {r.fields.map((f) => (
                 <FieldRow key={f.label} label={f.label} value={f.value} />
               ))}
-            </dl>
+            </DescriptionList>
             {r.changes && r.changes.length > 0 && (
               <>
                 <Separator label="PROPOSED CHANGES" />
-                <dl className="ds-fields">
+                <DescriptionList>
                   {r.changes.map((c) => (
                     <FieldRow key={c.field} label={c.field} value={`${c.current} → ${c.proposed}`} />
                   ))}
-                </dl>
+                </DescriptionList>
               </>
             )}
           </div>
@@ -127,19 +130,18 @@ export function RequestDetail({ id }: { id: string }) {
         <Card id="ds-reqd-activity">
           <div className="ds-requests-panel">
             <h2 className="ds-requests-eyebrow">Activity</h2>
-            <ol className="ds-requests-thread">
+            <Timeline aria-label="Activity">
               {r.thread.map((t) => {
                 const w = who(t);
                 const link = t.author === 'admin' ? backlogLink(t.text) : null;
                 return (
-                  <li key={t.id} className="ds-requests-thread__entry">
-                    <Avatar id={`ds-reqd-av-${t.id}`} size="sm" fallback={w.initials} />
-                    <div className="ds-requests-thread__body">
-                      <p className="ds-requests-meta">
-                        {w.name} · {t.at}
-                      </p>
-                      <p className="ds-text">{t.author === 'system' && t.text === 'Request submitted.' ? 'Submitted this request.' : t.text}</p>
-                      {link && (
+                  <TimelineItem
+                    key={t.id}
+                    marker={<Avatar id={`ds-reqd-av-${t.id}`} size="sm" fallback={w.initials} />}
+                    author={w.name}
+                    time={t.at}
+                    actions={
+                      link && (
                         <Button
                           id={`ds-reqd-backlog-${t.id}`}
                           style="link"
@@ -148,12 +150,14 @@ export function RequestDetail({ id }: { id: string }) {
                           IconRight={ArrowRight}
                           onClick={() => toast('The public feature backlog is outside this prototype', { description: `“${link}” would open there.` })}
                         />
-                      )}
-                    </div>
-                  </li>
+                      )
+                    }
+                  >
+                    {t.author === 'system' && t.text === 'Request submitted.' ? 'Submitted this request.' : t.text}
+                  </TimelineItem>
                 );
               })}
-            </ol>
+            </Timeline>
 
             {done ? (
               // OPEN in Figma (③): whether a DONE request keeps its composer. Built as the
@@ -161,7 +165,7 @@ export function RequestDetail({ id }: { id: string }) {
               <div className="ds-requests-reply">
                 <Separator />
                 <div className="ds-requests-reply__footer">
-                  <p className="ds-muted">This request is finished. Follow-ups start as a new request.</p>
+                  <Text tone="muted">This request is finished. Follow-ups start as a new request.</Text>
                   <Button id="ds-reqd-new" style="outline" size="sm" label="Start a new request" IconLeft={Plus} onClick={() => go({ page: 'new-request' })} />
                 </div>
               </div>
@@ -181,7 +185,7 @@ export function RequestDetail({ id }: { id: string }) {
                   }}
                 />
                 <div className="ds-requests-reply__footer">
-                  <p className="ds-muted">Sending puts this back with the DART Central admin team. Your request returns to Pending review.</p>
+                  <Text tone="muted">Sending puts this back with the DART Central admin team. Your request returns to Pending review.</Text>
                   <Button id="ds-reqd-send" size="sm" label="Send reply" disabled={!reply.trim()} onClick={send} />
                 </div>
               </div>
@@ -202,9 +206,6 @@ export function RequestDetail({ id }: { id: string }) {
 
 function FieldRow({ label, value }: { label: string; value: string }) {
   return (
-    <>
-      <dt>{label}</dt>
-      <dd>{value}</dd>
-    </>
+    <DescriptionListItem term={label}>{value}</DescriptionListItem>
   );
 }

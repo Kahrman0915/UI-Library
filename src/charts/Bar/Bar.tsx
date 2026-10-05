@@ -1,7 +1,7 @@
 import type { CSSProperties } from 'react';
 import { forwardRef } from 'react';
 import { useChartContext } from '../Chart/Chart.context';
-import Chart from '../Chart/Chart';
+import { Chart } from '../Chart/Chart';
 
 const cx = (...parts: (string | false | undefined)[]) => parts.filter(Boolean).join(' ');
 
@@ -126,4 +126,3 @@ const BarChart = forwardRef<HTMLElement, BarChartProps>(
 BarChart.displayName = 'BarChart';
 
 export { BarChart, ChartBars };
-export default BarChart;

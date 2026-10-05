@@ -21,6 +21,7 @@ import Section from '../../../../components/Section';
 import Separator from '../../../../components/Separator';
 import Skeleton from '../../../../components/Skeleton';
 import Stack from '../../../../components/Stack';
+import Text from '../../../../components/Text';
 import { ME } from '../../data';
 import { useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
@@ -193,15 +194,15 @@ function RequestCard({ r }: { r: Request }) {
       <div className="ds-requests-card">
         <FeaturedIcon Icon={Icon} color={color} />
         <div className="ds-requests-card__main">
-          <p className="ds-requests-meta">
+          <Text size="xs" tone="muted">
             {r.id} · {typeLabel[r.type]} · {scopeLabel(r)}
-          </p>
+          </Text>
           <h3 className="ds-requests-card__title">{r.title}</h3>
-          <p className="ds-muted">{r.summary}</p>
+          <Text tone="muted">{r.summary}</Text>
         </div>
         <div className="ds-requests-card__aside">
           <Badge id={`ds-myreq-badge-${r.id.slice(1)}`} label={s.label} IconLeft={s.Icon} {...toneBadge(s.tone)} />
-          <span className="ds-requests-meta">{r.submittedAt}</span>
+          <Text as="span" size="xs" tone="muted">{r.submittedAt}</Text>
         </div>
       </div>
       {lastAdmin && (

@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { useMounted } from '#/hooks/useMounted';
 import { useFloatingReposition } from '#/hooks/useFloatingReposition';
 import { computePosition } from '#/utils/computePosition';
@@ -213,10 +214,17 @@ const ChatComposerMenu = forwardRef<HTMLDivElement, ChatComposerMenuProps>(
     }, [open, items.length, reposition]);
     useFloatingReposition(open, reposition, inputRef.current);
 
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(open && mounted);
+
     if (!open || !mounted) return null;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <div
+        {...scope}
         ref={(node) => {
           surfaceRef.current = node;
           if (typeof ref === 'function') ref(node);
@@ -262,6 +270,8 @@ const ChatComposerMenu = forwardRef<HTMLDivElement, ChatComposerMenuProps>(
         </div>
       </div>,
       document.body,
+        )}
+      </>
     );
   },
 );

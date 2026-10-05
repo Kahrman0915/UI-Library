@@ -18,6 +18,11 @@ const meta: Meta<typeof Combobox> = {
       tags: ['form control', 'portal', 'searchable'],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Portaled surfaces carry the theme of the section that opened them.',
+          detail: 'The surface renders into `document.body`, outside the subtree that opened it, so a menu opened inside `<section data-theme="rm">` used to render in the page\'s theme. A hidden marker now sits where the component is and, while the surface is open, the nearest `data-mode` / `data-theme` / `data-tint` / `data-density` / `data-surface` above it is stamped on the portal root (`usePortalScope`). Values on `<html>` are skipped — the portal inherits those already. Spread before `...rest`, so a consumer\'s own `data-theme` still wins.',
+        },
+        {
           date: '2026-09-21',
           summary: 'Combobox can pick several: rows show a check box, a pick keeps the list open, and the trigger sums up the selection.',
           detail: 'New `multiple` with `values` / `defaultValues` / `onValuesChange` and an optional `summary(selected)` for the trigger text (default: the label for one, "{n} selected" for more). The listbox carries `aria-multiselectable`; `name` posts one hidden input per value; `clearable` empties the list. The indicator becomes a check box (`.ui-combobox__item-indicator--box`). Filtering never deselects. First consumer: the Suite\'s banner Scope field, which had been composed by hand from Popover, Command and Checkbox.',

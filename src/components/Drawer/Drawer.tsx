@@ -1,5 +1,6 @@
 import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import CloseButton from '#components/CloseButton/CloseButton';
 import { useMounted } from '#/hooks/useMounted';
 import type {
@@ -23,6 +24,14 @@ export const DrawerBelowStripContext = createContext(false);
 // closed → open (slide in) → closing (slide out) → closed. The `closing` state
 // keeps the panel mounted so its exit animation can play, mirroring Tooltip.
 type DrawerState = 'closed' | 'open' | 'closing';
+
+/**
+ * The Drawer's own `id`, shared with its parts. DrawerHeader seeds `{id}-title` /
+ * `{id}-description` from THIS, because the panel's `aria-labelledby` looks for
+ * exactly those ids: a header given a different id used to leave the drawer with
+ * no accessible name, silently. Same fix as DialogHeader.
+ */
+const DrawerIdContext = createContext<string | null>(null);
 
 const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
   (
@@ -192,6 +201,9 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
       }
     };
 
+    // Carry the opener's theme onto the portaled overlay (docked drawers render in place).
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(state !== 'closed' && mounted && modal);
+
     if (state === 'closed' || !mounted) return null;
 
     const isClosing = state === 'closing';
@@ -225,15 +237,19 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
           }
         }}
       >
-        {children}
+        <DrawerIdContext.Provider value={id}>{children}</DrawerIdContext.Provider>
       </div>
     );
 
     // Docked: in place, beside the work — no portal, no overlay.
     if (!modal) return panel;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <div
+        {...scope}
         className={`ui-drawer-overlay${belowStrip ? ' ui-drawer-overlay--below-strip' : ''}${isClosing ? ' ui-drawer-overlay--closing' : ''}`}
         onClick={handleOverlayClick}
         role="presentation"
@@ -241,6 +257,8 @@ const Drawer = forwardRef<HTMLDivElement, DrawerProps>(
         {panel}
       </div>,
       document.body,
+        )}
+      </>
     );
   },
 );
@@ -252,6 +270,10 @@ const DrawerHeader = forwardRef<HTMLDivElement, DrawerHeaderProps>(
     { id, title, description, showCloseButton = true, onClose, className, ...rest },
     ref,
   ) => {
+    // Inside a Drawer the ids always come from the Drawer, so they cannot drift
+    // from its aria-labelledby. `id` only applies to a header rendered outside one.
+    const drawerId = useContext(DrawerIdContext);
+    const baseId = drawerId ?? id;
     return (
       <div
         {...rest}
@@ -259,18 +281,18 @@ const DrawerHeader = forwardRef<HTMLDivElement, DrawerHeaderProps>(
         className={`ui-drawer__header${className ? ' ' + className : ''}`}
       >
         <div className="ui-drawer__header-content">
-          <h2 id={`${id}-title`} className="ui-drawer__title">
+          <h2 id={baseId ? `${baseId}-title` : undefined} className="ui-drawer__title">
             {title}
           </h2>
           {description && (
-            <p id={`${id}-description`} className="ui-drawer__description">
+            <p id={baseId ? `${baseId}-description` : undefined} className="ui-drawer__description">
               {description}
             </p>
           )}
         </div>
         {showCloseButton && onClose && (
           <CloseButton
-            id={`${id}-close-btn`}
+            id={`${baseId ?? 'drawer'}-close-btn`}
             variant="background"
             onClick={onClose}
             ariaLabel="Close drawer"

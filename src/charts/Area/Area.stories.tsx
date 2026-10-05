@@ -27,6 +27,11 @@ const meta: Meta<typeof AreaChart> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Charts export by name only — the default export is gone.',
+          detail: '`BarChart`, `LineChart`, `AreaChart` and `Chart` were each exported both as the module default and by name, which trips `import/no-named-as-default` in consumer lint. The package barrel only ever exposed the names, so `import { BarChart } from \'@ui/lib\'` is unchanged; only a deep default import (`import BarChart from \'…/charts/Bar\'`) breaks, by design.',
+        },
+        {
           date: '2026-08-04',
           summary: 'Initial build.',
           detail:

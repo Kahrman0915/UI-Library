@@ -10,6 +10,7 @@ import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTi
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
+import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
 import { useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
 import type { Request } from '../../types';
@@ -65,20 +66,16 @@ export function RequestSubmitted({ id }: { id: string }) {
       />
       <Card id="ds-reqs-card">
         <div className="ds-requests-panel">
-          <dl className="ds-fields">
-            <dt>Request type</dt>
-            <dd>{typeLabel[r.type]}</dd>
-            <dt>{subjectLabel}</dt>
-            <dd>{subjectValue}</dd>
-            <dt>Submitted</dt>
-            <dd>
+          <DescriptionList>
+            <DescriptionListItem term="Request type">{typeLabel[r.type]}</DescriptionListItem>
+            <DescriptionListItem term={subjectLabel}>{subjectValue}</DescriptionListItem>
+            <DescriptionListItem term="Submitted">
               {r.submittedAt}, {time}
-            </dd>
-            <dt>Status</dt>
-            <dd>
+            </DescriptionListItem>
+            <DescriptionListItem term="Status">
               <Badge id="ds-reqs-status" label={s.label} {...toneBadge(s.tone === 'neutral' ? 'warning' : s.tone)} />
-            </dd>
-          </dl>
+            </DescriptionListItem>
+          </DescriptionList>
           <Alert
             id="ds-reqs-where"
             variant="info"

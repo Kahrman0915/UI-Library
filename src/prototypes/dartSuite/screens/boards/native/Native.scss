@@ -1,0 +1,143 @@
+// DartBoards · native dashboards. Tokens only.
+
+.ds-native {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+// ── The suite's filters ────────────────────────────────────────────────────
+
+.ds-native-filters {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  &__note {
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+}
+
+// A link button running inside a sentence: the sentence's size, no box.
+.ds-native-inline-link.ui-button {
+  height: auto;
+  padding: 0;
+  font-size: inherit;
+  line-height: inherit;
+}
+
+// ── The grid of widgets ────────────────────────────────────────────────────
+
+.ds-native-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-3);
+}
+
+.ds-native-widget {
+  position: relative;
+  transition: box-shadow var(--duration-slow) var(--ease-out);
+
+  &--span-2 {
+    grid-column: 1 / -1;
+  }
+
+  // Arrived from a link to this chart.
+  &--highlight {
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  .ui-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-4);
+  }
+
+  // Ask Aiden and the menu, pinned top-right over the chart's own header —
+  // the pattern the admin chart cards use.
+  &__controls {
+    position: absolute;
+    top: var(--space-4);
+    right: var(--space-4);
+    z-index: var(--z-10);
+    display: flex;
+    align-items: center;
+    gap: var(--p-1);
+  }
+
+  &__heading {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1);
+    padding-right: var(--p-40);
+  }
+
+  // Leave room for the controls beside the chart's own title.
+  .ui-chart__header {
+    padding-right: var(--p-40);
+  }
+}
+
+// ── Headline numbers ───────────────────────────────────────────────────────
+
+.ds-native-kpis {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(var(--w-48), 1fr));
+  gap: var(--space-3);
+  margin: 0;
+}
+
+.ds-native-kpi {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  padding: var(--p-4);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+
+  &__label {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+
+  &__value {
+    margin: 0;
+    font-size: var(--text-2xl);
+    line-height: var(--leading-8);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__delta {
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+
+    &--good {
+      color: var(--success);
+    }
+
+    &--bad {
+      color: var(--error);
+    }
+  }
+}
+
+// ── Add a chart to a space ─────────────────────────────────────────────────
+
+.ds-native-add-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+}
+
+// ── A single chart in a space: always the full row, it is a chart not a card ─
+
+.ds-space-cell--widget {
+  grid-column: 1 / -1;
+}

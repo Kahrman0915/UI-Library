@@ -1,0 +1,59 @@
+// DartBoards · Marketplace › Metrics. Tokens only. Layout comes from Browse.scss.
+
+// A metric's tile: its latest value over a small trend — one number, not a dashboard.
+.ds-metric-thumb {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--p-4);
+  width: 100%;
+  height: 100%;
+  // Tight at the bottom so the value stays clear of the flags along the top edge.
+  padding: var(--p-2) var(--p-3);
+  background: var(--ds-hue-bg);
+  color: var(--ds-hue);
+
+  &__value {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-0-5);
+  }
+
+  &__number {
+    font-size: var(--text-xl);
+    line-height: var(--leading-7);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__change {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  &__bars {
+    display: flex;
+    align-items: flex-end;
+    gap: var(--p-0-5);
+    width: 45%;
+    height: 60%;
+
+    span {
+      flex: 1;
+      border-radius: var(--rounded-sm);
+      background: currentColor;
+      opacity: var(--o-60);
+    }
+  }
+}
+
+.ds-metric-facts {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+// A number card is short; it should not stretch to the trend beside it.
+.ds-metric-page .ds-native-grid {
+  align-items: start;
+}

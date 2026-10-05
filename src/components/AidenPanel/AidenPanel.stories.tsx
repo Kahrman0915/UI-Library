@@ -60,6 +60,11 @@ const meta: Meta<typeof AidenPanel> = {
       tags: ['ai', 'non-modal', 'landmark', 'surface'],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Portaled surfaces carry the theme of the section that opened them.',
+          detail: 'The surface renders into `document.body`, outside the subtree that opened it, so a menu opened inside `<section data-theme="rm">` used to render in the page\'s theme. A hidden marker now sits where the component is and, while the surface is open, the nearest `data-mode` / `data-theme` / `data-tint` / `data-density` / `data-surface` above it is stamped on the portal root (`usePortalScope`). Values on `<html>` are skipped — the portal inherits those already. Spread before `...rest`, so a consumer\'s own `data-theme` still wins.',
+        },
+        {
           date: '2026-09-20',
           summary:
             'The panel lifts off the page instead of sitting flush against it — a new `--shadow-panel`, with the hairline and the surface unchanged.',

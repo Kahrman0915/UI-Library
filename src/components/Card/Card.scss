@@ -67,6 +67,9 @@
     // a tall card squash the cover and quietly break the ratio it exists to
     // guarantee.
     flex: none;
+    // The overlay's positioning context — stated here as a contract, not left
+    // to AspectRatio's own `position: relative`.
+    position: relative;
 
     // A cover BETWEEN sections needs the same hairline the header carries
     // downward, or the image and the block under it read as one unit.
@@ -242,6 +245,36 @@
     line-height: var(--leading-5);
     color: var(--muted-foreground);
     margin: 0;
+  }
+
+  // `lines` on CardDescription (or `descriptionLines` on CardHeader). The count is
+  // the `--ui-card-description-lines` custom property, set inline, so one rule
+  // serves any number of lines.
+  // CardMedia `overlay` — badges and tags ON the cover, along its top edge: the
+  // first child at the start, the last at the end. Inset by the card padding
+  // rung. The layer itself takes no clicks (the cover underneath stays the
+  // card's own target); only what is placed in it does.
+  &__media-overlay {
+    position: absolute;
+    inset: 0 0 auto 0;
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--p-2);
+    padding: var(--p-3);
+    pointer-events: none;
+
+    > * {
+      pointer-events: auto;
+    }
+  }
+
+  &__description--clamp {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--ui-card-description-lines);
+    line-clamp: var(--ui-card-description-lines);
+    overflow: hidden;
   }
 
   &__body {

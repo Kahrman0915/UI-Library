@@ -94,6 +94,25 @@ const meta: Meta<typeof Chart> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Charts export by name only — the default export is gone.',
+          detail: '`BarChart`, `LineChart`, `AreaChart` and `Chart` were each exported both as the module default and by name, which trips `import/no-named-as-default` in consumer lint. The package barrel only ever exposed the names, so `import { BarChart } from \'@ui/lib\'` is unchanged; only a deep default import (`import BarChart from \'…/charts/Bar\'`) breaks, by design.',
+        },
+        {
+          date: '2026-09-23',
+          summary:
+            'A chart can now take another theme\'s colors on its own, without theming the card ' +
+            'around it. Charts still follow the page\'s theme by default.',
+          detail:
+            'New `palette` prop (`db|dc|ec|nb|ph|rm`) → `data-chart-palette` on the figure, a ' +
+            'generated scope in `tokens.scss` carrying that theme\'s `--chart-1..6`, ' +
+            '`--chart-muted` and `--decorative-hi` and NOTHING else. `data-theme` on a wrapper ' +
+            'was the alternative and repaints `--primary` too, so every button inside the wrapper ' +
+            'would change with the chart. A property declared on the figure beats one inherited ' +
+            'from the page, so there is no specificity race. Save the choice with the chart, not ' +
+            'per viewer: the color is how readers refer to a series. New story: Per-chart color.',
+        },
+        {
           date: '2026-08-08',
           summary:
             'Series colors now come from the active brand. Inside a `data-theme` scope ' +
@@ -174,6 +193,31 @@ export const SeriesRamp: Story = {
         key: `s${i}`, label: `Series ${i + 1}`,
         data: MONTHS.map((_, m) => 100 + i * 70 + m * (10 + i * 3)),
       }))} />
+  ),
+};
+
+/**
+ * **Per-chart color.** A chart with no `palette` takes the page's theme — set one
+ * theme for a user and every chart follows it. `palette` overrides that for ONE
+ * chart, and only its marks: the card, its buttons and its text stay on the page's
+ * theme. Save the choice with the chart so every reader sees the same colors.
+ */
+export const PerChartPalette: Story = {
+  name: 'Per-chart color',
+  render: () => (
+    <div style={{ display: 'grid', gap: 'var(--space-3)', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))' }}>
+      {([undefined, 'rm', 'nb', 'ph'] as const).map((p) => (
+        <BarChart
+          key={p ?? 'page'}
+          id={`pal-${p ?? 'page'}`}
+          title={p ? `palette="${p}"` : 'No palette — follows the page'}
+          categories={MONTHS}
+          series={TWO}
+          palette={p}
+          height={200}
+        />
+      ))}
+    </div>
   ),
 };
 

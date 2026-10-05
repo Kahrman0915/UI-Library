@@ -2,13 +2,6 @@
 // DART Central · Admin Flow — prototype-only layout glue. Tokens only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-// KPI tiles (1.1, 2.1, and the single KPI on each MANAGE page).
-.ds-admin-kpis {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-48), 1fr));
-  gap: var(--space-3);
-}
-
 .ds-admin-kpi {
   padding: var(--space-3);
   min-width: var(--w-40);
@@ -56,12 +49,6 @@
 // Toolbars.
 .ds-admin-search {
   min-width: var(--w-72);
-}
-
-.ds-admin-selbar {
-  padding: var(--space-4) var(--space-3);
-  border-radius: var(--rounded-lg);
-  background: var(--primary-light);
 }
 
 // A link-style title inside a table cell or card: left-aligned, wrapping.
@@ -150,33 +137,6 @@
     justify-content: space-between;
     gap: var(--space-3);
   }
-}
-
-// Review screens.
-.ds-admin-field {
-  display: contents;
-}
-
-.ds-admin-thread {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-}
-
-.ds-admin-thread__entry {
-  display: flex;
-  gap: var(--space-4);
-  align-items: flex-start;
-}
-
-.ds-admin-thread__text {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
-  min-width: 0;
 }
 
 .ds-admin-thread__foot {
@@ -295,13 +255,6 @@
   }
 }
 
-// Two-up row: the usage charts (1.4, 5.5) sit side by side, as Figma draws them.
-.ds-admin-grid2 {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-80), 1fr));
-  gap: var(--space-3);
-}
-
 // Access Control.
 .ds-admin-person {
   display: inline-flex;
@@ -328,4 +281,17 @@
   font-size: var(--text-xs);
   line-height: var(--leading-4);
   color: var(--error);
+}
+
+// The usage-chart card: the chart's colour control sits in the card's top-right,
+// over the chart's own header row, so nothing above the chart repeats its title.
+.ds-admin-chart {
+  position: relative;
+
+  &__control {
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: var(--z-10);
+  }
 }

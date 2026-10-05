@@ -72,11 +72,13 @@ const CardTitle = forwardRef<HTMLHeadingElement, CardTitleProps>(
 CardTitle.displayName = 'CardTitle';
 
 const CardDescription = forwardRef<HTMLParagraphElement, CardDescriptionProps>(
-  ({ children, className, ...rest }, ref) => (
+  ({ lines, children, className, style, ...rest }, ref) => (
     <p
       {...rest}
       ref={ref}
-      className={`ui-card__description${className ? ' ' + className : ''}`}
+      className={`ui-card__description${lines ? ' ui-card__description--clamp' : ''}${className ? ' ' + className : ''}`}
+      // The line count rides on a custom property so one rule serves any count.
+      style={lines ? ({ ...style, '--ui-card-description-lines': lines } as React.CSSProperties) : style}
     >
       {children}
     </p>
@@ -134,6 +136,7 @@ const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
       overline,
       title,
       description,
+      descriptionLines,
       media,
       action,
       mediaPlacement = 'leading',
@@ -154,7 +157,7 @@ const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
       <div className="ui-card__header-content">
         {overline && <CardOverline>{overline}</CardOverline>}
         <CardTitle id={`${id}-title`}>{title}</CardTitle>
-        {description && <CardDescription>{description}</CardDescription>}
+        {description && <CardDescription lines={descriptionLines}>{description}</CardDescription>}
       </div>
     );
 
@@ -207,7 +210,7 @@ CardHeader.displayName = 'CardHeader';
  * own line — an avatar or a status dot beside the heading. This one is the cover.
  */
 const CardMedia = forwardRef<HTMLDivElement, CardMediaProps>(
-  ({ ratio = 16 / 9, className, children, ...rest }, ref) => {
+  ({ ratio = 16 / 9, overlay, className, children, ...rest }, ref) => {
     return (
       <AspectRatio
         {...rest}
@@ -216,6 +219,7 @@ const CardMedia = forwardRef<HTMLDivElement, CardMediaProps>(
         className={`ui-card__media${className ? ' ' + className : ''}`}
       >
         {children}
+        {overlay && <div className="ui-card__media-overlay">{overlay}</div>}
       </AspectRatio>
     );
   },

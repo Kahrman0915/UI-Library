@@ -5,14 +5,33 @@ import { toast } from '../../../../../components/Toast';
 import { seriesFor } from '../../../data';
 import type { SuiteState } from '../../../store';
 import type { Dashboard, Space } from '../../../types';
+import { ExternalLink, LayoutDashboard, TrendingUp } from 'lucide-react';
 import './BoardsShared.scss';
+
+/** What a Marketplace card IS, said in words on a list where every kind is mixed —
+    so "Promise kept rate" the metric and "Promise Kept Rate" the dashboard read apart. */
+export type MarketKind = 'dashboard' | 'metric' | 'report';
+const KIND = {
+  dashboard: { label: 'Dashboard', Icon: LayoutDashboard },
+  metric: { label: 'Metric', Icon: TrendingUp },
+  report: { label: 'Web report', Icon: ExternalLink },
+} as const;
+export function KindLabel({ kind }: { kind: MarketKind }) {
+  const { label, Icon } = KIND[kind];
+  return (
+    <span className="ds-kind-label">
+      <Icon aria-hidden="true" />
+      {label}
+    </span>
+  );
+}
 
 /** The person's own spaces — shared spaces are read-only and never take an add. */
 export const ownSpaces = (state: SuiteState): Space[] => state.spaces.filter((s) => !s.shared);
 
 /** Own spaces that already hold this dashboard. */
 export const spacesWith = (state: SuiteState, dashboardId: string): Space[] =>
-  ownSpaces(state).filter((s) => s.items.some((i) => i.dashboardId === dashboardId));
+  ownSpaces(state).filter((s) => s.items.some((i) => i.dashboardId === dashboardId && !i.widgetId));
 
 /**
  * B1.4: "Add to space" is unavailable ONLY when every space you can add to
@@ -20,7 +39,7 @@ export const spacesWith = (state: SuiteState, dashboardId: string): Space[] =>
  */
 export const addUnavailable = (state: SuiteState, dashboardId: string): boolean => {
   const own = ownSpaces(state);
-  return own.length > 0 && own.every((s) => s.items.some((i) => i.dashboardId === dashboardId));
+  return own.length > 0 && own.every((s) => s.items.some((i) => i.dashboardId === dashboardId && !i.widgetId));
 };
 
 /** Sample audience line for a space row ("Shared with 4 people" / "Only you"). */

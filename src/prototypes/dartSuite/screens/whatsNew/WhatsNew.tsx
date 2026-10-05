@@ -28,6 +28,7 @@ import Switch from '../../../../components/Switch';
 import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup';
 import Toolbar, { ToolbarGroup } from '../../../../components/Toolbar';
 import { toast } from '../../../../components/Toast';
+import Grid from '../../../../components/Grid';
 import { useNav } from '../../nav';
 import { TOPIC_LABEL, WHATS_NEW } from './entries';
 import type { WnEntry, WnProduct, WnTopic } from './entries';
@@ -190,7 +191,7 @@ export function WhatsNew() {
           )}
 
           {top.length > 0 && (
-            <div className="ds-wn-grid">
+            <Grid level={3} minItemWidth="var(--w-64)" stretch>
               {top.map((e) => (
                 <Card id={`ds-wn-card-${e.id}`} key={e.id}>
                   <CardMedia ratio={16 / 9}>
@@ -209,7 +210,7 @@ export function WhatsNew() {
                   </CardBody>
                 </Card>
               ))}
-            </div>
+            </Grid>
           )}
 
           {more.length > 0 && (

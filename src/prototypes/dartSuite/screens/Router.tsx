@@ -24,6 +24,10 @@ import { Browse } from './boards/browse';
 import { DashboardViewer } from './boards/dashboard';
 import { SharedWithMe, SpacePage } from './boards/space';
 import { Builder } from './boards/builder';
+import { ReportDetails, ReportsBrowse } from './boards/reports';
+import { MetricPage, MetricsBrowse } from './boards/metrics';
+import { MarketplaceAll } from './boards/marketplace';
+import { SuiteBrowse } from './boards/suite/SuiteBrowse';
 import { AidenChatPage, AidenLauncherPage } from './aiden';
 
 function Screen({ route }: { route: Route }) {
@@ -37,7 +41,7 @@ function Screen({ route }: { route: Route }) {
     case 'new-request':
       return <NewRequest />;
     case 'request-form':
-      return <RequestForm kind={route.kind} mode={route.mode} />;
+      return <RequestForm kind={route.kind} mode={route.mode} dashboardId={route.dashboardId} />;
     case 'request-submitted':
       return <RequestSubmitted id={route.id} />;
     case 'whats-new':
@@ -69,21 +73,34 @@ function Screen({ route }: { route: Route }) {
     case 'admin-access':
       return <AdminAccess />;
     case 'browse':
-      return <Browse />;
+      return route.suite ? <SuiteBrowse suiteId={route.suite} sectionId={route.section} /> : <Browse />;
+    case 'marketplace':
+      return <MarketplaceAll />;
+    case 'reports':
+      return <ReportsBrowse />;
+    case 'metrics':
+      return <MetricsBrowse />;
+    case 'metric':
+      return <MetricPage id={route.id} />;
+    case 'report':
+      return <ReportDetails id={route.id} />;
     case 'space':
       return <SpacePage id={route.id} />;
     case 'shared':
       return <SharedWithMe />;
     case 'builder':
-      return <Builder spaceId={route.spaceId} seedDashboardId={route.seedDashboardId} />;
+      return <Builder spaceId={route.spaceId} seedDashboardId={route.seedDashboardId} seedAssetId={route.seedAssetId} />;
     case 'dashboard':
-      return <DashboardViewer id={route.id} fromSpaceId={route.fromSpaceId} />;
+      return <DashboardViewer id={route.id} fromSpaceId={route.fromSpaceId} widget={route.widget} />;
     case 'aiden-launcher':
       return <AidenLauncherPage />;
     case 'aiden-chat':
       return <AidenChatPage chatId={route.chatId} />;
   }
 }
+
+/** A suite's section is a filter on one page, not a new page — keep the page mounted (and focus in its filter). */
+const screenKey = (r: Route) => (r.page === 'browse' && r.suite ? `browse:${r.suite}` : JSON.stringify(r));
 
 export function Router() {
   const { tabs, activeId } = useNav();
@@ -93,7 +110,7 @@ export function Router() {
     <>
       {tabs.map((t) => (
         <div key={t.id} hidden={t.id !== activeId} style={{ display: t.id === activeId ? 'contents' : 'none' }}>
-          <Screen key={JSON.stringify(t.route)} route={t.route} />
+          <Screen key={screenKey(t.route)} route={t.route} />
         </div>
       ))}
     </>

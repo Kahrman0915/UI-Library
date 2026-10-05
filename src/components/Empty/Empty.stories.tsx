@@ -24,6 +24,11 @@ const meta: Meta<typeof Empty> = {
       tags: ['compound', '6 parts'],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: '`EmptyTitle` is a heading now, so screen-reader heading navigation finds the empty state.',
+          detail: 'It rendered a `div`. It renders an `h3` by default; `as` takes `h1`–`h6` or `p` to fit the page outline. The user-agent heading margin is reset, so the layout is unchanged.',
+        },
+        {
           date: '2026-07-29',
           summary: 'Initial build complete.',
           detail:

@@ -1,3 +1,5 @@
+@use './sr-only' as *;
+
 html {
   box-sizing: border-box;
 }
@@ -60,6 +62,7 @@ html {
      Width Scale
      ----------------------------------------------------------------------- */
   --w-0: 0px;
+  --w-px: 1px;
   --w-0-5: 2px;
   --w-1: 4px;
   --w-1-5: 6px;
@@ -98,6 +101,7 @@ html {
      Height Scale
      ----------------------------------------------------------------------- */
   --h-0: 0px;
+  --h-px: 1px;
   --h-0-5: 2px;
   --h-1: 4px;
   --h-1-5: 6px;
@@ -2012,6 +2016,219 @@ html {
   --chart-muted: #bec4c8;
 }
 
+/* CHART-ONLY palettes. A theme's chart slots with none of its identity, so a
+   single chart can be repainted without theming the card around it:
+   
+     <BarChart palette="rm" … />   →   data-chart-palette='rm'
+   
+   Why a second axis and not just data-theme on a wrapper: data-theme swaps
+   --primary too, so a magenta chart would hand every button inside that
+   wrapper a magenta fill. This declares --chart-* (plus --decorative-hi, which
+   the emphasis marker reads) and nothing else.
+   
+   It sits on the chart itself, BELOW whatever theme the page carries, and a
+   custom property declared on an element always beats one inherited from an
+   ancestor — so no specificity race with the [data-theme] blocks above.
+   Omit it and the chart inherits the page's palette, which is the default. */
+
+[data-chart-palette='db'] {
+  --decorative-hi: #8cdafd;
+  --chart-1: #466af4;
+  --chart-2: #a2b2d0;
+  --chart-3: #0d3bbf;
+  --chart-4: #5fc3ec;
+  --chart-5: #7f92a3;
+  --chart-6: #2b406a;
+  --chart-muted: #d7dce5;
+}
+[data-mode='dark'] [data-chart-palette='db'],
+[data-mode='dark'][data-chart-palette='db'] {
+  --decorative-hi: #8cdafd;
+  --chart-1: #689cfe;
+  --chart-2: #a1bee2;
+  --chart-3: #4c84c6;
+  --chart-4: #9ddcfa;
+  --chart-5: #8092a9;
+  --chart-6: #e6e8f9;
+  --chart-muted: #5a6579;
+}
+[data-mode='light'] [data-chart-palette='db'],
+[data-mode='light'][data-chart-palette='db'] {
+  --decorative-hi: #8cdafd;
+  --chart-1: #466af4;
+  --chart-2: #a2b2d0;
+  --chart-3: #0d3bbf;
+  --chart-4: #5fc3ec;
+  --chart-5: #7f92a3;
+  --chart-6: #2b406a;
+  --chart-muted: #d7dce5;
+}
+
+[data-chart-palette='dc'] {
+  --decorative-hi: #4eeeaf;
+  --chart-1: #127f76;
+  --chart-2: #7bc5c3;
+  --chart-3: #0c4955;
+  --chart-4: #74dbad;
+  --chart-5: #809aa2;
+  --chart-6: #143438;
+  --chart-muted: #d7dede;
+}
+[data-mode='dark'] [data-chart-palette='dc'],
+[data-mode='dark'][data-chart-palette='dc'] {
+  --decorative-hi: #4eeeaf;
+  --chart-1: #0db09d;
+  --chart-2: #b9d2d2;
+  --chart-3: #0f91aa;
+  --chart-4: #9dedc9;
+  --chart-5: #6f919b;
+  --chart-6: #d9efef;
+  --chart-muted: #576774;
+}
+[data-mode='light'] [data-chart-palette='dc'],
+[data-mode='light'][data-chart-palette='dc'] {
+  --decorative-hi: #4eeeaf;
+  --chart-1: #127f76;
+  --chart-2: #7bc5c3;
+  --chart-3: #0c4955;
+  --chart-4: #74dbad;
+  --chart-5: #809aa2;
+  --chart-6: #143438;
+  --chart-muted: #d7dede;
+}
+
+[data-chart-palette='ec'] {
+  --decorative-hi: #57e3fd;
+  --chart-1: #067db8;
+  --chart-2: #70a3d4;
+  --chart-3: #01517a;
+  --chart-4: #4ec8dc;
+  --chart-5: #6d8b9c;
+  --chart-6: #232f42;
+  --chart-muted: #d5d9dd;
+}
+[data-mode='dark'] [data-chart-palette='ec'],
+[data-mode='dark'][data-chart-palette='ec'] {
+  --decorative-hi: #57e3fd;
+  --chart-1: #1da0f3;
+  --chart-2: #96c2de;
+  --chart-3: #2088bb;
+  --chart-4: #95e2e2;
+  --chart-5: #7995a6;
+  --chart-6: #e1eaf9;
+  --chart-muted: #596678;
+}
+[data-mode='light'] [data-chart-palette='ec'],
+[data-mode='light'][data-chart-palette='ec'] {
+  --decorative-hi: #57e3fd;
+  --chart-1: #067db8;
+  --chart-2: #70a3d4;
+  --chart-3: #01517a;
+  --chart-4: #4ec8dc;
+  --chart-5: #6d8b9c;
+  --chart-6: #232f42;
+  --chart-muted: #d5d9dd;
+}
+
+[data-chart-palette='nb'] {
+  --decorative-hi: #c9db29;
+  --chart-1: #306602;
+  --chart-2: #7bad7a;
+  --chart-3: #364e2a;
+  --chart-4: #b1be6a;
+  --chart-5: #7e8c70;
+  --chart-6: #1f3426;
+  --chart-muted: #d7dad7;
+}
+[data-mode='dark'] [data-chart-palette='nb'],
+[data-mode='dark'][data-chart-palette='nb'] {
+  --decorative-hi: #c9db29;
+  --chart-1: #8bca2f;
+  --chart-2: #b7bfa8;
+  --chart-3: #649807;
+  --chart-4: #cfd9a0;
+  --chart-5: #8d9479;
+  --chart-6: #e0eee1;
+  --chart-muted: #5a676e;
+}
+[data-mode='light'] [data-chart-palette='nb'],
+[data-mode='light'][data-chart-palette='nb'] {
+  --decorative-hi: #c9db29;
+  --chart-1: #306602;
+  --chart-2: #7bad7a;
+  --chart-3: #364e2a;
+  --chart-4: #b1be6a;
+  --chart-5: #7e8c70;
+  --chart-6: #1f3426;
+  --chart-muted: #d7dad7;
+}
+
+[data-chart-palette='ph'] {
+  --decorative-hi: #fdc450;
+  --chart-1: #b56005;
+  --chart-2: #ddbf94;
+  --chart-3: #793e01;
+  --chart-4: #fdc450;
+  --chart-5: #d97c1f;
+  --chart-6: #3a2c18;
+  --chart-muted: #e2ddd6;
+}
+[data-mode='dark'] [data-chart-palette='ph'],
+[data-mode='dark'][data-chart-palette='ph'] {
+  --decorative-hi: #fdc450;
+  --chart-1: #ee7d0a;
+  --chart-2: #ddc19a;
+  --chart-3: #bd8042;
+  --chart-4: #fecf70;
+  --chart-5: #a08c78;
+  --chart-6: #f3e8d9;
+  --chart-muted: #4b4c52;
+}
+[data-mode='light'] [data-chart-palette='ph'],
+[data-mode='light'][data-chart-palette='ph'] {
+  --decorative-hi: #fdc450;
+  --chart-1: #b56005;
+  --chart-2: #ddbf94;
+  --chart-3: #793e01;
+  --chart-4: #fdc450;
+  --chart-5: #d97c1f;
+  --chart-6: #3a2c18;
+  --chart-muted: #e2ddd6;
+}
+
+[data-chart-palette='rm'] {
+  --decorative-hi: #f7b1fd;
+  --chart-1: #d62496;
+  --chart-2: #e4c9e7;
+  --chart-3: #960366;
+  --chart-4: #f7b1fd;
+  --chart-5: #997c8f;
+  --chart-6: #3f262b;
+  --chart-muted: #e1dadc;
+}
+[data-mode='dark'] [data-chart-palette='rm'],
+[data-mode='dark'][data-chart-palette='rm'] {
+  --decorative-hi: #f7b1fd;
+  --chart-1: #fe68b8;
+  --chart-2: #d4acd8;
+  --chart-3: #b6679c;
+  --chart-4: #f7b1fd;
+  --chart-5: #a88d9f;
+  --chart-6: #f8e4e8;
+  --chart-muted: #646272;
+}
+[data-mode='light'] [data-chart-palette='rm'],
+[data-mode='light'][data-chart-palette='rm'] {
+  --decorative-hi: #f7b1fd;
+  --chart-1: #d62496;
+  --chart-2: #e4c9e7;
+  --chart-3: #960366;
+  --chart-4: #f7b1fd;
+  --chart-5: #997c8f;
+  --chart-6: #3f262b;
+  --chart-muted: #e1dadc;
+}
+
 /* @endgenerated */
 
 /* Aiden AI surface — a scoped overlay, NOT a brand theme. Kept off the data-theme
@@ -2119,4 +2336,12 @@ html {
     animation-duration: var(--duration-spin) !important;
     animation-iteration-count: infinite !important;
   }
+}
+
+
+// Visually hidden, still read by screen readers — e.g. a name for an icon-only
+// control, or a column header with no visible label. Use this class rather than
+// re-declaring the pattern.
+.ui-sr-only {
+  @include sr-only;
 }

@@ -6,7 +6,7 @@
 // the owner rejected). Panel and rail widths are panel geometry, not spacing.
 
 .ds-builder {
-  --ds-builder-panel: calc(var(--w-96) + var(--w-9)); // 420
+  --ds-builder-panel: calc(var(--w-80) + var(--w-10)); // 360 — docked for the life of the Builder, so the canvas keeps room
   --ds-builder-rail: var(--w-14); // 56
 
   position: relative;
@@ -18,11 +18,13 @@
 // The canvas scrolls in a ScrollArea pinned to the builder's box, so its height
 // is definite; the Canvas inside fills at least that height, and its grid
 // scrolls with the widgets rather than sliding under them.
+// The panel is docked for the life of the Builder, so the canvas ends where it
+// begins — nothing on the canvas is ever under the panel.
 .ds-builder__canvas {
   position: absolute;
   inset-block: 0;
   inset-inline-start: 0;
-  inset-inline-end: var(--ds-builder-rail);
+  inset-inline-end: calc(var(--ds-builder-rail) + var(--ds-builder-panel));
 }
 
 .ds-builder__ground {
@@ -112,17 +114,12 @@
   }
 }
 
-// The empty state centers in the canvas the user can SEE, not the half the
-// panel is over. Placement only — never put this offset on the grid.
+// The empty state centers in the canvas. (The panel no longer covers any of it.)
 .ds-builder-empty {
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: var(--h-96);
-
-  &--panel {
-    padding-inline-end: var(--ds-builder-panel);
-  }
 }
 
 // ── The side panel ────────────────────────────────────────────────────────
@@ -164,9 +161,168 @@
   inset-inline-end: 0;
   z-index: 3;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   width: var(--ds-builder-rail);
   padding-block: var(--space-4);
   background: var(--background);
   border-inline-start: var(--border-w-100) solid var(--border);
+}
+
+// Settings sits apart at the foot of the rail: it changes the space, it is not
+// another kind of thing to add to it.
+.ds-builder-rail__foot {
+  margin-top: auto;
+}
+
+// Settings › Layout: the presets are clickable rows, so each one spans the
+// panel like the library rows do, not just the width of its words.
+.ds-builder-presets .ui-item {
+  width: 100%;
+  text-align: start;
+}
+
+// Library: the search field takes the row; Filter sits at its end.
+.ds-builder-lib-search {
+  flex: 1;
+  min-width: 0;
+}
+
+// Filters kept for another kind, said quietly under the applied ones.
+.ds-builder-parked {
+  margin: 0;
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+// "Not filtered here — …": what the space filter bar does to a card, under it.
+.ds-builder-follows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  height: 100%;
+
+  > .ui-card {
+    flex: 1;
+  }
+
+  &__note {
+    margin: 0;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+// The panel's status line — what just happened, where you are working.
+.ds-builder-notice {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  margin-bottom: var(--space-4);
+  padding: var(--p-2) var(--p-3);
+  border-radius: var(--rounded-md);
+  background: var(--success-light);
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  animation: ds-builder-notice-in var(--duration-normal) var(--ease-out);
+
+  &__icon {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--success);
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ui-button {
+    height: auto;
+    padding: 0;
+  }
+}
+
+@keyframes ds-builder-notice-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-slide-sm) * -1));
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.ds-builder-results {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+}
+
+// ── The space's focus: one line at the top of every library screen ─────────
+.ds-builder-focus {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--p-1) var(--p-3);
+  padding: var(--p-2) var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+
+  // While it is applied, it reads as the thing scoping the list.
+  &[data-on] {
+    border-color: var(--primary-border);
+    background: var(--primary-light);
+  }
+
+  &__icon {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--muted-foreground);
+  }
+
+  &__text {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ui-button {
+    height: auto;
+    padding: 0;
+  }
+
+  // The picker takes the whole bar while it is open.
+  > .ui-stack {
+    flex: 1;
+  }
+}
+
+// One-tap filters for the kind on screen.
+.ds-builder-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-2);
+}
+
+// Rail: a dot on a kind whose own filters are on.
+.ds-builder-rail__item--filtered {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: var(--p-1);
+    right: var(--p-1);
+    width: var(--w-2);
+    height: var(--h-2);
+    border-radius: var(--rounded-full);
+    background: var(--primary);
+  }
 }

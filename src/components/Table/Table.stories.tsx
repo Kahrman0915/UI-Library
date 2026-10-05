@@ -74,6 +74,11 @@ const meta: Meta<typeof Table> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'Visually-hidden text now uses the shared pattern.',
+          detail: 'The local screen-reader-only rule was replaced by the library\'s `sr-only` mixin (also available as the `.ui-sr-only` class), built on the new `--w-px` / `--h-px` tokens. Six components carried their own copy, with two clip techniques; there is one now.',
+        },
+        {
           date: '2026-09-20',
           summary: 'Initial build — Table ships in code.',
           detail:

@@ -27,13 +27,16 @@ import { AidenSparkles } from '../../../AidenSparkles';
 import { useNav } from '../../nav';
 import { useUi } from '../../ui';
 import { Conversation } from './Conversation';
+import { sendMessage } from './engine';
+import { useSuite } from '../../store';
 import './Aiden.scss';
 
 const MODEL = 'Claude Opus 5';
 
 export function AidenHost() {
   const { route, open } = useNav();
-  const { aidenStop: stop, setAidenStop: setStop } = useUi();
+  const { aidenStop: stop, setAidenStop: setStop, aidenAsk, clearAidenAsk } = useUi();
+  const { state, saveChat, update } = useSuite();
   const [chatId, setChatId] = useState<string | null>(null);
   const [draft, setDraft] = useState('');
 
@@ -42,6 +45,18 @@ export function AidenHost() {
   useEffect(() => {
     if (onAidenTab) setStop('closed');
   }, [onAidenTab, setStop]);
+
+  // "Ask Aiden about this chart": a new chat, the question asked, the panel open beside the chart.
+  useEffect(() => {
+    if (!aidenAsk) return;
+    const id = sendMessage(null, aidenAsk.question, { state, saveChat, update }, aidenAsk.answer);
+    setChatId(id);
+    setDraft('');
+    setStop('panel');
+    clearAidenAsk();
+    // Only a new ask should fire this; `state` is read at ask time.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [aidenAsk]);
 
   const close = useCallback(() => setStop('closed'), [setStop]);
   const toPanel = useCallback(() => setStop('panel'), [setStop]);

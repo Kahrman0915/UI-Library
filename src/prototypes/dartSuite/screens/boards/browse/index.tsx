@@ -28,6 +28,10 @@ import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import { BrowseCard, BrowseCardSkeleton, BrowseRow, BrowseRowSkeleton } from './BrowseItems';
 import { FilterDrawer } from './FilterDrawer';
+import Section from '../../../../../components/Section';
+import Grid from '../../../../../components/Grid';
+import Text from '../../../../../components/Text';
+import { SuiteStrip } from '../suite/SuiteStrip';
 import { FACETS, SORTS, appliedCount, matches, sortDashboards } from './facets';
 import type { Filters, SortId } from './facets';
 import './Browse.scss';
@@ -164,11 +168,11 @@ export function Browse() {
   if (loading) {
     content =
       view === 'grid' ? (
-        <div className="ds-browse-grid" aria-busy="true" aria-label="Loading dashboards">
+        <Grid level={3} minItemWidth="var(--w-64)" aria-busy="true" aria-label="Loading dashboards">
           {Array.from({ length: PAGE }, (_, i) => (
             <BrowseCardSkeleton key={i} index={i} />
           ))}
-        </div>
+        </Grid>
       ) : (
         <div className="ds-browse-rows" aria-busy="true" aria-label="Loading dashboards">
           {Array.from({ length: 6 }, (_, i) => (
@@ -227,12 +231,12 @@ export function Browse() {
     content = (
       <>
         {view === 'grid' ? (
-          <div className="ds-browse-grid">
+          <Grid level={3} minItemWidth="var(--w-64)">
             {visible.map((d) => (
               <BrowseCard key={d.id} d={d} />
             ))}
             {loadingMore && Array.from({ length: Math.min(4, matching.length - visible.length) }, (_, i) => <BrowseCardSkeleton key={`s${i}`} index={100 + i} />)}
-          </div>
+          </Grid>
         ) : (
           <div className="ds-browse-rows">
             {visible.map((d) => (
@@ -259,11 +263,11 @@ export function Browse() {
             )}
           </div>
         ) : (
-          <p className="ds-browse-end ds-muted" aria-live="polite">
+          <Text tone="muted" className="ds-browse-end" aria-live="polite">
             {q || nApplied
               ? `That’s all ${matching.length} matching ${matching.length === 1 ? 'dashboard' : 'dashboards'}.`
               : `That’s all ${library.length} dashboards.`}
-          </p>
+          </Text>
         )}
       </>
     );
@@ -291,7 +295,17 @@ export function Browse() {
           )}
         </FilterTagGroup>
       )}
-      {content}
+      {/* Team suites lead the library, as a way in; they step aside while you search or filter. */}
+      {!q && nApplied === 0 && !loading ? (
+        <>
+          <SuiteStrip />
+          <Section id="ds-browse-all" heading="All dashboards" variant="group">
+            {content}
+          </Section>
+        </>
+      ) : (
+        content
+      )}
       <FilterDrawer
         open={drawer}
         onClose={() => setDrawer(false)}

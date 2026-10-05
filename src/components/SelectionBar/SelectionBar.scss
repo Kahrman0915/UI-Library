@@ -1,0 +1,21 @@
+// SelectionBar — the bar a page shows while items are selected. See SelectionBar.tsx.
+//
+// The surface is the whole reason this is a component and not a Toolbar: a tint of
+// the theme colour (`--primary-light`, the subtle 6% step) marks the page as being
+// in a selection mode. It themes with the page, like a selected table row, which
+// is the thing it is about. Padding is level 4 above and below, level 3 at the
+// sides — the toolbar's own rungs — on the card radius.
+
+.ui-selection-bar {
+  padding: var(--space-4) var(--space-3);
+  border-radius: var(--rounded-lg);
+  background: var(--primary-light);
+
+  &__count {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    font-weight: var(--font-medium);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+}

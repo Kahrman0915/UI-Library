@@ -32,8 +32,11 @@ import Textarea from '../../../../components/Textarea';
 import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup';
 import Toolbar, { ToolbarGroup } from '../../../../components/Toolbar';
 import { toast } from '../../../../components/Toast';
+import Grid from '../../../../components/Grid';
+import Text from '../../../../components/Text';
 import { seriesFor } from '../../data';
 import { useNav } from '../../nav';
+import { irmFor } from '../../irm';
 import { scopeProducts, today, useSuite } from '../../store';
 import type { Tone } from '../../store';
 import type { Banner, Dashboard, Promotion, Redirect } from '../../types';
@@ -124,7 +127,8 @@ const req = (v: string, label: string, tried: boolean) => ({
 
 const LIFECYCLE_TONE: Record<Dashboard['lifecycle'], Tone> = { draft: 'neutral', 'under-review': 'warning', published: 'success', archived: 'neutral' };
 const HEALTH_TONE: Record<Dashboard['health'], Tone> = { ok: 'success', decommissioning: 'warning', unreachable: 'error' };
-const inventoryOf = (id: string) => `AST-${4000 + ([...id].reduce((a, c) => a + c.charCodeAt(0), 0) % 900)}`;
+/** The IRM record each listing points at (irm.ts). */
+const inventoryOf = (d: Dashboard) => irmFor(d).number;
 
 type DashDraft = Pick<Dashboard, 'name' | 'owner' | 'category' | 'lifecycle' | 'health' | 'description'>;
 const EMPTY_DASH: DashDraft = { name: '', owner: '', category: 'Operations', lifecycle: 'draft', health: 'ok', description: '' };
@@ -146,7 +150,7 @@ export function AdminDashboards() {
     const q = query.trim().toLowerCase();
     return state.dashboards
       .filter((d) => phase === 'all' || d.lifecycle === phase)
-      .filter((d) => !q || [d.name, d.category, inventoryOf(d.id), d.owner].some((s) => s.toLowerCase().includes(q)));
+      .filter((d) => !q || [d.name, d.category, inventoryOf(d), d.owner].some((s) => s.toLowerCase().includes(q)));
   }, [state.dashboards, phase, query]);
 
   const promoted = (id: string) => state.promotions.some((p) => p.dashboardId === id && p.state !== 'ended');
@@ -237,7 +241,7 @@ export function AdminDashboards() {
             />
           </ToolbarGroup>
           <ToolbarGroup>
-            <SearchField id="ds-md-search" placeholder="Search name, project or inventory number…" value={query} onChange={setQuery} />
+            <SearchField id="ds-md-search" placeholder="Search name, project or IRM number…" value={query} onChange={setQuery} />
             <Button id="ds-md-new" label="New dashboard" IconLeft={Plus} size="sm" onClick={() => openEdit(null)} />
           </ToolbarGroup>
         </Toolbar>
@@ -258,7 +262,7 @@ export function AdminDashboards() {
               <TableRow>
                 <TableHeaderCell>Name</TableHeaderCell>
                 <TableHeaderCell>Project</TableHeaderCell>
-                <TableHeaderCell>Inventory</TableHeaderCell>
+                <TableHeaderCell>IRM record</TableHeaderCell>
                 <TableHeaderCell>Lifecycle</TableHeaderCell>
                 <TableHeaderCell>Health</TableHeaderCell>
                 <TableHeaderCell>Promoted</TableHeaderCell>
@@ -279,7 +283,7 @@ export function AdminDashboards() {
                     </TableCell>
                     <TableCell>{d.category}</TableCell>
                     <TableCell>
-                      <RefCode>{inventoryOf(d.id)}</RefCode>
+                      <RefCode>{inventoryOf(d)}</RefCode>
                     </TableCell>
                     <TableCell>
                       <ToneBadge id={`ds-md-lc-${d.id}`} label={d.lifecycle.replace('-', ' ')} tone={LIFECYCLE_TONE[d.lifecycle]} />
@@ -287,7 +291,7 @@ export function AdminDashboards() {
                     <TableCell>
                       <ToneBadge id={`ds-md-h-${d.id}`} label={d.health === 'ok' ? 'OK' : d.health} tone={HEALTH_TONE[d.health]} />
                     </TableCell>
-                    <TableCell>{promoted(d.id) ? <Badge id={`ds-md-pr-${d.id}`} label="Promoted" color="violet" appearance="soft" /> : <span className="ds-muted">—</span>}</TableCell>
+                    <TableCell>{promoted(d.id) ? <Badge id={`ds-md-pr-${d.id}`} label="Promoted" color="violet" appearance="soft" /> : <Text as="span" tone="muted">—</Text>}</TableCell>
                     <TableCell>{d.updatedAt}</TableCell>
                     <TableCell actions>
                       <RowMenu id={`ds-md-menu-${d.id}`} label={`Actions for ${d.name}`}>
@@ -344,11 +348,11 @@ export function AdminDashboards() {
             <Select id="ds-md-f-lc" label="Lifecycle" value={draft.lifecycle} onChange={(v) => setDraft({ ...draft, lifecycle: v as Dashboard['lifecycle'] })} options={['draft', 'under-review', 'published', 'archived']} />
             <Select id="ds-md-f-h" label="Health" value={draft.health} onChange={(v) => setDraft({ ...draft, health: v as Dashboard['health'] })} options={['ok', 'decommissioning', 'unreachable']} />
             <Textarea id="ds-md-f-desc" label="Description" rows={3} value={draft.description} onValueChange={(v) => setDraft({ ...draft, description: v })} />
-            <p className="ds-muted">
+            <Text tone="muted">
               {failed
                 ? 'Nothing was saved, so there’s nothing to undo. Closing this drawer discards the edits above, so use Try again.'
                 : 'Nobody asked for this change, so nothing links back to a request. Activity is the only record, and it shows your name, the field and the old value.'}
-            </p>
+            </Text>
           </Stack>
         </DrawerBody>
         <DrawerFooter>
@@ -496,7 +500,7 @@ export function AdminBanners() {
                   </div>
                 </div>
                 <p className="ds-admin-banner__title">{b.title}</p>
-                <p className="ds-muted">{b.message}</p>
+                <Text tone="muted">{b.message}</Text>
                 <p className="ds-admin-banner__meta">
                   {b.starts && `Starts ${b.starts}`}
                   {b.ends ? `  ·  Ends ${b.ends}` : '  ·  No end date'}
@@ -681,7 +685,7 @@ export function AdminPromotions() {
             </TableBody>
           </Table>
         )}
-        <p className="ds-muted">A promotion is a window, not a switch. It ends on its date whether or not anyone remembers it. The ⋯ menu can end one early.</p>
+        <Text tone="muted">A promotion is a window, not a switch. It ends on its date whether or not anyone remembers it. The ⋯ menu can end one early.</Text>
       </Stack>
 
       <Drawer id="ds-mp-drawer" open={!!drawer} onClose={() => setDrawer(null)}>
@@ -698,7 +702,7 @@ export function AdminPromotions() {
             <Select id="ds-mp-f-place" label="Placement" value={draft.placement} onChange={(v) => setDraft({ ...draft, placement: v })} options={PLACEMENTS} />
             <Input id="ds-mp-f-start" label="Starts" required placeholder="MM/DD/YYYY" value={draft.starts} onValueChange={(v) => setDraft({ ...draft, starts: v })} {...req(draft.starts, 'Start date', tried)} />
             <Input id="ds-mp-f-end" label="Ends" required placeholder="MM/DD/YYYY" value={draft.ends} onValueChange={(v) => setDraft({ ...draft, ends: v })} {...req(draft.ends, 'End date', tried)} />
-            <p className="ds-muted">A promotion ends on its own date. Editing the window here doesn’t touch the request it came from.</p>
+            <Text tone="muted">A promotion ends on its own date. Editing the window here doesn’t touch the request it came from.</Text>
           </Stack>
         </DrawerBody>
         <DrawerFooter>
@@ -836,7 +840,7 @@ export function AdminRedirects() {
                     <TableCell>
                       <RefCode>{r.to}</RefCode>
                     </TableCell>
-                    <TableCell>{r.reason || <span className="ds-muted">—</span>}</TableCell>
+                    <TableCell>{r.reason || <Text as="span" tone="muted">—</Text>}</TableCell>
                     <TableCell numeric>{r.hits.toLocaleString()}</TableCell>
                     <TableCell>
                       <ToneBadge id={`ds-mr-st-${r.id}`} label={r.inactive ? 'Inactive' : 'Active'} tone={r.inactive ? 'neutral' : 'success'} />
@@ -865,7 +869,7 @@ export function AdminRedirects() {
             </TableBody>
           </Table>
         )}
-        <p className="ds-muted">Hits is the column that tells you most. A redirect with thousands of hits is load-bearing; one at zero after a year is safe to retire.</p>
+        <Text tone="muted">Hits is the column that tells you most. A redirect with thousands of hits is load-bearing; one at zero after a year is safe to retire.</Text>
       </Stack>
 
       <Drawer id="ds-mr-drawer" open={!!drawer} onClose={() => setDrawer(null)}>
@@ -876,7 +880,7 @@ export function AdminRedirects() {
             <Input id="ds-mr-f-to" label="To" required placeholder="/dashboards/new-path" value={draft.to} onValueChange={(v) => setDraft({ ...draft, to: v })} {...pathErr(draft.to, 'To')} />
             <Input id="ds-mr-f-reason" label="Reason" value={draft.reason} onValueChange={(v) => setDraft({ ...draft, reason: v })} />
             <Select id="ds-mr-f-status" label="Status" value={draft.status} onChange={(v) => setDraft({ ...draft, status: v })} options={['active', 'inactive']} />
-            <p className="ds-muted">Editing the From path breaks any link already pasted into an email, so add a second redirect instead of repointing this one.</p>
+            <Text tone="muted">Editing the From path breaks any link already pasted into an email, so add a second redirect instead of repointing this one.</Text>
           </Stack>
         </DrawerBody>
         <DrawerFooter>
@@ -940,16 +944,16 @@ export function AdminUsage() {
         }
       />
       <Stack level={2}>
-        <div className="ds-admin-kpis">
+        <Grid level={3} minItemWidth="var(--w-48)" stretch>
           <Kpi id="ds-mu-k1" value={views.toLocaleString()} label="Dashboard views" hint={r.label} tone="info" />
           <Kpi id="ds-mu-k2" value={Math.round(1847 * Math.sqrt(r.scale)).toLocaleString()} label="Active people" hint={r.label} tone="success" />
           <Kpi id="ds-mu-k3" value="6m 12s" label="Median session" hint="across all products" tone="violet" />
           <Kpi id="ds-mu-k4" value={never.length} label="Never opened" hint="live 90+ days, 0 views" tone="error" />
-        </div>
-        <div className="ds-admin-grid2">
+        </Grid>
+        <Grid level={3} minItemWidth="var(--w-80)" stretch>
           <ViewsOverTime id="ds-mu-over-time" months={r.months} totals={r.months.map((_, i) => Math.round((views / r.months.length / 1000) * (0.8 + 0.1 * i)))} />
           <ViewsByProduct id="ds-mu-by-product" totals={byProduct as [number, number, number]} />
-        </div>
+        </Grid>
         <Section id="ds-mu-sec-table" heading="Most opened, and least" variant="group">
           <Table id="ds-mu-table" label="Most and least opened dashboards">
             <TableHead>
@@ -973,7 +977,7 @@ export function AdminUsage() {
                     <TableCell numeric>{Math.round(d.views * r.scale).toLocaleString()}</TableCell>
                     <TableCell>
                       {delta === null ? (
-                        <span className="ds-muted">No data</span>
+                        <Text as="span" tone="muted">No data</Text>
                       ) : (
                         <ToneBadge id={`ds-mu-tr-${d.id}`} label={`${delta >= 0 ? '▲' : '▼'} ${Math.abs(delta)}%`} tone={delta >= 0 ? 'success' : 'error'} />
                       )}
@@ -984,7 +988,7 @@ export function AdminUsage() {
             </TableBody>
           </Table>
         </Section>
-        <p className="ds-muted">The bottom of this table is the useful end: a dashboard nobody has looked at in 90 days is a decommission candidate.</p>
+        <Text tone="muted">The bottom of this table is the useful end: a dashboard nobody has looked at in 90 days is a decommission candidate.</Text>
       </Stack>
     </PageContainer>
   );
@@ -1064,7 +1068,7 @@ export function AdminActivity() {
                         ) : ref ? (
                           <RefCode>{ref}</RefCode>
                         ) : (
-                          <span className="ds-muted">—</span>
+                          <Text as="span" tone="muted">—</Text>
                         )}
                       </TableCell>
                       <TableCell>{what}</TableCell>

@@ -36,6 +36,11 @@ const meta: Meta<typeof PageContainer> = {
       },
       changelog: [
         {
+          date: '2026-10-03',
+          summary: 'The bottom margin grows by the Fab\'s footprint while a bottom-corner Fab is on the page, so the end of the content scrolls clear of it.',
+          detail: '`padding-block-end: calc(var(--space-2) + var(--ui-fab-clearance, var(--p-0)))`. `--ui-fab-clearance` is published by Fab.scss on :root and is unset otherwise, so pages without a Fab keep their exact margin. The container honours the variable and knows nothing about the Fab.',
+        },
+        {
           date: '2026-09-20',
           summary:
             'The page margin drops to level 2 and the header→content gap to level 3. At 1920 that is 36 and 24, where both were 48; at 1440, 24 and 16, where both were 32.',

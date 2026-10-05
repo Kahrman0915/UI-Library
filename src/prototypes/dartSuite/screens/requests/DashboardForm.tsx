@@ -1,13 +1,26 @@
-/* R3 · DASHBOARD REQUEST — four modes behind Tabs (R3.1 Add · R3.2 Edit ·
-   R3.3 Promote · R3.4 Remove). Each tab is a different form, so switching with
-   anything entered asks "Discard your changes?" first. Edit, Promote and Remove
-   are GATED: nothing below the picker exists until a dashboard is chosen. */
+/* R3 · DASHBOARD REQUEST — about a dashboard's place in DARTBOARDS, never the
+   report itself. Four modes behind Tabs (R3.1 Publish · R3.2 Update listing ·
+   R3.3 Promote · R3.4 Unpublish). Each tab is a different form, so switching
+   with anything entered asks "Discard your changes?" first.
+
+   THE SPLIT THIS FORM IS BUILT ON (owner, 2026-10-01): IRM is where a report is
+   built and controlled — requirements, development, access, controls, for its
+   whole life, under its IRM number. This form only asks for a finished report
+   to be SHOWN in DartBoards, and owns only what DartBoards shows: the display
+   title (IRM names start with the number), the description, the category and
+   tags, and display options. Everything else is read from the IRM record and
+   shown read-only, labelled "Managed in IRM", so nobody tries to change it here.
+
+   Update listing, Promote and Unpublish are GATED: nothing below the picker
+   exists until a dashboard is chosen. */
 
 import { useState } from 'react';
-import { CirclePlus, LayoutGrid, Pencil, Plus, Trash2 } from 'lucide-react';
+import { CirclePlus, ExternalLink, EyeOff, LayoutGrid, Pencil, Upload } from 'lucide-react';
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../../../components/AlertDialog';
 import Alert from '../../../../components/Alert';
+import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
+import Card, { CardBody, CardDescription, CardMedia, CardTitle } from '../../../../components/Card';
 import Combobox from '../../../../components/Combobox';
 import DatePicker from '../../../../components/DatePicker';
 import Input from '../../../../components/Input';
@@ -16,117 +29,152 @@ import Separator from '../../../../components/Separator';
 import Switch from '../../../../components/Switch';
 import Tabs, { TabsContent, TabsList, TabsTrigger } from '../../../../components/Tabs';
 import Textarea from '../../../../components/Textarea';
+import { toast } from '../../../../components/Toast';
+import Text from '../../../../components/Text';
+import { CONTROLS, IRM_UNPUBLISHED, displayTitleFrom, irmFor } from '../../irm';
+import type { IrmRecord } from '../../irm';
 import { useSuite } from '../../store';
 import type { Dashboard, DashboardRequestMode, FieldChange } from '../../types';
+import { DashboardThumb } from '../boards/shared/boardsShared';
 import { FormShell, Row, fmtDate, useSubmission } from './shared';
 
-const CATEGORIES = ['Operations', 'Finance', 'Sales', 'Customer', 'Risk', 'Collections'];
-const ACCESS_ROLES = ['All authenticated users', 'Restricted · by request', 'DART Central admins only'];
+const CATEGORIES = ['Operations', 'Finance', 'Sales', 'Customer', 'Risk'];
 
-/** "Current:" values the Edit tab shows under each label. Derived dummy data. */
-const currentOf = (d: Dashboard) => ({
-  name: d.name,
-  project: d.owner === 'Priya Raman' ? 'Collateral' : 'Servicing',
-  description: d.description,
-  url: `https://tableau.example.com/views/${d.id}`,
-  params: `?env=prod&team=${d.category.toLowerCase()}`,
-  category: d.category,
-  subcategory: d.category === 'Operations' ? 'Servicing' : 'Reporting',
-  tags: d.tags.length ? d.tags.join(', ').toLowerCase() : d.category.toLowerCase(),
-  developer: d.owner,
-  inventory: `IRM-${4400 + d.name.length * 7}`,
-  access: ACCESS_ROLES[0],
-});
+/** What DartBoards owns about a listing — and nothing else. */
+type Listing = { title: string; description: string; category: string; tags: string };
+const EMPTY_LISTING: Listing = { title: '', description: '', category: '', tags: '' };
+const LISTING_LABELS: Record<keyof Listing, string> = { title: 'Display title', description: 'Description', category: 'Category', tags: 'Tags' };
+const listingOf = (d: Dashboard): Listing => ({ title: d.name, description: d.description, category: d.category, tags: d.tags.join(', ') });
 
-type AddState = {
-  name: string;
-  project: string;
-  description: string;
-  url: string;
-  params: string;
-  category: string;
-  subcategory: string;
-  tags: string;
-  developer: string;
-  inventory: string;
-  access: string;
-  toolbar: boolean;
-  tabs: boolean;
-  beta: boolean;
-};
-
-const EMPTY_ADD: AddState = {
-  name: '',
-  project: '',
-  description: '',
-  url: '',
-  params: '',
-  category: '',
-  subcategory: '',
-  tags: '',
-  developer: '',
-  inventory: '',
-  access: '',
-  toolbar: true,
-  tabs: false,
-  beta: false,
-};
+type Display = { toolbar: boolean; tabs: boolean; beta: boolean };
 
 type Gated = { dashboardId: string; start: Date | null; end: Date | null; reason: string };
-const EMPTY_GATED: Gated = { dashboardId: '', start: null, end: null, reason: '' };
 
-const LABELS: Record<Exclude<keyof AddState, 'toolbar' | 'tabs' | 'beta'>, string> = {
-  name: 'Dashboard name',
-  project: 'Project name',
-  description: 'Description',
-  url: 'URL',
-  params: 'URL parameters',
-  category: 'Category',
-  subcategory: 'Sub-category',
-  tags: 'Tags',
-  developer: 'Developer name',
-  inventory: 'Inventory number',
-  access: 'Access role',
-};
-
-/** Diff field names the admin "apply" step understands (store.applyRequest). */
-const CHANGE_FIELD: Partial<Record<keyof AddState, string>> = { name: 'Name', description: 'Description', developer: 'Owner' };
-
-const MODES: { value: DashboardRequestMode; label: string; Icon: typeof Plus }[] = [
-  { value: 'add', label: 'Add', Icon: Plus },
-  { value: 'edit', label: 'Edit', Icon: Pencil },
+const MODES: { value: DashboardRequestMode; label: string; Icon: typeof Upload }[] = [
+  { value: 'add', label: 'Publish', Icon: Upload },
+  { value: 'edit', label: 'Update listing', Icon: Pencil },
   { value: 'promote', label: 'Promote', Icon: CirclePlus },
-  { value: 'remove', label: 'Remove', Icon: Trash2 },
+  { value: 'remove', label: 'Unpublish', Icon: EyeOff },
 ];
 
-export function DashboardForm({ initialMode = 'add' }: { initialMode?: DashboardRequestMode }) {
+const openIrm = (number: string) =>
+  toast(`Opening ${number} in IRM`, { description: 'IRM opens in a new tab. Report details, access and controls are changed there.' });
+
+/* ── The IRM record, read-only ─────────────────────────────────────────────── */
+
+function IrmRecordPanel({ id, record }: { id: string; record: IrmRecord }) {
+  const c = CONTROLS[record.controls];
+  return (
+    <Card id={id} className="ds-req-irm">
+      <CardBody>
+        <div className="ds-req-irm__head">
+          <span className="ds-req-irm__label">Managed in IRM · change these there</span>
+          <Button id={`${id}-open`} style="link" size="sm" label="Open IRM record" IconRight={ExternalLink} aria-label={`Open ${record.number} in IRM (opens in a new tab)`} onClick={() => openIrm(record.number)} />
+        </div>
+        <dl className="ds-req-irm__facts">
+          <div>
+            <dt>IRM record</dt>
+            <dd>{record.number}</dd>
+          </div>
+          <div className="ds-req-irm__wide">
+            <dt>Report name in IRM</dt>
+            <dd>{record.name}</dd>
+          </div>
+          <div>
+            <dt>Developer</dt>
+            <dd>{record.developer}</dd>
+          </div>
+          <div>
+            <dt>Business owner</dt>
+            <dd>{record.businessOwner}</dd>
+          </div>
+          <div>
+            <dt>Source</dt>
+            <dd>{record.source}</dd>
+          </div>
+          <div>
+            <dt>Access group</dt>
+            <dd>{record.accessGroup}</dd>
+          </div>
+          <div className="ds-req-irm__wide">
+            <dt>Controls</dt>
+            <dd>
+              <Badge id={`${id}-controls`} label={c.label} color={c.color} appearance="soft" />
+              <Text as="span" tone="muted"> · last reviewed {record.lastReviewed}</Text>
+            </dd>
+          </div>
+        </dl>
+      </CardBody>
+    </Card>
+  );
+}
+
+/* ── How it will look in Browse ────────────────────────────────────────────── */
+
+function ListingPreview({ id, listing, hue, source }: { id: string; listing: Listing; hue: Dashboard['hue']; source: Dashboard['source'] }) {
+  // A Dashboard-shaped stand-in, only so the thumbnail draws the same tile Browse will.
+  const thumb = { id, hue } as Dashboard;
+  return (
+    <div className="ds-req-preview">
+      <span className="ds-req-preview__label" id={`${id}-label`}>
+        Preview · how it appears in Browse
+      </span>
+      <Card id={id} className="ds-req-preview__card" aria-labelledby={`${id}-label`}>
+        <CardMedia ratio={8 / 3}>
+          <DashboardThumb dashboard={thumb} />
+        </CardMedia>
+        <CardBody>
+          <CardTitle as="p">{listing.title.trim() || 'Display title'}</CardTitle>
+          <CardDescription>{listing.description.trim() || 'The description people read before they open it.'}</CardDescription>
+          <Text as="span" tone="muted" className="ds-req-preview__meta">
+            {[listing.category, source].filter(Boolean).join(' · ')}
+          </Text>
+        </CardBody>
+      </Card>
+    </div>
+  );
+}
+
+/* ── The form ──────────────────────────────────────────────────────────────── */
+
+export function DashboardForm({ initialMode = 'add', initialDashboardId }: { initialMode?: DashboardRequestMode; initialDashboardId?: string }) {
   const { state } = useSuite();
   const { phase, submit } = useSubmission();
   const [mode, setMode] = useState<DashboardRequestMode>(initialMode);
-  const [add, setAdd] = useState<AddState>(EMPTY_ADD);
-  const [edit, setEdit] = useState<AddState>({ ...EMPTY_ADD, toolbar: false });
-  const [gated, setGated] = useState<Gated>(EMPTY_GATED);
+
+  // Publish
+  const [irmNumber, setIrmNumber] = useState('');
+  const [listing, setListing] = useState<Listing>(EMPTY_LISTING);
+  const [display, setDisplay] = useState<Display>({ toolbar: true, tabs: false, beta: false });
+  // Update listing / Promote / Unpublish
+  const [gated, setGated] = useState<Gated>({ dashboardId: initialDashboardId ?? '', start: null, end: null, reason: '' });
+  const [edit, setEdit] = useState<Listing>(EMPTY_LISTING);
+
   const [pendingMode, setPendingMode] = useState<DashboardRequestMode | null>(null);
   const [confirmRemove, setConfirmRemove] = useState(false);
 
-  const dashboards = state.dashboards.filter((d) => d.lifecycle !== 'archived');
-  const options = dashboards.map((d) => ({ value: d.id, label: d.name }));
-  const picked = dashboards.find((d) => d.id === gated.dashboardId);
-  const current = picked ? currentOf(picked) : null;
+  /* What can be published: finished IRM records not already in DartBoards. */
+  const listedIrm = new Set(state.dashboards.filter((d) => d.lifecycle === 'published').map((d) => irmFor(d).number));
+  const publishable = IRM_UNPUBLISHED.filter((r) => !listedIrm.has(r.number));
+  const record = publishable.find((r) => r.number === irmNumber);
 
-  const addKeys = Object.keys(LABELS) as (keyof typeof LABELS)[];
-  const editFilled = addKeys.filter((k) => (edit[k] as string).trim());
+  const listed = state.dashboards.filter((d) => d.lifecycle === 'published');
+  const picked = listed.find((d) => d.id === gated.dashboardId);
+  const current = picked ? listingOf(picked) : null;
+
+  const listingKeys = Object.keys(LISTING_LABELS) as (keyof Listing)[];
+  const editChanged = current ? listingKeys.filter((k) => edit[k].trim() && edit[k].trim() !== current[k]) : [];
 
   const dirty =
     mode === 'add'
-      ? addKeys.some((k) => (add[k] as string).trim()) || add.tabs || add.beta || !add.toolbar
-      : !!gated.dashboardId || !!gated.reason.trim() || !!gated.start || !!gated.end || editFilled.length > 0;
+      ? !!irmNumber || listingKeys.some((k) => listing[k].trim())
+      : (!!gated.dashboardId && gated.dashboardId !== initialDashboardId) || !!gated.reason.trim() || !!gated.start || !!gated.end || editChanged.length > 0;
 
   const ready =
     mode === 'add'
-      ? ['name', 'project', 'description', 'url', 'category', 'developer', 'access'].every((k) => (add[k as keyof AddState] as string).trim())
+      ? !!record && record.controls === 'complete' && !!listing.title.trim() && !!listing.description.trim() && !!listing.category
       : mode === 'edit'
-        ? !!picked
+        ? !!picked && editChanged.length > 0
         : mode === 'promote'
           ? !!picked && !!gated.start && !!gated.reason.trim()
           : !!picked && !!gated.reason.trim();
@@ -138,43 +186,57 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
   };
 
   const discardAndSwitch = () => {
-    setAdd(EMPTY_ADD);
-    setEdit({ ...EMPTY_ADD, toolbar: false });
-    setGated(EMPTY_GATED);
+    setIrmNumber('');
+    setListing(EMPTY_LISTING);
+    setEdit(EMPTY_LISTING);
+    setGated({ dashboardId: '', start: null, end: null, reason: '' });
     if (pendingMode) setMode(pendingMode);
     setPendingMode(null);
   };
 
+  /** Picking an IRM record pre-fills the display title from its name — minus the number. */
+  const pickRecord = (n: string) => {
+    setIrmNumber(n);
+    const r = IRM_UNPUBLISHED.find((x) => x.number === n);
+    if (r) setListing((l) => ({ ...l, title: l.title.trim() ? l.title : displayTitleFrom(r.name) }));
+  };
+
   const doSubmit = () => {
     if (mode === 'add') {
-      const fields = addKeys.filter((k) => (add[k] as string).trim()).map((k) => ({ label: LABELS[k], value: add[k] as string }));
-      fields.push(
-        { label: 'Show toolbar', value: add.toolbar ? 'Yes' : 'No' },
-        { label: 'Show tabs', value: add.tabs ? 'Yes' : 'No' },
-        { label: 'Beta / preview', value: add.beta ? 'Yes' : 'No' },
-      );
+      if (!record) return;
+      const title = listing.title.trim();
       return submit({
         type: 'dashboard-add',
         product: 'DARTBoards',
-        title: `Add ${add.name.trim()} to the library`,
-        summary: `Request to add the ${add.name.trim()} dashboard to the Dartboards library.`,
-        fields,
+        title: `Publish ${title} to DartBoards`,
+        summary: `List ${record.number} in DartBoards as “${title}”.`,
+        fields: [
+          { label: 'IRM record', value: record.number },
+          { label: 'IRM report name', value: record.name },
+          { label: 'Display title', value: title },
+          { label: 'Description', value: listing.description.trim() },
+          { label: 'Category', value: listing.category },
+          ...(listing.tags.trim() ? [{ label: 'Tags', value: listing.tags.trim() }] : []),
+          { label: 'Show toolbar', value: display.toolbar ? 'Yes' : 'No' },
+          { label: 'Show tabs', value: display.tabs ? 'Yes' : 'No' },
+          { label: 'Beta / preview', value: display.beta ? 'Yes' : 'No' },
+        ],
       });
     }
     if (!picked || !current) return;
+    const irm = irmFor(picked);
     if (mode === 'edit') {
-      const changes: FieldChange[] = editFilled.map((k) => ({
-        field: CHANGE_FIELD[k] ?? LABELS[k],
-        current: current[k],
-        proposed: (edit[k] as string).trim(),
-      }));
+      const changes: FieldChange[] = editChanged.map((k) => ({ field: LISTING_LABELS[k], current: current[k], proposed: edit[k].trim() }));
       return submit(
         {
           type: 'dashboard-edit',
           product: 'DARTBoards',
-          title: `Update ${picked.name}`,
-          summary: changes.length ? `Changes to ${changes.map((c) => c.field.toLowerCase()).join(', ')}.` : 'No field changes proposed.',
-          fields: [{ label: 'Dashboard', value: picked.name }, ...editFilled.map((k) => ({ label: LABELS[k], value: (edit[k] as string).trim() }))],
+          title: `Update the ${picked.name} listing`,
+          summary: `Changes to the ${changes.map((c) => c.field.toLowerCase()).join(', ')} shown in Browse.`,
+          fields: [
+            { label: 'Dashboard', value: picked.name },
+            { label: 'IRM record', value: irm.number },
+          ],
           changes,
         },
         picked.id,
@@ -190,6 +252,7 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
           summary: `Highlighted on the browse page, ${window}.`,
           fields: [
             { label: 'Dashboard', value: picked.name },
+            { label: 'IRM record', value: irm.number },
             { label: 'Starts', value: fmtDate(gated.start) },
             ...(gated.end ? [{ label: 'Ends', value: fmtDate(gated.end) }] : []),
             { label: 'Reason for promotion', value: gated.reason.trim() },
@@ -202,12 +265,13 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
       {
         type: 'dashboard-remove',
         product: 'DARTBoards',
-        title: `Remove ${picked.name}`,
+        title: `Unpublish ${picked.name}`,
         summary: gated.reason.trim(),
         fields: [
           { label: 'Dashboard', value: picked.name },
+          { label: 'IRM record', value: irm.number },
           { label: 'Reason', value: gated.reason.trim() },
-          ...(gated.end ? [{ label: 'Proposed removal date', value: fmtDate(gated.end) }] : []),
+          ...(gated.end ? [{ label: 'Proposed date', value: fmtDate(gated.end) }] : []),
         ],
       },
       picked.id,
@@ -216,73 +280,50 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
 
   const onSubmit = () => (mode === 'remove' && phase !== 'failed' ? setConfirmRemove(true) : doSubmit());
 
-  const setA = (k: keyof AddState) => (v: string) => setAdd((s) => ({ ...s, [k]: v }));
-  const setE = (k: keyof AddState) => (v: string) => setEdit((s) => ({ ...s, [k]: v }));
-
   const picker = (
     <Combobox
       id={`ds-req-dash-${mode}-picker`}
-      label="Select dashboard"
+      label="Dashboard in DartBoards"
       required
       placeholder="Select…"
-      searchPlaceholder="Search dashboards…"
+      searchPlaceholder="Search by title or IRM number…"
       emptyMessage="No dashboards match."
-      options={options}
+      options={listed.map((d) => ({ value: d.id, label: d.name, description: irmFor(d).number, searchText: `${d.name} ${irmFor(d).number}` }))}
       value={gated.dashboardId || undefined}
-      onValueChange={(v) => setGated((g) => ({ ...g, dashboardId: v }))}
+      onValueChange={(v) => {
+        setGated((g) => ({ ...g, dashboardId: v }));
+        setEdit(EMPTY_LISTING);
+      }}
     />
   );
 
-  /** Shared Add / Edit field set. In Edit every field is optional and shows its current value. */
-  const identityFields = (s: AddState, set: (k: keyof AddState) => (v: string) => void, isEdit: boolean) => {
-    const cur = (k: keyof ReturnType<typeof currentOf>) => (isEdit && current ? `Current: ${current[k]}` : undefined);
-    const ph = (example: string) => (isEdit ? 'Leave blank to keep' : example);
-    const p = isEdit ? 'edit' : 'add';
+  /** The listing fields — what this form is actually about. */
+  const listingFields = (s: Listing, set: (k: keyof Listing) => (v: string) => void, cur: Listing | null, p: string) => {
+    const now = (k: keyof Listing) => (cur ? `Current: ${cur[k] || '—'}` : undefined);
     return (
       <>
-        <Separator label="IDENTITY" />
         <Input
-          id={`ds-req-${p}-name`}
-          label="Dashboard name"
-          required={!isEdit}
-          description={cur('name') ?? 'Must match IRM exactly.'}
-          placeholder={ph('e.g. Originations Daily Volume')}
-          value={s.name}
-          onValueChange={set('name')}
-        />
-        <Input
-          id={`ds-req-${p}-project`}
-          label="Project name"
-          required={!isEdit}
-          description={cur('project') ?? 'The project or team it belongs to.'}
-          placeholder={ph('e.g. FCPS, Collections…')}
-          value={s.project}
-          onValueChange={set('project')}
+          id={`ds-req-${p}-title`}
+          label="Display title"
+          required={!cur}
+          description={now('title') ?? 'Shown in Browse instead of the IRM name. The IRM number stays on the record.'}
+          placeholder={cur ? 'Leave blank to keep' : 'e.g. Originations Daily Volume'}
+          value={s.title}
+          onValueChange={set('title')}
         />
         <Textarea
           id={`ds-req-${p}-description`}
           label="Description"
-          required={!isEdit}
-          description={cur('description') ?? 'What does this dashboard show and who is it for?'}
-          placeholder={ph('e.g. Daily origination volume by channel, for the Collections team.')}
+          required={!cur}
+          description={now('description') ?? 'One or two sentences: what it shows and who it is for.'}
+          placeholder={cur ? 'Leave blank to keep' : 'e.g. Daily origination volume by channel, for the Collections team.'}
           value={s.description}
           onValueChange={set('description')}
           rows={3}
         />
-        <Separator label="LOCATION" />
-        <Input id={`ds-req-${p}-url`} label="URL" required={!isEdit} description={cur('url')} placeholder={ph('https://…')} value={s.url} onValueChange={set('url')} />
-        <Input
-          id={`ds-req-${p}-params`}
-          label="URL parameters"
-          description={cur('params')}
-          placeholder={ph('?env=prod&team=example')}
-          value={s.params}
-          onValueChange={set('params')}
-        />
-        <Separator label="CLASSIFICATION" />
         <Row>
-          <Select id={`ds-req-${p}-category`} label="Category" required={!isEdit} description={cur('category')} value={s.category || undefined} onValueChange={set('category')}>
-            <SelectTrigger placeholder="Select…" />
+          <Select id={`ds-req-${p}-category`} label="Category" required={!cur} description={now('category')} value={s.category || undefined} onValueChange={set('category')}>
+            <SelectTrigger placeholder={cur ? 'Keep current' : 'Select…'} />
             <SelectContent>
               {CATEGORIES.map((c) => (
                 <SelectItem key={c} value={c} label={c} />
@@ -290,59 +331,32 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
             </SelectContent>
           </Select>
           <Input
-            id={`ds-req-${p}-subcategory`}
-            label="Sub-category"
-            description={cur('subcategory')}
-            placeholder={ph('e.g. Originations, Servicing…')}
-            value={s.subcategory}
-            onValueChange={set('subcategory')}
+            id={`ds-req-${p}-tags`}
+            label="Tags"
+            description={now('tags') ?? 'Separate with commas.'}
+            placeholder={cur ? 'Leave blank to keep' : 'e.g. originations, daily'}
+            value={s.tags}
+            onValueChange={set('tags')}
           />
         </Row>
-        <Input
-          id={`ds-req-${p}-tags`}
-          label="Tags"
-          description={cur('tags') ?? 'Separate multiple tags with commas.'}
-          placeholder={ph('e.g. originations, daily, ops')}
-          value={s.tags}
-          onValueChange={set('tags')}
-        />
-        <Separator label="OWNERSHIP & ACCESS" />
-        <Row>
-          <Input
-            id={`ds-req-${p}-developer`}
-            label="Developer name"
-            required={!isEdit}
-            description={cur('developer')}
-            placeholder={ph('e.g. Jordan Mount')}
-            value={s.developer}
-            onValueChange={set('developer')}
-          />
-          <Input
-            id={`ds-req-${p}-inventory`}
-            label="Inventory number"
-            description={cur('inventory')}
-            placeholder={ph('Asset or tracking ID')}
-            value={s.inventory}
-            onValueChange={set('inventory')}
-          />
-        </Row>
-        <Select id={`ds-req-${p}-access`} label="Access role" required={!isEdit} description={cur('access')} value={s.access || undefined} onValueChange={set('access')}>
-          <SelectTrigger placeholder="Select…" />
-          <SelectContent>
-            {ACCESS_ROLES.map((c) => (
-              <SelectItem key={c} value={c} label={c} />
-            ))}
-          </SelectContent>
-        </Select>
       </>
     );
   };
 
+  const setL = (k: keyof Listing) => (v: string) => setListing((s) => ({ ...s, [k]: v }));
+  const setE = (k: keyof Listing) => (v: string) => setEdit((s) => ({ ...s, [k]: v }));
+  const merged = (cur: Listing): Listing => ({
+    title: edit.title.trim() || cur.title,
+    description: edit.description.trim() || cur.description,
+    category: edit.category || cur.category,
+    tags: edit.tags.trim() || cur.tags,
+  });
+
   return (
     <FormShell
       id="ds-req-dash"
-      crumb="Dashboard Request"
-      title="Dashboard Request"
+      crumb="Dashboard in DartBoards"
+      title="Dashboard in DartBoards"
       Icon={LayoutGrid}
       color="info"
       ready={ready}
@@ -350,6 +364,15 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
       dirty={dirty}
       onSubmit={onSubmit}
     >
+      {/* The most common wrong turn, caught before any field: a new report, or a change to one, is IRM. */}
+      <Alert
+        id="ds-req-dash-irm-note"
+        variant="info"
+        title="Building a report, or changing its data, visuals, access or controls?"
+        description="That is done in IRM. Use this form once a report is finished, to show it in DartBoards or change how it is listed."
+        action={<Button id="ds-req-dash-irm-go" size="sm" style="outline" label="Open IRM" IconRight={ExternalLink} aria-label="Open IRM (opens in a new tab)" onClick={() => openIrm('IRM')} />}
+      />
+
       <Tabs id="ds-req-dash-tabs" className="ds-requests-tabs" value={mode} onValueChange={switchMode} activationMode="manual">
         <TabsList aria-label="Dashboard request type">
           {MODES.map(({ value, label, Icon }) => (
@@ -362,42 +385,71 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
 
         <TabsContent value="add">
           <div className="ds-requests-fields">
-            {identityFields(add, setA, false)}
-            <Separator label="DISPLAY OPTIONS" />
-            <Switch
-              id="ds-req-add-toolbar"
-              label="Show toolbar"
-              description="Display the Tableau toolbar when viewing this dashboard."
-              checked={add.toolbar}
-              onCheckedChange={(v) => setAdd((s) => ({ ...s, toolbar: v }))}
+            <Combobox
+              id="ds-req-add-irm"
+              label="IRM record"
+              required
+              description="The finished report to publish. Only reports with complete controls can be published."
+              placeholder="Search by IRM number or name…"
+              searchPlaceholder="IRM number or report name…"
+              emptyMessage="No finished IRM records match."
+              options={publishable.map((r) => ({
+                value: r.number,
+                label: r.name,
+                description: CONTROLS[r.controls].label,
+                searchText: r.name,
+                disabled: r.controls !== 'complete',
+              }))}
+              value={irmNumber || undefined}
+              onValueChange={pickRecord}
             />
-            <Switch
-              id="ds-req-add-tabs"
-              label="Show tabs"
-              description="Display panel tabs if the dashboard uses tab navigation."
-              checked={add.tabs}
-              onCheckedChange={(v) => setAdd((s) => ({ ...s, tabs: v }))}
-            />
-            <Switch
-              id="ds-req-add-beta"
-              label="Beta / preview"
-              description="Mark this dashboard as a beta release with a preview badge."
-              checked={add.beta}
-              onCheckedChange={(v) => setAdd((s) => ({ ...s, beta: v }))}
-            />
+            {record && (
+              <>
+                <IrmRecordPanel id="ds-req-add-irm-record" record={record} />
+                <Separator label="HOW IT APPEARS IN DARTBOARDS" />
+                <div className="ds-req-listing">
+                  <div className="ds-req-listing__fields">{listingFields(listing, setL, null, 'add')}</div>
+                  <ListingPreview id="ds-req-add-preview" listing={listing} hue="blue" source={record.source} />
+                </div>
+                <Separator label="DISPLAY OPTIONS" />
+                <Switch
+                  id="ds-req-add-toolbar"
+                  label="Show toolbar"
+                  description="Display the source tool’s toolbar when viewing this dashboard."
+                  checked={display.toolbar}
+                  onCheckedChange={(v) => setDisplay((s) => ({ ...s, toolbar: v }))}
+                />
+                <Switch
+                  id="ds-req-add-tabs"
+                  label="Show tabs"
+                  description="Display panel tabs if the dashboard uses tab navigation."
+                  checked={display.tabs}
+                  onCheckedChange={(v) => setDisplay((s) => ({ ...s, tabs: v }))}
+                />
+                <Switch
+                  id="ds-req-add-beta"
+                  label="Beta / preview"
+                  description="Mark it as a beta release with a preview badge."
+                  checked={display.beta}
+                  onCheckedChange={(v) => setDisplay((s) => ({ ...s, beta: v }))}
+                />
+              </>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="edit">
           <div className="ds-requests-fields">
+            <Alert id="ds-req-edit-note" description="Change how a dashboard is listed in Browse. Its owner, data, access and controls are changed in IRM." />
             {picker}
-            {picked && (
+            {picked && current && (
               <>
-                <Alert
-                  id="ds-req-edit-note"
-                  description={`Editing ${picked.name}. Only fill in the fields you want to change, and leave the rest blank.`}
-                />
-                {identityFields(edit, setE, true)}
+                <IrmRecordPanel id="ds-req-edit-irm-record" record={irmFor(picked)} />
+                <Separator label="HOW IT APPEARS IN DARTBOARDS" />
+                <div className="ds-req-listing">
+                  <div className="ds-req-listing__fields">{listingFields(edit, setE, current, 'edit')}</div>
+                  <ListingPreview id="ds-req-edit-preview" listing={merged(current)} hue={picked.hue} source={picked.source} />
+                </div>
               </>
             )}
           </div>
@@ -405,7 +457,7 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
 
         <TabsContent value="promote">
           <div className="ds-requests-fields">
-            <Alert id="ds-req-promote-note" description="Promoting a dashboard adds a highlighted badge on the Dartboards browse page so users notice it." />
+            <Alert id="ds-req-promote-note" description="Promoting a dashboard adds a highlighted badge on the DartBoards browse page so users notice it." />
             {picker}
             {picked && (
               <>
@@ -448,16 +500,16 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
           <div className="ds-requests-fields">
             <Alert
               id="ds-req-remove-note"
-              description="Removing a dashboard deletes it from the Dartboards library. Anyone who has added it to a space will see a broken tile until they remove it."
+              description="Unpublishing takes the dashboard out of DartBoards. The report itself, its IRM record and its controls are untouched — retiring a report is done in IRM. Anyone who added it to a space will see it as unavailable."
             />
             {picker}
             {picked && (
               <>
                 <Textarea
                   id="ds-req-remove-reason"
-                  label="Reason for removal"
+                  label="Reason"
                   required
-                  description="Why is this dashboard being removed?"
+                  description="Why should it come out of DartBoards?"
                   placeholder="e.g. Superseded by v2, live since July."
                   rows={3}
                   value={gated.reason}
@@ -465,7 +517,7 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
                 />
                 <DatePicker
                   id="ds-req-remove-date"
-                  label="Proposed removal date"
+                  label="Proposed date"
                   placeholder="mm/dd/yyyy"
                   formatValue={fmtDate}
                   value={gated.end}
@@ -487,16 +539,16 @@ export function DashboardForm({ initialMode = 'add' }: { initialMode?: Dashboard
       </AlertDialog>
 
       <AlertDialog id="ds-req-remove-confirm" open={confirmRemove} onClose={() => setConfirmRemove(false)}>
-        <AlertDialogHeader id="ds-req-remove-confirm-header" title="Submit a removal request?" />
+        <AlertDialogHeader id="ds-req-remove-confirm-header" title="Submit an unpublish request?" />
         <AlertDialogBody>
-          The DART Central admin team will review this. Once approved, “{picked?.name}” is removed from the library permanently.
+          The DART Central admin team will review this. Once approved, “{picked?.name}” comes out of DartBoards. Its IRM record is not changed.
         </AlertDialogBody>
         <AlertDialogFooter>
           <Button id="ds-req-remove-confirm-cancel" style="ghost" label="Cancel" onClick={() => setConfirmRemove(false)} />
           <Button
             id="ds-req-remove-confirm-go"
             variant="error"
-            label="Submit removal request"
+            label="Submit unpublish request"
             onClick={() => {
               setConfirmRemove(false);
               doSubmit();

@@ -74,3 +74,64 @@
   flex: 1;
 }
 
+
+// "Started from the <suite> suite" — the overline's link back to the suite.
+.ds-space-from {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--p-1);
+
+  .ui-button {
+    height: auto;
+    padding: 0;
+    font-size: inherit;
+    line-height: inherit;
+  }
+}
+
+// The one-line glance on a metric / workflow / report card.
+.ds-space-glance {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+// ── A metric, shown one way ────────────────────────────────────────────────
+// Charts and breakdowns take the full row; a single number sits like a card.
+.ds-space-cell--metric-wide {
+  grid-column: 1 / -1;
+}
+
+// The card header already names the chart, so the chart's own caption (its
+// accessible name) is kept for screen readers and hidden from view.
+.ds-metric-card .ui-chart__header {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.ds-metric-number {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+
+  &__value {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-9);
+    font-weight: var(--font-semibold);
+    color: var(--foreground);
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__change {
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--muted-foreground);
+  }
+}

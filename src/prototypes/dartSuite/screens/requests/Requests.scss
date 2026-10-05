@@ -2,13 +2,6 @@
 // DART Central · Request Flow — prototype layout glue. Tokens only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-.ds-requests-meta {
-  margin: 0;
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  color: var(--muted-foreground);
-}
-
 .ds-requests-eyebrow {
   margin: 0;
   font-size: var(--text-xs);
@@ -81,29 +74,6 @@
   padding: var(--space-3);
 }
 
-.ds-requests-thread {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--p-5);
-
-  &__entry {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--p-3);
-  }
-
-  &__body {
-    min-width: 0;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: var(--p-1);
-  }
-}
-
 .ds-requests-reply {
   display: flex;
   flex-direction: column;
@@ -119,13 +89,6 @@
       justify-content: flex-end;
     }
   }
-}
-
-// ── Chooser ──
-.ds-requests-chooser {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-64), 1fr));
-  gap: var(--space-3);
 }
 
 .ds-requests-option {
@@ -189,3 +152,92 @@
   gap: var(--p-2);
 }
 
+
+// ── Dashboard in DartBoards: the IRM record, read-only ─────────────────────
+// A quieter surface, so it reads as information brought in, not fields to fill.
+// --secondary, not --muted: the labels are --muted-foreground (the AA rule).
+
+.ds-req-irm.ui-card {
+  background: var(--secondary);
+  box-shadow: none;
+}
+
+.ds-req-irm__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-3);
+  margin-bottom: var(--p-3);
+}
+
+.ds-req-irm__label {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+}
+
+.ds-req-irm__facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--p-3) var(--p-6);
+  margin: 0;
+
+  dt {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+  }
+}
+
+.ds-req-irm__wide {
+  grid-column: 1 / -1;
+}
+
+// ── The listing fields beside a live Browse card ───────────────────────────
+
+.ds-req-listing {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) var(--w-72);
+  gap: var(--p-6);
+  align-items: start;
+
+  &__fields {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-5);
+  }
+}
+
+.ds-req-preview {
+  position: sticky;
+  top: var(--p-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+
+  &__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    font-weight: var(--font-medium);
+    color: var(--muted-foreground);
+  }
+
+  &__card .ui-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1);
+  }
+
+  &__meta {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}

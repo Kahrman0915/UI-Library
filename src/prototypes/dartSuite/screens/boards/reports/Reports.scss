@@ -1,0 +1,128 @@
+@use '../../../../../styles/sr-only' as *;
+
+// DartBoards · Marketplace › Reports. Tokens only. Layout comes from Browse.scss.
+
+// A report's tile: a tinted page with a document on it, so it never reads as a chart.
+.ds-report-thumb {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  background: var(--ds-hue-bg);
+
+  &__page {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-1-5);
+    width: var(--w-24);
+    padding: var(--p-3);
+    border-radius: var(--rounded-md);
+    background: var(--card);
+    box-shadow: var(--shadow-sm);
+    color: var(--ds-hue);
+
+    svg {
+      width: var(--w-5);
+      height: var(--h-5);
+    }
+  }
+
+  &__line {
+    height: var(--h-1);
+    border-radius: var(--rounded-full);
+    background: var(--border);
+
+    &--short {
+      width: 60%;
+    }
+  }
+}
+
+.ds-report-tag svg {
+  width: var(--w-3);
+  height: var(--h-3);
+}
+
+// Subject picker on the filter row: its label beside it, on the toolbar's line.
+.ds-reports-subject.ui-input-field:not(.ds-reports-subject--bare) {
+  flex-direction: row;
+  align-items: center;
+  gap: var(--p-2);
+
+  .ui-label {
+    flex: none;
+  }
+
+  > :last-child {
+    min-width: var(--w-56);
+  }
+}
+
+// In the header the picker behaves like the search: a 160 floor, widening to 224.
+.ds-reports-subject--bare.ui-input-field {
+  flex: 1 1 var(--w-40);
+  min-width: var(--w-40);
+  max-width: var(--w-56);
+  contain: inline-size;
+}
+
+// In the header: the label is read, not shown (owner, 2026-10-02). The sr-only
+// pattern, so the trigger keeps "Subject" as its accessible name.
+.ds-reports-subject--bare.ui-input-field .ui-label {
+  @include sr-only;
+}
+
+// ── A report's page ─────────────────────────────────────────────────────────
+.ds-report-body {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.ds-report-preview__media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.ds-report-preview__stamp {
+  position: absolute;
+  left: var(--p-3);
+  bottom: var(--p-3);
+  padding: var(--p-1) var(--p-2);
+  border-radius: var(--rounded-md);
+  background: var(--card);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+}
+
+.ds-report-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.ds-report-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--p-3) var(--space-3);
+  width: 100%;
+  margin: 0;
+
+  dt {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+  }
+}

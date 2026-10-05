@@ -11,18 +11,23 @@
 import { createContext, useCallback, useContext, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { BadgeAppearance, BadgeColor } from '../../components/Badge/Badge.types';
+import type { ChartPalette } from '../../charts';
 import {
   ACTIVITY,
   ADMINS,
   AIDEN_CHATS,
+  ASSETS,
   BANNERS,
+  COLLECTIONS_DASHBOARDS,
   DASHBOARDS,
   DEFAULT_WIDGETS,
+  FOLLOWED_SUITES,
   ME,
   PROMOTIONS,
   REDIRECTS,
   REQUESTS,
   SPACES,
+  SUITES,
 } from './data';
 import type {
   ActivityEntry,
@@ -30,14 +35,17 @@ import type {
   AdminScope,
   AdminWidget,
   AidenChat,
+  Asset,
   Banner,
   Dashboard,
+  NativeFilters,
   Promotion,
   Redirect,
   Request,
   RequestStatus,
   Space,
   SpaceItem,
+  Suite,
   ThreadEntry,
 } from './types';
 
@@ -45,6 +53,14 @@ export type SuiteState = {
   requests: Request[];
   dashboards: Dashboard[];
   spaces: Space[];
+  /** Metrics, workflows and reports — what a space can hold besides dashboards. */
+  assets: Asset[];
+  /** Team-curated suites of library dashboards (Browse scoped to one). */
+  suites: Suite[];
+  /** Suite ids this user follows — shown in the DartBoards sidebar. Toggle with `update`. */
+  followedSuites: string[];
+  /** Per suite: the filters its native dashboards share. Absent = DEFAULT_NATIVE_FILTERS. Set with `update`. */
+  suiteFilters: Record<string, NativeFilters>;
   banners: Banner[];
   promotions: Promotion[];
   redirects: Redirect[];
@@ -59,12 +75,26 @@ export type SuiteState = {
    * (Pattern/AppSidebar Admin=None/Overall/Sub/Application) can be reached.
    */
   adminScope: AdminScope | null;
+  /**
+   * Per-chart colour, keyed by chart id. Absent = the chart follows the user's
+   * theme, which is the default and what most charts stay on.
+   *
+   * It lives in the SHARED state, not in the user's own settings, because the
+   * colour is how people refer to a chart ("the magenta one"). A per-viewer
+   * colour would make that reference mean different things to different readers.
+   */
+  chartPalettes: Record<string, ChartPalette>;
 };
 
 const initial = (): SuiteState => ({
   requests: structuredClone(REQUESTS),
-  dashboards: structuredClone(DASHBOARDS),
+  // The Collections suite's 42 are ordinary library dashboards too.
+  dashboards: structuredClone([...DASHBOARDS, ...COLLECTIONS_DASHBOARDS]),
   spaces: structuredClone(SPACES),
+  assets: structuredClone(ASSETS),
+  suites: structuredClone(SUITES),
+  followedSuites: [...FOLLOWED_SUITES],
+  suiteFilters: {},
   banners: structuredClone(BANNERS),
   promotions: structuredClone(PROMOTIONS),
   redirects: structuredClone(REDIRECTS),
@@ -73,6 +103,9 @@ const initial = (): SuiteState => ({
   widgets: [...DEFAULT_WIDGETS],
   aidenChats: structuredClone(AIDEN_CHATS),
   adminScope: 'overall',
+  // Section 5.5's "Views by product" ships magenta, so the prototype opens with
+  // one chart already off the user's theme — the point of the feature on screen.
+  chartPalettes: { 'ds-mu-by-product-chart': 'rm' },
 });
 
 /** Today, in the MM/DD/YYYY the Figma screens use. */
@@ -94,6 +127,8 @@ type Actions = {
   /** Escape hatch for area-specific edits. The draft is a deep copy; return nothing. */
   update: (fn: (draft: SuiteState) => void) => void;
   setAdminScope: (scope: AdminScope | null) => void;
+  /** Repaint one chart for everyone; `null` puts it back on the user's theme. */
+  setChartPalette: (chartId: string, palette: ChartPalette | null) => void;
 
   // ── requests (requester side) ──
   submitRequest: (input: NewRequestInput) => Request;
@@ -163,6 +198,11 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
     return {
       update,
       setAdminScope: (scope) => update((d) => void (d.adminScope = scope)),
+      setChartPalette: (chartId, palette) =>
+        update((d) => {
+          if (palette) d.chartPalettes[chartId] = palette;
+          else delete d.chartPalettes[chartId];
+        }),
 
       submitRequest: (input) => {
         const req: Request = {
@@ -235,7 +275,9 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
                 if (!dash) break;
                 if (c.field === 'Owner') dash.owner = c.proposed;
                 if (c.field === 'Description') dash.description = c.proposed;
-                if (c.field === 'Name') dash.name = c.proposed;
+                if (c.field === 'Name' || c.field === 'Display title') dash.name = c.proposed;
+                if (c.field === 'Category') dash.category = c.proposed as Dashboard['category'];
+                if (c.field === 'Tags') dash.tags = c.proposed.split(',').map((t) => t.trim()).filter(Boolean);
               }
             }
             r.thread.push(entry('system', 'DART Central', 'Changes applied.'));
@@ -255,7 +297,7 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
       addToSpaces: (dashboardId, spaceIds) =>
         update((d) => {
           for (const s of d.spaces) {
-            if (spaceIds.includes(s.id) && !s.items.some((i) => i.dashboardId === dashboardId)) {
+            if (spaceIds.includes(s.id) && !s.items.some((i) => i.dashboardId === dashboardId && !i.widgetId)) {
               s.items.push({ dashboardId, layout: 'card' });
             }
           }
@@ -263,7 +305,8 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
       removeFromSpace: (spaceId, dashboardId) =>
         update((d) => {
           const s = d.spaces.find((x) => x.id === spaceId);
-          if (s) s.items = s.items.filter((i) => i.dashboardId !== dashboardId);
+          // A single chart from the dashboard is a different item; it stays.
+          if (s) s.items = s.items.filter((i) => i.dashboardId !== dashboardId || !!i.widgetId);
         }),
       setItemLayout: (spaceId, dashboardId, layout) =>
         update((d) => {
@@ -358,10 +401,10 @@ export const adminStatus = (s: RequestStatus): { label: string; tone: Tone; acti
 };
 
 export const typeLabel: Record<Request['type'], string> = {
-  'dashboard-add': 'Add Dashboard',
-  'dashboard-edit': 'Edit Dashboard',
+  'dashboard-add': 'Publish to DartBoards',
+  'dashboard-edit': 'Update DartBoards listing',
   'dashboard-promote': 'Promote Dashboard',
-  'dashboard-remove': 'Remove Dashboard',
+  'dashboard-remove': 'Unpublish from DartBoards',
   banner: 'Banner / Notice',
   'banner-edit': 'Banner / Notice (edit)',
   general: 'General Request',

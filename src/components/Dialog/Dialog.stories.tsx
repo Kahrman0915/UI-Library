@@ -17,6 +17,16 @@ const meta: Meta<typeof Dialog> = {
       tags: ['compound', 'modal', 'portal'],
       changelog: [
         {
+          date: '2026-10-03',
+          summary: '`DialogHeader` takes its ids from the `Dialog`, so its `id` is optional and can no longer leave the dialog unnamed.',
+          detail: 'Dialog shares its own `id` through context, and DialogHeader seeds `{id}-title` / `{id}-description` from it — the ids the Dialog\'s `aria-labelledby` / `aria-describedby` look for. A header given a different id used to produce a dialog with no accessible name and no warning. DialogHeaderProps\' `id` is now optional and only used outside a Dialog. New story: HeaderIdFromDialog.',
+        },
+        {
+          date: '2026-10-03',
+          summary: 'Portaled surfaces carry the theme of the section that opened them.',
+          detail: 'The surface renders into `document.body`, outside the subtree that opened it, so a menu opened inside `<section data-theme="rm">` used to render in the page\'s theme. A hidden marker now sits where the component is and, while the surface is open, the nearest `data-mode` / `data-theme` / `data-tint` / `data-density` / `data-surface` above it is stamped on the portal root (`usePortalScope`). Values on `<html>` are skipped — the portal inherits those already. Spread before `...rest`, so a consumer\'s own `data-theme` still wins.',
+        },
+        {
           date: '2026-09-09',
           summary:
             'New part: `DialogMedia`, the full-bleed media region for a clip or image.',
@@ -44,6 +54,32 @@ const meta: Meta<typeof Dialog> = {
 export default meta;
 
 type Story = StoryObj<typeof Dialog>;
+
+/**
+ * The header takes its ids from the Dialog, so it needs no `id` of its own — and a
+ * mismatched one can no longer leave the dialog unnamed. The title here is still
+ * the dialog's accessible name (`header-id-dialog-title`).
+ */
+export const HeaderIdFromDialog: Story = {
+  render: () => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button id="open-header-id" label="Open dialog" onClick={() => setOpen(true)} />
+        <Dialog id="header-id-dialog" open={open} onClose={() => setOpen(false)}>
+          <DialogHeader title="Rename space" description="The new name shows everywhere the space is listed." onClose={() => setOpen(false)} />
+          <DialogBody>
+            <p>No id on the header: it reads the Dialog&apos;s.</p>
+          </DialogBody>
+          <DialogFooter>
+            <Button id="header-id-cancel" label="Cancel" style="ghost" onClick={() => setOpen(false)} />
+            <Button id="header-id-save" label="Save" onClick={() => setOpen(false)} />
+          </DialogFooter>
+        </Dialog>
+      </>
+    );
+  },
+};
 
 export const Basic: Story = {
   render: () => {

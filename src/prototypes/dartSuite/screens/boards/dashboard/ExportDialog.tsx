@@ -18,6 +18,7 @@ import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow } fro
 import Tabs, { TabsContent, TabsList, TabsTrigger } from '../../../../../components/Tabs';
 import { toast } from '../../../../../components/Toast';
 import Tooltip, { TooltipContent, TooltipTrigger } from '../../../../../components/Tooltip';
+import Text from '../../../../../components/Text';
 import { seriesFor } from '../../../data';
 import type { Dashboard } from '../../../types';
 
@@ -113,7 +114,7 @@ export function ExportDialog({ open, kind, dashboard, onClose }: { open: boolean
                 <TabsTrigger value="full">Full data set</TabsTrigger>
               </TabsList>
               <TabsContent value="summary">
-                <p className="ds-muted ds-dash-export__hint">Download a summary of this data set.</p>
+                <Text tone="muted" className="ds-dash-export__hint">Download a summary of this data set.</Text>
                 <ScrollArea id={`ds-export-${dashboard.id}-summary-scroll`} className="ds-scroll-max ds-dash-export__table">
                   <Table id={`ds-export-${dashboard.id}-summary`} density="sm" label="Summary data set">
                     <TableHead>
@@ -134,7 +135,7 @@ export function ExportDialog({ open, kind, dashboard, onClose }: { open: boolean
                 </ScrollArea>
               </TabsContent>
               <TabsContent value="full">
-                <p className="ds-muted ds-dash-export__hint">Download every row behind this view, one per month.</p>
+                <Text tone="muted" className="ds-dash-export__hint">Download every row behind this view, one per month.</Text>
                 <ScrollArea id={`ds-export-${dashboard.id}-full-scroll`} className="ds-scroll-max ds-dash-export__table">
                   <Table id={`ds-export-${dashboard.id}-full`} density="sm" label="Full data set">
                     <TableHead>

@@ -25,8 +25,17 @@ export type EmptyMediaProps = React.HTMLAttributes<HTMLDivElement> & {
   className?: string;
 };
 
-export type EmptyTitleProps = React.HTMLAttributes<HTMLDivElement> & {
+/** The heading level an empty state's title renders at. */
+export type EmptyTitleAs = 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'p';
+
+export type EmptyTitleProps = React.HTMLAttributes<HTMLHeadingElement> & {
   children: React.ReactNode;
+  /**
+   * The element the title renders as. Default `h3` — a heading, so screen-reader
+   * heading navigation finds the empty state (it was a `div` and was skipped).
+   * Pick the level that fits the page outline; `p` opts out.
+   */
+  as?: EmptyTitleAs;
   className?: string;
 };
 

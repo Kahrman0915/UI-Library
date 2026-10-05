@@ -68,15 +68,15 @@ const EmptyMedia = forwardRef<HTMLDivElement, EmptyMediaProps>(
 EmptyMedia.displayName = 'EmptyMedia';
 
 // Title
-const EmptyTitle = forwardRef<HTMLDivElement, EmptyTitleProps>(
-  ({ children, className, ...rest }, ref) => (
-    <div
+const EmptyTitle = forwardRef<HTMLHeadingElement, EmptyTitleProps>(
+  ({ children, as: Tag = 'h3', className, ...rest }, ref) => (
+    <Tag
       {...rest}
       ref={ref}
       className={`ui-empty__title${className ? ' ' + className : ''}`}
     >
       {children}
-    </div>
+    </Tag>
   ),
 );
 

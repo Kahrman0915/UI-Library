@@ -1,5 +1,6 @@
-import { forwardRef, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { createContext, forwardRef, useContext, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import CloseButton from '#components/CloseButton/CloseButton';
 import AspectRatio from '../AspectRatio';
 import { useMounted } from '#/hooks/useMounted';
@@ -13,6 +14,14 @@ import type {
 import './Dialog.scss';
 import '../../styles/overlay-entrance.scss';
 import { getFocusable } from '#/utils/focus';
+
+/**
+ * The Dialog's own `id`, shared with its parts. DialogHeader seeds `{id}-title` /
+ * `{id}-description` from THIS, not from its own prop, because the Dialog's
+ * `aria-labelledby` looks for exactly those ids: a header given a different id
+ * used to leave the dialog with no accessible name, silently.
+ */
+const DialogIdContext = createContext<string | null>(null);
 
 const Dialog = forwardRef<HTMLDivElement, DialogProps>(
   (
@@ -189,6 +198,9 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
       }
     };
 
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(state !== 'closed' && !inline && mounted);
+
     if (state === 'closed') return null;
 
     const closing = state === 'closing';
@@ -225,7 +237,7 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         aria-labelledby={refIds.title ? `${id}-title` : undefined}
         aria-describedby={refIds.desc ? `${id}-description` : undefined}
       >
-        {children}
+        <DialogIdContext.Provider value={id}>{children}</DialogIdContext.Provider>
       </div>
     );
 
@@ -233,8 +245,12 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
 
     if (!mounted) return null;
 
-    return createPortal(
+    return (
+      <>
+        <span ref={scopeAnchorRef} hidden />
+        {createPortal(
       <div
+        {...scope}
         className={`ui-dialog-overlay ${closing ? 'ui-overlay-backdrop-out' : 'ui-overlay-backdrop'}`}
         onClick={handleOverlayClick}
         role="presentation"
@@ -242,6 +258,8 @@ const Dialog = forwardRef<HTMLDivElement, DialogProps>(
         {dialogPanel}
       </div>,
       document.body,
+    )}
+      </>
     );
   },
 );
@@ -263,6 +281,10 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
     },
     ref,
   ) => {
+    // Inside a Dialog the ids always come from the Dialog, so they cannot drift
+    // from its aria-labelledby. `id` only applies to a header rendered outside one.
+    const dialogId = useContext(DialogIdContext);
+    const baseId = dialogId ?? id;
     return (
       <div
         {...rest}
@@ -272,11 +294,11 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
         <div
           className={`ui-dialog__header-content ui-dialog__header-content--${alignment}`}
         >
-          <h2 id={`${id}-title`} className="ui-dialog__title">
+          <h2 id={baseId ? `${baseId}-title` : undefined} className="ui-dialog__title">
             {title}
           </h2>
           {description && (
-            <p id={`${id}-description`} className="ui-dialog__description">
+            <p id={baseId ? `${baseId}-description` : undefined} className="ui-dialog__description">
               {description}
             </p>
           )}
@@ -284,7 +306,7 @@ const DialogHeader = forwardRef<HTMLDivElement, DialogHeaderProps>(
         {actions && <div className="ui-dialog__header-actions">{actions}</div>}
         {showCloseButton && onClose && (
           <CloseButton
-            id={`${id}-close-btn`}
+            id={`${baseId ?? 'dialog'}-close-btn`}
             variant="background"
             onClick={onClose}
             ariaLabel="Close dialog"

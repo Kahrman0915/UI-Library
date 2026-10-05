@@ -8,6 +8,7 @@ import {
   useState,
 } from 'react';
 import { createPortal } from 'react-dom';
+import { usePortalScope } from '../../hooks/usePortalScope';
 import { Check, ChevronDown, Search, X } from 'lucide-react';
 import { useMounted } from '#/hooks/useMounted';
 import { usePresence } from '#/hooks/usePresence';
@@ -129,6 +130,8 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     const [minWidth, setMinWidth] = useState<number | undefined>(undefined);
     const mounted = useMounted();
     const { present, status, onExitAnimationEnd } = usePresence(open);
+    // Carry the opener's theme/mode/density onto the portaled surface.
+    const { anchorRef: scopeAnchorRef, scope } = usePortalScope(present && mounted);
 
     // Filter options against the current search.
     const filtered = useMemo(
@@ -419,10 +422,12 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           </p>
         )}
 
+        {present && mounted && <span ref={scopeAnchorRef} hidden />}
         {present &&
           mounted &&
           createPortal(
             <div
+              {...scope}
               ref={contentRef}
               onAnimationEnd={onExitAnimationEnd}
               className={`ui-combobox__content ${status === 'closing' ? 'ui-overlay-exit' : 'ui-overlay-enter'}`}

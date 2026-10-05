@@ -1,0 +1,47 @@
+// DescriptionList — label/value pairs on a `dl`. See DescriptionList.tsx.
+//
+// Spacing is on the ladder: rows sit at level 4 (rows inside a card), the term column sits
+// level 3 from the values, and a stacked term sits level 5 above its value (icon → label).
+
+.ui-description-list {
+  margin: 0;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  min-width: 0;
+
+  // The term column is as wide as the longest term, but never narrower than --w-32, so a
+  // list of short labels still reads as a column and does not crowd its values.
+  &--horizontal {
+    display: grid;
+    grid-template-columns: minmax(var(--w-32), max-content) minmax(0, 1fr);
+    gap: var(--space-4) var(--space-3);
+
+    .ui-description-list__item {
+      display: contents;
+    }
+  }
+
+  &--vertical {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+
+    .ui-description-list__item {
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-5);
+    }
+  }
+
+  &__term {
+    color: var(--muted-foreground);
+  }
+
+  &__details {
+    margin: 0;
+    color: var(--foreground);
+    min-width: 0;
+    // A long unbroken value (an id, a URL, a table name) wraps instead of widening the list.
+    overflow-wrap: anywhere;
+  }
+}

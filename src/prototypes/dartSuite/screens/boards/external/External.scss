@@ -1,0 +1,111 @@
+// DartBoards · external charts. Tokens only.
+
+// ── The details page ───────────────────────────────────────────────────────
+
+.ds-ext-body {
+  display: grid;
+  grid-template-columns: minmax(0, 3fr) minmax(0, 2fr);
+  gap: var(--space-3);
+  align-items: start;
+}
+
+.ds-ext-preview__media {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  // Says what the tile is: a picture, not the chart.
+  .ds-ext-preview__stamp {
+    position: absolute;
+    left: var(--p-3);
+    bottom: var(--p-3);
+    padding: var(--p-1) var(--p-2);
+    border-radius: var(--rounded-md);
+    background: var(--card);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+}
+
+.ds-ext-side {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.ds-ext-facts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--p-3) var(--space-3);
+  width: 100%;
+  margin: 0;
+
+  dt {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+    color: var(--muted-foreground);
+  }
+
+  dd {
+    margin: 0;
+    font-size: var(--text-sm);
+    line-height: var(--leading-5);
+    color: var(--foreground);
+  }
+}
+
+.ds-ext-inline-link.ui-button {
+  height: auto;
+  padding: 0;
+  text-align: start;
+  white-space: normal;
+}
+
+// ── The tag on a Browse card or a space card ───────────────────────────────
+
+.ds-ext-tag svg {
+  width: var(--w-3);
+  height: var(--h-3);
+}
+
+// ── Leaving DART Central — the one-time message ─────────────────────────────
+
+.ds-leave {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--foreground);
+
+  p {
+    margin: 0;
+  }
+}
+
+.ds-leave__list {
+  margin: 0;
+  padding-left: var(--p-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  color: var(--muted-foreground);
+}
+
+.ds-leave__host {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  color: var(--muted-foreground);
+
+  svg {
+    width: var(--w-3-5);
+    height: var(--h-3-5);
+    flex: none;
+  }
+}

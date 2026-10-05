@@ -10,6 +10,10 @@
   flex-direction: column;
   gap: var(--space-3);
   padding: var(--space-2);
+  // Room for a bottom-corner Fab, when one is mounted — Fab.scss publishes --ui-fab-clearance
+  // (its size plus its inset) on :root, and it is unset otherwise. The container only honours
+  // it; it knows nothing about the Fab. So the end of a long page scrolls clear of the launcher.
+  padding-block-end: calc(var(--space-2) + var(--ui-fab-clearance, var(--p-0)));
   box-sizing: border-box;
   width: 100%;
   margin-inline: auto;
