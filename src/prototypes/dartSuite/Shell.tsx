@@ -99,7 +99,7 @@ import { scopeProducts, useSignedIn, useSuite } from './store';
 import { IrmAnnouncer, NotificationsMenu, SimulateMenu } from './screens/irm';
 import { AUDIENCE_LABEL, audienceOf, waitingOn } from './hub';
 import { openItems } from './openItems';
-import { ROLE_LABEL, evergreenState, recordName } from './irm';
+import { ROLE_LABEL, recordName } from './irm';
 import type { SuiteState } from './store';
 import { appOf } from './types';
 import type { AdminScope, Route } from './types';
@@ -462,7 +462,8 @@ function IrmSidebar({ current }: { current: Route }) {
       Icon: ShieldAlert,
       route: { page: 'irm-home' },
       match: ['irm-home', 'irm-governance'],
-      badge: state.irm.records.filter((r) => (r.lifecycle === 'production' || r.lifecycle === 'retiring') && evergreenState(r, state.irm.today) === 'past-due').length,
+      // What needs governance now — the evidence the page opens on, and Home's count — not the evergreen backlog.
+      badge: openItems(state, me).filter((m) => m.app === 'irm' && m.section === 'needs').length,
     },
     'prod-support': { label: 'Deployments', Icon: Rocket, route: { page: 'irm-home' }, match: ['irm-home', 'irm-deployments'], badge: active.filter((c) => c.status === 'awaiting-deployment' && !c.deployerId).length },
   };

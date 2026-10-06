@@ -437,7 +437,7 @@ export function widgetPulse(t: HomeTile, state: SuiteState, personId: string): W
       return over ? { level: 'urgent', label: `${over} overdue` } : { level: 'normal' };
     }
     case 'queue': {
-      const mine = state.irm.changes.filter((c) => c.assigneeId === personId && WORK_STATUSES.includes(c.status) && c.status !== 'awaiting-deployment');
+      const mine = state.irm.changes.filter((c) => c.assigneeId === personId && WORK_STATUSES.includes(c.status));
       const late = mine.filter((c) => isAged(c, today, state.irm.workflows)).length;
       if (!mine.length) return { level: 'quiet', caughtUp: 'Nothing assigned to you.' };
       return late ? { level: 'urgent', label: `${late} past SLA` } : { level: 'normal' };
@@ -1208,7 +1208,7 @@ function Queue({ id, size }: { id: string; size: HomeSize }) {
   const { person } = useSignedIn();
   const mine = state.irm.changes
     // Awaiting deployment is production support's, not the developer's.
-    .filter((c) => c.assigneeId === person.id && WORK_STATUSES.includes(c.status) && c.status !== 'awaiting-deployment')
+    .filter((c) => c.assigneeId === person.id && WORK_STATUSES.includes(c.status))
     .sort((a, b) => PRIORITY[a.priority].rank - PRIORITY[b.priority].rank);
   const late = mine.filter((c) => isAged(c, state.irm.today, state.irm.workflows));
   const spec: ListSpec = {

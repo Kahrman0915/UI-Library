@@ -88,12 +88,16 @@ function BusinessHome() {
         <OpenItemsList id="ds-irm-open" items={items} onAct={act} />
 
         <Section id="ds-irm-owned" heading="Reports you own">
-          <RecordTable
-            id="ds-irm-owned-table"
-            label="Reports you own"
-            rows={owned}
-            actions={(r) => (due(r) ? <Button id={`ds-irm-owned-${r.number}-cert`} size="sm" style="outline" label="Certify" onClick={() => irm.certify(r.number)} /> : null)}
-          />
+          {owned.length ? (
+            <RecordTable
+              id="ds-irm-owned-table"
+              label="Reports you own"
+              rows={owned}
+              actions={(r) => (due(r) ? <Button id={`ds-irm-owned-${r.number}-cert`} size="sm" style="outline" label="Certify" onClick={() => irm.certify(r.number)} /> : null)}
+            />
+          ) : (
+            <Text size="sm" tone="muted">You are not the business owner of any report. Reports you own show here, with their controls and when they are due to be recertified.</Text>
+          )}
         </Section>
       </Stack>
       {dialogs}

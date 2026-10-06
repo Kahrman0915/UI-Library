@@ -169,7 +169,7 @@ export const TODAY_METRICS: TodayMetric[] = [
     app: 'IRM',
     for: ['developer'],
     read: (s, p) => {
-      const mine = s.irm.changes.filter((c) => c.assigneeId === p && WORK_STATUSES.includes(c.status) && c.status !== 'awaiting-deployment');
+      const mine = s.irm.changes.filter((c) => c.assigneeId === p && WORK_STATUSES.includes(c.status));
       const late = mine.filter((c) => isAged(c, s.irm.today, s.irm.workflows)).length;
       return { value: mine.length, tone: late ? 'warning' : 'default', context: late ? `${late} past SLA` : 'All within SLA', route: { page: 'irm-home' } };
     },
