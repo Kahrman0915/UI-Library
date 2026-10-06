@@ -16,6 +16,7 @@ import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
 import Text from '../../../../components/Text';
 import Grid from '../../../../components/Grid';
+import { toast } from '../../../../components/Toast';
 import { useLeaveGuard, useNav } from '../../nav';
 import type { LeaveGuard } from '../../nav';
 import { useSuite } from '../../store';
@@ -92,6 +93,21 @@ export const typeVisual = (t: RequestType): { Icon: LucideIcon; color: FeaturedI
   return { Icon: LayoutGrid, color: 'info' };
 };
 
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const US_DATE = /\b(\d{2})\/(\d{2})\/(\d{4})\b/g;
+
+/**
+ * One date format across a person's requests: "Aug 29, 2026", the way IRM writes dates. DART Central's
+ * records keep the MM/DD/YYYY the Figma screens were drawn with; this turns every one inside a string
+ * ("Warning banner, 09/06/2026 – 09/07/2026", "08/30/2026 now") into the same form.
+ */
+export const prettyDates = (text: string) => text.replace(US_DATE, (_, m, d, y) => `${MONTHS[+m - 1]} ${+d}, ${y}`);
+
+/** The reference line, without saying a name twice: "DartBoards · #0417 · Publish to DartBoards" drops the
+    trailing "DartBoards" that the app or the type already said. `app` is empty where the page already names it. */
+export const refLine = (app: string, id: string, type: string, scope: string) =>
+  [app, id, type, scope === app || type.includes(scope) ? '' : scope].filter(Boolean).join(' · ');
+
 /** The third part of the reference line: scope for a banner, else the product. */
 export const scopeLabel = (r: Request) => {
   if (r.type === 'banner' || r.type === 'banner-edit') {
@@ -101,7 +117,7 @@ export const scopeLabel = (r: Request) => {
       return n === 1 ? scope : `${n} dashboards`;
     }
   }
-  return r.product === 'DARTBoards' ? 'Dartboards' : r.product;
+  return r.product === 'DARTBoards' ? 'DartBoards' : r.product;
 };
 
 /* ── Breadcrumb ───────────────────────────────────────────────────────────── */
@@ -136,7 +152,7 @@ export function Crumbs({ trail }: { trail: { label: string; route?: Route }[] })
   );
 }
 
-export const MY_REQUESTS: { label: string; route: Route } = { label: 'My requests', route: { page: 'my-requests' } };
+export const MY_REQUESTS: { label: string; route: Route } = { label: 'Open items', route: { page: 'my-requests' } };
 export const NEW_REQUEST: { label: string; route: Route } = { label: 'New request', route: { page: 'new-request' } };
 
 /* ── Date helpers ─────────────────────────────────────────────────────────── */
@@ -171,7 +187,16 @@ export function useSubmission() {
       if (fail) return setPhase('failed');
       const req = submitRequest(input);
       if (assetId) update((d) => void (d.requests.find((r) => r.id === req.id)!.assetId = assetId));
-      replace({ page: 'request-submitted', id: req.id });
+      // One pattern for every form, DART Central's and IRM's: straight to the request you filed — it is
+      // where you will track it — with a toast saying it went in and where it lives. (Was a separate
+      // "Request submitted" page for DART Central forms only.)
+      replace({ page: 'request-detail', id: req.id });
+      toast.success(`Request ${req.id} submitted`, {
+        description:
+          input.type === 'feature'
+            ? 'The admin team reviews it, then publishes it to the feature backlog. Track it in Open items, under Waiting on others.'
+            : 'The DART Central admin team reviews it. Track it in Open items, under Waiting on others.',
+      });
     }, 1500);
   };
 
@@ -191,6 +216,9 @@ export function FormShell({
   phase,
   dirty,
   onSubmit,
+  trail,
+  readyNote = 'Reviewed by the DART Central admin team.',
+  submitLabel = 'Submit for review',
 }: {
   id: string;
   crumb: string;
@@ -202,6 +230,11 @@ export function FormShell({
   phase: Phase;
   dirty: boolean;
   onSubmit: () => void;
+  /** The breadcrumb; defaults to New request › `crumb`. `null` for a form that is a place of its own. */
+  trail?: { label: string; route?: Route }[] | null;
+  /** What the footer says once the form is ready: who handles it next. */
+  readyNote?: string;
+  submitLabel?: string;
 }) {
   // Guard every route out (breadcrumb, sidebar, rail, tab switch, tab close).
   // While a submit is in flight the guard also holds — there is no abort.
@@ -214,14 +247,14 @@ export function FormShell({
       : phase === 'failed'
         ? 'Nothing has been submitted yet.'
         : ready
-          ? 'Reviewed by the DART Central admin team.'
+          ? readyNote
           : 'Complete the required fields to submit';
 
   return (
     <PageContainer width="form">
       <PageHeader
         id={`${id}-header`}
-        overline={<Crumbs trail={[MY_REQUESTS, NEW_REQUEST, { label: crumb }]} />}
+        overline={trail === null ? undefined : <Crumbs trail={trail ?? [NEW_REQUEST, { label: crumb }]} />}
         visual={<FeaturedIcon Icon={Icon} color={color} />}
         title={title}
       />
@@ -246,7 +279,7 @@ export function FormShell({
           </Text>
           <Button
             id={`${id}-submit`}
-            label={phase === 'failed' ? 'Try again' : phase === 'submitting' ? 'Submitting…' : 'Submit for review'}
+            label={phase === 'failed' ? 'Try again' : phase === 'submitting' ? 'Submitting…' : submitLabel}
             isLoading={phase === 'submitting'}
             disabled={!ready && phase !== 'failed'}
             onClick={() => phase !== 'submitting' && onSubmit()}

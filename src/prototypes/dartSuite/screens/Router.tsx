@@ -29,6 +29,21 @@ import { MetricPage, MetricsBrowse } from './boards/metrics';
 import { MarketplaceAll } from './boards/marketplace';
 import { SuiteBrowse } from './boards/suite/SuiteBrowse';
 import { AidenChatPage, AidenLauncherPage } from './aiden';
+import {
+  IrmActivity,
+  IrmAuditLog,
+  IrmBoard,
+  IrmChange,
+  IrmChanges,
+  IrmDeployments,
+  IrmGovernance,
+  IrmHome,
+  IrmIntegrations,
+  IrmNewChange,
+  IrmRecord,
+  IrmRecords,
+  IrmWorkflows,
+} from './irm';
 
 function Screen({ route }: { route: Route }) {
   switch (route.page) {
@@ -41,7 +56,7 @@ function Screen({ route }: { route: Route }) {
     case 'new-request':
       return <NewRequest />;
     case 'request-form':
-      return <RequestForm kind={route.kind} mode={route.mode} dashboardId={route.dashboardId} />;
+      return <RequestForm key={route.reach ?? route.kind} kind={route.kind} mode={route.mode} dashboardId={route.dashboardId} record={route.record} reach={route.reach} />;
     case 'request-submitted':
       return <RequestSubmitted id={route.id} />;
     case 'whats-new':
@@ -96,6 +111,36 @@ function Screen({ route }: { route: Route }) {
       return <AidenLauncherPage />;
     case 'aiden-chat':
       return <AidenChatPage chatId={route.chatId} />;
+    case 'irm-home':
+      return <IrmHome />;
+    case 'irm-records':
+      return <IrmRecords />;
+    case 'irm-record':
+      return <IrmRecord number={route.number} />;
+    case 'irm-changes':
+      return <IrmChanges />;
+    case 'irm-change':
+      return <IrmChange id={route.id} />;
+    case 'report-request':
+      return <IrmNewChange type={route.type} record={route.record} hosted />;
+    case 'report-request-detail':
+      return <IrmChange id={route.id} hosted />;
+    case 'irm-new-change':
+      return <IrmNewChange type={route.type} record={route.record} />;
+    case 'irm-board':
+      return <IrmBoard />;
+    case 'irm-activity':
+      return <IrmActivity />;
+    case 'irm-governance':
+      return <IrmGovernance />;
+    case 'irm-deployments':
+      return <IrmDeployments />;
+    case 'irm-integrations':
+      return <IrmIntegrations />;
+    case 'irm-audit':
+      return <IrmAuditLog />;
+    case 'irm-workflows':
+      return <IrmWorkflows />;
   }
 }
 

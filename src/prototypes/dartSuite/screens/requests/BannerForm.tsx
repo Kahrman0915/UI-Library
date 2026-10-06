@@ -5,7 +5,7 @@
    switching from a written custom message to standard asks first. */
 
 import { useState } from 'react';
-import { Bell, CircleAlert, CircleCheck, Info, TriangleAlert } from 'lucide-react';
+import { Bell, CircleAlert, Megaphone, CircleCheck, Info, TriangleAlert } from 'lucide-react';
 import Alert from '../../../../components/Alert';
 import type { AlertVariant } from '../../../../components/Alert/Alert.types';
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../../../components/AlertDialog';
@@ -44,7 +44,20 @@ const STANDARD: { id: string; type: BannerType; name: string; title: string; tex
   { id: 'resolved', type: 'success', name: 'Issue resolved', title: 'The issue is resolved', text: 'Data is loading normally again.' },
 ];
 
-export function BannerForm() {
+/** The applications a site-wide banner can go on. "Everywhere" is one row, not "select all". */
+const APPLICATIONS = [
+  { value: 'everywhere', label: 'Everywhere in DART Central' },
+  { value: 'DART Central', label: 'DART Central' },
+  { value: 'DartBoards', label: 'DartBoards' },
+  { value: 'IRM', label: 'IRM' },
+  { value: 'Aiden', label: 'Aiden' },
+];
+
+/** `reach`: on dashboards (DartBoards' option in New request) or across applications (Everything else's). */
+export function BannerForm({ reach = 'dashboards' }: { reach?: 'dashboards' | 'applications' }) {
+  const apps = reach === 'applications';
+  // The standard messages are written for a dashboard; across an application they say "application".
+  const say = (t: string) => (apps ? t.replace(/\b([Tt])his dashboard\b/g, '$1his application').replace(/^Dashboard unavailable/, 'Application unavailable').replace(/\bto this dashboard\b/g, 'to this application') : t);
   const { state } = useSuite();
   const { phase, submit } = useSubmission();
   const [type, setType] = useState<BannerType | ''>('');
@@ -61,13 +74,19 @@ export function BannerForm() {
   const [ctaUrl, setCtaUrl] = useState('');
   const [confirmSwitch, setConfirmSwitch] = useState(false);
 
+  // "Everywhere" stands alone: picking it clears the applications, picking an application clears it.
+  const pickScope = (next: string[]) => {
+    if (!apps) return setScope(next);
+    const added = next.find((v) => !scope.includes(v));
+    setScope(added === 'everywhere' ? ['everywhere'] : next.filter((v) => v !== 'everywhere'));
+  };
   const standard = STANDARD.find((m) => m.id === standardId);
-  const options = state.dashboards.filter((d) => d.lifecycle !== 'archived').map((d) => ({ value: d.id, label: d.name }));
+  const options = apps ? APPLICATIONS : state.dashboards.filter((d) => d.lifecycle !== 'archived').map((d) => ({ value: d.id, label: d.name }));
   const scopeNames = scope.map((id) => options.find((o) => o.value === id)?.label ?? id);
   const locked = source === 'standard' && !!standard;
 
-  const previewTitle = source === 'standard' ? standard?.title : title.trim();
-  const previewText = source === 'standard' ? standard?.text : message.trim();
+  const previewTitle = source === 'standard' && standard ? say(standard.title) : title.trim();
+  const previewText = source === 'standard' && standard ? say(standard.text) : message.trim();
 
   const dirty = !!(type || scope.length || source || title || message || start || end || noEnd || cta || ctaLabel || ctaUrl);
   const ready =
@@ -89,13 +108,13 @@ export function BannerForm() {
     const window = start || end ? `${start ? fmtDate(start) : 'on approval'} – ${noEnd ? 'no end date' : end ? fmtDate(end) : 'open'}` : 'from approval';
     submit({
       type: 'banner',
-      product: 'DARTBoards',
+      product: apps ? 'DART Central' : 'DARTBoards',
       title: previewTitle ?? 'Banner / Notice',
       summary: `${typeLabel.split(' · ')[0]} banner, ${window}.`,
       fields: [
         { label: 'Banner type', value: typeLabel },
         { label: 'Scope', value: scopeNames.join(', ') },
-        { label: 'Message source', value: source === 'standard' ? `Standard · ${standard?.name}` : 'Custom message' },
+        { label: 'Message source', value: source === 'standard' ? `Standard · ${say(standard?.name ?? '')}` : 'Custom message' },
         { label: 'Banner title', value: previewTitle ?? '' },
         { label: 'Message', value: previewText ?? '' },
         { label: 'Starts', value: start ? fmtDate(start) : 'As soon as it is approved' },
@@ -106,7 +125,7 @@ export function BannerForm() {
   };
 
   return (
-    <FormShell id="ds-req-banner" crumb="Banner / Notice" title="Banner / Notice" Icon={Bell} color="warning" ready={ready} phase={phase} dirty={dirty} onSubmit={onSubmit}>
+    <FormShell id="ds-req-banner" crumb={apps ? 'Application banner' : 'Dashboard banner'} title={apps ? 'Application or site-wide banner' : 'Banner on a dashboard'} Icon={apps ? Megaphone : Bell} color="warning" ready={ready} phase={phase} dirty={dirty} onSubmit={onSubmit}>
       <div className="ds-requests-fields">
         <Separator label="TARGETING" />
         <Row>
@@ -126,7 +145,7 @@ export function BannerForm() {
               ))}
             </SelectContent>
           </Select>
-          <ScopeMultiSelect id="ds-req-banner-scope" options={options} selected={scope} onChange={setScope} />
+          <ScopeMultiSelect id="ds-req-banner-scope" options={options} selected={scope} onChange={pickScope} noun={apps ? 'applications' : 'dashboards'} />
         </Row>
 
         <Separator label="MESSAGE" />
@@ -160,7 +179,7 @@ export function BannerForm() {
             <SelectTrigger placeholder="Select…" />
             <SelectContent>
               {STANDARD.filter((m) => !type || locked || m.type === type).map((m) => (
-                <SelectItem key={m.id} value={m.id} label={m.name} />
+                <SelectItem key={m.id} value={m.id} label={say(m.name)} />
               ))}
             </SelectContent>
           </Select>

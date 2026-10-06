@@ -57,7 +57,7 @@ import { toast } from '../../../../../components/Toast';
 import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGroup';
 import Text from '../../../../../components/Text';
 import { DISCARD_BUILDER, useLeaveGuard, useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import type { Asset, Dashboard, MetricView, NativeFilters, NativeWidget, Space, SpaceBlock, SpaceCardLayout, SpaceItem } from '../../../types';
 import { useUi } from '../../../ui';
 import { ASSET_META, AssetCard, SpaceCard, SpaceCardSkeleton } from '../space/SpaceCards';
@@ -352,7 +352,7 @@ export function Builder({ spaceId, seedDashboardId, seedAssetId }: { spaceId?: s
   const BY = { org: 'Org', region: 'Region', product: 'Product' } as const;
   const library: LibraryEntry[] = [
     ...state.dashboards
-      .filter((d) => d.lifecycle === 'published' && !d.external)
+      .filter((d) => discoverable(d) && !d.external)
       .map<LibraryEntry>((d) => {
         const subject = subjectOf(state, d);
         return {
@@ -368,7 +368,7 @@ export function Builder({ spaceId, seedDashboardId, seedAssetId }: { spaceId?: s
         };
       }),
     ...state.dashboards
-      .filter((d) => d.native && d.lifecycle === 'published')
+      .filter((d) => d.native && discoverable(d))
       .flatMap((d) => {
         const subject = subjectOf(state, d);
         return d.native!.widgets.map<LibraryEntry>((w) => ({

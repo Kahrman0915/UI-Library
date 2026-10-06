@@ -2,13 +2,15 @@
    (`layout: 'thumbnail'`). The Builder renders these same cards on its canvas —
    "the canvas IS the space" (Builder ① START HERE) — so they live here once. */
 
-import { ArrowRight, ChartLine, ExternalLink, FileText, ImageIcon, LayoutDashboard, Lock, Workflow } from 'lucide-react';
+import { Archive, ArrowRight, ChartLine, ExternalLink, FileText, ImageIcon, LayoutDashboard, Lock, Workflow } from 'lucide-react';
 import type { ReactNode } from 'react';
+import Badge from '../../../../../components/Badge';
 import Button from '../../../../../components/Button';
 import Card, { CardActions, CardBody, CardHeader } from '../../../../../components/Card';
 import FeaturedIcon from '../../../../../components/FeaturedIcon';
 import Skeleton from '../../../../../components/Skeleton';
 import type { Asset, AssetKind, Dashboard, SpaceCardLayout } from '../../../types';
+import { fmtIso } from '../../../irm';
 import { openAriaLabel, openLabel, useOpenExternal } from '../external/externalShared';
 import './Space.scss';
 
@@ -19,13 +21,45 @@ export type SpaceCardProps = {
   /** The ••• (space page) — left empty on the Builder canvas, where CanvasItem owns the menu. */
   action?: ReactNode;
   onOpen: () => void;
+  /** A retired dashboard's tile offers to swap its replacement in, where the space can be edited. */
+  onReplace?: (replacementId: string) => void;
+  /** The replacement's name, for the retired tile's copy. */
+  replacementName?: string;
 };
 
 /** A short description — the first clause, like the Figma cards. */
 const shortDescription = (d: Dashboard) => d.description.split(/,| — /)[0].replace(/\.$/, '');
 
-export function SpaceCard({ id, dashboard, layout, action, onOpen }: SpaceCardProps) {
+export function SpaceCard({ id, dashboard, layout, action, onOpen, onReplace, replacementName }: SpaceCardProps) {
   const openExternal = useOpenExternal();
+
+  // IRM retired the report: the tile stays where the owner put it, as a placeholder pointing at what replaces it.
+  if (dashboard.retired) {
+    const to = dashboard.retired.replacedBy;
+    return (
+      <Card id={id} className="ds-space-card ds-space-card--retired">
+        <CardHeader
+          id={`${id}-header`}
+          overline={<Badge id={`${id}-retired`} label="Retired" color="default" appearance="outline" />}
+          title={dashboard.name}
+          description={`Retired on ${fmtIso(dashboard.retired.on)}${replacementName ? ` · replaced by ${replacementName}` : ''}`}
+          media={<FeaturedIcon Icon={Archive} size="sm" />}
+          action={action}
+        />
+        {to && onReplace && (
+          <CardBody>
+            <CardActions>
+              <Button id={`${id}-replace`} style="link" size="sm" label={`Replace with ${replacementName ?? 'the replacement'}`} IconRight={ArrowRight} onClick={() => onReplace(to)} />
+            </CardActions>
+          </CardBody>
+        )}
+      </Card>
+    );
+  }
+  // During IRM's notice period the tile says so; it still opens.
+  const retiringBadge = dashboard.retiring ? (
+    <Badge id={`${id}-retiring`} label={`Retiring ${fmtIso(dashboard.retiring.on)}`} color="warning" appearance="soft" />
+  ) : undefined;
 
   // An external chart in a space is a LINK card — never drawn as if it were live.
   if (dashboard.external) {
@@ -76,6 +110,7 @@ export function SpaceCard({ id, dashboard, layout, action, onOpen }: SpaceCardPr
       <Card id={id} className="ds-space-card ds-space-card--thumbnail">
         <CardHeader
           id={`${id}-header`}
+          overline={retiringBadge}
           title={dashboard.name}
           description={shortDescription(dashboard)}
           action={action}
@@ -95,6 +130,7 @@ export function SpaceCard({ id, dashboard, layout, action, onOpen }: SpaceCardPr
     <Card id={id} className="ds-space-card">
       <CardHeader
         id={`${id}-header`}
+        overline={retiringBadge}
         title={dashboard.name}
         description={shortDescription(dashboard)}
         media={<FeaturedIcon Icon={dashboard.hasAccess ? LayoutDashboard : Lock} size="sm" appearance="solid" />}

@@ -3,9 +3,9 @@
    Figma's W1.1 repeats one placeholder card ("Spaces: Your Personal Dashboard
    Collections") in every slot; these are varied so the product filter, the
    topic menu and search have something to act on. Only "Introducing
-   Dartboards" has a full release story page (W2.1). */
+   DartBoards" has a full release story page (W2.1). */
 
-export type WnProduct = 'DART Central' | 'Aiden' | 'Dartboards';
+export type WnProduct = 'DART Central' | 'Aiden' | 'DartBoards';
 export type WnTopic = 'launch' | 'feature' | 'resource' | 'coming-soon';
 
 export type WnEntry = {
@@ -36,11 +36,11 @@ export const WHATS_NEW: WnEntry[] = [
   {
     id: 'introducing-dartboards',
     date: 'July 7, 2026',
-    product: 'Dartboards',
+    product: 'DartBoards',
     version: 'v1.0.0',
-    title: 'Introducing Dartboards',
+    title: 'Introducing DartBoards',
     summary:
-      'Dartboards is here — a focused, dashboard-first experience built into DART Central. Browse your organization’s dashboard library, build personal or team spaces, and pin the views that matter most.',
+      'DartBoards is here — a focused, dashboard-first experience built into DART Central. Browse your organization’s dashboard library, build personal or team spaces, and pin the views that matter most.',
     topic: 'launch',
     featured: true,
     story: true,
@@ -55,7 +55,7 @@ export const WHATS_NEW: WnEntry[] = [
   {
     id: 'spaces',
     date: 'July 7, 2026',
-    product: 'Dartboards',
+    product: 'DartBoards',
     title: 'Spaces: your personal dashboard collections',
     summary:
       'Spaces let you group dashboards around any theme — a project, a team, a reporting cadence. Create as many as you need, and keep them private or share them with your team.',
@@ -66,7 +66,7 @@ export const WHATS_NEW: WnEntry[] = [
   {
     id: 'edit-mode',
     date: 'July 7, 2026',
-    product: 'Dartboards',
+    product: 'DartBoards',
     title: 'Edit mode for every space',
     summary:
       'Drag and drop to rearrange, switch dashboards between thumbnail and compact view, and rename your space. Undo reverses your last change.',
@@ -86,15 +86,23 @@ export const WHATS_NEW: WnEntry[] = [
     id: 'my-requests',
     date: 'August 18, 2026',
     product: 'DART Central',
-    title: 'Track every request in My Requests',
+    title: 'Track every request in one place',
     summary:
       'Every request you file with the admin team now lives in one place. Answer questions from the admins, follow the status, and see the decision without waiting for an email.',
     topic: 'feature',
   },
   {
+    id: 'feature-requests',
+    date: 'August 25, 2026',
+    product: 'DART Central',
+    title: 'Suggest a feature from New request',
+    summary: 'Have an idea for DART Central, DartBoards or Aiden? Pick Suggest a feature in New request, describe it and the difference it would make. The admin team reviews it like any other request and publishes accepted ideas to the feature backlog.',
+    topic: 'feature',
+  },
+  {
     id: 'getting-started-guide',
     date: 'August 20, 2026',
-    product: 'Dartboards',
+    product: 'DartBoards',
     title: 'Guide: building your first space',
     summary: 'A five-minute walkthrough from the Dashboard Library to a space your team opens every Monday.',
     topic: 'resource',
@@ -118,7 +126,7 @@ export const WHATS_NEW: WnEntry[] = [
   {
     id: 'share-space',
     date: 'Coming in October',
-    product: 'Dartboards',
+    product: 'DartBoards',
     title: 'Share a copy of a space',
     summary: 'Send a teammate a copy of a space you built. They get their own version to rename, rearrange and make their own.',
     topic: 'coming-soon',
@@ -126,7 +134,7 @@ export const WHATS_NEW: WnEntry[] = [
   {
     id: 'metrics-library',
     date: 'Coming in November',
-    product: 'Dartboards',
+    product: 'DartBoards',
     title: 'Metrics library',
     summary: 'Browse metrics the same way you browse dashboards, then add any metric to your space as the chart type you prefer.',
     topic: 'coming-soon',

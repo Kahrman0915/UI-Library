@@ -9,7 +9,6 @@
 
 import {
   BarChart3,
-  Box,
   ChartColumn,
   ChevronDown,
   CircleHelp,
@@ -40,11 +39,22 @@ import {
   FileBarChart,
   LineChart,
   Rocket,
+  Kanban,
+  ClipboardList,
+  Plug,
+  GitPullRequest,
+  Database,
+  ShieldAlert,
+  ScrollText,
+  Workflow,
+  Star,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { useState } from 'react';
 import type { ReactNode } from 'react';
 import AppShell, { AppShellBody, AppShellMain, AppShellTabStrip, AppShellWorkspace } from '../../components/AppShell';
 import AppRail, { AppRailItem } from '../../components/AppRail';
+import { APP_ICON } from './appIcons';
 import TabBar, { TabBarList, TabBarMenu, TabBarNewGroupItem, TabBarTab } from '../../components/TabBar';
 import type { TabBarMenuItem } from '../../components/TabBar';
 import { ContextMenuItem, ContextMenuSeparator, ContextMenuSub, ContextMenuSubContent, ContextMenuSubTrigger } from '../../components/ContextMenu';
@@ -70,6 +80,7 @@ import Sidebar, {
   SidebarGroupLabel,
   SidebarInset,
   SidebarMenu,
+  SidebarMenuAction,
   SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -79,10 +90,16 @@ import Sidebar, {
   SidebarProvider,
   SidebarTrigger,
 } from '../../components/Sidebar';
-import { Toaster } from '../../components/Toast';
-import { ME } from './data';
+import { Toaster, toast } from '../../components/Toast';
+import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../components/Dialog';
+import Input from '../../components/Input';
+import { ME, PEOPLE } from './data';
 import { useNav } from './nav';
-import { scopeProducts, useSuite } from './store';
+import { scopeProducts, useSignedIn, useSuite } from './store';
+import { IrmAnnouncer, NotificationsMenu, SimulateMenu } from './screens/irm';
+import { AUDIENCE_LABEL, audienceOf, waitingOn } from './hub';
+import { openItems } from './openItems';
+import { ROLE_LABEL, evergreenState, recordName } from './irm';
 import type { SuiteState } from './store';
 import { appOf } from './types';
 import type { AdminScope, Route } from './types';
@@ -99,12 +116,16 @@ export function tabMeta(route: Route, state: SuiteState): { label: string; Icon:
     case 'home':
       return { label: 'Home', Icon: Home };
     case 'my-requests':
-      return { label: 'My Requests', Icon: Inbox };
+      return { label: 'Open items', Icon: Inbox };
     case 'request-detail':
       return { label: state.requests.find((r) => r.id === route.id)?.title ?? route.id, Icon: Inbox };
     case 'new-request':
     case 'request-form':
       return { label: 'New request', Icon: Plus };
+    case 'report-request':
+      return { label: 'New request', Icon: Plus };
+    case 'report-request-detail':
+      return { label: route.id, Icon: Inbox };
     case 'request-submitted':
       return { label: 'Request submitted', Icon: Inbox };
     case 'whats-new':
@@ -167,22 +188,52 @@ export function tabMeta(route: Route, state: SuiteState): { label: string; Icon:
       return { label: 'New tab', Icon: Sparkles };
     case 'aiden-chat':
       return { label: state.aidenChats.find((c) => c.id === route.chatId)?.title ?? 'Aiden', Icon: Sparkles };
+    case 'irm-home':
+      return { label: 'IRM', Icon: APP_ICON.irm };
+    case 'irm-records':
+      return { label: 'Inventory', Icon: Database };
+    case 'irm-record':
+      return { label: route.number, Icon: Database };
+    case 'irm-changes':
+      return { label: 'All requests', Icon: GitPullRequest };
+    case 'irm-change':
+      return { label: route.id, Icon: GitPullRequest };
+    case 'irm-new-change':
+      return { label: 'New IRM request', Icon: Plus };
+    case 'irm-board':
+      return { label: 'Team board', Icon: Kanban };
+    case 'irm-activity':
+      return { label: 'IRM activity', Icon: BarChart3 };
+    case 'irm-governance':
+      return { label: 'Governance', Icon: ShieldAlert };
+    case 'irm-deployments':
+      return { label: 'Deployments', Icon: Rocket };
+    case 'irm-integrations':
+      return { label: 'Integrations', Icon: Plug };
+    case 'irm-audit':
+      return { label: 'Audit log', Icon: ScrollText };
+    case 'irm-workflows':
+      return { label: 'Workflows', Icon: Workflow };
   }
 }
 
 /* ── Sidebar items ────────────────────────────────────────────────────────── */
 
-type NavItem = { label: string; Icon: LucideIcon; route: Route; badge?: number; match?: Route['page'][] };
+/** `action` is a second door on the row — a "+" that starts something new from the place it belongs to. */
+type NavItem = { label: string; Icon: LucideIcon; route: Route; badge?: number; match?: Route['page'][]; action?: { label: string; Icon: LucideIcon; route: Route } };
 
-function NavList({ items, current }: { items: NavItem[]; current: Route }) {
-  const { go } = useNav();
+function NavList({ items, current: here }: { items: NavItem[]; current: Route }) {
+  const { go, previous } = useNav();
+  // A request belongs to the list it was opened from: from My work, My work stays lit, not All requests.
+  const current = here.page === 'irm-change' && previous && previous.page.startsWith('irm-') && previous.page !== 'irm-change' ? previous : here;
   return (
     <SidebarMenu>
-      {items.map(({ label, Icon, route, badge, match }) => {
+      {items.map(({ label, Icon, route, badge, match, action }) => {
         const active =
           (match ?? [route.page]).includes(current.page) &&
           (route.page !== 'space' || (current.page === 'space' && current.id === (route as { id: string }).id)) &&
           (route.page !== 'placeholder' || (current.page === 'placeholder' && current.title === (route as { title: string }).title)) &&
+          (route.page !== 'irm-record' || (current.page === 'irm-record' && current.number === (route as { number: string }).number)) &&
           // A suite is Browse scoped down; its own sidebar item is the active one, not "Dashboards".
           !(route.page === 'browse' && current.page === 'browse' && current.suite);
         return (
@@ -192,6 +243,16 @@ function NavList({ items, current }: { items: NavItem[]; current: Route }) {
               <span>{label}</span>
             </SidebarMenuButton>
             {badge ? <SidebarMenuBadge>{badge}</SidebarMenuBadge> : null}
+            {action && (
+              <Tooltip id={`ds-nav-${route.page}-action-tip`} side="right">
+                <TooltipTrigger>
+                  <SidebarMenuAction aria-label={action.label} onClick={() => go(action.route)}>
+                    <action.Icon />
+                  </SidebarMenuAction>
+                </TooltipTrigger>
+                <TooltipContent>{action.label}</TooltipContent>
+              </Tooltip>
+            )}
           </SidebarMenuItem>
         );
       })}
@@ -201,14 +262,19 @@ function NavList({ items, current }: { items: NavItem[]; current: Route }) {
 
 function CentralSidebar({ current }: { current: Route }) {
   const { state } = useSuite();
-  const needsReply = state.requests.filter((r) => r.requesterId === ME.id && r.status === 'awaiting-reply').length;
+  const { person } = useSignedIn();
+  // Open items' badge is its "Needs you" count — the same number Home's Needs your attention shows.
+  const needsYou = waitingOn(state, person.id).length;
   const scope = state.adminScope;
   const products = scopeProducts(scope);
   const pending = state.requests.filter((r) => products.includes(r.product) && (r.status === 'new' || r.status === 'needs-review')).length;
 
   const main: NavItem[] = [
     { label: 'Home', Icon: Home, route: { page: 'home' } },
-    { label: 'My Requests', Icon: Inbox, route: { page: 'my-requests' }, badge: needsReply, match: ['my-requests', 'request-detail', 'new-request', 'request-form', 'request-submitted'] },
+    { label: 'Open items', Icon: Inbox, route: { page: 'my-requests' }, badge: needsYou, match: ['my-requests', 'request-detail', 'report-request-detail'] },
+    // Starting something is its own row, not a button inside Open items: Open items is a to-do list across
+    // every app now, so "New request" under it would be a door nobody looks for. Lit while you fill one in.
+    { label: 'New request', Icon: Plus, route: { page: 'new-request' }, match: ['new-request', 'request-form', 'report-request', 'request-submitted'] },
   ];
   const discover: NavItem[] = [
     { label: "What's New", Icon: Megaphone, route: { page: 'whats-new' }, match: ['whats-new', 'whats-new-story'] },
@@ -376,16 +442,96 @@ function SuitesGroup({ current }: { current: Route }) {
   );
 }
 
+/**
+ * IRM's sidebar follows the signed-in person's ROLE — there is no switcher.
+ * Each role's home is the first item; the shared screens follow; the
+ * prototype's Simulate menu sits at the bottom.
+ */
+function IrmSidebar({ current }: { current: Route }) {
+  const { state } = useSuite();
+  const { person, role } = useSignedIn();
+  const me = person.id;
+  const active = state.irm.changes.filter((c) => c.status !== 'deployed' && c.status !== 'rejected' && c.status !== 'cancelled');
+  const home: Record<typeof role, NavItem> = {
+    // The badge is the page's own "Needs you" count, so the two numbers can never disagree.
+    business: { label: 'My IRM', Icon: Home, route: { page: 'irm-home' }, badge: openItems(state, me).filter((m) => m.app === 'irm' && m.section === 'needs').length },
+    developer: { label: 'My queue', Icon: ClipboardList, route: { page: 'irm-home' }, badge: active.filter((c) => c.assigneeId === me).length },
+    'dev-manager': { label: 'Team board', Icon: Kanban, route: { page: 'irm-home' }, match: ['irm-home', 'irm-board'], badge: active.filter((c) => !c.assigneeId && c.status === 'ready').length },
+    governance: {
+      label: 'Governance',
+      Icon: ShieldAlert,
+      route: { page: 'irm-home' },
+      match: ['irm-home', 'irm-governance'],
+      badge: state.irm.records.filter((r) => (r.lifecycle === 'production' || r.lifecycle === 'retiring') && evergreenState(r, state.irm.today) === 'past-due').length,
+    },
+    'prod-support': { label: 'Deployments', Icon: Rocket, route: { page: 'irm-home' }, match: ['irm-home', 'irm-deployments'], badge: active.filter((c) => c.status === 'awaiting-deployment' && !c.deployerId).length },
+  };
+  const work: NavItem[] = [
+    home[role],
+    ...(role === 'dev-manager' ? [{ label: 'Month over month', Icon: BarChart3, route: { page: 'irm-activity' } } as NavItem] : []),
+  ];
+  const favorites: NavItem[] = (state.irmFavorites[me] ?? [])
+    .map((n) => state.irm.records.find((r) => r.number === n))
+    .filter((r): r is NonNullable<typeof r> => !!r)
+    .map((r) => ({ label: recordName(r), Icon: Star, route: { page: 'irm-record', number: r.number } as Route }));
+  const shared: NavItem[] = [
+    // Everyone's IRM requests — "All", so it is never mistaken for Open items or My IRM (yours).
+    { label: 'All requests', Icon: GitPullRequest, route: { page: 'irm-changes' }, match: ['irm-changes', 'irm-change'] },
+    // A visible row, like DART Central's New request and DartBoards' New space — it was a "+" that only
+    // showed on hover, which nobody finds. "New IRM request", not "New request": DART Central's New request
+    // is the chooser across every app, and this one goes straight to IRM's own form.
+    { label: 'New IRM request', Icon: Plus, route: { page: 'irm-new-change' } },
+    { label: 'Inventory', Icon: Database, route: { page: 'irm-records' }, match: ['irm-records', 'irm-record'] },
+    ...(role === 'governance' ? [{ label: 'Activity', Icon: BarChart3, route: { page: 'irm-activity' } } as NavItem] : []),
+    { label: 'Workflows', Icon: Workflow, route: { page: 'irm-workflows' } },
+    ...(role === 'governance' ? [{ label: 'Audit log', Icon: ScrollText, route: { page: 'irm-audit' } } as NavItem] : []),
+    { label: 'Integrations', Icon: Plug, route: { page: 'irm-integrations' } },
+  ];
+  return (
+    <>
+      <SidebarGroup>
+        <SidebarGroupLabel>{ROLE_LABEL[role]}</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <NavList items={work} current={current} />
+        </SidebarGroupContent>
+      </SidebarGroup>
+      {/* No "IRM" label: the rail already says which application this is. */}
+      <SidebarGroup>
+        <SidebarGroupContent>
+          <NavList items={shared} current={current} />
+        </SidebarGroupContent>
+      </SidebarGroup>
+      {/* The reports this person starred in the inventory, one click from anywhere in IRM. */}
+      {favorites.length > 0 && (
+        <SidebarGroup>
+          <SidebarGroupLabel>Favorites</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <NavList items={favorites} current={current} />
+          </SidebarGroupContent>
+        </SidebarGroup>
+      )}
+      <SidebarGroup>
+        <SidebarGroupLabel>Prototype</SidebarGroupLabel>
+        <SidebarGroupContent>
+          <SimulateMenu />
+        </SidebarGroupContent>
+      </SidebarGroup>
+    </>
+  );
+}
+
 /* ── Rail ─────────────────────────────────────────────────────────────────── */
 
 const OTHER_APPS: { code: string; name: string; Icon: LucideIcon; count?: number }[] = [
-  { code: 'irm', name: 'IRM', Icon: Box, count: 3 },
   { code: 'phoenix', name: 'Phoenix', Icon: Flame },
   { code: 'eclipse', name: 'Eclipse', Icon: Layers },
   { code: 'notegen', name: 'NoteGen', Icon: FileText },
 ];
 
 /* ── The shell ────────────────────────────────────────────────────────────── */
+
+/** One seed person per IRM role — the personas the prototype can sign in as. */
+const PERSONAS = [ME.id, 'u-tb', 'u-jm', 'u-ar', 'u-np', 'u-oh', 'u-cb'].map((id) => PEOPLE.find((p) => p.id === id) ?? ME);
 
 const SCOPES: { value: string; label: string }[] = [
   { value: 'none', label: 'Requester (no admin rights)' },
@@ -395,13 +541,28 @@ const SCOPES: { value: string; label: string }[] = [
 ];
 
 export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactNode }) {
-  const { state, setAdminScope } = useSuite();
+  const { state, setAdminScope, update, saveTabSet } = useSuite();
   const nav = useNav();
   const { aidenStop, setAidenStop, theme, setTheme, leaveNotices, setLeaveNotices } = useUi();
   const app = appOf(nav.route);
+  const { person } = useSignedIn();
 
   const item = (t: { id: string; route: Route }): TabBarMenuItem => ({ value: t.id, ...tabMeta(t.route, state), groupable: t.id !== 'home' });
   const setOf = (group: string | null) => nav.tabs.filter((t) => t.id !== 'home' && t.group === group).map(item);
+
+  /* Save the tabs in the bar — the group on screen, or the loose tabs — to reopen in one click from a quick
+     action on Home. Saving under a name that already exists updates that set. */
+  const [savingTabs, setSavingTabs] = useState<string | null>(null);
+  const shownGroup = nav.groups.find((g) => g.id === nav.activeGroup);
+  const shownRoutes = nav.visibleTabs.filter((t) => t.id !== 'home').map((t) => t.route);
+  const saveShownTabs = () => {
+    const name = (savingTabs ?? '').trim();
+    if (!name) return;
+    const existing = (state.tabSets[person.id] ?? []).find((x) => x.name.toLowerCase() === name.toLowerCase());
+    saveTabSet(person.id, { id: existing?.id ?? `ts-${Date.now().toString(36)}`, name, color: shownGroup?.color ?? 'blue', routes: shownRoutes });
+    setSavingTabs(null);
+    toast.success(`${existing ? 'Updated' : 'Saved'} “${name}”`, { description: `${shownRoutes.length} tabs. Add it to a Quick actions widget on Home to reopen them all in one click.` });
+  };
 
   // Right-click on a tab: move it to another group, or start a new one with it.
   const tabMenu = (tabId: string) => {
@@ -422,6 +583,7 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
           </ContextMenuSubContent>
         </ContextMenuSub>
         {nav.activeGroup !== null && <ContextMenuItem onClick={() => nav.moveToGroup(tabId, null)}>Remove from group</ContextMenuItem>}
+        <ContextMenuItem onClick={() => setSavingTabs(shownGroup?.label ?? '')}>Save these tabs…</ContextMenuItem>
         <ContextMenuSeparator />
         <ContextMenuItem
           onClick={() => {
@@ -451,10 +613,10 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
             />
             <DropdownMenu id="ds-account-menu">
               <DropdownMenuTrigger>
-                <Button id="ds-account" className="ui-app-shell__account" style="ghost" label={ME.name} IconRight={ChevronDown} />
+                <Button id="ds-account" className="ui-app-shell__account" style="ghost" label={person.name} IconRight={ChevronDown} />
               </DropdownMenuTrigger>
               <DropdownMenuContent align="start">
-                <DropdownMenuLabel>{ME.email}</DropdownMenuLabel>
+                <DropdownMenuLabel>{person.email}</DropdownMenuLabel>
                 <DropdownMenuItem onClick={() => nav.go({ page: 'placeholder', title: 'My profile' })}>
                   <CircleUser aria-hidden="true" />
                   My profile
@@ -480,7 +642,24 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
                   Explain links that open a new tab
                 </DropdownMenuCheckboxItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel>Prototype · act as</DropdownMenuLabel>
+                {/* Prototype only: who is signed in. In IRM the person's role decides the views — the real app has no switch. */}
+                <DropdownMenuLabel>Prototype · sign in as</DropdownMenuLabel>
+                <DropdownMenuRadioGroup
+                  value={person.id}
+                  onValueChange={(id) =>
+                    update((d) => {
+                      d.userId = id;
+                    })
+                  }
+                >
+                  {PERSONAS.map((p) => (
+                    <DropdownMenuRadioItem key={p.id} value={p.id}>
+                      {p.name} · {AUDIENCE_LABEL[audienceOf(state, p.id)]}
+                    </DropdownMenuRadioItem>
+                  ))}
+                </DropdownMenuRadioGroup>
+                <DropdownMenuSeparator />
+                <DropdownMenuLabel>Prototype · DART Central admin rights</DropdownMenuLabel>
                 <DropdownMenuRadioGroup
                   value={state.adminScope ?? 'none'}
                   onValueChange={(v) => setAdminScope(v === 'none' ? null : (v as AdminScope))}
@@ -506,24 +685,27 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
           </>
         }
         actions={
-          /* Ask Aiden at the far end of the strip, beside the Fab (owner, 2026-09-22: keep both).
-             The strip button opens the side panel; the Fab opens the mini window. */
-          <Tooltip id="ds-ask-aiden-tooltip" side="bottom">
-            <TooltipTrigger>
-              <Button
-                id="ds-ask-aiden"
-                style="ghost"
-                size="sm"
-                iconOnly
-                IconCenter={() => <AidenSparkles size={16} gradient />}
-                aria-label={aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}
-                aria-expanded={aidenStop === 'panel'}
-                aria-controls={aidenStop === 'panel' ? 'ds-aiden-panel' : undefined}
-                onClick={() => setAidenStop((s) => (s === 'panel' ? 'closed' : 'panel'))}
-              />
-            </TooltipTrigger>
-            <TooltipContent>{aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}</TooltipContent>
-          </Tooltip>
+          <>
+            <NotificationsMenu />
+            {/* Ask Aiden at the far end of the strip, beside the Fab (owner, 2026-09-22: keep both).
+               The strip button opens the side panel; the Fab opens the mini window. */}
+            <Tooltip id="ds-ask-aiden-tooltip" side="bottom">
+              <TooltipTrigger>
+                <Button
+                  id="ds-ask-aiden"
+                  style="ghost"
+                  size="sm"
+                  iconOnly
+                  IconCenter={() => <AidenSparkles size={16} gradient />}
+                  aria-label={aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}
+                  aria-expanded={aidenStop === 'panel'}
+                  aria-controls={aidenStop === 'panel' ? 'ds-aiden-panel' : undefined}
+                  onClick={() => setAidenStop((s) => (s === 'panel' ? 'closed' : 'panel'))}
+                />
+              </TooltipTrigger>
+              <TooltipContent>{aidenStop === 'panel' ? 'Close Aiden' : 'Ask Aiden'}</TooltipContent>
+            </Tooltip>
+          </>
         }
       >
         <TabBar
@@ -539,7 +721,8 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
             {nav.visibleTabs.map((t) => {
               const { label, Icon } = tabMeta(t.route, state);
               return t.id === 'home' ? (
-                <TabBarTab key={t.id} value="home" label="Home" Icon={Home} iconOnly closable={false} />
+                // Home is pinned (never closable), and says "Home" rather than leaving the icon to say it (owner, 2026-10-06).
+                <TabBarTab key={t.id} value="home" label="Home" Icon={Home} closable={false} className="ds-tab-home" />
               ) : (
                 <TabBarTab
                   key={t.id}
@@ -588,10 +771,17 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
           <AppRail header={<SidebarTrigger />} footer={<ModeToggler id="ds-mode" variant="ghost" size="sm" />}>
             <AppRailItem
               id="ds-rail-boards"
-              label="DARTBoards"
-              Icon={LayoutDashboard}
+              label="DartBoards"
+              Icon={APP_ICON.boards}
               active={app === 'boards'}
-              onClick={() => app !== 'boards' && nav.go({ page: 'browse' })}
+              onClick={() => app !== 'boards' && nav.openApp({ page: 'browse' })}
+            />
+            <AppRailItem
+              id="ds-rail-irm"
+              label="IRM"
+              Icon={APP_ICON.irm}
+              active={app === 'irm'}
+              onClick={() => app !== 'irm' && nav.openApp({ page: 'irm-home' })}
             />
             {OTHER_APPS.map(({ code, name, Icon, count }) => (
               <AppRailItem
@@ -607,7 +797,9 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
 
           <AppShellWorkspace>
             <Sidebar>
-              <SidebarContent>{app === 'boards' ? <BoardsSidebar current={nav.route} /> : <CentralSidebar current={nav.route} />}</SidebarContent>
+              <SidebarContent>
+                {app === 'boards' ? <BoardsSidebar current={nav.route} /> : app === 'irm' ? <IrmSidebar current={nav.route} /> : <CentralSidebar current={nav.route} />}
+              </SidebarContent>
             </Sidebar>
             <SidebarInset>
               <AppShellMain>{children}</AppShellMain>
@@ -617,7 +809,31 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
       </AppShellBody>
 
       {aiden}
+      <IrmAnnouncer />
       <Toaster position="bottom-right" />
+      <Dialog id="ds-save-tabs" open={savingTabs !== null} onClose={() => setSavingTabs(null)}>
+        <DialogHeader
+          id="ds-save-tabs-header"
+          title="Save these tabs"
+          description={`The ${shownRoutes.length} ${shownRoutes.length === 1 ? 'tab' : 'tabs'} open${shownGroup ? ` in ${shownGroup.label}` : ''}. Add the set to a Quick actions widget on Home to reopen them all in one click.`}
+          onClose={() => setSavingTabs(null)}
+        />
+        <DialogBody>
+          <form
+            id="ds-save-tabs-form"
+            onSubmit={(e) => {
+              e.preventDefault();
+              saveShownTabs();
+            }}
+          >
+            <Input id="ds-save-tabs-name" label="Name" placeholder="e.g. Monday review" value={savingTabs ?? ''} onValueChange={setSavingTabs} autoFocus />
+          </form>
+        </DialogBody>
+        <DialogFooter>
+          <Button id="ds-save-tabs-cancel" style="ghost" label="Cancel" onClick={() => setSavingTabs(null)} />
+          <Button id="ds-save-tabs-save" label="Save tabs" disabled={!(savingTabs ?? '').trim() || !shownRoutes.length} onClick={saveShownTabs} />
+        </DialogFooter>
+      </Dialog>
     </AppShell>
   );
 }

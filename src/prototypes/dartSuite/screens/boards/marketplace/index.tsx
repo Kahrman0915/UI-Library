@@ -28,7 +28,7 @@ import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGr
 import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
 import { useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import type { Dashboard, Route } from '../../../types';
 import { BrowseCard } from '../browse/BrowseItems';
 import { subjectOf } from '../builder/facets';
@@ -67,7 +67,7 @@ export function MarketplaceAll() {
   const [kind, setKind] = useState<Kind | ''>('');
   const [subject, setSubject] = useState('');
 
-  const dashboards = state.dashboards.filter((d) => d.lifecycle === 'published' && !d.external);
+  const dashboards = state.dashboards.filter((d) => discoverable(d) && !d.external);
   const metrics = state.assets.filter(isMetric);
   const reports = state.assets.filter(isReport);
 

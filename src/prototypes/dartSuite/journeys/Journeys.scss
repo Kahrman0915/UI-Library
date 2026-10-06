@@ -1,0 +1,187 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DART Suite · Persona journeys — the map and the presenter. Prototype-only
+// layout glue; tokens only. No colored edge on any card: the application a step
+// happens in is a Badge, and "improved" is a Badge.
+// ─────────────────────────────────────────────────────────────────────────────
+
+.ds-journeys {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.ds-journeys__tabs {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-journeys__bar {
+  flex: none;
+  padding: var(--space-3) var(--space-2);
+  border-bottom: var(--border-w-100) solid var(--border);
+}
+
+.ds-journeys__panel {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+
+  &--present {
+    overflow: hidden;
+  }
+}
+
+/* ── Map ── */
+
+.ds-journeys__map {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  padding: var(--space-2);
+}
+
+.ds-journeys__lane {
+  display: grid;
+  grid-template-columns: var(--w-60) minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  padding-bottom: var(--space-2);
+  border-bottom: var(--border-w-100) solid var(--border);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 900px) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.ds-journeys__who {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.ds-journeys__cast {
+  display: flex;
+  gap: var(--p-1);
+  flex-wrap: wrap;
+}
+
+.ds-journeys__lane-title {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: var(--leading-7);
+  font-weight: var(--font-semibold);
+}
+
+.ds-journeys__track {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--w-56)), 1fr));
+  gap: var(--space-3);
+}
+
+.ds-journeys__stop {
+  display: flex;
+}
+
+.ds-journeys__card {
+  flex: 1;
+}
+
+/* The cast: six people across the top, each a way into their walkthrough. */
+.ds-journeys__cast-row {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--w-48)), 1fr));
+  gap: var(--space-3);
+
+  > li {
+    display: flex;
+  }
+}
+
+.ds-journeys__persona {
+  flex: 1;
+}
+
+.ds-journeys__go {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  color: var(--primary-text);
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+}
+
+// The step number: a small disc, the same in the map and the step list.
+.ds-journeys__num {
+  display: inline-grid;
+  place-items: center;
+  width: var(--w-6);
+  height: var(--h-6);
+  border-radius: var(--rounded-full);
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-semibold);
+
+  &--sm {
+    background: none;
+  }
+}
+
+/* ── Presenter ── */
+
+.ds-journeys__present {
+  height: 100%;
+  display: grid;
+  grid-template-columns: var(--w-96) minmax(0, 1fr);
+}
+
+.ds-journeys__script {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  overflow-y: auto;
+  border-right: var(--border-w-100) solid var(--border);
+  background: var(--background);
+
+  // A scrolling column: nothing in it shrinks. A Card clips its overflow, so a
+  // shrunk one would collapse to its border.
+  > * {
+    flex: none;
+  }
+}
+
+.ds-journeys__step-title {
+  margin: 0;
+  font-size: var(--text-xl);
+  line-height: var(--leading-7);
+  font-weight: var(--font-semibold);
+}
+
+// The live prototype. `contain: layout` keeps its viewport-fixed parts — the
+// Aiden button, toasts, the sidebar panel — inside this frame instead of the page.
+.ds-journeys__frame {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
+  contain: layout;
+}

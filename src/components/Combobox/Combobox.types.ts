@@ -59,7 +59,7 @@ export type ComboboxProps = Omit<
   description?: React.ReactNode;
   /** Paints the error border and sets `aria-invalid`. */
   error?: boolean;
-  /** Message text, announced via `role="alert"` when it appears. */
+  /** Message text, shown only while `error` is set and announced via `role="alert"` when it appears. */
   errorMessage?: React.ReactNode;
   /** Shown on the trigger when nothing is selected. */
   placeholder?: React.ReactNode;

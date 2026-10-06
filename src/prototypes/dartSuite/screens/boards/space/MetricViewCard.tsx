@@ -51,6 +51,40 @@ function axis(view: MetricView, space: NativeFilters | null): string[] {
   return back(PERIODS.find((p) => p.value === (space?.period ?? '13w'))!.weeks, 7);
 }
 
+/**
+ * A metric's number as a NUMBER view shows it — the value now, and how it moved on the previous period.
+ * One function, so any surface that shows the same metric with the same view and filters (a space, a
+ * space pinned to Home) shows the same number.
+ */
+function numbers(asset: Asset, view: MetricView, space: NativeFilters | null) {
+  const product = space?.product ?? 'all';
+  const base = (BASE[asset.id] ?? 10) * PRODUCT_SCALE[product];
+  const key = `${asset.id}-${view.timeframe}-${product}-${space?.period ?? ''}`;
+  const now = base * (0.96 + noise(key, 1) * 0.08);
+  const prev = base * (0.96 + noise(key, 2) * 0.08);
+  return { base, key, now, prev };
+}
+
+export function metricNumber(asset: Asset, view: MetricView, space: NativeFilters | null) {
+  const { now, prev } = numbers(asset, view, space);
+  const delta = now - prev;
+  const by = asset.metric?.unit === 'time' ? `${Math.abs(Math.round(delta))}m` : `${Math.abs(delta).toFixed(1)} pts`;
+  const period = view.timeframe === 'day' ? 'day' : view.timeframe === 'mtd' ? 'month' : 'period';
+  return { value: formatMetric(asset, now), change: `${delta >= 0 ? 'up' : 'down'} ${by}`, period };
+}
+
+/**
+ * The shape behind a NUMBER view — `n` periods that END on its previous value and its value now, so a
+ * sparkline beside the number finishes exactly where the number and its change say it does.
+ */
+export function metricTrend(asset: Asset, view: MetricView, space: NativeFilters | null, n = 12): number[] {
+  const { base, key, now, prev } = numbers(asset, view, space);
+  // A gentle drift into the previous value, not independent noise, so the line reads as a trend.
+  const start = base * (0.94 + noise(`${key}-trend`, 0) * 0.12);
+  const walk = Array.from({ length: n - 2 }, (_, i) => start + ((prev - start) * i) / (n - 2) + base * (noise(`${key}-trend`, i + 1) - 0.5) * 0.03);
+  return [...walk.map((v) => +v.toFixed(2)), +prev.toFixed(2), +now.toFixed(2)];
+}
+
 /** What drives this card, in one line. */
 export function metricCaption(view: MetricView, space: NativeFilters | null, origin: string | null = 'from the space'): string {
   const from = origin ? ` · ${origin}` : '';
@@ -76,14 +110,12 @@ export function MetricViewCard({ id, asset, view, space, action, origin = 'from 
 
   let body: ReactNode;
   if (view.display === 'number') {
-    const now = base * (0.96 + noise(key, 1) * 0.08);
-    const prev = base * (0.96 + noise(key, 2) * 0.08);
-    const delta = now - prev;
+    const n = metricNumber(asset, view, space);
     body = (
       <div className="ds-metric-number">
-        <span className="ds-metric-number__value">{fmt(now)}</span>
+        <span className="ds-metric-number__value">{n.value}</span>
         <span className="ds-metric-number__change">
-          {delta >= 0 ? 'up' : 'down'} {asset.metric?.unit === 'time' ? `${Math.abs(Math.round(delta))}m` : `${Math.abs(delta).toFixed(1)} pts`} on the previous {view.timeframe === 'day' ? 'day' : view.timeframe === 'mtd' ? 'month' : 'period'}
+          {n.change} on the previous {n.period}
         </span>
       </div>
     );

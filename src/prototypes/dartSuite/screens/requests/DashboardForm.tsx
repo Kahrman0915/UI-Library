@@ -15,7 +15,7 @@
    exists until a dashboard is chosen. */
 
 import { useState } from 'react';
-import { CirclePlus, ExternalLink, EyeOff, LayoutGrid, Pencil, Upload } from 'lucide-react';
+import { ArrowRight, CirclePlus, EyeOff, LayoutGrid, Pencil, Upload } from 'lucide-react';
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../../../components/AlertDialog';
 import Alert from '../../../../components/Alert';
 import Badge from '../../../../components/Badge';
@@ -29,12 +29,13 @@ import Separator from '../../../../components/Separator';
 import Switch from '../../../../components/Switch';
 import Tabs, { TabsContent, TabsList, TabsTrigger } from '../../../../components/Tabs';
 import Textarea from '../../../../components/Textarea';
-import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
 import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
-import { CONTROLS, IRM_UNPUBLISHED, displayTitleFrom, irmFor } from '../../irm';
+import { CONTROLS, displayTitleFrom, irmFor, publishable as publishableRecords } from '../../irm';
 import type { IrmRecord } from '../../irm';
-import { useSuite } from '../../store';
+import { LISTING_MODE_OPTION, audienceOf, canRequest, reportRequestRoute } from '../../hub';
+import { useNav } from '../../nav';
+import { useSignedIn, useSuite } from '../../store';
 import type { Dashboard, DashboardRequestMode, FieldChange } from '../../types';
 import { DashboardThumb } from '../boards/shared/boardsShared';
 import { FormShell, Row, fmtDate, useSubmission } from './shared';
@@ -58,19 +59,18 @@ const MODES: { value: DashboardRequestMode; label: string; Icon: typeof Upload }
   { value: 'remove', label: 'Unpublish', Icon: EyeOff },
 ];
 
-const openIrm = (number: string) =>
-  toast(`Opening ${number} in IRM`, { description: 'IRM opens in a new tab. Report details, access and controls are changed there.' });
 
 /* ── The IRM record, read-only ─────────────────────────────────────────────── */
 
 function IrmRecordPanel({ id, record }: { id: string; record: IrmRecord }) {
+  const { go } = useNav();
   const c = CONTROLS[record.controls];
   return (
     <Card id={id} className="ds-req-irm">
       <CardBody>
         <div className="ds-req-irm__head">
           <span className="ds-req-irm__label">Managed in IRM · change these there</span>
-          <Button id={`${id}-open`} style="link" size="sm" label="Open IRM record" IconRight={ExternalLink} aria-label={`Open ${record.number} in IRM (opens in a new tab)`} onClick={() => openIrm(record.number)} />
+          <Button id={`${id}-open`} style="link" size="sm" label="Open IRM record" IconRight={ArrowRight} onClick={() => go({ page: 'irm-record', number: record.number })} />
         </div>
         <DescriptionList orientation="vertical" className="ds-req-irm__facts">
           <DescriptionListItem term="IRM record">{record.number}</DescriptionListItem>
@@ -117,13 +117,27 @@ function ListingPreview({ id, listing, hue, source }: { id: string; listing: Lis
 
 /* ── The form ──────────────────────────────────────────────────────────────── */
 
-export function DashboardForm({ initialMode = 'add', initialDashboardId }: { initialMode?: DashboardRequestMode; initialDashboardId?: string }) {
+export function DashboardForm({
+  initialMode = 'add',
+  initialDashboardId,
+  initialRecord,
+}: {
+  initialMode?: DashboardRequestMode;
+  initialDashboardId?: string;
+  /** Publish: the IRM record to list, when IRM's "ready to list" notice sent the developer here. */
+  initialRecord?: string;
+}) {
   const { state } = useSuite();
+  const { go } = useNav();
+  const { person } = useSignedIn();
   const { phase, submit } = useSubmission();
-  const [mode, setMode] = useState<DashboardRequestMode>(initialMode);
+  // The tabs this person can use — the same rules as the New request chooser.
+  const audience = audienceOf(state, person.id);
+  const modes = MODES.filter((m) => canRequest(LISTING_MODE_OPTION[m.value], audience));
+  const [mode, setMode] = useState<DashboardRequestMode>(modes.some((m) => m.value === initialMode) ? initialMode : (modes[0]?.value ?? initialMode));
 
   // Publish
-  const [irmNumber, setIrmNumber] = useState('');
+  const [irmNumber, setIrmNumber] = useState(initialRecord ?? '');
   const [listing, setListing] = useState<Listing>(EMPTY_LISTING);
   const [display, setDisplay] = useState<Display>({ toolbar: true, tabs: false, beta: false });
   // Update listing / Promote / Unpublish
@@ -134,8 +148,9 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
   const [confirmRemove, setConfirmRemove] = useState(false);
 
   /* What can be published: finished IRM records not already in DartBoards. */
-  const listedIrm = new Set(state.dashboards.filter((d) => d.lifecycle === 'published').map((d) => irmFor(d).number));
-  const publishable = IRM_UNPUBLISHED.filter((r) => !listedIrm.has(r.number));
+  const publishable = publishableRecords(state.irm.records, state.dashboards);
+  // Every listing has its IRM record (seedIrm); `!` because the form only offers listed dashboards.
+  const recOf = (d: Dashboard) => irmFor(d, state.irm.records)!;
   const record = publishable.find((r) => r.number === irmNumber);
 
   const listed = state.dashboards.filter((d) => d.lifecycle === 'published');
@@ -177,7 +192,7 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
   /** Picking an IRM record pre-fills the display title from its name — minus the number. */
   const pickRecord = (n: string) => {
     setIrmNumber(n);
-    const r = IRM_UNPUBLISHED.find((x) => x.number === n);
+    const r = state.irm.records.find((x) => x.number === n);
     if (r) setListing((l) => ({ ...l, title: l.title.trim() ? l.title : displayTitleFrom(r.name) }));
   };
 
@@ -204,7 +219,7 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
       });
     }
     if (!picked || !current) return;
-    const irm = irmFor(picked);
+    const irm = recOf(picked);
     if (mode === 'edit') {
       const changes: FieldChange[] = editChanged.map((k) => ({ field: LISTING_LABELS[k], current: current[k], proposed: edit[k].trim() }));
       return submit(
@@ -268,7 +283,7 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
       placeholder="Select…"
       searchPlaceholder="Search by title or IRM number…"
       emptyMessage="No dashboards match."
-      options={listed.map((d) => ({ value: d.id, label: d.name, description: irmFor(d).number, searchText: `${d.name} ${irmFor(d).number}` }))}
+      options={listed.map((d) => ({ value: d.id, label: d.name, description: recOf(d).number, searchText: `${d.name} ${recOf(d).number}` }))}
       value={gated.dashboardId || undefined}
       onValueChange={(v) => {
         setGated((g) => ({ ...g, dashboardId: v }));
@@ -348,14 +363,14 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
       <Alert
         id="ds-req-dash-irm-note"
         variant="info"
-        title="Building a report, or changing its data, visuals, access or controls?"
-        description="That is done in IRM. Use this form once a report is finished, to show it in DartBoards or change how it is listed."
-        action={<Button id="ds-req-dash-irm-go" size="sm" style="outline" label="Open IRM" IconRight={ExternalLink} aria-label="Open IRM (opens in a new tab)" onClick={() => openIrm('IRM')} />}
+        title="Need a new report, a fix, or a change to its data, access or controls?"
+        description="That is a request about the report itself — the report's owner and developers handle it in IRM. This form only changes how a finished report appears in DartBoards."
+        action={<Button id="ds-req-dash-irm-go" size="sm" style="outline" label="Ask about the report" IconRight={ArrowRight} onClick={() => go({ page: 'new-request' })} />}
       />
 
       <Tabs id="ds-req-dash-tabs" className="ds-requests-tabs" value={mode} onValueChange={switchMode} activationMode="manual">
         <TabsList aria-label="Dashboard request type">
-          {MODES.map(({ value, label, Icon }) => (
+          {modes.map(({ value, label, Icon }) => (
             <TabsTrigger key={value} value={value}>
               <Icon aria-hidden="true" size={16} />
               {label}
@@ -424,7 +439,7 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
             {picker}
             {picked && current && (
               <>
-                <IrmRecordPanel id="ds-req-edit-irm-record" record={irmFor(picked)} />
+                <IrmRecordPanel id="ds-req-edit-irm-record" record={recOf(picked)} />
                 <Separator label="HOW IT APPEARS IN DARTBOARDS" />
                 <div className="ds-req-listing">
                   <div className="ds-req-listing__fields">{listingFields(edit, setE, current, 'edit')}</div>
@@ -480,7 +495,17 @@ export function DashboardForm({ initialMode = 'add', initialDashboardId }: { ini
           <div className="ds-requests-fields">
             <Alert
               id="ds-req-remove-note"
-              description="Unpublishing takes the dashboard out of DartBoards. The report itself, its IRM record and its controls are untouched — retiring a report is done in IRM. Anyone who added it to a space will see it as unavailable."
+              description="Unpublishing takes the dashboard out of DartBoards. The report itself keeps running, with its IRM record and controls — anyone who added it to a space will see it as unavailable. To stop the report altogether, retire it: everyone using it gets a notice period."
+              action={
+                <Button
+                  id="ds-req-remove-retire"
+                  size="sm"
+                  style="outline"
+                  label="Retire the report instead"
+                  IconRight={ArrowRight}
+                  onClick={() => go(reportRequestRoute(audience, 'decommission', picked ? recOf(picked).number : undefined))}
+                />
+              }
             />
             {picker}
             {picked && (

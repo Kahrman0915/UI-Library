@@ -1,0 +1,327 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// IRM — prototype-only layout glue. Tokens only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// An age past its status's SLA.
+.ds-irm-aged {
+  color: var(--error);
+}
+
+.ds-irm-gap-top {
+  margin-top: var(--space-3);
+}
+
+.ds-irm-int-tick {
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--success);
+}
+
+// ── The team board: a lane per person, a column per working status ──────────
+
+.ds-irm-board {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  margin-top: var(--space-3);
+  overflow-x: auto;
+}
+
+.ds-irm-board__row {
+  display: grid;
+  // The status columns share the width; the lane's person sits on its own line above them, so four
+  // columns fit the narrow page (848 at 1440) and only scroll below a 160 floor each.
+  grid-template-columns: repeat(var(--ds-irm-cols), minmax(var(--w-40), 1fr));
+  gap: var(--space-4);
+  align-items: stretch;
+
+  &--head {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: var(--background);
+    padding-bottom: var(--space-5);
+    border-bottom: var(--border-w-100) solid var(--border);
+  }
+}
+
+.ds-irm-board__lane-head {
+  grid-column: 1 / -1;
+}
+
+.ds-irm-board__cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-height: var(--h-24);
+  padding: var(--p-2);
+  border-radius: var(--rounded-lg);
+  background: var(--secondary);
+  border: var(--border-w-100) dashed transparent;
+  transition: border-color var(--duration-fast) var(--ease-out), background var(--duration-fast) var(--ease-out);
+
+  &--over {
+    border-color: var(--primary-border);
+    background: var(--primary-light);
+  }
+}
+
+
+.ds-irm-card {
+  position: relative;
+  cursor: grab;
+
+  &:active {
+    cursor: grabbing;
+  }
+}
+
+// Plain title text; its ::after covers the card, so the whole card opens the change.
+.ds-irm-card__open.ui-button {
+  position: static;
+  color: var(--foreground);
+  font-weight: var(--font-medium);
+
+  &::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+}
+
+.ds-irm-card__menu {
+  position: relative;
+  z-index: 1;
+}
+
+// The notifications popover: wide enough for a sentence, capped so a long list scrolls.
+.ds-notifications {
+  width: var(--w-96);
+  max-height: var(--h-96);
+  overflow-y: auto;
+}
+
+// A number of days: wide enough for three digits, not a full-width field.
+.ds-irm-wf-sla {
+  width: var(--w-24);
+}
+
+// Lineage columns: every row the column's width, a micro gap between outlined rows.
+.ds-irm-lineage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+
+  // ItemGroup wraps each Item in a row; the Item itself is what hugs its text.
+  .ui-item {
+    width: 100%;
+  }
+}
+
+.ds-irm-lineage__self {
+  width: 100%;
+}
+
+/* ── Inventory: a table set up by the person ── */
+
+// Wide tables scroll inside the page rather than pushing it sideways.
+.ds-inv__scroll {
+  overflow-x: auto;
+}
+
+.ds-inv__quick {
+  width: var(--w-48);
+}
+
+.ds-inv__panel {
+  width: var(--w-80);
+}
+
+.ds-inv__star-col {
+  width: var(--w-10);
+}
+
+// The favorite star: an outline until it is on, then filled in amber.
+.ds-inv__star {
+  display: inline-grid;
+  place-items: center;
+  width: var(--w-7);
+  height: var(--h-7);
+  padding: 0;
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--muted-foreground);
+  cursor: pointer;
+  transition: color var(--duration-instant) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+
+  &:hover {
+    color: var(--foreground);
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &--on,
+  &--on:hover {
+    color: var(--category-amber);
+
+    svg {
+      fill: currentColor;
+    }
+  }
+}
+
+.ds-inv__fav-toggle--on svg {
+  color: var(--category-amber);
+  fill: currentColor;
+}
+
+.ds-inv__purpose {
+  display: block;
+  min-width: var(--w-56);
+  max-width: var(--w-80);
+}
+
+.ds-inv__code {
+  font-family: var(--font-family-mono);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  white-space: nowrap;
+}
+
+.ds-inv__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  color: var(--primary-text);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  text-decoration: none;
+  white-space: nowrap;
+
+  svg {
+    width: var(--w-3);
+    height: var(--h-3);
+  }
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--rounded-sm);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-inv__cols {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+}
+
+.ds-inv__col {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-2);
+}
+
+.ds-inv__empty {
+  display: block;
+  padding: var(--p-6) 0;
+  text-align: center;
+}
+
+// Short values stay on one line; only the report's name and purpose wrap.
+.ds-inv__cell {
+  white-space: nowrap;
+
+  .ui-badge {
+    white-space: nowrap;
+  }
+
+  &--name {
+    min-width: var(--w-40);
+    white-space: normal;
+  }
+
+  &--purpose {
+    white-space: normal;
+  }
+}
+
+// The Views button names the view on screen; long names truncate rather than push the toolbar.
+.ds-inv__views {
+  max-width: var(--w-64);
+
+  .ui-button__label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// Holds the check mark's place in the Views menu, so names line up whether or not they are ticked.
+.ds-inv__menu-gap {
+  display: inline-block;
+  width: var(--w-4);
+  flex: none;
+}
+
+// Requests tables: short values stay on one line, so a narrow page never breaks
+// "Modification" mid-word — only the request's title and its report wrap.
+.ds-chg__cell {
+  white-space: nowrap;
+
+  .ui-badge {
+    white-space: nowrap;
+  }
+
+  &--title {
+    min-width: var(--w-48);
+    white-space: normal;
+  }
+
+  &--record {
+    white-space: normal;
+  }
+
+  // "Change what a report shows" is the longest type name: two short lines rather than one long one,
+  // so a narrow table (the role landing pages) keeps its action column on screen.
+  &--type {
+    min-width: var(--w-28);
+    white-space: normal;
+  }
+
+  // A status breaks between its words ("Awaiting / deployment") but never inside one.
+  // Text's `overflow-wrap: anywhere` would let the table squeeze it mid-word, so it is reset here.
+  &--status {
+    white-space: normal;
+
+    .ui-text {
+      overflow-wrap: normal;
+    }
+  }
+}
+
+// "Latest update": the newest history line over who and when.
+.ds-chg__update {
+  display: flex;
+  flex-direction: column;
+  max-width: var(--w-64);
+  white-space: normal;
+}

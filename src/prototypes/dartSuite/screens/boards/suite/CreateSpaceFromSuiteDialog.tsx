@@ -16,7 +16,7 @@ import Input from '../../../../../components/Input';
 import ScrollArea from '../../../../../components/ScrollArea';
 import { toast } from '../../../../../components/Toast';
 import { useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import type { Dashboard, Suite } from '../../../types';
 import { countLabel, orderedSections } from './suiteShared';
 
@@ -39,7 +39,7 @@ export function CreateSpaceFromSuiteDialog({ open, suite, initialSections, onClo
   const [expanded, setExpanded] = useState<string[]>([]);
 
   const present = (ids: string[]) =>
-    ids.map((id) => state.dashboards.find((d) => d.id === id && d.lifecycle === 'published')).filter((d): d is Dashboard => !!d);
+    ids.map((id) => state.dashboards.find((d) => d.id === id && discoverable(d))).filter((d): d is Dashboard => !!d);
   const sections = orderedSections(suite).map((s) => ({ ...s, list: present(s.dashboardIds) }));
 
   // Reset each time it opens, so a section's "New space from section" starts from that section.

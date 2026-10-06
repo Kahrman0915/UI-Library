@@ -39,6 +39,7 @@ import { toast } from '../../../../../components/Toast';
 import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
 import { seriesFor } from '../../../data';
+import { fmtIso } from '../../../irm';
 import { useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import type { Dashboard } from '../../../types';
@@ -59,6 +60,8 @@ export function DashboardViewer({ id, fromSpaceId, widget }: { id: string; fromS
   const ui = useUi();
   const d = state.dashboards.find((x) => x.id === id);
   const space = fromSpaceId ? state.spaces.find((s) => s.id === fromSpaceId) : undefined;
+  const replacementId = d?.retiring?.replacedBy ?? d?.retired?.replacedBy;
+  const replacement = replacementId ? state.dashboards.find((x) => x.id === replacementId) : undefined;
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -224,6 +227,46 @@ export function DashboardViewer({ id, fromSpaceId, widget }: { id: string; fromS
             title="This dashboard is running behind"
             description={d.notice}
             onClose={() => setNoticeOpen(false)}
+          />
+        )}
+        {/* What IRM, the report's system of record, has told DartBoards. Not dismissible: they are facts about the report. */}
+        {d.retired && (
+          <Alert
+            id={`ds-dash-${d.id}-retired`}
+            variant="error"
+            title={`Retired on ${fmtIso(d.retired.on)}`}
+            description={`This report has been retired and is no longer kept up to date${replacement ? ` — “${replacement.name}” replaces it` : ''}.`}
+            action={
+              replacement ? (
+                <Button id={`ds-dash-${d.id}-replaced`} size="sm" style="outline" label="Open the replacement" onClick={() => go({ page: 'dashboard', id: replacement.id })} />
+              ) : undefined
+            }
+          />
+        )}
+        {d.retiring && (
+          <Alert
+            id={`ds-dash-${d.id}-retiring`}
+            variant="warning"
+            title={`This dashboard retires on ${fmtIso(d.retiring.on)}`}
+            description={`It is being retired: it no longer appears in Browse and stops updating on that date${
+              replacement ? ` — use “${replacement.name}” instead` : ''
+            }.`}
+            action={
+              replacement ? (
+                <Button id={`ds-dash-${d.id}-replacement`} size="sm" style="outline" label="Open the replacement" onClick={() => go({ page: 'dashboard', id: replacement.id })} />
+              ) : undefined
+            }
+          />
+        )}
+        {d.irmFlags?.incident && (
+          <Alert id={`ds-dash-${d.id}-incident`} variant="error" title="Known issue" description={`${d.irmFlags.incident}. The team is fixing it; this notice goes away when the fix is live.`} />
+        )}
+        {d.irmFlags?.controlsOverdue && (
+          <Alert
+            id={`ds-dash-${d.id}-controls`}
+            variant="info"
+            title="Control review overdue"
+            description="A control on this report has not been attested on time, so its figures are not currently certified. Use them with care."
           />
         )}
         {/* A native dashboard is rendered by DartBoards itself; anything else is a BI tool's frame. */}

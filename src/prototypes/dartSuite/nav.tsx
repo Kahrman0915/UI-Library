@@ -21,6 +21,7 @@ import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } fr
 import Button from '../../components/Button';
 import type { CategoryColor } from '../../types/GlobalTypes';
 import type { TabBarNewGroup } from '../../components/TabBar';
+import { appOf } from './types';
 import type { Route } from './types';
 
 /** `group` is the tab group the tab belongs to; `null` = the ungrouped tabs. Home is always `null` and shows in every set. */
@@ -44,10 +45,18 @@ type NavCtx = {
   go: (route: Route) => void;
   /** Always open a new tab and activate it. */
   open: (route: Route) => void;
+  /**
+   * Go to an application, from the rail: switch to a tab already in that application if one is open in
+   * this set, otherwise open its home in a new tab. Never replaces the page you are on — leaving Open
+   * items for IRM keeps Open items where you left it.
+   */
+  openApp: (route: Route) => void;
   /** Replace the active tab's route without adding history (e.g. submit → outcome). */
   replace: (route: Route) => void;
   back: () => void;
   canGoBack: boolean;
+  /** The page this tab showed before the current one — where a detail page was opened from. */
+  previous?: Route;
   activate: (tabId: string) => void;
   closeTab: (tabId: string) => void;
   /** Bumped every time the tab strip is used — Drawers close on it (AppShell rule). */
@@ -71,6 +80,11 @@ type NavCtx = {
   ungroup: (group: string) => void;
   /** Closes the group's tabs (they go to Recently closed). */
   deleteGroup: (group: string) => void;
+  /**
+   * Open a saved set of tabs in one go, as a tab group of that name, and switch to it. If a group of
+   * that name is already open, switch to it instead — one click never opens the same set twice.
+   */
+  openTabSet: (set: { name: string; color: CategoryColor; routes: Route[] }) => void;
   closed: ClosedTab[];
   reopen: (key: string) => void;
 };
@@ -282,6 +296,26 @@ export function NavProvider({ initial, children }: { initial?: Route; children: 
     [tabs, activeGroup, activeId, guarded, showSet],
   );
 
+  const openTabSet = useCallback(
+    ({ name, color, routes }: { name: string; color: CategoryColor; routes: Route[] }) => {
+      const open = groups.find((g) => g.label === name);
+      if (open) {
+        // Already open: go to it. Home sits in every set, so from Home "go to it" means its first tab.
+        const first = tabs.find((t) => t.group === open.id);
+        if (open.id === activeGroup) return first && activeId === 'home' ? activate(first.id) : undefined;
+        return guarded(activeId, () => showSet(open.id));
+      }
+      if (!routes.length) return;
+      const id = `g${groupSeq++}`;
+      const added: Tab[] = routes.map((route) => ({ id: `t${tabSeq++}`, route, history: [], group: id }));
+      const next = [...tabs, ...added];
+      setGroups((gs) => [...gs, { id, label: name, color }]);
+      setTabs(next);
+      guarded(activeId, () => showSet(id, added[0].id, next));
+    },
+    [groups, tabs, activeId, activeGroup, activate, guarded, showSet],
+  );
+
   const reopen = useCallback(
     (key: string) => {
       const c = closed.find((x) => x.key === key);
@@ -299,9 +333,16 @@ export function NavProvider({ initial, children }: { initial?: Route; children: 
       route: activeTab.route,
       go,
       open: (r) => guarded(activeId, () => openNow(r)),
+      openApp: (r) => {
+        const app = appOf(r);
+        const existing = tabs.find((t) => t.id !== 'home' && t.group === activeGroup && appOf(t.route) === app);
+        if (existing) activate(existing.id);
+        else guarded(activeId, () => openNow(r));
+      },
       replace,
       back,
       canGoBack: activeTab.history.length > 0,
+      previous: activeTab.history[activeTab.history.length - 1],
       activate,
       closeTab,
       tabBarUsed,
@@ -319,8 +360,9 @@ export function NavProvider({ initial, children }: { initial?: Route; children: 
       deleteGroup,
       closed,
       reopen,
+      openTabSet,
     }),
-    [tabs, activeId, activeTab, go, guarded, openNow, replace, back, activate, closeTab, tabBarUsed, groups, activeGroup, visibleTabs, selectGroup, openTabIn, createGroup, moveToGroup, renameGroup, recolorGroup, ungroup, deleteGroup, closed, reopen],
+    [tabs, activeId, activeTab, go, guarded, openNow, replace, back, activate, closeTab, tabBarUsed, groups, activeGroup, visibleTabs, selectGroup, openTabIn, createGroup, moveToGroup, renameGroup, recolorGroup, ungroup, deleteGroup, closed, reopen, openTabSet],
   );
 
   const guardApi = useMemo(

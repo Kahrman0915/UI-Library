@@ -9,27 +9,25 @@
    extra ids below are stored through a cast (see the area report). */
 
 import { useState } from 'react';
-import { ArrowDown, ArrowUp, LayoutGrid, Plus, X } from 'lucide-react';
+import { ChevronRight, LayoutGrid, Plus } from 'lucide-react';
+import { Sparkline } from '../../../../charts';
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
-import Card, { CardBody } from '../../../../components/Card';
-import Drawer, { DrawerBody, DrawerFooter, DrawerHeader } from '../../../../components/Drawer';
+import Item, { ItemActions, ItemContent, ItemDescription, ItemGroup, ItemMedia, ItemTitle } from '../../../../components/Item';
 import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../../../components/Empty';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import PageContainer from '../../../../components/PageContainer';
 import PageHeader from '../../../../components/PageHeader';
-import Section from '../../../../components/Section';
-import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow } from '../../../../components/Table';
-import Alert from '../../../../components/Alert';
 import { toast } from '../../../../components/Toast';
-import Grid from '../../../../components/Grid';
 import Text from '../../../../components/Text';
-import { DEFAULT_WIDGETS } from '../../data';
+import { Bento, BentoPicker, BentoTile } from '../../bento';
+import { DEFAULT_WIDGETS, seriesFor } from '../../data';
+import { fmtIso } from '../../irm';
 import { useNav } from '../../nav';
 import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
 import type { SuiteState } from '../../store';
-import type { ActivityEntry, AdminWidget } from '../../types';
+import type { ActivityEntry, AdminWidget, BentoSize } from '../../types';
 import { byQueueOrder, eventOf, Kpi, PRODUCT_LABEL, RefCode, requesterOf, splitTarget, StatusBadge, ToneBadge, TYPE_ICON, ViewsByProduct, ViewsOverTime } from './shared';
 import type { KpiTone } from './shared';
 import './Admin.scss';
@@ -50,26 +48,32 @@ type WidgetId =
   | 'access-recent'
   | 'redirects-top';
 
-type WidgetDef = { id: WidgetId; label: string; group: string; kpi?: boolean };
+type WidgetDef = { id: WidgetId; label: string; group: string; kpi?: boolean; size: BentoSize; sizes: readonly BentoSize[]; bare?: boolean };
+
+const KPI = { kpi: true, size: 3, sizes: [3, 4, 6], bare: true } as const;
+const CHART = { size: 6, sizes: [6, 8, 12], bare: true } as const;
+const LIST = { size: 4, sizes: [4, 6, 8] } as const;
+const TABLE = { size: 12, sizes: [8, 12] } as const;
 
 const CATALOG: WidgetDef[] = [
-  { id: 'queue', label: 'Approval queue · top 3', group: 'From Approval Queue' },
-  { id: 'queue-5', label: 'Approval queue · top 5', group: 'From Approval Queue' },
-  { id: 'kpi-pending', label: 'KPI · Pending approvals', group: 'From Approval Queue', kpi: true },
-  { id: 'kpi-approved', label: 'KPI · Approved, not applied', group: 'From Approval Queue', kpi: true },
-  { id: 'dash-most-opened', label: 'Dashboards · most opened', group: 'From Dashboards' },
-  { id: 'kpi-dashboards', label: 'KPI · Dashboards live', group: 'From Dashboards', kpi: true },
-  { id: 'kpi-never-opened', label: 'KPI · Never opened in 90 days', group: 'From Dashboards', kpi: true },
-  { id: 'banners-displaying', label: 'Banners · currently displaying', group: 'From Banners' },
-  { id: 'kpi-banners', label: 'KPI · Active banners', group: 'From Banners', kpi: true },
-  { id: 'promotions-live', label: 'Promotions · live and scheduled', group: 'From Promotions' },
-  { id: 'kpi-promoted', label: 'KPI · Live promotions', group: 'From Promotions', kpi: true },
-  { id: 'usage', label: 'Chart · Views over time', group: 'From Usage Analytics' },
-  { id: 'views-by-product', label: 'Chart · Views by product', group: 'From Usage Analytics' },
-  { id: 'access-recent', label: 'Recent access changes', group: 'From Access Control' },
-  { id: 'redirects-top', label: 'Redirects · top by hits', group: 'From URL Redirects' },
-  { id: 'activity', label: 'Recent activity · 5 rows', group: 'Activity' },
-  { id: 'activity-10', label: 'Recent activity · 10 rows', group: 'Activity' },
+  { id: 'queue', label: 'Approval queue · top 3', group: 'From Approval Queue', size: 8, sizes: [6, 8, 12] },
+  { id: 'queue-5', label: 'Approval queue · top 5', group: 'From Approval Queue', size: 8, sizes: [6, 8, 12] },
+  { id: 'kpi-pending', label: 'KPI · Pending approvals', group: 'From Approval Queue', ...KPI },
+  { id: 'kpi-approved', label: 'KPI · Approved, not applied', group: 'From Approval Queue', ...KPI },
+  { id: 'dash-most-opened', label: 'Dashboards · most opened', group: 'From Dashboards', ...LIST },
+  { id: 'kpi-dashboards', label: 'KPI · Dashboards live', group: 'From Dashboards', ...KPI },
+  { id: 'kpi-never-opened', label: 'KPI · Never opened in 90 days', group: 'From Dashboards', ...KPI },
+  { id: 'banners-displaying', label: 'Banners · currently displaying', group: 'From Banners', ...LIST },
+  { id: 'kpi-banners', label: 'KPI · Active banners', group: 'From Banners', ...KPI },
+  { id: 'promotions-live', label: 'Promotions · live and scheduled', group: 'From Promotions', ...LIST },
+  { id: 'kpi-promoted', label: 'KPI · Live promotions', group: 'From Promotions', ...KPI },
+  { id: 'usage', label: 'Chart · Views over time', group: 'From Usage Analytics', ...CHART },
+  { id: 'views-by-product', label: 'Chart · Views by product', group: 'From Usage Analytics', ...CHART },
+  { id: 'access-recent', label: 'Recent access changes', group: 'From Access Control', ...LIST },
+  { id: 'redirects-top', label: 'Redirects · top by hits', group: 'From URL Redirects', ...LIST },
+  { id: 'irm-catalog', label: 'What IRM is changing in DartBoards', group: 'From IRM', ...TABLE },
+  { id: 'activity', label: 'Recent activity · 5 rows', group: 'Activity', ...TABLE },
+  { id: 'activity-10', label: 'Recent activity · 10 rows', group: 'Activity', ...TABLE },
 ];
 
 const defOf = (id: WidgetId) => CATALOG.find((w) => w.id === id);
@@ -125,71 +129,55 @@ function QueuePreview({ n, state }: { n: number; state: SuiteState }) {
   const products = scopeProducts(state.adminScope);
   const rows = state.requests.filter((r) => products.includes(r.product) && adminStatus(r.status).active).sort(byQueueOrder);
   if (!rows.length) return <Text tone="muted">Nothing is waiting. Every request is decided.</Text>;
+  // Rows, not cards: a tile of cards inside a card is the stack this layout is meant to escape.
   return (
-    <Stack level={4}>
+    <ItemGroup>
       {rows.slice(0, n).map((r) => {
         const key = r.id.replace('#', '');
-        const open = () => go({ page: 'admin-review', id: r.id });
         return (
-          <Card key={r.id} id={`ds-ov-q-${key}`} interactive size="sm" onClick={open}>
-            <CardBody>
-              <div className="ds-admin-qcard">
-                <FeaturedIcon Icon={TYPE_ICON[r.type]} color={r.type.startsWith('banner') ? 'warning' : r.type.startsWith('dashboard') ? 'info' : 'default'} />
-                <div className="ds-admin-qcard__text">
-                  <Text tone="muted">
-                    {r.id}  ·  {typeLabel[r.type]}  ·  {requesterOf(r).name}
-                  </Text>
-                  <Button
-                    id={`ds-ov-q-open-${key}`}
-                    style="link"
-                    label={r.title}
-                    className="ds-admin-rowlink ds-admin-qcard__title"
-                    onClick={open}
-                  />
-                  <Text tone="muted">{r.summary}</Text>
-                </div>
-                <div className="ds-admin-status">
-                  <StatusBadge id={`ds-ov-q-st-${key}`} request={r} />
-                  <Text as="span" tone="muted">{r.submittedAt}</Text>
-                </div>
-              </div>
-            </CardBody>
-          </Card>
+          <Item key={r.id} size="sm" onClick={() => go({ page: 'admin-review', id: r.id })}>
+            <ItemMedia variant="icon">
+              <FeaturedIcon Icon={TYPE_ICON[r.type]} size="sm" color={r.type.startsWith('banner') ? 'warning' : r.type.startsWith('dashboard') ? 'info' : 'default'} />
+            </ItemMedia>
+            <ItemContent>
+              <ItemTitle>{r.title}</ItemTitle>
+              <ItemDescription>{`${r.id} · ${typeLabel[r.type]} · ${requesterOf(r).name} · ${r.submittedAt}`}</ItemDescription>
+            </ItemContent>
+            <ItemActions>
+              <StatusBadge id={`ds-ov-q-st-${key}`} request={r} />
+            </ItemActions>
+          </Item>
         );
       })}
-    </Stack>
+    </ItemGroup>
   );
 }
 
-function kpiFor(id: WidgetId, s: SuiteState): { value: string | number; label: string; hint: string; tone: KpiTone } {
+/** A deterministic recent history that ends on today's value — the prototype has no time series for these counts. */
+const trendTo = (seed: string, value: number) => {
+  // seriesFor ranges 30–100; mapped to ±15% of today's value so the history is plausible for a count.
+  const s = seriesFor(seed, 8).map((v) => Math.max(0, Math.round(value * (0.85 + (0.3 * (v - 30)) / 70))));
+  s[s.length - 1] = value;
+  return s;
+};
+
+function kpiFor(id: WidgetId, s: SuiteState): { value: number; label: string; hint: string; tone: KpiTone; good: 'up' | 'down' } {
   const products = scopeProducts(s.adminScope);
   const reqs = s.requests.filter((r) => products.includes(r.product));
   switch (id) {
     case 'kpi-pending':
-      return { value: reqs.filter((r) => r.status === 'new' || r.status === 'needs-review').length, label: 'Pending approvals', hint: 'awaiting your review', tone: 'error' };
+      return { value: reqs.filter((r) => r.status === 'new' || r.status === 'needs-review').length, label: 'Pending approvals', hint: 'awaiting your review', tone: 'warning', good: 'down' };
     case 'kpi-approved':
-      return { value: reqs.filter((r) => r.status === 'approved-not-applied').length, label: 'Approved, not applied', hint: 'staged changes to apply', tone: 'warning' };
+      return { value: reqs.filter((r) => r.status === 'approved-not-applied').length, label: 'Approved, not applied', hint: 'staged changes to apply', tone: 'neutral', good: 'down' };
     case 'kpi-dashboards':
-      return { value: s.dashboards.filter((d) => d.lifecycle === 'published').length, label: 'Dashboards live', hint: 'in Dart Central', tone: 'success' };
+      return { value: s.dashboards.filter((d) => d.lifecycle === 'published').length, label: 'Dashboards live', hint: 'in DartBoards', tone: 'neutral', good: 'up' };
     case 'kpi-never-opened':
-      return { value: s.dashboards.filter((d) => d.views === 0).length, label: 'Never opened', hint: 'in 90 days', tone: 'violet' };
+      return { value: s.dashboards.filter((d) => d.views === 0).length, label: 'Never opened', hint: 'in 90 days', tone: 'neutral', good: 'down' };
     case 'kpi-banners':
-      return { value: s.banners.filter((b) => b.state === 'active' && b.visible).length, label: 'Active banners', hint: 'across all products', tone: 'info' };
+      return { value: s.banners.filter((b) => b.state === 'active' && b.visible).length, label: 'Active banners', hint: 'across all products', tone: 'neutral', good: 'up' };
     default:
-      return { value: s.promotions.filter((p) => p.state === 'active').length, label: 'Dashboards promoted', hint: 'in Dart Central', tone: 'violet' };
+      return { value: s.promotions.filter((p) => p.state === 'active').length, label: 'Dashboards promoted', hint: 'in DartBoards', tone: 'neutral', good: 'up' };
   }
-}
-
-/** Widgets that are charts, and the run-grouping that sets them side by side. */
-const CHART_WIDGETS: WidgetId[] = ['usage', 'views-by-product'];
-function groupCharts(list: WidgetId[]): (WidgetId | WidgetId[])[] {
-  const out: (WidgetId | WidgetId[])[] = [];
-  for (const w of list) {
-    const last = out[out.length - 1];
-    if (CHART_WIDGETS.includes(w)) Array.isArray(last) ? last.push(w) : out.push([w]);
-    else out.push(w);
-  }
-  return out;
 }
 
 function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
@@ -198,6 +186,8 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
     case 'queue':
     case 'queue-5':
       return <QueuePreview n={id === 'queue' ? 3 : 5} state={state} />;
+    case 'irm-catalog':
+      return <IrmCatalog state={state} />;
     case 'activity':
     case 'activity-10':
       return <ActivityTable id={`ds-ov-act-${id}`} rows={state.activity.slice(0, id === 'activity' ? 5 : 10)} />;
@@ -207,17 +197,22 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
       return <ViewsByProduct id="ds-ov-byprod" totals={[12, 29, 7]} />;
     case 'dash-most-opened':
       return (
-        <ul className="ds-admin-list">
+        <ItemGroup>
           {[...state.dashboards]
             .sort((a, b) => b.views - a.views)
             .slice(0, 5)
             .map((d) => (
-              <li key={d.id}>
-                <Button id={`ds-ov-mo-${d.id}`} style="link" size="sm" label={d.name} onClick={() => go({ page: 'dashboard', id: d.id })} />
-                <Text as="span" tone="muted">{d.views.toLocaleString()} views</Text>
-              </li>
+              <Item key={d.id} size="xs" onClick={() => go({ page: 'dashboard', id: d.id })}>
+                <ItemContent>
+                  <ItemTitle>{d.name}</ItemTitle>
+                  <ItemDescription>{`${d.views.toLocaleString()} views`}</ItemDescription>
+                </ItemContent>
+                <ItemActions className="ds-ov-trend">
+                  <Sparkline id={`ds-ov-mo-${d.id}`} label={`${d.name} views`} data={seriesFor(d.id, 12)} height={24} />
+                </ItemActions>
+              </Item>
             ))}
-        </ul>
+        </ItemGroup>
       );
     case 'banners-displaying':
       return (
@@ -285,77 +280,69 @@ function WidgetBody({ id, state }: { id: WidgetId; state: SuiteState }) {
 /* ── The page ────────────────────────────────────────────────────────────── */
 
 export function AdminOverview() {
-  const { state, setWidgets } = useSuite();
+  const { state, setWidgets, update } = useSuite();
   const { go } = useNav();
   const [editing, setEditing] = useState(false);
   const [picker, setPicker] = useState(false);
 
-  const widgets = state.widgets as WidgetId[];
+  const widgets = (state.widgets as WidgetId[]).filter((w) => defOf(w));
   const save = (next: WidgetId[]) => setWidgets(next as AdminWidget[]);
-
-  const kpis = widgets.filter((w) => defOf(w)?.kpi);
-  const blocks = widgets.filter((w) => defOf(w) && !defOf(w)?.kpi);
+  const sizeOf = (w: WidgetId) => (state.widgetSizes[w] as BentoSize | undefined) ?? defOf(w)!.size;
+  const resize = (w: WidgetId, size: BentoSize) => update((d) => void (d.widgetSizes[w] = size));
 
   const remove = (w: WidgetId) => {
     const before = widgets;
-    const next = widgets.filter((x) => x !== w);
-    save(next);
-    const label = defOf(w)?.label ?? 'Widget';
-    toast(`${label} removed`, {
+    save(widgets.filter((x) => x !== w));
+    toast(`${defOf(w)?.label ?? 'Widget'} removed`, {
       description: 'It’s still available in Add widget.',
       action: { label: 'Undo', onClick: () => save(before) },
       cancel: { label: 'Dismiss' },
     });
   };
-
-  const move = (w: WidgetId, dir: -1 | 1) => {
-    const list = defOf(w)?.kpi ? kpis : blocks;
-    const i = list.indexOf(w);
-    const j = i + dir;
-    if (j < 0 || j >= list.length) return;
-    const swapWith = list[j];
+  const move = (i: number, by: -1 | 1) => {
     const next = [...widgets];
-    const a = next.indexOf(w);
-    const b = next.indexOf(swapWith);
-    [next[a], next[b]] = [next[b], next[a]];
+    [next[i], next[i + by]] = [next[i + by], next[i]];
     save(next);
   };
-
   const reset = () => {
     save([...DEFAULT_WIDGETS]);
+    update((d) => void (d.widgetSizes = {}));
     toast('Layout reset', { description: 'The original overview is back.' });
   };
 
-  const controls = (w: WidgetId, list: WidgetId[]) =>
-    editing && (
-      <div className="ds-admin-wctl">
-        <Button id={`ds-ov-up-${w}`} style="ghost" size="xs" iconOnly IconCenter={ArrowUp} aria-label={`Move ${defOf(w)?.label} earlier`} disabled={list.indexOf(w) === 0} onClick={() => move(w, -1)} />
-        <Button id={`ds-ov-down-${w}`} style="ghost" size="xs" iconOnly IconCenter={ArrowDown} aria-label={`Move ${defOf(w)?.label} later`} disabled={list.indexOf(w) === list.length - 1} onClick={() => move(w, 1)} />
-        <Button id={`ds-ov-rm-${w}`} style="ghost" size="xs" iconOnly IconCenter={X} aria-label={`Remove ${defOf(w)?.label}`} onClick={() => remove(w)} />
-      </div>
-    );
-
-  const isEmpty = widgets.filter((w) => defOf(w)).length === 0;
+  const viewAll = (w: WidgetId) =>
+    w === 'queue' || w === 'queue-5' ? (
+      <Button id={`ds-ov-all-${w}`} style="link" size="sm" label="View all" IconRight={ChevronRight} onClick={() => go({ page: 'admin-queue' })} />
+    ) : w === 'activity' || w === 'activity-10' ? (
+      <Button id={`ds-ov-all-${w}`} style="link" size="sm" label="View all" IconRight={ChevronRight} onClick={() => go({ page: 'admin-activity' })} />
+    ) : undefined;
 
   return (
     <PageContainer>
       <PageHeader
         id="ds-ov-header"
         title="Admin Overview"
-        description={isEmpty ? 'Nothing is on your overview right now. This is your layout, so it doesn’t change what anyone else sees.' : 'Platform-wide health across all DART products.'}
+        description={
+          !widgets.length
+            ? 'Nothing is on your overview right now. This is your layout, so it doesn’t change what anyone else sees.'
+            : editing
+              ? 'Arrange your overview: resize, move or remove a widget, or add one. Only you see this layout.'
+              : 'Platform-wide health across all DART products.'
+        }
         actions={
           editing ? (
             <>
+              <Button id="ds-ov-add" style="outline" label="Add widget" IconLeft={Plus} onClick={() => setPicker(true)} />
               <Button id="ds-ov-reset" style="ghost" label="Reset to default" onClick={reset} />
               <Button id="ds-ov-done" label="Done" onClick={() => setEditing(false)} />
             </>
           ) : (
-            <Button id="ds-ov-customize" style="outline" label="Customize" onClick={() => setEditing(true)} />
+            <Button id="ds-ov-customize" style="outline" label="Customize" IconLeft={LayoutGrid} onClick={() => setEditing(true)} />
           )
         }
       />
 
-      {isEmpty ? (
+      {!widgets.length ? (
         <Empty>
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -372,119 +359,112 @@ export function AdminOverview() {
           </EmptyContent>
         </Empty>
       ) : (
-        <Stack level={2}>
-          {editing && (
-            <Alert
-              id="ds-ov-editing"
-              variant="info"
-              title="Editing your layout"
-              description="Reorder a card with its arrows, or remove what you don’t use. Removing is undoable, and Reset to default puts the original layout back. Only you see this layout."
-            />
-          )}
-          {kpis.length > 0 && (
-            <Grid level={3} minItemWidth="var(--w-48)" stretch className="ds-admin-kpis">
-              {kpis.map((w) => {
-                const k = kpiFor(w, state);
-                return (
-                  <div key={w} className={editing ? 'ds-admin-widget ds-admin-widget--editing' : 'ds-admin-widget'}>
-                    {controls(w, kpis)}
-                    <Kpi id={`ds-ov-kpi-${w}`} {...k} />
-                  </div>
-                );
-              })}
-            </Grid>
-          )}
-          {groupCharts(blocks).map((w) => {
-            // Charts title themselves (Figma's Chart is card + title), so they take no
-            // Section heading; a run of them shares a row, as in Figma's 1.4.
-            if (Array.isArray(w))
-              return (
-                <Grid key={w.join('+')} level={3} minItemWidth="var(--w-80)" stretch>
-                  {w.map((c) => (
-                    <div key={c} className={editing ? 'ds-admin-widget ds-admin-widget--editing' : 'ds-admin-widget'}>
-                      {controls(c, blocks)}
-                      <WidgetBody id={c} state={state} />
-                    </div>
-                  ))}
-                </Grid>
-              );
+        <Bento editing={editing}>
+          {widgets.map((w, i) => {
             const def = defOf(w)!;
-            const viewAll =
-              w === 'queue' || w === 'queue-5' ? (
-                <Button id={`ds-ov-all-${w}`} style="link" size="sm" label="View all" onClick={() => go({ page: 'admin-queue' })} />
-              ) : w === 'activity' || w === 'activity-10' ? (
-                <Button id={`ds-ov-all-${w}`} style="link" size="sm" label="View all" onClick={() => go({ page: 'admin-activity' })} />
-              ) : undefined;
-            const heading = editing ? def.label : def.label.replace(/ · .*$/, '');
+            const k = def.kpi ? kpiFor(w, state) : null;
+            const trend = k ? trendTo(w, k.value) : [];
+            const prev = trend[trend.length - 2];
             return (
-              <div key={w} className={editing ? 'ds-admin-widget ds-admin-widget--editing' : 'ds-admin-widget'}>
-                <Section
-                  id={`ds-ov-sec-${w}`}
-                  heading={heading}
-                  variant="group"
-                  actions={
-                    <>
-                      {viewAll}
-                      {controls(w, blocks)}
-                    </>
-                  }
-                >
+              <BentoTile
+                key={w}
+                id={`ds-ov-${w}`}
+                title={editing ? def.label : def.label.replace(/ · .*$/, '')}
+                size={sizeOf(w)}
+                sizes={def.sizes}
+                editing={editing}
+                index={i}
+                count={widgets.length}
+                onResize={(size) => resize(w, size)}
+                onMove={(by) => move(i, by)}
+                onRemove={() => remove(w)}
+                link={viewAll(w)}
+                bare={def.bare}
+              >
+                {k ? (
+                  <Kpi
+                    id={`ds-ov-kpi-${w}`}
+                    value={k.value}
+                    label={k.label}
+                    hint={k.hint}
+                    tone={k.value > 0 ? k.tone : 'neutral'}
+                    goodDirection={k.good}
+                    change={prev ? Math.round(((k.value - prev) / prev) * 100) : undefined}
+                    changeLabel="vs last week"
+                    trend={trend}
+                  />
+                ) : (
                   <WidgetBody id={w} state={state} />
-                </Section>
-              </div>
+                )}
+              </BentoTile>
             );
           })}
-          {editing && (
-            <div>
-              <Button id="ds-ov-add" style="outline" label="Add widget" IconLeft={Plus} onClick={() => setPicker(true)} />
-            </div>
-          )}
-        </Stack>
+        </Bento>
       )}
 
       {/* 1.3 — the widget picker */}
-      <Drawer id="ds-ov-picker" open={picker} onClose={() => setPicker(false)}>
-        <DrawerHeader
-          id="ds-ov-picker-header"
-          title="Add a widget"
-          description="Anything you can manage, you can watch here. New widgets are added to the bottom of the page."
-          onClose={() => setPicker(false)}
-        />
-        <DrawerBody>
-          <Stack level={3}>
-            {[...new Set(CATALOG.map((c) => c.group))].map((g) => (
-              <Section key={g} id={`ds-ov-pick-${g.replace(/\W+/g, '-').toLowerCase()}`} heading={g} variant="group" headingLevel="h3">
-                <ul className="ds-admin-list">
-                  {CATALOG.filter((c) => c.group === g).map((c) => {
-                    const added = widgets.includes(c.id);
-                    return (
-                      <li key={c.id}>
-                        <Text as="span">{c.label}</Text>
-                        <Button
-                          id={`ds-ov-pick-${c.id}`}
-                          size="xs"
-                          style={added ? 'ghost' : 'outline'}
-                          label={added ? 'Added' : 'Add'}
-                          onClick={() => {
-                            if (added) save(widgets.filter((w) => w !== c.id));
-                            else {
-                              save([...widgets, c.id]);
-                              setEditing(true);
-                            }
-                          }}
-                        />
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Section>
-            ))}
-          </Stack>
-        </DrawerBody>
-        <DrawerFooter>
-          <Button id="ds-ov-picker-done" label="Done" onClick={() => setPicker(false)} />
-        </DrawerFooter>
-      </Drawer>
+      <BentoPicker
+        id="ds-ov-picker"
+        open={picker}
+        onClose={() => setPicker(false)}
+        description="Anything you can manage, you can watch here. New widgets are added to the end of the page."
+        items={CATALOG.map((c) => ({ id: c.id, label: c.label, group: c.group, added: widgets.includes(c.id) }))}
+        onToggle={(id, add) => {
+          const w = id as WidgetId;
+          save(add ? [...widgets, w] : widgets.filter((x) => x !== w));
+          if (add) setEditing(true);
+        }}
+      />
     </PageContainer>
+  );
+}
+
+/**
+ * What IRM is doing to the catalog right now: listings retiring, known issues
+ * from open breaks, controls overdue. IRM drives these listings, so an admin
+ * should see it coming here rather than stumble on it in Manage.
+ */
+function IrmCatalog({ state }: { state: SuiteState }) {
+  const { go } = useNav();
+  const rows = state.dashboards
+    .filter((d) => d.lifecycle === 'published' && (d.retiring || d.irmFlags))
+    .map((d) => ({
+      d,
+      what: d.retiring ? `Retiring ${fmtIso(d.retiring.on)}` : d.irmFlags?.incident ? 'Known issue' : 'Controls overdue',
+      detail: d.retiring ? 'Hidden from Browse; archives itself on the day' : d.irmFlags?.incident ?? 'Viewers see a notice that figures are not certified',
+      tone: (d.retiring ? 'warning' : 'error') as 'warning' | 'error',
+    }));
+  if (!rows.length) return <Text tone="muted">IRM is not changing any listing right now.</Text>;
+  return (
+    <Table id="ds-ov-irm" label="What IRM is changing in DartBoards">
+      <TableHead>
+        <TableRow>
+          <TableHeaderCell>Dashboard</TableHeaderCell>
+          <TableHeaderCell>From IRM</TableHeaderCell>
+          <TableHeaderCell>What it means</TableHeaderCell>
+          <TableHeaderCell align="end">
+            <span className="ui-table__sr-only">Actions</span>
+          </TableHeaderCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+        {rows.map(({ d, what, detail, tone }) => (
+          <TableRow key={d.id}>
+            <TableCell>
+              <Button id={`ds-ov-irm-${d.id}`} style="link" size="sm" className="ds-admin-rowlink" label={d.name} onClick={() => go({ page: 'dashboard', id: d.id })} />
+            </TableCell>
+            <TableCell>
+              <Badge id={`ds-ov-irm-${d.id}-what`} label={what} color={tone} appearance="soft" />
+            </TableCell>
+            <TableCell>
+              <Text as="span" size="sm" tone="muted">{detail}</Text>
+            </TableCell>
+            <TableCell align="end">
+              {d.irm && <Button id={`ds-ov-irm-${d.id}-rec`} size="sm" style="ghost" label="Open in IRM" onClick={() => go({ page: 'irm-record', number: d.irm! })} />}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 }

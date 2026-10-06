@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 /* ── Aiden · one conversation, on any surface ──────────────────────────────────
    The mini window, the side panel and the full tab all render THIS — same
    transcript, same composer — which is the Aiden page's whole argument (build
@@ -147,7 +148,7 @@ function Requests({ ids, compact, idPrefix }: { ids: string[]; compact?: boolean
         </ItemGroup>
       )}
       <div>
-        <Button id={`${idPrefix}-my-requests`} style="outline" size="sm" label="Open My Requests" onClick={() => go({ page: 'my-requests' })} />
+        <Button id={`${idPrefix}-my-requests`} style="outline" size="sm" label="Go to Open items" onClick={() => go({ page: 'my-requests' })} />
       </div>
     </div>
   );
@@ -284,12 +285,16 @@ export type ConversationProps = {
   greeting?: string;
   /** `open` = links open a new tab (Aiden's own tab). Default `go`. */
   follow?: 'go' | 'open';
+  /** The questions offered before anything is asked. Default: Aiden's general starters. */
+  suggestions?: string[];
+  /** Shown under the starters before anything is asked (Home lists recent conversations here). */
+  extra?: ReactNode;
 };
 
 const DICTATED = ['Which dashboards cover servicing?', 'What’s happening with my requests?', 'Add Support Backlog to Weekly Ops Review'];
 let dictation = 0;
 
-export function Conversation({ idPrefix, chatId, onChatId, compact, sendSize = 'sm', draft, onDraft, greeting, follow = 'go' }: ConversationProps) {
+export function Conversation({ idPrefix, chatId, onChatId, compact, sendSize = 'sm', draft, onDraft, greeting, follow = 'go', suggestions = STARTERS, extra }: ConversationProps) {
   const { state, saveChat, update } = useSuite();
   const rt = useAidenRuntime();
   const [ownDraft, setOwnDraft] = useState('');
@@ -337,12 +342,13 @@ export function Conversation({ idPrefix, chatId, onChatId, compact, sendSize = '
               description={greeting ?? 'Ask about your dashboards, spaces or anything in DART Central.'}
             >
               <ChatSuggestions>
-                {STARTERS.map((s) => (
+                {suggestions.map((s) => (
                   <ChatSuggestion key={s} onClick={() => submit(s)}>
                     {s}
                   </ChatSuggestion>
                 ))}
               </ChatSuggestions>
+              {extra}
             </ChatGreeting>
           ) : (
             <>

@@ -1,0 +1,1994 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// DART Central · Home — the greeting, Today, and a fixed-pixel board of
+// widgets. Prototype-only layout glue. Tokens only.
+// ─────────────────────────────────────────────────────────────────────────────
+
+// The dashboard grid (react-grid-layout). Its own stylesheet is not imported —
+// it hard-codes colors (a red drop placeholder, a black resize mark) — so its
+// handful of classes are restyled here from tokens.
+.ds-home-grid {
+  position: relative;
+  min-width: 0;
+}
+
+.ds-home-grid .react-grid-layout {
+  position: relative;
+  transition: height var(--duration-normal) var(--ease-out);
+}
+
+.ds-home-grid .react-grid-item {
+  transition: transform var(--duration-normal) var(--ease-out), width var(--duration-normal) var(--ease-out), height var(--duration-normal) var(--ease-out);
+
+  &.resizing,
+  &.react-draggable-dragging {
+    transition: none;
+    z-index: var(--z-10);
+  }
+
+  &.react-draggable-dragging .ds-home-widget {
+    box-shadow: var(--shadow-lg);
+  }
+
+  // Where the widget will land: a soft primary block the size of its new place.
+  &.react-grid-placeholder {
+    border: var(--border-w-200) dashed var(--primary-border);
+    border-radius: var(--rounded-xl);
+    background: var(--primary-light);
+    transition-duration: var(--duration-fast);
+    user-select: none;
+  }
+}
+
+// Sizes are picked, never dragged (a widget's size is one of its designs), so the resize corner never shows.
+.ds-home-grid .react-resizable-handle {
+  display: none;
+}
+
+.ds-home-grid .react-resizable-handle {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: var(--w-5);
+  height: var(--h-5);
+  cursor: se-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    right: var(--p-1-5);
+    bottom: var(--p-1-5);
+    width: var(--w-2);
+    height: var(--h-2);
+    border-right: var(--border-w-200) solid var(--muted-foreground);
+    border-bottom: var(--border-w-200) solid var(--muted-foreground);
+  }
+}
+
+// A widget fills its grid cell; content longer than the cell scrolls inside it.
+.ds-home-cell-slot {
+  display: flex;
+  // The board's rows carry no margin; a widget's slot pads in the 24px gap under it.
+  padding-bottom: var(--p-6);
+
+  &--block {
+    padding-bottom: 0;
+  }
+}
+
+.ds-home-widget {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  // Each widget answers to its OWN width: the same widget is a tight list at
+  // 320px and shows more at 600px.
+  container-type: inline-size;
+}
+
+.ds-home-widget__body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// While customizing, each widget reads as something you can pick up.
+.ds-home-grid--editing .ds-home-widget {
+  border-style: dashed;
+}
+
+.ds-home-grip {
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+  cursor: grab;
+}
+
+// A compact search trigger for the header row — the full search is the ⌘K tab.
+.ds-home-search {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-2);
+  width: var(--w-64);
+  height: var(--h-9);
+  padding: 0 var(--p-3);
+  border: var(--border-w-100) solid var(--input);
+  border-radius: var(--rounded-md);
+  background: var(--background);
+  color: var(--muted-foreground);
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-out);
+
+  > span {
+    flex: 1;
+    text-align: start;
+  }
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// Lists in a widget sit flush with the card's own padding.
+.ds-home-list {
+  margin-inline: calc(var(--p-2) * -1);
+}
+
+// Aiden: a chat window that fills its widget. The conversation scrolls inside it; the composer stays put.
+.ds-home-widget--aiden .ds-home-widget__body {
+  overflow: hidden;
+  padding-top: var(--p-2);
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-home-aiden {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+
+  > * {
+    flex: 1;
+    min-height: 0;
+  }
+
+  // The widget header already says "Ask Aiden": the greeting drops its big
+  // mark and its padding, so the questions fit above the composer.
+  .ui-chat-greeting {
+    padding: var(--p-3) var(--p-2);
+  }
+
+  .ui-chat-greeting__icon {
+    display: none;
+  }
+
+  .ui-chat-greeting__title {
+    font-size: var(--text-base);
+    line-height: var(--leading-6);
+  }
+}
+
+// A pinned space fills its widget: the cells take the whole body, their rows
+// and columns set in widgets.tsx from how many fit.
+
+
+
+
+
+
+
+
+
+
+// A cell's lines: the name (and any flag), then the number and its change.
+.ds-home-cell__name {
+  display: flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  min-width: 0;
+}
+
+.ds-home-cell__num {
+  display: flex;
+  align-items: baseline;
+  gap: var(--p-2);
+}
+
+.ds-home-cell__value {
+  font-size: var(--text-xl);
+  line-height: var(--leading-7);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+// A flag in a cell: a short word on the name line, so it can never sit on the chart.
+.ds-home-flag {
+  flex: none;
+  padding: 0 var(--p-1-5);
+  border-radius: var(--rounded-sm);
+  background: var(--error-light);
+  color: var(--error);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+
+  &--warning {
+    background: var(--warning-light);
+    color: var(--warning);
+  }
+
+  &--ok {
+    background: var(--success-light);
+    color: var(--success);
+  }
+}
+
+// A dashboard on a pinned space: name, number, change, shape.
+.ds-home-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-out);
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-home-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-2);
+}
+
+// A trend cell has a width to fill; a sparkline in an auto column would collapse.
+// Below roughly 440px of widget the trend column goes, and name, views and change stay.
+
+
+.ds-tone--success {
+  color: var(--success);
+}
+.ds-tone--warning {
+  color: var(--warning);
+}
+.ds-tone--error {
+  color: var(--error);
+}
+.ds-tone--muted {
+  color: var(--muted-foreground);
+}
+.ds-tone--default {
+  color: var(--foreground);
+}
+
+/* ── Add to Home ── */
+
+// Wider than a default drawer: each row carries a name, a state and a sentence.
+.ui-drawer.ds-home-add {
+  max-width: var(--max-w-xl);
+}
+
+// A clickable Item is a <button>, which sizes to its content; every row spans the drawer.
+.ds-home-add__row {
+  width: 100%;
+}
+
+.ds-home-add__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+.ds-home-add__name {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+.ds-home-add__row--added {
+  opacity: var(--o-70);
+}
+
+.ds-home-add__go {
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+}
+
+/* ── Widgets that fill their box (fit.tsx) ── */
+
+// A list that shows as many rows as fit: the clip takes the room, the more line sits under it.
+.ds-fit {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-2);
+}
+
+.ds-fit__clip {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+// A row past the bottom stays laid out (so it can be measured) but is not seen or reached.
+.ds-fit-hidden {
+  visibility: hidden;
+}
+
+.ds-fit__more {
+  flex: none;
+  align-self: flex-start;
+
+  &--text {
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+// A number and a trend that takes whatever height is left.
+.ds-fill {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+}
+
+.ds-fill__flag {
+  align-self: flex-start;
+}
+
+.ds-fill-trend {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+// KPI tiles sit at their natural height; a taller widget shows more content under them.
+.ds-kpi-grid {
+  flex: none;
+  display: grid;
+  gap: var(--p-3);
+  align-items: stretch;
+}
+
+// The Today strip is sized to its tiles, so its tiles fill it exactly.
+.ds-kpi-grid--stretch {
+  flex: 1;
+  min-height: 0;
+  grid-auto-rows: 1fr;
+}
+
+.ds-home-news {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-4);
+}
+
+.ds-home-news__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+}
+
+.ds-home-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-1-5);
+}
+
+/* ── KPI tiles ── */
+
+.ds-kpi {
+  display: flex;
+  align-items: stretch;
+  gap: var(--p-3);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  transition: border-color var(--duration-instant) var(--ease-out), box-shadow var(--duration-instant) var(--ease-out);
+
+  &:enabled {
+    cursor: pointer;
+
+    &:hover {
+      border-color: var(--border-hover);
+    }
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-kpi__text {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: var(--p-1);
+}
+
+// Today's tiles: a card each, the number large enough to read across the room.
+.ds-kpi--lg {
+  padding: var(--p-4);
+  border-radius: var(--rounded-xl);
+  background: var(--card);
+  box-shadow: var(--shadow-xs);
+
+  &:enabled:hover {
+    box-shadow: var(--shadow-md);
+  }
+
+  .ds-kpi__value {
+    font-size: var(--text-3xl);
+    line-height: var(--leading-9);
+  }
+}
+
+// A trend beside the number: the text keeps its width, the line takes what is left.
+.ds-kpi--trend .ds-kpi__text {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+.ds-kpi__trend {
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: flex-end;
+}
+
+.ds-kpi__label {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-kpi__value {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+
+  &--success {
+    color: var(--success);
+  }
+  &--warning {
+    color: var(--warning);
+  }
+  &--error {
+    color: var(--error);
+  }
+}
+
+.ds-kpi__context {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+/* A one-row grid (a Medium widget) is a glance: the number says the percentage, the bar would
+   make the row taller than the widget. Its numbers are one rung smaller than a tile's own (xl, 20/28)
+   and its tiles a little flatter, so a row of three fits under a header with a subtitle. */
+.ds-kpi-grid--one-row .ds-kpi__bar {
+  display: none;
+}
+
+.ds-kpi-grid--one-row .ds-kpi {
+  padding-block: var(--p-1-5);
+}
+
+.ds-kpi-grid--one-row .ds-kpi__value {
+  font-size: var(--text-xl);
+  line-height: var(--leading-7);
+}
+
+// In a Medium, a row of three keeps the number and its label; the context line waits for Large.
+.ds-home-widget--size-M .ds-kpi-grid--one-row .ds-kpi__context {
+  display: none;
+}
+
+/* A compact tile holds one line of context — a second line would make a Medium widget's row
+   taller than the widget. The Today strip's tiles have room to wrap. */
+.ds-kpi:not(.ds-kpi--lg) .ds-kpi__context {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-kpi__bar {
+  display: block;
+  height: var(--h-1-5);
+  border-radius: var(--rounded-full);
+  background: var(--border);
+  overflow: hidden;
+}
+
+.ds-kpi__fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--primary);
+
+  &--success {
+    background: var(--success);
+  }
+  &--warning {
+    background: var(--warning);
+  }
+  &--error {
+    background: var(--error);
+  }
+}
+
+/* ── Aiden: its own look ──
+   A normal chat window on the card's own surface; what marks it as Aiden is the
+   gradient outline (--aiden-border, mode-aware) and the sparkle. The outline is
+   drawn as a border-box background behind a transparent border, the only way to
+   put a gradient on a rounded border. */
+.ds-home-widget.ds-home-widget--aiden {
+  border: var(--border-w-200) solid transparent;
+  background:
+    linear-gradient(var(--card), var(--card)) padding-box,
+    var(--aiden-border) border-box;
+}
+
+.ds-home-grid--editing .ds-home-widget.ds-home-widget--aiden {
+  border-style: solid;
+}
+
+// Aiden's mark: the sparkle on its own, in the gradient — no tile behind it.
+.ds-home-aiden-mark {
+  display: inline-flex;
+  flex: none;
+}
+
+// Aiden, before anything is asked: the conversations to pick up, under the starters.
+.ds-home-aiden-recent {
+  display: flex;
+  flex-direction: column;
+  align-self: stretch;
+  // Its own line under the starters, never beside them.
+  flex-basis: 100%;
+  width: 100%;
+  gap: var(--p-1);
+  margin-top: var(--p-4);
+  text-align: start;
+}
+
+.ds-home-aiden-recent__label {
+  padding-inline: var(--p-2);
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-home-aiden-recent__item {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  min-width: 0;
+  padding: var(--p-1-5) var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  text-align: start;
+  cursor: pointer;
+
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  svg {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--aiden-text);
+  }
+
+  &:hover {
+    background: var(--aiden-secondary);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+/* ── Sizes (Apple-style): each size has its own design ── */
+
+// Small: one big number, what it counts, one line of context. The whole body is the tap target.
+.ds-bigstat {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  // Content starts under the header like every widget's, not floated in the middle.
+  justify-content: flex-start;
+  gap: var(--p-1);
+  padding: 0;
+  border: none;
+  border-radius: var(--rounded-lg);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+
+  &:enabled {
+    cursor: pointer;
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-bigstat__value {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-10);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ds-bigstat__label {
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+.ds-bigstat__context {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+/* ── The gallery's live preview ── */
+
+.ds-home-preview {
+  position: relative;
+  overflow: hidden;
+}
+
+.ds-home-preview__stage {
+  position: absolute;
+  top: 0;
+  display: flex;
+  transform-origin: top left;
+  pointer-events: none;
+
+  > .ds-home-widget {
+    flex: 1;
+  }
+}
+
+// The greeting's row of starters wraps, so the recent conversations start a line of their own.
+.ds-home-aiden .ui-chat-greeting__content {
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+// One-line rows for a Medium widget: the title truncates, the status stays readable.
+.ds-home-lines {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-home-line {
+  display: flex;
+  align-items: baseline;
+  gap: var(--p-3);
+  width: 100%;
+  padding: var(--p-1-5) var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-home-line__title {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+.ds-home-line__meta {
+  flex: none;
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+
+  &--warning {
+    color: var(--warning);
+    font-weight: var(--font-medium);
+  }
+}
+
+
+/* ── The page: a fixed-width board, centred ──
+   The frame takes the page's whole width (it is what Home measures); the board
+   inside it is exactly as wide as four 240px cells and their gaps, and centres. */
+
+.ds-home-frame {
+  width: 100%;
+  min-width: 0;
+}
+
+.ds-home-board {
+  width: 100%;
+  margin-inline: auto;
+  display: flex;
+  flex-direction: column;
+  // Today and the board read as one page: the same 24px that separates two widgets.
+  gap: var(--p-6);
+}
+
+// A heading sits close over what it names — tighter than Section's default page-level gap.
+.ds-today.ui-section,
+.ds-home-widgets.ui-section {
+  gap: var(--p-3);
+}
+
+/* ── A widget: fixed padding, so a size is the same on every screen ── */
+
+.ds-home-widget {
+  // The card's own padding is fluid (the spacing ladder); a fixed-size widget needs fixed insides.
+  // Header → body is a full rung (16), not the header's own 8: the title block reads as a header, set
+  // apart from what it introduces, rather than as the body's first line.
+  .ds-home-head {
+    padding: var(--p-3) var(--p-4) var(--p-4);
+  }
+
+  .ds-home-widget__body.ui-card__body {
+    padding: 0 var(--p-4) var(--p-4);
+    gap: var(--p-3);
+  }
+}
+
+.ds-home-head {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  min-width: 0;
+}
+
+.ds-home-head__h {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+// The header is the widget's door to its page: the whole title row is the button.
+.ds-home-head__link {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--p-1);
+  margin: calc(var(--p-1) * -1);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+
+  &:is(button) {
+    cursor: pointer;
+
+    &:hover {
+      background: var(--accent);
+
+      .ds-home-head__chevron {
+        opacity: 1;
+      }
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+
+      .ds-home-head__chevron {
+        opacity: 1;
+      }
+    }
+  }
+
+  .ui-featured-icon,
+  .ui-badge {
+    flex: none;
+  }
+}
+
+.ds-home-head__title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-semibold);
+}
+
+// The title and the line under it — what the widget shows — as one column beside the mark.
+.ds-home-head__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-home-head__sub {
+  min-width: 0;
+  // It sits inside the widget's heading (an h3) and would inherit its bold.
+  font-weight: var(--font-normal);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+// A Small holds its number and nothing more: the subtitle would push the number's context out.
+.ds-home-widget--size-S .ds-home-head__sub {
+  display: none;
+}
+
+.ds-home-head__chevron {
+  flex: none;
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+  opacity: 0;
+  transition: opacity var(--duration-instant) var(--ease-out);
+}
+
+.ds-home-head__actions {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+/* ── Today: a section of its own, on the board's columns ── */
+
+.ds-today__tiles {
+  display: grid;
+  // Four to a row with the board's own gap, so each tile sits over a column of widgets.
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--p-6);
+}
+
+/* Every tile is the same four rows — label, number, picture, detail — shared across the row through a
+   subgrid, so a two-line label or a taller picture in one tile moves the same row in all of them:
+   numbers line up with numbers, detail lines with detail lines, and no tile is left with a hole. */
+.ds-today-tile {
+  display: grid;
+  grid-row: span 4;
+  grid-template-rows: subgrid;
+  row-gap: var(--p-1-5);
+  align-content: start;
+}
+
+.ds-today-tile__visual {
+  display: flex;
+  align-items: flex-end;
+  min-width: 0;
+
+  > * {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ds-kpi__bar {
+    margin-bottom: var(--p-1);
+  }
+}
+
+// A sparkline in the strip: the picture row keeps a chart's height, and the numbers step down one size.
+.ds-today__tiles--charts {
+  .ds-today-tile__visual {
+    min-height: var(--h-7);
+  }
+
+  // Reordering Today by drag: the tile you hold dims, the tile you are over shows where it will land.
+.ds-today-tile--dragging {
+  opacity: var(--o-50);
+}
+
+.ds-today-tile--over {
+  border-color: var(--primary-border);
+  box-shadow: 0 0 0 var(--border-w-300) var(--primary-border);
+}
+
+// The icon-only tag is the narrow-tile form; at full width the tag shows its word.
+.ds-today-tag--icon {
+  display: none;
+}
+
+.ds-today-tile__value {
+    font-size: var(--text-4xl);
+    line-height: var(--leading-10);
+  }
+}
+
+// A count, as one block per thing counted — the ones that need something coloured.
+.ds-today-segments {
+  display: flex;
+  gap: var(--p-0-5);
+  height: var(--h-2);
+  margin-bottom: var(--p-1);
+}
+
+.ds-today-segments__item {
+  flex: 1;
+  border-radius: var(--rounded-full);
+  background: var(--border);
+
+  &--warning {
+    background: var(--warning);
+  }
+
+  &--error {
+    background: var(--error);
+  }
+}
+
+.ds-today-tile {
+  min-width: 0;
+  padding: var(--p-4);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-xl);
+  background: var(--card);
+  box-shadow: var(--shadow-xs);
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-out), box-shadow var(--duration-instant) var(--ease-out);
+
+  &:hover {
+    border-color: var(--border-hover);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+}
+
+.ds-today-tile__label {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p-2);
+  color: var(--muted-foreground);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+
+  // A metric's name can be long ("Roll rate into 1–30 days"): two lines before it truncates.
+  > span {
+    min-width: 0;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+
+  // Which application the number comes from.
+  .ui-badge {
+    flex: none;
+  }
+}
+
+// No sparkline in the strip: the picture row is only as tall as a bar, and the numbers take the room.
+.ds-today-tile__value {
+  font-size: var(--text-5xl);
+  line-height: var(--leading-11);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ds-today-tile__context {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+// The Edit Today drawer.
+.ds-today-order {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+}
+
+.ds-today-order__row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--p-3);
+  padding: var(--p-1) var(--p-1) var(--p-1) var(--p-3);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+}
+
+.ds-today-pick {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p-3);
+}
+
+/* ── Medium, for a list: the number beside its first items ── */
+
+.ds-glance {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--w-36) minmax(0, 1fr);
+  gap: var(--p-4);
+}
+
+.ds-glance__stat {
+  display: flex;
+  flex-direction: column;
+  // Top-aligned with the rows beside it.
+  justify-content: flex-start;
+  gap: var(--p-0-5);
+  min-width: 0;
+  padding: 0 var(--p-4) 0 0;
+  border: none;
+  border-inline-end: var(--border-w-100) solid var(--border);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover .ds-glance__context {
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-glance__label {
+    color: var(--foreground);
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--rounded-md);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-glance__value {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-9);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ds-glance__label {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-glance__list {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-home-line__icon {
+  flex: none;
+  align-self: center;
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+}
+
+/* ── Large: item by item, each with its action ── */
+
+.ds-rows {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  min-width: 0;
+  padding-inline-end: var(--p-2);
+  border-radius: var(--rounded-md);
+
+  // The divider stops at the content edge; the row's hover area reaches 8px further on each side.
+  & + &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    inset-inline: var(--p-2);
+    border-top: var(--border-w-100) solid var(--border);
+  }
+
+  &:hover {
+    background: var(--accent);
+  }
+}
+
+.ds-row__main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--p-3);
+  padding: var(--p-2);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-row__icon {
+  flex: none;
+  width: var(--w-4);
+  height: var(--h-4);
+  color: var(--muted-foreground);
+}
+
+.ds-row__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-row__title,
+.ds-row__detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-row__title {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+.ds-row__detail {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ds-row__meta {
+  flex: none;
+}
+
+/* ── Quick actions: shortcuts as tiles ── */
+
+.ds-quick {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: var(--p-2);
+  grid-auto-rows: minmax(0, 1fr);
+
+  &--S {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  &--M {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  &--L {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: var(--h-14);
+    align-content: start;
+  }
+}
+
+.ds-quick__action {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2-5);
+  min-width: 0;
+  min-height: 0;
+  padding: var(--p-2) var(--p-2-5);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-lg);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-out), background-color var(--duration-instant) var(--ease-out);
+
+  &:hover {
+    border-color: var(--primary-border);
+    background: var(--primary-light);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+// One action in a Small widget: the icon above the words, Apple's single shortcut tile.
+// One action: the same row as any other (icon beside its words), and only as tall as that row — not
+// stretched to fill the widget. (It was a tile with the icon above the words, which made a tall button.)
+.ds-quick--one {
+  grid-auto-rows: auto;
+  align-content: start;
+}
+
+.ds-quick__icon {
+  // Just the glyph: the widget's header carries the boxed icon, the actions under it stay plain.
+  flex: none;
+  display: inline-flex;
+  color: var(--muted-foreground);
+  transition: color var(--duration-instant) var(--ease-out);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+.ds-quick__action:hover .ds-quick__icon {
+  color: var(--primary-text);
+}
+
+.ds-quick__text {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-quick__label,
+.ds-quick__hint {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ds-quick__label {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+.ds-quick__hint {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+/* ── A pinned space at Medium or Wide: one row of numbers ── */
+
+
+
+// A number beside its trend (Medium pulse and dashboard).
+.ds-fill--row {
+  flex-direction: row;
+  align-items: stretch;
+  gap: var(--p-4);
+
+  > :first-child {
+    flex: none;
+    align-self: center;
+  }
+
+  .ds-fill-trend {
+    min-width: 0;
+  }
+}
+
+// Small: the number has the room, so it is the biggest thing in the card.
+.ds-home-widget--size-S .ds-bigstat__value {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-9);
+}
+
+// Aiden at Large: the header already says "Ask Aiden", so the greeting's own title and sentence go
+// and the questions, the last conversation and the composer fit without scrolling.
+.ds-home-aiden--L {
+  .ui-chat-greeting {
+    padding-block: var(--p-2);
+  }
+
+  .ui-chat-greeting__title,
+  .ui-chat-greeting__description {
+    display: none;
+  }
+
+  // Its own group under the questions, its text on the same edge — the rows' hover area hangs 8px outside.
+  .ds-home-aiden-recent {
+    margin: var(--p-4) calc(var(--p-2) * -1) 0;
+    width: calc(100% + var(--p-4));
+  }
+}
+
+/* ── Blocks: a section heading, a separator ── */
+
+.ds-home-block {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--p-2);
+}
+
+// A heading: its line of type, and 12px under it before the widgets it names.
+.ds-home-block__title {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--foreground);
+  font-size: var(--text-lg);
+  line-height: var(--leading-7);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+}
+
+.ds-home-block--heading.ds-home-block--editing {
+  align-items: center;
+  // The name field is taller than the title it edits; it sits in the same 40px.
+  align-self: stretch;
+  padding-bottom: var(--p-1);
+}
+
+.ds-home-block__input {
+  flex: 1;
+  max-width: var(--max-w-sm);
+}
+
+// A separator: a hairline at the top of its 24px, so it has the same 24 above (the widget's gap) as below.
+.ds-home-block--divider {
+  align-items: flex-start;
+
+  .ds-home-block__line {
+    flex: 1;
+    align-self: flex-start;
+  }
+}
+
+.ds-home-block--divider.ds-home-block--editing {
+  align-items: center;
+
+  .ds-home-block__line {
+    align-self: center;
+  }
+}
+
+/* ── Colour lives on the detail line, never the number ──
+   A number is always the text colour. Its detail line ("1 can't wait", "▼ 12%", "2 past due") takes a
+   colour only for something actually wrong, or a trend's direction — so colour on Home means something.
+   Two classes, so these win over each detail line's own muted colour. */
+.ds-today-tile__context,
+.ds-kpi__context,
+.ds-bigstat__context,
+.ds-glance__context {
+  &.ds-tone--error {
+    color: var(--error);
+    font-weight: var(--font-medium);
+  }
+
+  &.ds-tone--warning {
+    color: var(--warning);
+    font-weight: var(--font-medium);
+  }
+
+  &.ds-tone--success {
+    color: var(--success);
+    font-weight: var(--font-medium);
+  }
+}
+
+/* ── A pinned metric: its number, and the line behind it ── */
+.ds-metric {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: var(--w-36) minmax(0, 1fr);
+  gap: var(--p-4);
+  align-items: stretch;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--rounded-md);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  // Small: the number on top, the line under it.
+  &--S {
+    display: flex;
+    flex-direction: column;
+    gap: var(--p-2);
+
+    .ds-metric__num {
+      flex-direction: row;
+      align-items: baseline;
+      gap: var(--p-2);
+    }
+  }
+}
+
+.ds-metric__num {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  gap: var(--p-0-5);
+}
+
+.ds-metric__about {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+}
+
+/* ── DartBoards on Home: dashboards are doors, metrics carry numbers ── */
+
+// A pinned dashboard: the whole widget is the way in.
+.ds-dash-door {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+
+  &:hover .ds-dash-door__open {
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: none;
+    border-radius: var(--rounded-md);
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-dash-door__top {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  flex-wrap: wrap;
+}
+
+.ds-dash-door__open {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  color: var(--primary-text);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+
+  svg {
+    width: var(--w-4);
+    height: var(--h-4);
+  }
+}
+
+// A space, at Large and up: its metrics, then its dashboards.
+.ds-space-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-3);
+}
+
+.ds-space-body__more {
+  align-self: flex-start;
+  margin-top: auto;
+}
+
+.ds-space-part {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1-5);
+  min-height: 0;
+
+  &--grow {
+    flex: 1;
+  }
+}
+
+.ds-space-part__label {
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-metric-cells {
+  // The cells take the room the widget gives them, so each line gets real height.
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-auto-rows: minmax(0, 1fr);
+  gap: var(--p-3);
+}
+
+.ds-metric-cell {
+  gap: var(--p-1);
+  padding: var(--p-2-5) var(--p-3);
+
+  .ds-home-cell__num {
+    min-width: 0;
+  }
+
+  // The line takes whatever height the cell has left.
+  .ds-fill-trend {
+    min-height: var(--h-5);
+  }
+}
+
+.ds-metric-cell--more {
+  justify-content: center;
+}
+
+// A space's dashboards: links that wrap; the ones past the bottom go into "N more".
+.ds-dash-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--p-2);
+}
+
+.ds-dash-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1-5);
+  max-width: 100%;
+  min-width: 0;
+  padding: var(--p-1) var(--p-2-5);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-md);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  cursor: pointer;
+  transition: border-color var(--duration-instant) var(--ease-out);
+
+  > svg {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--muted-foreground);
+  }
+
+  &:hover {
+    border-color: var(--border-hover);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+}
+
+.ds-dash-link__name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+// Aiden at Large: the questions start under the header, at the content edge, like any widget's content —
+// the chat's own top padding, the greeting's padding and its content margin would otherwise stack to ~56px.
+.ds-home-aiden--L {
+  .ui-chat__list-content {
+    padding-top: var(--p-2);
+  }
+
+  .ui-chat-greeting {
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding: 0;
+  }
+
+  .ui-chat-greeting__content {
+    margin-top: 0;
+    justify-content: flex-start;
+  }
+}
+
+// The chat sits on the widget's own 16px content edge: the conversation and the composer line up with
+// every other widget's content, instead of adding the chat layout's own inset on top of the card's.
+.ds-home-aiden {
+  .ui-chat__list-content {
+    padding-inline: 0;
+  }
+
+  // No rule over the composer: in a widget this small the chat and the message box are one surface.
+  .ui-chat-layout__footer {
+    padding: var(--p-3) 0 0;
+    border-top: none;
+  }
+
+  // Smaller suggestions — a nudge, not buttons that compete with the widget's header.
+  .ui-chat-suggestion {
+    padding: var(--p-1) var(--p-2-5);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+/* A list's rows have a hover area that reaches past the content edge (so the TEXT lines up with every
+   other widget's content). The clip that hides rows which don't fit would cut that hover area off, so
+   it reaches out by the same amount — margin out, padding back in — and the hover shows in full. */
+.ds-fit__clip:has(> .ds-home-lines) {
+  margin: calc(var(--p-1-5) * -1) calc(var(--p-2) * -1) 0;
+  padding: 0 var(--p-2);
+}
+
+.ds-fit__clip:has(> .ds-rows) {
+  margin: calc(var(--p-2) * -1) calc(var(--p-2) * -1) 0;
+  padding: 0 var(--p-2);
+}
+
+.ds-home-lines,
+.ds-rows {
+  margin-inline: calc(var(--p-2) * -1);
+}
+
+/* ── Compact cells ──
+   The board fills the narrow reading column (Open items, My IRM), so its cells run 190–240px wide (4 columns at 1440, 6 at
+   1920). Below 240 Home adds `ds-home-compact` to the board, and each widget tightens to keep its
+   words whole: the type steps down a rung where a line would otherwise be cut, and a Medium list
+   gives its number a narrower column. At 240 nothing here applies. */
+.ds-home-compact {
+  // A Small widget's title takes the icon's two lines rather than truncating.
+  .ds-home-widget--size-S .ds-home-head__title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+
+  // The hover chevron holds its width even while invisible; on a Small the whole header is the link
+  // anyway, so the title gets that room instead.
+  .ds-home-widget--size-S .ds-home-head__chevron {
+    display: none;
+  }
+
+  // Small: the phrase under the number is one rung smaller, so the context line keeps its room.
+  .ds-bigstat__label {
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+
+  // Medium list: the number column narrows (144 → 96) so the items keep three lines and most of
+  // their words. Stacking the number on top was tried: it cost two of the three items.
+  .ds-glance {
+    grid-template-columns: var(--w-24) minmax(0, 1fr);
+    gap: var(--p-3);
+  }
+
+  .ds-glance__stat {
+    padding-inline-end: var(--p-3);
+  }
+
+  // A Small quick action names itself in two lines rather than cutting the name.
+  .ds-quick--S .ds-quick__label {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+  }
+
+  // KPI tiles three across: a label may take two lines, and every tile keeps room for two, so the
+  // numbers stay on one line across the row.
+  .ds-kpi-grid--one-row .ds-kpi__label {
+    min-height: var(--h-8);
+  }
+
+  // A Medium keeps the number and its label; the context waits for Large.
+  .ds-home-widget--size-M .ds-kpi__context {
+    display: none;
+  }
+
+  // Team load's bars below already say who has what, so its numbers drop their context line here.
+  .ds-home-widget--team .ds-kpi__context {
+    display: none;
+  }
+
+  // Large has the height for it, so the context wraps instead of cutting.
+  .ds-home-widget--size-L .ds-kpi:not(.ds-kpi--lg) .ds-kpi__context {
+    white-space: normal;
+  }
+
+  // Today: the app tag stays beside the name but shrinks to its icon, so a long name ("Roll rate into
+  // 1–30 days") keeps the tile's width instead of what is left beside "DartBoards". (Stacking the tag
+  // above the name was tried: a tile with no tag — Needs your attention — then sat a line lower.)
+  .ds-today-tag--full {
+    display: none;
+  }
+
+  .ds-today-tag--icon {
+    display: inline-flex;
+  }
+
+  // The detail line may take a second line; the subgrid keeps it level across the row.
+  .ds-today-tile__context {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+  }
+}
+
+/* ── Customize: one session, a docked panel beside the board ──
+   The panel is fixed to the workspace (AppShell's workspace is `contain: layout`, so `fixed` pins to it,
+   not the window): full height under the tab strip, the board scrolling beside it. While it is open the
+   page leaves its width free, and the sidebar folds away (Home.tsx) so the board keeps its columns. */
+.ui-app-shell {
+  // 440: room for the widget gallery and its live previews. As wide as it can be while the board keeps
+  // its four columns at 1440 (it needs 896 beside the panel, with the sidebar folded).
+  --ds-home-panel: calc(var(--w-96) + var(--w-14));
+}
+
+.ds-home-root--editing {
+  padding-inline-end: var(--ds-home-panel);
+}
+
+.ui-drawer.ds-home-add--docked {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: var(--ds-home-panel);
+  max-width: none;
+  height: auto;
+}
+
+// Toasts ("… added to your home") land beside the panel, not on it. The toaster is portaled to <body>,
+// outside the shell, so it cannot read --ds-home-panel and spells the same width out.
+:root:has(.ds-home-add--docked) .ui-toaster--bottom-right {
+  right: calc(var(--w-96) + var(--w-14));
+}
+
+// A saved tab set in the quick-actions picker: its checkbox, and its Rename/Delete menu at the end.
+.ds-home-tabset {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--p-2);
+
+  &--renaming {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
+/* ── A widget's loudness follows what it holds (widgetPulse) ──
+   Urgent: the card lifts (a neutral shadow) and its header carries a red Badge saying what — never a
+   coloured edge on the card. Quiet: nothing for you, so the card recedes onto the page. */
+.ds-home-widget--urgent {
+  box-shadow: var(--shadow-md);
+}
+
+.ds-home-widget--quiet {
+  background: var(--background);
+  box-shadow: none;
+
+  .ds-home-head__title {
+    color: var(--muted-foreground);
+  }
+}
+
+.ds-home-quiet {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: var(--p-1);
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+}
+
+.ds-home-quiet__icon {
+  width: var(--w-5);
+  height: var(--h-5);
+  color: var(--success);
+}
+
+.ds-home-quiet__title {
+  color: var(--foreground);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+}
+
+/* ── Next up: the one thing to do first, under the greeting ── */
+.ds-next {
+  display: flex;
+  align-items: center;
+  gap: var(--p-4);
+  padding: var(--p-4);
+  border: var(--border-w-100) solid var(--border);
+  border-radius: var(--rounded-xl);
+  background: var(--card);
+  box-shadow: var(--shadow-xs);
+
+  // Nothing to do: the same row, quieter — no card lift.
+  &--clear {
+    background: var(--background);
+    box-shadow: none;
+  }
+}
+
+.ds-next__text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-0-5);
+}
+
+.ds-next__eyebrow {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+  font-weight: var(--font-medium);
+}
+
+.ds-next__title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--foreground);
+  font-size: var(--text-base);
+  line-height: var(--leading-6);
+  font-weight: var(--font-semibold);
+}
+
+.ds-next__detail {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--muted-foreground);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+}
+
+.ds-next__actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+}

@@ -1,0 +1,101 @@
+@use '../../styles/sr-only' as *;
+
+// One number and what it means. Content only — the surface is whoever holds it.
+.ui-stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+  min-width: 0;
+}
+
+.ui-stat__label {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  color: var(--muted-foreground);
+}
+
+.ui-stat__row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: var(--space-4);
+}
+
+.ui-stat__value {
+  font-size: var(--text-3xl);
+  line-height: var(--leading-9);
+  font-weight: var(--font-semibold);
+  letter-spacing: var(--tracking-tight);
+  color: var(--foreground);
+  font-variant-numeric: tabular-nums;
+}
+
+.ui-stat--sz-sm .ui-stat__value {
+  font-size: var(--text-2xl);
+  line-height: var(--leading-8);
+}
+
+.ui-stat--sz-lg .ui-stat__value {
+  font-size: var(--text-4xl);
+  line-height: var(--leading-10);
+}
+
+// A tone colors the VALUE only — the label and change keep their own meaning.
+.ui-stat--info .ui-stat__value {
+  color: var(--info);
+}
+.ui-stat--success .ui-stat__value {
+  color: var(--success);
+}
+.ui-stat--warning .ui-stat__value {
+  color: var(--warning);
+}
+.ui-stat--error .ui-stat__value {
+  color: var(--error);
+}
+
+.ui-stat__change {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  font-weight: var(--font-medium);
+  font-variant-numeric: tabular-nums;
+
+  &--good {
+    color: var(--success);
+  }
+  &--bad {
+    color: var(--error);
+  }
+  &--neutral {
+    color: var(--muted-foreground);
+  }
+}
+
+.ui-stat__arrow {
+  width: var(--w-4);
+  height: var(--h-4);
+  flex: none;
+}
+
+.ui-stat__change-label {
+  font-weight: var(--font-normal);
+  color: var(--muted-foreground);
+}
+
+.ui-stat__sr {
+  @include sr-only;
+}
+
+.ui-stat__description {
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  color: var(--muted-foreground);
+}
+
+.ui-stat__trend {
+  margin-top: var(--space-5);
+}

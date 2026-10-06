@@ -267,7 +267,7 @@ export function sourcesOf(state: SuiteState, items: SpaceItem[]): Source[] {
       name: d.name,
       source: d.source,
       late,
-      why: d.notice ?? (d.health === 'decommissioning' ? 'Being decommissioned — it will stop refreshing.' : d.health === 'unreachable' ? 'The source could not be reached this morning.' : undefined),
+      why: d.notice ?? d.irmFlags?.incident ?? (d.retiring ? `Retiring on ${d.retiring.on}.` : d.health === 'decommissioning' ? 'Being decommissioned — it will stop refreshing.' : d.health === 'unreachable' ? 'The source could not be reached this morning.' : undefined),
     });
   }
   return [...out.values()];

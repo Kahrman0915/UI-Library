@@ -300,6 +300,19 @@ export function SpacePage({ id }: { id: string }) {
               layout={item.layout}
               action={menu}
               onOpen={() => go({ page: 'dashboard', id: dash.id, fromSpaceId: space.id })}
+              replacementName={dash.retired?.replacedBy ? byId(dash.retired.replacedBy)?.name : undefined}
+              onReplace={
+                space.shared
+                  ? undefined
+                  : (to) =>
+                      update((d) => {
+                        const s = d.spaces.find((x) => x.id === space.id);
+                        const it = s?.items.find((i) => i.dashboardId === dash.id && !i.widgetId);
+                        if (!s || !it) return;
+                        if (s.items.some((i) => i.dashboardId === to && !i.widgetId)) s.items = s.items.filter((i) => i !== it);
+                        else it.dashboardId = to;
+                      })
+              }
             />
           </div>
         </HoverCardTrigger>
@@ -315,7 +328,7 @@ export function SpacePage({ id }: { id: string }) {
                 Submit a request for the Production environment with the Viewer role. Admins usually reply within a day.
               </CardDescription>
               <Stack level={4} direction="horizontal" wrap>
-                <Button id={`${cardId}-access-requests`} style="link" size="sm" label="Open My Requests" onClick={() => go({ page: 'my-requests' })} />
+                <Button id={`${cardId}-access-requests`} style="link" size="sm" label="Go to Open items" onClick={() => go({ page: 'my-requests' })} />
                 <Button
                   id={`${cardId}-access-how`}
                   style="link"

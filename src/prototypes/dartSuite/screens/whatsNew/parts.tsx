@@ -115,7 +115,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
   const s = STEPS[step];
 
   return (
-    <Dialog id="ds-wn-tour" open={open} onClose={close} closeOnOutsideClick className="ds-wn-tour" aria-label="What’s new in Dartboards">
+    <Dialog id="ds-wn-tour" open={open} onClose={close} closeOnOutsideClick className="ds-wn-tour" aria-label="What’s new in DartBoards">
       <div className="ds-wn-tour__close">
         <CloseButton id="ds-wn-tour-close" variant="chip" ariaLabel="Close" onClick={close} />
       </div>
@@ -125,7 +125,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
         ) : (
           <div className="ds-wn-tour__hero">
             <span className="ds-wn-tour__hero-overline">Explore more</span>
-            <span className="ds-wn-tour__hero-title">Get more out of Dartboards with guides and release notes.</span>
+            <span className="ds-wn-tour__hero-title">Get more out of DartBoards with guides and release notes.</span>
           </div>
         )}
       </DialogMedia>

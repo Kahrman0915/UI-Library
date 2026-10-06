@@ -25,9 +25,9 @@ import { ME } from '../../data';
 import { useLeaveGuard, useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
 import type { ThreadEntry } from '../../types';
-import { Crumbs, DISCARD_UNSENT_REPLY, MY_REQUESTS, scopeLabel, statusFor, typeVisual } from './shared';
+import { Crumbs, DISCARD_UNSENT_REPLY, MY_REQUESTS, prettyDates, refLine, scopeLabel, statusFor, typeVisual } from './shared';
 
-/** My Requests' "Reply" button lands here with the composer already open. */
+/** Open items' "Reply" button lands here with the composer already open. */
 let replyOnArrival: string | null = null;
 export const openReplyOnArrival = (id: string) => void (replyOnArrival = id);
 
@@ -97,11 +97,11 @@ export function RequestDetail({ id }: { id: string }) {
         overline={<Crumbs trail={[MY_REQUESTS, { label: r.title }]} />}
         visual={<FeaturedIcon Icon={Icon} color={color} />}
         title={r.title}
-        description={`${r.id} · ${typeLabel[r.type]} · ${scopeLabel(r)}`}
+        description={refLine('', r.id, typeLabel[r.type], scopeLabel(r))}
         actions={
           <div className="ds-requests-card__aside">
             <Badge id={`ds-reqd-badge-${key}`} label={s.label} IconLeft={s.Icon} {...toneBadge(s.tone)} />
-            <Text as="span" size="xs" tone="muted">Submitted {r.submittedAt}</Text>
+            <Text as="span" size="xs" tone="muted">Opened {prettyDates(r.submittedAt)}</Text>
           </div>
         }
       />
@@ -140,7 +140,7 @@ export function RequestDetail({ id }: { id: string }) {
                     key={t.id}
                     marker={<Avatar id={`ds-reqd-av-${t.id}`} size="sm" fallback={w.initials} />}
                     author={w.name}
-                    time={t.at}
+                    time={prettyDates(t.at)}
                     actions={
                       link && (
                         <Button

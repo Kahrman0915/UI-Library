@@ -19,7 +19,7 @@ const meta: Meta = {
     layout: 'fullscreen',
     ui: {
       description:
-        'Every flow in the Figma file as ONE clickable prototype: DART Central (home, My Requests, the request ' +
+        'Every flow in the Figma file as ONE clickable prototype: DART Central (home, Open items, the request ' +
         'flow and the whole admin side), DartBoards (Browse, spaces, the Builder and the dashboard viewer) and ' +
         'Aiden on top of both.\n\n' +
         '**It is one application, not a gallery of screens.** The tab strip is the router: every page opens in a ' +
@@ -41,10 +41,10 @@ const meta: Meta = {
 export default meta;
 type Story = StoryObj;
 
-function Suite({ start }: { start?: Route }) {
+function Suite({ start, signedInAs }: { start?: Route; signedInAs?: string }) {
   return (
     <div style={{ height: '100vh' }}>
-      <SuiteProvider>
+      <SuiteProvider signedInAs={signedInAs}>
         <NavProvider initial={start}>
           <UiProvider>
             <Shell aiden={<AidenHost />}>
@@ -60,8 +60,8 @@ function Suite({ start }: { start?: Route }) {
 /** Start at DART Central Home, the fixed first tab. */
 export const App: Story = { render: () => <Suite /> };
 
-/** Start on My Requests — the requester's home base (Request Flow R1.1). */
-export const StartAtMyRequests: Story = { name: 'Start · My Requests', render: () => <Suite start={{ page: 'my-requests' }} /> };
+/** Start on Open items — everything a person is working on or waiting on, every app (Request Flow R1.1). */
+export const StartAtMyRequests: Story = { name: 'Start · Open items', render: () => <Suite start={{ page: 'my-requests' }} /> };
 
 /** Start on the admin overview (Admin Flow 1.1). */
 export const StartAtAdmin: Story = { name: 'Start · Admin Overview', render: () => <Suite start={{ page: 'admin-overview' }} /> };
@@ -69,7 +69,7 @@ export const StartAtAdmin: Story = { name: 'Start · Admin Overview', render: ()
 /** Start in DartBoards on Browse (Browse B1.1). */
 export const StartAtBrowse: Story = { name: 'Start · Browse', render: () => <Suite start={{ page: 'browse' }} /> };
 
-/** Start on What's New, where the Dartboards tour opens over the page (What's New W3.1). */
+/** Start on What's New, where the DartBoards tour opens over the page (What's New W3.1). */
 /** Start inside a team suite — Browse scoped to the Servicing team's dashboards. */
 export const StartAtSuite: Story = { name: 'Start · Suite', render: () => <Suite start={{ page: 'browse', suite: 'servicing' }} /> };
 
@@ -107,3 +107,25 @@ export const StartAtMetrics: Story = { name: 'Start · Metrics', render: () => <
 export const StartAtMarketplace: Story = { name: 'Start · Marketplace (All)', render: () => <Suite start={{ page: 'marketplace' }} /> };
 
 export const StartAtWhatsNew: Story = { name: "Start · What's New", render: () => <Suite start={{ page: 'whats-new' }} /> };
+
+/* ── IRM, one story per persona ───────────────────────────────────────────
+   IRM is the system of record for every report; DartBoards lists what IRM
+   has in production and reacts to what IRM tells it. There is no role switch
+   in the UI: who is signed in decides IRM's home and sidebar. Use the sidebar's
+   Simulate menu to move IRM's clock on and watch a decommission's notice
+   period end in DartBoards. */
+
+/** Business user — request progress, approvals waiting on you, evergreen due, the reports you own. */
+export const IrmBusiness: Story = { name: 'IRM · Business user', render: () => <Suite signedInAs="u-km" start={{ page: 'irm-home' }} /> };
+
+/** Developer — requests assigned to you and ones you created; your queue by priority and age in status. */
+export const IrmDeveloper: Story = { name: 'IRM · Developer', render: () => <Suite signedInAs="u-jm" start={{ page: 'irm-home' }} /> };
+
+/** Dev manager — the team board (assigned and unassigned, drag to balance) and month over month. */
+export const IrmDevManager: Story = { name: 'IRM · Dev manager', render: () => <Suite signedInAs="u-ar" start={{ page: 'irm-home' }} /> };
+
+/** Governance — evergreens, flags, decommission approvals, SLA and performance monitoring. */
+export const IrmGovernance: Story = { name: 'IRM · Governance', render: () => <Suite signedInAs="u-np" start={{ page: 'irm-home' }} /> };
+
+/** Production support — everything awaiting deployment, unassigned first, by age in status. */
+export const IrmProdSupport: Story = { name: 'IRM · Production support', render: () => <Suite signedInAs="u-cb" start={{ page: 'irm-home' }} /> };

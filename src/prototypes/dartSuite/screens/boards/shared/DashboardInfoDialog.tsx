@@ -5,8 +5,7 @@
 
 import { useRef } from 'react';
 import { ExternalLink, Pencil, Share2 } from 'lucide-react';
-import { toast } from '../../../../../components/Toast';
-import { CONTROLS, irmFor } from '../../../irm';
+import { CONTROLS, LIFECYCLE, fmtIso, irmFor } from '../../../irm';
 import Badge from '../../../../../components/Badge';
 import Button from '../../../../../components/Button';
 import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../../../../components/Dialog';
@@ -25,7 +24,7 @@ export function DashboardInfoDialog({ open, dashboardId, onClose }: { open: bool
   const { go, open: openTab } = useNav();
   const d = state.dashboards.find((x) => x.id === shownId) ?? null;
   const inSpaces = d ? spacesWith(state, d.id) : [];
-  const irm = d ? irmFor(d) : null;
+  const irm = d ? (irmFor(d, state.irm.records) ?? null) : null;
 
   return (
     <Dialog id="ds-dashboard-info" open={open && !!d} onClose={onClose} closeOnOutsideClick>
@@ -92,13 +91,19 @@ export function DashboardInfoDialog({ open, dashboardId, onClose }: { open: bool
                   style="link"
                   size="sm"
                   label="Open IRM record"
-                  IconRight={ExternalLink}
-                  aria-label={`Open ${irm.number} in IRM (opens in a new tab)`}
-                  onClick={() => toast(`Opening ${irm.number} in IRM`, { description: 'IRM opens in a new tab. Data, access and controls are changed there.' })}
+                  onClick={() => {
+                    onClose();
+                    go({ page: 'irm-record', number: irm.number });
+                  }}
                 />
               </div>
               <DescriptionList>
                 <DescriptionListItem term="IRM record">{irm.number}</DescriptionListItem>
+                <DescriptionListItem term="Lifecycle">
+                  {LIFECYCLE[irm.lifecycle].label}
+                  {irm.lifecycle === 'retiring' && irm.retireOn ? ` · retires ${fmtIso(irm.retireOn)}` : ''}
+                  {irm.lifecycle === 'retired' && irm.retireOn ? ` · ${fmtIso(irm.retireOn)}` : ''}
+                </DescriptionListItem>
                 <DescriptionListItem term="Business owner">{irm.businessOwner}</DescriptionListItem>
                 <DescriptionListItem term="Developer">{irm.developer}</DescriptionListItem>
                 <DescriptionListItem term="Data source">

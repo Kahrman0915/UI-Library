@@ -18,7 +18,7 @@ import PageContainer from '../../../../../components/PageContainer';
 import PageHeader from '../../../../../components/PageHeader';
 import Section from '../../../../../components/Section';
 import { useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import type { Dashboard } from '../../../types';
 import { useUi } from '../../../ui';
 import { BrowseRow } from '../browse/BrowseItems';
@@ -38,7 +38,7 @@ export function ExternalDetails({ d, fromSpaceId }: { d: Dashboard; fromSpaceId?
   const section = suite?.sections.find((s) => s.dashboardIds.includes(d.id));
   const related = (section?.dashboardIds ?? [])
     .filter((id) => id !== d.id)
-    .map((id) => state.dashboards.find((x) => x.id === id && x.lifecycle === 'published'))
+    .map((id) => state.dashboards.find((x) => x.id === id && discoverable(x)))
     .filter((x): x is Dashboard => !!x)
     .slice(0, 3);
   const base = `ds-ext-${d.id}`;

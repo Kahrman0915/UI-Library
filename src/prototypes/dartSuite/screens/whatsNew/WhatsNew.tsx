@@ -36,7 +36,7 @@ import { TOPIC_LABEL, WHATS_NEW } from './entries';
 import type { WnEntry, WnProduct, WnTopic } from './entries';
 import { Clip, EntryBadges, EntryMeta, Tour, takeTourOnce } from './parts';
 
-const PRODUCTS: WnProduct[] = ['DART Central', 'Aiden', 'Dartboards'];
+const PRODUCTS: WnProduct[] = ['DART Central', 'Aiden', 'DartBoards'];
 const TOPICS: WnTopic[] = ['launch', 'feature', 'resource', 'coming-soon'];
 const PAGE = 3;
 

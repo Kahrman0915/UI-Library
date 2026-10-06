@@ -118,7 +118,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
     const listboxId = `${id}-listbox`;
     const searchInputId = `${id}-search`;
     const descriptionId = description ? `${id}-description` : undefined;
-    const errorId = errorMessage ? `${id}-error` : undefined;
+    const errorId = error && errorMessage ? `${id}-error` : undefined;
 
     const triggerRef = useRef<HTMLButtonElement | null>(null);
     const contentRef = useRef<HTMLDivElement | null>(null);
@@ -416,7 +416,7 @@ const Combobox = forwardRef<HTMLDivElement, ComboboxProps>(
           layout. (Toast's region is persistent instead because it is a portal
           container that has to exist to receive anything.)
         */}
-        {errorMessage && (
+        {error && errorMessage && (
           <p id={errorId} className="ui-input__error" role="alert">
             {errorMessage}
           </p>

@@ -26,11 +26,24 @@ export const ME: Person = { id: 'u-km', name: 'Kahrman McKenzie', initials: 'KM'
 export const PEOPLE: Person[] = [
   ME,
   { id: 'u-pr', name: 'Priya Raman', initials: 'PR', email: 'priya.raman@example.com' },
-  { id: 'u-so', name: 'Sam Okafor', initials: 'SO', email: 'sam.okafor@example.com' },
-  { id: 'u-dw', name: 'Dana Wu', initials: 'DW', email: 'dana.wu@example.com' },
+  { id: 'u-so', name: 'Sam Okafor', initials: 'SO', email: 'sam.okafor@example.com', irmRole: 'developer' },
+  { id: 'u-dw', name: 'Dana Wu', initials: 'DW', email: 'dana.wu@example.com', irmRole: 'developer' },
   { id: 'u-jl', name: 'Jordan Lee', initials: 'JL', email: 'jordan.lee@example.com' },
   { id: 'u-mh', name: 'Maya Hart', initials: 'MH', email: 'maya.hart@example.com' },
+  // IRM — the people who build, govern and ship reports. Their role decides what IRM shows them.
+  { id: 'u-jm', name: 'Jordan Mount', initials: 'JM', email: 'jordan.mount@example.com', irmRole: 'developer' },
+  { id: 'u-lg', name: 'Leo Grant', initials: 'LG', email: 'leo.grant@example.com', irmRole: 'developer' },
+  { id: 'u-ar', name: 'Alex Rivera', initials: 'AR', email: 'alex.rivera@example.com', irmRole: 'dev-manager' },
+  { id: 'u-np', name: 'Nina Patel', initials: 'NP', email: 'nina.patel@example.com', irmRole: 'governance' },
+  // A second reviewer, so no one on the governance team ever reviews their own evidence.
+  { id: 'u-oh', name: 'Omar Haddad', initials: 'OH', email: 'omar.haddad@example.com', irmRole: 'governance' },
+  { id: 'u-cb', name: 'Chris Bauer', initials: 'CB', email: 'chris.bauer@example.com', irmRole: 'prod-support' },
+  // Uses dashboards, owns no report — the most common person in DART Central, and the one with the fewest options.
+  { id: 'u-tb', name: 'Taylor Brooks', initials: 'TB', email: 'taylor.brooks@example.com' },
 ];
+
+/** The developers a dev manager balances work across. */
+export const IRM_DEVELOPERS = ['u-jm', 'u-so', 'u-dw', 'u-lg'];
 
 export const personById = (id: string) => PEOPLE.find((p) => p.id === id) ?? ME;
 
@@ -93,6 +106,11 @@ export const SPACES: Space[] = [
     hue: 'blue',
     pinned: true,
     items: [
+      // The numbers the ops team reads first: metrics, which DART Central holds the values for.
+      { dashboardId: '', assetId: 'm-roll-rate', layout: 'card', viewId: 'weekly', metric: { display: 'number', timeframe: 'follow', breakdown: 'org' } },
+      { dashboardId: '', assetId: 'm-cure-rate', layout: 'card', viewId: 'weekly', metric: { display: 'number', timeframe: 'follow', breakdown: 'org' } },
+      { dashboardId: '', assetId: 'm-ptp-kept', layout: 'card', viewId: 'weekly', metric: { display: 'number', timeframe: 'follow', breakdown: 'org' } },
+      { dashboardId: '', assetId: 'm-first-response', layout: 'card', viewId: 'weekly', metric: { display: 'number', timeframe: 'follow', breakdown: 'org' } },
       { dashboardId: 'revenue-by-region', layout: 'thumbnail' },
       { dashboardId: 'pipeline-health', layout: 'thumbnail' },
       { dashboardId: 'support-backlog', layout: 'card' },
@@ -133,10 +151,25 @@ export const SPACES: Space[] = [
     name: 'Finance month-end close',
     description: 'Shared by Dana Wu with the finance group.',
     hue: 'violet',
-    shared: true,
+    ownerId: 'u-dw',
+    sharedWith: ['u-km', 'u-tb'],
     items: [
       { dashboardId: 'campaign-roi', layout: 'card' },
       { dashboardId: 'headcount-plan', layout: 'card' },
+    ],
+  },
+  // A report reader's own space — the dashboards they open every week.
+  {
+    id: 'tb-my-dashboards',
+    name: 'My dashboards',
+    description: 'The ones I check every Monday.',
+    hue: 'blue',
+    pinned: true,
+    ownerId: 'u-tb',
+    items: [
+      { dashboardId: 'revenue-by-region', layout: 'card' },
+      { dashboardId: 'nps-trends', layout: 'card' },
+      { dashboardId: 'support-backlog', layout: 'card' },
     ],
   },
 ];
@@ -420,7 +453,8 @@ export const REQUESTS: Request[] = [
   },
   {
     id: '#0417', type: 'dashboard-add', product: 'DARTBoards', title: 'Publish Originations Daily Volume to DartBoards',
-    summary: 'Request to add the Originations Daily Volume dashboard to the Dartboards library.', requesterId: ME.id,
+    // Opened by the developer who built it, once the IRM request was deployed (the request → Jira → DartBoards chain).
+    summary: 'Request to add the Originations Daily Volume dashboard to the DartBoards library.', requesterId: 'u-jm',
     submittedAt: '09/01/2026', updatedAt: '09/01/2026', status: 'new',
     fields: [
       { label: 'IRM record', value: 'IRM-20512' },
@@ -586,7 +620,7 @@ export const ACTIVITY: ActivityEntry[] = [
   { id: 'a8', at: '08/20/2026 09:10', who: 'Priya Raman', action: 'closed', target: '#0408 Add a saved view for the Servicing team', product: 'DARTBoards' },
 ];
 
-export const DEFAULT_WIDGETS: AdminWidget[] = ['kpi-pending', 'kpi-approved', 'kpi-dashboards', 'queue', 'activity'];
+export const DEFAULT_WIDGETS: AdminWidget[] = ['kpi-pending', 'kpi-approved', 'kpi-dashboards', 'kpi-banners', 'queue', 'dash-most-opened', 'usage', 'views-by-product', 'irm-catalog', 'activity'];
 
 export const AIDEN_CHATS: AidenChat[] = [
   {

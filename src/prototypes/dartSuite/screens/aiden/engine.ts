@@ -17,8 +17,8 @@
 
 import { useSyncExternalStore } from 'react';
 import type { ChatActionStatus } from '../../../../components/Chat';
-import { ME } from '../../data';
-import { requesterStatus } from '../../store';
+import { seriesFor } from '../../data';
+import { requesterStatus, discoverable } from '../../store';
 import type { SuiteState } from '../../store';
 import type { AidenChat, AidenMessage, Dashboard } from '../../types';
 
@@ -79,7 +79,7 @@ const search = (dashboards: Dashboard[], text: string) => {
   const keys = keywords(text);
   if (!keys.length) return [];
   return dashboards
-    .filter((d) => d.lifecycle === 'published')
+    .filter((d) => discoverable(d))
     .map((d) => {
       const name = d.name.toLowerCase();
       const desc = d.description.toLowerCase();
@@ -107,6 +107,31 @@ export function buildReply(text: string, state: SuiteState, history: AidenMessag
   const id = mid();
   const say = (t: string, extra: Partial<RichMessage> = {}): RichMessage => ({ id, from: 'assistant', text: t, kind: 'text', ...extra });
 
+  // 0 · "Why is X up/down?" — explain a dashboard's movement from the same numbers Home shows.
+  if (/\b(why|what happened|what changed)\b/.test(q) && /\b(up|down|drop|dropped|fell|rose|jump|jumped|change|changed)\b/.test(q)) {
+    const dash = [...state.dashboards].sort((a, b) => b.name.length - a.name.length).find((d) => q.includes(d.name.toLowerCase()));
+    if (dash) {
+      const s = seriesFor(dash.id, 12);
+      const recent = s.slice(-4).reduce((a, b) => a + b, 0);
+      const before = s.slice(-8, -4).reduce((a, b) => a + b, 0);
+      const pct = before ? Math.round(((recent - before) / before) * 100) : 0;
+      let at = 1;
+      for (let i = 2; i < s.length; i++) if (Math.abs(s[i] - s[i - 1]) > Math.abs(s[at] - s[at - 1])) at = i;
+      const weeksAgo = s.length - 1 - at;
+      const when = weeksAgo === 0 ? 'this week' : weeksAgo === 1 ? 'last week' : `${weeksAgo} weeks ago`;
+      const dir = pct < 0 ? 'down' : 'up';
+      const parts = [
+        `${dash.name} is ${dir} ${Math.abs(pct)}%: ${recent} views over the last four weeks against ${before} the four before.`,
+        `The sharpest week was ${when}, from ${s[at - 1]} to ${s[at]} views.`,
+      ];
+      if (dash.irmFlags?.incident) parts.push(`There is also a known issue open on it (“${dash.irmFlags.incident}”), which can keep people away until it’s fixed.`);
+      else if (dash.retiring) parts.push(`It is also being retired on ${dash.retiring.on}, and people tend to move to the replacement early.`);
+      else if (dash.irmFlags?.controlsOverdue) parts.push('Its review is overdue, so some readers may be holding off until it is certified again.');
+      else parts.push(pct < 0 ? 'Nothing is flagged on it, so this looks like a change in who is using it rather than a problem with the data.' : 'Nothing is flagged on it — more people are simply using it.');
+      return say(parts.join(' '), { kind: 'results', dashboardIds: [dash.id] });
+    }
+  }
+
   // 1 · "Add … to a space" — propose, never just do.
   if (/\badd\b/.test(q) && /\bspaces?\b/.test(q)) {
     const named = state.dashboards.find((d) => q.includes(d.name.toLowerCase()));
@@ -128,12 +153,12 @@ export function buildReply(text: string, state: SuiteState, history: AidenMessag
 
   // 2 · Your requests.
   if (/\brequests?\b/.test(q)) {
-    const mine = state.requests.filter((r) => r.requesterId === ME.id);
+    const mine = state.requests.filter((r) => r.requesterId === state.userId);
     const open = mine.filter((r) => requesterStatus(r.status).group !== 'done');
     const reply = open.filter((r) => requesterStatus(r.status).group === 'reply');
     const order = { reply: 0, review: 1, active: 2, done: 3 } as const;
     const rows = [...open].sort((a, b) => order[requesterStatus(a.status).group] - order[requesterStatus(b.status).group]).slice(0, 4);
-    if (!open.length) return say(`You have ${mine.length} requests and none are open. Start a new one from My Requests.`, { kind: 'requests', requestIds: [] });
+    if (!open.length) return say(`You have ${mine.length} requests and none are open. Start a new one from Open items.`, { kind: 'requests', requestIds: [] });
     const head = `You have ${open.length} open request${open.length === 1 ? '' : 's'}`;
     const tail = reply.length
       ? ` — ${reply.length} ${reply.length === 1 ? 'needs' : 'need'} your reply, so ${reply.length === 1 ? 'that one is' : 'those are'} first.`
@@ -151,7 +176,7 @@ export function buildReply(text: string, state: SuiteState, history: AidenMessag
 
   // 4 · What the team is opening.
   if (/\bteam\b|this week|popular|most (used|viewed)/.test(q)) {
-    const top = [...state.dashboards].filter((d) => d.hasAccess && d.lifecycle === 'published').sort((a, b) => b.views - a.views).slice(0, 3);
+    const top = [...state.dashboards].filter((d) => d.hasAccess && discoverable(d)).sort((a, b) => b.views - a.views).slice(0, 3);
     return say('Your team opened these most this week — most viewed first.', { kind: 'results', dashboardIds: top.map((d) => d.id) });
   }
 
