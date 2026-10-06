@@ -39,7 +39,7 @@ import Timeline, { TimelineItem } from '../../../../components/Timeline';
 import { DISCARD_REPLY, useLeaveGuard, useNav } from '../../nav';
 import { adminStatus, today, typeLabel, useSuite } from '../../store';
 import type { Banner, Dashboard, Request } from '../../types';
-import { CONTROLS, IRM_UNPUBLISHED, irmFor } from '../../irm';
+import { CONTROLS, irmFor } from '../../irm';
 import { DecisionDialog, fieldValue, isStaged, PRODUCT_LABEL, requesterOf, StatusBadge, TYPE_ICON, useGoAfterCommit } from './shared';
 import type { Decision } from './shared';
 import './Admin.scss';
@@ -160,7 +160,7 @@ function IrmStatus({ r }: { r: Request }) {
   const number = fieldValue(r, 'IRM record');
   const dash =
     state.dashboards.find((x) => x.id === r.assetId) ?? state.dashboards.find((x) => x.name === fieldValue(r, 'Dashboard', 'Display title'));
-  const record = IRM_UNPUBLISHED.find((x) => x.number === number) ?? (dash ? irmFor(dash) : undefined);
+  const record = state.irm.records.find((x) => x.number === number) ?? (dash ? irmFor(dash, state.irm.records) : undefined);
   const key = r.id.replace('#', '');
   if (!record) {
     return number ? (
@@ -322,7 +322,7 @@ export function AdminReview({ id }: { id: string }) {
       approve(r.id, text || undefined);
       setDecision(null);
       // What approving produces (③ DATA CONTRACT §2): Promote → a scheduled
-      // promotion window; Remove → that dashboard's health = decommissioning.
+      // promotion window; Remove → that dashboard's listing is archived.
       const dash = state.dashboards.find((d) => d.name === fieldValue(r, 'Dashboard', 'Dashboard name'));
       if (dash && r.type === 'dashboard-promote')
         update((d) =>
@@ -335,7 +335,10 @@ export function AdminReview({ id }: { id: string }) {
             state: 'scheduled',
           }),
         );
-      if (dash && r.type === 'dashboard-remove') update((d) => void Object.assign(d.dashboards.find((x) => x.id === dash.id) ?? {}, { health: 'decommissioning' }));
+      // Remove → the LISTING is archived, exactly as Manage's Decommission does. The report itself lives on in IRM:
+      // removing a listing never retires the record (that is an IRM decommission, with its own notice period).
+      if (dash && r.type === 'dashboard-remove')
+        update((d) => void Object.assign(d.dashboards.find((x) => x.id === dash.id) ?? {}, { lifecycle: 'archived', health: 'decommissioning' }));
       if (isStaged(r.type)) {
         toast.success(`${r.id} approved`, { description: 'Nothing is live yet. Apply changes when you are ready.' });
         go({ page: 'admin-applied', id: r.id });
@@ -644,12 +647,14 @@ export function AdminApplied({ id }: { id: string }) {
       } else if (r.type === 'dashboard-add') {
         const name = val('Dashboard name');
         const existing = d.dashboards.find((x) => x.name === name);
+        // The source is IRM's to say — the record knows where the report is built.
+        const irmRecord = d.irm.records.find((x) => x.number === fieldValue(r, 'IRM record'));
         const dash: Dashboard = existing ?? {
           id: name.toLowerCase().replace(/[^a-z0-9]+/g, '-'),
           name,
           description: val('Description'),
           owner: requesterOf(r).name,
-          source: 'Tableau',
+          source: irmRecord?.source ?? 'Tableau',
           category: val('Category') as Dashboard['category'],
           tags: ['New'],
           updatedAt: today(),

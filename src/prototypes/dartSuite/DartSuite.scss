@@ -39,3 +39,9 @@
 .ds-sidebar-more.ui-sidebar__menu-sub-button {
   color: var(--sidebar-muted-foreground);
 }
+
+// The Home tab is only as wide as its icon and word. The library's 140px floor stops short document
+// names from making stubby tabs; Home is the one pinned tab, a fixed word, so it hugs its label.
+.ui-tab-bar__tab.ds-tab-home {
+  min-width: 0;
+}

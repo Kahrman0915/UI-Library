@@ -6,7 +6,7 @@
    This file is the contract every screen folder builds against. Add a route
    here before adding a screen for it. */
 
-export type AppId = 'central' | 'boards';
+export type AppId = 'central' | 'boards' | 'irm';
 
 /* ── Routes ─────────────────────────────────────────────────────────────────── */
 
@@ -20,7 +20,7 @@ export type Route =
   | { page: 'request-detail'; id: string }
   | { page: 'new-request' }
   // `dashboardId` preselects the dashboard ("Edit listing" from a dashboard's details).
-  | { page: 'request-form'; kind: RequestKind; mode?: DashboardRequestMode; dashboardId?: string }
+  | { page: 'request-form'; kind: RequestKind; mode?: DashboardRequestMode; dashboardId?: string; record?: string; /** Banner only: on dashboards (default) or across applications. */ reach?: 'dashboards' | 'applications' }
   | { page: 'request-submitted'; id: string }
   // DART Central · What's New (Figma: Whats New)
   | { page: 'whats-new' }
@@ -56,6 +56,24 @@ export type Route =
   | { page: 'builder'; spaceId?: string; seedDashboardId?: string; seedAssetId?: string }
   // `widget` deep-links to one chart on a native dashboard.
   | { page: 'dashboard'; id: string; fromSpaceId?: string; widget?: string }
+  // IRM — the system of record for every report: inventory, change requests, controls.
+  // What each person lands on depends on their IRM role (Person.irmRole), never a switcher.
+  | { page: 'irm-home' }
+  | { page: 'irm-records' }
+  | { page: 'irm-record'; number: string }
+  | { page: 'irm-changes' }
+  | { page: 'irm-change'; id: string }
+  | { page: 'irm-new-change'; type?: IrmChangeType; record?: string }
+  | { page: 'irm-board' }
+  | { page: 'irm-activity' }
+  | { page: 'irm-governance' }
+  | { page: 'irm-deployments' }
+  | { page: 'irm-integrations' }
+  | { page: 'irm-audit' }
+  // A report request (IRM's form and page) hosted in DART Central, for business people.
+  | { page: 'report-request'; type?: IrmChangeType; record?: string }
+  | { page: 'report-request-detail'; id: string }
+  | { page: 'irm-workflows' }
   // Aiden (Figma: Aiden)
   | { page: 'aiden-launcher' }
   | { page: 'aiden-chat'; chatId: string };
@@ -64,11 +82,22 @@ export type PageId = Route['page'];
 
 /** Which application a route belongs to — drives the rail and the sidebar. */
 export const appOf = (r: Route): AppId =>
-  ['browse', 'marketplace', 'reports', 'report', 'metrics', 'metric', 'space', 'shared', 'builder', 'dashboard'].includes(r.page) ? 'boards' : 'central';
+  r.page.startsWith('irm-')
+    ? 'irm'
+    : ['browse', 'marketplace', 'reports', 'report', 'metrics', 'metric', 'space', 'shared', 'builder', 'dashboard'].includes(r.page) ? 'boards' : 'central';
 
 /* ── Domain ─────────────────────────────────────────────────────────────────── */
 
-export type Person = { id: string; name: string; initials: string; email: string };
+/**
+ * A person's job in IRM. It decides what IRM shows them first — there is no
+ * switcher: a developer's home IS their queue, governance's IS the evergreen and
+ * flagged lists. Absent = a business user, the default for anyone who owns reports.
+ */
+export type IrmRole = 'business' | 'developer' | 'dev-manager' | 'governance' | 'prod-support';
+
+export type IrmChangeType = 'new' | 'break' | 'modification' | 'decommission';
+
+export type Person = { id: string; name: string; initials: string; email: string; irmRole?: IrmRole };
 
 export type Product = 'DART Central' | 'DARTBoards' | 'Aiden';
 
@@ -168,6 +197,17 @@ export type Dashboard = {
   irm?: string;
   /** What it is about. Absent = derived from its suite section, else its category. */
   subject?: string;
+  /*
+   * ── Driven by IRM, never set by hand (irmEngine.ts `project`) ──
+   * A listing follows its IRM record: these three are re-derived from the record
+   * every time IRM changes, so DartBoards can never disagree with the system of record.
+   */
+  /** IRM has scheduled the report's retirement: a notice period, then it archives itself. ISO dates. */
+  retiring?: { on: string; replacedBy?: string };
+  /** IRM retired the report: the listing is archived and spaces show a placeholder pointing here. */
+  retired?: { on: string; replacedBy?: string };
+  /** What IRM says a viewer should know: controls overdue, or a known issue (an open break). */
+  irmFlags?: { controlsOverdue?: boolean; incident?: string };
 };
 
 /* ── The native dashboard contract ─────────────────────────────────────────────
@@ -299,7 +339,12 @@ export type Space = {
   hue: 'violet' | 'blue' | 'emerald' | 'amber' | 'rose' | 'cyan';
   items: SpaceItem[];
   pinned?: boolean;
+  /** Derived for the signed-in person: true when the space is someone else's, shared with them. */
   shared?: boolean;
+  /** Whose space it is. A person sees their own spaces and the ones shared with them. */
+  ownerId?: string;
+  /** People it is shared with, besides its owner. */
+  sharedWith?: string[];
   /** The Builder's layout preset (Builder BL4.7). Absent = auto. */
   layout?: 'auto' | 'two' | 'three' | 'kpis' | 'full';
   /** Space-level notices (Space S3.1/S3.2). */
@@ -387,7 +432,67 @@ export type Admin = { personId: string; role: AdminScope; products: Product[]; g
 
 export type ActivityEntry = { id: string; at: string; who: string; action: string; target: string; product: Product };
 
-export type AdminWidget = 'queue' | 'activity' | 'kpi-pending' | 'kpi-approved' | 'kpi-dashboards' | 'usage';
+/** A widget on DART Central Home. `space`, `dashboard` and `quick` can each appear more than once. */
+export type HomeTileId =
+  | 'waiting'
+  | 'aiden'
+  | 'watchlist'
+  | 'pulse'
+  | 'metric'
+  | 'reports'
+  | 'irm-recert'
+  | 'irm-controls'
+  | 'irm-changes'
+  | 'requests'
+  | 'quick'
+  | 'tabs'
+  | 'whats-new'
+  | 'jira'
+  | 'heading'
+  | 'divider'
+  | 'space'
+  | 'dashboard'
+  | 'queue'
+  | 'team'
+  | 'deploys'
+  | 'governance';
+/**
+ * A Home widget's size, Apple-style: a few fixed shapes in PIXELS, each with its own design.
+ * S (one cell) is the compact glance — a number. M (two cells across) is the glance plus a
+ * little more. L (two by two) is the detailed view, item by item. W and XL are full width.
+ */
+export type HomeSize = 'S' | 'M' | 'L' | 'W' | 'XL';
+/** Where a widget sits on a Home grid (x in columns, y in rows) and which size it is there. */
+export type HomeGridPos = { x: number; y: number; size: HomeSize };
+/**
+ * One placed widget. `key` is unique on the page; `ref` is the space or dashboard a pinned widget
+ * shows; `actions` are the shortcuts a quick-actions widget holds, and `name` what its owner called it
+ * (a quick-actions widget, or a section heading). A widget has TWO places, set by
+ * its owner: `lg` on the four-column desktop board and `sm` on the two-column small-screen board.
+ */
+export type HomeTile = { key: string; id: HomeTileId; ref?: string; actions?: string[]; /** A name its owner gave it (quick-actions widgets). */ name?: string; lg: HomeGridPos; sm: HomeGridPos; /** The six-column board (wide screens): absent until the person arranges one, then kept. */ xl?: HomeGridPos };
+/** A bento tile's span on the 12-column grid (Admin Overview). */
+export type BentoSize = 3 | 4 | 6 | 8 | 12;
+
+export type AdminWidget =
+  | 'queue'
+  | 'queue-5'
+  | 'activity'
+  | 'activity-10'
+  | 'kpi-pending'
+  | 'kpi-approved'
+  | 'kpi-dashboards'
+  | 'kpi-never-opened'
+  | 'kpi-banners'
+  | 'kpi-promoted'
+  | 'usage'
+  | 'views-by-product'
+  | 'dash-most-opened'
+  | 'banners-displaying'
+  | 'promotions-live'
+  | 'access-recent'
+  | 'redirects-top'
+  | 'irm-catalog';
 
 export type AidenMessage = { id: string; from: 'user' | 'assistant'; text: string };
 

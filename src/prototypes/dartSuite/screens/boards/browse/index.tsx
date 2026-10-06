@@ -25,7 +25,7 @@ import PageHeader from '../../../../../components/PageHeader';
 import Skeleton from '../../../../../components/Skeleton';
 import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGroup';
 import { useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import { BrowseCard, BrowseCardSkeleton, BrowseRow, BrowseRowSkeleton } from './BrowseItems';
 import { FilterDrawer } from './FilterDrawer';
 import Section from '../../../../../components/Section';
@@ -61,7 +61,7 @@ export function Browse() {
   }, []);
 
   // The marketplace lists what is published; drafts and archived stay out.
-  const library = useMemo(() => state.dashboards.filter((d) => d.lifecycle === 'published'), [state.dashboards]);
+  const library = useMemo(() => state.dashboards.filter(discoverable), [state.dashboards]);
   const q = query.trim().toLowerCase();
   const searched = useMemo(
     () => library.filter((d) => !q || `${d.name} ${d.description} ${d.owner} ${d.category}`.toLowerCase().includes(q)),

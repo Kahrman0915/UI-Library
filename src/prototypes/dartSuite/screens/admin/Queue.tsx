@@ -21,11 +21,14 @@ import Stack from '../../../../components/Stack';
 import Table, { TableBody, TableCell, TableHead, TableHeaderCell, TableRow, TableSelectionCell } from '../../../../components/Table';
 import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup';
 import Toolbar, { ToolbarGroup } from '../../../../components/Toolbar';
+import Badge from '../../../../components/Badge';
+import Text from '../../../../components/Text';
 import { toast } from '../../../../components/Toast';
+import { CONTROLS, LIFECYCLE } from '../../irm';
 import { useNav } from '../../nav';
 import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
 import type { Request } from '../../types';
-import { byQueueOrder, daysSince, DecisionDialog, Kpi, KpiRow, PRODUCT_LABEL, RefCode, requesterOf, StatusBadge } from './shared';
+import { byQueueOrder, daysSince, DecisionDialog, fieldValue, Kpi, KpiRow, PRODUCT_LABEL, RefCode, requesterOf, StatusBadge } from './shared';
 import type { Decision } from './shared';
 import './Admin.scss';
 
@@ -202,6 +205,7 @@ export function AdminQueue() {
                   <TableHeaderCell>Request #</TableHeaderCell>
                   <TableHeaderCell>Type</TableHeaderCell>
                   <TableHeaderCell>Request</TableHeaderCell>
+                  <TableHeaderCell>In IRM</TableHeaderCell>
                   <TableHeaderCell>Product</TableHeaderCell>
                   <TableHeaderCell>Submitted</TableHeaderCell>
                   <TableHeaderCell>Status</TableHeaderCell>
@@ -231,6 +235,9 @@ export function AdminQueue() {
                       <TableCell>
                         {/* The title is the link; no other cell in the row is. */}
                         <Button id={`ds-aq-open-${key}`} style="link" size="sm" label={r.title} className="ds-admin-rowlink" onClick={() => go({ page: 'admin-review', id: r.id })} />
+                      </TableCell>
+                      <TableCell>
+                        <IrmCell request={r} />
                       </TableCell>
                       <TableCell>{PRODUCT_LABEL[r.product]}</TableCell>
                       <TableCell>{r.submittedAt}</TableCell>
@@ -270,5 +277,34 @@ export function AdminQueue() {
 
       <DecisionDialog id="ds-aq-dialog" decision={dialog?.decision ?? null} requests={dialogRequests} onClose={() => setDialog(null)} onConfirm={confirm} />
     </PageContainer>
+  );
+}
+
+/**
+ * What IRM says about the report a DartBoards request is about — so an admin
+ * sees an unsigned control or a retiring report in the queue, not only once
+ * they open the review. Requests that are not about a report show a dash.
+ */
+function IrmCell({ request: r }: { request: Request }) {
+  const { state } = useSuite();
+  const listing = r.assetId ? state.dashboards.find((d) => d.id === r.assetId) : undefined;
+  const number = fieldValue(r, 'IRM record') || listing?.irm;
+  const rec = number ? state.irm.records.find((x) => x.number === number) : undefined;
+  if (!r.type.startsWith('dashboard') || !rec) return <Text as="span" tone="muted">—</Text>;
+  const key = r.id.replace('#', '');
+  const incident = state.irm.incidents.some((i) => i.record === rec.number && !i.resolved);
+  const issue =
+    rec.lifecycle === 'retiring' || rec.lifecycle === 'retired'
+      ? LIFECYCLE[rec.lifecycle].label
+      : incident
+        ? 'Known issue'
+        : rec.controls !== 'complete'
+        ? CONTROLS[rec.controls].short === 'Overdue' ? 'Controls overdue' : 'Controls not signed off'
+        : undefined;
+  return (
+    <Stack level={5}>
+      <Text as="span" size="sm" tone="muted">{rec.number}</Text>
+      {issue && <Badge id={`ds-aq-irm-${key}`} label={issue} color={incident || rec.controls === 'overdue' ? 'error' : 'warning'} appearance="soft" />}
+    </Stack>
   );
 }

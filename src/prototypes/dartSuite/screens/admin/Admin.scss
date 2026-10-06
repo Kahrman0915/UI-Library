@@ -5,45 +5,6 @@
 .ds-admin-kpi {
   padding: var(--space-3);
   min-width: var(--w-40);
-
-  p {
-    margin: 0;
-  }
-}
-
-.ds-admin-kpi__value {
-  font-size: var(--text-3xl);
-  line-height: var(--leading-9);
-  font-weight: var(--font-semibold);
-
-  &--info {
-    color: var(--info);
-  }
-  &--error {
-    color: var(--error);
-  }
-  &--success {
-    color: var(--success);
-  }
-  &--warning {
-    color: var(--warning);
-  }
-  &--violet {
-    color: var(--category-violet-text);
-  }
-}
-
-.ds-admin-kpi__label {
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-.ds-admin-kpi__hint {
-  font-size: var(--text-sm);
-  line-height: var(--leading-5);
-  color: var(--muted-foreground);
 }
 
 // Toolbars.
@@ -73,53 +34,9 @@
   white-space: nowrap;
 }
 
-// Overview queue preview card.
-.ds-admin-qcard {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-3);
-}
-
-.ds-admin-qcard__text {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: var(--space-5);
-  flex: 1;
-  min-width: 0;
-}
-
-.ds-admin-qcard__title.ui-button {
-  font-size: var(--text-base);
-  line-height: var(--leading-6);
-  font-weight: var(--font-semibold);
-  color: var(--foreground);
-}
-
-// Overview customize mode.
-.ds-admin-widget {
-  position: relative;
-  min-width: 0;
-
-  &--editing {
-    outline: var(--border-w-100) dashed var(--border-hover);
-    outline-offset: var(--p-1);
-    border-radius: var(--rounded-lg);
-  }
-}
-
-.ds-admin-kpis .ds-admin-widget--editing .ds-admin-wctl {
-  position: absolute;
-  top: var(--p-1);
-  right: var(--p-1);
-  z-index: 1;
-}
-
-.ds-admin-wctl {
-  display: inline-flex;
-  gap: var(--p-0-5);
-  border-radius: var(--rounded-md);
-  background: var(--card);
+// A sparkline in a list row needs a width to fill.
+.ds-ov-trend {
+  width: var(--w-24);
 }
 
 // Simple label/value list (overview widgets, widget picker).
@@ -294,4 +211,38 @@
     right: var(--space-3);
     z-index: var(--z-10);
   }
+}
+
+// A KPI's last two weeks, one bar per day (Kpi's DailyBars) — the picture under a number that has no
+// trend line. Same height as the Sparkline beside it, so a row of KPI cards lines up. Today's bar wears
+// the card's tone; the days before are neutral.
+.ds-daybars {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--p-0-5);
+  width: 100%;
+  height: var(--h-7);
+}
+
+.ds-daybars__bar {
+  flex: 1;
+  min-width: 0;
+  border-radius: var(--rounded-sm);
+  background: var(--border);
+
+  &:last-child {
+    background: var(--primary);
+  }
+}
+
+.ds-daybars--error .ds-daybars__bar:last-child {
+  background: var(--error);
+}
+
+.ds-daybars--warning .ds-daybars__bar:last-child {
+  background: var(--warning);
+}
+
+.ds-daybars--success .ds-daybars__bar:last-child {
+  background: var(--success);
 }

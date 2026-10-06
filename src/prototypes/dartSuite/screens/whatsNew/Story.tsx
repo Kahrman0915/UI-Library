@@ -1,4 +1,4 @@
-/* What's New · a release story (Figma W2.1 "Introducing Dartboards").
+/* What's New · a release story (Figma W2.1 "Introducing DartBoards").
 
    The DartBoards launch is the one story the file draws in full: what's
    included (three clips), how to get started (the walkthrough), the default
@@ -21,6 +21,8 @@ import Section from '../../../../components/Section';
 import Stack from '../../../../components/Stack';
 import { toast } from '../../../../components/Toast';
 import Grid from '../../../../components/Grid';
+import Heading from '../../../../components/Heading';
+import Text from '../../../../components/Text';
 import { Walkthrough } from '../../../productDemos/Walkthrough';
 import { useNav } from '../../nav';
 import { WHATS_NEW } from './entries';
@@ -57,7 +59,7 @@ const DETAILS: [string, string][] = [
   ['The builder', 'Name a new space and add several dashboards at once from the Add components panel.'],
   ['Tabs', 'Dashboards you open from a space appear as tabs, so your space is always one click away.'],
   ['Edit mode', 'Drag and drop to rearrange, switch between thumbnail and compact view, and rename your space or change its description. Undo reverses your last change.'],
-  ['Default space', 'Right-click a space in the sidebar and choose Make default space. Dartboards opens to it next time.'],
+  ['Default space', 'Right-click a space in the sidebar and choose Make default space. DartBoards opens to it next time.'],
   ['Locked dashboards', 'See the name of every dashboard, even ones you can’t open yet. A lock shows which ones need access.'],
 ];
 
@@ -100,7 +102,7 @@ export function WhatsNewStory({ id }: { id: string }) {
       title={entry.title}
       description={
         full
-          ? 'Your dashboards, organized your way. Dartboards brings every DART dashboard into one library, lets you build spaces around the way you work, and opens straight to the dashboards you use most.'
+          ? 'Your dashboards, organized your way. DartBoards brings every DART dashboard into one library, lets you build spaces around the way you work, and opens straight to the dashboards you use most.'
           : entry.summary
       }
       meta={<span className="ds-wn-date">{entry.date}</span>}
@@ -142,7 +144,7 @@ export function WhatsNewStory({ id }: { id: string }) {
           )}
           <div className="ds-wn-actions">
             <Button id={`ds-wns-${entry.id}-back`} style="outline" label="Back to What’s New" onClick={() => go({ page: 'whats-new' })} />
-            {entry.product === 'Dartboards' && (
+            {entry.product === 'DartBoards' && (
               <Button id={`ds-wns-${entry.id}-open`} label="Open the Dashboard Library" IconLeft={() => <Store aria-hidden="true" />} onClick={() => go({ page: 'browse' })} />
             )}
           </div>
@@ -188,7 +190,7 @@ export function WhatsNewStory({ id }: { id: string }) {
             <ItemContent>
               <ItemTitle>Set a default space</ItemTitle>
               <ItemDescription>
-                With one space, Dartboards opens straight to it. With more than one, right-click a space in the sidebar and choose Make default
+                With one space, DartBoards opens straight to it. With more than one, right-click a space in the sidebar and choose Make default
                 space — that’s where you’ll land next time.
               </ItemDescription>
             </ItemContent>
@@ -197,7 +199,7 @@ export function WhatsNewStory({ id }: { id: string }) {
 
         <Section id="ds-wns-details" heading="Full details" variant="group">
           <Stack level={4}>
-            <p className="ds-wn-copy">Stop hunting for the dashboards you check every day. Here’s everything Dartboards gives you:</p>
+            <Text tone="muted">Stop hunting for the dashboards you check every day. Here’s everything DartBoards gives you:</Text>
             <ul className="ds-wn-details">
               {DETAILS.map(([term, text]) => (
                 <li key={term}>
@@ -222,8 +224,8 @@ export function WhatsNewStory({ id }: { id: string }) {
                     <Badge id={`ds-wns-soon-${s.title}-badge`} label="Soon" color="default" appearance="outline" />
                   </div>
                   <Stack level={5}>
-                    <h3 className="ds-wn-card__title">{s.title}</h3>
-                    <p className="ds-wn-copy">{s.text}</p>
+                    <Heading level={3} size="base">{s.title}</Heading>
+                    <Text tone="muted">{s.text}</Text>
                   </Stack>
                 </CardBody>
               </Card>

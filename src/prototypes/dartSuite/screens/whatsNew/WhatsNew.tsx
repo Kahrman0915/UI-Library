@@ -29,12 +29,14 @@ import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup
 import Toolbar, { ToolbarGroup } from '../../../../components/Toolbar';
 import { toast } from '../../../../components/Toast';
 import Grid from '../../../../components/Grid';
+import Heading from '../../../../components/Heading';
+import Text from '../../../../components/Text';
 import { useNav } from '../../nav';
 import { TOPIC_LABEL, WHATS_NEW } from './entries';
 import type { WnEntry, WnProduct, WnTopic } from './entries';
 import { Clip, EntryBadges, EntryMeta, Tour, takeTourOnce } from './parts';
 
-const PRODUCTS: WnProduct[] = ['DART Central', 'Aiden', 'Dartboards'];
+const PRODUCTS: WnProduct[] = ['DART Central', 'Aiden', 'DartBoards'];
 const TOPICS: WnTopic[] = ['launch', 'feature', 'resource', 'coming-soon'];
 const PAGE = 3;
 
@@ -167,8 +169,8 @@ export function WhatsNew() {
               <CardBody>
                 <Stack level={4}>
                   <EntryMeta entry={featured} />
-                  <h2 className="ds-wn-featured__title">{featured.title}</h2>
-                  <p className="ds-wn-lede">{featured.summary}</p>
+                  <Heading level={2} size="3xl">{featured.title}</Heading>
+                  <Text size="base" tone="muted">{featured.summary}</Text>
                   {featured.bullets && (
                     <ul className="ds-wn-bullets">
                       {featured.bullets.map((b) => (
@@ -200,8 +202,8 @@ export function WhatsNew() {
                   <CardBody>
                     <Stack level={5}>
                       <EntryMeta entry={e} />
-                      <h3 className="ds-wn-card__title">{e.title}</h3>
-                      <p className="ds-wn-copy">{e.summary}</p>
+                      <Heading level={3} size="base">{e.title}</Heading>
+                      <Text tone="muted">{e.summary}</Text>
                     </Stack>
                     <div className="ds-wn-foot">
                       <EntryBadges entry={e} idPrefix={`ds-wn-card-${e.id}`} />
@@ -266,8 +268,8 @@ export function WhatsNew() {
             <div className="ds-wn-alerts">
               <FeaturedIcon Icon={Megaphone} size="sm" />
               <div className="ds-wn-alerts__text">
-                <p className="ds-wn-card__title">Release notifications</p>
-                <p className="ds-wn-copy">Get notified when new releases ship.</p>
+                <Text size="base" weight="semibold">Release notifications</Text>
+                <Text tone="muted">Get notified when new releases ship.</Text>
               </div>
               <Switch
                 id="ds-wn-alerts-switch"
@@ -307,8 +309,8 @@ function Row({ entry, children }: { entry: WnEntry; children: React.ReactNode })
       <CardBody>
         <Stack level={5}>
           <EntryMeta entry={entry} />
-          <h3 className="ds-wn-card__title">{entry.title}</h3>
-          <p className="ds-wn-copy">{entry.summary}</p>
+          <Heading level={3} size="base">{entry.title}</Heading>
+          <Text tone="muted">{entry.summary}</Text>
         </Stack>
         <div className="ds-wn-foot">
           <EntryBadges entry={entry} idPrefix={`ds-wn-row-${entry.id}`} />

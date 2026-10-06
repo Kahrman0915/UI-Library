@@ -47,7 +47,7 @@ import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
 import Text from '../../../../../components/Text';
 import { useNav } from '../../../nav';
-import { useSuite } from '../../../store';
+import { useSuite, discoverable } from '../../../store';
 import type { Dashboard } from '../../../types';
 import { BrowseCard, BrowseRow } from '../browse/BrowseItems';
 import { FilterDrawer } from '../browse/FilterDrawer';
@@ -111,7 +111,7 @@ export function SuiteBrowse({ suiteId, sectionId }: { suiteId: string; sectionId
 
   const base = `ds-suite-${suite.id}`;
   const Icon = suiteIcon(suite.id);
-  const find = (id: string) => state.dashboards.find((d) => d.id === id && d.lifecycle === 'published');
+  const find = (id: string) => state.dashboards.find((d) => d.id === id && discoverable(d));
   const present = (ids: string[]) => ids.map(find).filter((d): d is Dashboard => !!d);
 
   const all = present(suiteDashboardIds(suite));

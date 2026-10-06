@@ -11,12 +11,12 @@ export { RequestDetail } from './RequestDetail';
 export { NewRequest } from './NewRequest';
 export { RequestSubmitted } from './RequestSubmitted';
 
-export function RequestForm({ kind, mode, dashboardId }: { kind: RequestKind; mode?: DashboardRequestMode; dashboardId?: string }) {
+export function RequestForm({ kind, mode, dashboardId, record, reach }: { kind: RequestKind; mode?: DashboardRequestMode; dashboardId?: string; record?: string; reach?: 'dashboards' | 'applications' }) {
   switch (kind) {
     case 'dashboard':
-      return <DashboardForm initialMode={mode ?? 'add'} initialDashboardId={dashboardId} />;
+      return <DashboardForm initialMode={mode ?? 'add'} initialDashboardId={dashboardId} initialRecord={record} />;
     case 'banner':
-      return <BannerForm />;
+      return <BannerForm reach={reach ?? 'dashboards'} />;
     case 'general':
       return <GeneralForm />;
     case 'feature':

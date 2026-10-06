@@ -42,7 +42,7 @@ export function AssetInfoDialog({ open, assetId, onClose }: { open: boolean; ass
         <DialogBody>
           <div className="ds-boards-info-head">
             <div>
-              <p className="ds-boards-info-name">{a.name}</p>
+              <Text size="base" weight="semibold" className="ds-boards-info-name">{a.name}</Text>
               <Text tone="muted">{a.description}</Text>
             </div>
           </div>

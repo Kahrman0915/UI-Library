@@ -10,11 +10,14 @@ export function ScopeMultiSelect({
   options,
   selected,
   onChange,
+  noun = 'dashboards',
 }: {
   id: string;
   options: { value: string; label: string }[];
   selected: string[];
   onChange: (next: string[]) => void;
+  /** What the options are, plural — "dashboards", "applications". */
+  noun?: string;
 }) {
   return (
     <Combobox
@@ -27,9 +30,9 @@ export function ScopeMultiSelect({
       values={selected}
       onValuesChange={onChange}
       placeholder="Select…"
-      searchPlaceholder="Search dashboards…"
-      emptyMessage="No dashboards match."
-      summary={(picked) => (picked.length === 1 ? picked[0].label : `${picked.length} dashboards selected`)}
+      searchPlaceholder={`Search ${noun}…`}
+      emptyMessage={`No ${noun} match.`}
+      summary={(picked) => (picked.length === 1 ? picked[0].label : `${picked.length} ${noun} selected`)}
     />
   );
 }

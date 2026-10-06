@@ -20,13 +20,14 @@ import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
 import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
 import Timeline, { TimelineItem } from '../../../../components/Timeline';
+import Section from '../../../../components/Section';
 import { ME } from '../../data';
 import { useLeaveGuard, useNav } from '../../nav';
 import { toneBadge, typeLabel, useSuite } from '../../store';
 import type { ThreadEntry } from '../../types';
-import { Crumbs, DISCARD_UNSENT_REPLY, MY_REQUESTS, scopeLabel, statusFor, typeVisual } from './shared';
+import { Crumbs, DISCARD_UNSENT_REPLY, MY_REQUESTS, prettyDates, refLine, scopeLabel, statusFor, typeVisual } from './shared';
 
-/** My Requests' "Reply" button lands here with the composer already open. */
+/** Open items' "Reply" button lands here with the composer already open. */
 let replyOnArrival: string | null = null;
 export const openReplyOnArrival = (id: string) => void (replyOnArrival = id);
 
@@ -96,11 +97,11 @@ export function RequestDetail({ id }: { id: string }) {
         overline={<Crumbs trail={[MY_REQUESTS, { label: r.title }]} />}
         visual={<FeaturedIcon Icon={Icon} color={color} />}
         title={r.title}
-        description={`${r.id} · ${typeLabel[r.type]} · ${scopeLabel(r)}`}
+        description={refLine('', r.id, typeLabel[r.type], scopeLabel(r))}
         actions={
           <div className="ds-requests-card__aside">
             <Badge id={`ds-reqd-badge-${key}`} label={s.label} IconLeft={s.Icon} {...toneBadge(s.tone)} />
-            <Text as="span" size="xs" tone="muted">Submitted {r.submittedAt}</Text>
+            <Text as="span" size="xs" tone="muted">Opened {prettyDates(r.submittedAt)}</Text>
           </div>
         }
       />
@@ -129,7 +130,7 @@ export function RequestDetail({ id }: { id: string }) {
 
         <Card id="ds-reqd-activity">
           <div className="ds-requests-panel">
-            <h2 className="ds-requests-eyebrow">Activity</h2>
+            <Section id="ds-reqd-activity-section" heading="Activity" variant="group">
             <Timeline aria-label="Activity">
               {r.thread.map((t) => {
                 const w = who(t);
@@ -139,7 +140,7 @@ export function RequestDetail({ id }: { id: string }) {
                     key={t.id}
                     marker={<Avatar id={`ds-reqd-av-${t.id}`} size="sm" fallback={w.initials} />}
                     author={w.name}
-                    time={t.at}
+                    time={prettyDates(t.at)}
                     actions={
                       link && (
                         <Button
@@ -158,6 +159,7 @@ export function RequestDetail({ id }: { id: string }) {
                 );
               })}
             </Timeline>
+            </Section>
 
             {done ? (
               // OPEN in Figma (③): whether a DONE request keeps its composer. Built as the

@@ -11,6 +11,7 @@ import CloseButton from '../../../../components/CloseButton';
 import Dialog, { DialogMedia } from '../../../../components/Dialog';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
 import Item, { ItemContent, ItemDescription, ItemMedia, ItemTitle } from '../../../../components/Item';
+import Heading from '../../../../components/Heading';
 import { EditModeDemo } from '../../../productDemos/EditModeDemo';
 import { LibraryDemo } from '../../../productDemos/LibraryDemo';
 import { SpacesDemo } from '../../../productDemos/SpacesDemo';
@@ -114,7 +115,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
   const s = STEPS[step];
 
   return (
-    <Dialog id="ds-wn-tour" open={open} onClose={close} closeOnOutsideClick className="ds-wn-tour" aria-label="What’s new in Dartboards">
+    <Dialog id="ds-wn-tour" open={open} onClose={close} closeOnOutsideClick className="ds-wn-tour" aria-label="What’s new in DartBoards">
       <div className="ds-wn-tour__close">
         <CloseButton id="ds-wn-tour-close" variant="chip" ariaLabel="Close" onClick={close} />
       </div>
@@ -124,7 +125,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
         ) : (
           <div className="ds-wn-tour__hero">
             <span className="ds-wn-tour__hero-overline">Explore more</span>
-            <span className="ds-wn-tour__hero-title">Get more out of Dartboards with guides and release notes.</span>
+            <span className="ds-wn-tour__hero-title">Get more out of DartBoards with guides and release notes.</span>
           </div>
         )}
       </DialogMedia>
@@ -143,7 +144,7 @@ export function Tour({ open, onClose }: { open: boolean; onClose: () => void }) 
           <div className="ds-wn-tour__text" aria-live="polite">
             <FeaturedIcon Icon={s.Icon} size="sm" />
             <p className="ds-wn-tour__overline">What’s New · {step + 1} of {last}</p>
-            <h2 className="ds-wn-tour__title">{s.title}</h2>
+            <Heading level={2} size="lg">{s.title}</Heading>
             <p className="ds-wn-tour__desc">{s.text}</p>
           </div>
         ) : (

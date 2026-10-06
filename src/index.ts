@@ -625,6 +625,8 @@ export type { InputOTPProps, InputOTPSize } from './components/InputOTP';
 export { default as Label } from './components/Label';
 export type { LabelProps, LabelSize } from './components/Label';
 
+export { default as Stat } from './components/Stat';
+export type { StatProps, StatSize, StatTone } from './components/Stat';
 export { default as Text } from './components/Text';
 export type { TextProps, TextSize, TextTone, TextWeight } from './components/Text';
 export { default as Textarea } from './components/Textarea';

@@ -11,7 +11,7 @@ import type { Product } from '../../types';
 import { FormShell, Row, useSubmission } from './shared';
 
 const PRODUCTS: { value: Product; label: string }[] = [
-  { value: 'DARTBoards', label: 'Dartboards' },
+  { value: 'DARTBoards', label: 'DartBoards' },
   { value: 'Aiden', label: 'Aiden' },
   { value: 'DART Central', label: 'DART Central' },
 ];

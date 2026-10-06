@@ -2,17 +2,7 @@
 // DART Central · Request Flow — prototype layout glue. Tokens only.
 // ─────────────────────────────────────────────────────────────────────────────
 
-.ds-requests-eyebrow {
-  margin: 0;
-  font-size: var(--text-xs);
-  line-height: var(--leading-4);
-  font-weight: var(--font-medium);
-  letter-spacing: var(--tracking-wider);
-  text-transform: uppercase;
-  color: var(--muted-foreground);
-}
-
-// ── My Requests · list cards ──
+// ── Open items · list cards ──
 .ds-requests-card {
   display: flex;
   align-items: flex-start;
@@ -25,14 +15,6 @@
     display: flex;
     flex-direction: column;
     gap: var(--p-1);
-  }
-
-  &__title {
-    margin: 0;
-    font-size: var(--text-base);
-    line-height: var(--leading-6);
-    font-weight: var(--font-semibold);
-    color: var(--foreground);
   }
 
   &__aside {
@@ -140,9 +122,8 @@
 }
 
 .ds-requests-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(var(--w-56), 1fr));
-  gap: var(--p-4);
+  // Fields in a row keep their own height, so an error message under one field
+  // does not stretch its neighbour.
   align-items: start;
 }
 
@@ -178,22 +159,12 @@
 }
 
 .ds-req-irm__facts {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--p-3) var(--p-6);
-  margin: 0;
-
-  dt {
-    font-size: var(--text-xs);
-    line-height: var(--leading-4);
-    color: var(--muted-foreground);
-  }
-
-  dd {
-    margin: 0;
-    font-size: var(--text-sm);
-    line-height: var(--leading-5);
-    color: var(--foreground);
+  // DescriptionList vertical, laid out two pairs to a row; a pair marked wide spans both.
+  // The pair div is display: flex in the vertical layout, so it is the grid item here.
+  &.ui-description-list--vertical {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-4) var(--space-3);
   }
 }
 
@@ -240,4 +211,156 @@
     font-size: var(--text-xs);
     line-height: var(--leading-4);
   }
+}
+
+// ── Open items ──
+
+// The other half of a report's chain (its IRM request, its DartBoards listing request), under the summary.
+.ds-open-links {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--space-4);
+}
+
+// The Jira tickets opened for an IRM request, under its card: one line each, every one opens Jira.
+.ds-open-tickets {
+  display: flex;
+  flex-direction: column;
+  gap: var(--p-1);
+  margin: 0 var(--space-3) var(--space-3);
+  padding-top: var(--space-4);
+  border-top: var(--border-w-100) solid var(--border);
+}
+
+.ds-open-tickets__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.ds-open-ticket {
+  display: flex;
+  align-items: center;
+  gap: var(--p-3);
+  width: 100%;
+  padding: var(--p-1-5) var(--p-2);
+  margin-inline: calc(var(--p-2) * -1);
+  border: none;
+  border-radius: var(--rounded-md);
+  background: none;
+  color: var(--foreground);
+  font: inherit;
+  font-size: var(--text-sm);
+  line-height: var(--leading-5);
+  text-align: start;
+  cursor: pointer;
+
+  &:hover {
+    background: var(--accent);
+  }
+
+  &:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 var(--focus-ring-width) var(--focus);
+  }
+
+  &__icon,
+  &__out {
+    flex: none;
+    width: var(--w-4);
+    height: var(--h-4);
+    color: var(--muted-foreground);
+  }
+
+  &__key {
+    flex: none;
+    color: var(--muted-foreground);
+    font-family: var(--font-family-mono);
+    font-size: var(--text-code);
+  }
+
+  &__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &__due {
+    flex: none;
+    color: var(--muted-foreground);
+    font-size: var(--text-xs);
+    line-height: var(--leading-4);
+  }
+}
+
+// "Closed in the last 30 days": folded away under the open work, its trigger sat flush with the cards.
+// The collapsible is a flex column that stretches its children, so the button hugs its label instead.
+.ds-open-closed__trigger {
+  align-self: flex-start;
+  margin-inline-start: calc(var(--p-3) * -1);
+  margin-bottom: var(--space-4);
+
+  .ui-button__icon {
+    transition: transform var(--duration-normal) var(--ease-out);
+  }
+}
+
+.ds-open-closed[data-state='open'] .ds-open-closed__trigger .ui-button__icon {
+  transform: rotate(180deg);
+}
+
+// A request type's name with its "New" tag beside it.
+.ds-requests-option__title {
+  display: flex;
+  align-items: center;
+  gap: var(--p-2);
+}
+
+// The reference line, with Jira's "opens elsewhere" mark at its end.
+.ds-open-line {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--p-1);
+}
+
+.ds-open-line__out {
+  flex: none;
+  width: var(--w-3);
+  height: var(--h-3);
+}
+
+// When the right side is an action, the status is a quiet line under the title instead of a badge.
+.ds-open-meta {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: var(--p-2);
+  color: var(--muted-foreground);
+  font-size: var(--text-xs);
+  line-height: var(--leading-4);
+
+  > * + *::before {
+    content: '·';
+    margin-inline-end: var(--p-2);
+  }
+}
+
+.ds-open-meta__status {
+  font-weight: var(--font-medium);
+
+  &--warning {
+    color: var(--warning);
+  }
+
+  &--error {
+    color: var(--error);
+  }
+}
+
+// The action sits level with the card's middle, alone.
+.ds-open-act {
+  align-self: center;
 }

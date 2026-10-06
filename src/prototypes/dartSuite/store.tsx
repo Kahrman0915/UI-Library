@@ -8,10 +8,11 @@
    to one area, prefer `update(draft => …)` in that area's own file over adding
    an action here — this file is shared by every screen folder. */
 
-import { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { createContext, useCallback, useContext, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { BadgeAppearance, BadgeColor } from '../../components/Badge/Badge.types';
 import type { ChartPalette } from '../../charts';
+import type { CategoryColor } from '../../types/GlobalTypes';
 import {
   ACTIVITY,
   ADMINS,
@@ -23,6 +24,7 @@ import {
   DEFAULT_WIDGETS,
   FOLLOWED_SUITES,
   ME,
+  PEOPLE,
   PROMOTIONS,
   REDIRECTS,
   REQUESTS,
@@ -34,6 +36,8 @@ import type {
   Admin,
   AdminScope,
   AdminWidget,
+  HomeTile,
+  BentoSize,
   AidenChat,
   Asset,
   Banner,
@@ -43,11 +47,41 @@ import type {
   Redirect,
   Request,
   RequestStatus,
+  Route,
   Space,
   SpaceItem,
   Suite,
   ThreadEntry,
 } from './types';
+import { seedIrm } from './irm';
+import type { IrmState } from './irm';
+import { notify, reconcile } from './irmEngine';
+
+/** A person's inventory table: which columns, in what order, sorted how, filtered to what. */
+export type InventoryView = {
+  columns: string[];
+  sort: { key: string; dir: 'asc' | 'desc' } | null;
+  /** Column key → the values kept (any of them matches). */
+  filters: Record<string, string[]>;
+  /** Only the reports the person starred. */
+  favoritesOnly?: boolean;
+  /** The saved view this one was opened from, if any — so the page can say which, and whether it was edited. */
+  savedId?: string;
+};
+
+/** A view a person named and kept, to come back to. */
+export type SavedView<V> = { id: string; name: string; view: V };
+export type SavedInventoryView = SavedView<InventoryView>;
+
+/** A person's IRM requests list: which types, open or closed, sorted how. */
+export type RequestView = {
+  type: 'all' | 'new' | 'break' | 'modification' | 'decommission';
+  phase: 'active' | 'closed' | 'all';
+  sort: { key: 'priority' | 'age' | 'opened'; dir: 'asc' | 'desc' } | null;
+  /** Which columns show, in order (`ChangeColumn` keys). Absent = the default set. */
+  columns?: string[];
+  savedId?: string;
+};
 
 export type SuiteState = {
   requests: Request[];
@@ -68,6 +102,23 @@ export type SuiteState = {
   activity: ActivityEntry[];
   /** The admin overview's widget arrangement (per-admin; Admin Flow 1.2–1.6). */
   widgets: AdminWidget[];
+  /** Each person's DART Central Home, as they arranged it. Absent = their role's default. */
+  homeLayouts: Record<string, HomeTile[]>;
+  /** What each person chose to show in Home's Today strip (ids from `TODAY_METRICS`). Absent = their role's default. */
+  homeToday: Record<string, string[]>;
+  /** IRM records each person starred, by IRM number. */
+  irmFavorites: Record<string, string[]>;
+  /** Tabs each person saved to reopen in one click (a quick action on Home). */
+  tabSets: Record<string, TabSet[]>;
+  /** How each person set up IRM's inventory table: columns, sort, filters. Absent = the default view. */
+  irmInventoryView: Record<string, InventoryView>;
+  /** The inventory views each person named and saved. */
+  irmSavedViews: Record<string, SavedInventoryView[]>;
+  /** The requests list as each person last left it, and the views they named. */
+  irmRequestView: Record<string, RequestView>;
+  irmSavedRequestViews: Record<string, SavedView<RequestView>[]>;
+  /** Admin Overview widget sizes the admin changed; absent = the widget's default. */
+  widgetSizes: Partial<Record<AdminWidget, BentoSize>>;
   aidenChats: AidenChat[];
   /**
    * Who the prototype user is acting as. `null` = a requester with no admin
@@ -84,13 +135,26 @@ export type SuiteState = {
    * colour would make that reference mean different things to different readers.
    */
   chartPalettes: Record<string, ChartPalette>;
+  /** IRM — the system of record every DartBoards listing points at (irm.ts, irmEngine.ts). */
+  irm: IrmState;
+  /**
+   * Who is signed in. The rest of DART Central still acts as ME; IRM reads this,
+   * because IRM's views follow the person's IRM ROLE and there is no switcher —
+   * each persona is a different person (one Storybook story each).
+   */
+  userId: string;
 };
 
-const initial = (): SuiteState => ({
-  requests: structuredClone(REQUESTS),
+const initial = (userId: string = ME.id): SuiteState => {
   // The Collections suite's 42 are ordinary library dashboards too.
-  dashboards: structuredClone([...DASHBOARDS, ...COLLECTIONS_DASHBOARDS]),
-  spaces: structuredClone(SPACES),
+  const dashboards = structuredClone([...DASHBOARDS, ...COLLECTIONS_DASHBOARDS]);
+  // Every listing gets its IRM record (and its `irm` number) before anything reads them.
+  const irm = seedIrm(dashboards);
+  const state: SuiteState = {
+  requests: structuredClone(REQUESTS),
+  dashboards,
+  // A space with no owner is the main user's — the seed was written for them.
+  spaces: structuredClone(SPACES).map((s) => ({ ...s, ownerId: s.ownerId ?? ME.id })),
   assets: structuredClone(ASSETS),
   suites: structuredClone(SUITES),
   followedSuites: [...FOLLOWED_SUITES],
@@ -101,12 +165,32 @@ const initial = (): SuiteState => ({
   admins: structuredClone(ADMINS),
   activity: structuredClone(ACTIVITY),
   widgets: [...DEFAULT_WIDGETS],
+  homeLayouts: {},
+  homeToday: {},
+  irmFavorites: {},
+  // A sample saved set, so the one-click reopen can be tried without saving one first.
+  tabSets: {
+    'u-km': [{ id: 'ts-monday', name: 'Monday review', color: 'blue', routes: [{ page: 'my-requests' }, { page: 'space', id: 'weekly-ops' }, { page: 'irm-home' }] }],
+  },
+  irmInventoryView: {},
+  irmSavedViews: {},
+  irmRequestView: {},
+  irmSavedRequestViews: {},
+  widgetSizes: {},
   aidenChats: structuredClone(AIDEN_CHATS),
   adminScope: 'overall',
   // Section 5.5's "Views by product" ships magenta, so the prototype opens with
   // one chart already off the user's theme — the point of the feature on screen.
   chartPalettes: { 'ds-mu-by-product-chart': 'rm' },
-});
+  irm,
+  userId,
+  };
+  // Project every listing from its record once, quietly — the seed is the starting truth, not news.
+  reconcile(state, true);
+  // Requests already waiting on their requester show in the bell from the start.
+  for (const r of state.requests) if (r.status === 'awaiting-reply') tell(state, r, `Question on ${r.id}`, r.title);
+  return state;
+};
 
 /** Today, in the MM/DD/YYYY the Figma screens use. */
 export const today = () => {
@@ -156,6 +240,19 @@ type Actions = {
 
   // ── admin overview ──
   setWidgets: (widgets: AdminWidget[]) => void;
+  /** `null` puts the person back on their role's default. */
+  setHomeLayout: (personId: string, tiles: HomeTile[] | null) => void;
+  /** `null` puts Today back on the role's default numbers. */
+  setHomeToday: (personId: string, metrics: string[] | null) => void;
+  toggleIrmFavorite: (personId: string, number: string) => void;
+  /** Save a set of tabs to reopen in one click; a set with the same id is replaced. */
+  saveTabSet: (personId: string, set: TabSet) => void;
+  removeTabSet: (personId: string, id: string) => void;
+  /** `null` puts the person back on the default inventory view. */
+  setInventoryView: (personId: string, view: InventoryView | null) => void;
+  setSavedInventoryViews: (personId: string, views: SavedInventoryView[]) => void;
+  setRequestView: (personId: string, view: RequestView | null) => void;
+  setSavedRequestViews: (personId: string, views: SavedView<RequestView>[]) => void;
   logActivity: (action: string, target: string) => void;
 
   // ── Aiden ──
@@ -166,8 +263,8 @@ type Ctx = { state: SuiteState } & Actions;
 
 const SuiteCtx = createContext<Ctx | null>(null);
 
-export function SuiteProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<SuiteState>(initial);
+export function SuiteProvider({ children, signedInAs }: { children: ReactNode; signedInAs?: string }) {
+  const [state, setState] = useState<SuiteState>(() => initial(signedInAs));
 
   const update = useCallback((fn: (d: SuiteState) => void) => {
     setState((prev) => {
@@ -177,6 +274,9 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // The actions are memoized once; they read who is signed in through this ref.
+  const userRef = useRef(state.userId);
+  userRef.current = state.userId;
   const actions = useMemo<Actions>(() => {
     const log = (d: SuiteState, who: string, action: string, target: string, product: Request['product'] = 'DARTBoards') =>
       d.activity.unshift({ id: uid('a'), at: `${today()} now`, who, action, target, product });
@@ -233,6 +333,7 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
       approve: (id, note) =>
         update((d) =>
           touch(d, id, (r) => {
+            tell(d, r, `${r.id} approved`, r.title);
             if (note) r.thread.push(entry('admin', ME.name, note));
             // Feature requests publish on approval — the one type with no apply step.
             const staged = r.type === 'dashboard-edit' || r.type === 'banner-edit' || r.type === 'banner' || r.type === 'dashboard-add';
@@ -245,6 +346,7 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
         update((d) =>
           touch(d, id, (r) => {
             r.status = 'denied';
+            tell(d, r, `${r.id} was not approved`, reason);
             r.thread.push(entry('admin', ME.name, reason));
             log(d, ME.name, 'denied', `${r.id} ${r.title}`, r.product);
           }),
@@ -254,6 +356,7 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
           touch(d, id, (r) => {
             r.thread.push(entry('admin', ME.name, text));
             r.status = close ? 'closed' : 'awaiting-reply';
+            tell(d, r, close ? `${r.id} answered and closed` : `Question on ${r.id}`, text);
             log(d, ME.name, close ? 'answered and closed' : 'asked a question on', `${r.id} ${r.title}`, r.product);
           }),
         ),
@@ -269,6 +372,7 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
         update((d) =>
           touch(d, id, (r) => {
             r.status = 'applied';
+            tell(d, r, `${r.id} is live`, `${r.title} — the change has been applied.`);
             if (r.changes && r.assetId) {
               const dash = d.dashboards.find((x) => x.id === r.assetId);
               for (const c of r.changes) {
@@ -314,7 +418,8 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
           if (it) it.layout = layout;
         }),
       saveSpace: (space) => {
-        const saved: Space = { ...space, id: space.id ?? uid('space') };
+        // A new space belongs to whoever is signed in; an existing one keeps its owner.
+        const saved: Space = { ...space, id: space.id ?? uid('space'), ownerId: space.ownerId ?? userRef.current };
         update((d) => {
           const i = d.spaces.findIndex((x) => x.id === saved.id);
           if (i >= 0) d.spaces[i] = saved;
@@ -330,6 +435,42 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
         }),
 
       setWidgets: (widgets) => update((d) => void (d.widgets = widgets)),
+      setHomeLayout: (personId, tiles) =>
+        update((d) => {
+          if (tiles) d.homeLayouts[personId] = tiles;
+          else delete d.homeLayouts[personId];
+        }),
+      saveTabSet: (personId, set) =>
+        update((d) => {
+          const list = (d.tabSets[personId] ?? []).filter((x) => x.id !== set.id);
+          d.tabSets[personId] = [...list, set];
+        }),
+      removeTabSet: (personId, id) =>
+        update((d) => {
+          d.tabSets[personId] = (d.tabSets[personId] ?? []).filter((x) => x.id !== id);
+        }),
+      toggleIrmFavorite: (personId, number) =>
+        update((d) => {
+          const list = d.irmFavorites[personId] ?? [];
+          d.irmFavorites[personId] = list.includes(number) ? list.filter((n) => n !== number) : [...list, number];
+        }),
+      setInventoryView: (personId, view) =>
+        update((d) => {
+          if (view) d.irmInventoryView[personId] = view;
+          else delete d.irmInventoryView[personId];
+        }),
+      setSavedInventoryViews: (personId, views) => update((d) => void (d.irmSavedViews[personId] = views)),
+      setRequestView: (personId, view) =>
+        update((d) => {
+          if (view) d.irmRequestView[personId] = view;
+          else delete d.irmRequestView[personId];
+        }),
+      setSavedRequestViews: (personId, views) => update((d) => void (d.irmSavedRequestViews[personId] = views)),
+      setHomeToday: (personId, metrics) =>
+        update((d) => {
+          if (metrics) d.homeToday[personId] = metrics;
+          else delete d.homeToday[personId];
+        }),
       logActivity: (action, target) => update((d) => log(d, ME.name, action, target)),
 
       saveChat: (chat) =>
@@ -341,8 +482,47 @@ export function SuiteProvider({ children }: { children: ReactNode }) {
     };
   }, [update]);
 
-  const value = useMemo(() => ({ state, ...actions }), [state, actions]);
+  // Every screen sees the signed-in person's spaces — their own, plus the ones shared
+  // with them (marked `shared`). Writes go through `update` on the full list, so a
+  // space nobody can see is never lost.
+  const view = useMemo<SuiteState>(
+    () => ({
+      ...state,
+      spaces: state.spaces
+        .filter((s) => s.ownerId === state.userId || s.sharedWith?.includes(state.userId))
+        .map((s) => ({ ...s, shared: s.ownerId !== state.userId })),
+    }),
+    [state],
+  );
+  const value = useMemo(() => ({ state: view, ...actions }), [view, actions]);
   return <SuiteCtx.Provider value={value}>{children}</SuiteCtx.Provider>;
+}
+
+/** The signed-in person. IRM's views follow their `irmRole`; absent = a business user. */
+/**
+ * Can a reader FIND this listing? Published and not retiring: IRM's notice
+ * period hides a listing from Browse, the Marketplace and the Builder while
+ * keeping it reachable by link and from the spaces it already sits on.
+ */
+export const discoverable = (d: Dashboard) => d.lifecycle === 'published' && !d.retiring;
+
+/** A DART Central request changed: the requester hears about it in the suite's one bell. */
+function tell(d: SuiteState, r: Request, title: string, body: string) {
+  notify(d, {
+    key: `req:${r.id}:${r.thread.length}:${title}`,
+    personId: r.requesterId,
+    kind: 'request-update',
+    app: r.type.startsWith('dashboard') ? 'DartBoards' : 'DART Central',
+    title,
+    body,
+    route: { page: 'request-detail', id: r.id },
+  });
+}
+
+export function useSignedIn() {
+  const { state } = useSuite();
+  const person = PEOPLE.find((p) => p.id === state.userId) ?? ME;
+  return { person, role: person.irmRole ?? 'business' } as const;
 }
 
 export function useSuite() {
@@ -356,6 +536,9 @@ export function useSuite() {
    request with an asset word, or the reverse. */
 
 export type Tone = 'default' | 'info' | 'success' | 'warning' | 'error' | 'neutral';
+
+/** A saved set of tabs: reopened in one click as a tab group of the same name (a quick action on Home). */
+export type TabSet = { id: string; name: string; color: CategoryColor; routes: Route[] };
 
 /** Tone → Badge props. `neutral` is an outline badge; everything else is soft. */
 export const toneBadge = (t: Tone): { color: BadgeColor; appearance: BadgeAppearance } =>

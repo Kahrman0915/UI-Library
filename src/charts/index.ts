@@ -10,3 +10,5 @@ export * from './Chart';
 export { BarChart, ChartBars } from './Bar';
 export { LineChart, ChartLine } from './Line';
 export { AreaChart, ChartArea } from './Area';
+export { Sparkline } from './Sparkline';
+export type { SparklineProps, SparklineTone } from './Sparkline/Sparkline.types';

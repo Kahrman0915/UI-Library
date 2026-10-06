@@ -36,10 +36,10 @@ import Grid from '../../../../components/Grid';
 import Text from '../../../../components/Text';
 import { seriesFor } from '../../data';
 import { useNav } from '../../nav';
-import { irmFor } from '../../irm';
 import { scopeProducts, today, useSuite } from '../../store';
 import type { Tone } from '../../store';
 import type { Banner, Dashboard, Promotion, Redirect } from '../../types';
+import { ControlsBadge } from '../irm/shared';
 import { ConfirmDialog, eventOf, Kpi, parseDate, PRODUCT_LABEL, RefCode, splitTarget, ToneBadge, useFirstLoad, ViewsByProduct, ViewsOverTime } from './shared';
 import './Admin.scss';
 
@@ -106,9 +106,25 @@ function RowMenu({ id, label, children }: { id: string; label: string; children:
   );
 }
 
-function Select({ id, label, value, onChange, options }: { id: string; label: string; value: string; onChange: (v: string) => void; options: string[] }) {
+function Select({
+  id,
+  label,
+  value,
+  onChange,
+  options,
+  disabled,
+  description,
+}: {
+  id: string;
+  label: string;
+  value: string;
+  onChange: (v: string) => void;
+  options: string[];
+  disabled?: boolean;
+  description?: string;
+}) {
   return (
-    <NativeSelect id={id} label={label} value={value} onValueChange={onChange}>
+    <NativeSelect id={id} label={label} value={value} onValueChange={onChange} disabled={disabled} description={description}>
       {options.map((o) => (
         <NativeSelectOption key={o} value={o}>
           {o}
@@ -127,8 +143,8 @@ const req = (v: string, label: string, tried: boolean) => ({
 
 const LIFECYCLE_TONE: Record<Dashboard['lifecycle'], Tone> = { draft: 'neutral', 'under-review': 'warning', published: 'success', archived: 'neutral' };
 const HEALTH_TONE: Record<Dashboard['health'], Tone> = { ok: 'success', decommissioning: 'warning', unreachable: 'error' };
-/** The IRM record each listing points at (irm.ts). */
-const inventoryOf = (d: Dashboard) => irmFor(d).number;
+/** The IRM number each listing points at (irm.ts). Every seed listing has one. */
+const inventoryOf = (d: Dashboard) => d.irm ?? '—';
 
 type DashDraft = Pick<Dashboard, 'name' | 'owner' | 'category' | 'lifecycle' | 'health' | 'description'>;
 const EMPTY_DASH: DashDraft = { name: '', owner: '', category: 'Operations', lifecycle: 'draft', health: 'ok', description: '' };
@@ -140,6 +156,8 @@ export function AdminDashboards() {
   const [phase, setPhase] = useState('all');
   const [query, setQuery] = useState('');
   const [drawer, setDrawer] = useState<{ id: string | null } | null>(null);
+  const editing = drawer?.id ? state.dashboards.find((x) => x.id === drawer.id) : undefined;
+  const irmLinked = !!editing?.irm;
   const [draft, setDraft] = useState<DashDraft>(EMPTY_DASH);
   const [tried, setTried] = useState(false);
   const [failed, setFailed] = useState(false);
@@ -263,6 +281,7 @@ export function AdminDashboards() {
                 <TableHeaderCell>Name</TableHeaderCell>
                 <TableHeaderCell>Project</TableHeaderCell>
                 <TableHeaderCell>IRM record</TableHeaderCell>
+                <TableHeaderCell>IRM controls</TableHeaderCell>
                 <TableHeaderCell>Lifecycle</TableHeaderCell>
                 <TableHeaderCell>Health</TableHeaderCell>
                 <TableHeaderCell>Promoted</TableHeaderCell>
@@ -274,7 +293,7 @@ export function AdminDashboards() {
             </TableHead>
             <TableBody>
               {loading ? (
-                <SkeletonRows cols={8} />
+                <SkeletonRows cols={9} />
               ) : (
                 rows.map((d) => (
                   <TableRow key={d.id}>
@@ -284,6 +303,12 @@ export function AdminDashboards() {
                     <TableCell>{d.category}</TableCell>
                     <TableCell>
                       <RefCode>{inventoryOf(d)}</RefCode>
+                    </TableCell>
+                    <TableCell>
+                      {(() => {
+                        const r = d.irm ? state.irm.records.find((x) => x.number === d.irm) : undefined;
+                        return r ? <ControlsBadge id={`ds-md-ctl-${d.id}`} record={r} /> : <Text as="span" tone="muted">—</Text>;
+                      })()}
                     </TableCell>
                     <TableCell>
                       <ToneBadge id={`ds-md-lc-${d.id}`} label={d.lifecycle.replace('-', ' ')} tone={LIFECYCLE_TONE[d.lifecycle]} />
@@ -301,7 +326,12 @@ export function AdminDashboards() {
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={() => go({ page: 'admin-usage' })}>View usage</DropdownMenuItem>
                         <DropdownMenuSeparator />
-                        {d.lifecycle === 'archived' ? (
+                        {d.irm ? (
+                          // IRM owns this listing's lifecycle: retiring it is an IRM decommission, with a notice period.
+                          <DropdownMenuItem onClick={() => go(d.retired || d.retiring ? { page: 'irm-record', number: d.irm! } : { page: 'irm-new-change', type: 'decommission', record: d.irm })}>
+                            {d.retired || d.retiring ? 'Open in IRM' : 'Retire in IRM'}
+                          </DropdownMenuItem>
+                        ) : d.lifecycle === 'archived' ? (
                           <DropdownMenuItem
                             onClick={() => {
                               update((s) => void Object.assign(s.dashboards.find((x) => x.id === d.id) ?? {}, { lifecycle: 'published', health: 'ok' }));
@@ -345,8 +375,24 @@ export function AdminDashboards() {
             <Input id="ds-md-f-name" label="Name" required value={draft.name} onValueChange={(v) => setDraft({ ...draft, name: v })} {...req(draft.name, 'Name', tried)} />
             <Input id="ds-md-f-owner" label="Owner" required value={draft.owner} onValueChange={(v) => setDraft({ ...draft, owner: v })} {...req(draft.owner, 'Owner', tried)} />
             <Select id="ds-md-f-cat" label="Project" value={draft.category} onChange={(v) => setDraft({ ...draft, category: v as Dashboard['category'] })} options={['Operations', 'Finance', 'Sales', 'Customer', 'Risk']} />
-            <Select id="ds-md-f-lc" label="Lifecycle" value={draft.lifecycle} onChange={(v) => setDraft({ ...draft, lifecycle: v as Dashboard['lifecycle'] })} options={['draft', 'under-review', 'published', 'archived']} />
-            <Select id="ds-md-f-h" label="Health" value={draft.health} onChange={(v) => setDraft({ ...draft, health: v as Dashboard['health'] })} options={['ok', 'decommissioning', 'unreachable']} />
+            <Select
+              id="ds-md-f-lc"
+              label="Lifecycle"
+              value={draft.lifecycle}
+              onChange={(v) => setDraft({ ...draft, lifecycle: v as Dashboard['lifecycle'] })}
+              options={['draft', 'under-review', 'published', 'archived']}
+              disabled={irmLinked}
+              description={irmLinked ? `Synced from IRM (${editing?.irm}). Retire it there.` : undefined}
+            />
+            <Select
+              id="ds-md-f-h"
+              label="Health"
+              value={draft.health}
+              onChange={(v) => setDraft({ ...draft, health: v as Dashboard['health'] })}
+              options={['ok', 'decommissioning', 'unreachable']}
+              disabled={irmLinked}
+              description={irmLinked ? 'Synced from IRM — a fix or retirement request there sets it.' : undefined}
+            />
             <Textarea id="ds-md-f-desc" label="Description" rows={3} value={draft.description} onValueChange={(v) => setDraft({ ...draft, description: v })} />
             <Text tone="muted">
               {failed

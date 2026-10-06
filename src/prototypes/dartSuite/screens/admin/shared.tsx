@@ -11,7 +11,8 @@ import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } fr
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
 import Card, { CardBody } from '../../../../components/Card';
-import { BarChart, LineChart } from '../../../../charts';
+import { BarChart, LineChart, Sparkline } from '../../../../charts';
+import Stat from '../../../../components/Stat';
 import type { ChartPalette } from '../../../../charts';
 import DropdownMenu, {
   DropdownMenuContent,
@@ -38,7 +39,7 @@ import type { ActivityEntry, Product, Request, RequestType, Route } from '../../
 /** How a product reads on screen. */
 export const PRODUCT_LABEL: Record<Product, string> = {
   'DART Central': 'DART Central',
-  DARTBoards: 'Dartboards',
+  DARTBoards: 'DartBoards',
   Aiden: 'Aiden',
 };
 
@@ -90,14 +91,76 @@ export function RefCode({ children }: { children: string }) {
 
 /* ── KPI tile ────────────────────────────────────────────────────────────── */
 
-export type KpiTone = 'info' | 'error' | 'success' | 'violet' | 'warning';
+export type KpiTone = 'info' | 'error' | 'success' | 'violet' | 'warning' | 'neutral';
 
-export function Kpi({ id, value, label, hint, tone = 'info' }: { id: string; value: string | number; label: string; hint?: string; tone?: KpiTone }) {
+/** A KPI tile: a `Card` holding the library's `Stat`. Color only where the number needs something. */
+/** A stable pseudo-random 0–1 per key and index, so a card's bars are the same on every render. */
+const seeded = (key: string, i: number) => {
+  const h = [...key].reduce((a, c) => (Math.imul(a, 31) + c.charCodeAt(0)) | 0, 7);
+  const x = Math.sin(h + i * 12.9898) * 43758.5453;
+  return x - Math.floor(x);
+};
+
+/**
+ * The last two weeks of a count, one bar per day, ending on today's value — so a KPI without a trend line
+ * still has a picture and no empty space under its number (owner, 2026-10-06). Sample data, like every
+ * trend in the prototype; today's bar wears the card's tone, the rest are neutral.
+ */
+function DailyBars({ id, label, value, tone }: { id: string; label: string; value: number; tone: string }) {
+  const days = 14;
+  const data = Array.from({ length: days }, (_, i) => (i === days - 1 ? value : Math.max(0, Math.round(value * (0.4 + seeded(id, i) * 1.1)))));
+  const max = Math.max(1, ...data);
+  return (
+    <span id={`${id}-bars`} className={`ds-daybars ds-daybars--${tone}`} role="img" aria-label={`${label}, daily over the last ${days} days, ${value} today`}>
+      {data.map((v, i) => (
+        <span key={i} className="ds-daybars__bar" style={{ height: `${Math.max(8, (v / max) * 100)}%` }} />
+      ))}
+    </span>
+  );
+}
+
+export function Kpi({
+  id,
+  value,
+  label,
+  hint,
+  tone = 'neutral',
+  change,
+  changeLabel,
+  goodDirection,
+  trend,
+}: {
+  id: string;
+  value: string | number;
+  label: string;
+  hint?: string;
+  tone?: KpiTone;
+  change?: number;
+  changeLabel?: string;
+  goodDirection?: 'up' | 'down';
+  /** A trend under the number: values oldest first, drawn as a Sparkline. */
+  trend?: number[];
+}) {
+  const statTone = tone === 'neutral' || tone === 'violet' ? 'default' : tone;
   return (
     <Card id={id} className="ds-admin-kpi">
-      <p className={`ds-admin-kpi__value ds-admin-kpi__value--${tone}`}>{value}</p>
-      <p className="ds-admin-kpi__label">{label}</p>
-      {hint && <p className="ds-admin-kpi__hint">{hint}</p>}
+      <Stat
+        id={`${id}-stat`}
+        label={label}
+        value={value}
+        description={hint}
+        tone={statTone}
+        change={change}
+        changeLabel={changeLabel}
+        goodDirection={goodDirection}
+        trend={
+          trend ? (
+            <Sparkline id={`${id}-trend`} label={`${label}, recent trend`} data={trend} variant="area" height={28} />
+          ) : typeof value === 'number' || /^\d+(\.\d+)?%?$/.test(String(value)) ? (
+            <DailyBars id={id} label={label} value={parseFloat(String(value))} tone={statTone} />
+          ) : undefined
+        }
+      />
     </Card>
   );
 }
@@ -143,7 +206,7 @@ const approveCopy = (rs: Request[]) => {
   const who = requesterOf(r).name;
   switch (r.type) {
     case 'dashboard-add':
-      return `The dashboard is added to the Dartboards library as a draft and ${who} sees it as Approved on My requests. You can add a note; it is optional.`;
+      return `The dashboard is added to the DartBoards library as a draft and ${who} sees it as Approved on My requests. You can add a note; it is optional.`;
     case 'banner':
     case 'banner-edit':
       return `The banner is staged as a draft and ${who} sees it as Approved on My requests. Nothing displays until you apply it. You can add a note; it is optional.`;
@@ -403,7 +466,7 @@ export function ViewsByProduct({ id, totals }: { id: string; totals: [number, nu
           palette={usePalette(`${id}-chart`)}
           title="Views by product"
           description="Last 30 days"
-          categories={['DART Central', 'Dartboards', 'Aiden']}
+          categories={['DART Central', 'DartBoards', 'Aiden']}
           series={[
             { key: 'direct', label: 'Direct', data: split(0.5) },
             { key: 'referral', label: 'Referral', data: split(0.3) },
