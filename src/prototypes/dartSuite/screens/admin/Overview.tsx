@@ -25,7 +25,7 @@ import { Bento, BentoPicker, BentoTile } from '../../bento';
 import { DEFAULT_WIDGETS, seriesFor } from '../../data';
 import { fmtIso } from '../../irm';
 import { useNav } from '../../nav';
-import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
+import { adminOf, adminStatus, typeLabel, useSuite } from '../../store';
 import type { SuiteState } from '../../store';
 import type { ActivityEntry, AdminWidget, BentoSize } from '../../types';
 import { byQueueOrder, eventOf, Kpi, PRODUCT_LABEL, RefCode, requesterOf, splitTarget, StatusBadge, ToneBadge, TYPE_ICON, ViewsByProduct, ViewsOverTime } from './shared';
@@ -126,7 +126,7 @@ export function ActivityTable({ id, rows }: { id: string; rows: ActivityEntry[] 
 
 function QueuePreview({ n, state }: { n: number; state: SuiteState }) {
   const { go } = useNav();
-  const products = scopeProducts(state.adminScope);
+  const products = adminOf(state, state.userId)?.products ?? [];
   const rows = state.requests.filter((r) => products.includes(r.product) && adminStatus(r.status).active).sort(byQueueOrder);
   if (!rows.length) return <Text tone="muted">Nothing is waiting. Every request is decided.</Text>;
   // Rows, not cards: a tile of cards inside a card is the stack this layout is meant to escape.
@@ -162,7 +162,7 @@ const trendTo = (seed: string, value: number) => {
 };
 
 function kpiFor(id: WidgetId, s: SuiteState): { value: number; label: string; hint: string; tone: KpiTone; good: 'up' | 'down' } {
-  const products = scopeProducts(s.adminScope);
+  const products = adminOf(s, s.userId)?.products ?? [];
   const reqs = s.requests.filter((r) => products.includes(r.product));
   switch (id) {
     case 'kpi-pending':

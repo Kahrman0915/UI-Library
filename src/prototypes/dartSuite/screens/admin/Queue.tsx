@@ -26,7 +26,7 @@ import Text from '../../../../components/Text';
 import { toast } from '../../../../components/Toast';
 import { CONTROLS, LIFECYCLE } from '../../irm';
 import { useNav } from '../../nav';
-import { adminStatus, scopeProducts, typeLabel, useSuite } from '../../store';
+import { adminOf, adminStatus, typeLabel, useSuite } from '../../store';
 import type { Request } from '../../types';
 import { byQueueOrder, daysSince, DecisionDialog, fieldValue, Kpi, KpiRow, PRODUCT_LABEL, RefCode, requesterOf, StatusBadge } from './shared';
 import type { Decision } from './shared';
@@ -35,7 +35,7 @@ import './Admin.scss';
 export function AdminQueue() {
   const { state, approve, deny, replyAsAdmin } = useSuite();
   const { go } = useNav();
-  const products = scopeProducts(state.adminScope);
+  const products = adminOf(state, state.userId)?.products ?? [];
 
   const [product, setProduct] = useState('all');
   const [phase, setPhase] = useState('all');
@@ -151,7 +151,7 @@ export function AdminQueue() {
         id="ds-aq-header"
         title="Approval Queue"
         description={
-          state.adminScope === 'application'
+          adminOf(state, state.userId)?.scope === 'application'
             ? 'Every request for the product you administer. Returned answers come first, then new requests, then anything waiting on the requester.'
             : 'Every request across the products you administer. Returned answers come first, then new requests, then anything waiting on the requester.'
         }

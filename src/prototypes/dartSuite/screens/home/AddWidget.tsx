@@ -25,7 +25,7 @@ import Text from '../../../../components/Text';
 import { toast } from '../../../../components/Toast';
 import ToggleGroup, { ToggleGroupItem } from '../../../../components/ToggleGroup';
 import type { Audience } from '../../hub';
-import { useSignedIn, useSuite } from '../../store';
+import { adminOf, useSignedIn, useSuite } from '../../store';
 import type { TabSet } from '../../store';
 import { useNav } from '../../nav';
 import type { HomeSize, HomeTile, HomeTileId } from '../../types';
@@ -93,7 +93,7 @@ export function AddWidget({
     setQuery('');
   };
   const has = (key: string) => layout.some((t) => t.key === key);
-  const available = (Object.keys(WIDGETS) as HomeTileId[]).filter((id) => (!WIDGETS[id].for || WIDGETS[id].for!.includes(audience)) && (!WIDGETS[id].admin || !!state.adminScope));
+  const available = (Object.keys(WIDGETS) as HomeTileId[]).filter((id) => (!WIDGETS[id].for || WIDGETS[id].for!.includes(audience)) && (!WIDGETS[id].admin || !!adminOf(state, state.userId)));
   const back = <Button id="ds-home-add-back" style="ghost" size="sm" label="All widgets" IconLeft={ArrowLeft} onClick={() => setStep({ kind: 'list' })} />;
 
   let title = docked ? 'Customize your home' : 'Add to Home';
@@ -118,7 +118,7 @@ export function AddWidget({
           value={name}
           onValueChange={setName}
         />
-        <ActionPicker audience={audience} isAdmin={!!state.adminScope} value={actions} onChange={setActions} />
+        <ActionPicker audience={audience} isAdmin={!!adminOf(state, state.userId)} value={actions} onChange={setActions} />
       </Stack>
     );
     footer = editing ? (

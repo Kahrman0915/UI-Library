@@ -22,7 +22,7 @@ import { audienceOf, waitingOn } from '../../hub';
 import type { Audience } from '../../hub';
 import { CHANGE_STATUS, WORK_STATUSES, evergreenState, fmtIso, isAged } from '../../irm';
 import { useNav } from '../../nav';
-import { useSignedIn, useSuite } from '../../store';
+import { adminOf, useSignedIn, useSuite } from '../../store';
 import type { SuiteState } from '../../store';
 import type { Asset, Route } from '../../types';
 import { Sparkline } from '../../../../charts';
@@ -80,6 +80,12 @@ export type TodayMetric = {
   /** Admins only. */
   admin?: boolean;
   read: (state: SuiteState, personId: string) => Value;
+};
+
+/** The requests this person sees in the admin queue — only the products they administer. */
+const adminRequests = (s: SuiteState, personId: string) => {
+  const products = adminOf(s, personId)?.products ?? [];
+  return s.requests.filter((r) => products.includes(r.product));
 };
 
 const IRM_WORK: Audience[] = ['developer', 'dev-manager', 'governance', 'prod-support'];
@@ -249,8 +255,8 @@ export const TODAY_METRICS: TodayMetric[] = [
     label: 'Waiting for review',
     app: 'Admin',
     admin: true,
-    read: (s) => {
-      const waiting = s.requests.filter((r) => r.status === 'new' || r.status === 'needs-review');
+    read: (s, p) => {
+      const waiting = adminRequests(s, p).filter((r) => r.status === 'new' || r.status === 'needs-review');
       const fresh = waiting.filter((r) => r.status === 'new').length;
       return { value: waiting.length, tone: 'default', context: waiting.length ? `${fresh} new, ${waiting.length - fresh} in review` : 'The queue is clear', route: { page: 'admin-queue' } };
     },
@@ -260,8 +266,8 @@ export const TODAY_METRICS: TodayMetric[] = [
     label: 'Waiting on requesters',
     app: 'Admin',
     admin: true,
-    read: (s) => {
-      const n = s.requests.filter((r) => r.status === 'awaiting-reply').length;
+    read: (s, p) => {
+      const n = adminRequests(s, p).filter((r) => r.status === 'awaiting-reply').length;
       return { value: n, context: n ? 'You asked; they haven’t answered' : 'No open questions', route: { page: 'admin-queue' } };
     },
   },
@@ -270,8 +276,8 @@ export const TODAY_METRICS: TodayMetric[] = [
     label: 'Approved, not applied',
     app: 'Admin',
     admin: true,
-    read: (s) => {
-      const n = s.requests.filter((r) => r.status === 'approved-not-applied').length;
+    read: (s, p) => {
+      const n = adminRequests(s, p).filter((r) => r.status === 'approved-not-applied').length;
       return { value: n, tone: n ? 'warning' : 'default', context: n ? 'Approved but not live yet' : 'Everything approved is live', route: { page: 'admin-queue' } };
     },
   },
@@ -310,6 +316,14 @@ export const TODAY_METRICS: TodayMetric[] = [
 ];
 
 export const TODAY_MAX = 8;
+
+/**
+ * A development manager who is also an admin (Alex Rivera runs DART Central's request queue) trades "in
+ * flight" for the queue: in flight is the number least likely to change what they do next, and the
+ * requests waiting on an admin are the other half of their job.
+ */
+const defaultToday = (audience: Audience, isAdmin: boolean) =>
+  audience === 'dev-manager' && isAdmin ? ['unassigned', 'admin-review', 'late', 'to-ship'] : DEFAULT_TODAY[audience];
 
 const DEFAULT_TODAY: Record<Audience, string[]> = {
   // Each role's four numbers (owner, 2026-10-06). "Needs your attention" is not one of them: the greeting
@@ -356,7 +370,8 @@ export function Today() {
   const { go } = useNav();
   const [editing, setEditing] = useState(false);
   const audience = audienceOf(state, person.id);
-  const chosen = (state.homeToday[person.id] ?? DEFAULT_TODAY[audience]).map((id) => findMetric(state, id)).filter((m): m is TodayMetric => !!m && (!m.admin || !!state.adminScope));
+  const isAdmin = !!adminOf(state, person.id);
+  const chosen = (state.homeToday[person.id] ?? defaultToday(audience, isAdmin)).map((id) => findMetric(state, id)).filter((m): m is TodayMetric => !!m && (!m.admin || isAdmin));
   const values = chosen.map((m) => m.read(state, person.id));
   // Drag a tile onto another to put it there (native drag and drop, no library). The arrows in Edit Today
   // are the keyboard route to the same thing.
@@ -499,7 +514,7 @@ function TodayPicker({
 }) {
   const { state } = useSuite();
   const { person } = useSignedIn();
-  const all = metricsFor(state, audience, !!state.adminScope);
+  const all = metricsFor(state, audience, !!adminOf(state, person.id));
   // Business metrics sit right after the hub's own numbers; usage and admin numbers come last.
   const ORDER: TodayApp[] = ['DART Central', 'Metrics', 'DartBoards', 'IRM', 'Jira', 'Admin'];
   const apps = ORDER.filter((app) => all.some((m) => m.app === app));

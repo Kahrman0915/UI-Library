@@ -42,6 +42,7 @@ import {
   Ticket,
   Users,
   Zap,
+  ClipboardList,
 } from 'lucide-react';
 import { Sparkline } from '../../../../charts';
 import Badge from '../../../../components/Badge';
@@ -57,7 +58,8 @@ import { APP_NAME, audienceOf, myIrmChanges, reportChangeRoute, waitingOn } from
 import type { Audience, WaitingItem } from '../../hub';
 import { CHANGE_STATUS, CHANGE_TYPE, CONTROL_STATE, EVERGREEN, PRIORITY, WORK_STATUSES, evergreenState, fmtIso, isAged, recordName } from '../../irm';
 import { useNav } from '../../nav';
-import { useSignedIn, useSuite } from '../../store';
+import { adminOf, adminStatus, useSignedIn, useSuite } from '../../store';
+import { byQueueOrder } from '../admin/shared';
 import { openItems } from '../../openItems';
 import type { SuiteState } from '../../store';
 import type { Dashboard, HomeGridPos, HomeSize, HomeTile, HomeTileId, Route } from '../../types';
@@ -130,6 +132,7 @@ export const WIDGETS: Record<HomeTileId, WidgetDef> = {
   aiden: { title: 'Ask Aiden', description: 'A chat with Aiden, always open on your home.', app: 'aiden', group: 'Aiden', Icon: Sparkles, sizes: ['L', 'XL'], size: 'L', to: () => ({ page: 'aiden-launcher' }) },
   watchlist: { title: 'Your dashboards', description: 'Every dashboard on your spaces, one click away, with any notices.', app: 'boards', group: 'DartBoards', Icon: Activity, sizes: ['M', 'L'], size: 'L', to: () => ({ page: 'browse' }) },
   metric: { title: 'Metric', description: 'Pin one business metric from DartBoards — its value, its change, and who owns it.', app: 'boards', group: 'DartBoards', Icon: Gauge, pick: 'metric', sizes: ['S', 'M'], size: 'S', to: (t) => ({ page: 'metric', id: t.ref ?? '' }) },
+  'request-queue': { title: 'Request queue', description: 'Requests waiting on an admin for the products you administer — banners, listings, features — in the queue’s order.', app: 'central', group: 'Everyday', Icon: ClipboardList, admin: true, sizes: ['S', 'M', 'L'], size: 'M', to: () => ({ page: 'admin-queue' }) },
   pulse: { title: 'DartBoards views', description: 'How much the dashboards you watch are used — views this week, for admins.', app: 'boards', group: 'DartBoards', Icon: BarChart3, admin: true, sizes: ['S', 'M'], size: 'S', to: () => ({ page: 'browse' }) },
   space: { title: 'Space', description: 'Pin one of your spaces: its metrics with their values, and its dashboards one click away.', app: 'boards', group: 'DartBoards', Icon: LayoutGrid, pick: 'space', sizes: ['M', 'L', 'W', 'XL'], size: 'L', to: (t) => ({ page: 'space', id: t.ref ?? '' }) },
   dashboard: { title: 'Dashboard', description: 'Pin one dashboard as a one-click way into it.', app: 'boards', group: 'DartBoards', Icon: ChartColumn, pick: 'dashboard', sizes: ['S', 'M'], size: 'S', to: (t) => ({ page: 'dashboard', id: t.ref ?? '' }) },
@@ -249,7 +252,7 @@ type Pick = { id: HomeTileId; ref?: string; actions?: string[] };
 export function defaultLayout(audience: Audience, state: SuiteState, personId: string): HomeTile[] {
   const ownSpace = state.spaces.find((s) => s.ownerId === personId);
   const numbers: Pick = ownSpace ? { id: 'space', ref: ownSpace.id } : watched(state).length ? { id: 'watchlist' } : { id: 'whats-new' };
-  const irmActions: Pick = { id: 'quick', ref: 'irm', actions: defaultActions(audience) };
+  const irmActions: Pick = { id: 'quick', ref: 'irm', actions: defaultActions(audience, !!adminOf(state, personId)) };
   /*
    * Each role's home, designed (owner, 2026-10-06). The same three rules for every role:
    *   1. Next up (above Today) already names the first thing to do, so the board does not repeat it.
@@ -298,13 +301,24 @@ export function defaultLayout(audience: Audience, state: SuiteState, personId: s
             ]
           : audience === 'dev-manager'
             ? // Development manager: keep work flowing — assign what nobody has, see the load, see what ships.
-              [
-                [{ id: 'waiting' }, 0, 0, 'L'], // unassigned work, each with Assign
-                [{ id: 'team' }, 2, 0, 'L'], // load per developer
-                [{ id: 'deploys' }, 0, 2, 'M'],
-                [{ id: 'jira' }, 2, 2, 'M'],
-                [irmActions, 0, 3, 'M'],
-              ]
+              adminOf(state, personId)
+              ? // …who also runs DART Central's request queue (Alex Rivera, the product manager): the queue
+                // takes the second row's first place, beside what ships; Jira and the shortcuts move down.
+                [
+                  [{ id: 'waiting' }, 0, 0, 'L'], // unassigned work and admin requests, each actionable
+                  [{ id: 'team' }, 2, 0, 'L'],
+                  [{ id: 'request-queue' }, 0, 2, 'M'],
+                  [{ id: 'deploys' }, 2, 2, 'M'],
+                  [{ id: 'jira' }, 0, 3, 'M'],
+                  [irmActions, 2, 3, 'M'],
+                ]
+              : [
+                  [{ id: 'waiting' }, 0, 0, 'L'], // unassigned work, each with Assign
+                  [{ id: 'team' }, 2, 0, 'L'], // load per developer
+                  [{ id: 'deploys' }, 0, 2, 'M'],
+                  [{ id: 'jira' }, 2, 2, 'M'],
+                  [irmActions, 0, 3, 'M'],
+                ]
             : audience === 'governance'
               ? // Governance: evidence to review, recertifications past due, requests past SLA.
                 [
@@ -324,7 +338,7 @@ export function defaultLayout(audience: Audience, state: SuiteState, personId: s
   const placed: HomeTile[] = [];
   for (const [p, x, y, size] of plan) {
     const key = tileKey(p.id, p.ref);
-    if (seen.has(key) || (WIDGETS[p.id].for && !WIDGETS[p.id].for!.includes(audience)) || (WIDGETS[p.id].admin && !state.adminScope)) continue;
+    if (seen.has(key) || (WIDGETS[p.id].for && !WIDGETS[p.id].for!.includes(audience)) || (WIDGETS[p.id].admin && !adminOf(state, personId))) continue;
     seen.add(key);
     placed.push({ key, id: p.id, ref: p.ref, actions: p.actions, lg: { x, y: y * CELL_ROWS, size }, sm: { x: 0, y: 0, size } });
   }
@@ -355,6 +369,7 @@ export function widgetTitle(t: HomeTile, state: SuiteState) {
 const SUBTITLE: Record<HomeTileId, string> = {
   waiting: 'From every app',
   requests: 'Your work and what you’re waiting on',
+  'request-queue': 'Waiting on an admin, for your products',
   quick: 'Your shortcuts',
   tabs: 'The pages you have open',
   'whats-new': 'The latest releases',
@@ -416,6 +431,12 @@ export function widgetPulse(t: HomeTile, state: SuiteState, personId: string): W
       const items = waitingOn(state, personId);
       const urgent = items.filter((w) => w.urgent).length;
       if (!items.length) return { level: 'quiet', caughtUp: 'Nothing needs you in any app.' };
+      return urgent ? { level: 'urgent', label: `${urgent} can’t wait` } : { level: 'normal' };
+    }
+    case 'request-queue': {
+      const open = adminQueue(state, personId);
+      const urgent = waitingOn(state, personId).filter((w) => w.kind === 'triage' && w.urgent).length;
+      if (!open.length) return { level: 'quiet', caughtUp: 'The queue is clear.' };
       return urgent ? { level: 'urgent', label: `${urgent} can’t wait` } : { level: 'normal' };
     }
     case 'jira': {
@@ -628,6 +649,8 @@ export function WidgetBody({ tile: t, size }: { tile: HomeTile; size: HomeSize }
       return <NeedsYou id={id} size={size} />;
     case 'requests':
       return <Requests id={id} size={size} />;
+    case 'request-queue':
+      return <RequestQueue id={id} size={size} />;
     case 'quick':
       return <Quick id={id} actions={t.actions ?? []} size={size} />;
     case 'tabs':
@@ -736,7 +759,7 @@ function Quick({ id, actions, size }: { id: string; actions: string[]; size: Hom
   const { person } = useSignedIn();
   const { go } = useNav();
   const audience = audienceOf(state, person.id);
-  const allowed = availableActions(audience, !!state.adminScope).map((a) => a.id);
+  const allowed = availableActions(audience, !!adminOf(state, person.id)).map((a) => a.id);
   const nav = useNav();
   const sets = state.tabSets[person.id] ?? [];
   // One list of buttons: the built-in shortcuts this person may use, and their saved tab sets.
@@ -1263,6 +1286,51 @@ function Team({ size }: { size: HomeSize }) {
       </Stack>
     </Stack>
   );
+}
+
+/** The admin queue's open requests, for the products this person administers. */
+const adminQueue = (state: SuiteState, personId: string) => {
+  const products = adminOf(state, personId)?.products ?? [];
+  // What can't wait (a banner at or past its start date) leads, so the card's "can't wait" badge points at a
+  // row you can see; then the Approval Queue's own order.
+  const urgent = new Set(waitingOn(state, personId).filter((w) => w.kind === 'triage' && w.urgent).map((w) => w.ref));
+  return state.requests
+    .filter((r) => products.includes(r.product) && adminStatus(r.status).active)
+    .sort((a, b) => Number(urgent.has(b.id)) - Number(urgent.has(a.id)) || byQueueOrder(a, b));
+};
+
+/**
+ * An admin's request queue on Home — banners, listings and feature requests waiting on an admin, in the
+ * Approval Queue's own order. Only their products: an admin who does not handle Aiden never sees its rows.
+ */
+function RequestQueue({ id, size }: { id: string; size: HomeSize }) {
+  const { state } = useSuite();
+  const { person } = useSignedIn();
+  const { go } = useNav();
+  const rows = adminQueue(state, person.id);
+  const waiting = rows.filter((r) => r.status !== 'awaiting-reply');
+  const spec: ListSpec = {
+    value: waiting.length,
+    label: waiting.length === 1 ? 'request to review' : 'requests to review',
+    tone: 'default',
+    context: rows.length - waiting.length ? `${rows.length - waiting.length} with the requester` : 'Nothing with requesters',
+    route: { page: 'admin-queue' },
+    rows: rows.map((r) => {
+      const status = adminStatus(r.status);
+      return {
+        key: r.id,
+        title: r.title,
+        detail: `${r.id} · ${r.product === 'DARTBoards' ? 'DartBoards' : r.product}`,
+        meta: status.label,
+        metaTone: tone(status.tone),
+        route: { page: 'admin-review', id: r.id } as Route,
+        action: r.status === 'awaiting-reply' ? undefined : { label: 'Review', run: () => go({ page: 'admin-review', id: r.id }) },
+      };
+    }),
+    empty: 'The queue is clear.',
+    more: { label: (n) => `${n} more in the queue`, route: { page: 'admin-queue' } },
+  };
+  return <ListWidget id={id} spec={spec} size={size} />;
 }
 
 /** Production support: what is waiting to ship — take it or deploy it here. */
