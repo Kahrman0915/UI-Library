@@ -30,7 +30,7 @@
 
 import { Check, ChevronDown, Layers, LayoutGrid, List, Plus, Search, SearchX, SlidersHorizontal } from 'lucide-react';
 import { useRef, useState } from 'react';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
 import Button from '../../../../../components/Button';
 import Combobox from '../../../../../components/Combobox';
 import DropdownMenu, { DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '../../../../../components/DropdownMenu';
@@ -46,7 +46,7 @@ import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGr
 import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
 import Text from '../../../../../components/Text';
-import { useNav } from '../../../nav';
+import { CrumbRoot, useNav } from '../../../nav';
 import { useSuite, discoverable } from '../../../store';
 import type { Dashboard } from '../../../types';
 import { BrowseCard, BrowseRow } from '../browse/BrowseItems';
@@ -253,17 +253,7 @@ export function SuiteBrowse({ suiteId, sectionId }: { suiteId: string; sectionId
     <PageContainer className="ds-browse ds-suite">
       <Breadcrumb aria-label="Breadcrumb">
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                go({ page: 'browse' });
-              }}
-            >
-              Dashboards
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+          <CrumbRoot label="Dashboards" route={{ page: 'browse' }} />
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{suite.name}</BreadcrumbPage>

@@ -18,14 +18,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import AlertDialog, { AlertDialogBody, AlertDialogFooter, AlertDialogHeader } from '../../components/AlertDialog';
+import { BreadcrumbItem, BreadcrumbLink } from '../../components/Breadcrumb';
 import Button from '../../components/Button';
 import type { CategoryColor } from '../../types/GlobalTypes';
 import type { TabBarNewGroup } from '../../components/TabBar';
 import { appOf } from './types';
 import type { Route } from './types';
 
-/** `group` is the tab group the tab belongs to; `null` = the ungrouped tabs. Home is always `null` and shows in every set. */
-export type Tab = { id: string; route: Route; history: Route[]; group: string | null };
+/**
+ * `group` is the tab group the tab belongs to; `null` = the ungrouped tabs. Home is always `null` and shows in every set.
+ * `from` is where the tab was opened from when that was Home — a tab opened from Home starts with no history, so
+ * without it the page's breadcrumb could only name its place in the app, never the way back to Home.
+ */
+export type Tab = { id: string; route: Route; history: Route[]; group: string | null; from?: Route };
 export type TabGroup = { id: string; label: string; color: CategoryColor };
 /** A closed tab, kept for the tab menu's Recently closed. `key` is unique per closing. */
 export type ClosedTab = { key: string; route: Route };
@@ -132,10 +137,10 @@ export function NavProvider({ initial, children }: { initial?: Route; children: 
   const openNow = useCallback(
     (route: Route) => {
       const id = `t${tabSeq++}`;
-      setTabs((ts) => [...ts, { id, route, history: [], group: activeGroup }]);
+      setTabs((ts) => [...ts, { id, route, history: [], group: activeGroup, from: activeId === 'home' ? { page: 'home' } : undefined }]);
       setActiveId(id);
     },
-    [activeGroup],
+    [activeGroup, activeId],
   );
 
   /** Show `group`, landing on `tabId` if given, else where that set was left. No guard — callers guard. */
@@ -342,7 +347,7 @@ export function NavProvider({ initial, children }: { initial?: Route; children: 
       replace,
       back,
       canGoBack: activeTab.history.length > 0,
-      previous: activeTab.history[activeTab.history.length - 1],
+      previous: activeTab.history[activeTab.history.length - 1] ?? activeTab.from,
       activate,
       closeTab,
       tabBarUsed,
@@ -406,6 +411,38 @@ export function useNav() {
   const ctx = useContext(Ctx);
   if (!ctx) throw new Error('useNav must be used inside <NavProvider>');
   return ctx;
+}
+
+type Crumb = { label: string; route: Route };
+const HOME_CRUMB: Crumb = { label: 'Home', route: { page: 'home' } };
+
+/**
+ * A breadcrumb's first link. The way back is the way in: a tab opened from Home, still on its first page,
+ * leads back to Home; anywhere else the page keeps its place in the app (`fallback`). Every breadcrumb in
+ * the prototype starts here, so clicking an item on Home never strands you inside an application.
+ */
+export function useCrumbRoot(fallback: Crumb): Crumb {
+  const { previous } = useNav();
+  return previous?.page === 'home' ? HOME_CRUMB : fallback;
+}
+
+/** `useCrumbRoot` as the breadcrumb's first item. */
+export function CrumbRoot(fallback: Crumb) {
+  const { go } = useNav();
+  const root = useCrumbRoot(fallback);
+  return (
+    <BreadcrumbItem>
+      <BreadcrumbLink
+        href="#"
+        onClick={(e) => {
+          e.preventDefault();
+          go(root.route);
+        }}
+      >
+        {root.label}
+      </BreadcrumbLink>
+    </BreadcrumbItem>
+  );
 }
 
 /**

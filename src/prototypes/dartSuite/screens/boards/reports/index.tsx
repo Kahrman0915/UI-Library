@@ -19,7 +19,7 @@ import { ArrowLeft, ChevronDown, Clock, ExternalLink, FileText, LayoutGrid, Link
 import { useState } from 'react';
 import Alert from '../../../../../components/Alert';
 import Badge from '../../../../../components/Badge';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
 import Button from '../../../../../components/Button';
 import Card, { CardBody, CardDescription, CardMedia, CardOverline, CardTitle } from '../../../../../components/Card';
 import Combobox from '../../../../../components/Combobox';
@@ -33,7 +33,7 @@ import Section from '../../../../../components/Section';
 import { toast } from '../../../../../components/Toast';
 import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGroup';
 import Grid from '../../../../../components/Grid';
-import { useNav } from '../../../nav';
+import { CrumbRoot, useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import type { Asset } from '../../../types';
 import { useUi } from '../../../ui';
@@ -329,17 +329,7 @@ export function ReportDetails({ id }: { id: string }) {
     <PageContainer width="narrow" className="ds-report">
       <Breadcrumb aria-label="Breadcrumb">
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                go({ page: 'reports' });
-              }}
-            >
-              Reports
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+          <CrumbRoot label="Reports" route={{ page: 'reports' }} />
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{r.name}</BreadcrumbPage>

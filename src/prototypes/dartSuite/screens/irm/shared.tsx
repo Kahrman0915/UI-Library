@@ -159,6 +159,8 @@ export function IrmCrumbs({ parent: fallback, page }: { parent: { label: string;
         return 'Deployments';
       case 'my-requests':
         return 'Open items';
+      case 'home':
+        return 'Home';
       default:
         return undefined;
     }

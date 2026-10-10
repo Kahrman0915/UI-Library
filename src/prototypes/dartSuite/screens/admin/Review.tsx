@@ -18,7 +18,7 @@ import { useEffect, useState } from 'react';
 import { Check, CheckCircle2, ExternalLink, Info, Lightbulb, ThumbsUp } from 'lucide-react';
 import Alert from '../../../../components/Alert';
 import Avatar from '../../../../components/Avatar';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
 import Button from '../../../../components/Button';
 import Card, { CardBody, CardHeader } from '../../../../components/Card';
 import Drawer, { DrawerBody, DrawerFooter, DrawerHeader } from '../../../../components/Drawer';
@@ -36,7 +36,7 @@ import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
 import DescriptionList, { DescriptionListItem } from '../../../../components/DescriptionList';
 import Timeline, { TimelineItem } from '../../../../components/Timeline';
-import { DISCARD_REPLY, useLeaveGuard, useNav } from '../../nav';
+import { CrumbRoot, DISCARD_REPLY, useLeaveGuard, useNav } from '../../nav';
 import { adminStatus, today, typeLabel, useSuite } from '../../store';
 import type { Banner, Dashboard, Request } from '../../types';
 import { CONTROLS, irmFor } from '../../irm';
@@ -61,21 +61,10 @@ const BACKLOG = [
 /* ── Shared page chrome ──────────────────────────────────────────────────── */
 
 function Crumbs({ r }: { r: Request }) {
-  const { go } = useNav();
   return (
     <Breadcrumb>
       <BreadcrumbList>
-        <BreadcrumbItem>
-          <BreadcrumbLink
-            href="#"
-            onClick={(e) => {
-              e.preventDefault();
-              go({ page: 'admin-queue' });
-            }}
-          >
-            Approval Queue
-          </BreadcrumbLink>
-        </BreadcrumbItem>
+        <CrumbRoot label="Approval Queue" route={{ page: 'admin-queue' }} />
         <BreadcrumbSeparator />
         <BreadcrumbItem>
           <BreadcrumbPage>
