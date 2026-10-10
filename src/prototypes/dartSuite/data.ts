@@ -607,6 +607,9 @@ export const ADMINS: Admin[] = [
   { personId: ME.id, role: 'overall', products: ['DART Central', 'DARTBoards', 'Aiden'], grantedAt: '01/12/2026' },
   { personId: 'u-pr', role: 'sub', products: ['DARTBoards', 'Aiden'], grantedAt: '03/04/2026' },
   { personId: 'u-jl', role: 'application', products: ['Aiden'], grantedAt: '06/18/2026' },
+  // The development manager is also DART Central's product manager: the banner, listing and feature requests
+  // for DART Central and DartBoards come to them, shared with Priya. Aiden's do not.
+  { personId: 'u-ar', role: 'sub', products: ['DART Central', 'DARTBoards'], grantedAt: '10/06/2026' },
 ];
 
 export const ACTIVITY: ActivityEntry[] = [

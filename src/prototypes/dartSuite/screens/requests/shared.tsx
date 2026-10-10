@@ -17,7 +17,7 @@ import PageHeader from '../../../../components/PageHeader';
 import Text from '../../../../components/Text';
 import Grid from '../../../../components/Grid';
 import { toast } from '../../../../components/Toast';
-import { useLeaveGuard, useNav } from '../../nav';
+import { useCrumbRoot, useLeaveGuard, useNav } from '../../nav';
 import type { LeaveGuard } from '../../nav';
 import { useSuite } from '../../store';
 import type { NewRequestInput, Tone } from '../../store';
@@ -122,8 +122,12 @@ export const scopeLabel = (r: Request) => {
 
 /* ── Breadcrumb ───────────────────────────────────────────────────────────── */
 
-export function Crumbs({ trail }: { trail: { label: string; route?: Route }[] }) {
+export function Crumbs({ trail: given }: { trail: { label: string; route?: Route }[] }) {
   const { go } = useNav();
+  // The first link is where the tab came from: Home, when it was opened from there (useCrumbRoot).
+  const first = given[0];
+  const root = useCrumbRoot(first?.route ? { label: first.label, route: first.route } : { label: '', route: { page: 'home' } });
+  const trail = first?.route ? [root, ...given.slice(1)] : given;
   return (
     <Breadcrumb aria-label="Breadcrumb">
       <BreadcrumbList>

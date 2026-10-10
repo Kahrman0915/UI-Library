@@ -444,6 +444,7 @@ export type HomeTileId =
   | 'irm-controls'
   | 'irm-changes'
   | 'requests'
+  | 'request-queue'
   | 'quick'
   | 'tabs'
   | 'whats-new'

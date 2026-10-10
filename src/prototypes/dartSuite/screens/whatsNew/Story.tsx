@@ -9,7 +9,7 @@
 import { Share2, Star, Store, Link2, Library, LayoutGrid, Move, BarChart3, Home as HomeIcon } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 import Badge from '../../../../components/Badge';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../components/Breadcrumb';
 import Button from '../../../../components/Button';
 import Code from '../../../../components/Code';
 import Card, { CardBody, CardHeader, CardMedia } from '../../../../components/Card';
@@ -24,7 +24,7 @@ import Grid from '../../../../components/Grid';
 import Heading from '../../../../components/Heading';
 import Text from '../../../../components/Text';
 import { Walkthrough } from '../../../productDemos/Walkthrough';
-import { useNav } from '../../nav';
+import { CrumbRoot, useNav } from '../../nav';
 import { WHATS_NEW } from './entries';
 import type { WnEntry } from './entries';
 import { Clip, EntryBadges } from './parts';
@@ -81,17 +81,7 @@ export function WhatsNewStory({ id }: { id: string }) {
       overline={
         <Breadcrumb id={`ds-wns-${entry.id}-crumbs`}>
           <BreadcrumbList>
-            <BreadcrumbItem>
-              <BreadcrumbLink
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  go({ page: 'whats-new' });
-                }}
-              >
-                What’s New
-              </BreadcrumbLink>
-            </BreadcrumbItem>
+            <CrumbRoot label="What’s New" route={{ page: 'whats-new' }} />
             <BreadcrumbSeparator />
             <BreadcrumbItem>
               <BreadcrumbPage>{entry.title}</BreadcrumbPage>

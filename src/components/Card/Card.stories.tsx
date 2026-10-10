@@ -71,6 +71,11 @@ const meta: Meta<typeof Card> = {
       ],
       changelog: [
         {
+          date: '2026-10-10',
+          summary: 'No visible change: the stylesheet no longer triggers Sass deprecation warnings.',
+          detail: 'The `CardTitle` scale loop uses `list.nth` from `sass:list` instead of the global `nth()`, which Dart Sass 3.0 removes. Compiled CSS is byte-identical.',
+        },
+        {
           date: '2026-10-03',
           summary: '`CardMedia` takes an `overlay` — badges or tags placed on the cover, as a supported region.',
           detail: 'Rendered in `.ui-card__media-overlay`: absolute along the cover\'s top edge, first child at the start and last at the end, inset by `--p-3`, `pointer-events: none` on the layer and `auto` on its children. `.ui-card__media` now declares `position: relative` itself, so the positioning context is a contract rather than AspectRatio\'s implementation detail. Story: CoverOverlay.',

@@ -1,3 +1,5 @@
+@use 'sass:list';
+
 .ui-card {
   display: flex;
   flex-direction: column;
@@ -489,7 +491,7 @@ $ui-card-title-scales: (
 
 @each $rung, $type in $ui-card-title-scales {
   .ui-card__title.ui-card__title--scale-#{$rung} {
-    font-size: nth($type, 1);
-    line-height: nth($type, 2);
+    font-size: list.nth($type, 1);
+    line-height: list.nth($type, 2);
   }
 }

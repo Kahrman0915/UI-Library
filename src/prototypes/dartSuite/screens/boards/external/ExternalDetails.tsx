@@ -30,7 +30,7 @@ import './External.scss';
 
 export function ExternalDetails({ d, fromSpaceId }: { d: Dashboard; fromSpaceId?: string }) {
   const { state } = useSuite();
-  const { go } = useNav();
+  const { go, previous } = useNav();
   const ui = useUi();
   const openExternal = useOpenExternal();
   const space = fromSpaceId ? state.spaces.find((s) => s.id === fromSpaceId) : undefined;
@@ -43,8 +43,11 @@ export function ExternalDetails({ d, fromSpaceId }: { d: Dashboard; fromSpaceId?
     .slice(0, 3);
   const base = `ds-ext-${d.id}`;
 
-  // The way back up: the space it was opened from, else its suite, else Browse.
-  const crumbs = space
+  // The way back up: Home if the tab was opened from there, else the space it was opened from, else its
+  // suite, else Browse.
+  const crumbs = previous?.page === 'home'
+    ? [{ label: 'Home', onClick: () => go({ page: 'home' }) }]
+    : space
     ? [{ label: space.name, onClick: () => go({ page: 'space', id: space.id }) }]
     : suite
       ? [

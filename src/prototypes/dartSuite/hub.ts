@@ -9,6 +9,7 @@ import { CHANGE_STATUS, CHANGE_TYPE, addDaysIso, evergreenState, fmtIso, isAged,
 import type { IrmChange } from './irm';
 import { GOVERNANCE_IDS, approversOf } from './irmEngine';
 import { PEOPLE } from './data';
+import { adminOf, typeLabel } from './store';
 import type { SuiteState } from './store';
 import type { Request, Route } from './types';
 
@@ -20,8 +21,12 @@ export const HANDLER = {
 } as const;
 export type Handler = keyof typeof HANDLER;
 
-/** What a DART Central request is about, in the same words the chooser uses. */
-export const requestHandler = (r: Request): Handler => (r.type.startsWith('dashboard') ? 'boards' : 'central');
+/**
+ * Who handles a DART Central request: its product's admins. Read from the product, not the type — a banner
+ * on DartBoards (#0416) is the DartBoards admins', though only dashboard requests used to say so. Aiden's
+ * requests have no application of their own here, so they read as DART Central's.
+ */
+export const requestHandler = (r: Request): Handler => (r.product === 'DARTBoards' ? 'boards' : 'central');
 
 export const APP_NAME: Record<Handler, string> = { irm: 'IRM', boards: 'DartBoards', central: 'DART Central' };
 
@@ -37,7 +42,7 @@ export const irmChangeLabel = (c: IrmChange) =>
   CHANGE_TYPE[c.type].label;
 
 /** What kind of thing is waiting — Home acts on it in place by kind, without leaving DART Central. */
-export type WaitingKind = 'reply' | 'approve' | 'review' | 'certify' | 'attest' | 'retiring' | 'start' | 'assign' | 'take' | 'deploy';
+export type WaitingKind = 'reply' | 'triage' | 'approve' | 'review' | 'certify' | 'attest' | 'retiring' | 'start' | 'assign' | 'take' | 'deploy';
 
 export type WaitingItem = {
   key: string;
@@ -69,6 +74,32 @@ export function waitingOn(state: SuiteState, personId: string): WaitingItem[] {
   for (const r of state.requests)
     if (r.requesterId === personId && r.status === 'awaiting-reply')
       out.push({ key: `req-${r.id}`, kind: 'reply', ref: r.id, title: r.title, detail: `${r.id} · the admins asked you a question`, app: requestHandler(r), action: 'Reply', route: { page: 'request-detail', id: r.id }, urgent: 'Needs a reply' });
+
+  // DART Central / DartBoards requests this person handles as an admin: new ones, and ones the requester
+  // answered. Only the products they administer, and never their own — nobody approves what they asked for.
+  // A banner whose start date is close (or gone) cannot wait: a banner that misses its window has failed.
+  const rights = adminOf(state, personId);
+  if (rights)
+    for (const r of state.requests) {
+      if (!rights.products.includes(r.product) || r.requesterId === personId) continue;
+      if (r.status !== 'new' && r.status !== 'needs-review') continue;
+      const last = r.thread[r.thread.length - 1];
+      const where = r.status === 'new' ? 'new request' : last?.author === 'requester' ? 'the requester answered' : 'in review';
+      const starts = r.type.startsWith('banner') ? r.fields.find((f) => f.label === 'Starts')?.value : undefined;
+      const startIso = starts ? starts.replace(/^(\d{2})\/(\d{2})\/(\d{4})$/, '$3-$1-$2') : undefined;
+      const urgent = !startIso ? undefined : startIso < today ? 'Overdue' : startIso <= addDaysIso(today, 3) ? 'Starts soon' : undefined;
+      out.push({
+        key: `adm-${r.id}`,
+        kind: 'triage',
+        ref: r.id,
+        title: r.title,
+        detail: `${r.id} · ${typeLabel[r.type]} · ${where}${starts ? ` · starts ${fmtIso(startIso!)}` : ''}`,
+        app: requestHandler(r),
+        action: 'Review',
+        route: { page: 'admin-review', id: r.id },
+        urgent,
+      });
+    }
 
   // IRM approvals, whatever the workflow sends this person.
   for (const c of state.irm.changes)

@@ -25,7 +25,7 @@ import { toast } from '../../../../components/Toast';
 import Text from '../../../../components/Text';
 import { ShieldAlert } from 'lucide-react';
 import { ME, PEOPLE, personById } from '../../data';
-import { today, useSuite } from '../../store';
+import { adminOf, today, useSuite } from '../../store';
 import type { SuiteState } from '../../store';
 import type { Admin, AdminScope, Product } from '../../types';
 import { ConfirmDialog, Kpi, PRODUCT_LABEL, ToneBadge } from './shared';
@@ -71,7 +71,7 @@ export function AdminAccess() {
   const [grantDrawer, setGrantDrawer] = useState<{ personId: string | null } | null>(null);
   const [grantDraft, setGrantDraft] = useState<{ personId: string; level: Level }>({ personId: '', level: 'Standard' });
 
-  if (state.adminScope !== 'overall') {
+  if (adminOf(state, state.userId)?.scope !== 'overall') {
     return (
       <PageContainer width="narrow">
         <Empty>

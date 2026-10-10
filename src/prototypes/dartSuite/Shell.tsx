@@ -95,7 +95,7 @@ import Dialog, { DialogBody, DialogFooter, DialogHeader } from '../../components
 import Input from '../../components/Input';
 import { ME, PEOPLE } from './data';
 import { useNav } from './nav';
-import { scopeProducts, useSignedIn, useSuite } from './store';
+import { adminOf, useSignedIn, useSuite } from './store';
 import { IrmAnnouncer, NotificationsMenu, SimulateMenu } from './screens/irm';
 import { AUDIENCE_LABEL, audienceOf, waitingOn } from './hub';
 import { openItems } from './openItems';
@@ -265,8 +265,9 @@ function CentralSidebar({ current }: { current: Route }) {
   const { person } = useSignedIn();
   // Open items' badge is its "Needs you" count — the same number Home's Needs your attention shows.
   const needsYou = waitingOn(state, person.id).length;
-  const scope = state.adminScope;
-  const products = scopeProducts(scope);
+  const rights = adminOf(state, person.id);
+  const scope = rights?.scope ?? null;
+  const products = rights?.products ?? [];
   const pending = state.requests.filter((r) => products.includes(r.product) && (r.status === 'new' || r.status === 'needs-review')).length;
 
   const main: NavItem[] = [
@@ -656,21 +657,31 @@ export function Shell({ children, aiden }: { children: ReactNode; aiden?: ReactN
                   {PERSONAS.map((p) => (
                     <DropdownMenuRadioItem key={p.id} value={p.id}>
                       {p.name} · {AUDIENCE_LABEL[audienceOf(state, p.id)]}
+                      {p.id !== ME.id && adminOf(state, p.id) ? ' · DART Central admin' : ''}
                     </DropdownMenuRadioItem>
                   ))}
                 </DropdownMenuRadioGroup>
                 <DropdownMenuSeparator />
-                <DropdownMenuLabel>Prototype · DART Central admin rights</DropdownMenuLabel>
-                <DropdownMenuRadioGroup
-                  value={state.adminScope ?? 'none'}
-                  onValueChange={(v) => setAdminScope(v === 'none' ? null : (v as AdminScope))}
-                >
-                  {SCOPES.map((s) => (
-                    <DropdownMenuRadioItem key={s.value} value={s.value}>
-                      {s.label}
-                    </DropdownMenuRadioItem>
-                  ))}
-                </DropdownMenuRadioGroup>
+                {/* The switch is the main user's alone; every other persona's rights are their Access Control grant. */}
+                {person.id === ME.id ? (
+                  <>
+                    <DropdownMenuLabel>Prototype · DART Central admin rights</DropdownMenuLabel>
+                    <DropdownMenuRadioGroup
+                      value={state.adminScope ?? 'none'}
+                      onValueChange={(v) => setAdminScope(v === 'none' ? null : (v as AdminScope))}
+                    >
+                      {SCOPES.map((s) => (
+                        <DropdownMenuRadioItem key={s.value} value={s.value}>
+                          {s.label}
+                        </DropdownMenuRadioItem>
+                      ))}
+                    </DropdownMenuRadioGroup>
+                  </>
+                ) : (
+                  <DropdownMenuLabel>
+                    Admin rights · {adminOf(state, person.id)?.products.join(', ') ?? 'none'}
+                  </DropdownMenuLabel>
+                )}
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={() => nav.go({ page: 'placeholder', title: 'Help' })}>
                   <CircleHelp aria-hidden="true" />

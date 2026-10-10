@@ -7,7 +7,7 @@
    review, production support a deployment. When nothing needs the person it says so and stays quiet. */
 
 import type { LucideIcon } from 'lucide-react';
-import { Archive, ArrowRight, CircleCheck, ClipboardCheck, FileClock, MessageSquare, Play, Rocket, ShieldCheck, Stamp, Ticket, TriangleAlert, UserPlus } from 'lucide-react';
+import { Archive, ArrowRight, CircleCheck, ClipboardCheck, FileClock, Inbox, MessageSquare, Play, Rocket, ShieldCheck, Stamp, Ticket, TriangleAlert, UserPlus } from 'lucide-react';
 import Badge from '../../../../components/Badge';
 import Button from '../../../../components/Button';
 import FeaturedIcon from '../../../../components/FeaturedIcon';
@@ -47,6 +47,7 @@ export const needsCount = (state: SuiteState, personId: string) => waitingOn(sta
 
 const KIND_ICON: Record<WaitingKind, LucideIcon> = {
   reply: MessageSquare,
+  triage: Inbox,
   approve: Stamp,
   review: ShieldCheck,
   certify: FileClock,

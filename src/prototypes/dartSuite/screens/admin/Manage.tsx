@@ -36,7 +36,7 @@ import Grid from '../../../../components/Grid';
 import Text from '../../../../components/Text';
 import { seriesFor } from '../../data';
 import { useNav } from '../../nav';
-import { scopeProducts, today, useSuite } from '../../store';
+import { adminOf, today, useSuite } from '../../store';
 import type { Tone } from '../../store';
 import type { Banner, Dashboard, Promotion, Redirect } from '../../types';
 import { ControlsBadge } from '../irm/shared';
@@ -473,7 +473,7 @@ export function AdminBanners() {
     setDrawer(null);
   };
 
-  const products = scopeProducts(state.adminScope);
+  const products = adminOf(state, state.userId)?.products ?? [];
 
   return (
     <PageContainer width="narrow">
@@ -1046,7 +1046,7 @@ export function AdminActivity() {
   const { state } = useSuite();
   const { go } = useNav();
   const loading = useFirstLoad();
-  const products = scopeProducts(state.adminScope);
+  const products = adminOf(state, state.userId)?.products ?? [];
   const [product, setProduct] = useState('all');
   const [query, setQuery] = useState('');
   const [limit, setLimit] = useState(25);

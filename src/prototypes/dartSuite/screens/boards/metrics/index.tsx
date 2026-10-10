@@ -16,7 +16,7 @@
 import { Check, ChevronDown, Clock, LayoutGrid, List, Plus, Search, SearchX, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import Badge from '../../../../../components/Badge';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
 import Button from '../../../../../components/Button';
 import Card, { CardBody, CardDescription, CardMedia, CardOverline, CardTitle } from '../../../../../components/Card';
 import Combobox from '../../../../../components/Combobox';
@@ -30,7 +30,7 @@ import Section from '../../../../../components/Section';
 import ToggleGroup, { ToggleGroupItem } from '../../../../../components/ToggleGroup';
 import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
-import { useNav } from '../../../nav';
+import { CrumbRoot, useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import type { Asset, MetricView, NativeFilters } from '../../../types';
 import { useUi } from '../../../ui';
@@ -318,17 +318,7 @@ export function MetricPage({ id }: { id: string }) {
     <PageContainer className="ds-metric-page">
       <Breadcrumb aria-label="Breadcrumb">
         <BreadcrumbList>
-          <BreadcrumbItem>
-            <BreadcrumbLink
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                go({ page: 'metrics' });
-              }}
-            >
-              Metrics
-            </BreadcrumbLink>
-          </BreadcrumbItem>
+          <CrumbRoot label="Metrics" route={{ page: 'metrics' }} />
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage>{m.name}</BreadcrumbPage>

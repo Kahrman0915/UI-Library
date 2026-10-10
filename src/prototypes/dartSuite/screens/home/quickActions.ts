@@ -103,5 +103,6 @@ export const quickTitle = (ids: string[]) => {
 export const QUICK_CAPACITY = { S: 2, M: 4, L: 8, W: 8, XL: 8 } as const;
 
 /** A starting set for a role, used when a quick-actions widget is first added. */
-export const defaultActions = (audience: Audience): string[] =>
-  audience === 'owner' ? ['irm-new', 'irm-break'] : audience === 'reader' ? ['new-request', 'browse'] : audience === 'governance' ? ['irm-governance', 'irm-inventory'] : ['irm-new', 'irm-inventory'];
+export const defaultActions = (audience: Audience, isAdmin = false): string[] =>
+  // A development manager who runs the request queue gets it, and the board, one click away.
+  audience === 'dev-manager' && isAdmin ? ['admin-queue', 'irm-board', 'irm-new', 'irm-inventory'] : audience === 'owner' ? ['irm-new', 'irm-break'] : audience === 'reader' ? ['new-request', 'browse'] : audience === 'governance' ? ['irm-governance', 'irm-inventory'] : ['irm-new', 'irm-inventory'];

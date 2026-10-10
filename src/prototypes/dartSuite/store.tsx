@@ -597,3 +597,23 @@ export const typeLabel: Record<Request['type'], string> = {
 /** Products the current admin scope may see (Admin Flow: an Aiden-only admin sees Aiden rows only). */
 export const scopeProducts = (scope: AdminScope | null): Request['product'][] =>
   scope === 'application' ? ['Aiden'] : ['DART Central', 'DARTBoards', 'Aiden'];
+
+export type AdminRights = { scope: AdminScope; products: Request['product'][] };
+
+/**
+ * A person's DART Central admin rights, or `null` for none. The main user's come from the prototype switch
+ * in the account menu, so every Figma sidebar variant stays reachable; everyone else's are their grant in
+ * Access Control (`state.admins`), products and all — so an admin who does not handle Aiden never sees
+ * Aiden's requests, and a persona with no grant sees no admin chrome at all.
+ */
+export const adminOf = (state: SuiteState, personId: string): AdminRights | null => {
+  if (personId === ME.id) return state.adminScope ? { scope: state.adminScope, products: scopeProducts(state.adminScope) } : null;
+  const grant = state.admins.find((a) => a.personId === personId);
+  return grant ? { scope: grant.role, products: grant.products } : null;
+};
+
+/** The signed-in person's admin rights. */
+export function useAdmin() {
+  const { state } = useSuite();
+  return adminOf(state, state.userId);
+}

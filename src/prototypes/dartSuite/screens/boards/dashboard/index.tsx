@@ -29,7 +29,7 @@ import {
 } from 'lucide-react';
 import Alert from '../../../../../components/Alert';
 import Badge from '../../../../../components/Badge';
-import Breadcrumb, { BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
+import Breadcrumb, { BreadcrumbItem, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from '../../../../../components/Breadcrumb';
 import Button from '../../../../../components/Button';
 import DropdownMenu, { DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../../../../../components/DropdownMenu';
 import Empty, { EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from '../../../../../components/Empty';
@@ -40,7 +40,7 @@ import Toolbar, { ToolbarGroup } from '../../../../../components/Toolbar';
 import Grid from '../../../../../components/Grid';
 import { seriesFor } from '../../../data';
 import { fmtIso } from '../../../irm';
-import { useNav } from '../../../nav';
+import { CrumbRoot, useNav } from '../../../nav';
 import { useSuite } from '../../../store';
 import type { Dashboard } from '../../../types';
 import { useUi } from '../../../ui';
@@ -56,7 +56,7 @@ const SEGMENTS = ['North', 'South', 'East', 'West', 'Central', 'Online'];
 
 export function DashboardViewer({ id, fromSpaceId, widget }: { id: string; fromSpaceId?: string; widget?: string }) {
   const { state, logActivity } = useSuite();
-  const { go } = useNav();
+  const { go, previous } = useNav();
   const ui = useUi();
   const d = state.dashboards.find((x) => x.id === id);
   const space = fromSpaceId ? state.spaces.find((s) => s.id === fromSpaceId) : undefined;
@@ -278,21 +278,11 @@ export function DashboardViewer({ id, fromSpaceId, widget }: { id: string; fromS
   return (
     <div className="ds-dash">
       <div className="ds-dash-header">
-        {space && (
-          // D1.5 — opened from a space: the way back is the space, not Browse.
+        {(space || previous?.page === 'home') && (
+          // D1.5 — opened from a space: the way back is the space, not Browse. Opened from Home: back to Home.
           <Breadcrumb aria-label="Breadcrumb">
             <BreadcrumbList>
-              <BreadcrumbItem>
-                <BreadcrumbLink
-                  href="#"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    go({ page: 'space', id: space.id });
-                  }}
-                >
-                  {space.name}
-                </BreadcrumbLink>
-              </BreadcrumbItem>
+              <CrumbRoot label={space?.name ?? 'Dashboards'} route={space ? { page: 'space', id: space.id } : { page: 'browse' }} />
               <BreadcrumbSeparator />
               <BreadcrumbItem>
                 <BreadcrumbPage>{d.name}</BreadcrumbPage>
