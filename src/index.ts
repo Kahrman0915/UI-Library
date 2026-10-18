@@ -627,6 +627,8 @@ export type { LabelProps, LabelSize } from './components/Label';
 
 export { default as Stat } from './components/Stat';
 export type { StatProps, StatSize, StatTone } from './components/Stat';
+export { default as PaceTimeline } from './components/PaceTimeline';
+export type { PaceTimelineProps, PaceTimelineStatus } from './components/PaceTimeline';
 export { default as Text } from './components/Text';
 export type { TextProps, TextSize, TextTone, TextWeight } from './components/Text';
 export { default as Textarea } from './components/Textarea';
