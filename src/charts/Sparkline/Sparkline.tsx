@@ -22,9 +22,10 @@ const W = 100;
 
 const Sparkline = forwardRef<HTMLDivElement, SparklineProps>(
   (
-    { id, label, data, categories, variant = 'line', tone = 'default', height = 32, showEnd = true, valueFormatter = (v) => String(v), className, ...rest },
+    { id, label, data, categories, variant = 'line', highlight, tone = 'default', height = 32, showEnd = true, valueFormatter = (v) => String(v), className, ...rest },
     ref,
   ) => {
+    const isBar = variant === 'bar';
     const values = data.filter((v): v is number => v !== null);
     const min = Math.min(...values);
     const max = Math.max(...values);
@@ -49,6 +50,21 @@ const Sparkline = forwardRef<HTMLDivElement, SparklineProps>(
 
     let lastIndex = data.length - 1;
     while (lastIndex >= 0 && data[lastIndex] === null) lastIndex--;
+
+    // Bars stand on ZERO, not on the minimum: a bar's length is its value, and a baseline at
+    // the minimum would make the smallest count look like nothing. Each bar gets an equal slot
+    // with a third of it left as gap; the stretched viewBox keeps the proportion at any width.
+    const barMax = Math.max(0, ...values) || 1;
+    const slot = W / Math.max(1, data.length);
+    const barW = slot * (2 / 3);
+    const hi = highlight === undefined ? lastIndex : highlight;
+    const bars = isBar
+      ? data.map((v, i) => {
+          if (v === null) return null;
+          const h = Math.max(0, (v / barMax) * height);
+          return { i, x: i * slot + (slot - barW) / 2, y: height - h, h };
+        })
+      : [];
     const last = lastIndex >= 0 ? (data[lastIndex] as number) : null;
     const first = values[0];
     const name = values.length ? `${label}: ${valueFormatter(first)} to ${valueFormatter(last as number)}` : `${label}: no data`;
@@ -59,22 +75,40 @@ const Sparkline = forwardRef<HTMLDivElement, SparklineProps>(
         {...rest}
         ref={ref}
         id={id}
-        className={`ui-sparkline ui-sparkline--${tone}${className ? ' ' + className : ''}`}
+        className={`ui-sparkline ui-sparkline--${tone}${isBar ? ' ui-sparkline--bar' : ''}${className ? ' ' + className : ''}`}
         style={{ ...rest.style, height }}
         role="img"
         aria-label={name}
       >
         {values.length > 0 && (
           <svg className="ui-sparkline__svg" viewBox={`0 0 ${W} ${height}`} preserveAspectRatio="none" aria-hidden="true" focusable="false">
-            {areas.map((d, i) => (
-              <path key={`a${i}`} className="ui-sparkline__area" d={d} />
-            ))}
-            {lines.map((d, i) => (
-              <path key={`l${i}`} className="ui-sparkline__line" d={d} />
-            ))}
+            {isBar
+              ? bars.map(
+                  (b) =>
+                    b && (
+                      <rect
+                        key={`b${b.i}`}
+                        className={`ui-sparkline__bar${hi !== null && b.i !== hi ? ' ui-sparkline__bar--dim' : ''}`}
+                        x={b.x}
+                        y={b.y}
+                        width={barW}
+                        height={b.h}
+                      />
+                    ),
+                )
+              : (
+                <>
+                  {areas.map((d, i) => (
+                    <path key={`a${i}`} className="ui-sparkline__area" d={d} />
+                  ))}
+                  {lines.map((d, i) => (
+                    <path key={`l${i}`} className="ui-sparkline__line" d={d} />
+                  ))}
+                </>
+              )}
           </svg>
         )}
-        {showEnd && last !== null && (
+        {!isBar && showEnd && last !== null && (
           <span className="ui-sparkline__end" style={{ left: `${x(lastIndex)}%`, top: `${(y(last) / height) * 100}%` }} aria-hidden="true" />
         )}
         {/* Hidden in a div, not on the table: a table ignores a 1px box and would still push its container to scroll. */}

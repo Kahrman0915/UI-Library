@@ -16,12 +16,21 @@ export type SparklineProps = Omit<HTMLAttributes<HTMLDivElement>, 'children'> & 
   data: (number | null)[];
   /** One label per value, for the data table twin. Defaults to 1, 2, 3… */
   categories?: string[];
-  /** `line` alone, or `area` — the line over a soft fill to the baseline. */
-  variant?: 'line' | 'area';
+  /**
+   * `line` alone, `area` — the line over a soft fill to the baseline — or `bar`, one bar per
+   * value from zero. Use `bar` for counts per period (items due per day), where each value
+   * stands on its own; a line implies the values in between exist.
+   */
+  variant?: 'line' | 'area' | 'bar';
+  /**
+   * `bar` only: the index of the bar drawn at full strength; the rest are dimmed. Default the
+   * last value — "today" or "this week". Pass `null` to draw every bar at full strength.
+   */
+  highlight?: number | null;
   tone?: SparklineTone;
   /** Height in px. Width always fills the container. Default 32. */
   height?: number;
-  /** Mark the last value with a dot — where the trend is now. Default true. */
+  /** Mark the last value with a dot — where the trend is now. Default true. Ignored for `bar`, which uses `highlight`. */
   showEnd?: boolean;
   /** Formats values in the data table twin. */
   valueFormatter?: (value: number) => string;

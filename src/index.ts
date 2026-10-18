@@ -588,6 +588,12 @@ export type {
   ProgressSize,
   ProgressVariant,
 } from './components/Progress';
+export { default as ProgressRing } from './components/ProgressRing';
+export type {
+  ProgressRingProps,
+  ProgressRingSize,
+  ProgressRingVariant,
+} from './components/ProgressRing';
 
 export {
   default as Attachment,

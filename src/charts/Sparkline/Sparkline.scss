@@ -44,6 +44,16 @@
   stroke: none;
 }
 
+// One bar per value. The highlighted bar (today, by default) is the tone at full strength;
+// the rest stay the same hue, dimmed, so the bars still read as one series.
+.ui-sparkline__bar {
+  fill: currentColor;
+
+  &--dim {
+    opacity: var(--o-40);
+  }
+}
+
 // Where the trend is now. An HTML dot, so the stretched SVG cannot squash it.
 .ui-sparkline__end {
   position: absolute;
