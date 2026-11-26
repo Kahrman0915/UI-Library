@@ -31,6 +31,12 @@ const meta: Meta<typeof Sparkline> = {
       },
       changelog: [
         {
+          date: '2026-10-18',
+          summary: 'Added a bar variant for counts per period, with today highlighted.',
+          detail:
+            '`variant="bar"` draws one bar per value from zero (not from the minimum) in the same stretched viewBox, with a third of each slot left as gap. `highlight` picks the bar drawn at full strength (default the last value; `null` for none); the rest render at `--o-40`. `showEnd` is ignored for bars.',
+        },
+        {
           date: '2026-10-06',
           summary: 'Fixed a sparkline making the table or panel around it scroll.',
           detail:
@@ -68,6 +74,21 @@ export const Variants: Story = {
       <Sparkline id="spark-bad" label="On-time refresh rate" data={DOWN} variant="area" tone="error" />
       <Sparkline id="spark-muted" label="Last year" data={DOWN} tone="muted" showEnd={false} />
       <Sparkline id="spark-gap" label="Views with a missing week" data={[412, 398, null, 465, 431, 502, 548]} />
+    </div>
+  ),
+};
+
+/**
+ * `variant="bar"` for counts per period. Bars stand on zero, and the highlighted bar — the last
+ * one by default, so "today" — is drawn at full strength while the rest are dimmed.
+ */
+export const Bars: Story = {
+  render: () => (
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 120px)', gap: 24 }}>
+      <Sparkline id="spark-bar" label="Items due, Fri to Thu" data={[2, 3, 2, 4, 5]} categories={['Fri', 'Mon', 'Tue', 'Wed', 'Thu']} variant="bar" tone="error" />
+      <Sparkline id="spark-bar-good" label="Items closed per day" data={[1, 2, 0, 3, 4, 2]} variant="bar" tone="success" />
+      <Sparkline id="spark-bar-mid" label="Meetings per day, Wednesday highlighted" data={[3, 2, 4, 1, 1]} variant="bar" highlight={2} />
+      <Sparkline id="spark-bar-all" label="Deploys per week" data={[4, 6, 5, 7, 6, 8]} variant="bar" tone="muted" highlight={null} />
     </div>
   ),
 };
