@@ -173,14 +173,31 @@
 
   // The marker starts just above the first track and runs a little past the second, so it
   // reads as one line through both rather than a tick on either.
+  //
+  // It breaks across the work bar's header row. Early in a period the marker sits over the
+  // "Work done" label, and a solid line struck through the text. CSS cannot tell text from
+  // empty space under the line, so the break is there on every day, which keeps the marker's
+  // shape the same as it moves. The break is painted into the background rather than masked,
+  // so the line stays on its token. Its offsets are the layout's own rungs, measured from the
+  // marker's top: the first bar's gap + track + the gap between bars, less the marker's lift
+  // above the first track; it is one header line tall. If those rungs change, change these.
   &__marker {
+    --_break-start: calc(var(--p-1) + var(--h-2) + var(--p-3) - var(--p-0-5));
+    --_break-end: calc(var(--_break-start) + var(--leading-4));
+
     position: absolute;
     top: calc(var(--leading-4) + var(--p-0-5));
     bottom: calc(-1 * var(--p-1));
     inset-inline-start: var(--ui-pace-time);
     width: var(--w-0-5);
     border-radius: var(--rounded-full);
-    background: var(--foreground);
+    background: linear-gradient(
+      to bottom,
+      var(--foreground) var(--_break-start),
+      transparent var(--_break-start),
+      transparent var(--_break-end),
+      var(--foreground) var(--_break-end)
+    );
     transform: translateX(-50%);
     transition: inset-inline-start var(--duration-normal) var(--ease-out);
   }

@@ -43,6 +43,12 @@ const meta: Meta<typeof PaceTimeline> = {
       },
       changelog: [
         {
+          date: '2026-11-26',
+          summary: 'The today marker no longer strikes through the "Work done" label early in a period.',
+          detail:
+            'The marker is now broken across the work bar\'s header row on every day, so its shape stays the same as it moves. The break is painted into the marker\'s `background` (a `--foreground` gradient with a transparent band), not a mask, so it stays on tokens. Its offsets (`--_break-start` / `--_break-end`) come from the layout\'s own rungs (`--p-1` + `--h-2` + `--p-3` − `--p-0-5`, one `--leading-4` tall); change them if those rungs change. A work label long enough to wrap to two lines would outgrow the break.',
+        },
+        {
           date: '2026-10-18',
           summary: 'Initial build — a sprint\'s working days over time-used and work-done bars, with a today marker.',
           detail:
